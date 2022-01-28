@@ -111,14 +111,14 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             const DiscoverMovies(),
             ScrollingMovies(
-              title: 'Top Rated',
-              api: Endpoints.topRatedUrl(1),
-              discoverType: 'top_rated',
-            ),
-            ScrollingMovies(
               title: 'Popular',
               api: Endpoints.popularMoviesUrl(1),
               discoverType: 'popular',
+            ),
+            ScrollingMovies(
+              title: 'Top Rated',
+              api: Endpoints.topRatedUrl(1),
+              discoverType: 'top_rated',
             ),
             ScrollingMovies(
               title: 'Now playing',

@@ -34,9 +34,9 @@ class Movie {
   int? voteCount;
   int? id;
   bool? video;
-  String? voteAverage;
+  num? voteAverage;
   String? title;
-  double? popularity;
+  num? popularity;
   String? posterPath;
   String? originalLanguage;
   String? originalTitle;
@@ -68,7 +68,7 @@ class Movie {
     voteCount = json['vote_count'];
     id = json['id'];
     video = json['video'];
-    voteAverage = json['vote_average'].toString();
+    voteAverage = json['vote_average'];
     title = json['title'];
     popularity = json['popularity'];
     posterPath = json['poster_path'];
@@ -111,8 +111,13 @@ class MovieDetails {
   int? budget;
   int? revenue;
 
-  MovieDetails(this.runtime, this.tagline, this.status, this.budget,
-      this.revenue, this.originalTitle);
+  MovieDetails(
+      {this.runtime,
+      this.tagline,
+      this.status,
+      this.budget,
+      this.revenue,
+      this.originalTitle});
   MovieDetails.fromJson(Map<String, dynamic> json) {
     runtime = json['runtime'];
     tagline = json['tagline'];

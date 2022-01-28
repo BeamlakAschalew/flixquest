@@ -37,6 +37,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -162,7 +163,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                                     left: 8.0),
                                                             child: Text(
                                                               widget.movie
-                                                                  .voteAverage!,
+                                                                  .voteAverage!
+                                                                  .toString(),
                                                               // style: widget.themeData
                                                               //     .textTheme.bodyText1,
                                                             ),
@@ -227,6 +229,11 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                               TextStyle(fontFamily: 'Poppins')),
                                     ),
                                     Tab(
+                                      child: Text('Crew',
+                                          style:
+                                              TextStyle(fontFamily: 'Poppins')),
+                                    ),
+                                    Tab(
                                       child: Text('Recommendations',
                                           style:
                                               TextStyle(fontFamily: 'Poppins')),
@@ -236,11 +243,6 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                           style:
                                               TextStyle(fontFamily: 'Poppins')),
                                     ),
-                                    Tab(
-                                      child: Text('Comments',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
-                                    )
                                   ],
                                   controller: tabController,
                                   indicatorSize: TabBarIndicatorSize.tab,
@@ -303,7 +305,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                               tapButtonText:
                                                   'See full cast & crew',
                                               onTap: (Cast cast) {
-                                                modalBottomSheetMenu(cast);
+                                                //  modalBottomSheetMenu(cast);
                                               },
                                             ),
                                             MovieImagesDisplay(
@@ -327,9 +329,17 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                         api: Endpoints.getCreditsUrl(
                                             widget.movie.id!),
                                       ),
-                                      const Text('Recommendations'),
-                                      const Text('Similarr'),
-                                      const Text('Comments'),
+                                      CrewTab(
+                                        api: Endpoints.getCreditsUrl(
+                                            widget.movie.id!),
+                                      ),
+                                      MovieRecommendationsTab(
+                                          api:
+                                              Endpoints.getMovieRecommendations(
+                                                  widget.movie.id!, 1)),
+                                      SimilarMoviesTab(
+                                          api: Endpoints.getSimilarMovies(
+                                              widget.movie.id!, 1)),
                                     ],
                                     controller: tabController,
                                   ),
@@ -377,87 +387,6 @@ class _MovieDetailPageState extends State<MovieDetailPage>
     );
   }
 
-  void modalBottomSheetMenu(Cast cast) {
-    // double height = MediaQuery.of(context).size.height;
-    showModalBottomSheet(
-        context: context,
-        builder: (builder) {
-          return Container(
-            // height: height / 2,
-            color: Colors.transparent,
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 0,
-                    ),
-                    child: Container(
-                        padding: const EdgeInsets.only(top: 100),
-                        decoration: const BoxDecoration(
-                            color: Color(0xFFF57C00),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(16.0),
-                                topRight: Radius.circular(16.0))),
-                        child: Center(
-                          child: ListView(
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: <Widget>[
-                                    Text(
-                                      '${cast.name}',
-                                      // style: widget.themeData.textTheme.bodyText2,
-                                    ),
-                                    const Text(
-                                      'as',
-                                      // style: widget.themeData.textTheme.bodyText2,
-                                    ),
-                                    Text(
-                                      '${cast.character}',
-                                      //style: widget.themeData.textTheme.bodyText2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: const Color(0xFFF57C00),
-                            border: Border.all(
-                                color: const Color(0xFFFFFFFF), width: 3),
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: (cast.profilePath == null
-                                    ? const AssetImage('assets/images/na.jpg')
-                                    : NetworkImage(TMDB_BASE_IMAGE_URL +
-                                        'w500/' +
-                                        cast.profilePath!)) as ImageProvider<
-                                    Object>),
-                            shape: BoxShape.circle),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
-  }
-
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

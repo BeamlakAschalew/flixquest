@@ -25,7 +25,8 @@ class Endpoints {
     return '$TMDB_API_BASE_URL'
         '/movie/top_rated?api_key='
         '$TMDB_API_KEY'
-        '&include_adult=false&page=$page';
+        '&include_adult=false&page=$page'
+        '&region=US';
   }
 
   static String popularMoviesUrl(int page) {
@@ -94,5 +95,15 @@ class Endpoints {
 
   static String getVideos(int id) {
     return TMDB_API_BASE_URL + '/movie/$id/videos?api_key=$TMDB_API_KEY';
+  }
+
+  static String getMovieRecommendations(int id, int page) {
+    return '$TMDB_API_BASE_URL'
+        '/movie/$id/recommendations?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+  }
+
+  static String getSimilarMovies(int id, int page) {
+    return '$TMDB_API_BASE_URL'
+        '/movie/$id/similar?api_key=$TMDB_API_KEY&language=en-US&page=$page';
   }
 }

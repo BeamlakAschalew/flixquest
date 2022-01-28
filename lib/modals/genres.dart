@@ -25,13 +25,16 @@ class GenreList {
 
 class Genres {
   String? genreName;
-  Genres({this.genreName});
+  int? genreID;
+  Genres({this.genreName, this.genreID});
   Genres.fromJson(Map<String, dynamic> json) {
     genreName = json['name'];
+    genreID = json['id'];
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = genreName;
+    data['id'] = genreID;
     return data;
   }
 }

@@ -38,12 +38,12 @@ Future<Credits> fetchCredits(String api) async {
   return credits;
 }
 
-Future<GenreList> fetchNewCredits(String api) async {
+Future<List<Genres>> fetchNewCredits(String api) async {
   GenreList newGenreList;
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);
   newGenreList = GenreList.fromJson(decodeRes);
-  return newGenreList;
+  return newGenreList.genre ?? [];
 }
 
 Future<MovieDetails> fetchMovieDetails(String api) async {
@@ -52,4 +52,20 @@ Future<MovieDetails> fetchMovieDetails(String api) async {
   var decodeRes = jsonDecode(res.body);
   movieDetails = MovieDetails.fromJson(decodeRes);
   return movieDetails;
+}
+
+Future<List<Movie>> fetchMovieRecommendations(String api) async {
+  MovieList movieList;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  movieList = MovieList.fromJson(decodeRes);
+  return movieList.movies ?? [];
+}
+
+Future<List<Movie>> fetchSimilarMovies(String api) async {
+  MovieList movieList;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  movieList = MovieList.fromJson(decodeRes);
+  return movieList.movies ?? [];
 }
