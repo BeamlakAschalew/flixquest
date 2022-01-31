@@ -3,7 +3,10 @@ import 'package:cinemax/modals/movie.dart';
 import 'package:cinemax/screens/widgets.dart';
 
 class MovieSearch extends SearchDelegate<Movie?> {
-  MovieSearch();
+  MovieSearch()
+      : super(
+          searchFieldLabel: 'Search for a movie',
+        );
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -15,17 +18,19 @@ class MovieSearch extends SearchDelegate<Movie?> {
     // ));
     return ThemeData(
       // primaryColor: Color(0xFFF57C00),
-      // appBarTheme: AppBarTheme(backgroundColor: Color(0xFFF57C00)),
+      appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF000000)),
+
       inputDecorationTheme: const InputDecorationTheme(
         border: InputBorder.none,
-        hintStyle: TextStyle(color: Colors.black, fontFamily: 'Poppins'),
+        hintStyle: TextStyle(color: Colors.white24, fontFamily: 'Poppins'),
         focusedBorder: InputBorder.none,
         enabledBorder: InputBorder.none,
         errorBorder: InputBorder.none,
         disabledBorder: InputBorder.none,
       ),
       textTheme: const TextTheme(
-          headline6: TextStyle(color: Colors.black, fontFamily: 'Poppins')),
+        headline6: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+      ),
       colorScheme: const ColorScheme(
         primary: Color(0xFFF57C00),
         primaryVariant: Color(0xFF8f4700),
@@ -41,6 +46,11 @@ class MovieSearch extends SearchDelegate<Movie?> {
         onError: Color(0xFFFFFFFF),
         brightness: Brightness.dark,
       ),
+      textSelectionTheme: const TextSelectionThemeData(
+        cursorColor: Color(0xFFF57C00),
+        selectionHandleColor: Color(0xFFFFFFFF),
+        selectionColor: Colors.white12,
+      ),
     );
   }
 
@@ -50,7 +60,7 @@ class MovieSearch extends SearchDelegate<Movie?> {
       IconButton(
         icon: const Icon(
           Icons.clear,
-          color: Colors.black,
+          color: Color(0xFFF57C00),
         ),
         onPressed: () {
           query = '';
@@ -62,7 +72,7 @@ class MovieSearch extends SearchDelegate<Movie?> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.arrow_back, color: Colors.black),
+      icon: const Icon(Icons.arrow_back, color: Color(0xFFF57C00)),
       onPressed: () {
         close(context, null);
       },

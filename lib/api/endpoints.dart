@@ -79,13 +79,13 @@ class Endpoints {
     return "$TMDB_API_BASE_URL/person/$personId?api_key=$TMDB_API_KEY&append_to_response=movie_credits";
   }
 
-  static watchProvidersMovies() {
+  static watchProvidersMovies(int providerId, int page) {
     return '$TMDB_API_BASE_URL'
         '/discover/movie?api_key='
         '$TMDB_API_KEY'
         '&language=en-US&sort_by=popularity'
-        '.desc&include_adult=false&include_video=false&page=1'
-        '&with_watch_providers=350'
+        '.desc&include_adult=false&include_video=false&page=$page'
+        '&with_watch_providers=$providerId'
         '&watch_region=US';
   }
 

@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:cinemax/modals/videos.dart';
+import 'package:cinemax/screens/streaming_services_movies.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '/modals/function.dart';
@@ -19,6 +20,7 @@ import 'package:cinemax/api/endpoints.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'genremovies.dart';
+import 'about.dart';
 
 class DiscoverMovies extends StatefulWidget {
   const DiscoverMovies({Key? key}) : super(key: key);
@@ -358,6 +360,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
     return Column(
       children: <Widget>[
         credits == null
@@ -404,7 +407,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
               ),
         SizedBox(
           width: double.infinity,
-          height: 120,
+          height: deviceHeight * 0.20,
           child: credits == null
               ? const Center(
                   child: CircularProgressIndicator(),
@@ -448,12 +451,17 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                                   ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  credits!.cast![index].name!,
-                                  /*style: widget.themeData!.textTheme.caption,*/
-                                  overflow: TextOverflow.ellipsis,
+                              SizedBox(
+                                height: 60,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    credits!.cast![index].name!,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    /*style: widget.themeData!.textTheme.caption,*/
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               )
                             ],
@@ -576,8 +584,10 @@ class _MovieImagesState extends State<MovieImagesDisplay> {
                         width: double.infinity,
                         height: deviceHeight * 0.10,
                         child: const Center(
-                          child:
-                              Text('This movie doesn\'t have a video provided'),
+                          child: Text(
+                            'This movie doesn\'t have an image provided',
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       )
                     : CarouselSlider.builder(
@@ -872,8 +882,8 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
     return movieDetails == null
         ? const SizedBox(
             child: CircularProgressIndicator(),
-            width: 90,
-            height: 90,
+            width: 50,
+            height: 50,
           )
         : Column(
             children: [
@@ -1711,5 +1721,438 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                   ],
                 ),
     );
+  }
+}
+
+class ParticularStreamingServiceMovies extends StatefulWidget {
+  final String api;
+  final int providerID;
+  const ParticularStreamingServiceMovies(
+      {Key? key, required this.api, required this.providerID})
+      : super(key: key);
+  @override
+  _ParticularStreamingServiceMoviesState createState() =>
+      _ParticularStreamingServiceMoviesState();
+}
+
+class _ParticularStreamingServiceMoviesState
+    extends State<ParticularStreamingServiceMovies> {
+  List<Movie>? moviesList;
+  final _scrollController = ScrollController();
+
+  int pageNum = 2;
+  bool isLoading = false;
+
+  Future<String> getMoreData() async {
+    _scrollController.addListener(() async {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        setState(() {
+          isLoading = true;
+        });
+
+        var response = await http.get(Uri.parse('$TMDB_API_BASE_URL'
+            '/discover/movie?api_key='
+            '$TMDB_API_KEY'
+            '&language=en-US&sort_by=popularity'
+            '.desc&include_adult=false&include_video=false&page=$pageNum'
+            '&with_watch_providers=${widget.providerID}'
+            '&watch_region=US'));
+        setState(() {
+          pageNum++;
+          isLoading = false;
+          var newlistMovies = (json.decode(response.body)['results'] as List)
+              .map((i) => Movie.fromJson(i))
+              .toList();
+          moviesList!.addAll(newlistMovies);
+        });
+      }
+    });
+
+    return "success";
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMovies(widget.api).then((value) {
+      setState(() {
+        moviesList = value;
+      });
+    });
+    getMoreData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(0xFF202124),
+      child: moviesList == null
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : moviesList!.isEmpty
+              ? const Center(
+                  child: Text(
+                    'Oops! movies for this watch provider doesn\'t exist :(',
+                    style: TextStyle(fontFamily: 'Poppins'),
+                  ),
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        controller: _scrollController,
+                        itemCount: moviesList!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MovieDetailPage(
+                                          movie: moviesList![index],
+                                          heroId: '${moviesList![index].id}')));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: <Widget>[
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      SizedBox(
+                                        width: 80,
+                                        height: 110,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          child:
+                                              moviesList![index].posterPath ==
+                                                      null
+                                                  ? Image.asset(
+                                                      'assets/images/na.jpg',
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : FadeInImage(
+                                                      image: NetworkImage(
+                                                          TMDB_BASE_IMAGE_URL +
+                                                              'w500/' +
+                                                              moviesList![index]
+                                                                  .posterPath!),
+                                                      fit: BoxFit.cover,
+                                                      placeholder: const AssetImage(
+                                                          'assets/images/loading.gif'),
+                                                    ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                moviesList![index].title!,
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
+                                                style: const TextStyle(
+                                                    fontFamily: 'Poppins'),
+                                              ),
+                                              Row(
+                                                children: <Widget>[
+                                                  Text(
+                                                    moviesList![index]
+                                                        .voteAverage!
+                                                        .toString(),
+                                                    style: const TextStyle(
+                                                        fontFamily: 'Poppins'),
+                                                  ),
+                                                  const Icon(Icons.star,
+                                                      color: Color(0xFFF57C00)),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 24.0),
+                                    child: Divider(
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    Visibility(
+                        visible: isLoading,
+                        child:
+                            const Center(child: CircularProgressIndicator())),
+                  ],
+                ),
+    );
+  }
+}
+
+class StreamingServicesWidget extends StatelessWidget {
+  final String imagePath;
+  final String title;
+  final int providerID;
+  const StreamingServicesWidget({
+    Key? key,
+    required this.imagePath,
+    required this.title,
+    required this.providerID,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return StreamingServicesMovies(
+            providerId: providerID,
+            providerName: title,
+          );
+        }));
+      },
+      child: ListTile(
+        leading: SizedBox(
+          height: 30,
+          width: 30,
+          child: Image(
+            image: AssetImage(imagePath),
+          ),
+        ),
+        title: Text(title),
+      ),
+    );
+  }
+}
+
+class DrawerWidget extends StatelessWidget {
+  const DrawerWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: [
+          Expanded(
+            flex: 2,
+            child: SizedBox(
+              width: double.infinity,
+              child: DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFFFFF),
+                ),
+                child: Image.asset('assets/images/logo.png'),
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text('Movies from streaming services'),
+          ),
+          Expanded(
+            flex: 5,
+            child: SingleChildScrollView(
+              child: Column(
+                children: const [
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/netflix.png',
+                    title: 'Netflix',
+                    providerID: 8,
+                  ),
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/amazon_prime.png',
+                    title: 'Amazon Prime',
+                    providerID: 9,
+                  ),
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/hulu.png',
+                    title: 'hulu',
+                    providerID: 15,
+                  ),
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/hbo_max.png',
+                    title: 'HBO Max',
+                    providerID: 384,
+                  ),
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/apple_tv.png',
+                    title: 'Apple TV plus',
+                    providerID: 350,
+                  ),
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/peacock.png',
+                    title: 'Peacock',
+                    providerID: 387,
+                  ),
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/itunes.png',
+                    title: 'iTunes',
+                    providerID: 2,
+                  ),
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/youtube.png',
+                    title: 'YouTube Premium',
+                    providerID: 188,
+                  ),
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/paramount.png',
+                    title: 'Paramount Plus',
+                    providerID: 531,
+                  ),
+                  StreamingServicesWidget(
+                    imagePath: 'assets/images/netflix.png',
+                    title: 'Netflix Kids',
+                    providerID: 175,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Divider(
+            color: Color(0xFFF57C00),
+            thickness: 3,
+          ),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('About'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const AboutPage();
+              }));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GenreListGrid extends StatefulWidget {
+  final String api;
+  const GenreListGrid({Key? key, required this.api}) : super(key: key);
+
+  @override
+  _GenreListGridState createState() => _GenreListGridState();
+}
+
+class _GenreListGridState extends State<GenreListGrid>
+    with AutomaticKeepAliveClientMixin<GenreListGrid> {
+  List<Genres>? genreList;
+  @override
+  void initState() {
+    super.initState();
+    fetchNewCredits(widget.api).then((value) {
+      setState(() {
+        genreList = value;
+      });
+    });
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+  @override
+  Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
+    super.build(context);
+    return genreList == null
+        ? Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Genres',
+                      style: TextStyle(fontSize: deviceHeight * 0.036),
+                    ),
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ],
+          )
+        : Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Genres',
+                      style: TextStyle(fontSize: deviceHeight * 0.036),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 20.0, right: 20.0, bottom: 20.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: deviceHeight * 0.55,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 200,
+                                    childAspectRatio: 4 / 2,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10),
+                            itemCount: genreList!.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return GenreMovies(
+                                        genres: genreList![index]);
+                                  }));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    child: Text(genreList![index].genreName!),
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFFF57C00),
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                  ),
+                                ),
+                              );
+                            }),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
   }
 }

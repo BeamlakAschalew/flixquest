@@ -19,12 +19,14 @@ class _MovieStreamState extends State<MovieStream> {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: [SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.immersiveSticky,
+    );
   }
 
   @override
   void dispose() {
+    super.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -33,20 +35,25 @@ class _MovieStreamState extends State<MovieStream> {
     ]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: WebView(
-          initialUrl: "$EMBED_BASE_URL${widget.id}",
-          navigationDelegate: (NavigationRequest request) {
-            return NavigationDecision.prevent;
-          },
-          javascriptMode: JavascriptMode.unrestricted,
-          zoomEnabled: false,
+    return WillPopScope(
+      onWillPop: () async {
+        SystemNavigator.pop();
+        return true;
+      },
+      child: SafeArea(
+        child: Scaffold(
+          body: WebView(
+            initialUrl: "$EMBED_BASE_URL${widget.id}",
+            navigationDelegate: (NavigationRequest request) {
+              return NavigationDecision.prevent;
+            },
+            javascriptMode: JavascriptMode.unrestricted,
+            zoomEnabled: false,
+          ),
         ),
       ),
     );

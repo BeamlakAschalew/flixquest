@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_unnecessary_containers
-import 'package:cinemax/screens/about.dart';
 import 'package:flutter/material.dart';
 import 'screens/movie_detail.dart';
 import 'screens/widgets.dart';
@@ -63,27 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFFFFF),
-              ),
-              child: Image.asset('assets/images/logo.png'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info_outline),
-              title: const Text('About'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const AboutPage();
-                }));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: const DrawerWidget(),
       backgroundColor: const Color(0xFF1f1f1e),
       appBar: AppBar(
         title: const Text(
@@ -130,11 +109,12 @@ class _MyHomePageState extends State<MyHomePage> {
               api: Endpoints.upcomingMoviesUrl(1),
               discoverType: 'upcoming',
             ),
-            ScrollingMovies(
-              title: 'Popular on Apple TV+',
-              api: Endpoints.watchProvidersMovies(),
-              watchProviderId: '350',
-            ),
+            GenreListGrid(api: Endpoints.genresUrl()),
+            // ScrollingMovies(
+            //   title: 'Popular on Apple TV+',
+            //   api: Endpoints.watchProvidersMovies(),
+            //   watchProviderId: '350',
+            // ),
           ],
         ),
       ),

@@ -31,8 +31,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
 
   @override
   void initState() {
-    tabController = TabController(length: 5, vsync: this);
     super.initState();
+    tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -249,8 +249,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                 ),
                                 Expanded(
                                   child: TabBarView(
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
+                                    physics: const PageScrollPhysics(),
                                     children: [
                                       SingleChildScrollView(
                                         physics: const BouncingScrollPhysics(),

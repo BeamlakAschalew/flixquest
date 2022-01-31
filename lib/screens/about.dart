@@ -34,8 +34,8 @@ class _AboutPageState extends State<AboutPage> {
                         borderRadius: BorderRadius.circular(40.0),
                         child: Image.asset(
                           'assets/images/logo.png',
-                          height: 150,
-                          width: 150,
+                          height: 100,
+                          width: 100,
                         ),
                       ),
                     ),
@@ -55,8 +55,8 @@ class _AboutPageState extends State<AboutPage> {
                 ),
                 SizedBox(
                   child: Image.asset('assets/images/tmdb_logo.png'),
-                  height: 150,
-                  width: 150,
+                  height: 100,
+                  width: 100,
                 ),
                 GestureDetector(
                   child: const Text(
@@ -69,6 +69,21 @@ class _AboutPageState extends State<AboutPage> {
                   onTap: () {
                     launch('https://themoviedb.org');
                   },
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GestureDetector(
+                    child: const Text(
+                      'Noticed any bugs? Inform me on Telegram, click here',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          decorationStyle: TextDecorationStyle.solid),
+                    ),
+                    onTap: () {
+                      launch('https://t.me/beamlakaschalew');
+                    },
+                  ),
                 ),
                 const Padding(
                   padding: EdgeInsets.only(
