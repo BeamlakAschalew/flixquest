@@ -156,24 +156,24 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                     children: [
                                                       Row(
                                                         children: [
-                                                          Padding(
+                                                          const Padding(
                                                             padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    left: 8.0),
-                                                            child: Text(
-                                                              widget.movie
-                                                                  .voteAverage!
-                                                                  .toString(),
-                                                              // style: widget.themeData
-                                                              //     .textTheme.bodyText1,
+                                                                EdgeInsets.only(
+                                                                    left: 8.0,
+                                                                    right: 3.0),
+                                                            child: Icon(
+                                                              Icons.star,
+                                                              size: 15,
+                                                              color: Color(
+                                                                  0xFFF57C00),
                                                             ),
                                                           ),
-                                                          const Icon(
-                                                            Icons.star,
-                                                            size: 15,
-                                                            color: Color(
-                                                                0xFFF57C00),
+                                                          Text(
+                                                            widget.movie
+                                                                .voteAverage!
+                                                                .toString(),
+                                                            // style: widget.themeData
+                                                            //     .textTheme.bodyText1,
                                                           ),
                                                         ],
                                                       ),
@@ -184,6 +184,16 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                                 left: 8.0),
                                                         child: Row(
                                                           children: [
+                                                            const Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      right:
+                                                                          8.0),
+                                                              child: Icon(
+                                                                  Icons
+                                                                      .people_alt,
+                                                                  size: 15),
+                                                            ),
                                                             Text(
                                                               widget.movie
                                                                   .voteCount!
@@ -193,10 +203,6 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                                       fontSize:
                                                                           10),
                                                             ),
-                                                            const Icon(
-                                                                Icons
-                                                                    .people_alt,
-                                                                size: 15),
                                                           ],
                                                         ),
                                                       ),

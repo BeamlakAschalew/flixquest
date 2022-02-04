@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_unnecessary_containers
+// ignore_for_file: avoid_unnecessary_containers, unused_local_variable
 
 import 'dart:convert';
 import 'package:cinemax/modals/videos.dart';
@@ -219,9 +219,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    deviceHeight = MediaQuery.of(context).size.height;
-    deviceWidth = MediaQuery.of(context).size.width;
-    deviceAspectRatio = MediaQuery.of(context).size.aspectRatio;
+    double deviceFont = MediaQuery.of(context).textScaleFactor;
     return Column(
       children: <Widget>[
         Row(
@@ -231,14 +229,14 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 widget.title!,
-                style: TextStyle(fontSize: deviceHeight * 0.036),
+                style: const TextStyle(fontSize: 20),
               ),
             ),
           ],
         ),
         SizedBox(
           width: double.infinity,
-          height: deviceHeight * 0.33,
+          height: 250,
           child: moviesList == null
               ? const Center(
                   child: CircularProgressIndicator(),
@@ -255,20 +253,12 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
-                              onTap: () async {
-                                // await fetchMovieDetails(Endpoints.movieDetailsUrl(
-                                //         moviesList![index].id!))
-                                //     .then((value) {
-                                //   setState(() {
-                                //     movieDetails = value;
-                                //   });
-                                // });
+                              onTap: () {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => MovieDetailPage(
                                             movie: moviesList![index],
-                                            md: movieDetails,
                                             heroId:
                                                 '${moviesList![index].id}${widget.title}')));
                               },
@@ -279,6 +269,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                   child: Column(
                                     children: <Widget>[
                                       Expanded(
+                                        flex: 6,
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8.0),
@@ -294,14 +285,15 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
-                                        height: 60,
+                                      Expanded(
+                                        flex: 3,
                                         child: Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Text(
                                             moviesList![index].title!,
-                                            overflow: TextOverflow.ellipsis,
                                             maxLines: 2,
+                                            textAlign: TextAlign.center,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       )
@@ -360,54 +352,35 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
 
   @override
   Widget build(BuildContext context) {
-    double deviceHeight = MediaQuery.of(context).size.height;
     return Column(
       children: <Widget>[
         credits == null
             ? Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
-                  children: <Widget>[
+                  children: const <Widget>[
                     Text(
-                      widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /* style: widget.themeData!.textTheme.bodyText1*/
+                      'Cast',
+                      style: TextStyle(fontSize: 20),
                     ),
                   ],
                 ),
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
+                children: const <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8.0),
                     child: Text(
-                      widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /*style: widget.themeData!.textTheme.bodyText1*/
+                      'Cast',
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
-                  // TextButton(
-                  //   onPressed: () {
-                  //     Navigator.push(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //             builder: (context) => CastAndCrew(
-                  //                   credits: credits,
-                  //                 )));
-                  //   },
-                  //   child: Text(
-                  //     widget
-                  //         .tapButtonText!, /*style: widget.themeData!.textTheme.caption*/
-                  //   ),
-                  // ),
                 ],
               ),
         SizedBox(
           width: double.infinity,
-          height: deviceHeight * 0.20,
+          height: 160,
           child: credits == null
               ? const Center(
                   child: CircularProgressIndicator(),
@@ -424,14 +397,16 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                           widget.onTap!(credits!.cast![index]);
                         },
                         child: SizedBox(
-                          width: 80,
+                          width:
+                              80, //TODO: improve this so as to fit large cast first names
                           child: Column(
                             children: <Widget>[
                               Expanded(
+                                flex: 6,
                                 child: SizedBox(
-                                  width: 70,
+                                  width: 75,
                                   child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(35.0),
+                                    borderRadius: BorderRadius.circular(100.0),
                                     child: credits!.cast![index].profilePath ==
                                             null
                                         ? Image.asset(
@@ -451,15 +426,14 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                height: 60,
+                              Expanded(
+                                flex: 6,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
                                     credits!.cast![index].name!,
                                     maxLines: 2,
                                     textAlign: TextAlign.center,
-                                    /*style: widget.themeData!.textTheme.caption,*/
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
@@ -476,6 +450,120 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
     );
   }
 }
+// return Column(
+//   children: <Widget>[
+//     credits == null
+//         ? Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: Row(
+//               children: <Widget>[
+//                 Text(
+//                   widget.title!,
+//                   style: const TextStyle(
+//                       fontSize:
+//                           20), /* style: widget.themeData!.textTheme.bodyText1*/
+//                 ),
+//               ],
+//             ),
+//           )
+//         : Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: <Widget>[
+//               Padding(
+//                 padding: const EdgeInsets.all(8.0),
+//                 child: Text(
+//                   widget.title!,
+//                   style: const TextStyle(
+//                       fontSize:
+//                           20), /*style: widget.themeData!.textTheme.bodyText1*/
+//                 ),
+//               ),
+//               // TextButton(
+//               //   onPressed: () {
+//               //     Navigator.push(
+//               //         context,
+//               //         MaterialPageRoute(
+//               //             builder: (context) => CastAndCrew(
+//               //                   credits: credits,
+//               //                 )));
+//               //   },
+//               //   child: Text(
+//               //     widget
+//               //         .tapButtonText!, /*style: widget.themeData!.textTheme.caption*/
+//               //   ),
+//               // ),
+//             ],
+//           ),
+//     SizedBox(
+//       width: double.infinity,
+//       height: deviceHeight * 0.20,
+//       child: credits == null
+//           ? const Center(
+//               child: CircularProgressIndicator(),
+//             )
+//           : ListView.builder(
+//               physics: const BouncingScrollPhysics(),
+//               itemCount: credits!.cast!.length,
+//               scrollDirection: Axis.horizontal,
+//               itemBuilder: (BuildContext context, int index) {
+//                 return Padding(
+//                   padding: const EdgeInsets.all(8.0),
+//                   child: GestureDetector(
+//                     onTap: () {
+//                       widget.onTap!(credits!.cast![index]);
+//                     },
+//                     child: SizedBox(
+//                       width: deviceWidth * 0.20,
+//                       child: Column(
+//                         children: <Widget>[
+//                           Expanded(
+//                             child: SizedBox(
+//                               height: deviceHeight * 0.8,
+//                               width: deviceWidth * 0.19,
+//                               child: ClipRRect(
+//                                 borderRadius: BorderRadius.circular(50.0),
+//                                 child: credits!.cast![index].profilePath ==
+//                                         null
+//                                     ? Image.asset(
+//                                         'assets/images/na.jpg',
+//                                         fit: BoxFit.cover,
+//                                       )
+//                                     : FadeInImage(
+//                                         image: NetworkImage(
+//                                             TMDB_BASE_IMAGE_URL +
+//                                                 'w500/' +
+//                                                 credits!.cast![index]
+//                                                     .profilePath!),
+//                                         fit: BoxFit.cover,
+//                                         placeholder: const AssetImage(
+//                                             'assets/images/loading.gif'),
+//                                       ),
+//                               ),
+//                             ),
+//                           ),
+//                           SizedBox(
+//                             height: 60,
+//                             child: Padding(
+//                               padding: const EdgeInsets.all(8.0),
+//                               child: Text(
+//                                 credits!.cast![index].name!,
+//                                 maxLines: 2,
+//                                 textAlign: TextAlign.center,
+//                                 /*style: widget.themeData!.textTheme.caption,*/
+//                                 overflow: TextOverflow.ellipsis,
+//                               ),
+//                             ),
+//                           )
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 );
+//               },
+//             ),
+//     ),
+//   ],
+// );
 
 class WatchNowButton extends StatelessWidget {
   const WatchNowButton({
@@ -765,7 +853,10 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
                                       Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Text(
-                                            movieVideos!.result![index].name!),
+                                          movieVideos!.result![index].name!,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       )
                                     ],
                                   ),
@@ -969,6 +1060,8 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
+    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: moviesList == null
@@ -989,6 +1082,12 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget> {
                     return GestureDetector(
                       onTap: () {
                         widget.onTap!(moviesList![index]);
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return MovieDetailPage(
+                              movie: moviesList![index],
+                              heroId: '${moviesList![index].id}');
+                        }));
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -998,8 +1097,8 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 SizedBox(
-                                  width: 70,
-                                  height: 80,
+                                  width: deviceWidth * 0.25,
+                                  height: deviceHeight * 0.17,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: moviesList![index].posterPath == null
@@ -1290,6 +1389,8 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    double deviceHeight = MediaQuery.of(context).size.height;
+    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: movieList == null
@@ -1329,8 +1430,8 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 SizedBox(
-                                  width: 70,
-                                  height: 80,
+                                  width: deviceWidth * 0.20,
+                                  height: deviceHeight * 0.15,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: movieList![index].posterPath == null
@@ -1428,6 +1529,8 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    double deviceHeight = MediaQuery.of(context).size.height;
+    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: movieList == null
@@ -1467,8 +1570,8 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 SizedBox(
-                                  width: 70,
-                                  height: 80,
+                                  height: deviceHeight * 0.15,
+                                  width: deviceWidth * 0.20,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: movieList![index].posterPath == null
@@ -1603,6 +1706,8 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
+    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: moviesList == null
@@ -1634,15 +1739,15 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                           heroId: '${moviesList![index].id}')));
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(10.0),
                               child: Column(
                                 children: <Widget>[
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       SizedBox(
-                                        width: 80,
-                                        height: 110,
+                                        width: deviceWidth * 0.18,
+                                        height: deviceHeight * 0.15,
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8.0),

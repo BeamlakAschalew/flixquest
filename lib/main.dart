@@ -1,9 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:flutter/material.dart';
-import 'screens/movie_detail.dart';
 import 'screens/widgets.dart';
 import 'api/endpoints.dart';
-import 'modals/movie.dart';
 import 'screens/search_view.dart';
 
 void main() {
@@ -71,16 +69,15 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         actions: [
           IconButton(
-              onPressed: () async {
-                final Movie? result = await showSearch<Movie?>(
-                    context: context, delegate: MovieSearch());
-                if (result != null) {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MovieDetailPage(
-                              movie: result, heroId: '${result.id}search')));
-                }
+              onPressed: () {
+                showSearch(context: context, delegate: MovieSearch());
+                // if (result != null) {
+                //   Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //           builder: (context) => MovieDetailPage(
+                //               movie: result, heroId: '${result.id}search')));
+                // }
               },
               icon: const Icon(Icons.search)),
         ],
