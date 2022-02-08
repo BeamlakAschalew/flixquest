@@ -262,13 +262,14 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                             heroId:
                                                 '${moviesList![index].id}${widget.title}')));
                               },
-                              child: Hero(
-                                tag: '${moviesList![index].id}${widget.title}',
-                                child: SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    children: <Widget>[
-                                      Expanded(
+                              child: SizedBox(
+                                width: 100,
+                                child: Column(
+                                  children: <Widget>[
+                                    Hero(
+                                      tag:
+                                          '${moviesList![index].id}${widget.title}',
+                                      child: Expanded(
                                         flex: 6,
                                         child: ClipRRect(
                                           borderRadius:
@@ -285,20 +286,20 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                           ),
                                         ),
                                       ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            moviesList![index].title!,
-                                            maxLines: 2,
-                                            textAlign: TextAlign.center,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          moviesList![index].title!,
+                                          maxLines: 2,
+                                          textAlign: TextAlign.center,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    )
+                                  ],
                                 ),
                               ),
                             ),
@@ -565,14 +566,18 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
 //   ],
 // );
 
-class WatchNowButton extends StatelessWidget {
+class WatchNowButton extends StatefulWidget {
   const WatchNowButton({
     Key? key,
     required this.widget,
   }) : super(key: key);
-
   final MovieDetailPage widget;
 
+  @override
+  _WatchNowButtonState createState() => _WatchNowButtonState();
+}
+
+class _WatchNowButtonState extends State<WatchNowButton> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -583,7 +588,7 @@ class WatchNowButton extends StatelessWidget {
                   MaterialStateProperty.all(const Color(0xFFF57C00))),
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return MovieStream(id: widget.movie.id!);
+              return MovieStream(id: widget.widget.movie.id!);
             }));
           },
           child: Row(

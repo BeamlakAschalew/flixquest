@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       title: 'Cinemax',
       theme: ThemeData.dark().copyWith(
           textTheme: ThemeData.dark().textTheme.apply(
