@@ -6,7 +6,7 @@ import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/modals/credits.dart';
 import 'package:cinemax/modals/movie.dart';
-import 'package:cinemax/screens/widgets.dart';
+import 'package:cinemax/screens/movie_widgets.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
@@ -59,7 +59,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                 widget.movie.backdropPath!),
                             fit: BoxFit.cover,
                             placeholder:
-                                const AssetImage('assets/images/loading.gif'),
+                                const AssetImage('assets/images/loading_8.gif'),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -95,15 +95,31 @@ class _MovieDetailPageState extends State<MovieDetailPage>
               AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Color(0xFFF57C00),
+                leading: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50.0),
+                        color: Colors.black38),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFFF57C00),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
                 ),
+                actions: [
+                  GestureDetector(
+                    child: const WatchProvidersButton(),
+                    // onTap: (Cast cast) {
+                    //   modalBottomSheetMenu(cast);
+                    // },
+                  ),
+                ],
               ),
               Expanded(
                 child: Container(
@@ -134,7 +150,9 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
+                                          widget.movie.releaseDate == ""
+                                              ? widget.movie.title!
+                                              : '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
                                           // style: widget
                                           //     .themeData.textTheme.headline5,
                                           maxLines: 2,
@@ -171,7 +189,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                           Text(
                                                             widget.movie
                                                                 .voteAverage!
-                                                                .toString(),
+                                                                .toStringAsFixed(
+                                                                    1),
                                                             // style: widget.themeData
                                                             //     .textTheme.bodyText1,
                                                           ),
@@ -295,7 +314,10 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                           left: 8.0,
                                                           bottom: 4.0),
                                                   child: Text(
-                                                    'Release date : ${widget.movie.releaseDate}',
+                                                    widget.movie.releaseDate ==
+                                                            null
+                                                        ? 'Release date: N/A'
+                                                        : 'Release date : ${widget.movie.releaseDate}',
                                                     // style: widget.themeData
                                                     //     .textTheme.bodyText1,
                                                   ),
@@ -394,4 +416,70 @@ class _MovieDetailPageState extends State<MovieDetailPage>
 
   @override
   bool get wantKeepAlive => true;
+
+  void modalBottomSheetMenu(Cast cast) {
+    showModalBottomSheet(
+      context: context,
+      builder: (builder) {
+        return Container(
+          // height: height / 2,
+          color: Colors.transparent,
+          child: Stack(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: Container(
+                    padding: const EdgeInsets.only(top: 54),
+                    decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(16.0),
+                            topRight: Radius.circular(16.0))),
+                    child: Center(
+                      child: ListView(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: <Widget>[
+                                Text(
+                                  '${cast.name}',
+                                ),
+                                const Text(
+                                  'as',
+                                ),
+                                Text(
+                                  '${cast.character}',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+              ),
+              Align(
+                  alignment: Alignment.topCenter,
+                  child: SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(width: 3),
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: (cast.profilePath == null
+                                      ? const AssetImage('assets/images/na.jpg')
+                                      : NetworkImage(TMDB_BASE_IMAGE_URL +
+                                          'w500/' +
+                                          cast.profilePath!))
+                                  as ImageProvider<Object>),
+                          shape: BoxShape.circle),
+                    ),
+                  ))
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
