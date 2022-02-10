@@ -43,6 +43,7 @@ class Cast {
   String? name;
   int? order;
   String? profilePath;
+  String? department;
 
   Cast(
       {this.castId,
@@ -52,7 +53,8 @@ class Cast {
       this.id,
       this.name,
       this.order,
-      this.profilePath});
+      this.profilePath,
+      this.department});
 
   Cast.fromJson(Map<String, dynamic> json) {
     castId = json['cast_id'];
@@ -63,6 +65,7 @@ class Cast {
     name = json['name'];
     order = json['order'];
     profilePath = json['profile_path'];
+    department = json['known_for_department'];
   }
 
   Map<String, dynamic> toJson() {
@@ -75,6 +78,7 @@ class Cast {
     data['name'] = name;
     data['order'] = order;
     data['profile_path'] = profilePath;
+    data['known_for_department'] = department;
     return data;
   }
 }

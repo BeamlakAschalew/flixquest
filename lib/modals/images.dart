@@ -36,3 +36,39 @@ class Backdrops {
     return data;
   }
 }
+
+class PersonImages {
+  List<Profiles>? profile;
+  PersonImages(this.profile);
+
+  PersonImages.fromJson(Map<String, dynamic> json) {
+    if (json['profiles'] != null) {
+      profile = [];
+      json['profiles'].forEach((v) {
+        profile?.add(Profiles.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (profile != null) {
+      data['profiles'] = profile?.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Profiles {
+  String? filePath;
+  Profiles(this.filePath);
+  Profiles.fromJson(Map<String, dynamic> json) {
+    filePath = json['file_path'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['file_path'] = filePath;
+
+    return data;
+  }
+}

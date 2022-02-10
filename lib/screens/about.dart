@@ -42,7 +42,7 @@ class _AboutPageState extends State<AboutPage> {
                   ],
                 ),
                 const Text(
-                  'Cinemax 1.1.0',
+                  'Cinemax 2.0',
                   style: TextStyle(
                     fontSize: 30.0,
                   ),

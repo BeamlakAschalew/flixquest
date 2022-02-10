@@ -106,4 +106,18 @@ class Endpoints {
     return '$TMDB_API_BASE_URL'
         '/movie/$id/similar?api_key=$TMDB_API_KEY&language=en-US&page=$page';
   }
+
+  static String getMovieCreditsForPerson(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/person/$id/movie_credits?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static getPersonDetails(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/person/$id?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static getPersonImages(int id) {
+    return '$TMDB_API_BASE_URL' '/person/$id/images?api_key=$TMDB_API_KEY';
+  }
 }

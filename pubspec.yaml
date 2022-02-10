@@ -19,6 +19,9 @@ dependencies:
   intl: ^0.17.0
   url_launcher: ^6.0.18
   flutter_inappwebview: ^5.3.2
+  shimmer: ^2.0.0
+  readmore: ^2.1.0
+  mixpanel_flutter: ^1.4.4
 
 
 dev_dependencies:

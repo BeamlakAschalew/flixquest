@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:flutter/material.dart';
-import 'screens/widgets.dart';
-import 'api/endpoints.dart';
+import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -51,10 +51,20 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  late Mixpanel mixpanel;
+  late TabController tabController;
   @override
   void initState() {
     super.initState();
+    initMixpanel();
+    tabController = TabController(length: 2, vsync: this);
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("8625a1817d0551c18fc6297b294978b2",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -81,39 +91,37 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               icon: const Icon(Icons.search)),
         ],
-      ),
-      body: Container(
-        child: ListView(
-          children: [
-            const DiscoverMovies(),
-            ScrollingMovies(
-              title: 'Popular',
-              api: Endpoints.popularMoviesUrl(1),
-              discoverType: 'popular',
-            ),
-            ScrollingMovies(
-              title: 'Top Rated',
-              api: Endpoints.topRatedUrl(1),
-              discoverType: 'top_rated',
-            ),
-            ScrollingMovies(
-              title: 'Now playing',
-              api: Endpoints.nowPlayingMoviesUrl(1),
-              discoverType: 'now_playing',
-            ),
-            ScrollingMovies(
-              title: 'Upcoming',
-              api: Endpoints.upcomingMoviesUrl(1),
-              discoverType: 'upcoming',
-            ),
-            GenreListGrid(api: Endpoints.genresUrl()),
-            // ScrollingMovies(
-            //   title: 'Popular on Apple TV+',
-            //   api: Endpoints.watchProvidersMovies(),
-            //   watchProviderId: '350',
-            // ),
+        bottom: TabBar(
+          tabs: const [
+            Tab(
+                child: Text(
+              'Movies',
+            )),
+            Tab(
+                child: Text(
+              'TV Series',
+            ))
           ],
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          //isScrollable: true,
+          labelStyle: const TextStyle(
+            fontFamily: 'PoppinsSB',
+            color: Colors.black,
+          ),
+          unselectedLabelStyle:
+              const TextStyle(fontFamily: 'Poppins', color: Colors.black87),
+          labelColor: Colors.black,
+          controller: tabController,
+          indicatorSize: TabBarIndicatorSize.tab,
         ),
+      ),
+      body: TabBarView(
+        controller: tabController,
+        children: [
+          const MainMoviesDisplay(),
+          Container(),
+        ],
       ),
     );
   }

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/screens/widgets.dart';
+import 'package:cinemax/screens/movie_widgets.dart';
 
 class StreamingServicesMovies extends StatelessWidget {
   final int providerId;
