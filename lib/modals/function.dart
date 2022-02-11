@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cinemax/modals/images.dart';
 import 'package:cinemax/modals/person.dart';
 import 'package:cinemax/modals/videos.dart';
+import 'package:cinemax/modals/watch_providers.dart';
 import 'package:http/http.dart' as http;
 import '/modals/credits.dart';
 import '/modals/genres.dart';
@@ -93,4 +94,12 @@ Future<PersonDetails> fetchPersonDetails(String api) async {
   var decodeRes = jsonDecode(res.body);
   personDetails = PersonDetails.fromJson(decodeRes);
   return personDetails;
+}
+
+Future<WatchProviders> fetchWatchProviders(String api) async {
+  WatchProviders watchProviders;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  watchProviders = WatchProviders.fromJson(decodeRes);
+  return watchProviders;
 }

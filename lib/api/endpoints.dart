@@ -36,6 +36,13 @@ class Endpoints {
         '&include_adult=false&page=$page';
   }
 
+  static String trendingMoviesUrl(int page) {
+    return '$TMDB_API_BASE_URL'
+        '/trending/movie/week?api_key='
+        '$TMDB_API_KEY'
+        '&include_adult=false&page=$page';
+  }
+
   static String upcomingMoviesUrl(int page) {
     return '$TMDB_API_BASE_URL'
         '/movie/upcoming?api_key='
@@ -119,5 +126,10 @@ class Endpoints {
 
   static getPersonImages(int id) {
     return '$TMDB_API_BASE_URL' '/person/$id/images?api_key=$TMDB_API_KEY';
+  }
+
+  static getMovieWatchProviders(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/movie/$id/watch/providers?api_key=$TMDB_API_KEY';
   }
 }

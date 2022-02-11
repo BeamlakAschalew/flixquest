@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cinemax/modals/watch_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
@@ -114,10 +115,12 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                 ),
                 actions: [
                   GestureDetector(
-                    child: const WatchProvidersButton(),
-                    // onTap: (Cast cast) {
-                    //   modalBottomSheetMenu(cast);
-                    // },
+                    child: WatchProvidersButton(
+                      api: Endpoints.getMovieWatchProviders(widget.movie.id!),
+                      onTap: () {
+                        modalBottomSheetMenu();
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -417,67 +420,12 @@ class _MovieDetailPageState extends State<MovieDetailPage>
   @override
   bool get wantKeepAlive => true;
 
-  void modalBottomSheetMenu(Cast cast) {
+  void modalBottomSheetMenu() {
     showModalBottomSheet(
       context: context,
       builder: (builder) {
-        return Container(
-          // height: height / 2,
-          color: Colors.transparent,
-          child: Stack(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(top: 50),
-                child: Container(
-                    padding: const EdgeInsets.only(top: 54),
-                    decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(16.0),
-                            topRight: Radius.circular(16.0))),
-                    child: Center(
-                      child: ListView(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: <Widget>[
-                                Text(
-                                  '${cast.name}',
-                                ),
-                                const Text(
-                                  'as',
-                                ),
-                                Text(
-                                  '${cast.character}',
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-              ),
-              Align(
-                  alignment: Alignment.topCenter,
-                  child: SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(width: 3),
-                          image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: (cast.profilePath == null
-                                      ? const AssetImage('assets/images/na.jpg')
-                                      : NetworkImage(TMDB_BASE_IMAGE_URL +
-                                          'w500/' +
-                                          cast.profilePath!))
-                                  as ImageProvider<Object>),
-                          shape: BoxShape.circle),
-                    ),
-                  ))
-            ],
-          ),
+        return WatchProvidersDetails(
+          api: Endpoints.getMovieWatchProviders(widget.movie.id!),
         );
       },
     );

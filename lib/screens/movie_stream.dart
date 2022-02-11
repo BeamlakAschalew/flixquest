@@ -22,6 +22,7 @@ class _MovieStreamState extends State<MovieStream> {
       crossPlatform: InAppWebViewOptions(
         useShouldOverrideUrlLoading: true,
         mediaPlaybackRequiresUserGesture: false,
+        supportZoom: false,
       ),
       android: AndroidInAppWebViewOptions(
         useHybridComposition: true,

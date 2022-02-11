@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:cinemax/modals/videos.dart';
+import 'package:cinemax/modals/watch_providers.dart';
 import 'package:cinemax/screens/person_detail.dart';
 import 'package:cinemax/screens/streaming_services_movies.dart';
 import 'package:flutter/material.dart';
@@ -38,28 +39,33 @@ class MainMoviesDisplay extends StatelessWidget {
             title: 'Popular',
             api: Endpoints.popularMoviesUrl(1),
             discoverType: 'popular',
+            isTrending: false,
+          ),
+          ScrollingMovies(
+            title: 'Trending',
+            api: Endpoints.trendingMoviesUrl(1),
+            discoverType: 1,
+            isTrending: true,
           ),
           ScrollingMovies(
             title: 'Top Rated',
             api: Endpoints.topRatedUrl(1),
             discoverType: 'top_rated',
+            isTrending: false,
           ),
           ScrollingMovies(
             title: 'Now playing',
             api: Endpoints.nowPlayingMoviesUrl(1),
             discoverType: 'now_playing',
+            isTrending: false,
           ),
           ScrollingMovies(
             title: 'Upcoming',
             api: Endpoints.upcomingMoviesUrl(1),
             discoverType: 'upcoming',
+            isTrending: false,
           ),
           GenreListGrid(api: Endpoints.genresUrl()),
-          // ScrollingMovies(
-          //   title: 'Popular on Apple TV+',
-          //   api: Endpoints.watchProvidersMovies(),
-          //   watchProviderId: '350',
-          // ),
         ],
       ),
     );
@@ -174,14 +180,16 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
 
 class ScrollingMovies extends StatefulWidget {
   final String? api, title;
-  final String? discoverType;
+  final dynamic discoverType;
   final String? watchProviderId;
+  final bool isTrending;
   const ScrollingMovies({
     Key? key,
     this.api,
     this.title,
     this.discoverType,
     this.watchProviderId,
+    required this.isTrending,
   }) : super(key: key);
   @override
   _ScrollingMoviesState createState() => _ScrollingMoviesState();
@@ -207,7 +215,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
         setState(() {
           isLoading = true;
         });
-        if (widget.watchProviderId == null) {
+        if (widget.isTrending == false) {
           var response = await http.get(
             Uri.parse(
                 "$TMDB_API_BASE_URL/movie/${widget.discoverType}?api_key=$TMDB_API_KEY&page=" +
@@ -221,10 +229,10 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                 .toList();
             moviesList!.addAll(newlistMovies);
           });
-        } else {
+        } else if (widget.isTrending == true) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY&language=en-US&sort_by=popularity.desc&with_watch_providers=${widget.watchProviderId}&watch_region=US&include_adult=false&include_video=false&page=" +
+                "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=false&page=" +
                     pageNum.toString()),
           );
           setState(() {
@@ -918,8 +926,11 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
   @override
   Widget build(BuildContext context) {
     return movieDetails == null
-        ? const SizedBox(
-            child: CircularProgressIndicator(),
+        ? const Padding(
+            padding: EdgeInsets.only(bottom: 8.0),
+            child: SizedBox(
+              child: CircularProgressIndicator(),
+            ),
           )
         : Column(
             children: [
@@ -1787,9 +1798,11 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
 class ParticularStreamingServiceMovies extends StatefulWidget {
   final String api;
   final int providerID;
-  const ParticularStreamingServiceMovies(
-      {Key? key, required this.api, required this.providerID})
-      : super(key: key);
+  const ParticularStreamingServiceMovies({
+    Key? key,
+    required this.api,
+    required this.providerID,
+  }) : super(key: key);
   @override
   _ParticularStreamingServiceMoviesState createState() =>
       _ParticularStreamingServiceMoviesState();
@@ -1885,26 +1898,29 @@ class _ParticularStreamingServiceMoviesState
                                       SizedBox(
                                         width: 80,
                                         height: 110,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child:
-                                              moviesList![index].posterPath ==
-                                                      null
-                                                  ? Image.asset(
-                                                      'assets/images/na.jpg',
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : FadeInImage(
-                                                      image: NetworkImage(
-                                                          TMDB_BASE_IMAGE_URL +
-                                                              'w500/' +
-                                                              moviesList![index]
-                                                                  .posterPath!),
-                                                      fit: BoxFit.cover,
-                                                      placeholder: const AssetImage(
-                                                          'assets/images/loading.gif'),
-                                                    ),
+                                        child: Hero(
+                                          tag: '${moviesList![index].id}',
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: moviesList![index]
+                                                        .posterPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na.jpg',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            moviesList![index]
+                                                                .posterPath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
                                         ),
                                       ),
                                       Expanded(
@@ -2217,35 +2233,330 @@ class _GenreListGridState extends State<GenreListGrid>
   }
 }
 
-class WatchProvidersButton extends StatelessWidget {
-  final Function(Cast)? onTap;
-  final String? api;
+class WatchProvidersButton extends StatefulWidget {
+  final Function()? onTap;
+  final String api;
   const WatchProvidersButton({
     Key? key,
     this.onTap,
-    this.api,
+    required this.api,
   }) : super(key: key);
 
   @override
+  State<WatchProvidersButton> createState() => _WatchProvidersButtonState();
+}
+
+class _WatchProvidersButtonState extends State<WatchProvidersButton> {
+  WatchProviders? watchProviders;
+  @override
+  void initState() {
+    super.initState();
+    fetchWatchProviders(widget.api).then((value) {
+      setState(() {
+        watchProviders = value;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: TextButton(
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all(const Color(0x26F57C00)),
-              maximumSize: MaterialStateProperty.all(const Size(140, 40)),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                      side: const BorderSide(color: Color(0xFFF57C00))))),
-          onPressed: () {},
-          child: const Text(
-            'Watch providers',
-            style: TextStyle(color: Colors.white),
-          ),
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextButton(
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(const Color(0x26F57C00)),
+            maximumSize: MaterialStateProperty.all(const Size(140, 40)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    side: const BorderSide(color: Color(0xFFF57C00))))),
+        onPressed: () {
+          widget.onTap!();
+        },
+        child: const Text(
+          'Watch providers',
+          style: TextStyle(color: Colors.white),
         ),
+      ),
+    );
+  }
+}
+
+class WatchProvidersDetails extends StatefulWidget {
+  final String api;
+  const WatchProvidersDetails({
+    Key? key,
+    required this.api,
+  }) : super(key: key);
+
+  @override
+  State<WatchProvidersDetails> createState() => _WatchProvidersDetailsState();
+}
+
+class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
+    with SingleTickerProviderStateMixin {
+  WatchProviders? watchProviders;
+  late TabController tabController;
+  @override
+  void initState() {
+    super.initState();
+    fetchWatchProviders(widget.api).then((value) {
+      setState(() {
+        watchProviders = value;
+      });
+    });
+    tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          TabBar(
+            controller: tabController,
+            isScrollable: true,
+            indicatorColor: const Color(0xFFF57C00),
+            indicatorWeight: 3,
+            unselectedLabelColor: Colors.white54,
+            labelColor: Colors.white,
+            indicatorSize: TabBarIndicatorSize.tab,
+            tabs: const [
+              Tab(
+                child: Text('Buy'),
+              ),
+              Tab(
+                child: Text('Paid Stream'),
+              ),
+              Tab(
+                child: Text('Rent'),
+              ),
+              Tab(
+                child: Text('Free'),
+              )
+            ],
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: tabController,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 100,
+                        childAspectRatio: 0.65,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 5,
+                      ),
+                      itemCount: watchProviders!.buy!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: watchProviders!.buy![index].logoPath ==
+                                          null
+                                      ? Image.asset(
+                                          'assets/images/na.jpg',
+                                          fit: BoxFit.cover,
+                                        )
+                                      : FadeInImage(
+                                          image: NetworkImage(
+                                              TMDB_BASE_IMAGE_URL +
+                                                  'w500/' +
+                                                  watchProviders!
+                                                      .buy![index].logoPath!),
+                                          fit: BoxFit.cover,
+                                          placeholder: const AssetImage(
+                                              'assets/images/loading.gif'),
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Expanded(
+                                  flex: 6,
+                                  child: Text(
+                                    watchProviders!.buy![index].providerName!,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  )),
+                            ],
+                          ),
+                        );
+                      }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 100,
+                        childAspectRatio: 0.65,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 5,
+                      ),
+                      itemCount: watchProviders!.flatRate!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: watchProviders!
+                                              .flatRate![index].logoPath ==
+                                          null
+                                      ? Image.asset(
+                                          'assets/images/na.jpg',
+                                          fit: BoxFit.cover,
+                                        )
+                                      : FadeInImage(
+                                          image: NetworkImage(
+                                              TMDB_BASE_IMAGE_URL +
+                                                  'w500/' +
+                                                  watchProviders!
+                                                      .flatRate![index]
+                                                      .logoPath!),
+                                          fit: BoxFit.cover,
+                                          placeholder: const AssetImage(
+                                              'assets/images/loading.gif'),
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Expanded(
+                                  flex: 6,
+                                  child: Text(
+                                    watchProviders!
+                                        .flatRate![index].providerName!,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  )),
+                            ],
+                          ),
+                        );
+                      }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 100,
+                        childAspectRatio: 0.65,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 5,
+                      ),
+                      itemCount: watchProviders!.rent!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child:
+                                      watchProviders!.rent![index].logoPath ==
+                                              null
+                                          ? Image.asset(
+                                              'assets/images/na.jpg',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : FadeInImage(
+                                              image: NetworkImage(
+                                                  TMDB_BASE_IMAGE_URL +
+                                                      'w500/' +
+                                                      watchProviders!
+                                                          .rent![index]
+                                                          .logoPath!),
+                                              fit: BoxFit.cover,
+                                              placeholder: const AssetImage(
+                                                  'assets/images/loading.gif'),
+                                            ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Expanded(
+                                flex: 6,
+                                child: Text(
+                                  watchProviders!.rent![index].providerName!,
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 100,
+                        childAspectRatio: 0.65,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 5,
+                      ),
+                      itemCount: 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                flex: 6,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: const FadeInImage(
+                                    image: AssetImage(
+                                        'assets/images/logo_shadow.png'),
+                                    fit: BoxFit.cover,
+                                    placeholder:
+                                        AssetImage('assets/images/loading.gif'),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              const Expanded(
+                                  flex: 6,
+                                  child: Text(
+                                    'Cinemax',
+                                    textAlign: TextAlign.center,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  )),
+                            ],
+                          ),
+                        );
+                      }),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

@@ -108,6 +108,7 @@ class _MyHomePageState extends State<MyHomePage>
           labelStyle: const TextStyle(
             fontFamily: 'PoppinsSB',
             color: Colors.black,
+            fontSize: 17,
           ),
           unselectedLabelStyle:
               const TextStyle(fontFamily: 'Poppins', color: Colors.black87),
