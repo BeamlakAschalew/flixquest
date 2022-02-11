@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:cinemax/modals/images.dart';
 import 'package:cinemax/modals/person.dart';
+import 'package:cinemax/modals/tv.dart';
+import 'package:cinemax/modals/tv_genres.dart';
 import 'package:cinemax/modals/videos.dart';
 import 'package:cinemax/modals/watch_providers.dart';
 import 'package:http/http.dart' as http;
@@ -24,12 +26,12 @@ Future<List<Movie>> fetchPersonMovies(String api) async {
   return personMoviesList.movies ?? [];
 }
 
-Future<MovieImages> fetchImages(String api) async {
-  MovieImages movieImages;
+Future<Images> fetchImages(String api) async {
+  Images images;
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);
-  movieImages = MovieImages.fromJson(decodeRes);
-  return movieImages;
+  images = Images.fromJson(decodeRes);
+  return images;
 }
 
 Future<PersonImages> fetchPersonImages(String api) async {
@@ -40,12 +42,12 @@ Future<PersonImages> fetchPersonImages(String api) async {
   return personImages;
 }
 
-Future<MovieVideos> fetchVideos(String api) async {
-  MovieVideos movieVideos;
+Future<Videos> fetchVideos(String api) async {
+  Videos videos;
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);
-  movieVideos = MovieVideos.fromJson(decodeRes);
-  return movieVideos;
+  videos = Videos.fromJson(decodeRes);
+  return videos;
 }
 
 Future<Credits> fetchCredits(String api) async {
@@ -56,12 +58,20 @@ Future<Credits> fetchCredits(String api) async {
   return credits;
 }
 
-Future<List<Genres>> fetchNewGenre(String api) async {
+Future<List<Genres>> fetchMovieGenre(String api) async {
   GenreList newGenreList;
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);
   newGenreList = GenreList.fromJson(decodeRes);
   return newGenreList.genre ?? [];
+}
+
+Future<List<TVGenres>> fetchTVGenre(String api) async {
+  TVGenreList tvGenreList;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  tvGenreList = TVGenreList.fromJson(decodeRes);
+  return tvGenreList.genre ?? [];
 }
 
 Future<MovieDetails> fetchMovieDetails(String api) async {
@@ -70,22 +80,6 @@ Future<MovieDetails> fetchMovieDetails(String api) async {
   var decodeRes = jsonDecode(res.body);
   movieDetails = MovieDetails.fromJson(decodeRes);
   return movieDetails;
-}
-
-Future<List<Movie>> fetchMovieRecommendations(String api) async {
-  MovieList movieList;
-  var res = await http.get(Uri.parse(api));
-  var decodeRes = jsonDecode(res.body);
-  movieList = MovieList.fromJson(decodeRes);
-  return movieList.movies ?? [];
-}
-
-Future<List<Movie>> fetchSimilarMovies(String api) async {
-  MovieList movieList;
-  var res = await http.get(Uri.parse(api));
-  var decodeRes = jsonDecode(res.body);
-  movieList = MovieList.fromJson(decodeRes);
-  return movieList.movies ?? [];
 }
 
 Future<PersonDetails> fetchPersonDetails(String api) async {
@@ -102,4 +96,12 @@ Future<WatchProviders> fetchWatchProviders(String api) async {
   var decodeRes = jsonDecode(res.body);
   watchProviders = WatchProviders.fromJson(decodeRes);
   return watchProviders;
+}
+
+Future<List<TV>> fetchTV(String api) async {
+  TVList tvList;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  tvList = TVList.fromJson(decodeRes);
+  return tvList.tvSeries ?? [];
 }

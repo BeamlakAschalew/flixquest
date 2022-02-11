@@ -44,6 +44,7 @@ class Cast {
   int? order;
   String? profilePath;
   String? department;
+  List<Roles>? roles;
 
   Cast(
       {this.castId,
@@ -54,7 +55,8 @@ class Cast {
       this.name,
       this.order,
       this.profilePath,
-      this.department});
+      this.department,
+      this.roles});
 
   Cast.fromJson(Map<String, dynamic> json) {
     castId = json['cast_id'];
@@ -66,6 +68,12 @@ class Cast {
     order = json['order'];
     profilePath = json['profile_path'];
     department = json['known_for_department'];
+    if (json['roles'] != null) {
+      roles = [];
+      json['roles'].forEach((v) {
+        roles?.add(Roles.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -79,6 +87,25 @@ class Cast {
     data['order'] = order;
     data['profile_path'] = profilePath;
     data['known_for_department'] = department;
+    if (roles != null) {
+      data['roles'] = roles?.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class Roles {
+  String? character;
+  int? episodeCount;
+  Roles({this.character, this.episodeCount});
+  Roles.fromJson(Map<String, dynamic> json) {
+    character = json['character'];
+    episodeCount = json['episode_count'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['character'] = character;
+    data['episode_count'] = episodeCount;
     return data;
   }
 }

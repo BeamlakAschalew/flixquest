@@ -9,12 +9,12 @@ import 'package:cinemax/modals/credits.dart';
 import 'person_widgets.dart';
 
 class PersonDetailPage extends StatefulWidget {
-  final Cast cast;
+  final Cast? cast;
   final String heroId;
 
   const PersonDetailPage({
     Key? key,
-    required this.cast,
+    this.cast,
     required this.heroId,
   }) : super(key: key);
   @override
@@ -136,7 +136,7 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
                                       Text(
-                                        '${widget.cast.name}',
+                                        '${widget.cast!.name}',
                                         style: const TextStyle(fontSize: 25),
                                         // style: widget
                                         //     .themeData.textTheme.headline5,
@@ -144,7 +144,7 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       Text(
-                                        '${widget.cast.department}',
+                                        '${widget.cast!.department}',
                                         style: const TextStyle(
                                             fontSize: 15,
                                             color: Colors.white54),
@@ -200,12 +200,13 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                                   PersonAboutWidget(
                                                       api: Endpoints
                                                           .getPersonDetails(
-                                                              widget.cast.id!)),
+                                                              widget
+                                                                  .cast!.id!)),
                                                   PersonImagesDisplay(
                                                     widget: widget,
                                                     api: Endpoints
                                                         .getPersonImages(
-                                                      widget.cast.id!,
+                                                      widget.cast!.id!,
                                                     ),
                                                     title: 'Images',
                                                   ),
@@ -219,7 +220,7 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                         child: PersonMovieList(
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
-                                                  widget.cast.id!),
+                                                  widget.cast!.id!),
                                         ),
                                       ),
                                       Container(),
@@ -246,7 +247,7 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                   child: FadeInImage(
                                     image: NetworkImage(TMDB_BASE_IMAGE_URL +
                                         'w500/' +
-                                        '${widget.cast.profilePath}'),
+                                        '${widget.cast!.profilePath}'),
                                     fit: BoxFit.cover,
                                     placeholder: const AssetImage(
                                         'assets/images/loading.gif'),

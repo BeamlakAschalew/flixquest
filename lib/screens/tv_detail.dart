@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/modals/watch_providers.dart';
+import 'package:cinemax/modals/tv.dart';
+import 'package:cinemax/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
@@ -9,25 +10,25 @@ import 'package:cinemax/modals/credits.dart';
 import 'package:cinemax/modals/movie.dart';
 import 'package:cinemax/screens/movie_widgets.dart';
 
-class MovieDetailPage extends StatefulWidget {
-  final Movie movie;
+class TVDetailPage extends StatefulWidget {
+  final TV tvSeries;
   final String heroId;
   final MovieDetails? md;
 
-  const MovieDetailPage({
+  const TVDetailPage({
     Key? key,
-    required this.movie,
+    required this.tvSeries,
     required this.heroId,
     this.md,
   }) : super(key: key);
   @override
-  _MovieDetailPageState createState() => _MovieDetailPageState();
+  _TVDetailPageState createState() => _TVDetailPageState();
 }
 
-class _MovieDetailPageState extends State<MovieDetailPage>
+class _TVDetailPageState extends State<TVDetailPage>
     with
         SingleTickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin<MovieDetailPage> {
+        AutomaticKeepAliveClientMixin<TVDetailPage> {
   late TabController tabController;
 
   @override
@@ -47,7 +48,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
               Expanded(
                 child: Stack(
                   children: <Widget>[
-                    widget.movie.backdropPath == null
+                    widget.tvSeries.backdropPath == null
                         ? Image.asset(
                             'assets/images/na.jpg',
                             fit: BoxFit.cover,
@@ -57,7 +58,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                             height: double.infinity,
                             image: NetworkImage(TMDB_BASE_IMAGE_URL +
                                 'original/' +
-                                widget.movie.backdropPath!),
+                                widget.tvSeries.backdropPath!),
                             fit: BoxFit.cover,
                             placeholder:
                                 const AssetImage('assets/images/loading_8.gif'),
@@ -116,7 +117,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                 actions: [
                   GestureDetector(
                     child: WatchProvidersButton(
-                      api: Endpoints.getMovieWatchProviders(widget.movie.id!),
+                      api:
+                          Endpoints.getMovieWatchProviders(widget.tvSeries.id!),
                       onTap: () {
                         modalBottomSheetMenu();
                       },
@@ -153,9 +155,9 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          widget.movie.releaseDate == ""
-                                              ? widget.movie.title!
-                                              : '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
+                                          widget.tvSeries.firstAirDate == ""
+                                              ? widget.tvSeries.name!
+                                              : '${widget.tvSeries.name!} (${DateTime.parse(widget.tvSeries.firstAirDate!).year})',
                                           // style: widget
                                           //     .themeData.textTheme.headline5,
                                           maxLines: 2,
@@ -190,7 +192,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                             ),
                                                           ),
                                                           Text(
-                                                            widget.movie
+                                                            widget.tvSeries
                                                                 .voteAverage!
                                                                 .toStringAsFixed(
                                                                     1),
@@ -217,7 +219,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                                   size: 15),
                                                             ),
                                                             Text(
-                                                              widget.movie
+                                                              widget.tvSeries
                                                                   .voteCount!
                                                                   .toString(),
                                                               style:
@@ -283,9 +285,9 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                         physics: const BouncingScrollPhysics(),
                                         child: Column(
                                           children: <Widget>[
-                                            GenreDisplay(
-                                              api: Endpoints.movieDetailsUrl(
-                                                  widget.movie.id!),
+                                            TVGenreDisplay(
+                                              api: Endpoints.tvDetailsUrl(
+                                                  widget.tvSeries.id!),
                                             ),
                                             Row(
                                               children: const <Widget>[
@@ -304,7 +306,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: Text(
-                                                widget.movie.overview!,
+                                                widget.tvSeries.overview!,
                                                 // style: widget
                                                 //     .themeData.textTheme.caption,
                                               ),
@@ -317,54 +319,53 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                           left: 8.0,
                                                           bottom: 4.0),
                                                   child: Text(
-                                                    widget.movie.releaseDate ==
+                                                    widget.tvSeries
+                                                                .firstAirDate ==
                                                             null
                                                         ? 'Release date: N/A'
-                                                        : 'Release date : ${widget.movie.releaseDate}',
+                                                        : 'Release date : ${widget.tvSeries.firstAirDate}',
                                                     // style: widget.themeData
                                                     //     .textTheme.bodyText1,
                                                   ),
                                                 ),
                                               ],
                                             ),
-                                            WatchNowButton(widget: widget),
-                                            ScrollingArtists(
-                                              api: Endpoints.getCreditsUrl(
-                                                  widget.movie.id!),
+                                            ScrollingTVArtists(
+                                              api: Endpoints.getTVCreditsUrl(
+                                                  widget.tvSeries.id!),
                                               title: 'Cast',
                                             ),
                                             MovieImagesDisplay(
                                               title: 'Images',
-                                              api: Endpoints.getImages(
-                                                  widget.movie.id!),
+                                              api: Endpoints.getTVImages(
+                                                  widget.tvSeries.id!),
                                             ),
                                             MovieVideosDisplay(
-                                              api: Endpoints.getVideos(
-                                                  widget.movie.id!),
+                                              api: Endpoints.getTVVideos(
+                                                  widget.tvSeries.id!),
                                               title: 'Videos',
                                             ),
                                             MovieInfoTable(
                                               api: Endpoints.movieDetailsUrl(
-                                                  widget.movie.id!),
+                                                  widget.tvSeries.id!),
                                             ),
                                           ],
                                         ),
                                       ),
-                                      CastTab(
-                                        api: Endpoints.getCreditsUrl(
-                                            widget.movie.id!),
+                                      TVCastTab(
+                                        api: Endpoints.getTVCreditsUrl(
+                                            widget.tvSeries.id!),
                                       ),
-                                      CrewTab(
-                                        api: Endpoints.getCreditsUrl(
-                                            widget.movie.id!),
+                                      TVCrewTab(
+                                        api: Endpoints.getTVCreditsUrl(
+                                            widget.tvSeries.id!),
                                       ),
-                                      MovieRecommendationsTab(
-                                          api:
-                                              Endpoints.getMovieRecommendations(
-                                                  widget.movie.id!, 1)),
-                                      SimilarMoviesTab(
-                                          api: Endpoints.getSimilarMovies(
-                                              widget.movie.id!, 1)),
+                                      TVRecommendationsTab(
+                                          api: Endpoints.getTVRecommendations(
+                                              widget.tvSeries.id!, 1)),
+                                      SimilarTVTab(
+                                          api: Endpoints.getSimilarTV(
+                                              widget.tvSeries.id!, 1)),
                                     ],
                                     controller: tabController,
                                   ),
@@ -384,7 +385,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                             height: 150,
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
-                              child: widget.movie.posterPath == null
+                              child: widget.tvSeries.posterPath == null
                                   ? Image.asset(
                                       'assets/images/na.jpg',
                                       fit: BoxFit.cover,
@@ -392,7 +393,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                   : FadeInImage(
                                       image: NetworkImage(TMDB_BASE_IMAGE_URL +
                                           'w500/' +
-                                          widget.movie.posterPath!),
+                                          widget.tvSeries.posterPath!),
                                       fit: BoxFit.cover,
                                       placeholder: const AssetImage(
                                           'assets/images/loading.gif'),
@@ -420,7 +421,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
       context: context,
       builder: (builder) {
         return WatchProvidersDetails(
-          api: Endpoints.getMovieWatchProviders(widget.movie.id!),
+          api: Endpoints.getMovieWatchProviders(widget.tvSeries.id!),
         );
       },
     );

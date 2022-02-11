@@ -25,7 +25,8 @@ class PersonImagesDisplay extends StatefulWidget {
   State<PersonImagesDisplay> createState() => _PersonImagesDisplayState();
 }
 
-class _PersonImagesDisplayState extends State<PersonImagesDisplay> {
+class _PersonImagesDisplayState extends State<PersonImagesDisplay>
+    with AutomaticKeepAliveClientMixin {
   PersonImages? personImages;
   @override
   void initState() {
@@ -108,6 +109,9 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class PersonMovieList extends StatefulWidget {
@@ -251,7 +255,8 @@ class PersonAboutWidget extends StatefulWidget {
   State<PersonAboutWidget> createState() => _PersonAboutWidgetState();
 }
 
-class _PersonAboutWidgetState extends State<PersonAboutWidget> {
+class _PersonAboutWidgetState extends State<PersonAboutWidget>
+    with AutomaticKeepAliveClientMixin {
   PersonDetails? personDetails;
 
   @override
@@ -361,4 +366,7 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget> {
             ],
           );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

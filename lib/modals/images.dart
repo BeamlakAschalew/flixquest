@@ -1,11 +1,11 @@
-class MovieImages {
+class Images {
   List<Backdrops>? backdrop;
 
-  MovieImages({
+  Images({
     this.backdrop,
   });
 
-  MovieImages.fromJson(Map<String, dynamic> json) {
+  Images.fromJson(Map<String, dynamic> json) {
     if (json['backdrops'] != null) {
       backdrop = [];
       json['backdrops'].forEach((v) {

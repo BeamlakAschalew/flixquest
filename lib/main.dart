@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'package:cinemax/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
@@ -119,9 +120,9 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       body: TabBarView(
         controller: tabController,
-        children: [
-          const MainMoviesDisplay(),
-          Container(),
+        children: const [
+          MainMoviesDisplay(),
+          MainTVDisplay(),
         ],
       ),
     );

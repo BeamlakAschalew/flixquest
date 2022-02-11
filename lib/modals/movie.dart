@@ -110,6 +110,8 @@ class MovieDetails {
   String? status;
   int? budget;
   int? revenue;
+  List<ProductionCompanies>? productionCompanies;
+  List<ProductionCountries>? productionCountries;
 
   MovieDetails(
       {this.runtime,
@@ -117,7 +119,9 @@ class MovieDetails {
       this.status,
       this.budget,
       this.revenue,
-      this.originalTitle});
+      this.originalTitle,
+      this.productionCompanies,
+      this.productionCountries});
   MovieDetails.fromJson(Map<String, dynamic> json) {
     runtime = json['runtime'];
     tagline = json['tagline'];
@@ -125,16 +129,59 @@ class MovieDetails {
     budget = json['budget'];
     revenue = json['revenue'];
     originalTitle = json['original_title'];
+    if (json['production_companies'] != null) {
+      productionCompanies = [];
+      json['production_companies'].forEach((v) {
+        productionCompanies?.add(ProductionCompanies.fromJson(v));
+      });
+    }
+    if (json['production_countries'] != null) {
+      productionCountries = [];
+      json['production_countries'].forEach((v) {
+        productionCountries?.add(ProductionCountries.fromJson(v));
+      });
+    }
   }
-  // Map<String, dynamic> toJson() {
-  //   final Map<String, dynamic> data = <String, dynamic>{};
-  //   data['runtime'] = runtime;
-  //   data['tagline'] = tagline;
-  //   data['status'] = status;
-  //   data['budget'] = budget;
-  //   data['revenue'] = revenue;
-  //   return data;
-  // }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (productionCompanies != null) {
+      data['production_companies'] =
+          productionCompanies?.map((v) => v.toJson()).toList();
+    }
+    if (productionCountries != null) {
+      data['production_countries'] =
+          productionCountries?.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class ProductionCompanies {
+  String? name;
+  ProductionCompanies({this.name});
+  ProductionCompanies.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+
+    return data;
+  }
+}
+
+class ProductionCountries {
+  String? name;
+  ProductionCountries({this.name});
+  ProductionCountries.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+
+    return data;
+  }
 }
 
 class PersonMoviesList {

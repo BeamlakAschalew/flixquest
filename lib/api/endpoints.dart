@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import '/constants/api_constants.dart';
 
 class Endpoints {
@@ -51,8 +53,7 @@ class Endpoints {
   }
 
   static String movieDetailsUrl(int movieId) {
-    return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY&append_to_response=credits,'
-        'images';
+    return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY';
   }
 
   static String genresUrl() {
@@ -131,5 +132,70 @@ class Endpoints {
   static getMovieWatchProviders(int id) {
     return '$TMDB_API_BASE_URL'
         '/movie/$id/watch/providers?api_key=$TMDB_API_KEY';
+  }
+
+  static discoverTVUrl(int page) {
+    return '$TMDB_API_BASE_URL'
+        '/discover/tv?api_key=$TMDB_API_KEY&language=en-US&sort_by=popularity.desc&page=$page';
+  }
+
+  static popularTVUrl(int page) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/popular?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+  }
+
+  static trendingTVUrl(int page) {
+    return '$TMDB_API_BASE_URL'
+        '/trending/tv/week?api_key=$TMDB_API_KEY&page=$page';
+  }
+
+  static topRatedTVUrl(int page) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/top_rated?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+  }
+
+  static airingTodayUrl(int page) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/airing_today?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+  }
+
+  static onTheAirUrl(int page) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/on_the_air?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+  }
+
+  static getTVCreditsUrl(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/aggregate_credits?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static String tvDetailsUrl(int id) {
+    return '$TMDB_API_BASE_URL/tv/$id?api_key=$TMDB_API_KEY';
+  }
+
+  static String getTVImages(int id) {
+    return TMDB_API_BASE_URL + '/tv/$id/images?api_key=$TMDB_API_KEY';
+  }
+
+  static String getTVVideos(int id) {
+    return TMDB_API_BASE_URL + '/tv/$id/videos?api_key=$TMDB_API_KEY';
+  }
+
+  static String getTVRecommendations(int id, int page) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/recommendations?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+  }
+
+  static String getSimilarTV(int id, int page) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/similar?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+  }
+
+  static String getTVForGenre(int genreId, int page) {
+    return '$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY'
+        '&language=en-US'
+        '&sort_by=popularity.desc'
+        '&page=$page'
+        '&with_genres=$genreId';
   }
 }

@@ -5,6 +5,7 @@ import 'package:cinemax/modals/videos.dart';
 import 'package:cinemax/modals/watch_providers.dart';
 import 'package:cinemax/screens/person_detail.dart';
 import 'package:cinemax/screens/streaming_services_movies.dart';
+import 'package:cinemax/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import '/modals/function.dart';
@@ -447,7 +448,6 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          widget.onTap!(credits!.cast![index]);
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return PersonDetailPage(
@@ -463,7 +463,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                               Expanded(
                                 flex: 6,
                                 child: Hero(
-                                  tag: credits!.cast![index].castId!,
+                                  tag: credits!.cast![index].id!,
                                   child: SizedBox(
                                     width: 75,
                                     child: ClipRRect(
@@ -518,9 +518,9 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
 class WatchNowButton extends StatefulWidget {
   const WatchNowButton({
     Key? key,
-    required this.widget,
+    this.widget,
   }) : super(key: key);
-  final MovieDetailPage widget;
+  final MovieDetailPage? widget;
 
   @override
   _WatchNowButtonState createState() => _WatchNowButtonState();
@@ -537,7 +537,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
                 MaterialStateProperty.all(const Color(0xFFF57C00))),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return MovieStream(id: widget.widget.movie.id!);
+            return MovieStream(id: widget.widget!.movie.id!);
           }));
         },
         child: Row(
@@ -569,7 +569,7 @@ class MovieImagesDisplay extends StatefulWidget {
 }
 
 class _MovieImagesState extends State<MovieImagesDisplay> {
-  MovieImages? movieImages;
+  Images? movieImages;
   @override
   void initState() {
     super.initState();
@@ -677,7 +677,7 @@ class MovieVideosDisplay extends StatefulWidget {
 }
 
 class _MovieVideosState extends State<MovieVideosDisplay> {
-  MovieVideos? movieVideos;
+  Videos? movieVideos;
 
   @override
   void initState() {
@@ -843,7 +843,7 @@ class _GenreDisplayState extends State<GenreDisplay>
   @override
   void initState() {
     super.initState();
-    fetchNewGenre(widget.api!).then((value) {
+    fetchMovieGenre(widget.api!).then((value) {
       setState(() {
         genreList = value;
       });
@@ -936,14 +936,14 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
             children: [
               const Text(
                 'Movie Info',
-                style: TextStyle(fontSize: 30),
+                style: TextStyle(fontSize: 25),
               ),
               Container(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: DataTable(columns: [
+                    child: DataTable(dataRowHeight: 40, columns: [
                       const DataColumn(
                           label: Text(
                         'Original Title',
@@ -979,11 +979,25 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
                       ]),
                       DataRow(cells: [
                         const DataCell(Text('Tagline')),
-                        DataCell(Text(
-                          movieDetails!.tagline!,
-                          style:
-                              const TextStyle(overflow: TextOverflow.ellipsis),
-                        )),
+                        DataCell(
+                          Text(
+                            movieDetails!.tagline!,
+                            style: const TextStyle(
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                      ]),
+                      DataRow(cells: [
+                        const DataCell(Text('Production company')),
+                        DataCell(
+                          Text(movieDetails!.productionCompanies![0].name!),
+                        ),
+                      ]),
+                      DataRow(cells: [
+                        const DataCell(Text('Production country')),
+                        DataCell(
+                          Text(movieDetails!.productionCountries![0].name!),
+                        ),
                       ]),
                     ]),
                   ),
@@ -1053,8 +1067,8 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 SizedBox(
-                                  width: deviceWidth * 0.25,
-                                  height: deviceHeight * 0.17,
+                                  width: 85,
+                                  height: 130,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: moviesList![index].posterPath == null
@@ -1345,7 +1359,7 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   @override
   void initState() {
     super.initState();
-    fetchMovieRecommendations(widget.api).then((value) {
+    fetchMovies(widget.api).then((value) {
       setState(() {
         movieList = value;
       });
@@ -1396,8 +1410,8 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 SizedBox(
-                                  width: deviceWidth * 0.20,
-                                  height: deviceHeight * 0.15,
+                                  width: 80,
+                                  height: 125,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: movieList![index].posterPath == null
@@ -1485,7 +1499,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
   @override
   void initState() {
     super.initState();
-    fetchSimilarMovies(widget.api).then((value) {
+    fetchMovies(widget.api).then((value) {
       setState(() {
         movieList = value;
       });
@@ -1536,8 +1550,8 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
                                 SizedBox(
-                                  height: deviceHeight * 0.15,
-                                  width: deviceWidth * 0.20,
+                                  height: 125,
+                                  width: 80,
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: movieList![index].posterPath == null
@@ -1712,8 +1726,8 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       SizedBox(
-                                        width: deviceWidth * 0.18,
-                                        height: deviceHeight * 0.15,
+                                        width: 85,
+                                        height: 130,
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8.0),
@@ -1896,8 +1910,8 @@ class _ParticularStreamingServiceMoviesState
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       SizedBox(
-                                        width: 80,
-                                        height: 110,
+                                        width: 85,
+                                        height: 130,
                                         child: Hero(
                                           tag: '${moviesList![index].id}',
                                           child: ClipRRect(
@@ -2136,7 +2150,7 @@ class _GenreListGridState extends State<GenreListGrid>
   @override
   void initState() {
     super.initState();
-    fetchNewGenre(widget.api).then((value) {
+    fetchMovieGenre(widget.api).then((value) {
       setState(() {
         genreList = value;
       });
@@ -2310,254 +2324,278 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          TabBar(
-            controller: tabController,
-            isScrollable: true,
-            indicatorColor: const Color(0xFFF57C00),
-            indicatorWeight: 3,
-            unselectedLabelColor: Colors.white54,
-            labelColor: Colors.white,
-            indicatorSize: TabBarIndicatorSize.tab,
-            tabs: const [
-              Tab(
-                child: Text('Buy'),
-              ),
-              Tab(
-                child: Text('Paid Stream'),
-              ),
-              Tab(
-                child: Text('Rent'),
-              ),
-              Tab(
-                child: Text('Free'),
-              )
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: tabController,
+    return watchProviders == null
+        ? Center(child: CircularProgressIndicator())
+        : Container(
+            child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 100,
-                        childAspectRatio: 0.65,
-                        crossAxisSpacing: 5,
-                        mainAxisSpacing: 5,
-                      ),
-                      itemCount: watchProviders!.buy!.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: watchProviders!.buy![index].logoPath ==
-                                          null
-                                      ? Image.asset(
-                                          'assets/images/na.jpg',
-                                          fit: BoxFit.cover,
-                                        )
-                                      : FadeInImage(
-                                          image: NetworkImage(
-                                              TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
-                                                  watchProviders!
-                                                      .buy![index].logoPath!),
-                                          fit: BoxFit.cover,
-                                          placeholder: const AssetImage(
-                                              'assets/images/loading.gif'),
-                                        ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Expanded(
-                                  flex: 6,
-                                  child: Text(
-                                    watchProviders!.buy![index].providerName!,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  )),
-                            ],
-                          ),
-                        );
-                      }),
+                TabBar(
+                  controller: tabController,
+                  isScrollable: true,
+                  indicatorColor: const Color(0xFFF57C00),
+                  indicatorWeight: 3,
+                  unselectedLabelColor: Colors.white54,
+                  labelColor: Colors.white,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  tabs: const [
+                    Tab(
+                      child: Text('Buy'),
+                    ),
+                    Tab(
+                      child: Text('Paid Stream'),
+                    ),
+                    Tab(
+                      child: Text('Rent'),
+                    ),
+                    Tab(
+                      child: Text('Free'),
+                    )
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 100,
-                        childAspectRatio: 0.65,
-                        crossAxisSpacing: 5,
-                        mainAxisSpacing: 5,
-                      ),
-                      itemCount: watchProviders!.flatRate!.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: watchProviders!
-                                              .flatRate![index].logoPath ==
-                                          null
-                                      ? Image.asset(
-                                          'assets/images/na.jpg',
-                                          fit: BoxFit.cover,
-                                        )
-                                      : FadeInImage(
-                                          image: NetworkImage(
-                                              TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
-                                                  watchProviders!
-                                                      .flatRate![index]
-                                                      .logoPath!),
-                                          fit: BoxFit.cover,
-                                          placeholder: const AssetImage(
-                                              'assets/images/loading.gif'),
-                                        ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Expanded(
-                                  flex: 6,
-                                  child: Text(
-                                    watchProviders!
-                                        .flatRate![index].providerName!,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  )),
-                            ],
-                          ),
-                        );
-                      }),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 100,
-                        childAspectRatio: 0.65,
-                        crossAxisSpacing: 5,
-                        mainAxisSpacing: 5,
-                      ),
-                      itemCount: watchProviders!.rent!.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child:
-                                      watchProviders!.rent![index].logoPath ==
-                                              null
-                                          ? Image.asset(
-                                              'assets/images/na.jpg',
-                                              fit: BoxFit.cover,
-                                            )
-                                          : FadeInImage(
-                                              image: NetworkImage(
-                                                  TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
-                                                      watchProviders!
-                                                          .rent![index]
-                                                          .logoPath!),
-                                              fit: BoxFit.cover,
-                                              placeholder: const AssetImage(
-                                                  'assets/images/loading.gif'),
-                                            ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Expanded(
-                                flex: 6,
+                Expanded(
+                  child: TabBarView(
+                    controller: tabController,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: watchProviders?.buy == null
+                            ? const Center(
                                 child: Text(
-                                  watchProviders!.rent![index].providerName!,
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                    'This movie doesn\'t have an option to buy yet'))
+                            : GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 100,
+                                  childAspectRatio: 0.65,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                        maxCrossAxisExtent: 100,
-                        childAspectRatio: 0.65,
-                        crossAxisSpacing: 5,
-                        mainAxisSpacing: 5,
+                                itemCount: watchProviders!.buy!.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          flex: 6,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: watchProviders!
+                                                        .buy![index].logoPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na.jpg',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            watchProviders!
+                                                                .buy![index]
+                                                                .logoPath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Expanded(
+                                            flex: 6,
+                                            child: Text(
+                                              watchProviders!
+                                                  .buy![index].providerName!,
+                                              textAlign: TextAlign.center,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            )),
+                                      ],
+                                    ),
+                                  );
+                                }),
                       ),
-                      itemCount: 1,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                flex: 6,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: const FadeInImage(
-                                    image: AssetImage(
-                                        'assets/images/logo_shadow.png'),
-                                    fit: BoxFit.cover,
-                                    placeholder:
-                                        AssetImage('assets/images/loading.gif'),
-                                  ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: watchProviders?.flatRate == null
+                            ? const Center(
+                                child: Text(
+                                    'This movie doesn\'t have an option to stream yet'))
+                            : GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 100,
+                                  childAspectRatio: 0.65,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              const Expanded(
-                                  flex: 6,
-                                  child: Text(
-                                    'Cinemax',
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  )),
-                            ],
-                          ),
-                        );
-                      }),
-                ),
+                                itemCount: watchProviders!.flatRate!.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          flex: 6,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: watchProviders!
+                                                        .flatRate![index]
+                                                        .logoPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na.jpg',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            watchProviders!
+                                                                .flatRate![
+                                                                    index]
+                                                                .logoPath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Expanded(
+                                            flex: 6,
+                                            child: Text(
+                                              watchProviders!.flatRate![index]
+                                                  .providerName!,
+                                              textAlign: TextAlign.center,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            )),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: watchProviders?.rent == null
+                            ? const Center(
+                                child: Text(
+                                    'This movie doesn\'t have an option to rent yet'))
+                            : GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 100,
+                                  childAspectRatio: 0.65,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
+                                ),
+                                itemCount: watchProviders!.rent!.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          flex: 6,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: watchProviders!.rent![index]
+                                                        .logoPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na.jpg',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            watchProviders!
+                                                                .rent![index]
+                                                                .logoPath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        Expanded(
+                                          flex: 6,
+                                          child: Text(
+                                            watchProviders!
+                                                .rent![index].providerName!,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 100,
+                              childAspectRatio: 0.65,
+                              crossAxisSpacing: 5,
+                              mainAxisSpacing: 5,
+                            ),
+                            itemCount: 1,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      flex: 6,
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        child: const FadeInImage(
+                                          image: AssetImage(
+                                              'assets/images/logo_shadow.png'),
+                                          fit: BoxFit.cover,
+                                          placeholder: AssetImage(
+                                              'assets/images/loading.gif'),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    const Expanded(
+                                        flex: 6,
+                                        child: Text(
+                                          'Cinemax',
+                                          textAlign: TextAlign.center,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        )),
+                                  ],
+                                ),
+                              );
+                            }),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
-          )
-        ],
-      ),
-    );
+          );
   }
 }
