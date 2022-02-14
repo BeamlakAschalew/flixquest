@@ -1,11 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/modals/watch_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/modals/credits.dart';
 import 'package:cinemax/modals/movie.dart';
 import 'package:cinemax/screens/movie_widgets.dart';
 
@@ -49,7 +47,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                   children: <Widget>[
                     widget.movie.backdropPath == null
                         ? Image.asset(
-                            'assets/images/na.jpg',
+                            'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
                         : FadeInImage(
@@ -303,11 +301,15 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                             Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                widget.movie.overview!,
-                                                // style: widget
-                                                //     .themeData.textTheme.caption,
-                                              ),
+                                              child: widget
+                                                      .movie.overview!.isEmpty
+                                                  ? const Text(
+                                                      'There is no overview for this movie')
+                                                  : Text(
+                                                      widget.movie.overview!,
+                                                      // style: widget
+                                                      //     .themeData.textTheme.caption,
+                                                    ),
                                             ),
                                             Row(
                                               children: <Widget>[
@@ -342,6 +344,11 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                               api: Endpoints.getVideos(
                                                   widget.movie.id!),
                                               title: 'Videos',
+                                            ),
+                                            SocialLinks(
+                                              api: Endpoints
+                                                  .getExternalLinksForMovie(
+                                                      widget.movie.id!),
                                             ),
                                             MovieInfoTable(
                                               api: Endpoints.movieDetailsUrl(
@@ -386,7 +393,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                               borderRadius: BorderRadius.circular(8.0),
                               child: widget.movie.posterPath == null
                                   ? Image.asset(
-                                      'assets/images/na.jpg',
+                                      'assets/images/na_logo.png',
                                       fit: BoxFit.cover,
                                     )
                                   : FadeInImage(

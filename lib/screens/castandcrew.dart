@@ -72,7 +72,7 @@ class CastAndCrew extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50.0),
                     child: credits!.cast![index].profilePath == null
                         ? Image.asset(
-                            'assets/images/na.jpg',
+                            'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
                         : FadeInImage(
@@ -133,7 +133,7 @@ class CastAndCrew extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50.0),
                     child: credits!.crew![index].profilePath == null
                         ? Image.asset(
-                            'assets/images/na.jpg',
+                            'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
                         : FadeInImage(

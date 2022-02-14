@@ -66,6 +66,14 @@ Future<List<Genres>> fetchMovieGenre(String api) async {
   return newGenreList.genre ?? [];
 }
 
+Future fetchSocialLinks(String api) async {
+  ExternalLinks externalLinks;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  externalLinks = ExternalLinks.fromJson(decodeRes);
+  return externalLinks;
+}
+
 Future<List<TVGenres>> fetchTVGenre(String api) async {
   TVGenreList tvGenreList;
   var res = await http.get(Uri.parse(api));
@@ -104,4 +112,12 @@ Future<List<TV>> fetchTV(String api) async {
   var decodeRes = jsonDecode(res.body);
   tvList = TVList.fromJson(decodeRes);
   return tvList.tvSeries ?? [];
+}
+
+Future<TVDetails> fetchTVDetails(String api) async {
+  TVDetails tvDetails;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  tvDetails = TVDetails.fromJson(decodeRes);
+  return tvDetails;
 }

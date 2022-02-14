@@ -4,7 +4,7 @@ description: A Flutter movie app.
 
 publish_to: 'none'
 
-version: 2.0+1
+version: 1.2.0+1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -22,6 +22,8 @@ dependencies:
   shimmer: ^2.0.0
   readmore: ^2.1.0
   mixpanel_flutter: ^1.4.4
+  photo_view: ^0.13.0
+  font_awesome_flutter: ^9.2.0
 
 
 dev_dependencies:
@@ -46,6 +48,12 @@ flutter:
     - family: PoppinsSB
       fonts:
         - asset: assets/fonts/poppins/Poppins-SemiBold.ttf
+    - family: SocialIcons
+      fonts:
+        - asset: assets/fonts/SocialIcons.ttf
+    - family: IMdb
+      fonts:
+        - asset: assets/fonts/imdb.ttf
   
 flutter_native_splash:
   color: "#252625"

@@ -110,6 +110,11 @@ class Endpoints {
         '/movie/$id/recommendations?api_key=$TMDB_API_KEY&language=en-US&page=$page';
   }
 
+  static String getExternalLinksForMovie(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/movie/$id/external_ids?api_key=$TMDB_API_KEY';
+  }
+
   static String getSimilarMovies(int id, int page) {
     return '$TMDB_API_BASE_URL'
         '/movie/$id/similar?api_key=$TMDB_API_KEY&language=en-US&page=$page';

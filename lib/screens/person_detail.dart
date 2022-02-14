@@ -244,14 +244,20 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                 height: 150,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100.0),
-                                  child: FadeInImage(
-                                    image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                        'w500/' +
-                                        '${widget.cast!.profilePath}'),
-                                    fit: BoxFit.cover,
-                                    placeholder: const AssetImage(
-                                        'assets/images/loading.gif'),
-                                  ),
+                                  child: widget.cast!.profilePath == null
+                                      ? Image.asset(
+                                          'assets/images/na_logo.png',
+                                          fit: BoxFit.cover,
+                                        )
+                                      : FadeInImage(
+                                          image: NetworkImage(
+                                              TMDB_BASE_IMAGE_URL +
+                                                  'w500/' +
+                                                  '${widget.cast!.profilePath}'),
+                                          fit: BoxFit.cover,
+                                          placeholder: const AssetImage(
+                                              'assets/images/loading.gif'),
+                                        ),
                                 ),
                               ),
                             ),

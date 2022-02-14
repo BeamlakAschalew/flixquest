@@ -46,6 +46,7 @@ class Movie {
   String? overview;
   String? releaseDate;
   String? runtime;
+  String? webLink;
 
   Movie(
       {this.voteCount,
@@ -62,7 +63,8 @@ class Movie {
       this.adult,
       this.overview,
       this.releaseDate,
-      this.runtime});
+      this.runtime,
+      this.webLink});
 
   Movie.fromJson(Map<String, dynamic> json) {
     voteCount = json['vote_count'];
@@ -80,6 +82,7 @@ class Movie {
     overview = json['overview'];
     releaseDate = json['release_date'];
     runtime = json['runtime'];
+    webLink = json['homepage'];
   }
 
   Map<String, dynamic> toJson() {
@@ -99,6 +102,7 @@ class Movie {
     data['overview'] = overview;
     data['release_date'] = releaseDate;
     data['runtime'] = runtime;
+    data['homepage'] = webLink;
     return data;
   }
 }
@@ -201,5 +205,25 @@ class PersonMoviesList {
       data['cast'] = movies!.map((v) => v.toJson()).toList();
     }
     return data;
+  }
+}
+
+class ExternalLinks {
+  String? facebookUsername;
+  String? instagramUsername;
+  String? twitterUsername;
+  String? imdbId;
+
+  ExternalLinks({
+    this.facebookUsername,
+    this.imdbId,
+    this.instagramUsername,
+    this.twitterUsername,
+  });
+  ExternalLinks.fromJson(Map<String, dynamic> json) {
+    facebookUsername = json['facebook_id'];
+    instagramUsername = json['instagram_id'];
+    imdbId = json['imdb_id'];
+    twitterUsername = json['twitter_id'];
   }
 }

@@ -17,6 +17,7 @@ import 'package:cinemax/screens/tv_detail.dart';
 import 'package:cinemax/screens/genre_tv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'genremovies.dart';
@@ -320,7 +321,7 @@ class _ScrollingTVState extends State<ScrollingTV>
                                           child:
                                               tvList![index].posterPath == null
                                                   ? Image.asset(
-                                                      'assets/images/na.jpg',
+                                                      'assets/images/na_logo.png',
                                                       fit: BoxFit.cover,
                                                     )
                                                   : FadeInImage(
@@ -471,7 +472,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists> {
                                           credits!.cast![index].profilePath ==
                                                   null
                                               ? Image.asset(
-                                                  'assets/images/na.jpg',
+                                                  'assets/images/na_logo.png',
                                                   fit: BoxFit.cover,
                                                 )
                                               : FadeInImage(
@@ -843,7 +844,7 @@ class _TVCastTabState extends State<TVCastTab>
                             borderRadius: BorderRadius.circular(50.0),
                             child: credits!.cast![index].profilePath == null
                                 ? Image.asset(
-                                    'assets/images/na.jpg',
+                                    'assets/images/na_logo.png',
                                     fit: BoxFit.cover,
                                   )
                                 : FadeInImage(
@@ -947,7 +948,7 @@ class _TVCrewTabState extends State<TVCrewTab>
                           borderRadius: BorderRadius.circular(50.0),
                           child: credits!.crew![index].profilePath == null
                               ? Image.asset(
-                                  'assets/images/na.jpg',
+                                  'assets/images/na_logo.png',
                                   fit: BoxFit.cover,
                                 )
                               : FadeInImage(
@@ -1063,7 +1064,7 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: tvList![index].posterPath == null
                                         ? Image.asset(
-                                            'assets/images/na.jpg',
+                                            'assets/images/na_logo.png',
                                             fit: BoxFit.cover,
                                           )
                                         : FadeInImage(
@@ -1202,7 +1203,7 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: tvList![index].posterPath == null
                                         ? Image.asset(
-                                            'assets/images/na.jpg',
+                                            'assets/images/na_logo.png',
                                             fit: BoxFit.cover,
                                           )
                                         : FadeInImage(
@@ -1448,7 +1449,7 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                           child:
                                               tvList![index].posterPath == null
                                                   ? Image.asset(
-                                                      'assets/images/na.jpg',
+                                                      'assets/images/na_logo.png',
                                                       fit: BoxFit.cover,
                                                     )
                                                   : FadeInImage(
@@ -1519,5 +1520,123 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                   ],
                 ),
     );
+  }
+}
+
+class TVInfoTable extends StatefulWidget {
+  final String? api;
+  const TVInfoTable({Key? key, this.api}) : super(key: key);
+
+  @override
+  _TVInfoTableState createState() => _TVInfoTableState();
+}
+
+class _TVInfoTableState extends State<TVInfoTable> {
+  TVDetails? tvDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTVDetails(widget.api!).then((value) {
+      setState(() {
+        tvDetails = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return tvDetails == null
+        ? const Padding(
+            padding: EdgeInsets.only(bottom: 8.0),
+            child: SizedBox(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : Column(
+            children: [
+              const Text(
+                'TV series Info',
+                style: TextStyle(fontSize: 25),
+              ),
+              Container(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(dataRowHeight: 40, columns: [
+                      const DataColumn(
+                          label: Text(
+                        'Original Title',
+                        style: TextStyle(overflow: TextOverflow.ellipsis),
+                      )),
+                      DataColumn(
+                        label: Text(
+                          tvDetails!.originalTitle!,
+                          style:
+                              const TextStyle(overflow: TextOverflow.ellipsis),
+                        ),
+                      ),
+                    ], rows: [
+                      DataRow(cells: [
+                        const DataCell(Text('Status')),
+                        DataCell(Text(tvDetails!.status!.isEmpty
+                            ? 'unknown'
+                            : tvDetails!.status!)),
+                      ]),
+                      DataRow(cells: [
+                        const DataCell(Text('Runtime')),
+                        DataCell(Text(tvDetails!.runtime!.isEmpty
+                            ? '-'
+                            : tvDetails!.runtime![0] == 0
+                                ? 'N/A'
+                                : '${tvDetails!.runtime![0]} mins')),
+                      ]),
+                      DataRow(cells: [
+                        const DataCell(Text('Total seasons')),
+                        DataCell(Text(tvDetails!.numberOfSeasons! == 0
+                            ? '-'
+                            : '${tvDetails!.numberOfSeasons!}')),
+                      ]),
+                      DataRow(cells: [
+                        const DataCell(Text('Total episodes')),
+                        DataCell(Text(tvDetails!.numberOfEpisodes! == 0
+                            ? '-'
+                            : '${tvDetails!.numberOfEpisodes!}')),
+                      ]),
+                      DataRow(cells: [
+                        const DataCell(Text('Tagline')),
+                        DataCell(
+                          Text(
+                            tvDetails!.tagline!.isEmpty
+                                ? '-'
+                                : tvDetails!.tagline!,
+                            style: const TextStyle(
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                      ]),
+                      DataRow(cells: [
+                        const DataCell(Text('Production company')),
+                        DataCell(
+                          tvDetails!.productionCompanies!.isEmpty
+                              ? const Text('-')
+                              : Text(tvDetails!.productionCompanies![0].name!),
+                        ),
+                      ]),
+                      DataRow(cells: [
+                        const DataCell(Text('Production country')),
+                        DataCell(
+                          tvDetails!.productionCompanies!.isEmpty
+                              ? const Text('-')
+                              : Text(tvDetails!.productionCountries![0].name!),
+                        ),
+                      ]),
+                    ]),
+                  ),
+                ),
+              ),
+            ],
+          );
   }
 }

@@ -121,6 +121,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  font_awesome_flutter:
+    dependency: "direct main"
+    description:
+      name: font_awesome_flutter
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "9.2.0"
   http:
     dependency: "direct main"
     description:
@@ -198,6 +205,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "4.4.0"
+  photo_view:
+    dependency: "direct main"
+    description:
+      name: photo_view
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.13.0"
   plugin_platform_interface:
     dependency: transitive
     description:

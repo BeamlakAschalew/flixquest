@@ -95,3 +95,107 @@ class TV {
     return data;
   }
 }
+
+class TVDetails {
+  List<dynamic>? runtime;
+  String? tagline;
+  String? originalTitle;
+  String? status;
+  bool? inProduction;
+  int? numberOfSeasons;
+  int? numberOfEpisodes;
+  List<ProductionCompanies>? productionCompanies;
+  List<ProductionCountries>? productionCountries;
+
+  TVDetails(
+      {this.runtime,
+      this.tagline,
+      this.status,
+      this.originalTitle,
+      this.inProduction,
+      this.numberOfEpisodes,
+      this.numberOfSeasons,
+      this.productionCompanies,
+      this.productionCountries});
+  TVDetails.fromJson(Map<String, dynamic> json) {
+    runtime = json['episode_run_time'];
+    tagline = json['tagline'];
+    status = json['status'];
+    originalTitle = json['original_name'];
+    numberOfEpisodes = json['number_of_episodes'];
+    numberOfSeasons = json['number_of_seasons'];
+    inProduction = json['in_production'];
+    if (json['production_companies'] != null) {
+      productionCompanies = [];
+      json['production_companies'].forEach((v) {
+        productionCompanies?.add(ProductionCompanies.fromJson(v));
+      });
+    }
+    if (json['production_countries'] != null) {
+      productionCountries = [];
+      json['production_countries'].forEach((v) {
+        productionCountries?.add(ProductionCountries.fromJson(v));
+      });
+    }
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (productionCompanies != null) {
+      data['production_companies'] =
+          productionCompanies?.map((v) => v.toJson()).toList();
+    }
+    if (productionCountries != null) {
+      data['production_countries'] =
+          productionCountries?.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class ProductionCompanies {
+  String? name;
+  ProductionCompanies({this.name});
+  ProductionCompanies.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+
+    return data;
+  }
+}
+
+class ProductionCountries {
+  String? name;
+  ProductionCountries({this.name});
+  ProductionCountries.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+
+    return data;
+  }
+}
+
+class PersonTVList {
+  List<TV>? movies;
+  PersonTVList({this.movies});
+  PersonTVList.fromJson(Map<String, dynamic> json) {
+    if (json['cast'] != null) {
+      movies = [];
+      json['cast'].forEach((v) {
+        movies!.add(TV.fromJson(v));
+      });
+    }
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (movies != null) {
+      data['cast'] = movies!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}

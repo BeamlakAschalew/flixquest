@@ -50,7 +50,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                   children: <Widget>[
                     widget.tvSeries.backdropPath == null
                         ? Image.asset(
-                            'assets/images/na.jpg',
+                            'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
                         : FadeInImage(
@@ -115,15 +115,15 @@ class _TVDetailPageState extends State<TVDetailPage>
                   ),
                 ),
                 actions: [
-                  GestureDetector(
-                    child: WatchProvidersButton(
-                      api:
-                          Endpoints.getMovieWatchProviders(widget.tvSeries.id!),
-                      onTap: () {
-                        modalBottomSheetMenu();
-                      },
-                    ),
-                  ),
+                  // GestureDetector(
+                  //   child: WatchProvidersButton(
+                  //     api:
+                  //         Endpoints.getMovieWatchProviders(widget.tvSeries.id!),
+                  //     onTap: () {
+                  //       modalBottomSheetMenu();
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
               Expanded(
@@ -345,8 +345,8 @@ class _TVDetailPageState extends State<TVDetailPage>
                                                   widget.tvSeries.id!),
                                               title: 'Videos',
                                             ),
-                                            MovieInfoTable(
-                                              api: Endpoints.movieDetailsUrl(
+                                            TVInfoTable(
+                                              api: Endpoints.tvDetailsUrl(
                                                   widget.tvSeries.id!),
                                             ),
                                           ],
@@ -387,7 +387,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                               borderRadius: BorderRadius.circular(8.0),
                               child: widget.tvSeries.posterPath == null
                                   ? Image.asset(
-                                      'assets/images/na.jpg',
+                                      'assets/images/na_logo.png',
                                       fit: BoxFit.cover,
                                     )
                                   : FadeInImage(

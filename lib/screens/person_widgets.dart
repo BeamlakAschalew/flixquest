@@ -63,47 +63,52 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : Row(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: personImages!.profile!.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  0.0, 0.0, 15.0, 8.0),
-                              child: SizedBox(
-                                width: 100,
-                                child: Column(
-                                  children: <Widget>[
-                                    Expanded(
-                                      flex: 6,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: FadeInImage(
-                                          image: NetworkImage(
-                                              TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
-                                                  personImages!.profile![index]
-                                                      .filePath!),
-                                          fit: BoxFit.cover,
-                                          placeholder: const AssetImage(
-                                              'assets/images/loading.gif'),
+                : personImages!.profile!.isEmpty
+                    ? const Center(
+                        child: Text('No images available for this person'),
+                      )
+                    : Row(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: personImages!.profile!.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      0.0, 0.0, 15.0, 8.0),
+                                  child: SizedBox(
+                                    width: 100,
+                                    child: Column(
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 6,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: FadeInImage(
+                                              image: NetworkImage(
+                                                  TMDB_BASE_IMAGE_URL +
+                                                      'w500/' +
+                                                      personImages!
+                                                          .profile![index]
+                                                          .filePath!),
+                                              fit: BoxFit.cover,
+                                              placeholder: const AssetImage(
+                                                  'assets/images/loading.gif'),
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
           ),
         ],
       ),
@@ -200,7 +205,7 @@ class _PersonMovieListState extends State<PersonMovieList>
                                                         .posterPath ==
                                                     null
                                                 ? Image.asset(
-                                                    'assets/images/na.jpg',
+                                                    'assets/images/na_logo.png',
                                                     fit: BoxFit.cover,
                                                   )
                                                 : FadeInImage(

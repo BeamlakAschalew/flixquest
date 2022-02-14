@@ -5,23 +5,29 @@ class WatchProviders {
   WatchProviders(this.buy, this.flatRate, this.rent);
 
   WatchProviders.fromJson(Map<String, dynamic> json) {
-    if (json['results']['US']['buy'] != null) {
-      buy = [];
-      json['results']['US']['buy'].forEach((v) {
-        buy?.add(Buy.fromJson(v));
-      });
-    }
-    if (json['results']['US']['flatrate'] != null) {
-      flatRate = [];
-      json['results']['US']['flatrate'].forEach((v) {
-        flatRate?.add(FlatRate.fromJson(v));
-      });
-    }
-    if (json['results']['US']['rent'] != null) {
-      rent = [];
-      json['results']['US']['rent'].forEach((v) {
-        rent?.add(Rent.fromJson(v));
-      });
+    if (json['results']['US'] == null) {
+      buy = null;
+      rent = null;
+      flatRate = null;
+    } else {
+      if (json['results']['US']['buy'] != null) {
+        buy = [];
+        json['results']['US']['buy'].forEach((v) {
+          buy?.add(Buy.fromJson(v));
+        });
+      }
+      if (json['results']['US']['flatrate'] != null) {
+        flatRate = [];
+        json['results']['US']['flatrate'].forEach((v) {
+          flatRate?.add(FlatRate.fromJson(v));
+        });
+      }
+      if (json['results']['US']['rent'] != null) {
+        rent = [];
+        json['results']['US']['rent'].forEach((v) {
+          rent?.add(Rent.fromJson(v));
+        });
+      }
     }
   }
 

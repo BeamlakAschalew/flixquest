@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers, unused_local_variable
 
 import 'dart:convert';
+import 'package:cinemax/modals/social_icons_icons.dart';
 import 'package:cinemax/modals/videos.dart';
 import 'package:cinemax/modals/watch_providers.dart';
 import 'package:cinemax/screens/person_detail.dart';
@@ -24,6 +25,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'genremovies.dart';
 import 'about.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MainMoviesDisplay extends StatelessWidget {
   const MainMoviesDisplay({
@@ -473,7 +475,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                                           credits!.cast![index].profilePath ==
                                                   null
                                               ? Image.asset(
-                                                  'assets/images/na.jpg',
+                                                  'assets/images/na_logo.png',
                                                   fit: BoxFit.cover,
                                                 )
                                               : FadeInImage(
@@ -512,6 +514,165 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
         ),
       ],
     );
+  }
+}
+
+class SocialLinks extends StatefulWidget {
+  final String? api;
+  const SocialLinks({
+    Key? key,
+    this.api,
+  }) : super(key: key);
+
+  @override
+  _SocialLinksState createState() => _SocialLinksState();
+}
+
+class _SocialLinksState extends State<SocialLinks> {
+  ExternalLinks? externalLinks;
+  bool? isAllNull;
+  @override
+  void initState() {
+    super.initState();
+    fetchSocialLinks(widget.api!).then((value) {
+      setState(() {
+        externalLinks = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Social media links',
+              style: TextStyle(fontSize: 20),
+            ),
+            SizedBox(
+              height: 55,
+              width: double.infinity,
+              child: externalLinks == null
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : externalLinks?.facebookUsername == null &&
+                          externalLinks?.instagramUsername == null &&
+                          externalLinks?.twitterUsername == null &&
+                          externalLinks?.imdbId == null
+                      ? Center(
+                          child: Text(
+                            'This movie doesn\'t have social media links provided :(',
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            SocialIconWidget(
+                              isNull: externalLinks?.facebookUsername == null,
+                              url: externalLinks?.facebookUsername == null
+                                  ? ''
+                                  : FACEBOOK_BASE_URL +
+                                      externalLinks!.facebookUsername!,
+                              icon: const Icon(
+                                SocialIcons.facebook_f,
+                                color: Color(0xFFF57C00),
+                              ),
+                            ),
+                            SocialIconWidget(
+                              isNull: externalLinks?.instagramUsername == null,
+                              url: externalLinks?.instagramUsername == null
+                                  ? ''
+                                  : INSTAGRAM_BASE_URL +
+                                      externalLinks!.instagramUsername!,
+                              icon: const Icon(
+                                SocialIcons.instagram,
+                                color: Color(0xFFF57C00),
+                              ),
+                            ),
+                            SocialIconWidget(
+                              isNull: externalLinks?.twitterUsername == null,
+                              url: externalLinks?.twitterUsername == null
+                                  ? ''
+                                  : TWITTER_BASE_URL +
+                                      externalLinks!.twitterUsername!,
+                              icon: const Icon(
+                                SocialIcons.twitter,
+                                color: Color(0xFFF57C00),
+                              ),
+                            ),
+                            SocialIconWidget(
+                              isNull: externalLinks?.facebookUsername == null,
+                              url: externalLinks?.facebookUsername == null
+                                  ? ''
+                                  : FACEBOOK_BASE_URL +
+                                      externalLinks!.facebookUsername!,
+                              icon: const Icon(
+                                SocialIcons.globe,
+                                color: Color(0xFFF57C00),
+                              ),
+                            ),
+                            SocialIconWidget(
+                              isNull: externalLinks?.imdbId == null,
+                              url: externalLinks?.imdbId == null
+                                  ? ''
+                                  : IMDB_BASE_URL + externalLinks!.imdbId!,
+                              icon: const Center(
+                                child: FaIcon(
+                                  FontAwesomeIcons.imdb,
+                                  size: 30,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SocialIconWidget extends StatelessWidget {
+  const SocialIconWidget({
+    Key? key,
+    this.url,
+    this.icon,
+    this.isNull,
+  }) : super(key: key);
+
+  final String? url;
+  final Widget? icon;
+  final bool? isNull;
+
+  @override
+  Widget build(BuildContext context) {
+    return isNull == true
+        ? Container()
+        : Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GestureDetector(
+              onTap: () {
+                launch(url!);
+              },
+              child: Container(
+                height: 50,
+                width: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.0),
+                  color: Colors.white,
+                ),
+                child: icon,
+              ),
+            ),
+          );
   }
 }
 
@@ -959,29 +1120,39 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
                     ], rows: [
                       DataRow(cells: [
                         const DataCell(Text('Status')),
-                        DataCell(Text(movieDetails!.status!)),
+                        DataCell(Text(movieDetails!.status!.isEmpty
+                            ? 'unknown'
+                            : movieDetails!.status!)),
                       ]),
                       DataRow(cells: [
                         const DataCell(Text('Runtime')),
-                        DataCell(Text('${movieDetails!.runtime!} mins')),
+                        DataCell(Text(movieDetails!.runtime! == 0
+                            ? 'N/A'
+                            : '${movieDetails!.runtime!} mins')),
                       ]),
                       DataRow(cells: [
                         const DataCell(Text('Budget')),
-                        DataCell(Text(formatCurrency
-                            .format(movieDetails!.budget!)
-                            .toString())),
+                        DataCell(movieDetails!.budget == 0
+                            ? const Text('-')
+                            : Text(formatCurrency
+                                .format(movieDetails!.budget!)
+                                .toString())),
                       ]),
                       DataRow(cells: [
                         const DataCell(Text('Revenue')),
-                        DataCell(Text(formatCurrency
-                            .format(movieDetails!.revenue!)
-                            .toString())),
+                        DataCell(movieDetails!.budget == 0
+                            ? const Text('-')
+                            : Text(formatCurrency
+                                .format(movieDetails!.revenue!)
+                                .toString())),
                       ]),
                       DataRow(cells: [
                         const DataCell(Text('Tagline')),
                         DataCell(
                           Text(
-                            movieDetails!.tagline!,
+                            movieDetails!.tagline!.isEmpty
+                                ? '-'
+                                : movieDetails!.tagline!,
                             style: const TextStyle(
                                 overflow: TextOverflow.ellipsis),
                           ),
@@ -990,13 +1161,19 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
                       DataRow(cells: [
                         const DataCell(Text('Production company')),
                         DataCell(
-                          Text(movieDetails!.productionCompanies![0].name!),
+                          movieDetails!.productionCompanies!.isEmpty
+                              ? const Text('-')
+                              : Text(
+                                  movieDetails!.productionCompanies![0].name!),
                         ),
                       ]),
                       DataRow(cells: [
                         const DataCell(Text('Production country')),
                         DataCell(
-                          Text(movieDetails!.productionCountries![0].name!),
+                          movieDetails!.productionCompanies!.isEmpty
+                              ? const Text('-')
+                              : Text(
+                                  movieDetails!.productionCountries![0].name!),
                         ),
                       ]),
                     ]),
@@ -1073,7 +1250,7 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget> {
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: moviesList![index].posterPath == null
                                         ? Image.asset(
-                                            'assets/images/na.jpg',
+                                            'assets/images/na_logo.png',
                                             fit: BoxFit.cover,
                                           )
                                         : FadeInImage(
@@ -1200,7 +1377,7 @@ class _CastTabState extends State<CastTab>
                             borderRadius: BorderRadius.circular(50.0),
                             child: credits!.cast![index].profilePath == null
                                 ? Image.asset(
-                                    'assets/images/na.jpg',
+                                    'assets/images/na_logo.png',
                                     fit: BoxFit.cover,
                                   )
                                 : FadeInImage(
@@ -1298,7 +1475,7 @@ class _CrewTabState extends State<CrewTab>
                           borderRadius: BorderRadius.circular(50.0),
                           child: credits!.crew![index].profilePath == null
                               ? Image.asset(
-                                  'assets/images/na.jpg',
+                                  'assets/images/na_logo.png',
                                   fit: BoxFit.cover,
                                 )
                               : FadeInImage(
@@ -1416,7 +1593,7 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: movieList![index].posterPath == null
                                         ? Image.asset(
-                                            'assets/images/na.jpg',
+                                            'assets/images/na_logo.png',
                                             fit: BoxFit.cover,
                                           )
                                         : FadeInImage(
@@ -1556,7 +1733,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: movieList![index].posterPath == null
                                         ? Image.asset(
-                                            'assets/images/na.jpg',
+                                            'assets/images/na_logo.png',
                                             fit: BoxFit.cover,
                                           )
                                         : FadeInImage(
@@ -1725,29 +1902,32 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
-                                      SizedBox(
-                                        width: 85,
-                                        height: 130,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child:
-                                              moviesList![index].posterPath ==
-                                                      null
-                                                  ? Image.asset(
-                                                      'assets/images/na.jpg',
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : FadeInImage(
-                                                      image: NetworkImage(
-                                                          TMDB_BASE_IMAGE_URL +
-                                                              'w500/' +
-                                                              moviesList![index]
-                                                                  .posterPath!),
-                                                      fit: BoxFit.cover,
-                                                      placeholder: const AssetImage(
-                                                          'assets/images/loading.gif'),
-                                                    ),
+                                      Hero(
+                                        tag: '${moviesList![index].id}',
+                                        child: SizedBox(
+                                          width: 85,
+                                          height: 130,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: moviesList![index]
+                                                        .posterPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_logo.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            moviesList![index]
+                                                                .posterPath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
                                         ),
                                       ),
                                       Expanded(
@@ -1921,7 +2101,7 @@ class _ParticularStreamingServiceMoviesState
                                                         .posterPath ==
                                                     null
                                                 ? Image.asset(
-                                                    'assets/images/na.jpg',
+                                                    'assets/images/na_logo.png',
                                                     fit: BoxFit.cover,
                                                   )
                                                 : FadeInImage(
@@ -2199,21 +2379,16 @@ class _GenreListGridState extends State<GenreListGrid>
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.only(
-                    left: 20.0, right: 20.0, bottom: 20.0),
+                padding:
+                    const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 10.0),
                 child: SizedBox(
                   width: double.infinity,
-                  height: deviceHeight * 0.55,
+                  height: 75,
                   child: Row(
                     children: [
                       Expanded(
-                        child: GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 200,
-                                    childAspectRatio: 4 / 2,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10),
+                        child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
                             itemCount: genreList!.length,
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
@@ -2227,6 +2402,7 @@ class _GenreListGridState extends State<GenreListGrid>
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
+                                    width: 125,
                                     alignment: Alignment.center,
                                     child: Text(genreList![index].genreName!),
                                     decoration: BoxDecoration(
@@ -2385,7 +2561,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                                                         .buy![index].logoPath ==
                                                     null
                                                 ? Image.asset(
-                                                    'assets/images/na.jpg',
+                                                    'assets/images/na_logo.png',
                                                     fit: BoxFit.cover,
                                                   )
                                                 : FadeInImage(
@@ -2448,7 +2624,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                                                         .logoPath ==
                                                     null
                                                 ? Image.asset(
-                                                    'assets/images/na.jpg',
+                                                    'assets/images/na_logo.png',
                                                     fit: BoxFit.cover,
                                                   )
                                                 : FadeInImage(
@@ -2511,7 +2687,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                                                         .logoPath ==
                                                     null
                                                 ? Image.asset(
-                                                    'assets/images/na.jpg',
+                                                    'assets/images/na_logo.png',
                                                     fit: BoxFit.cover,
                                                   )
                                                 : FadeInImage(
