@@ -1,10 +1,14 @@
 // ignore_for_file: avoid_unnecessary_containers, unused_local_variable
 
 import 'dart:convert';
+import 'package:cinemax/constants/style_constants.dart';
+import 'package:cinemax/modals/person.dart';
 import 'package:cinemax/modals/social_icons_icons.dart';
+import 'package:cinemax/modals/tv.dart';
 import 'package:cinemax/modals/videos.dart';
 import 'package:cinemax/modals/watch_providers.dart';
-import 'package:cinemax/screens/person_detail.dart';
+import 'package:cinemax/screens/cast_detail.dart';
+import 'package:cinemax/screens/searchedperson.dart';
 import 'package:cinemax/screens/streaming_services_movies.dart';
 import 'package:cinemax/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +20,7 @@ import '/modals/genres.dart';
 import '/constants/api_constants.dart';
 import 'package:cinemax/screens/movie_detail.dart';
 import 'package:cinemax/modals/credits.dart';
+import 'crew_detail.dart';
 import 'movie_stream.dart';
 import 'package:cinemax/modals/images.dart';
 import 'package:http/http.dart' as http;
@@ -69,6 +74,7 @@ class MainMoviesDisplay extends StatelessWidget {
             isTrending: false,
           ),
           GenreListGrid(api: Endpoints.genresUrl()),
+          MoviesFromWatchProviders(),
         ],
       ),
     );
@@ -115,12 +121,12 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
       children: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
+          children: const <Widget>[
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: Text(
                 'Discover',
-                style: TextStyle(fontSize: deviceHeight * 0.036),
+                style: kTextHeaderStyle,
               ),
             ),
           ],
@@ -284,7 +290,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 widget.title!,
-                style: const TextStyle(fontSize: 20),
+                style: kTextHeaderStyle,
               ),
             ),
           ],
@@ -386,10 +392,12 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
 
 class ScrollingArtists extends StatefulWidget {
   final String? api, title, tapButtonText;
-  final Function(Cast)? onTap;
-  const ScrollingArtists(
-      {Key? key, this.api, this.title, this.tapButtonText, this.onTap})
-      : super(key: key);
+  const ScrollingArtists({
+    Key? key,
+    this.api,
+    this.title,
+    this.tapButtonText,
+  }) : super(key: key);
   @override
   _ScrollingArtistsState createState() => _ScrollingArtistsState();
 }
@@ -417,7 +425,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                   children: const <Widget>[
                     Text(
                       'Cast',
-                      style: TextStyle(fontSize: 20),
+                      style: kTextHeaderStyle,
                     ),
                   ],
                 ),
@@ -429,7 +437,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                     padding: EdgeInsets.all(8.0),
                     child: Text(
                       'Cast',
-                      style: TextStyle(fontSize: 20),
+                      style: kTextHeaderStyle,
                     ),
                   ),
                 ],
@@ -452,7 +460,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                         onTap: () {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return PersonDetailPage(
+                            return CastDetailPage(
                               cast: credits!.cast![index],
                               heroId: credits!.cast![index].id.toString(),
                             );
@@ -517,18 +525,18 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
   }
 }
 
-class SocialLinks extends StatefulWidget {
+class MovieSocialLinks extends StatefulWidget {
   final String? api;
-  const SocialLinks({
+  const MovieSocialLinks({
     Key? key,
     this.api,
   }) : super(key: key);
 
   @override
-  _SocialLinksState createState() => _SocialLinksState();
+  _MovieSocialLinksState createState() => _MovieSocialLinksState();
 }
 
-class _SocialLinksState extends State<SocialLinks> {
+class _MovieSocialLinksState extends State<MovieSocialLinks> {
   ExternalLinks? externalLinks;
   bool? isAllNull;
   @override
@@ -552,7 +560,7 @@ class _SocialLinksState extends State<SocialLinks> {
           children: [
             const Text(
               'Social media links',
-              style: TextStyle(fontSize: 20),
+              style: kTextHeaderStyle,
             ),
             SizedBox(
               height: 55,
@@ -676,51 +684,6 @@ class SocialIconWidget extends StatelessWidget {
   }
 }
 
-class WatchNowButton extends StatefulWidget {
-  const WatchNowButton({
-    Key? key,
-    this.widget,
-  }) : super(key: key);
-  final MovieDetailPage? widget;
-
-  @override
-  _WatchNowButtonState createState() => _WatchNowButtonState();
-}
-
-class _WatchNowButtonState extends State<WatchNowButton> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: TextButton(
-        style: ButtonStyle(
-            maximumSize: MaterialStateProperty.all(const Size(150, 50)),
-            backgroundColor:
-                MaterialStateProperty.all(const Color(0xFFF57C00))),
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return MovieStream(id: widget.widget!.movie.id!);
-          }));
-        },
-        child: Row(
-          children: const [
-            Padding(
-              padding: EdgeInsets.only(right: 10),
-              child: Icon(
-                Icons.play_circle,
-                color: Colors.white,
-              ),
-            ),
-            Text(
-              'WATCH NOW',
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class MovieImagesDisplay extends StatefulWidget {
   final String? api, title;
   const MovieImagesDisplay({Key? key, this.api, this.title}) : super(key: key);
@@ -754,9 +717,8 @@ class _MovieImagesState extends State<MovieImagesDisplay> {
                   children: <Widget>[
                     Text(
                       widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /* style: widget.themeData!.textTheme.bodyText1*/
+                      style:
+                          kTextHeaderStyle, /* style: widget.themeData!.textTheme.bodyText1*/
                     ),
                   ],
                 ),
@@ -768,9 +730,8 @@ class _MovieImagesState extends State<MovieImagesDisplay> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /*style: widget.themeData!.textTheme.bodyText1*/
+                      style:
+                          kTextHeaderStyle, /*style: widget.themeData!.textTheme.bodyText1*/
                     ),
                   ),
                 ],
@@ -864,9 +825,8 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
                   children: <Widget>[
                     Text(
                       widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /* style: widget.themeData!.textTheme.bodyText1*/
+                      style:
+                          kTextHeaderStyle, /* style: widget.themeData!.textTheme.bodyText1*/
                     ),
                   ],
                 ),
@@ -878,9 +838,8 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /*style: widget.themeData!.textTheme.bodyText1*/
+                      style:
+                          kTextHeaderStyle, /*style: widget.themeData!.textTheme.bodyText1*/
                     ),
                   ),
                 ],
@@ -986,6 +945,51 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class WatchNowButton extends StatefulWidget {
+  const WatchNowButton({
+    Key? key,
+    this.widget,
+  }) : super(key: key);
+  final MovieDetailPage? widget;
+
+  @override
+  _WatchNowButtonState createState() => _WatchNowButtonState();
+}
+
+class _WatchNowButtonState extends State<WatchNowButton> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: TextButton(
+        style: ButtonStyle(
+            maximumSize: MaterialStateProperty.all(const Size(150, 50)),
+            backgroundColor:
+                MaterialStateProperty.all(const Color(0xFFF57C00))),
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return MovieStream(id: widget.widget!.movie.id!);
+          }));
+        },
+        child: Row(
+          children: const [
+            Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: Icon(
+                Icons.play_circle,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              'WATCH NOW',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -1097,7 +1101,7 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
             children: [
               const Text(
                 'Movie Info',
-                style: TextStyle(fontSize: 25),
+                style: kTextHeaderStyle,
               ),
               Container(
                 child: SingleChildScrollView(
@@ -1131,6 +1135,26 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
                             : '${movieDetails!.runtime!} mins')),
                       ]),
                       DataRow(cells: [
+                        const DataCell(Text('Spoken language')),
+                        DataCell(SizedBox(
+                          height: 20,
+                          width: 200,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: movieDetails!.spokenLanguages!.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 5.0),
+                                child: Text(movieDetails!
+                                        .spokenLanguages!.isEmpty
+                                    ? 'N/A'
+                                    : '${movieDetails!.spokenLanguages![index].englishName},'),
+                              );
+                            },
+                          ),
+                        )),
+                      ]),
+                      DataRow(cells: [
                         const DataCell(Text('Budget')),
                         DataCell(movieDetails!.budget == 0
                             ? const Text('-')
@@ -1159,22 +1183,56 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
                         ),
                       ]),
                       DataRow(cells: [
-                        const DataCell(Text('Production company')),
-                        DataCell(
-                          movieDetails!.productionCompanies!.isEmpty
-                              ? const Text('-')
-                              : Text(
-                                  movieDetails!.productionCompanies![0].name!),
-                        ),
+                        const DataCell(Text('Production companies')),
+                        DataCell(SizedBox(
+                          height: 20,
+                          width: 200,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount:
+                                movieDetails!.productionCompanies!.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 5.0),
+                                child: Text(movieDetails!
+                                        .productionCompanies!.isEmpty
+                                    ? 'N/A'
+                                    : '${movieDetails!.productionCompanies![index].name},'),
+                              );
+                            },
+                          ),
+                        )
+                            // movieDetails!.productionCompanies!.isEmpty
+                            //     ? const Text('-')
+                            //     : Text(
+                            //         movieDetails!.productionCompanies![0].name!),
+                            ),
                       ]),
                       DataRow(cells: [
-                        const DataCell(Text('Production country')),
-                        DataCell(
-                          movieDetails!.productionCompanies!.isEmpty
-                              ? const Text('-')
-                              : Text(
-                                  movieDetails!.productionCountries![0].name!),
-                        ),
+                        const DataCell(Text('Production countries')),
+                        DataCell(SizedBox(
+                          height: 20,
+                          width: 200,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount:
+                                movieDetails!.productionCountries!.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 5.0),
+                                child: Text(movieDetails!
+                                        .productionCountries!.isEmpty
+                                    ? 'N/A'
+                                    : '${movieDetails!.productionCountries![index].name},'),
+                              );
+                            },
+                          ),
+                        )
+                            // movieDetails!.productionCompanies!.isEmpty
+                            //     ? const Text('-')
+                            //     : Text(
+                            //         movieDetails!.productionCountries![0].name!),
+                            ),
                       ]),
                     ]),
                   ),
@@ -1193,14 +1251,29 @@ class SearchMovieWidget extends StatefulWidget {
   _SearchMovieWidgetState createState() => _SearchMovieWidgetState();
 }
 
-class _SearchMovieWidgetState extends State<SearchMovieWidget> {
+class _SearchMovieWidgetState extends State<SearchMovieWidget>
+    with SingleTickerProviderStateMixin {
   List<Movie>? moviesList;
+  List<TV>? tvList;
+  List<Person>? personList;
+  TabController? tabController;
   @override
   void initState() {
     super.initState();
+    tabController = TabController(length: 3, vsync: this);
     fetchMovies(Endpoints.movieSearchUrl(widget.query!)).then((value) {
       setState(() {
         moviesList = value;
+      });
+    });
+    fetchTV(Endpoints.tvSearchUrl(widget.query!)).then((value) {
+      setState(() {
+        tvList = value;
+      });
+    });
+    fetchPerson(Endpoints.personSearchUrl(widget.query!)).then((value) {
+      setState(() {
+        personList = value;
       });
     });
   }
@@ -1209,109 +1282,368 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget> {
   Widget build(BuildContext context) {
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
-    return Container(
-      color: const Color(0xFF202124),
-      child: moviesList == null
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : moviesList!.isEmpty
-              ? const Center(
-                  child: Text(
-                    'Oops! the movie you searched doesn\'t exist',
-                    style: TextStyle(fontFamily: 'Poppins'),
-                  ),
-                )
-              : ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: moviesList!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        widget.onTap!(moviesList![index]);
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return MovieDetailPage(
-                              movie: moviesList![index],
-                              heroId: '${moviesList![index].id}');
-                        }));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                SizedBox(
-                                  width: 85,
-                                  height: 130,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: moviesList![index].posterPath == null
-                                        ? Image.asset(
-                                            'assets/images/na_logo.png',
-                                            fit: BoxFit.cover,
-                                          )
-                                        : FadeInImage(
-                                            image: NetworkImage(
-                                                TMDB_BASE_IMAGE_URL +
-                                                    'w500/' +
-                                                    moviesList![index]
-                                                        .posterPath!),
-                                            fit: BoxFit.cover,
-                                            placeholder: const AssetImage(
-                                                'assets/images/loading.gif'),
-                                          ),
-                                  ),
-                                ),
-                                Expanded(
+    return Scaffold(
+      body: Container(
+        color: const Color(0xFF202124),
+        child: moviesList == null || tvList == null || personList == null
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : moviesList!.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Oops! the movie you searched doesn\'t exist',
+                      style: TextStyle(fontFamily: 'Poppins'),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      TabBar(
+                        isScrollable: true,
+                        indicatorColor: const Color(0xFFF57C00),
+                        indicatorWeight: 3,
+                        unselectedLabelColor: Colors.white54,
+                        labelColor: Colors.white,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        controller: tabController,
+                        tabs: const [
+                          Tab(
+                            child: Text('Movies',
+                                style: TextStyle(fontFamily: 'Poppins')),
+                          ),
+                          Tab(
+                            child: Text('TV shows',
+                                style: TextStyle(fontFamily: 'Poppins')),
+                          ),
+                          Tab(
+                            child: Text('People',
+                                style: TextStyle(fontFamily: 'Poppins')),
+                          ),
+                        ],
+                      ),
+                      Expanded(
+                        child: TabBarView(controller: tabController, children: [
+                          Expanded(
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: moviesList!.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    widget.onTap!(moviesList![index]);
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return MovieDetailPage(
+                                          movie: moviesList![index],
+                                          heroId: '${moviesList![index].id}');
+                                    }));
+                                  },
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
                                       children: <Widget>[
-                                        Text(
-                                          moviesList![index].title!,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          style: const TextStyle(
-                                              fontFamily: 'Poppins'),
-                                        ),
                                         Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: <Widget>[
-                                            Text(
-                                              moviesList![index]
-                                                  .voteAverage!
-                                                  .toString(),
-                                              style: const TextStyle(
-                                                  fontFamily: 'Poppins'),
+                                            SizedBox(
+                                              width: 85,
+                                              height: 130,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: moviesList![index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : FadeInImage(
+                                                        image: NetworkImage(
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                'w500/' +
+                                                                moviesList![
+                                                                        index]
+                                                                    .posterPath!),
+                                                        fit: BoxFit.cover,
+                                                        placeholder:
+                                                            const AssetImage(
+                                                                'assets/images/loading.gif'),
+                                                      ),
+                                              ),
                                             ),
-                                            const Icon(Icons.star,
-                                                color: Color(0xFFF57C00)),
+                                            Expanded(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      moviesList![index].title!,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                      style: const TextStyle(
+                                                          fontFamily:
+                                                              'Poppins'),
+                                                    ),
+                                                    Row(
+                                                      children: <Widget>[
+                                                        Text(
+                                                          moviesList![index]
+                                                              .voteAverage!
+                                                              .toString(),
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                        ),
+                                                        const Icon(Icons.star,
+                                                            color: Color(
+                                                                0xFFF57C00)),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
                                           ],
                                         ),
+                                        const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 24.0),
+                                          child: Divider(
+                                            color: Colors.white,
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
-                                ),
-                              ],
+                                );
+                              },
                             ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24.0),
-                              child: Divider(
-                                color: Colors.white,
-                              ),
-                            )
-                          ],
-                        ),
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: moviesList!.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    widget.onTap!(moviesList![index]);
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return MovieDetailPage(
+                                          movie: moviesList![index],
+                                          heroId: '${moviesList![index].id}');
+                                    }));
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: <Widget>[
+                                            SizedBox(
+                                              width: 85,
+                                              height: 130,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: moviesList![index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : FadeInImage(
+                                                        image: NetworkImage(
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                'w500/' +
+                                                                moviesList![
+                                                                        index]
+                                                                    .posterPath!),
+                                                        fit: BoxFit.cover,
+                                                        placeholder:
+                                                            const AssetImage(
+                                                                'assets/images/loading.gif'),
+                                                      ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      moviesList![index].title!,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                      style: const TextStyle(
+                                                          fontFamily:
+                                                              'Poppins'),
+                                                    ),
+                                                    Row(
+                                                      children: <Widget>[
+                                                        Text(
+                                                          moviesList![index]
+                                                              .voteAverage!
+                                                              .toString(),
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                        ),
+                                                        const Icon(Icons.star,
+                                                            color: Color(
+                                                                0xFFF57C00)),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 24.0),
+                                          child: Divider(
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: personList!.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    widget.onTap!(moviesList![index]);
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return SearchedPersonDetailPage(
+                                          person: personList![index],
+                                          heroId: '${personList![index].id}');
+                                    }));
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: <Widget>[
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: <Widget>[
+                                            SizedBox(
+                                              width: 85,
+                                              height: 130,
+                                              child: Hero(
+                                                tag: '${personList![index].id}',
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  child: personList![index]
+                                                              .profilePath ==
+                                                          null
+                                                      ? Image.asset(
+                                                          'assets/images/na_logo.png',
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : FadeInImage(
+                                                          image: NetworkImage(
+                                                              TMDB_BASE_IMAGE_URL +
+                                                                  'w500/' +
+                                                                  personList![
+                                                                          index]
+                                                                      .profilePath!),
+                                                          fit: BoxFit.cover,
+                                                          placeholder:
+                                                              const AssetImage(
+                                                                  'assets/images/loading.gif'),
+                                                        ),
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      personList![index].name!,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      maxLines: 1,
+                                                      style: const TextStyle(
+                                                          fontFamily:
+                                                              'Poppins'),
+                                                    ),
+                                                    Row(
+                                                      children: <Widget>[
+                                                        Text(
+                                                          moviesList![index]
+                                                              .voteAverage!
+                                                              .toString(),
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                        ),
+                                                        const Icon(Icons.star,
+                                                            color: Color(
+                                                                0xFFF57C00)),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 24.0),
+                                          child: Divider(
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ]),
                       ),
-                    );
-                  },
-                ),
+                    ],
+                  ),
+      ),
     );
   }
 }
@@ -1359,7 +1691,7 @@ class _CastTabState extends State<CastTab>
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return PersonDetailPage(
+                      return CastDetailPage(
                           cast: credits!.cast![index],
                           heroId: credits!.cast![index].id.toString());
                     }));
@@ -1462,53 +1794,67 @@ class _CrewTabState extends State<CrewTab>
               physics: const BouncingScrollPhysics(),
               itemCount: credits!.crew!.length,
               itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.only(
-                      left: 8.0, right: 8.0, bottom: 16.0, top: 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50.0),
-                          child: credits!.crew![index].profilePath == null
-                              ? Image.asset(
-                                  'assets/images/na_logo.png',
-                                  fit: BoxFit.cover,
-                                )
-                              : FadeInImage(
-                                  image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                      'w500/' +
-                                      credits!.crew![index].profilePath!),
-                                  fit: BoxFit.cover,
-                                  placeholder: const AssetImage(
-                                      'assets/images/loading.gif'),
-                                ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                credits!.crew![index].name!,
-                                // style: themeData!.textTheme.bodyText2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                'Job : ' + credits!.crew![index].department!,
-                                // style: themeData!.textTheme.bodyText1,
-                              ),
-                            ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return CrewDetailPage(
+                        heroId: '${credits!.crew![index].id}',
+                        crew: credits!.crew![index],
+                      );
+                    }));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 8.0, right: 8.0, bottom: 16.0, top: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: Hero(
+                            tag: '${credits!.crew![index].id}',
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50.0),
+                              child: credits!.crew![index].profilePath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : FadeInImage(
+                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                          'w500/' +
+                                          credits!.crew![index].profilePath!),
+                                      fit: BoxFit.cover,
+                                      placeholder: const AssetImage(
+                                          'assets/images/loading.gif'),
+                                    ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  credits!.crew![index].name!,
+                                  // style: themeData!.textTheme.bodyText2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  'Job : ' + credits!.crew![index].department!,
+                                  // style: themeData!.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -2198,15 +2544,30 @@ class StreamingServicesWidget extends StatelessWidget {
           );
         }));
       },
-      child: ListTile(
-        leading: SizedBox(
-          height: 30,
-          width: 30,
-          child: Image(
-            image: AssetImage(imagePath),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          height: 60,
+          width: 200,
+          decoration: BoxDecoration(
+              color: const Color(0xFFF57C00),
+              borderRadius: BorderRadius.circular(15)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image(
+                image: AssetImage(imagePath),
+                height: 50,
+                width: 50,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(title),
+              ),
+            ],
           ),
         ),
-        title: Text(title),
       ),
     );
   }
@@ -2222,84 +2583,14 @@ class DrawerWidget extends StatelessWidget {
     return Drawer(
       child: Column(
         children: [
-          Expanded(
-            flex: 2,
-            child: SizedBox(
-              width: double.infinity,
-              child: DrawerHeader(
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFFFFFF),
-                ),
-                child: Image.asset('assets/images/logo.png'),
+          SizedBox(
+            width: double.infinity,
+            child: DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFFFFF),
               ),
+              child: Image.asset('assets/images/logo.png'),
             ),
-          ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text('Movies from streaming services'),
-          ),
-          Expanded(
-            flex: 5,
-            child: SingleChildScrollView(
-              child: Column(
-                children: const [
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/netflix.png',
-                    title: 'Netflix',
-                    providerID: 8,
-                  ),
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/amazon_prime.png',
-                    title: 'Amazon Prime',
-                    providerID: 9,
-                  ),
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/hulu.png',
-                    title: 'hulu',
-                    providerID: 15,
-                  ),
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/hbo_max.png',
-                    title: 'HBO Max',
-                    providerID: 384,
-                  ),
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/apple_tv.png',
-                    title: 'Apple TV plus',
-                    providerID: 350,
-                  ),
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/peacock.png',
-                    title: 'Peacock',
-                    providerID: 387,
-                  ),
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/itunes.png',
-                    title: 'iTunes',
-                    providerID: 2,
-                  ),
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/youtube.png',
-                    title: 'YouTube Premium',
-                    providerID: 188,
-                  ),
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/paramount.png',
-                    title: 'Paramount Plus',
-                    providerID: 531,
-                  ),
-                  StreamingServicesWidget(
-                    imagePath: 'assets/images/netflix.png',
-                    title: 'Netflix Kids',
-                    providerID: 175,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const Divider(
-            color: Color(0xFFF57C00),
-            thickness: 3,
           ),
           ListTile(
             leading: const Icon(Icons.info_outline),
@@ -2353,7 +2644,7 @@ class _GenreListGridState extends State<GenreListGrid>
                     padding: EdgeInsets.all(8.0),
                     child: Text(
                       'Genres',
-                      style: TextStyle(fontSize: 20),
+                      style: kTextHeaderStyle,
                     ),
                   ),
                 ],
@@ -2373,7 +2664,7 @@ class _GenreListGridState extends State<GenreListGrid>
                     padding: EdgeInsets.all(8.0),
                     child: Text(
                       'Genres',
-                      style: TextStyle(fontSize: 20),
+                      style: kTextHeaderStyle,
                     ),
                   ),
                 ],
@@ -2773,5 +3064,96 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
               ],
             ),
           );
+  }
+}
+
+class MoviesFromWatchProviders extends StatefulWidget {
+  const MoviesFromWatchProviders({Key? key}) : super(key: key);
+
+  @override
+  _MoviesFromWatchProvidersState createState() =>
+      _MoviesFromWatchProvidersState();
+}
+
+class _MoviesFromWatchProvidersState extends State<MoviesFromWatchProviders> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'Movies from streaming services',
+              style: kTextHeaderStyle,
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 75,
+            child: Row(
+              children: [
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: const [
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/netflix.png',
+                        title: 'Netflix',
+                        providerID: 8,
+                      ),
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/amazon_prime.png',
+                        title: 'Amazon Prime',
+                        providerID: 9,
+                      ),
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/hulu.png',
+                        title: 'hulu',
+                        providerID: 15,
+                      ),
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/hbo_max.png',
+                        title: 'HBO Max',
+                        providerID: 384,
+                      ),
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/apple_tv.png',
+                        title: 'Apple TV plus',
+                        providerID: 350,
+                      ),
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/peacock.png',
+                        title: 'Peacock',
+                        providerID: 387,
+                      ),
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/itunes.png',
+                        title: 'iTunes',
+                        providerID: 2,
+                      ),
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/youtube.png',
+                        title: 'YouTube Premium',
+                        providerID: 188,
+                      ),
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/paramount.png',
+                        title: 'Paramount Plus',
+                        providerID: 531,
+                      ),
+                      StreamingServicesWidget(
+                        imagePath: 'assets/images/netflix.png',
+                        title: 'Netflix Kids',
+                        providerID: 175,
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ]);
   }
 }
