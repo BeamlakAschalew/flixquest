@@ -104,8 +104,13 @@ class TVDetails {
   bool? inProduction;
   int? numberOfSeasons;
   int? numberOfEpisodes;
+  int? id;
+  String? backdropPath;
   List<ProductionCompanies>? productionCompanies;
   List<ProductionCountries>? productionCountries;
+  List<SpokenLanguages>? spokenLanguages;
+  List<Seasons>? seasons;
+  List<EpisodeList>? episodes;
 
   TVDetails(
       {this.runtime,
@@ -116,11 +121,16 @@ class TVDetails {
       this.numberOfEpisodes,
       this.numberOfSeasons,
       this.productionCompanies,
-      this.productionCountries});
+      this.productionCountries,
+      this.spokenLanguages,
+      this.id,
+      this.backdropPath});
   TVDetails.fromJson(Map<String, dynamic> json) {
     runtime = json['episode_run_time'];
     tagline = json['tagline'];
     status = json['status'];
+    id = json['id'];
+    backdropPath = json['backdrop_path'];
     originalTitle = json['original_name'];
     numberOfEpisodes = json['number_of_episodes'];
     numberOfSeasons = json['number_of_seasons'];
@@ -137,6 +147,24 @@ class TVDetails {
         productionCountries?.add(ProductionCountries.fromJson(v));
       });
     }
+    if (json['spoken_languages'] != null) {
+      spokenLanguages = [];
+      json['spoken_languages'].forEach((v) {
+        spokenLanguages?.add(SpokenLanguages.fromJson(v));
+      });
+    }
+    if (json['seasons'] != null) {
+      seasons = [];
+      json['seasons'].forEach((v) {
+        seasons?.add(Seasons.fromJson(v));
+      });
+    }
+    if (json['episodes'] != null) {
+      episodes = [];
+      json['episodes'].forEach((v) {
+        episodes?.add(EpisodeList.fromJson(v));
+      });
+    }
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -148,6 +176,63 @@ class TVDetails {
       data['production_countries'] =
           productionCountries?.map((v) => v.toJson()).toList();
     }
+    return data;
+  }
+}
+
+class Seasons {
+  String? name;
+  int? seasonNumber;
+  String? posterPath;
+  int? seasonId;
+  String? overview;
+  String? airDate;
+  int? episodeCount;
+  Seasons(
+      {this.airDate,
+      this.episodeCount,
+      this.name,
+      this.overview,
+      this.posterPath,
+      this.seasonId,
+      this.seasonNumber});
+  Seasons.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    seasonNumber = json['season_number'];
+    posterPath = json['poster_path'];
+    seasonId = json['id'];
+    overview = json['overview'];
+    airDate = json['air_date'];
+    episodeCount = json['episode_count'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
+    data['season_number'] = seasonNumber;
+    data['poster_path'] = posterPath;
+    data['id'] = seasonId;
+    data['overview'] = overview;
+    data['air_date'] = airDate;
+    data['episode_count'] = episodeCount;
+    return data;
+  }
+}
+
+class EpisodeList {
+  int? episodeNumber;
+  String? name;
+  String? airDate;
+  EpisodeList({this.airDate, this.episodeNumber, this.name});
+  EpisodeList.fromJson(Map<String, dynamic> json) {
+    episodeNumber = json['episode_number'];
+    name = json['name'];
+    airDate = json['air_date'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['episode_number'] = episodeNumber;
+    data['name'] = name;
+    data['air_date'] = airDate;
     return data;
   }
 }
@@ -180,6 +265,19 @@ class ProductionCountries {
   }
 }
 
+class SpokenLanguages {
+  String? englishName;
+  SpokenLanguages({this.englishName});
+  SpokenLanguages.fromJson(Map<String, dynamic> json) {
+    englishName = json['english_name'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['english_name'] = englishName;
+    return data;
+  }
+}
+
 class PersonTVList {
   List<TV>? movies;
   PersonTVList({this.movies});
@@ -190,12 +288,21 @@ class PersonTVList {
         movies!.add(TV.fromJson(v));
       });
     }
+    // if (json['crew'] != null) {
+    //   movies = [];
+    //   json['crew'].forEach((v) {
+    //     movies!.add(TV.fromJson(v));
+    //   });
+    // }
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     if (movies != null) {
       data['cast'] = movies!.map((v) => v.toJson()).toList();
     }
+    // if (movies != null) {
+    //   data['crew'] = movies!.map((v) => v.toJson()).toList();
+    // }
     return data;
   }
 }

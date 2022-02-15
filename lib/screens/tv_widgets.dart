@@ -5,22 +5,29 @@ import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
+import 'package:cinemax/constants/style_constants.dart';
 import 'package:cinemax/modals/credits.dart';
 import 'package:cinemax/modals/function.dart';
 import 'package:cinemax/modals/genres.dart';
 import 'package:cinemax/modals/images.dart';
+import 'package:cinemax/modals/movie.dart';
+import 'package:cinemax/modals/social_icons_icons.dart';
 import 'package:cinemax/modals/tv.dart';
 import 'package:cinemax/modals/tv_genres.dart';
 import 'package:cinemax/modals/videos.dart';
-import 'package:cinemax/screens/person_detail.dart';
+import 'package:cinemax/screens/cast_detail.dart';
+import 'package:cinemax/screens/seasons_detail.dart';
 import 'package:cinemax/screens/tv_detail.dart';
 import 'package:cinemax/screens/genre_tv.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'crew_detail.dart';
 import 'genremovies.dart';
+import 'movie_widgets.dart';
 
 class MainTVDisplay extends StatelessWidget {
   const MainTVDisplay({
@@ -105,12 +112,12 @@ class _DiscoverTVState extends State<DiscoverTV>
       children: <Widget>[
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
+          children: const <Widget>[
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(8.0),
               child: Text(
                 'Discover',
-                style: TextStyle(fontSize: deviceHeight * 0.036),
+                style: kTextHeaderStyle,
               ),
             ),
           ],
@@ -273,7 +280,7 @@ class _ScrollingTVState extends State<ScrollingTV>
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 widget.title!,
-                style: const TextStyle(fontSize: 20),
+                style: kTextHeaderStyle,
               ),
             ),
           ],
@@ -391,7 +398,8 @@ class ScrollingTVArtists extends StatefulWidget {
   _ScrollingTVArtistsState createState() => _ScrollingTVArtistsState();
 }
 
-class _ScrollingTVArtistsState extends State<ScrollingTVArtists> {
+class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
+    with AutomaticKeepAliveClientMixin {
   Credits? credits;
   @override
   void initState() {
@@ -414,7 +422,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists> {
                   children: const <Widget>[
                     Text(
                       'Cast',
-                      style: TextStyle(fontSize: 20),
+                      style: kTextHeaderStyle,
                     ),
                   ],
                 ),
@@ -426,7 +434,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists> {
                     padding: EdgeInsets.all(8.0),
                     child: Text(
                       'Cast',
-                      style: TextStyle(fontSize: 20),
+                      style: kTextHeaderStyle,
                     ),
                   ),
                 ],
@@ -449,7 +457,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists> {
                         onTap: () {
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                            return PersonDetailPage(
+                            return CastDetailPage(
                               cast: credits!.cast![index],
                               heroId: credits!.cast![index].id.toString(),
                             );
@@ -512,6 +520,10 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists> {
       ],
     );
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }
 
 class TVImagesDisplay extends StatefulWidget {
@@ -545,12 +557,10 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /* style: widget.themeData!.textTheme.bodyText1*/
-                    ),
+                    Text(widget.title!,
+                        style:
+                            kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
+                        ),
                   ],
                 ),
               )
@@ -559,12 +569,10 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /*style: widget.themeData!.textTheme.bodyText1*/
-                    ),
+                    child: Text(widget.title!,
+                        style:
+                            kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
+                        ),
                   ),
                 ],
               ),
@@ -582,7 +590,7 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
                         height: deviceHeight * 0.10,
                         child: const Center(
                           child: Text(
-                            'This movie doesn\'t have an image provided',
+                            'This tv show doesn\'t have an image provided',
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -614,6 +622,111 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
                           );
                         },
                         itemCount: tvImages!.backdrop!.length,
+                      ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class TVSeasonImagesDisplay extends StatefulWidget {
+  final String? api, title;
+  const TVSeasonImagesDisplay({Key? key, this.api, this.title})
+      : super(key: key);
+
+  @override
+  _TVSeasonImagesDisplayState createState() => _TVSeasonImagesDisplayState();
+}
+
+class _TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
+  Images? tvImages;
+  @override
+  void initState() {
+    super.initState();
+    fetchImages(widget.api!).then((value) {
+      setState(() {
+        tvImages = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
+    // double deviceWidth = MediaQuery.of(context).size.width;
+    return Column(
+      children: [
+        tvImages == null
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: <Widget>[
+                    Text(widget.title!,
+                        style:
+                            kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
+                        ),
+                  ],
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(widget.title!,
+                        style:
+                            kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
+                        ),
+                  ),
+                ],
+              ),
+        Container(
+          child: SizedBox(
+            width: double.infinity,
+            height: deviceHeight * 0.20,
+            child: tvImages == null
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : tvImages!.poster!.isEmpty
+                    ? SizedBox(
+                        width: double.infinity,
+                        height: deviceHeight * 0.10,
+                        child: const Center(
+                          child: Text(
+                            'This season doesn\'t have an image provided',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : CarouselSlider.builder(
+                        options: CarouselOptions(
+                          disableCenter: true,
+                          viewportFraction: 0.8,
+                          enlargeCenterPage: false,
+                          autoPlay: true,
+                        ),
+                        itemBuilder:
+                            (BuildContext context, int index, pageViewIndex) {
+                          return Container(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: FadeInImage(
+                                  image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                      'w500/' +
+                                      tvImages!.poster![index].posterPath!),
+                                  fit: BoxFit.cover,
+                                  placeholder: const AssetImage(
+                                      'assets/images/loading.gif'),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount: tvImages!.poster!.length,
                       ),
           ),
         ),
@@ -655,12 +768,10 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /* style: widget.themeData!.textTheme.bodyText1*/
-                    ),
+                    Text(widget.title!,
+                        style:
+                            kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
+                        ),
                   ],
                 ),
               )
@@ -669,12 +780,10 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      widget.title!,
-                      style: const TextStyle(
-                          fontSize:
-                              20), /*style: widget.themeData!.textTheme.bodyText1*/
-                    ),
+                    child: Text(widget.title!,
+                        style:
+                            kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
+                        ),
                   ),
                 ],
               ),
@@ -691,8 +800,8 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                         width: double.infinity,
                         height: deviceHeight * 0.10,
                         child: const Center(
-                          child:
-                              Text('This movie doesn\'t have a video provided'),
+                          child: Text(
+                              'This tv show doesn\'t have a video provided'),
                         ),
                       )
                     : SizedBox(
@@ -826,9 +935,9 @@ class _TVCastTabState extends State<TVCastTab>
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return PersonDetailPage(
+                      return CastDetailPage(
                           cast: credits!.cast![index],
-                          heroId: credits!.cast![index].id.toString());
+                          heroId: '${credits!.cast![index].id}');
                     }));
                   },
                   child: Padding(
@@ -840,21 +949,24 @@ class _TVCastTabState extends State<TVCastTab>
                         SizedBox(
                           width: 80,
                           height: 80,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50.0),
-                            child: credits!.cast![index].profilePath == null
-                                ? Image.asset(
-                                    'assets/images/na_logo.png',
-                                    fit: BoxFit.cover,
-                                  )
-                                : FadeInImage(
-                                    image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                        'w500/' +
-                                        credits!.cast![index].profilePath!),
-                                    fit: BoxFit.cover,
-                                    placeholder: const AssetImage(
-                                        'assets/images/loading.gif'),
-                                  ),
+                          child: Hero(
+                            tag: '${credits!.cast![index].id}',
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50.0),
+                              child: credits!.cast![index].profilePath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : FadeInImage(
+                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                          'w500/' +
+                                          credits!.cast![index].profilePath!),
+                                      fit: BoxFit.cover,
+                                      placeholder: const AssetImage(
+                                          'assets/images/loading.gif'),
+                                    ),
+                            ),
                           ),
                         ),
                         Expanded(
@@ -878,6 +990,114 @@ class _TVCastTabState extends State<TVCastTab>
                                   credits!.cast![index].roles![0].episodeCount!
                                           .toString() +
                                       ' episodes',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class TVSeasonsTab extends StatefulWidget {
+  final String? api;
+  const TVSeasonsTab({Key? key, this.api}) : super(key: key);
+
+  @override
+  _TVSeasonsTabState createState() => _TVSeasonsTabState();
+}
+
+class _TVSeasonsTabState extends State<TVSeasonsTab>
+    with AutomaticKeepAliveClientMixin<TVSeasonsTab> {
+  TVDetails? tvDetails;
+  @override
+  void initState() {
+    super.initState();
+    fetchTVDetails(widget.api!).then((value) {
+      setState(() {
+        tvDetails = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return tvDetails == null
+        ? Container(
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : Container(
+            padding: const EdgeInsets.only(
+              left: 8.0,
+            ),
+            color: const Color(0xFF202124),
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemCount: tvDetails!.seasons!.length,
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  onTap: () {
+                    // Navigator.push(context,
+                    //     MaterialPageRoute(builder: (context) {
+                    //   return CastDetailPage(
+                    //       cast: credits!.cast![index],
+                    //       heroId: '${credits!.cast![index].id}');
+                    // }));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 8.0, right: 8.0, bottom: 16.0, top: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 85,
+                          height: 130,
+                          child: Hero(
+                            tag: '${tvDetails!.seasons![index].seasonId}',
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: tvDetails!.seasons![index].posterPath ==
+                                      null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : FadeInImage(
+                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                          'w500/' +
+                                          tvDetails!
+                                              .seasons![index].posterPath!),
+                                      fit: BoxFit.cover,
+                                      placeholder: const AssetImage(
+                                          'assets/images/loading.gif'),
+                                    ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 8.0, bottom: 8.0, right: 8.0, left: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  tvDetails!.seasons![index].name!,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -935,53 +1155,67 @@ class _TVCrewTabState extends State<TVCrewTab>
               physics: const BouncingScrollPhysics(),
               itemCount: credits!.crew!.length,
               itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.only(
-                      left: 8.0, right: 8.0, bottom: 16.0, top: 0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50.0),
-                          child: credits!.crew![index].profilePath == null
-                              ? Image.asset(
-                                  'assets/images/na_logo.png',
-                                  fit: BoxFit.cover,
-                                )
-                              : FadeInImage(
-                                  image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                      'w500/' +
-                                      credits!.crew![index].profilePath!),
-                                  fit: BoxFit.cover,
-                                  placeholder: const AssetImage(
-                                      'assets/images/loading.gif'),
-                                ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                credits!.crew![index].name!,
-                                // style: themeData!.textTheme.bodyText2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                'Job : ' + credits!.crew![index].department!,
-                                // style: themeData!.textTheme.bodyText1,
-                              ),
-                            ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return CrewDetailPage(
+                        heroId: '${credits!.crew![index].id}',
+                        crew: credits!.crew![index],
+                      );
+                    }));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 8.0, right: 8.0, bottom: 16.0, top: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: Hero(
+                            tag: '${credits!.crew![index].id}',
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50.0),
+                              child: credits!.crew![index].profilePath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : FadeInImage(
+                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                          'w500/' +
+                                          credits!.crew![index].profilePath!),
+                                      fit: BoxFit.cover,
+                                      placeholder: const AssetImage(
+                                          'assets/images/loading.gif'),
+                                    ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  credits!.crew![index].name!,
+                                  // style: themeData!.textTheme.bodyText2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  'Job : ' + credits!.crew![index].department!,
+                                  // style: themeData!.textTheme.bodyText1,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -1030,7 +1264,7 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                   padding: EdgeInsets.all(8.0),
                   child: Center(
                     child: Text(
-                      'We don\'t have a recommendations for this movie :(',
+                      'We don\'t have a recommendations for this tv show :(',
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -1169,7 +1403,7 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                   padding: EdgeInsets.all(8.0),
                   child: Center(
                     child: Text(
-                      'We don\'t have a similars for this movie :(',
+                      'We don\'t have a similars for this tv show :(',
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -1557,7 +1791,7 @@ class _TVInfoTableState extends State<TVInfoTable> {
             children: [
               const Text(
                 'TV series Info',
-                style: TextStyle(fontSize: 25),
+                style: kTextHeaderStyle,
               ),
               Container(
                 child: SingleChildScrollView(
@@ -1593,6 +1827,25 @@ class _TVInfoTableState extends State<TVInfoTable> {
                                 : '${tvDetails!.runtime![0]} mins')),
                       ]),
                       DataRow(cells: [
+                        const DataCell(Text('Spoken languages')),
+                        DataCell(SizedBox(
+                          height: 20,
+                          width: 200,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: tvDetails!.spokenLanguages!.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 5.0),
+                                child: Text(tvDetails!.spokenLanguages!.isEmpty
+                                    ? 'N/A'
+                                    : '${tvDetails!.spokenLanguages![index].englishName},'),
+                              );
+                            },
+                          ),
+                        )),
+                      ]),
+                      DataRow(cells: [
                         const DataCell(Text('Total seasons')),
                         DataCell(Text(tvDetails!.numberOfSeasons! == 0
                             ? '-'
@@ -1617,20 +1870,44 @@ class _TVInfoTableState extends State<TVInfoTable> {
                         ),
                       ]),
                       DataRow(cells: [
-                        const DataCell(Text('Production company')),
-                        DataCell(
-                          tvDetails!.productionCompanies!.isEmpty
-                              ? const Text('-')
-                              : Text(tvDetails!.productionCompanies![0].name!),
-                        ),
+                        const DataCell(Text('Production companies')),
+                        DataCell(SizedBox(
+                          height: 20,
+                          width: 200,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: tvDetails!.productionCompanies!.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 5.0),
+                                child: Text(tvDetails!
+                                        .productionCompanies!.isEmpty
+                                    ? 'N/A'
+                                    : '${tvDetails!.productionCompanies![index].name},'),
+                              );
+                            },
+                          ),
+                        )),
                       ]),
                       DataRow(cells: [
-                        const DataCell(Text('Production country')),
-                        DataCell(
-                          tvDetails!.productionCompanies!.isEmpty
-                              ? const Text('-')
-                              : Text(tvDetails!.productionCountries![0].name!),
-                        ),
+                        const DataCell(Text('Production countries')),
+                        DataCell(SizedBox(
+                          height: 20,
+                          width: 200,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: tvDetails!.productionCountries!.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 5.0),
+                                child: Text(tvDetails!
+                                        .productionCountries!.isEmpty
+                                    ? 'N/A'
+                                    : '${tvDetails!.productionCountries![index].name},'),
+                              );
+                            },
+                          ),
+                        )),
                       ]),
                     ]),
                   ),
@@ -1638,5 +1915,323 @@ class _TVInfoTableState extends State<TVInfoTable> {
               ),
             ],
           );
+  }
+}
+
+class TVSocialLinks extends StatefulWidget {
+  final String? api;
+  const TVSocialLinks({
+    Key? key,
+    this.api,
+  }) : super(key: key);
+
+  @override
+  _TVSocialLinksState createState() => _TVSocialLinksState();
+}
+
+class _TVSocialLinksState extends State<TVSocialLinks> {
+  ExternalLinks? externalLinks;
+  bool? isAllNull;
+  @override
+  void initState() {
+    super.initState();
+    fetchSocialLinks(widget.api!).then((value) {
+      setState(() {
+        externalLinks = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Social media links',
+              style: kTextHeaderStyle,
+            ),
+            SizedBox(
+              height: 55,
+              width: double.infinity,
+              child: externalLinks == null
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : externalLinks?.facebookUsername == null &&
+                          externalLinks?.instagramUsername == null &&
+                          externalLinks?.twitterUsername == null &&
+                          externalLinks?.imdbId == null
+                      ? Center(
+                          child: Text(
+                            'This tv show doesn\'t have social media links provided :(',
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      : ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: [
+                            SocialIconWidget(
+                              isNull: externalLinks?.facebookUsername == null,
+                              url: externalLinks?.facebookUsername == null
+                                  ? ''
+                                  : FACEBOOK_BASE_URL +
+                                      externalLinks!.facebookUsername!,
+                              icon: const Icon(
+                                SocialIcons.facebook_f,
+                                color: Color(0xFFF57C00),
+                              ),
+                            ),
+                            SocialIconWidget(
+                              isNull: externalLinks?.instagramUsername == null,
+                              url: externalLinks?.instagramUsername == null
+                                  ? ''
+                                  : INSTAGRAM_BASE_URL +
+                                      externalLinks!.instagramUsername!,
+                              icon: const Icon(
+                                SocialIcons.instagram,
+                                color: Color(0xFFF57C00),
+                              ),
+                            ),
+                            SocialIconWidget(
+                              isNull: externalLinks?.twitterUsername == null,
+                              url: externalLinks?.twitterUsername == null
+                                  ? ''
+                                  : TWITTER_BASE_URL +
+                                      externalLinks!.twitterUsername!,
+                              icon: const Icon(
+                                SocialIcons.twitter,
+                                color: Color(0xFFF57C00),
+                              ),
+                            ),
+                            SocialIconWidget(
+                              isNull: externalLinks?.imdbId == null,
+                              url: externalLinks?.imdbId == null
+                                  ? ''
+                                  : IMDB_BASE_URL + externalLinks!.imdbId!,
+                              icon: const Center(
+                                child: FaIcon(
+                                  FontAwesomeIcons.imdb,
+                                  size: 30,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SeasonsList extends StatefulWidget {
+  final String? api;
+  final String? title;
+  const SeasonsList({Key? key, this.api, this.title}) : super(key: key);
+
+  @override
+  _SeasonsListState createState() => _SeasonsListState();
+}
+
+class _SeasonsListState extends State<SeasonsList> {
+  TVDetails? tvDetails;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchTVDetails(widget.api!).then((value) {
+      setState(() {
+        tvDetails = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                widget.title!,
+                style: kTextHeaderStyle,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          width: double.infinity,
+          height: 250,
+          child: tvDetails == null
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Row(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: tvDetails!.seasons!.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SeasonsDetail(
+                                            tvDetails: tvDetails!,
+                                            seasons: tvDetails!.seasons![index],
+                                            heroId:
+                                                '${tvDetails!.seasons![index].seasonNumber}')));
+                              },
+                              child: SizedBox(
+                                width: 105,
+                                child: Column(
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 6,
+                                      child: Hero(
+                                        tag:
+                                            '${tvDetails!.seasons![index].seasonNumber}',
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          child: tvDetails!.seasons![index]
+                                                      .posterPath ==
+                                                  null
+                                              ? Image.asset(
+                                                  'assets/images/na_logo.png',
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : FadeInImage(
+                                                  image: NetworkImage(
+                                                      TMDB_BASE_IMAGE_URL +
+                                                          'w500/' +
+                                                          tvDetails!
+                                                              .seasons![index]
+                                                              .posterPath!),
+                                                  fit: BoxFit.cover,
+                                                  placeholder: const AssetImage(
+                                                      'assets/images/loading.gif'),
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          tvDetails!.seasons![index].name!,
+                                          maxLines: 2,
+                                          textAlign: TextAlign.center,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+class EpisodeListWidget extends StatefulWidget {
+  final String? api;
+  const EpisodeListWidget({Key? key, this.api}) : super(key: key);
+
+  @override
+  _EpisodeListWidgetState createState() => _EpisodeListWidgetState();
+}
+
+class _EpisodeListWidgetState extends State<EpisodeListWidget> {
+  TVDetails? tvDetails;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchTVDetails(widget.api!).then((value) {
+      setState(() {
+        tvDetails = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: tvDetails == null
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : ListView.builder(
+                itemCount: tvDetails!.episodes!.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 8.0,
+                        left: 30,
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 30.0),
+                                child: Text(tvDetails!
+                                    .episodes![index].episodeNumber!
+                                    .toString()),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(tvDetails!.episodes![index].name!,
+                                        style: const TextStyle(
+                                            overflow: TextOverflow.ellipsis)),
+                                    Text(
+                                      '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
+                                      style: const TextStyle(
+                                          color: Colors.white54),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          const Divider(
+                            color: Color(0xFFF57C00),
+                            thickness: 2,
+                            endIndent: 40,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }));
   }
 }

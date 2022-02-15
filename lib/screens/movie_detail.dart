@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cinemax/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
@@ -292,8 +293,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                       left: 8.0),
                                                   child: Text(
                                                     'Overview',
-                                                    // style: widget.themeData
-                                                    //     .textTheme.bodyText1,
+                                                    style: kTextHeaderStyle,
                                                   ),
                                                 ),
                                               ],
@@ -323,8 +323,9 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                             null
                                                         ? 'Release date: N/A'
                                                         : 'Release date : ${widget.movie.releaseDate}',
-                                                    // style: widget.themeData
-                                                    //     .textTheme.bodyText1,
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            'PoppinsSB'),
                                                   ),
                                                 ),
                                               ],
@@ -345,7 +346,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                   widget.movie.id!),
                                               title: 'Videos',
                                             ),
-                                            SocialLinks(
+                                            MovieSocialLinks(
                                               api: Endpoints
                                                   .getExternalLinksForMovie(
                                                       widget.movie.id!),

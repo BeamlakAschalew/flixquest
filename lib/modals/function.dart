@@ -58,6 +58,14 @@ Future<Credits> fetchCredits(String api) async {
   return credits;
 }
 
+Future<List<Person>> fetchPerson(String api) async {
+  PersonList credits;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  credits = PersonList.fromJson(decodeRes);
+  return credits.person ?? [];
+}
+
 Future<List<Genres>> fetchMovieGenre(String api) async {
   GenreList newGenreList;
   var res = await http.get(Uri.parse(api));
@@ -90,6 +98,14 @@ Future<MovieDetails> fetchMovieDetails(String api) async {
   return movieDetails;
 }
 
+// Future<Credits> fetchPerson(String api) async {
+//   Credits credits;
+//   var res = await http.get(Uri.parse(api));
+//   var decodeRes = jsonDecode(res.body);
+//   credits = Credits.fromJson(decodeRes);
+//   return credits;
+// }
+
 Future<PersonDetails> fetchPersonDetails(String api) async {
   PersonDetails personDetails;
   var res = await http.get(Uri.parse(api));
@@ -120,4 +136,12 @@ Future<TVDetails> fetchTVDetails(String api) async {
   var decodeRes = jsonDecode(res.body);
   tvDetails = TVDetails.fromJson(decodeRes);
   return tvDetails;
+}
+
+Future<List<TV>> fetchPersonTV(String api) async {
+  PersonTVList personTVList;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  personTVList = PersonTVList.fromJson(decodeRes);
+  return personTVList.movies ?? [];
 }

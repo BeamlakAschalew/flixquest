@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cinemax/modals/person.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
@@ -8,23 +9,24 @@ import 'package:cinemax/modals/credits.dart';
 
 import 'person_widgets.dart';
 
-class PersonDetailPage extends StatefulWidget {
-  final Cast? cast;
+class SearchedPersonDetailPage extends StatefulWidget {
+  final Person? person;
   final String heroId;
 
-  const PersonDetailPage({
+  const SearchedPersonDetailPage({
     Key? key,
-    this.cast,
+    this.person,
     required this.heroId,
   }) : super(key: key);
   @override
-  _PersonDetailPageState createState() => _PersonDetailPageState();
+  _SearchedPersonDetailPageState createState() =>
+      _SearchedPersonDetailPageState();
 }
 
-class _PersonDetailPageState extends State<PersonDetailPage>
+class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
     with
         SingleTickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin<PersonDetailPage> {
+        AutomaticKeepAliveClientMixin<SearchedPersonDetailPage> {
   late TabController tabController;
 
   @override
@@ -136,7 +138,7 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
                                       Text(
-                                        '${widget.cast!.name}',
+                                        '${widget.person!.name}',
                                         style: const TextStyle(fontSize: 25),
                                         // style: widget
                                         //     .themeData.textTheme.headline5,
@@ -144,7 +146,7 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       Text(
-                                        '${widget.cast!.department}',
+                                        '${widget.person!.department}',
                                         style: const TextStyle(
                                             fontSize: 15,
                                             color: Colors.white54),
@@ -200,13 +202,17 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                                   PersonAboutWidget(
                                                       api: Endpoints
                                                           .getPersonDetails(
-                                                              widget
-                                                                  .cast!.id!)),
+                                                              widget.person!
+                                                                  .id!)),
+                                                  PersonSocialLinks(
+                                                    api: Endpoints
+                                                        .getExternalLinksForPerson(
+                                                            widget.person!.id!),
+                                                  ),
                                                   PersonImagesDisplay(
-                                                    widget: widget,
                                                     api: Endpoints
                                                         .getPersonImages(
-                                                      widget.cast!.id!,
+                                                      widget.person!.id!,
                                                     ),
                                                     title: 'Images',
                                                   ),
@@ -220,10 +226,15 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                                         child: PersonMovieList(
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
-                                                  widget.cast!.id!),
+                                                  widget.person!.id!),
                                         ),
                                       ),
-                                      Container(),
+                                      Container(
+                                        child: PersonTVList(
+                                            api:
+                                                Endpoints.getTVCreditsForPerson(
+                                                    widget.person!.id!)),
+                                      ),
                                     ],
                                     controller: tabController,
                                   ),
@@ -238,22 +249,21 @@ class _PersonDetailPageState extends State<PersonDetailPage>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Hero(
-                              tag: 'tag',
+                              tag: widget.heroId,
                               child: SizedBox(
                                 width: 150,
                                 height: 150,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100.0),
-                                  child: widget.cast!.profilePath == null
+                                  child: widget.person!.profilePath == null
                                       ? Image.asset(
                                           'assets/images/na_logo.png',
                                           fit: BoxFit.cover,
                                         )
                                       : FadeInImage(
-                                          image: NetworkImage(
-                                              TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
-                                                  '${widget.cast!.profilePath}'),
+                                          image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                              'w500/' +
+                                              '${widget.person!.profilePath}'),
                                           fit: BoxFit.cover,
                                           placeholder: const AssetImage(
                                               'assets/images/loading.gif'),

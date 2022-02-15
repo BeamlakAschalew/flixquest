@@ -116,6 +116,7 @@ class MovieDetails {
   int? revenue;
   List<ProductionCompanies>? productionCompanies;
   List<ProductionCountries>? productionCountries;
+  List<SpokenLanguages>? spokenLanguages;
 
   MovieDetails(
       {this.runtime,
@@ -125,7 +126,8 @@ class MovieDetails {
       this.revenue,
       this.originalTitle,
       this.productionCompanies,
-      this.productionCountries});
+      this.productionCountries,
+      this.spokenLanguages});
   MovieDetails.fromJson(Map<String, dynamic> json) {
     runtime = json['runtime'];
     tagline = json['tagline'];
@@ -143,6 +145,12 @@ class MovieDetails {
       productionCountries = [];
       json['production_countries'].forEach((v) {
         productionCountries?.add(ProductionCountries.fromJson(v));
+      });
+    }
+    if (json['spoken_languages'] != null) {
+      spokenLanguages = [];
+      json['spoken_languages'].forEach((v) {
+        spokenLanguages?.add(SpokenLanguages.fromJson(v));
       });
     }
   }
@@ -188,10 +196,29 @@ class ProductionCountries {
   }
 }
 
+class SpokenLanguages {
+  String? englishName;
+  SpokenLanguages({this.englishName});
+  SpokenLanguages.fromJson(Map<String, dynamic> json) {
+    englishName = json['english_name'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['english_name'] = englishName;
+    return data;
+  }
+}
+
 class PersonMoviesList {
   List<Movie>? movies;
   PersonMoviesList({this.movies});
   PersonMoviesList.fromJson(Map<String, dynamic> json) {
+    // if (json['crew'] != null) {
+    //   movies = [];
+    //   json['crew'].forEach((v) {
+    //     movies!.add(Movie.fromJson(v));
+    //   });
+    // }
     if (json['cast'] != null) {
       movies = [];
       json['cast'].forEach((v) {
@@ -201,9 +228,13 @@ class PersonMoviesList {
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    // if (movies != null) {
+    //   data['crew'] = movies!.map((v) => v.toJson()).toList();
+    // }
     if (movies != null) {
       data['cast'] = movies!.map((v) => v.toJson()).toList();
     }
+
     return data;
   }
 }

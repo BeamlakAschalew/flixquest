@@ -83,6 +83,10 @@ class Endpoints {
     return "$TMDB_API_BASE_URL/search/person?query=$query&api_key=$TMDB_API_KEY";
   }
 
+  static String tvSearchUrl(String query) {
+    return "$TMDB_API_BASE_URL/search/tv?query=$query&api_key=$TMDB_API_KEY";
+  }
+
   static getPerson(int personId) {
     return "$TMDB_API_BASE_URL/person/$personId?api_key=$TMDB_API_KEY&append_to_response=movie_credits";
   }
@@ -169,9 +173,34 @@ class Endpoints {
         '/tv/on_the_air?api_key=$TMDB_API_KEY&language=en-US&page=$page';
   }
 
-  static getTVCreditsUrl(int id) {
+  static getFullTVCreditsUrl(int id) {
     return '$TMDB_API_BASE_URL'
         '/tv/$id/aggregate_credits?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static getTVCreditsUrl(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/credits?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static getTVSeasonCreditsUrl(int id, int seasonNumber) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/season/$seasonNumber/credits?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static getFullTVSeasonCreditsUrl(int id, int seasonNumber) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/season/$seasonNumber/aggregate_credits?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static getTVSeasonImagesUrl(int id, int seasonNumber) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/season/$seasonNumber/images?api_key=$TMDB_API_KEY';
+  }
+
+  static getTVSeasonVideosUrl(int id, int seasonNumber) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/season/$seasonNumber/videos?api_key=$TMDB_API_KEY';
   }
 
   static String tvDetailsUrl(int id) {
@@ -202,5 +231,30 @@ class Endpoints {
         '&sort_by=popularity.desc'
         '&page=$page'
         '&with_genres=$genreId';
+  }
+
+  static String getTVCreditsForPerson(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/person/$id/tv_credits?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static String getExternalLinksForPerson(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/person/$id/external_ids?api_key=$TMDB_API_KEY';
+  }
+
+  static String getExternalLinksForTV(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/external_ids?api_key=$TMDB_API_KEY';
+  }
+
+  static String getTVSeasons(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static String getSeasonDetails(int id, int seasonNum) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/season/$seasonNum?api_key=$TMDB_API_KEY&language=en-US';
   }
 }
