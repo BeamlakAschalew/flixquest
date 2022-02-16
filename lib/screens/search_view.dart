@@ -1,3 +1,4 @@
+import 'package:cinemax/screens/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:cinemax/modals/movie.dart';
 import 'package:cinemax/screens/movie_widgets.dart';
@@ -5,7 +6,7 @@ import 'package:cinemax/screens/movie_widgets.dart';
 class MovieSearch extends SearchDelegate<Movie?> {
   MovieSearch()
       : super(
-          searchFieldLabel: 'Search for a movie',
+          searchFieldLabel: 'Search for a movie, TV show or a person',
         );
 
   @override
@@ -83,9 +84,6 @@ class MovieSearch extends SearchDelegate<Movie?> {
   Widget buildResults(BuildContext context) {
     return SearchMovieWidget(
       query: query,
-      onTap: (movie) {
-        close(context, movie);
-      },
     );
   }
 
@@ -108,7 +106,7 @@ class MovieSearch extends SearchDelegate<Movie?> {
             ),
           ),
           Text(
-            'Enter a Movie to search.',
+            'Enter a term to search.',
             style: TextStyle(fontFamily: 'Poppins'),
           ),
         ],

@@ -311,7 +311,13 @@ class _TVDetailPageState extends State<TVDetailPage>
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: Text(
-                                                widget.tvSeries.overview!,
+                                                widget.tvSeries.overview!
+                                                            .isEmpty ||
+                                                        widget.tvSeries
+                                                                .overview ==
+                                                            null
+                                                    ? 'There is no overview for this TV series :('
+                                                    : widget.tvSeries.overview!,
                                                 // style: widget
                                                 //     .themeData.textTheme.caption,
                                               ),

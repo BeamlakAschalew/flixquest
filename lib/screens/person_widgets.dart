@@ -124,7 +124,9 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
 
 class PersonMovieList extends StatefulWidget {
   final String api;
-  const PersonMovieList({Key? key, required this.api}) : super(key: key);
+  final bool isAdult;
+  const PersonMovieList({Key? key, required this.api, required this.isAdult})
+      : super(key: key);
 
   @override
   _PersonMovieListState createState() => _PersonMovieListState();
@@ -152,66 +154,77 @@ class _PersonMovieListState extends State<PersonMovieList>
         ? const Center(
             child: CircularProgressIndicator(),
           )
-        : Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      '${personMoviesList!.length} movies',
-                      style: const TextStyle(fontSize: 15),
-                    ),
+        : widget.isAdult == true
+            ? const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    'This section contains NSFW & 18+ content, thus it can\'t be displayed on this version of the app',
+                    textAlign: TextAlign.center,
                   ),
-                ],
-              ),
-              Expanded(
-                child: personMoviesList!.isEmpty
-                    ? Container()
-                    : Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10.0, right: 10.0, bottom: 10.0, top: 0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: GridView.builder(
-                                  gridDelegate:
-                                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 150,
-                                    childAspectRatio: 0.48,
-                                    crossAxisSpacing: 5,
-                                    mainAxisSpacing: 5,
-                                  ),
-                                  itemCount: personMoviesList!.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return MovieDetailPage(
-                                              movie: personMoviesList![index],
-                                              heroId:
-                                                  '${personMoviesList![index].id}');
-                                        }));
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              flex: 6,
-                                              child: Hero(
-                                                tag:
-                                                    '${personMoviesList![index].id}',
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  child:
-                                                      personMoviesList![index]
+                ),
+              )
+            : Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          '${personMoviesList!.length} movies',
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: personMoviesList!.isEmpty
+                        ? Container()
+                        : Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10.0, right: 10.0, bottom: 10.0, top: 0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                                        maxCrossAxisExtent: 150,
+                                        childAspectRatio: 0.48,
+                                        crossAxisSpacing: 5,
+                                        mainAxisSpacing: 5,
+                                      ),
+                                      itemCount: personMoviesList!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return MovieDetailPage(
+                                                  movie:
+                                                      personMoviesList![index],
+                                                  heroId:
+                                                      '${personMoviesList![index].id}');
+                                            }));
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Column(
+                                              children: [
+                                                Expanded(
+                                                  flex: 6,
+                                                  child: Hero(
+                                                    tag:
+                                                        '${personMoviesList![index].id}',
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.0),
+                                                      child: personMoviesList![
+                                                                      index]
                                                                   .posterPath ==
                                                               null
                                                           ? Image.asset(
@@ -230,40 +243,43 @@ class _PersonMovieListState extends State<PersonMovieList>
                                                                   const AssetImage(
                                                                       'assets/images/loading.gif'),
                                                             ),
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Expanded(
+                                                    flex: 2,
+                                                    child: Text(
+                                                      personMoviesList![index]
+                                                          .originalTitle!,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    )),
+                                              ],
                                             ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Expanded(
-                                                flex: 2,
-                                                child: Text(
-                                                  personMoviesList![index]
-                                                      .originalTitle!,
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                )),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }),
+                                          ),
+                                        );
+                                      }),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-              ),
-            ],
-          );
+                          ),
+                  ),
+                ],
+              );
   }
 }
 
 class PersonTVList extends StatefulWidget {
   final String api;
-  const PersonTVList({Key? key, required this.api}) : super(key: key);
+  final bool isAdult;
+  const PersonTVList({Key? key, required this.api, required this.isAdult})
+      : super(key: key);
 
   @override
   _PersonTVListState createState() => _PersonTVListState();
@@ -291,111 +307,124 @@ class _PersonTVListState extends State<PersonTVList>
         ? const Center(
             child: CircularProgressIndicator(),
           )
-        : Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      '${personTVList!.length} tv shows',
-                      style: const TextStyle(fontSize: 15),
-                    ),
+        : widget.isAdult == true
+            ? const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Center(
+                  child: Text(
+                    'This section contains NSFW & 18+ content, thus it can\'t be displayed on this version of the app',
+                    textAlign: TextAlign.center,
                   ),
-                ],
-              ),
-              Expanded(
-                child: personTVList!.isEmpty
-                    ? Container()
-                    : Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10.0, right: 10.0, bottom: 10.0, top: 0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: GridView.builder(
-                                  gridDelegate:
-                                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 150,
-                                    childAspectRatio: 0.48,
-                                    crossAxisSpacing: 5,
-                                    mainAxisSpacing: 5,
-                                  ),
-                                  itemCount: personTVList!.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return TVDetailPage(
-                                              tvSeries: personTVList![index],
-                                              heroId:
-                                                  '${personTVList![index].id}');
-                                        }));
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              flex: 6,
-                                              child: Hero(
-                                                tag:
-                                                    '${personTVList![index].id}',
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  child: personTVList![index]
-                                                              .posterPath ==
-                                                          null
-                                                      ? Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        )
-                                                      : FadeInImage(
-                                                          image: NetworkImage(
-                                                              TMDB_BASE_IMAGE_URL +
-                                                                  'w500/' +
-                                                                  personTVList![
-                                                                          index]
-                                                                      .posterPath!),
-                                                          fit: BoxFit.cover,
-                                                          placeholder:
-                                                              const AssetImage(
-                                                                  'assets/images/loading.gif'),
-                                                        ),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Expanded(
-                                                flex: 2,
-                                                child: Text(
-                                                  personTVList![index]
-                                                      .originalName!,
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                )),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }),
-                            ),
-                          ],
+                ),
+              )
+            : Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          '${personTVList!.length} TV shows',
+                          style: const TextStyle(fontSize: 15),
                         ),
                       ),
-              ),
-            ],
-          );
+                    ],
+                  ),
+                  Expanded(
+                    child: personTVList!.isEmpty
+                        ? Container()
+                        : Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10.0, right: 10.0, bottom: 10.0, top: 0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: GridView.builder(
+                                      gridDelegate:
+                                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                                        maxCrossAxisExtent: 150,
+                                        childAspectRatio: 0.48,
+                                        crossAxisSpacing: 5,
+                                        mainAxisSpacing: 5,
+                                      ),
+                                      itemCount: personTVList!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return TVDetailPage(
+                                                  tvSeries:
+                                                      personTVList![index],
+                                                  heroId:
+                                                      '${personTVList![index].id}');
+                                            }));
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Column(
+                                              children: [
+                                                Expanded(
+                                                  flex: 6,
+                                                  child: Hero(
+                                                    tag:
+                                                        '${personTVList![index].id}',
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.0),
+                                                      child: personTVList![
+                                                                      index]
+                                                                  .posterPath ==
+                                                              null
+                                                          ? Image.asset(
+                                                              'assets/images/na_logo.png',
+                                                              fit: BoxFit.cover,
+                                                            )
+                                                          : FadeInImage(
+                                                              image: NetworkImage(
+                                                                  TMDB_BASE_IMAGE_URL +
+                                                                      'w500/' +
+                                                                      personTVList![
+                                                                              index]
+                                                                          .posterPath!),
+                                                              fit: BoxFit.cover,
+                                                              placeholder:
+                                                                  const AssetImage(
+                                                                      'assets/images/loading.gif'),
+                                                            ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Expanded(
+                                                    flex: 2,
+                                                    child: Text(
+                                                      personTVList![index]
+                                                          .originalName!,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      maxLines: 2,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    )),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                ),
+                              ],
+                            ),
+                          ),
+                  ),
+                ],
+              );
   }
 }
 

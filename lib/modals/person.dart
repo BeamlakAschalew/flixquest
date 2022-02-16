@@ -35,6 +35,7 @@ class Person {
   String? profilePath;
   String? name;
   int? id;
+  bool? adult;
   List<Cast>? cast;
   List<Crew>? crew;
   Person(
@@ -43,12 +44,14 @@ class Person {
       this.name,
       this.profilePath,
       this.cast,
-      this.crew});
+      this.crew,
+      this.adult});
 
   Person.fromJson(Map<String, dynamic> json) {
     department = json['known_for_department'];
     id = json['id'];
     profilePath = json['profile_path'];
+    adult = json['adult'];
     name = json['name'];
     if (json['cast'] != null) {
       cast = [];
@@ -70,6 +73,7 @@ class Person {
     data['id'] = id;
     data['name'] = name;
     data['profile_path'] = profilePath;
+    data['adult'] = adult;
     if (cast != null) {
       data['cast'] = cast?.map((v) => v.toJson()).toList();
     }

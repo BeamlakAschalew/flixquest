@@ -695,7 +695,7 @@ class _TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                         height: deviceHeight * 0.10,
                         child: const Center(
                           child: Text(
-                            'This season doesn\'t have an image provided',
+                            'This tv season doesn\'t have an image provided',
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -801,7 +801,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                         height: deviceHeight * 0.10,
                         child: const Center(
                           child: Text(
-                              'This tv show doesn\'t have a video provided'),
+                              'This tv season doesn\'t have a video provided'),
                         ),
                       )
                     : SizedBox(
@@ -1049,12 +1049,14 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
-                    // Navigator.push(context,
-                    //     MaterialPageRoute(builder: (context) {
-                    //   return CastDetailPage(
-                    //       cast: credits!.cast![index],
-                    //       heroId: '${credits!.cast![index].id}');
-                    // }));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SeasonsDetail(
+                                tvDetails: tvDetails!,
+                                seasons: tvDetails!.seasons![index],
+                                heroId:
+                                    '${tvDetails!.seasons![index].seasonId}')));
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(
@@ -1831,18 +1833,22 @@ class _TVInfoTableState extends State<TVInfoTable> {
                         DataCell(SizedBox(
                           height: 20,
                           width: 200,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: tvDetails!.spokenLanguages!.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 5.0),
-                                child: Text(tvDetails!.spokenLanguages!.isEmpty
-                                    ? 'N/A'
-                                    : '${tvDetails!.spokenLanguages![index].englishName},'),
-                              );
-                            },
-                          ),
+                          child: tvDetails!.spokenLanguages!.isEmpty
+                              ? const Text('-')
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: tvDetails!.spokenLanguages!.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 5.0),
+                                      child: Text(tvDetails!
+                                              .spokenLanguages!.isEmpty
+                                          ? 'N/A'
+                                          : '${tvDetails!.spokenLanguages![index].englishName},'),
+                                    );
+                                  },
+                                ),
                         )),
                       ]),
                       DataRow(cells: [
@@ -1874,19 +1880,23 @@ class _TVInfoTableState extends State<TVInfoTable> {
                         DataCell(SizedBox(
                           height: 20,
                           width: 200,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: tvDetails!.productionCompanies!.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 5.0),
-                                child: Text(tvDetails!
-                                        .productionCompanies!.isEmpty
-                                    ? 'N/A'
-                                    : '${tvDetails!.productionCompanies![index].name},'),
-                              );
-                            },
-                          ),
+                          child: tvDetails!.productionCompanies!.isEmpty
+                              ? const Text('-')
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount:
+                                      tvDetails!.productionCompanies!.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 5.0),
+                                      child: Text(tvDetails!
+                                              .productionCompanies!.isEmpty
+                                          ? 'N/A'
+                                          : '${tvDetails!.productionCompanies![index].name},'),
+                                    );
+                                  },
+                                ),
                         )),
                       ]),
                       DataRow(cells: [
@@ -1894,19 +1904,23 @@ class _TVInfoTableState extends State<TVInfoTable> {
                         DataCell(SizedBox(
                           height: 20,
                           width: 200,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: tvDetails!.productionCountries!.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 5.0),
-                                child: Text(tvDetails!
-                                        .productionCountries!.isEmpty
-                                    ? 'N/A'
-                                    : '${tvDetails!.productionCountries![index].name},'),
-                              );
-                            },
-                          ),
+                          child: tvDetails!.productionCountries!.isEmpty
+                              ? const Text('-')
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount:
+                                      tvDetails!.productionCountries!.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 5.0),
+                                      child: Text(tvDetails!
+                                              .productionCountries!.isEmpty
+                                          ? 'N/A'
+                                          : '${tvDetails!.productionCountries![index].name},'),
+                                    );
+                                  },
+                                ),
                         )),
                       ]),
                     ]),

@@ -1139,19 +1139,23 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
                         DataCell(SizedBox(
                           height: 20,
                           width: 200,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: movieDetails!.spokenLanguages!.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 5.0),
-                                child: Text(movieDetails!
-                                        .spokenLanguages!.isEmpty
-                                    ? 'N/A'
-                                    : '${movieDetails!.spokenLanguages![index].englishName},'),
-                              );
-                            },
-                          ),
+                          child: movieDetails!.spokenLanguages!.isEmpty
+                              ? const Text('-')
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount:
+                                      movieDetails!.spokenLanguages!.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 5.0),
+                                      child: Text(movieDetails!
+                                              .spokenLanguages!.isEmpty
+                                          ? 'N/A'
+                                          : '${movieDetails!.spokenLanguages![index].englishName},'),
+                                    );
+                                  },
+                                ),
                         )),
                       ]),
                       DataRow(cells: [
@@ -1187,20 +1191,23 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
                         DataCell(SizedBox(
                           height: 20,
                           width: 200,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                                movieDetails!.productionCompanies!.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 5.0),
-                                child: Text(movieDetails!
-                                        .productionCompanies!.isEmpty
-                                    ? 'N/A'
-                                    : '${movieDetails!.productionCompanies![index].name},'),
-                              );
-                            },
-                          ),
+                          child: movieDetails!.productionCompanies!.isEmpty
+                              ? const Text('-')
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount:
+                                      movieDetails!.productionCompanies!.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 5.0),
+                                      child: Text(movieDetails!
+                                              .productionCompanies!.isEmpty
+                                          ? 'N/A'
+                                          : '${movieDetails!.productionCompanies![index].name},'),
+                                    );
+                                  },
+                                ),
                         )
                             // movieDetails!.productionCompanies!.isEmpty
                             //     ? const Text('-')
@@ -1213,20 +1220,23 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
                         DataCell(SizedBox(
                           height: 20,
                           width: 200,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                                movieDetails!.productionCountries!.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 5.0),
-                                child: Text(movieDetails!
-                                        .productionCountries!.isEmpty
-                                    ? 'N/A'
-                                    : '${movieDetails!.productionCountries![index].name},'),
-                              );
-                            },
-                          ),
+                          child: movieDetails!.productionCountries!.isEmpty
+                              ? const Text('-')
+                              : ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount:
+                                      movieDetails!.productionCountries!.length,
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 5.0),
+                                      child: Text(movieDetails!
+                                              .productionCountries!.isEmpty
+                                          ? 'N/A'
+                                          : '${movieDetails!.productionCountries![index].name},'),
+                                    );
+                                  },
+                                ),
                         )
                             // movieDetails!.productionCompanies!.isEmpty
                             //     ? const Text('-')
@@ -1240,411 +1250,6 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
               ),
             ],
           );
-  }
-}
-
-class SearchMovieWidget extends StatefulWidget {
-  final String? query;
-  final Function(Movie)? onTap;
-  const SearchMovieWidget({Key? key, this.query, this.onTap}) : super(key: key);
-  @override
-  _SearchMovieWidgetState createState() => _SearchMovieWidgetState();
-}
-
-class _SearchMovieWidgetState extends State<SearchMovieWidget>
-    with SingleTickerProviderStateMixin {
-  List<Movie>? moviesList;
-  List<TV>? tvList;
-  List<Person>? personList;
-  TabController? tabController;
-  @override
-  void initState() {
-    super.initState();
-    tabController = TabController(length: 3, vsync: this);
-    fetchMovies(Endpoints.movieSearchUrl(widget.query!)).then((value) {
-      setState(() {
-        moviesList = value;
-      });
-    });
-    fetchTV(Endpoints.tvSearchUrl(widget.query!)).then((value) {
-      setState(() {
-        tvList = value;
-      });
-    });
-    fetchPerson(Endpoints.personSearchUrl(widget.query!)).then((value) {
-      setState(() {
-        personList = value;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double deviceHeight = MediaQuery.of(context).size.height;
-    double deviceWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      body: Container(
-        color: const Color(0xFF202124),
-        child: moviesList == null || tvList == null || personList == null
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
-            : moviesList!.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Oops! the movie you searched doesn\'t exist',
-                      style: TextStyle(fontFamily: 'Poppins'),
-                    ),
-                  )
-                : Column(
-                    children: [
-                      TabBar(
-                        isScrollable: true,
-                        indicatorColor: const Color(0xFFF57C00),
-                        indicatorWeight: 3,
-                        unselectedLabelColor: Colors.white54,
-                        labelColor: Colors.white,
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        controller: tabController,
-                        tabs: const [
-                          Tab(
-                            child: Text('Movies',
-                                style: TextStyle(fontFamily: 'Poppins')),
-                          ),
-                          Tab(
-                            child: Text('TV shows',
-                                style: TextStyle(fontFamily: 'Poppins')),
-                          ),
-                          Tab(
-                            child: Text('People',
-                                style: TextStyle(fontFamily: 'Poppins')),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: TabBarView(controller: tabController, children: [
-                          Expanded(
-                            child: ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: moviesList!.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    widget.onTap!(moviesList![index]);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return MovieDetailPage(
-                                          movie: moviesList![index],
-                                          heroId: '${moviesList![index].id}');
-                                    }));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            SizedBox(
-                                              width: 85,
-                                              height: 130,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: moviesList![index]
-                                                            .posterPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : FadeInImage(
-                                                        image: NetworkImage(
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                'w500/' +
-                                                                moviesList![
-                                                                        index]
-                                                                    .posterPath!),
-                                                        fit: BoxFit.cover,
-                                                        placeholder:
-                                                            const AssetImage(
-                                                                'assets/images/loading.gif'),
-                                                      ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Text(
-                                                      moviesList![index].title!,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 1,
-                                                      style: const TextStyle(
-                                                          fontFamily:
-                                                              'Poppins'),
-                                                    ),
-                                                    Row(
-                                                      children: <Widget>[
-                                                        Text(
-                                                          moviesList![index]
-                                                              .voteAverage!
-                                                              .toString(),
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'Poppins'),
-                                                        ),
-                                                        const Icon(Icons.star,
-                                                            color: Color(
-                                                                0xFFF57C00)),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 24.0),
-                                          child: Divider(
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: moviesList!.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    widget.onTap!(moviesList![index]);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return MovieDetailPage(
-                                          movie: moviesList![index],
-                                          heroId: '${moviesList![index].id}');
-                                    }));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            SizedBox(
-                                              width: 85,
-                                              height: 130,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: moviesList![index]
-                                                            .posterPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : FadeInImage(
-                                                        image: NetworkImage(
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                'w500/' +
-                                                                moviesList![
-                                                                        index]
-                                                                    .posterPath!),
-                                                        fit: BoxFit.cover,
-                                                        placeholder:
-                                                            const AssetImage(
-                                                                'assets/images/loading.gif'),
-                                                      ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Text(
-                                                      moviesList![index].title!,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 1,
-                                                      style: const TextStyle(
-                                                          fontFamily:
-                                                              'Poppins'),
-                                                    ),
-                                                    Row(
-                                                      children: <Widget>[
-                                                        Text(
-                                                          moviesList![index]
-                                                              .voteAverage!
-                                                              .toString(),
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'Poppins'),
-                                                        ),
-                                                        const Icon(Icons.star,
-                                                            color: Color(
-                                                                0xFFF57C00)),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 24.0),
-                                          child: Divider(
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: personList!.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    widget.onTap!(moviesList![index]);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return SearchedPersonDetailPage(
-                                          person: personList![index],
-                                          heroId: '${personList![index].id}');
-                                    }));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            SizedBox(
-                                              width: 85,
-                                              height: 130,
-                                              child: Hero(
-                                                tag: '${personList![index].id}',
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  child: personList![index]
-                                                              .profilePath ==
-                                                          null
-                                                      ? Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        )
-                                                      : FadeInImage(
-                                                          image: NetworkImage(
-                                                              TMDB_BASE_IMAGE_URL +
-                                                                  'w500/' +
-                                                                  personList![
-                                                                          index]
-                                                                      .profilePath!),
-                                                          fit: BoxFit.cover,
-                                                          placeholder:
-                                                              const AssetImage(
-                                                                  'assets/images/loading.gif'),
-                                                        ),
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: <Widget>[
-                                                    Text(
-                                                      personList![index].name!,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      maxLines: 1,
-                                                      style: const TextStyle(
-                                                          fontFamily:
-                                                              'Poppins'),
-                                                    ),
-                                                    Row(
-                                                      children: <Widget>[
-                                                        Text(
-                                                          moviesList![index]
-                                                              .voteAverage!
-                                                              .toString(),
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'Poppins'),
-                                                        ),
-                                                        const Icon(Icons.star,
-                                                            color: Color(
-                                                                0xFFF57C00)),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 24.0),
-                                          child: Divider(
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ]),
-                      ),
-                    ],
-                  ),
-      ),
-    );
   }
 }
 

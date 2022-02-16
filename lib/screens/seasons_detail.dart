@@ -156,7 +156,8 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          widget.seasons.airDate == ""
+                                          widget.seasons.airDate == null ||
+                                                  widget.seasons.airDate == ""
                                               ? widget.seasons.name!
                                               : '${widget.seasons.name!} (${DateTime.parse(widget.seasons.airDate!).year})',
                                           style: kTextSmallHeaderStyle,

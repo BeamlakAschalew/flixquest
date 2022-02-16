@@ -45,6 +45,7 @@ class Cast {
   String? profilePath;
   String? department;
   List<Roles>? roles;
+  bool? adult;
 
   Cast(
       {this.castId,
@@ -56,7 +57,8 @@ class Cast {
       this.order,
       this.profilePath,
       this.department,
-      this.roles});
+      this.roles,
+      this.adult});
 
   Cast.fromJson(Map<String, dynamic> json) {
     castId = json['cast_id'];
@@ -67,6 +69,7 @@ class Cast {
     name = json['name'];
     order = json['order'];
     profilePath = json['profile_path'];
+    adult = json['adult'];
     department = json['known_for_department'];
     if (json['roles'] != null) {
       roles = [];
@@ -87,6 +90,7 @@ class Cast {
     data['order'] = order;
     data['profile_path'] = profilePath;
     data['known_for_department'] = department;
+    data['adult'] = adult;
     if (roles != null) {
       data['roles'] = roles?.map((v) => v.toJson()).toList();
     }
@@ -118,6 +122,7 @@ class Crew {
   String? job;
   String? name;
   String? profilePath;
+  bool? adult;
 
   Crew(
       {this.creditId,
@@ -126,7 +131,8 @@ class Crew {
       this.id,
       this.job,
       this.name,
-      this.profilePath});
+      this.profilePath,
+      this.adult});
 
   Crew.fromJson(Map<String, dynamic> json) {
     creditId = json['credit_id'];
@@ -135,6 +141,7 @@ class Crew {
     id = json['id'];
     job = json['job'];
     name = json['name'];
+    adult = json['adult'];
     profilePath = json['profile_path'];
   }
 
@@ -147,6 +154,7 @@ class Crew {
     data['job'] = job;
     data['name'] = name;
     data['profile_path'] = profilePath;
+    data['adult'] = adult;
     return data;
   }
 }
