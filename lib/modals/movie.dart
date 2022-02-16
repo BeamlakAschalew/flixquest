@@ -30,6 +30,40 @@ class MovieList {
   }
 }
 
+class CollectionMovieList {
+  List<Movie>? movies;
+  CollectionMovieList({
+    this.movies,
+  });
+
+  CollectionMovieList.fromJson(Map<String, dynamic> json) {
+    if (json['parts'] != null) {
+      movies = [];
+      json['parts'].forEach((v) {
+        movies!.add(Movie.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (movies != null) {
+      data['parts'] = movies!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class CollectionDetails {
+  String? overview;
+  CollectionDetails({this.overview});
+  CollectionDetails.fromJson(Map<String, dynamic> json) {
+    if (json['overview'] != null) {
+      overview = json['overview'];
+    }
+  }
+}
+
 class Movie {
   int? voteCount;
   int? id;
@@ -48,23 +82,24 @@ class Movie {
   String? runtime;
   String? webLink;
 
-  Movie(
-      {this.voteCount,
-      this.id,
-      this.video,
-      this.voteAverage,
-      this.title,
-      this.popularity,
-      this.posterPath,
-      this.originalLanguage,
-      this.originalTitle,
-      this.genreIds,
-      this.backdropPath,
-      this.adult,
-      this.overview,
-      this.releaseDate,
-      this.runtime,
-      this.webLink});
+  Movie({
+    this.voteCount,
+    this.id,
+    this.video,
+    this.voteAverage,
+    this.title,
+    this.popularity,
+    this.posterPath,
+    this.originalLanguage,
+    this.originalTitle,
+    this.genreIds,
+    this.backdropPath,
+    this.adult,
+    this.overview,
+    this.releaseDate,
+    this.runtime,
+    this.webLink,
+  });
 
   Movie.fromJson(Map<String, dynamic> json) {
     voteCount = json['vote_count'];
@@ -114,26 +149,31 @@ class MovieDetails {
   String? status;
   int? budget;
   int? revenue;
+
   List<ProductionCompanies>? productionCompanies;
   List<ProductionCountries>? productionCountries;
   List<SpokenLanguages>? spokenLanguages;
+  // BelongsToCollection? belongsToCollection;
 
-  MovieDetails(
-      {this.runtime,
-      this.tagline,
-      this.status,
-      this.budget,
-      this.revenue,
-      this.originalTitle,
-      this.productionCompanies,
-      this.productionCountries,
-      this.spokenLanguages});
+  MovieDetails({
+    this.runtime,
+    this.tagline,
+    this.status,
+    this.budget,
+    this.revenue,
+    this.originalTitle,
+    this.productionCompanies,
+    this.productionCountries,
+    this.spokenLanguages,
+    /*this.belongsToCollection*/
+  });
   MovieDetails.fromJson(Map<String, dynamic> json) {
     runtime = json['runtime'];
     tagline = json['tagline'];
     status = json['status'];
     budget = json['budget'];
     revenue = json['revenue'];
+    // belongsToCollection = json['belongs_to_collection'];
     originalTitle = json['original_title'];
     if (json['production_companies'] != null) {
       productionCompanies = [];
@@ -256,5 +296,34 @@ class ExternalLinks {
     instagramUsername = json['instagram_id'];
     imdbId = json['imdb_id'];
     twitterUsername = json['twitter_id'];
+  }
+}
+
+class BelongsToCollection {
+  int? id;
+  String? name;
+  String? posterPath;
+  String? backdropPath;
+  BelongsToCollection({this.backdropPath, this.id, this.name, this.posterPath});
+  BelongsToCollection.fromJson(Map<String, dynamic> json) {
+    if (json['belongs_to_collection'] == null) {
+      id = null;
+      name = null;
+      posterPath = null;
+      backdropPath = null;
+    } else {
+      if (json['belongs_to_collection']['id'] != null) {
+        id = json['belongs_to_collection']['id'];
+      }
+      if (json['belongs_to_collection']['name'] != null) {
+        name = json['belongs_to_collection']['name'];
+      }
+      if (json['belongs_to_collection']['poster_path'] != null) {
+        posterPath = json['belongs_to_collection']['poster_path'];
+      }
+      if (json['belongs_to_collection']['backdrop_path'] != null) {
+        backdropPath = json['belongs_to_collection']['backdrop_path'];
+      }
+    }
   }
 }

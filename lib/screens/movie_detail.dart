@@ -155,8 +155,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                           widget.movie.releaseDate == ""
                                               ? widget.movie.title!
                                               : '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
-                                          // style: widget
-                                          //     .themeData.textTheme.headline5,
+                                          style: kTextSmallHeaderStyle,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -350,6 +349,10 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                               api: Endpoints
                                                   .getExternalLinksForMovie(
                                                       widget.movie.id!),
+                                            ),
+                                            BelongsToCollectionWidget(
+                                              api: Endpoints.movieDetailsUrl(
+                                                  widget.movie.id!),
                                             ),
                                             MovieInfoTable(
                                               api: Endpoints.movieDetailsUrl(

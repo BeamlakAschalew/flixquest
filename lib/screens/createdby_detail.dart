@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cinemax/modals/person.dart';
+import 'package:cinemax/modals/tv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
@@ -8,23 +10,24 @@ import 'package:cinemax/modals/credits.dart';
 
 import 'person_widgets.dart';
 
-class CrewDetailPage extends StatefulWidget {
+class CreatedByPersonDetailPage extends StatefulWidget {
+  final CreatedBy? createdBy;
   final String heroId;
-  final Crew? crew;
 
-  const CrewDetailPage({
+  const CreatedByPersonDetailPage({
     Key? key,
-    this.crew,
+    this.createdBy,
     required this.heroId,
   }) : super(key: key);
   @override
-  _CrewDetailPageState createState() => _CrewDetailPageState();
+  _CreatedByPersonDetailPageState createState() =>
+      _CreatedByPersonDetailPageState();
 }
 
-class _CrewDetailPageState extends State<CrewDetailPage>
+class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
     with
         SingleTickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin<CrewDetailPage> {
+        AutomaticKeepAliveClientMixin<CreatedByPersonDetailPage> {
   late TabController tabController;
 
   @override
@@ -136,18 +139,12 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
                                       Text(
-                                        '${widget.crew!.name}',
+                                        '${widget.createdBy!.name}',
                                         style: const TextStyle(fontSize: 25),
                                         // style: widget
                                         //     .themeData.textTheme.headline5,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        '${widget.crew!.department}',
-                                        style: const TextStyle(
-                                            fontSize: 15,
-                                            color: Colors.white54),
                                       ),
                                     ],
                                   ),
@@ -200,17 +197,18 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                                   PersonAboutWidget(
                                                       api: Endpoints
                                                           .getPersonDetails(
-                                                              widget
-                                                                  .crew!.id!)),
+                                                              widget.createdBy!
+                                                                  .id!)),
                                                   PersonSocialLinks(
                                                     api: Endpoints
                                                         .getExternalLinksForPerson(
-                                                            widget.crew!.id!),
+                                                            widget.createdBy!
+                                                                .id!),
                                                   ),
                                                   PersonImagesDisplay(
                                                     api: Endpoints
                                                         .getPersonImages(
-                                                      widget.crew!.id!,
+                                                      widget.createdBy!.id!,
                                                     ),
                                                     title: 'Images',
                                                   ),
@@ -222,18 +220,16 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                       ),
                                       Container(
                                         child: PersonMovieListWidget(
-                                          isAdult: widget.crew!.adult!,
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
-                                                  widget.crew!.id!),
+                                                  widget.createdBy!.id!),
                                         ),
                                       ),
                                       Container(
                                         child: PersonTVListWidget(
-                                            isAdult: widget.crew!.adult!,
                                             api:
                                                 Endpoints.getTVCreditsForPerson(
-                                                    widget.crew!.id!)),
+                                                    widget.createdBy!.id!)),
                                       ),
                                     ],
                                     controller: tabController,
@@ -249,22 +245,21 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Hero(
-                              tag: 'tag',
+                              tag: widget.heroId,
                               child: SizedBox(
                                 width: 150,
                                 height: 150,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100.0),
-                                  child: widget.crew!.profilePath == null
+                                  child: widget.createdBy!.profilePath == null
                                       ? Image.asset(
                                           'assets/images/na_logo.png',
                                           fit: BoxFit.cover,
                                         )
                                       : FadeInImage(
-                                          image: NetworkImage(
-                                              TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
-                                                  '${widget.crew!.profilePath}'),
+                                          image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                              'w500/' +
+                                              '${widget.createdBy!.profilePath}'),
                                           fit: BoxFit.cover,
                                           placeholder: const AssetImage(
                                               'assets/images/loading.gif'),

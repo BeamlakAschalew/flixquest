@@ -16,6 +16,7 @@ import 'package:cinemax/modals/tv.dart';
 import 'package:cinemax/modals/tv_genres.dart';
 import 'package:cinemax/modals/videos.dart';
 import 'package:cinemax/screens/cast_detail.dart';
+import 'package:cinemax/screens/createdby_detail.dart';
 import 'package:cinemax/screens/seasons_detail.dart';
 import 'package:cinemax/screens/tv_detail.dart';
 import 'package:cinemax/screens/genre_tv.dart';
@@ -526,6 +527,150 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
   bool get wantKeepAlive => true;
 }
 
+class ScrollingTVCreators extends StatefulWidget {
+  final String? api, title, tapButtonText;
+  const ScrollingTVCreators({
+    Key? key,
+    this.api,
+    this.title,
+    this.tapButtonText,
+  }) : super(key: key);
+  @override
+  _ScrollingTVCreatorsState createState() => _ScrollingTVCreatorsState();
+}
+
+class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
+    with AutomaticKeepAliveClientMixin {
+  TVDetails? tvDetails;
+  @override
+  void initState() {
+    super.initState();
+    fetchTVDetails(widget.api!).then((value) {
+      setState(() {
+        tvDetails = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        tvDetails == null
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: const <Widget>[
+                    Text(
+                      'Created by',
+                      style: kTextHeaderStyle,
+                    ),
+                  ],
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Created by',
+                      style: kTextHeaderStyle,
+                    ),
+                  ),
+                ],
+              ),
+        SizedBox(
+          width: double.infinity,
+          height: 160,
+          child: tvDetails == null
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : tvDetails!.createdBy!.isEmpty
+                  ? Center(child: Text('N/A'))
+                  : ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: tvDetails!.createdBy!.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return CreatedByPersonDetailPage(
+                                  createdBy: tvDetails!.createdBy![index],
+                                  heroId: '${tvDetails!.createdBy![index].id}',
+                                );
+                              }));
+                            },
+                            child: SizedBox(
+                              width: 100,
+                              child: Column(
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 6,
+                                    child: Hero(
+                                      tag:
+                                          '${tvDetails!.createdBy![index].id!}',
+                                      child: SizedBox(
+                                        width: 75,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(100.0),
+                                          child: tvDetails!.createdBy![index]
+                                                      .profilePath ==
+                                                  null
+                                              ? Image.asset(
+                                                  'assets/images/na_logo.png',
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : FadeInImage(
+                                                  image: NetworkImage(
+                                                      TMDB_BASE_IMAGE_URL +
+                                                          'w500/' +
+                                                          tvDetails!
+                                                              .createdBy![index]
+                                                              .profilePath!),
+                                                  fit: BoxFit.cover,
+                                                  placeholder: const AssetImage(
+                                                      'assets/images/loading.gif'),
+                                                ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 6,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        tvDetails!.createdBy![index].name!,
+                                        maxLines: 2,
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
+}
+
 class TVImagesDisplay extends StatefulWidget {
   final String? api, title;
   const TVImagesDisplay({Key? key, this.api, this.title}) : super(key: key);
@@ -982,9 +1127,8 @@ class _TVCastTabState extends State<TVCastTab>
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  'As : ' +
-                                      credits!
-                                          .cast![index].roles![0].character!,
+                                  'As : '
+                                  '${credits!.cast![index].roles![0].character!.isEmpty ? 'N/A' : credits!.cast![index].roles![0].character!}',
                                 ),
                                 Text(
                                   credits!.cast![index].roles![0].episodeCount!

@@ -223,7 +223,7 @@ class _CastDetailPageState extends State<CastDetailPage>
                                         ),
                                       ),
                                       Container(
-                                        child: PersonMovieList(
+                                        child: PersonMovieListWidget(
                                           isAdult: widget.cast!.adult!,
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
@@ -231,7 +231,7 @@ class _CastDetailPageState extends State<CastDetailPage>
                                         ),
                                       ),
                                       Container(
-                                        child: PersonTVList(
+                                        child: PersonTVListWidget(
                                             isAdult: widget.cast!.adult!,
                                             api:
                                                 Endpoints.getTVCreditsForPerson(

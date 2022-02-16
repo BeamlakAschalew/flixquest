@@ -111,6 +111,7 @@ class TVDetails {
   List<SpokenLanguages>? spokenLanguages;
   List<Seasons>? seasons;
   List<EpisodeList>? episodes;
+  List<CreatedBy>? createdBy;
 
   TVDetails(
       {this.runtime,
@@ -124,7 +125,8 @@ class TVDetails {
       this.productionCountries,
       this.spokenLanguages,
       this.id,
-      this.backdropPath});
+      this.backdropPath,
+      this.createdBy});
   TVDetails.fromJson(Map<String, dynamic> json) {
     runtime = json['episode_run_time'];
     tagline = json['tagline'];
@@ -163,6 +165,12 @@ class TVDetails {
       episodes = [];
       json['episodes'].forEach((v) {
         episodes?.add(EpisodeList.fromJson(v));
+      });
+    }
+    if (json['created_by'] != null) {
+      createdBy = [];
+      json['created_by'].forEach((v) {
+        createdBy?.add(CreatedBy.fromJson(v));
       });
     }
   }
@@ -274,6 +282,28 @@ class SpokenLanguages {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['english_name'] = englishName;
+    return data;
+  }
+}
+
+class CreatedBy {
+  int? id;
+  String? name;
+  String? profilePath;
+  int? gender;
+  CreatedBy({this.gender, this.id, this.name, this.profilePath});
+  CreatedBy.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    profilePath = json['profile_path'];
+    gender = json['gender'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['profile_path'] = profilePath;
+    data['gender'] = gender;
     return data;
   }
 }

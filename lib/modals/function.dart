@@ -18,6 +18,22 @@ Future<List<Movie>> fetchMovies(String api) async {
   return movieList.movies ?? [];
 }
 
+Future<List<Movie>> fetchCollectionMovies(String api) async {
+  CollectionMovieList collectionMovieList;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  collectionMovieList = CollectionMovieList.fromJson(decodeRes);
+  return collectionMovieList.movies ?? [];
+}
+
+Future fetchCollectionDetails(String api) async {
+  CollectionDetails collectionDetails;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  collectionDetails = CollectionDetails.fromJson(decodeRes);
+  return collectionDetails;
+}
+
 Future<List<Movie>> fetchPersonMovies(String api) async {
   PersonMoviesList personMoviesList;
   var res = await http.get(Uri.parse(api));
@@ -80,6 +96,14 @@ Future fetchSocialLinks(String api) async {
   var decodeRes = jsonDecode(res.body);
   externalLinks = ExternalLinks.fromJson(decodeRes);
   return externalLinks;
+}
+
+Future fetchBelongsToCollection(String api) async {
+  BelongsToCollection belongsToCollection;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  belongsToCollection = BelongsToCollection.fromJson(decodeRes);
+  return belongsToCollection;
 }
 
 Future<List<TVGenres>> fetchTVGenre(String api) async {

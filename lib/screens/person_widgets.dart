@@ -122,18 +122,18 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
   bool get wantKeepAlive => true;
 }
 
-class PersonMovieList extends StatefulWidget {
+class PersonMovieListWidget extends StatefulWidget {
   final String api;
-  final bool isAdult;
-  const PersonMovieList({Key? key, required this.api, required this.isAdult})
+  final bool? isAdult;
+  const PersonMovieListWidget({Key? key, required this.api, this.isAdult})
       : super(key: key);
 
   @override
-  _PersonMovieListState createState() => _PersonMovieListState();
+  _PersonMovieListWidgetState createState() => _PersonMovieListWidgetState();
 }
 
-class _PersonMovieListState extends State<PersonMovieList>
-    with AutomaticKeepAliveClientMixin<PersonMovieList> {
+class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
+    with AutomaticKeepAliveClientMixin<PersonMovieListWidget> {
   List<Movie>? personMoviesList;
   @override
   void initState() {
@@ -275,18 +275,18 @@ class _PersonMovieListState extends State<PersonMovieList>
   }
 }
 
-class PersonTVList extends StatefulWidget {
+class PersonTVListWidget extends StatefulWidget {
   final String api;
-  final bool isAdult;
-  const PersonTVList({Key? key, required this.api, required this.isAdult})
+  final bool? isAdult;
+  const PersonTVListWidget({Key? key, required this.api, this.isAdult})
       : super(key: key);
 
   @override
-  _PersonTVListState createState() => _PersonTVListState();
+  _PersonTVListWidgetState createState() => _PersonTVListWidgetState();
 }
 
-class _PersonTVListState extends State<PersonTVList>
-    with AutomaticKeepAliveClientMixin<PersonTVList> {
+class _PersonTVListWidgetState extends State<PersonTVListWidget>
+    with AutomaticKeepAliveClientMixin<PersonTVListWidget> {
   List<TV>? personTVList;
   @override
   void initState() {

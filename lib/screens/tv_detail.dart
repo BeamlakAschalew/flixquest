@@ -159,8 +159,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                                           widget.tvSeries.firstAirDate == ""
                                               ? widget.tvSeries.name!
                                               : '${widget.tvSeries.name!} (${DateTime.parse(widget.tvSeries.firstAirDate!).year})',
-                                          // style: widget
-                                          //     .themeData.textTheme.headline5,
+                                          style: kTextSmallHeaderStyle,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -335,7 +334,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                                                             null
                                                         ? 'First episode air date: N/A'
                                                         : 'First episode air date : ${widget.tvSeries.firstAirDate}',
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                       fontFamily: 'PoppinsSB',
                                                     ),
                                                   ),
@@ -346,6 +345,11 @@ class _TVDetailPageState extends State<TVDetailPage>
                                               api: Endpoints.getTVCreditsUrl(
                                                   widget.tvSeries.id!),
                                               title: 'Cast',
+                                            ),
+                                            ScrollingTVCreators(
+                                              api: Endpoints.tvDetailsUrl(
+                                                  widget.tvSeries.id!),
+                                              title: 'Created by',
                                             ),
                                             SeasonsList(
                                               title: 'Seasons',

@@ -223,7 +223,7 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         ),
                                       ),
                                       Container(
-                                        child: PersonMovieList(
+                                        child: PersonMovieListWidget(
                                           isAdult: widget.person!.adult!,
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
@@ -231,7 +231,7 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         ),
                                       ),
                                       Container(
-                                        child: PersonTVList(
+                                        child: PersonTVListWidget(
                                             isAdult: widget.person!.adult!,
                                             api:
                                                 Endpoints.getTVCreditsForPerson(

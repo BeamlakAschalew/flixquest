@@ -257,4 +257,9 @@ class Endpoints {
     return '$TMDB_API_BASE_URL'
         '/tv/$id/season/$seasonNum?api_key=$TMDB_API_KEY&language=en-US';
   }
+
+  static String getCollectionDetails(int id) {
+    return '$TMDB_API_BASE_URL'
+        '/collection/$id?api_key=$TMDB_API_KEY&language=en-US';
+  }
 }
