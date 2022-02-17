@@ -8,7 +8,6 @@ import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/constants/style_constants.dart';
 import 'package:cinemax/modals/credits.dart';
 import 'package:cinemax/modals/function.dart';
-import 'package:cinemax/modals/genres.dart';
 import 'package:cinemax/modals/images.dart';
 import 'package:cinemax/modals/movie.dart';
 import 'package:cinemax/modals/social_icons_icons.dart';
@@ -17,6 +16,7 @@ import 'package:cinemax/modals/tv_genres.dart';
 import 'package:cinemax/modals/videos.dart';
 import 'package:cinemax/screens/cast_detail.dart';
 import 'package:cinemax/screens/createdby_detail.dart';
+import 'package:cinemax/screens/episode_detail.dart';
 import 'package:cinemax/screens/seasons_detail.dart';
 import 'package:cinemax/screens/tv_detail.dart';
 import 'package:cinemax/screens/genre_tv.dart';
@@ -25,9 +25,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'crew_detail.dart';
-import 'genremovies.dart';
 import 'movie_widgets.dart';
 
 class MainTVDisplay extends StatelessWidget {
@@ -271,7 +269,6 @@ class _ScrollingTVState extends State<ScrollingTV>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    double deviceFont = MediaQuery.of(context).textScaleFactor;
     return Column(
       children: <Widget>[
         Row(
@@ -414,6 +411,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: <Widget>[
         credits == null
@@ -481,7 +479,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                           credits!.cast![index].profilePath ==
                                                   null
                                               ? Image.asset(
-                                                  'assets/images/na_logo.png',
+                                                  'assets/images/na_square.png',
                                                   fit: BoxFit.cover,
                                                 )
                                               : FadeInImage(
@@ -523,7 +521,145 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
   }
 
   @override
-  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
+}
+
+class ScrollingTVEpisodeArtists extends StatefulWidget {
+  final String? api;
+  const ScrollingTVEpisodeArtists({
+    Key? key,
+    this.api,
+  }) : super(key: key);
+  @override
+  _ScrollingTVEpisodeArtistsState createState() =>
+      _ScrollingTVEpisodeArtistsState();
+}
+
+class _ScrollingTVEpisodeArtistsState extends State<ScrollingTVEpisodeArtists>
+    with AutomaticKeepAliveClientMixin {
+  Credits? credits;
+  @override
+  void initState() {
+    super.initState();
+    fetchCredits(widget.api!).then((value) {
+      setState(() {
+        credits = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Column(
+      children: <Widget>[
+        credits == null
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: const <Widget>[
+                    Text(
+                      'Cast',
+                      style: kTextHeaderStyle,
+                    ),
+                  ],
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Cast',
+                      style: kTextHeaderStyle,
+                    ),
+                  ),
+                ],
+              ),
+        SizedBox(
+          width: double.infinity,
+          height: 160,
+          child: credits == null
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: credits!.cast!.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CastDetailPage(
+                              cast: credits!.cast![index],
+                              heroId: credits!.cast![index].id.toString(),
+                            );
+                          }));
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 6,
+                                child: Hero(
+                                  tag: credits!.cast![index].id!,
+                                  child: SizedBox(
+                                    width: 75,
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      child:
+                                          credits!.cast![index].profilePath ==
+                                                  null
+                                              ? Image.asset(
+                                                  'assets/images/na_square.png',
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : FadeInImage(
+                                                  image: NetworkImage(
+                                                      TMDB_BASE_IMAGE_URL +
+                                                          'w500/' +
+                                                          credits!.cast![index]
+                                                              .profilePath!),
+                                                  fit: BoxFit.cover,
+                                                  placeholder: const AssetImage(
+                                                      'assets/images/loading.gif'),
+                                                ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 6,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    credits!.cast![index].name!,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  @override
   bool get wantKeepAlive => true;
 }
 
@@ -554,6 +690,7 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Column(
       children: <Widget>[
         tvDetails == null
@@ -588,7 +725,7 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                   child: CircularProgressIndicator(),
                 )
               : tvDetails!.createdBy!.isEmpty
-                  ? Center(child: Text('N/A'))
+                  ? const Center(child: Text('N/A'))
                   : ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       itemCount: tvDetails!.createdBy!.length,
@@ -624,7 +761,7 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                                                       .profilePath ==
                                                   null
                                               ? Image.asset(
-                                                  'assets/images/na_logo.png',
+                                                  'assets/images/na_square.png',
                                                   fit: BoxFit.cover,
                                                 )
                                               : FadeInImage(
@@ -667,7 +804,6 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
 
@@ -880,6 +1016,111 @@ class _TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
   }
 }
 
+class TVEpisodeImagesDisplay extends StatefulWidget {
+  final String? api, title;
+  const TVEpisodeImagesDisplay({Key? key, this.api, this.title})
+      : super(key: key);
+
+  @override
+  _TVEpisodeImagesDisplayState createState() => _TVEpisodeImagesDisplayState();
+}
+
+class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
+  Images? tvImages;
+  @override
+  void initState() {
+    super.initState();
+    fetchImages(widget.api!).then((value) {
+      setState(() {
+        tvImages = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double deviceHeight = MediaQuery.of(context).size.height;
+    // double deviceWidth = MediaQuery.of(context).size.width;
+    return Column(
+      children: [
+        tvImages == null
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: <Widget>[
+                    Text(widget.title!,
+                        style:
+                            kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
+                        ),
+                  ],
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(widget.title!,
+                        style:
+                            kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
+                        ),
+                  ),
+                ],
+              ),
+        Container(
+          child: SizedBox(
+            width: double.infinity,
+            height: deviceHeight * 0.20,
+            child: tvImages == null
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : tvImages!.still!.isEmpty
+                    ? SizedBox(
+                        width: double.infinity,
+                        height: deviceHeight * 0.10,
+                        child: const Center(
+                          child: Text(
+                            'This tv episode doesn\'t have an image provided',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : CarouselSlider.builder(
+                        options: CarouselOptions(
+                          disableCenter: true,
+                          viewportFraction: 0.8,
+                          enlargeCenterPage: false,
+                          autoPlay: true,
+                        ),
+                        itemBuilder:
+                            (BuildContext context, int index, pageViewIndex) {
+                          return Container(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: FadeInImage(
+                                  image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                      'w500/' +
+                                      tvImages!.still![index].stillPath!),
+                                  fit: BoxFit.cover,
+                                  placeholder: const AssetImage(
+                                      'assets/images/loading.gif'),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount: tvImages!.still!.length,
+                      ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class TVVideosDisplay extends StatefulWidget {
   final String? api, title;
   const TVVideosDisplay({Key? key, this.api, this.title}) : super(key: key);
@@ -1063,6 +1304,7 @@ class _TVCastTabState extends State<TVCastTab>
     super.build(context);
     return credits == null
         ? Container(
+            color: const Color(0xFF202124),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -1100,7 +1342,7 @@ class _TVCastTabState extends State<TVCastTab>
                               borderRadius: BorderRadius.circular(50.0),
                               child: credits!.cast![index].profilePath == null
                                   ? Image.asset(
-                                      'assets/images/na_logo.png',
+                                      'assets/images/na_square.png',
                                       fit: BoxFit.cover,
                                     )
                                   : FadeInImage(
@@ -1154,7 +1396,8 @@ class _TVCastTabState extends State<TVCastTab>
 
 class TVSeasonsTab extends StatefulWidget {
   final String? api;
-  const TVSeasonsTab({Key? key, this.api}) : super(key: key);
+  final int? tvId;
+  const TVSeasonsTab({Key? key, this.api, this.tvId}) : super(key: key);
 
   @override
   _TVSeasonsTabState createState() => _TVSeasonsTabState();
@@ -1178,6 +1421,7 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
     super.build(context);
     return tvDetails == null
         ? Container(
+            color: const Color(0xFF202124),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -1197,6 +1441,7 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                         context,
                         MaterialPageRoute(
                             builder: (context) => SeasonsDetail(
+                                tvId: widget.tvId,
                                 tvDetails: tvDetails!,
                                 seasons: tvDetails!.seasons![index],
                                 heroId:
@@ -1244,6 +1489,7 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                                 Text(
                                   tvDetails!.seasons![index].name!,
                                   overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 18),
                                 ),
                               ],
                             ),
@@ -1288,6 +1534,7 @@ class _TVCrewTabState extends State<TVCrewTab>
     super.build(context);
     return credits == null
         ? Container(
+            color: const Color(0xFF202124),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -1326,7 +1573,7 @@ class _TVCrewTabState extends State<TVCrewTab>
                               borderRadius: BorderRadius.circular(50.0),
                               child: credits!.crew![index].profilePath == null
                                   ? Image.asset(
-                                      'assets/images/na_logo.png',
+                                      'assets/images/na_square.png',
                                       fit: BoxFit.cover,
                                     )
                                   : FadeInImage(
@@ -1397,8 +1644,6 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    double deviceHeight = MediaQuery.of(context).size.height;
-    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: tvList == null
@@ -1536,8 +1781,6 @@ class _SimilarTVTabState extends State<SimilarTVTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    double deviceHeight = MediaQuery.of(context).size.height;
-    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: tvList == null
@@ -1781,8 +2024,6 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
 
   @override
   Widget build(BuildContext context) {
-    double deviceHeight = MediaQuery.of(context).size.height;
-    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: tvList == null
@@ -2117,14 +2358,14 @@ class _TVSocialLinksState extends State<TVSocialLinks> {
               height: 55,
               width: double.infinity,
               child: externalLinks == null
-                  ? Center(
+                  ? const Center(
                       child: CircularProgressIndicator(),
                     )
                   : externalLinks?.facebookUsername == null &&
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
                           externalLinks?.imdbId == null
-                      ? Center(
+                      ? const Center(
                           child: Text(
                             'This tv show doesn\'t have social media links provided :(',
                             textAlign: TextAlign.center,
@@ -2201,7 +2442,6 @@ class _SeasonsListState extends State<SeasonsList> {
   TVDetails? tvDetails;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchTVDetails(widget.api!).then((value) {
       setState(() {
@@ -2316,8 +2556,9 @@ class _SeasonsListState extends State<SeasonsList> {
 }
 
 class EpisodeListWidget extends StatefulWidget {
+  final int? tvId;
   final String? api;
-  const EpisodeListWidget({Key? key, this.api}) : super(key: key);
+  const EpisodeListWidget({Key? key, this.api, this.tvId}) : super(key: key);
 
   @override
   _EpisodeListWidgetState createState() => _EpisodeListWidgetState();
@@ -2327,7 +2568,6 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
   TVDetails? tvDetails;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchTVDetails(widget.api!).then((value) {
       setState(() {
@@ -2339,6 +2579,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
+        color: const Color(0xFF202124),
         child: tvDetails == null
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -2346,47 +2587,60 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget> {
             : ListView.builder(
                 itemCount: tvDetails!.episodes!.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 0.0,
-                        bottom: 8.0,
-                        left: 30,
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 30.0),
-                                child: Text(tvDetails!
-                                    .episodes![index].episodeNumber!
-                                    .toString()),
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(tvDetails!.episodes![index].name!,
-                                        style: const TextStyle(
-                                            overflow: TextOverflow.ellipsis)),
-                                    Text(
-                                      '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
-                                      style: const TextStyle(
-                                          color: Colors.white54),
-                                    ),
-                                  ],
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return EpisodeDetailPage(
+                            tvId: widget.tvId,
+                            episodes: tvDetails!.episodes,
+                            episodeList: tvDetails!.episodes![index]);
+                      }));
+                    },
+                    child: Container(
+                      color: const Color(0xFF202124),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 0.0,
+                          bottom: 8.0,
+                          left: 30,
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 30.0),
+                                  child: Text(tvDetails!
+                                      .episodes![index].episodeNumber!
+                                      .toString()),
                                 ),
-                              )
-                            ],
-                          ),
-                          const Divider(
-                            color: Color(0xFFF57C00),
-                            thickness: 2,
-                            endIndent: 40,
-                          ),
-                        ],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(tvDetails!.episodes![index].name!,
+                                          style: const TextStyle(
+                                              overflow: TextOverflow.ellipsis)),
+                                      Text(
+                                        '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
+                                        style: const TextStyle(
+                                            color: Colors.white54),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                            const Divider(
+                              color: Color(0xFFF57C00),
+                              thickness: 2,
+                              endIndent: 40,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

@@ -1,10 +1,12 @@
 class Images {
   List<Backdrops>? backdrop;
   List<Posters>? poster;
+  List<Stills>? still;
 
   Images({
     this.backdrop,
     this.poster,
+    this.still,
   });
 
   Images.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,12 @@ class Images {
         poster?.add(Posters.fromJson(v));
       });
     }
+    if (json['stills'] != null) {
+      still = [];
+      json['stills'].forEach((v) {
+        still?.add(Stills.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -29,6 +37,9 @@ class Images {
     }
     if (poster != null) {
       data['posters'] = poster?.map((v) => v.toJson()).toList();
+    }
+    if (still != null) {
+      data['stills'] = still?.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -57,6 +68,19 @@ class Posters {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['file_path'] = posterPath;
+    return data;
+  }
+}
+
+class Stills {
+  String? stillPath;
+  Stills({this.stillPath});
+  Stills.fromJson(Map<String, dynamic> json) {
+    stillPath = json['file_path'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['file_path'] = stillPath;
     return data;
   }
 }

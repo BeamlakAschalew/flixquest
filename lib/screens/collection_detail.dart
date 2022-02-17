@@ -208,7 +208,7 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                             ],
                                           ),
                                           Padding(
-                                            padding: EdgeInsets.all(8.0),
+                                            padding: const EdgeInsets.all(8.0),
                                             child: CollectionOverviewWidget(
                                               api: Endpoints
                                                   .getCollectionDetails(widget

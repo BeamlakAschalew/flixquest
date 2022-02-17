@@ -6,15 +6,22 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cinemax/constants/api_constants.dart';
 
-class MovieStream extends StatefulWidget {
+class TVStream extends StatefulWidget {
   final int id;
-  const MovieStream({Key? key, required this.id}) : super(key: key);
+  final int seasonNumber;
+  final int episodeNumber;
+  const TVStream(
+      {Key? key,
+      required this.id,
+      required this.episodeNumber,
+      required this.seasonNumber})
+      : super(key: key);
 
   @override
-  _MovieStreamState createState() => _MovieStreamState();
+  _TVStreamState createState() => _TVStreamState();
 }
 
-class _MovieStreamState extends State<MovieStream> {
+class _TVStreamState extends State<TVStream> {
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;
@@ -72,7 +79,8 @@ class _MovieStreamState extends State<MovieStream> {
               InAppWebView(
                 key: webViewKey,
                 initialUrlRequest: URLRequest(
-                    url: Uri.parse("$EMBED_BASE_MOVIE_URL${widget.id}")),
+                    url: Uri.parse(
+                        "$EMBED_BASE_TV_URL${widget.id}&s=${widget.seasonNumber}&e=${widget.episodeNumber}")),
                 initialOptions: options,
                 pullToRefreshController: pullToRefreshController,
                 onWebViewCreated: (controller) {

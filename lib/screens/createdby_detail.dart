@@ -1,13 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
-
-import 'package:cinemax/modals/person.dart';
 import 'package:cinemax/modals/tv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/modals/credits.dart';
-
 import 'person_widgets.dart';
 
 class CreatedByPersonDetailPage extends StatefulWidget {
@@ -125,7 +121,7 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF202124),
+                            color: const Color(0xFF2b2c30),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
@@ -185,40 +181,45 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                       //   ),
                                       // ),
                                       SingleChildScrollView(
-                                        child: Column(
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10.0,
-                                                  right: 10,
-                                                  top: 10.0),
-                                              child: Column(
-                                                children: [
-                                                  PersonAboutWidget(
+                                        child: Container(
+                                          color: const Color(0xFF202124),
+                                          child: Column(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 10.0,
+                                                    right: 10,
+                                                    top: 10.0),
+                                                child: Column(
+                                                  children: [
+                                                    PersonAboutWidget(
+                                                        api: Endpoints
+                                                            .getPersonDetails(
+                                                                widget
+                                                                    .createdBy!
+                                                                    .id!)),
+                                                    PersonSocialLinks(
                                                       api: Endpoints
-                                                          .getPersonDetails(
+                                                          .getExternalLinksForPerson(
                                                               widget.createdBy!
-                                                                  .id!)),
-                                                  PersonSocialLinks(
-                                                    api: Endpoints
-                                                        .getExternalLinksForPerson(
-                                                            widget.createdBy!
-                                                                .id!),
-                                                  ),
-                                                  PersonImagesDisplay(
-                                                    api: Endpoints
-                                                        .getPersonImages(
-                                                      widget.createdBy!.id!,
+                                                                  .id!),
                                                     ),
-                                                    title: 'Images',
-                                                  ),
-                                                ],
+                                                    PersonImagesDisplay(
+                                                      api: Endpoints
+                                                          .getPersonImages(
+                                                        widget.createdBy!.id!,
+                                                      ),
+                                                      title: 'Images',
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       Container(
+                                        color: const Color(0xFF202124),
                                         child: PersonMovieListWidget(
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
@@ -226,6 +227,7 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                         ),
                                       ),
                                       Container(
+                                        color: const Color(0xFF202124),
                                         child: PersonTVListWidget(
                                             api:
                                                 Endpoints.getTVCreditsForPerson(
@@ -253,7 +255,7 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                   borderRadius: BorderRadius.circular(100.0),
                                   child: widget.createdBy!.profilePath == null
                                       ? Image.asset(
-                                          'assets/images/na_logo.png',
+                                          'assets/images/na_square.png',
                                           fit: BoxFit.cover,
                                         )
                                       : FadeInImage(

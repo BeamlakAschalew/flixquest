@@ -1,18 +1,15 @@
-// ignore_for_file: avoid_unnecessary_containers, unused_local_variable
+// ignore_for_file: avoid_unnecessary_containers
 
 import 'dart:convert';
 import 'package:cinemax/constants/style_constants.dart';
-import 'package:cinemax/modals/person.dart';
 import 'package:cinemax/modals/social_icons_icons.dart';
-import 'package:cinemax/modals/tv.dart';
 import 'package:cinemax/modals/videos.dart';
 import 'package:cinemax/modals/watch_providers.dart';
 import 'package:cinemax/screens/cast_detail.dart';
-import 'package:cinemax/screens/searchedperson.dart';
 import 'package:cinemax/screens/streaming_services_movies.dart';
-import 'package:cinemax/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:share_plus/share_plus.dart';
 import '/modals/function.dart';
 import '/modals/movie.dart';
 import '/api/endpoints.dart';
@@ -75,7 +72,7 @@ class MainMoviesDisplay extends StatelessWidget {
             isTrending: false,
           ),
           GenreListGrid(api: Endpoints.genresUrl()),
-          MoviesFromWatchProviders(),
+          const MoviesFromWatchProviders(),
         ],
       ),
     );
@@ -281,7 +278,6 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    double deviceFont = MediaQuery.of(context).textScaleFactor;
     return Column(
       children: <Widget>[
         Row(
@@ -336,16 +332,23 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8.0),
-                                          child: FadeInImage(
-                                            image: NetworkImage(
-                                                TMDB_BASE_IMAGE_URL +
-                                                    'w500/' +
-                                                    moviesList![index]
-                                                        .posterPath!),
-                                            fit: BoxFit.cover,
-                                            placeholder: const AssetImage(
-                                                'assets/images/loading.gif'),
-                                          ),
+                                          child:
+                                              moviesList![index].posterPath ==
+                                                      null
+                                                  ? Image.asset(
+                                                      'assets/images/na_logo.png',
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : FadeInImage(
+                                                      image: NetworkImage(
+                                                          TMDB_BASE_IMAGE_URL +
+                                                              'w500/' +
+                                                              moviesList![index]
+                                                                  .posterPath!),
+                                                      fit: BoxFit.cover,
+                                                      placeholder: const AssetImage(
+                                                          'assets/images/loading.gif'),
+                                                    ),
                                         ),
                                       ),
                                     ),
@@ -484,7 +487,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                                           credits!.cast![index].profilePath ==
                                                   null
                                               ? Image.asset(
-                                                  'assets/images/na_logo.png',
+                                                  'assets/images/na_square.png',
                                                   fit: BoxFit.cover,
                                                 )
                                               : FadeInImage(
@@ -567,14 +570,14 @@ class _MovieSocialLinksState extends State<MovieSocialLinks> {
               height: 55,
               width: double.infinity,
               child: externalLinks == null
-                  ? Center(
+                  ? const Center(
                       child: CircularProgressIndicator(),
                     )
                   : externalLinks?.facebookUsername == null &&
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
                           externalLinks?.imdbId == null
-                      ? Center(
+                      ? const Center(
                           child: Text(
                             'This movie doesn\'t have social media links provided :(',
                             textAlign: TextAlign.center,
@@ -676,7 +679,7 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
   @override
   Widget build(BuildContext context) {
     return belongsToCollection == null
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : belongsToCollection?.id == null
             ? Container()
             : Padding(
@@ -706,7 +709,8 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                           child: Text(
                             'Belongs to the ${belongsToCollection!.name!}',
                             textAlign: TextAlign.center,
-                            style: TextStyle(backgroundColor: Colors.black38),
+                            style: const TextStyle(
+                                backgroundColor: Colors.black38),
                           ),
                         ),
                         Container(
@@ -761,7 +765,6 @@ class _CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
   CollectionDetails? collectionDetails;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchCollectionDetails(widget.api!).then((value) {
       setState(() {
@@ -774,7 +777,7 @@ class _CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
   Widget build(BuildContext context) {
     return Container(
       child: collectionDetails == null
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : Text(collectionDetails!.overview!),
@@ -795,7 +798,6 @@ class _PartsListState extends State<PartsList> {
   List<Movie>? collectionMovieList;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchCollectionMovies(widget.api!).then((value) {
       setState(() {
@@ -1222,6 +1224,11 @@ class WatchNowButton extends StatefulWidget {
 
 class _WatchNowButtonState extends State<WatchNowButton> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       child: TextButton(
@@ -1230,6 +1237,8 @@ class _WatchNowButtonState extends State<WatchNowButton> {
             backgroundColor:
                 MaterialStateProperty.all(const Color(0xFFF57C00))),
         onPressed: () {
+          // mixpanel.track('Most viewed',
+          //     properties: {'Movies': '${widget.widget!.movie.originalTitle}'});
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return MovieStream(id: widget.widget!.movie.id!);
           }));
@@ -1574,7 +1583,7 @@ class _CastTabState extends State<CastTab>
                             borderRadius: BorderRadius.circular(50.0),
                             child: credits!.cast![index].profilePath == null
                                 ? Image.asset(
-                                    'assets/images/na_logo.png',
+                                    'assets/images/na_square.png',
                                     fit: BoxFit.cover,
                                   )
                                 : FadeInImage(
@@ -1685,7 +1694,7 @@ class _CrewTabState extends State<CrewTab>
                               borderRadius: BorderRadius.circular(50.0),
                               child: credits!.crew![index].profilePath == null
                                   ? Image.asset(
-                                      'assets/images/na_logo.png',
+                                      'assets/images/na_square.png',
                                       fit: BoxFit.cover,
                                     )
                                   : FadeInImage(
@@ -1758,8 +1767,6 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    double deviceHeight = MediaQuery.of(context).size.height;
-    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: movieList == null
@@ -1898,8 +1905,6 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    double deviceHeight = MediaQuery.of(context).size.height;
-    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: movieList == null
@@ -2075,8 +2080,6 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
 
   @override
   Widget build(BuildContext context) {
-    double deviceHeight = MediaQuery.of(context).size.height;
-    double deviceWidth = MediaQuery.of(context).size.width;
     return Container(
       color: const Color(0xFF202124),
       child: moviesList == null
@@ -2467,6 +2470,14 @@ class DrawerWidget extends StatelessWidget {
               }));
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.share_sharp),
+            title: const Text('Share the app'),
+            onTap: () async {
+              await Share.share(
+                  'Download the Cinemax app for free and watch your favorite movies and TV shows for free! https://example.com');
+            },
+          ),
         ],
       ),
     );
@@ -2498,7 +2509,6 @@ class _GenreListGridState extends State<GenreListGrid>
   bool get wantKeepAlive => true;
   @override
   Widget build(BuildContext context) {
-    double deviceHeight = MediaQuery.of(context).size.height;
     super.build(context);
     return genreList == null
         ? Column(
@@ -2580,6 +2590,42 @@ class _GenreListGridState extends State<GenreListGrid>
   }
 }
 
+class TopButton extends StatefulWidget {
+  final String buttonText;
+  const TopButton({
+    Key? key,
+    required this.buttonText,
+  }) : super(key: key);
+
+  @override
+  _TopButtonState createState() => _TopButtonState();
+}
+
+class _TopButtonState extends State<TopButton> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextButton(
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(const Color(0x26F57C00)),
+            maximumSize: MaterialStateProperty.all(const Size(140, 40)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    side: const BorderSide(color: Color(0xFFF57C00))))),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Text(
+          widget.buttonText,
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
 class WatchProvidersButton extends StatefulWidget {
   final Function()? onTap;
   final String api;
@@ -2658,7 +2704,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
   @override
   Widget build(BuildContext context) {
     return watchProviders == null
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : Container(
             child: Column(
               children: [

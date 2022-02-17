@@ -1,31 +1,33 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/modals/person.dart';
+import 'package:cinemax/modals/tv.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
+import 'package:cinemax/modals/credits.dart';
 
 import 'person_widgets.dart';
 
-class SearchedPersonDetailPage extends StatefulWidget {
-  final Person? person;
+class GuestStarDetailPage extends StatefulWidget {
+  final EpisodeGuestStars? cast;
   final String heroId;
+  final Crew? crew;
 
-  const SearchedPersonDetailPage({
+  const GuestStarDetailPage({
     Key? key,
-    this.person,
+    this.cast,
+    this.crew,
     required this.heroId,
   }) : super(key: key);
   @override
-  _SearchedPersonDetailPageState createState() =>
-      _SearchedPersonDetailPageState();
+  _GuestStarDetailPageState createState() => _GuestStarDetailPageState();
 }
 
-class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
+class _GuestStarDetailPageState extends State<GuestStarDetailPage>
     with
         SingleTickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin<SearchedPersonDetailPage> {
+        AutomaticKeepAliveClientMixin<GuestStarDetailPage> {
   late TabController tabController;
 
   @override
@@ -137,18 +139,12 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         CrossAxisAlignment.center,
                                     children: <Widget>[
                                       Text(
-                                        '${widget.person!.name}',
+                                        '${widget.cast!.name}',
                                         style: const TextStyle(fontSize: 25),
                                         // style: widget
                                         //     .themeData.textTheme.headline5,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Text(
-                                        '${widget.person!.department}',
-                                        style: const TextStyle(
-                                            fontSize: 15,
-                                            color: Colors.white54),
                                       ),
                                     ],
                                   ),
@@ -203,18 +199,17 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                                     PersonAboutWidget(
                                                         api: Endpoints
                                                             .getPersonDetails(
-                                                                widget.person!
+                                                                widget.cast!
                                                                     .id!)),
                                                     PersonSocialLinks(
                                                       api: Endpoints
                                                           .getExternalLinksForPerson(
-                                                              widget
-                                                                  .person!.id!),
+                                                              widget.cast!.id!),
                                                     ),
                                                     PersonImagesDisplay(
                                                       api: Endpoints
                                                           .getPersonImages(
-                                                        widget.person!.id!,
+                                                        widget.cast!.id!,
                                                       ),
                                                       title: 'Images',
                                                     ),
@@ -228,19 +223,19 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                       Container(
                                         color: const Color(0xFF202124),
                                         child: PersonMovieListWidget(
-                                          isAdult: widget.person!.adult!,
+                                          isAdult: widget.cast!.adult!,
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
-                                                  widget.person!.id!),
+                                                  widget.cast!.id!),
                                         ),
                                       ),
                                       Container(
                                         color: const Color(0xFF202124),
                                         child: PersonTVListWidget(
-                                            isAdult: widget.person!.adult!,
+                                            isAdult: widget.cast!.adult!,
                                             api:
                                                 Endpoints.getTVCreditsForPerson(
-                                                    widget.person!.id!)),
+                                                    widget.cast!.id!)),
                                       ),
                                     ],
                                     controller: tabController,
@@ -256,21 +251,22 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Hero(
-                              tag: widget.heroId,
+                              tag: 'tag',
                               child: SizedBox(
                                 width: 150,
                                 height: 150,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100.0),
-                                  child: widget.person!.profilePath == null
+                                  child: widget.cast!.profilePath == null
                                       ? Image.asset(
                                           'assets/images/na_square.png',
                                           fit: BoxFit.cover,
                                         )
                                       : FadeInImage(
-                                          image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                              'w500/' +
-                                              '${widget.person!.profilePath}'),
+                                          image: NetworkImage(
+                                              TMDB_BASE_IMAGE_URL +
+                                                  'w500/' +
+                                                  '${widget.cast!.profilePath}'),
                                           fit: BoxFit.cover,
                                           placeholder: const AssetImage(
                                               'assets/images/loading.gif'),

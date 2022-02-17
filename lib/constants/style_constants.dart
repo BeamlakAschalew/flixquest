@@ -8,4 +8,5 @@ const kTextHeaderStyle = TextStyle(
 const kTextSmallHeaderStyle = TextStyle(
   fontFamily: 'PoppinsSB',
   fontSize: 17,
+  overflow: TextOverflow.ellipsis,
 );

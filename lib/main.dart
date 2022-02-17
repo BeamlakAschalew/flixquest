@@ -1,16 +1,16 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cinemax/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Cinemax());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Cinemax extends StatelessWidget {
+  const Cinemax({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,24 +38,24 @@ class MyApp extends StatelessWidget {
               onBackground: Color(0xFFF57C00),
               onError: Color(0xFFFFFFFF),
               brightness: Brightness.dark)),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const CinemaxHomePage(title: 'Cinemax'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class CinemaxHomePage extends StatefulWidget {
+  const CinemaxHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CinemaxHomePage> createState() => _CinemaxHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
+class _CinemaxHomePageState extends State<CinemaxHomePage>
     with SingleTickerProviderStateMixin {
-  late Mixpanel mixpanel;
   late TabController tabController;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("8625a1817d0551c18fc6297b294978b2",
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
         optOutTrackingDefault: false);
   }
 
@@ -82,25 +82,35 @@ class _MyHomePageState extends State<MyHomePage>
           IconButton(
               onPressed: () {
                 showSearch(context: context, delegate: MovieSearch());
-                // if (result != null) {
-                //   Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (context) => MovieDetailPage(
-                //               movie: result, heroId: '${result.id}search')));
-                // }
               },
               icon: const Icon(Icons.search)),
         ],
         bottom: TabBar(
-          tabs: const [
+          tabs: [
             Tab(
-                child: Text(
-              'Movies',
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: Icon(Icons.movie_creation_rounded),
+                ),
+                Text(
+                  'Movies',
+                ),
+              ],
             )),
             Tab(
-                child: Text(
-              'TV Series',
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Padding(
+                    padding: EdgeInsets.only(right: 8.0),
+                    child: Icon(Icons.live_tv_rounded)),
+                Text(
+                  'TV Series',
+                ),
+              ],
             ))
           ],
           indicatorColor: Colors.white,

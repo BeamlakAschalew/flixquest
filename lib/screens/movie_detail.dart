@@ -7,6 +7,7 @@ import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/modals/movie.dart';
 import 'package:cinemax/screens/movie_widgets.dart';
+import 'package:intl/intl.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
@@ -138,7 +139,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF202124),
+                            color: const Color(0xFF2b2c30),
                             child: Column(
                               children: <Widget>[
                                 Padding(
@@ -279,86 +280,89 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                     children: [
                                       SingleChildScrollView(
                                         physics: const BouncingScrollPhysics(),
-                                        child: Column(
-                                          children: <Widget>[
-                                            GenreDisplay(
-                                              api: Endpoints.movieDetailsUrl(
-                                                  widget.movie.id!),
-                                            ),
-                                            Row(
-                                              children: const <Widget>[
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 8.0),
-                                                  child: Text(
-                                                    'Overview',
-                                                    style: kTextHeaderStyle,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: widget
-                                                      .movie.overview!.isEmpty
-                                                  ? const Text(
-                                                      'There is no overview for this movie')
-                                                  : Text(
-                                                      widget.movie.overview!,
-                                                      // style: widget
-                                                      //     .themeData.textTheme.caption,
+                                        child: Container(
+                                          color: const Color(0xFF202124),
+                                          child: Column(
+                                            children: <Widget>[
+                                              GenreDisplay(
+                                                api: Endpoints.movieDetailsUrl(
+                                                    widget.movie.id!),
+                                              ),
+                                              Row(
+                                                children: const <Widget>[
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 8.0),
+                                                    child: Text(
+                                                      'Overview',
+                                                      style: kTextHeaderStyle,
                                                     ),
-                                            ),
-                                            Row(
-                                              children: <Widget>[
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 8.0,
-                                                          bottom: 4.0),
-                                                  child: Text(
-                                                    widget.movie.releaseDate ==
-                                                            null
-                                                        ? 'Release date: N/A'
-                                                        : 'Release date : ${widget.movie.releaseDate}',
-                                                    style: TextStyle(
-                                                        fontFamily:
-                                                            'PoppinsSB'),
                                                   ),
-                                                ),
-                                              ],
-                                            ),
-                                            WatchNowButton(widget: widget),
-                                            ScrollingArtists(
-                                              api: Endpoints.getCreditsUrl(
-                                                  widget.movie.id!),
-                                              title: 'Cast',
-                                            ),
-                                            MovieImagesDisplay(
-                                              title: 'Images',
-                                              api: Endpoints.getImages(
-                                                  widget.movie.id!),
-                                            ),
-                                            MovieVideosDisplay(
-                                              api: Endpoints.getVideos(
-                                                  widget.movie.id!),
-                                              title: 'Videos',
-                                            ),
-                                            MovieSocialLinks(
-                                              api: Endpoints
-                                                  .getExternalLinksForMovie(
-                                                      widget.movie.id!),
-                                            ),
-                                            BelongsToCollectionWidget(
-                                              api: Endpoints.movieDetailsUrl(
-                                                  widget.movie.id!),
-                                            ),
-                                            MovieInfoTable(
-                                              api: Endpoints.movieDetailsUrl(
-                                                  widget.movie.id!),
-                                            ),
-                                          ],
+                                                ],
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: widget
+                                                        .movie.overview!.isEmpty
+                                                    ? const Text(
+                                                        'There is no overview for this movie')
+                                                    : Text(
+                                                        widget.movie.overview!,
+                                                        // style: widget
+                                                        //     .themeData.textTheme.caption,
+                                                      ),
+                                              ),
+                                              Row(
+                                                children: <Widget>[
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 8.0,
+                                                            bottom: 4.0),
+                                                    child: Text(
+                                                      widget.movie.releaseDate ==
+                                                              null
+                                                          ? 'Release date: N/A'
+                                                          : 'Release date : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
+                                                      style: const TextStyle(
+                                                          fontFamily:
+                                                              'PoppinsSB'),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              WatchNowButton(widget: widget),
+                                              ScrollingArtists(
+                                                api: Endpoints.getCreditsUrl(
+                                                    widget.movie.id!),
+                                                title: 'Cast',
+                                              ),
+                                              MovieImagesDisplay(
+                                                title: 'Images',
+                                                api: Endpoints.getImages(
+                                                    widget.movie.id!),
+                                              ),
+                                              MovieVideosDisplay(
+                                                api: Endpoints.getVideos(
+                                                    widget.movie.id!),
+                                                title: 'Videos',
+                                              ),
+                                              MovieSocialLinks(
+                                                api: Endpoints
+                                                    .getExternalLinksForMovie(
+                                                        widget.movie.id!),
+                                              ),
+                                              BelongsToCollectionWidget(
+                                                api: Endpoints.movieDetailsUrl(
+                                                    widget.movie.id!),
+                                              ),
+                                              MovieInfoTable(
+                                                api: Endpoints.movieDetailsUrl(
+                                                    widget.movie.id!),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       CastTab(

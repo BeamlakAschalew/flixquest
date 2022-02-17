@@ -230,17 +230,144 @@ class EpisodeList {
   int? episodeNumber;
   String? name;
   String? airDate;
-  EpisodeList({this.airDate, this.episodeNumber, this.name});
+  String? stillPath;
+  int? seasonNumber;
+  num? voteAverage;
+  num? voteCount;
+  String? overview;
+  List<EpisodeCrew>? episodeCrew;
+  List<EpisodeGuestStars>? episodeGuestStars;
+
+  EpisodeList(
+      {this.airDate,
+      this.episodeNumber,
+      this.name,
+      this.stillPath,
+      this.episodeCrew,
+      this.overview,
+      this.seasonNumber,
+      this.voteAverage,
+      this.voteCount,
+      this.episodeGuestStars});
   EpisodeList.fromJson(Map<String, dynamic> json) {
     episodeNumber = json['episode_number'];
     name = json['name'];
     airDate = json['air_date'];
+    stillPath = json['still_path'];
+    overview = json['overview'];
+    seasonNumber = json['season_number'];
+    voteAverage = json['vote_average'];
+    voteCount = json['vote_count'];
+    if (json['crew'] != null) {
+      episodeCrew = [];
+      json['crew'].forEach((v) {
+        episodeCrew?.add(EpisodeCrew.fromJson(v));
+      });
+    }
+    if (json['guest_stars'] != null) {
+      episodeGuestStars = [];
+      json['guest_stars'].forEach((v) {
+        episodeGuestStars?.add(EpisodeGuestStars.fromJson(v));
+      });
+    }
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['episode_number'] = episodeNumber;
     data['name'] = name;
     data['air_date'] = airDate;
+    data['still_path'] = stillPath;
+    data['overview'] = overview;
+    data['season_number'] = seasonNumber;
+    data['vote_average'] = voteAverage;
+    data['vote_count'] = voteCount;
+    if (episodeCrew != null) {
+      data['crew'] = episodeCrew?.map((v) => v.toJson()).toList();
+    }
+    if (episodeGuestStars != null) {
+      data['guest_stars'] = episodeGuestStars?.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class EpisodeCrew {
+  String? department;
+  String? job;
+  bool? adult;
+  int? gender;
+  int? id;
+  String? knownForDepartment;
+  String? name;
+  String? profilePath;
+  EpisodeCrew(
+      {this.adult,
+      this.department,
+      this.gender,
+      this.id,
+      this.job,
+      this.knownForDepartment,
+      this.name,
+      this.profilePath});
+  EpisodeCrew.fromJson(Map<String, dynamic> json) {
+    department = json['department'];
+    job = json['job'];
+    adult = json['adult'];
+    gender = json['gender'];
+    id = json['id'];
+    knownForDepartment = json['known_for_department'];
+    name = json['name'];
+    profilePath = json['profile_path'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['department'] = department;
+    data['job'] = job;
+    data['adult'] = adult;
+    data['gender'] = gender;
+    data['id'] = id;
+    data['known_for_department'] = knownForDepartment;
+    data['name'] = name;
+    data['profile_path'] = profilePath;
+    return data;
+  }
+}
+
+class EpisodeGuestStars {
+  String? character;
+  bool? adult;
+  int? gender;
+  int? id;
+  String? knownForDepartment;
+  String? name;
+  String? profilePath;
+  EpisodeGuestStars(
+      {this.adult,
+      this.character,
+      this.gender,
+      this.id,
+      this.knownForDepartment,
+      this.name,
+      this.profilePath});
+
+  EpisodeGuestStars.fromJson(Map<String, dynamic> json) {
+    character = json['character'];
+    adult = json['adult'];
+    gender = json['gender'];
+    id = json['id'];
+    knownForDepartment = json['known_for_department'];
+    name = json['name'];
+    profilePath = json['profile_path'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['character'] = character;
+    data['adult'] = adult;
+    data['gender'] = gender;
+    data['id'] = id;
+    data['known_for_department'] = knownForDepartment;
+    data['name'] = name;
+    data['profile_path'] = profilePath;
     return data;
   }
 }

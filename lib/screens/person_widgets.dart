@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_unnecessary_containers
+
 import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/modals/function.dart';
 import 'package:cinemax/modals/images.dart';
@@ -7,7 +9,6 @@ import 'package:cinemax/modals/social_icons_icons.dart';
 import 'package:cinemax/modals/tv.dart';
 import 'package:cinemax/screens/movie_detail.dart';
 import 'package:cinemax/screens/movie_widgets.dart';
-import 'package:cinemax/screens/cast_detail.dart';
 import 'package:cinemax/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -43,6 +44,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
@@ -455,6 +457,7 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return personDetails == null
         ? const CircularProgressIndicator()
         : Column(
@@ -484,7 +487,7 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                       left: 10.0,
                     ),
                     child: Text(personDetails?.birthday != null
-                        ? '${DateTime.parse(personDetails!.birthday!).day} ${DateFormat.MMMM().format(DateTime.parse(personDetails!.birthday!))} ${DateTime.parse(personDetails!.birthday!.toString()).year}'
+                        ? '${DateTime.parse(personDetails!.birthday!).day} ${DateFormat.MMMM().format(DateTime.parse(personDetails!.birthday!))}, ${DateTime.parse(personDetails!.birthday!.toString()).year}'
                         : '-'),
                   ),
                 ],
@@ -493,14 +496,11 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Expanded(
-                    child: const Text(
-                      'From',
-                      style: TextStyle(color: Colors.white54),
-                    ),
+                  const Text(
+                    'From',
+                    style: TextStyle(color: Colors.white54),
                   ),
                   Expanded(
-                    flex: 7,
                     child: Padding(
                       padding: const EdgeInsets.only(
                         left: 5.0,
@@ -512,7 +512,7 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                                 ? personDetails!.birthPlace!
                                 : '-',
                             overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                            maxLines: 2,
                           ),
                         ],
                       ),
@@ -539,8 +539,8 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                     style: const TextStyle(fontFamily: 'Poppins'),
                     colorClickableText: const Color(0xFFF57C00),
                     trimMode: TrimMode.Line,
-                    trimCollapsedText: 'Show more',
-                    trimExpandedText: 'Show less',
+                    trimCollapsedText: 'read more',
+                    trimExpandedText: 'read less',
                     lessStyle: const TextStyle(
                         fontSize: 14,
                         color: Color(0xFFF57C00),
@@ -601,14 +601,14 @@ class _PersonSocialLinksState extends State<PersonSocialLinks> {
               height: 55,
               width: double.infinity,
               child: externalLinks == null
-                  ? Center(
+                  ? const Center(
                       child: CircularProgressIndicator(),
                     )
                   : externalLinks?.facebookUsername == null &&
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
                           externalLinks?.imdbId == null
-                      ? Center(
+                      ? const Center(
                           child: Text(
                             'This person doesn\'t have social media links provided :(',
                             textAlign: TextAlign.center,

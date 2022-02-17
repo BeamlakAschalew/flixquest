@@ -133,6 +133,7 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: Container(
         color: const Color(0xFF202124),
@@ -492,7 +493,7 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
                                                                     .profilePath ==
                                                                 null
                                                             ? Image.asset(
-                                                                'assets/images/na_logo.png',
+                                                                'assets/images/na_lsquare.png',
                                                                 fit: BoxFit
                                                                     .cover,
                                                               )
@@ -570,6 +571,5 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

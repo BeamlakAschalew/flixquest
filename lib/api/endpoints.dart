@@ -198,6 +198,16 @@ class Endpoints {
         '/tv/$id/season/$seasonNumber/images?api_key=$TMDB_API_KEY';
   }
 
+  static getTVEpisodeImagesUrl(int id, int seasonNumber, int episodeNumber) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/season/$seasonNumber/episode/$episodeNumber/images?api_key=$TMDB_API_KEY';
+  }
+
+  static getTVEpisodeVideosUrl(int id, int seasonNumber, int episodeNumber) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/season/$seasonNumber/episode/$episodeNumber/videos?api_key=$TMDB_API_KEY';
+  }
+
   static getTVSeasonVideosUrl(int id, int seasonNumber) {
     return '$TMDB_API_BASE_URL'
         '/tv/$id/season/$seasonNumber/videos?api_key=$TMDB_API_KEY';
@@ -261,5 +271,10 @@ class Endpoints {
   static String getCollectionDetails(int id) {
     return '$TMDB_API_BASE_URL'
         '/collection/$id?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static String getEpisodeCasts(int id, int seasonNumber, int episodeNumber) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/season/$seasonNumber/episode/$episodeNumber/credits?api_key=$TMDB_API_KEY&language=en-US';
   }
 }

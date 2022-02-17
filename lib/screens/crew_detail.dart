@@ -122,7 +122,7 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF202124),
+                            color: const Color(0xFF2b2c30),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
@@ -188,39 +188,43 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                       //   ),
                                       // ),
                                       SingleChildScrollView(
-                                        child: Column(
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 10.0,
-                                                  right: 10,
-                                                  top: 10.0),
-                                              child: Column(
-                                                children: [
-                                                  PersonAboutWidget(
+                                        child: Container(
+                                          color: const Color(0xFF202124),
+                                          child: Column(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 10.0,
+                                                    right: 10,
+                                                    top: 10.0),
+                                                child: Column(
+                                                  children: [
+                                                    PersonAboutWidget(
+                                                        api: Endpoints
+                                                            .getPersonDetails(
+                                                                widget.crew!
+                                                                    .id!)),
+                                                    PersonSocialLinks(
                                                       api: Endpoints
-                                                          .getPersonDetails(
-                                                              widget
-                                                                  .crew!.id!)),
-                                                  PersonSocialLinks(
-                                                    api: Endpoints
-                                                        .getExternalLinksForPerson(
-                                                            widget.crew!.id!),
-                                                  ),
-                                                  PersonImagesDisplay(
-                                                    api: Endpoints
-                                                        .getPersonImages(
-                                                      widget.crew!.id!,
+                                                          .getExternalLinksForPerson(
+                                                              widget.crew!.id!),
                                                     ),
-                                                    title: 'Images',
-                                                  ),
-                                                ],
+                                                    PersonImagesDisplay(
+                                                      api: Endpoints
+                                                          .getPersonImages(
+                                                        widget.crew!.id!,
+                                                      ),
+                                                      title: 'Images',
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       Container(
+                                        color: const Color(0xFF202124),
                                         child: PersonMovieListWidget(
                                           isAdult: widget.crew!.adult!,
                                           api: Endpoints
@@ -229,6 +233,7 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                         ),
                                       ),
                                       Container(
+                                        color: const Color(0xFF202124),
                                         child: PersonTVListWidget(
                                             isAdult: widget.crew!.adult!,
                                             api:
@@ -257,7 +262,7 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                   borderRadius: BorderRadius.circular(100.0),
                                   child: widget.crew!.profilePath == null
                                       ? Image.asset(
-                                          'assets/images/na_logo.png',
+                                          'assets/images/na_square.png',
                                           fit: BoxFit.cover,
                                         )
                                       : FadeInImage(
