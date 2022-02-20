@@ -8,6 +8,7 @@ import 'package:cinemax/modals/person.dart';
 import 'package:cinemax/modals/tv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'movie_detail.dart';
 import 'searchedperson.dart';
 import 'tv_detail.dart';
@@ -27,6 +28,7 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
   List<Movie>? moviesList;
   List<TV>? tvList;
   List<Person>? personList;
+  late Mixpanel mixpanel;
   TabController? tabController;
   final ScrollController moviescrollController = ScrollController();
   final ScrollController tvscrollController = ScrollController();
@@ -129,6 +131,12 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
       });
     });
     getMoreData();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -190,6 +198,14 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
                                         (BuildContext context, int index) {
                                       return GestureDetector(
                                         onTap: () {
+                                          mixpanel.track(
+                                              'Most viewed movie pages',
+                                              properties: {
+                                                'Movie name':
+                                                    '${moviesList![index].originalTitle}',
+                                                'Movie id':
+                                                    '${moviesList![index].id}'
+                                              });
                                           Navigator.pushReplacement(context,
                                               MaterialPageRoute(
                                                   builder: (context) {
@@ -324,6 +340,13 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
                                         (BuildContext context, int index) {
                                       return GestureDetector(
                                         onTap: () {
+                                          mixpanel.track('Most viewed TV pages',
+                                              properties: {
+                                                'TV series name':
+                                                    '${tvList![index].originalName}',
+                                                'TV series id':
+                                                    '${tvList![index].id}'
+                                              });
                                           Navigator.pushReplacement(context,
                                               MaterialPageRoute(
                                                   builder: (context) {
@@ -461,6 +484,14 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
                                         (BuildContext context, int index) {
                                       return GestureDetector(
                                         onTap: () {
+                                          mixpanel.track(
+                                              'Most viewed person pages',
+                                              properties: {
+                                                'Person name':
+                                                    '${personList![index].name}',
+                                                'Person id':
+                                                    '${personList![index].id}'
+                                              });
                                           Navigator.pushReplacement(context,
                                               MaterialPageRoute(
                                                   builder: (context) {

@@ -491,6 +491,14 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                                 child:
                                                                     GestureDetector(
                                                                   onTap: () {
+                                                                    mixpanel.track(
+                                                                        'Most viewed person pages',
+                                                                        properties: {
+                                                                          'Person name':
+                                                                              '${widget.episodeList.episodeGuestStars![index].name}',
+                                                                          'Person id':
+                                                                              '${widget.episodeList.episodeGuestStars![index].id}'
+                                                                        });
                                                                     Navigator.push(
                                                                         context,
                                                                         MaterialPageRoute(builder:

@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'crew_detail.dart';
 import 'movie_widgets.dart';
@@ -90,6 +91,7 @@ class _DiscoverTVState extends State<DiscoverTV>
   late double deviceHeight;
   late double deviceWidth;
   late double deviceAspectRatio;
+  late Mixpanel mixpanel;
 
   List<TV>? tvList;
   // MovieDetails? movieDetails;
@@ -101,6 +103,12 @@ class _DiscoverTVState extends State<DiscoverTV>
         tvList = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -143,16 +151,19 @@ class _DiscoverTVState extends State<DiscoverTV>
                     return Container(
                       child: GestureDetector(
                         onTap: () {
-                          // fetchMovieDetails(moviesList![index].id!);
+                          mixpanel.track('Most viewed TV pages', properties: {
+                            'TV series name': '${tvList![index].originalName}',
+                            'TV series id': '${tvList![index].id}'
+                          });
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => TVDetailPage(
                                       tvSeries: tvList![index],
-                                      heroId: '${tvList![index].id}discover')));
+                                      heroId: '${tvList![index].id}')));
                         },
                         child: Hero(
-                          tag: '${tvList![index].id}discover',
+                          tag: '${tvList![index].id}',
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: FadeInImage(
@@ -200,6 +211,7 @@ class _ScrollingTVState extends State<ScrollingTV>
     with AutomaticKeepAliveClientMixin {
   late int index;
   List<TV>? tvList;
+  late Mixpanel mixpanel;
   // MovieDetails? movieDetails;
   final ScrollController _scrollController = ScrollController();
 
@@ -258,6 +270,12 @@ class _ScrollingTVState extends State<ScrollingTV>
     });
 
     getMoreData();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -303,6 +321,12 @@ class _ScrollingTVState extends State<ScrollingTV>
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
                               onTap: () {
+                                mixpanel
+                                    .track('Most viewed TV pages', properties: {
+                                  'TV series name':
+                                      '${tvList![index].originalName}',
+                                  'TV series id': '${tvList![index].id}'
+                                });
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -399,6 +423,7 @@ class ScrollingTVArtists extends StatefulWidget {
 class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -407,6 +432,12 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
         credits = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -454,6 +485,11 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name': '${credits!.cast![index].name}',
+                            'Person id': '${credits!.cast![index].id}'
+                          });
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return CastDetailPage(
@@ -538,6 +574,7 @@ class ScrollingTVEpisodeArtists extends StatefulWidget {
 class _ScrollingTVEpisodeArtistsState extends State<ScrollingTVEpisodeArtists>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -546,6 +583,12 @@ class _ScrollingTVEpisodeArtistsState extends State<ScrollingTVEpisodeArtists>
         credits = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -593,6 +636,11 @@ class _ScrollingTVEpisodeArtistsState extends State<ScrollingTVEpisodeArtists>
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name': '${credits!.cast![index].name}',
+                            'Person id': '${credits!.cast![index].id}'
+                          });
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return CastDetailPage(
@@ -678,6 +726,7 @@ class ScrollingTVCreators extends StatefulWidget {
 class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
     with AutomaticKeepAliveClientMixin {
   TVDetails? tvDetails;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -686,6 +735,12 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
         tvDetails = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -735,6 +790,13 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(
                             onTap: () {
+                              mixpanel.track('Most viewed person pages',
+                                  properties: {
+                                    'Person name':
+                                        '${tvDetails!.createdBy![index].name}',
+                                    'Person id':
+                                        '${tvDetails!.createdBy![index].id}'
+                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return CreatedByPersonDetailPage(
@@ -1281,6 +1343,7 @@ class TVCastTab extends StatefulWidget {
 class _TVCastTabState extends State<TVCastTab>
     with AutomaticKeepAliveClientMixin<TVCastTab> {
   Credits? credits;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -1289,6 +1352,12 @@ class _TVCastTabState extends State<TVCastTab>
         credits = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -1320,6 +1389,10 @@ class _TVCastTabState extends State<TVCastTab>
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
+                        mixpanel.track('Most viewed person pages', properties: {
+                          'Person name': '${credits!.cast![index].name}',
+                          'Person id': '${credits!.cast![index].id}'
+                        });
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return CastDetailPage(
@@ -1541,6 +1614,7 @@ class TVCrewTab extends StatefulWidget {
 class _TVCrewTabState extends State<TVCrewTab>
     with AutomaticKeepAliveClientMixin<TVCrewTab> {
   Credits? credits;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -1549,6 +1623,12 @@ class _TVCrewTabState extends State<TVCrewTab>
         credits = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -1580,6 +1660,10 @@ class _TVCrewTabState extends State<TVCrewTab>
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
+                        mixpanel.track('Most viewed person pages', properties: {
+                          'Person name': '${credits!.crew![index].name}',
+                          'Person id': '${credits!.crew![index].id}'
+                        });
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return CrewDetailPage(
@@ -1665,6 +1749,7 @@ class TVRecommendationsTab extends StatefulWidget {
 class _TVRecommendationsTabState extends State<TVRecommendationsTab>
     with AutomaticKeepAliveClientMixin {
   List<TV>? tvList;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -1673,6 +1758,12 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
         tvList = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -1700,6 +1791,10 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
+                        mixpanel.track('Most viewed TV pages', properties: {
+                          'TV series name': '${tvList![index].originalName}',
+                          'TV series id': '${tvList![index].id}'
+                        });
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return TVDetailPage(
@@ -1802,6 +1897,7 @@ class SimilarTVTab extends StatefulWidget {
 class _SimilarTVTabState extends State<SimilarTVTab>
     with AutomaticKeepAliveClientMixin {
   List<TV>? tvList;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -1810,6 +1906,12 @@ class _SimilarTVTabState extends State<SimilarTVTab>
         tvList = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -1837,6 +1939,10 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
+                        mixpanel.track('Most viewed TV pages', properties: {
+                          'TV series name': '${tvList![index].originalName}',
+                          'TV series id': '${tvList![index].id}'
+                        });
                         Navigator.pushReplacement(context,
                             MaterialPageRoute(builder: (context) {
                           return TVDetailPage(
@@ -2012,7 +2118,7 @@ class ParticularGenreTV extends StatefulWidget {
 class _ParticularGenreTVState extends State<ParticularGenreTV> {
   List<TV>? tvList;
   final _scrollController = ScrollController();
-
+  late Mixpanel mixpanel;
   int pageNum = 2;
   bool isLoading = false;
 
@@ -2054,6 +2160,12 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
       });
     });
     getMoreData();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -2081,6 +2193,12 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
+                              mixpanel
+                                  .track('Most viewed TV pages', properties: {
+                                'TV series name':
+                                    '${tvList![index].originalName}',
+                                'TV series id': '${tvList![index].id}'
+                              });
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -3352,6 +3470,7 @@ class ParticularStreamingServiceTVShows extends StatefulWidget {
 class _ParticularStreamingServiceTVShowsState
     extends State<ParticularStreamingServiceTVShows> {
   List<TV>? tvList;
+  late Mixpanel mixpanel;
   final _scrollController = ScrollController();
 
   int pageNum = 2;
@@ -3395,6 +3514,12 @@ class _ParticularStreamingServiceTVShowsState
       });
     });
     getMoreData();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -3422,6 +3547,12 @@ class _ParticularStreamingServiceTVShowsState
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
+                              mixpanel
+                                  .track('Most viewed TV pages', properties: {
+                                'TV series name':
+                                    '${tvList![index].originalName}',
+                                'TV series id': '${tvList![index].id}'
+                              });
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

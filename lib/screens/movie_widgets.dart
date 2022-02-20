@@ -91,6 +91,7 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? moviesList;
   MovieDetails? movieDetails;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -104,6 +105,12 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
         movieDetails = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -142,7 +149,11 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
                     return Container(
                       child: GestureDetector(
                         onTap: () {
-                          // fetchMovieDetails(moviesList![index].id!);
+                          mixpanel
+                              .track('Most viewed movie pages', properties: {
+                            'Movie name': '${moviesList![index].originalTitle}',
+                            'Movie id': '${moviesList![index].id}'
+                          });
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -201,6 +212,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
   late int index;
   List<Movie>? moviesList;
   MovieDetails? movieDetails;
+  late Mixpanel mixpanel;
   final ScrollController _scrollController = ScrollController();
 
   int pageNum = 2;
@@ -256,8 +268,13 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
         moviesList = value;
       });
     });
-
     getMoreData();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -303,6 +320,12 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
                               onTap: () {
+                                mixpanel.track('Most viewed movie pages',
+                                    properties: {
+                                      'Movie name':
+                                          '${moviesList![index].originalTitle}',
+                                      'Movie id': '${moviesList![index].id}'
+                                    });
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -399,6 +422,7 @@ class ScrollingArtists extends StatefulWidget {
 
 class _ScrollingArtistsState extends State<ScrollingArtists> {
   Credits? credits;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -407,6 +431,12 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
         credits = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -453,6 +483,11 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name': '${credits!.cast![index].name}',
+                            'Person id': '${credits!.cast![index].id}'
+                          });
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return CastDetailPage(
@@ -778,6 +813,7 @@ class PartsList extends StatefulWidget {
 
 class _PartsListState extends State<PartsList> {
   List<Movie>? collectionMovieList;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -786,6 +822,12 @@ class _PartsListState extends State<PartsList> {
         collectionMovieList = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -823,6 +865,13 @@ class _PartsListState extends State<PartsList> {
                             padding: const EdgeInsets.all(8.0),
                             child: GestureDetector(
                               onTap: () {
+                                mixpanel.track('Most viewed movie pages',
+                                    properties: {
+                                      'Movie name':
+                                          '${collectionMovieList![index].originalTitle}',
+                                      'Movie id':
+                                          '${collectionMovieList![index].id}'
+                                    });
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -1530,6 +1579,7 @@ class CastTab extends StatefulWidget {
 class _CastTabState extends State<CastTab>
     with AutomaticKeepAliveClientMixin<CastTab> {
   Credits? credits;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -1538,6 +1588,12 @@ class _CastTabState extends State<CastTab>
         credits = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -1568,6 +1624,10 @@ class _CastTabState extends State<CastTab>
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
+                        mixpanel.track('Most viewed person pages', properties: {
+                          'Person name': '${credits!.cast![index].name}',
+                          'Person id': '${credits!.cast![index].id}'
+                        });
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return CastDetailPage(
@@ -1648,6 +1708,7 @@ class CrewTab extends StatefulWidget {
 class _CrewTabState extends State<CrewTab>
     with AutomaticKeepAliveClientMixin<CrewTab> {
   Credits? credits;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -1656,6 +1717,12 @@ class _CrewTabState extends State<CrewTab>
         credits = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -1686,6 +1753,10 @@ class _CrewTabState extends State<CrewTab>
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
+                        mixpanel.track('Most viewed person pages', properties: {
+                          'Person name': '${credits!.crew![index].name}',
+                          'Person id': '${credits!.crew![index].id}'
+                        });
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return CrewDetailPage(
@@ -1775,6 +1846,7 @@ class MovieRecommendationsTab extends StatefulWidget {
 class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? movieList;
+  late Mixpanel mixpanel;
   final _scrollController = ScrollController();
 
   int pageNum = 2;
@@ -1815,6 +1887,12 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
       });
     });
     getMoreData();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -1846,6 +1924,12 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
+                              mixpanel.track('Most viewed movie pages',
+                                  properties: {
+                                    'Movie name':
+                                        '${movieList![index].originalTitle}',
+                                    'Movie id': '${movieList![index].id}'
+                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return MovieDetailPage(
@@ -1952,6 +2036,7 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
 class SimilarMoviesTab extends StatefulWidget {
   final String api;
   final int movieId;
+
   const SimilarMoviesTab({Key? key, required this.api, required this.movieId})
       : super(key: key);
 
@@ -1963,7 +2048,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? movieList;
   final _scrollController = ScrollController();
-
+  late Mixpanel mixpanel;
   int pageNum = 2;
   bool isLoading = false;
 
@@ -2002,6 +2087,12 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
       });
     });
     getMoreData();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -2033,6 +2124,12 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
+                              mixpanel.track('Most viewed movie pages',
+                                  properties: {
+                                    'Movie name':
+                                        '${movieList![index].originalTitle}',
+                                    'Movie id': '${movieList![index].id}'
+                                  });
                               Navigator.pushReplacement(context,
                                   MaterialPageRoute(builder: (context) {
                                 return MovieDetailPage(
@@ -2149,7 +2246,7 @@ class ParticularGenreMovies extends StatefulWidget {
 class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   List<Movie>? moviesList;
   final _scrollController = ScrollController();
-
+  late Mixpanel mixpanel;
   int pageNum = 2;
   bool isLoading = false;
 
@@ -2193,6 +2290,12 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
       });
     });
     getMoreData();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -2220,6 +2323,12 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
+                              mixpanel.track('Most viewed movie pages',
+                                  properties: {
+                                    'Movie name':
+                                        '${moviesList![index].originalLanguage}',
+                                    'Movie id': '${moviesList![index].id}'
+                                  });
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -2338,7 +2447,7 @@ class _ParticularStreamingServiceMoviesState
     extends State<ParticularStreamingServiceMovies> {
   List<Movie>? moviesList;
   final _scrollController = ScrollController();
-
+  late Mixpanel mixpanel;
   int pageNum = 2;
   bool isLoading = false;
 
@@ -2380,6 +2489,12 @@ class _ParticularStreamingServiceMoviesState
       });
     });
     getMoreData();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -2407,6 +2522,12 @@ class _ParticularStreamingServiceMoviesState
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
+                              mixpanel.track('Most viewed movie pages',
+                                  properties: {
+                                    'Movie name':
+                                        '${moviesList![index].originalTitle}',
+                                    'Movie id': '${moviesList![index].id}'
+                                  });
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -3203,7 +3324,7 @@ class CollectionMovies extends StatefulWidget {
 
 class _CollectionMoviesState extends State<CollectionMovies> {
   List<Movie>? moviesList;
-
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -3212,6 +3333,12 @@ class _CollectionMoviesState extends State<CollectionMovies> {
         moviesList = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -3238,6 +3365,12 @@ class _CollectionMoviesState extends State<CollectionMovies> {
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
+                              mixpanel.track('Most viewed movie pages',
+                                  properties: {
+                                    'Movie name':
+                                        '${moviesList![index].originalTitle}',
+                                    'Movie id': '${moviesList![index].id}'
+                                  });
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

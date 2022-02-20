@@ -13,6 +13,7 @@ import 'package:cinemax/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:readmore/readmore.dart';
 
 class PersonImagesDisplay extends StatefulWidget {
@@ -137,6 +138,7 @@ class PersonMovieListWidget extends StatefulWidget {
 class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
     with AutomaticKeepAliveClientMixin<PersonMovieListWidget> {
   List<Movie>? personMoviesList;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -145,6 +147,12 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
         personMoviesList = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -202,6 +210,14 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                           (BuildContext context, int index) {
                                         return GestureDetector(
                                           onTap: () {
+                                            mixpanel.track(
+                                                'Most viewed movie pages',
+                                                properties: {
+                                                  'Movie name':
+                                                      '${personMoviesList![index].originalTitle}',
+                                                  'Movie id':
+                                                      '${personMoviesList![index].id}'
+                                                });
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
@@ -290,6 +306,7 @@ class PersonTVListWidget extends StatefulWidget {
 class _PersonTVListWidgetState extends State<PersonTVListWidget>
     with AutomaticKeepAliveClientMixin<PersonTVListWidget> {
   List<TV>? personTVList;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -298,6 +315,12 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
         personTVList = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -355,6 +378,14 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
                                           (BuildContext context, int index) {
                                         return GestureDetector(
                                           onTap: () {
+                                            mixpanel.track(
+                                                'Most viewed TV pages',
+                                                properties: {
+                                                  'TV series name':
+                                                      '${personTVList![index].name}',
+                                                  'TV series id':
+                                                      '${personTVList![index].id}'
+                                                });
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
