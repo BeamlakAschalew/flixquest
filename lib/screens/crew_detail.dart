@@ -254,7 +254,7 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Hero(
-                              tag: 'tag',
+                              tag: widget.heroId,
                               child: SizedBox(
                                 width: 150,
                                 height: 150,

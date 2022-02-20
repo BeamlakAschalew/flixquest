@@ -134,11 +134,18 @@ class _SearchWidgetState extends State<SearchWidget>
     });
     getMoreData();
     initMixpanel();
+    postQuery();
   }
 
   Future<void> initMixpanel() async {
     mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
         optOutTrackingDefault: false);
+  }
+
+  Future postQuery() async {
+    mixpanel.track('Searched terms', properties: {
+      'search term': '${widget.query}',
+    });
   }
 
   @override

@@ -256,7 +256,7 @@ class _CastDetailPageState extends State<CastDetailPage>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Hero(
-                              tag: 'tag',
+                              tag: widget.heroId,
                               child: SizedBox(
                                 width: 150,
                                 height: 150,

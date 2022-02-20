@@ -494,7 +494,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
                               MaterialPageRoute(builder: (context) {
                             return CastDetailPage(
                               cast: credits!.cast![index],
-                              heroId: credits!.cast![index].id.toString(),
+                              heroId: '${credits!.cast![index].id}',
                             );
                           }));
                         },
@@ -508,26 +508,30 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                   tag: credits!.cast![index].id!,
                                   child: SizedBox(
                                     width: 75,
-                                    child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(100.0),
-                                      child:
-                                          credits!.cast![index].profilePath ==
-                                                  null
-                                              ? Image.asset(
-                                                  'assets/images/na_square.png',
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : FadeInImage(
-                                                  image: NetworkImage(
-                                                      TMDB_BASE_IMAGE_URL +
-                                                          'w500/' +
-                                                          credits!.cast![index]
-                                                              .profilePath!),
-                                                  fit: BoxFit.cover,
-                                                  placeholder: const AssetImage(
-                                                      'assets/images/loading.gif'),
-                                                ),
+                                    child: Hero(
+                                      tag: '${credits!.cast![index].id}',
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(100.0),
+                                        child:
+                                            credits!.cast![index].profilePath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_square.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            credits!
+                                                                .cast![index]
+                                                                .profilePath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1814,22 +1818,26 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                 SizedBox(
                                   width: 80,
                                   height: 125,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: tvList![index].posterPath == null
-                                        ? Image.asset(
-                                            'assets/images/na_logo.png',
-                                            fit: BoxFit.cover,
-                                          )
-                                        : FadeInImage(
-                                            image: NetworkImage(
-                                                TMDB_BASE_IMAGE_URL +
-                                                    'w500/' +
-                                                    tvList![index].posterPath!),
-                                            fit: BoxFit.cover,
-                                            placeholder: const AssetImage(
-                                                'assets/images/loading.gif'),
-                                          ),
+                                  child: Hero(
+                                    tag: '${tvList![index].id}',
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: tvList![index].posterPath == null
+                                          ? Image.asset(
+                                              'assets/images/na_logo.png',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : FadeInImage(
+                                              image: NetworkImage(
+                                                  TMDB_BASE_IMAGE_URL +
+                                                      'w500/' +
+                                                      tvList![index]
+                                                          .posterPath!),
+                                              fit: BoxFit.cover,
+                                              placeholder: const AssetImage(
+                                                  'assets/images/loading.gif'),
+                                            ),
+                                    ),
                                   ),
                                 ),
                                 Expanded(
@@ -1962,22 +1970,26 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                 SizedBox(
                                   height: 125,
                                   width: 80,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: tvList![index].posterPath == null
-                                        ? Image.asset(
-                                            'assets/images/na_logo.png',
-                                            fit: BoxFit.cover,
-                                          )
-                                        : FadeInImage(
-                                            image: NetworkImage(
-                                                TMDB_BASE_IMAGE_URL +
-                                                    'w500/' +
-                                                    tvList![index].posterPath!),
-                                            fit: BoxFit.cover,
-                                            placeholder: const AssetImage(
-                                                'assets/images/loading.gif'),
-                                          ),
+                                  child: Hero(
+                                    tag: '${tvList![index].id}',
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      child: tvList![index].posterPath == null
+                                          ? Image.asset(
+                                              'assets/images/na_logo.png',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : FadeInImage(
+                                              image: NetworkImage(
+                                                  TMDB_BASE_IMAGE_URL +
+                                                      'w500/' +
+                                                      tvList![index]
+                                                          .posterPath!),
+                                              fit: BoxFit.cover,
+                                              placeholder: const AssetImage(
+                                                  'assets/images/loading.gif'),
+                                            ),
+                                    ),
                                   ),
                                 ),
                                 Expanded(
@@ -2216,25 +2228,28 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                       SizedBox(
                                         width: 85,
                                         height: 130,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child:
-                                              tvList![index].posterPath == null
-                                                  ? Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : FadeInImage(
-                                                      image: NetworkImage(
-                                                          TMDB_BASE_IMAGE_URL +
-                                                              'w500/' +
-                                                              tvList![index]
-                                                                  .posterPath!),
-                                                      fit: BoxFit.cover,
-                                                      placeholder: const AssetImage(
-                                                          'assets/images/loading.gif'),
-                                                    ),
+                                        child: Hero(
+                                          tag: '${tvList![index].id}',
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: tvList![index].posterPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_logo.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            tvList![index]
+                                                                .posterPath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
                                         ),
                                       ),
                                       Expanded(
