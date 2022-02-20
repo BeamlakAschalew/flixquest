@@ -7,20 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/modals/movie.dart';
 import 'package:cinemax/screens/movie_widgets.dart';
 import 'package:intl/intl.dart';
 
 class TVDetailPage extends StatefulWidget {
   final TV tvSeries;
   final String heroId;
-  final MovieDetails? md;
 
   const TVDetailPage({
     Key? key,
     required this.tvSeries,
     required this.heroId,
-    this.md,
   }) : super(key: key);
   @override
   _TVDetailPageState createState() => _TVDetailPageState();
@@ -62,7 +59,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                                 widget.tvSeries.backdropPath!),
                             fit: BoxFit.cover,
                             placeholder:
-                                const AssetImage('assets/images/loading_8.gif'),
+                                const AssetImage('assets/images/loading_5.gif'),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -116,15 +113,15 @@ class _TVDetailPageState extends State<TVDetailPage>
                   ),
                 ),
                 actions: [
-                  // GestureDetector(
-                  //   child: WatchProvidersButton(
-                  //     api:
-                  //         Endpoints.getMovieWatchProviders(widget.tvSeries.id!),
-                  //     onTap: () {
-                  //       modalBottomSheetMenu();
-                  //     },
-                  //   ),
-                  // ),
+                  GestureDetector(
+                    child: WatchProvidersButton(
+                      api:
+                          Endpoints.getMovieWatchProviders(widget.tvSeries.id!),
+                      onTap: () {
+                        modalBottomSheetMenu();
+                      },
+                    ),
+                  ),
                 ],
               ),
               Expanded(
@@ -158,7 +155,10 @@ class _TVDetailPageState extends State<TVDetailPage>
                                         Text(
                                           widget.tvSeries.firstAirDate == ""
                                               ? widget.tvSeries.name!
-                                              : '${widget.tvSeries.name!} (${DateTime.parse(widget.tvSeries.firstAirDate!).year})',
+                                              : widget.tvSeries.firstAirDate ==
+                                                      null
+                                                  ? widget.tvSeries.name!
+                                                  : '${widget.tvSeries.name!} (${DateTime.parse(widget.tvSeries.firstAirDate!).year})',
                                           style: kTextSmallHeaderStyle,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
@@ -332,9 +332,13 @@ class _TVDetailPageState extends State<TVDetailPage>
                                                             left: 8.0,
                                                             bottom: 4.0),
                                                     child: Text(
-                                                      widget.tvSeries
-                                                                  .firstAirDate ==
-                                                              null
+                                                      widget
+                                                                  .tvSeries
+                                                                  .firstAirDate!
+                                                                  .isEmpty ||
+                                                              widget.tvSeries
+                                                                      .firstAirDate ==
+                                                                  null
                                                           ? 'First episode air date: N/A'
                                                           : 'First episode air date : ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
                                                       style: const TextStyle(
@@ -355,6 +359,9 @@ class _TVDetailPageState extends State<TVDetailPage>
                                                 title: 'Created by',
                                               ),
                                               SeasonsList(
+                                                tvId: widget.tvSeries.id!,
+                                                seriesName: widget
+                                                    .tvSeries.originalName!,
                                                 title: 'Seasons',
                                                 api: Endpoints.getTVSeasons(
                                                     widget.tvSeries.id!),
@@ -384,6 +391,8 @@ class _TVDetailPageState extends State<TVDetailPage>
                                       ),
                                       TVSeasonsTab(
                                         tvId: widget.tvSeries.id!,
+                                        seriesName:
+                                            widget.tvSeries.originalName!,
                                         api: Endpoints.getTVSeasons(
                                             widget.tvSeries.id!),
                                       ),
@@ -455,8 +464,8 @@ class _TVDetailPageState extends State<TVDetailPage>
     showModalBottomSheet(
       context: context,
       builder: (builder) {
-        return WatchProvidersDetails(
-          api: Endpoints.getMovieWatchProviders(widget.tvSeries.id!),
+        return TVWatchProvidersDetails(
+          api: Endpoints.getTVWatchProviders(widget.tvSeries.id!),
         );
       },
     );

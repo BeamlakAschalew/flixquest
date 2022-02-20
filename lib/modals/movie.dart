@@ -80,7 +80,6 @@ class Movie {
   String? overview;
   String? releaseDate;
   String? runtime;
-  String? webLink;
 
   Movie({
     this.voteCount,
@@ -98,7 +97,6 @@ class Movie {
     this.overview,
     this.releaseDate,
     this.runtime,
-    this.webLink,
   });
 
   Movie.fromJson(Map<String, dynamic> json) {
@@ -117,7 +115,6 @@ class Movie {
     overview = json['overview'];
     releaseDate = json['release_date'];
     runtime = json['runtime'];
-    webLink = json['homepage'];
   }
 
   Map<String, dynamic> toJson() {
@@ -137,7 +134,7 @@ class Movie {
     data['overview'] = overview;
     data['release_date'] = releaseDate;
     data['runtime'] = runtime;
-    data['homepage'] = webLink;
+
     return data;
   }
 }
@@ -149,6 +146,7 @@ class MovieDetails {
   String? status;
   int? budget;
   int? revenue;
+  String? imdbId;
 
   List<ProductionCompanies>? productionCompanies;
   List<ProductionCountries>? productionCountries;
@@ -165,6 +163,7 @@ class MovieDetails {
     this.productionCompanies,
     this.productionCountries,
     this.spokenLanguages,
+    this.imdbId,
     /*this.belongsToCollection*/
   });
   MovieDetails.fromJson(Map<String, dynamic> json) {
@@ -173,6 +172,7 @@ class MovieDetails {
     status = json['status'];
     budget = json['budget'];
     revenue = json['revenue'];
+    imdbId = json['imdb_id'];
     // belongsToCollection = json['belongs_to_collection'];
     originalTitle = json['original_title'];
     if (json['production_companies'] != null) {

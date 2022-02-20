@@ -48,7 +48,7 @@ class _AboutPageState extends State<AboutPage> {
                   ),
                 ),
                 const Text(
-                  'This app uses TMdb as a data provider',
+                  'This app uses TMDB as a data provider',
                   textAlign: TextAlign.center,
                   style:
                       TextStyle(fontSize: 20.0, overflow: TextOverflow.visible),

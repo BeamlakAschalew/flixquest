@@ -13,6 +13,7 @@ class SeasonsDetail extends StatefulWidget {
   final Seasons seasons;
   final String heroId;
   final int? tvId;
+  final String? seriesName;
   final TVDetails tvDetails;
 
   const SeasonsDetail({
@@ -20,6 +21,7 @@ class SeasonsDetail extends StatefulWidget {
     required this.seasons,
     required this.heroId,
     required this.tvDetails,
+    this.seriesName,
     this.tvId,
   }) : super(key: key);
 
@@ -63,7 +65,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                 widget.tvDetails.backdropPath!),
                             fit: BoxFit.cover,
                             placeholder:
-                                const AssetImage('assets/images/loading_8.gif'),
+                                const AssetImage('assets/images/loading_5.gif'),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -312,6 +314,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                         ),
                                       ),
                                       EpisodeListWidget(
+                                        seriesName: widget.seriesName,
                                         tvId: widget.tvDetails.id,
                                         api: Endpoints.getSeasonDetails(
                                             widget.tvDetails.id!,

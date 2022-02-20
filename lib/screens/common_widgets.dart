@@ -493,7 +493,7 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
                                                                     .profilePath ==
                                                                 null
                                                             ? Image.asset(
-                                                                'assets/images/na_lsquare.png',
+                                                                'assets/images/na_square.png',
                                                                 fit: BoxFit
                                                                     .cover,
                                                               )

@@ -60,7 +60,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                 widget.movie.backdropPath!),
                             fit: BoxFit.cover,
                             placeholder:
-                                const AssetImage('assets/images/loading_8.gif'),
+                                const AssetImage('assets/images/loading_5.gif'),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -332,7 +332,11 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                   ),
                                                 ],
                                               ),
-                                              WatchNowButton(widget: widget),
+                                              WatchNowButton(
+                                                movieId: widget.movie.id,
+                                                movieName:
+                                                    widget.movie.originalTitle,
+                                              ),
                                               ScrollingArtists(
                                                 api: Endpoints.getCreditsUrl(
                                                     widget.movie.id!),
@@ -351,7 +355,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                               MovieSocialLinks(
                                                 api: Endpoints
                                                     .getExternalLinksForMovie(
-                                                        widget.movie.id!),
+                                                  widget.movie.id!,
+                                                ),
                                               ),
                                               BelongsToCollectionWidget(
                                                 api: Endpoints.movieDetailsUrl(
@@ -374,10 +379,12 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                             widget.movie.id!),
                                       ),
                                       MovieRecommendationsTab(
-                                          api:
-                                              Endpoints.getMovieRecommendations(
-                                                  widget.movie.id!, 1)),
+                                        api: Endpoints.getMovieRecommendations(
+                                            widget.movie.id!, 1),
+                                        movieId: widget.movie.id!,
+                                      ),
                                       SimilarMoviesTab(
+                                          movieId: widget.movie.id!,
                                           api: Endpoints.getSimilarMovies(
                                               widget.movie.id!, 1)),
                                     ],

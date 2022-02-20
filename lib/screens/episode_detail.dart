@@ -8,6 +8,7 @@ import 'package:cinemax/screens/guest_star_detail.dart';
 import 'package:cinemax/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'movie_widgets.dart';
 import 'tv_stream.dart';
@@ -16,12 +17,14 @@ class EpisodeDetailPage extends StatefulWidget {
   final EpisodeList episodeList;
   final List<EpisodeList>? episodes;
   final int? tvId;
+  final String? seriesName;
 
   const EpisodeDetailPage({
     Key? key,
     required this.episodeList,
     this.episodes,
     this.tvId,
+    this.seriesName,
   }) : super(key: key);
 
   @override
@@ -33,12 +36,16 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<EpisodeDetailPage> {
   late TabController tabController;
-
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
-    // tabController = TabController(length: 4, vsync: this);
-    // print(widget.episodes!.length);
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -65,7 +72,7 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                 widget.episodeList.stillPath!),
                             fit: BoxFit.cover,
                             placeholder:
-                                const AssetImage('assets/images/loading_8.gif'),
+                                const AssetImage('assets/images/loading_5.gif'),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -139,7 +146,7 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF202124),
+                            color: const Color(0xFF2b2c30),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,6 +158,8 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Expanded(
                                           child: Column(
@@ -171,6 +180,8 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                 padding: const EdgeInsets.only(
                                                     bottom: 10.0),
                                                 child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       widget.episodeList.name
@@ -178,6 +189,17 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                       maxLines: 2,
                                                       style:
                                                           kTextSmallHeaderStyle,
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 5.0),
+                                                      child: Text(
+                                                        widget.seriesName!,
+                                                        style: const TextStyle(
+                                                            color:
+                                                                Colors.white38),
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -267,306 +289,302 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                     ),
                                   ),
                                 ),
-                                // TabBar(
-                                //   isScrollable: true,
-                                //   indicatorColor: const Color(0xFFF57C00),
-                                //   indicatorWeight: 3,
-                                //   unselectedLabelColor: Colors.white54,
-                                //   labelColor: Colors.white,
-                                //   tabs: const [
-                                //     Tab(
-                                //       child: Text('About',
-                                //           style:
-                                //               TextStyle(fontFamily: 'Poppins')),
-                                //     ),
-                                //     Tab(
-                                //       child: Text('Episodes',
-                                //           style:
-                                //               TextStyle(fontFamily: 'Poppins')),
-                                //     ),
-                                //     Tab(
-                                //       child: Text('Cast',
-                                //           style:
-                                //               TextStyle(fontFamily: 'Poppins')),
-                                //     ),
-                                //     Tab(
-                                //       child: Text('Crew',
-                                //           style:
-                                //               TextStyle(fontFamily: 'Poppins')),
-                                //     ),
-                                //   ],
-                                //   controller: tabController,
-                                //   indicatorSize: TabBarIndicatorSize.tab,
-                                // ),
                                 Expanded(
-                                  child: SingleChildScrollView(
-                                    physics: const BouncingScrollPhysics(),
-                                    child: Column(
-                                      children: <Widget>[
-                                        Row(
-                                          children: const <Widget>[
-                                            Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 8.0),
-                                              child: Text(
-                                                'Overview',
-                                                style: kTextHeaderStyle,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: ReadMoreText(
-                                            widget.episodeList.overview!.isEmpty
-                                                ? 'This season doesn\'t have an overview'
-                                                : widget.episodeList.overview!,
-                                            trimLines: 4,
-                                            style: const TextStyle(
-                                                fontFamily: 'Poppins'),
-                                            colorClickableText:
-                                                const Color(0xFFF57C00),
-                                            trimMode: TrimMode.Line,
-                                            trimCollapsedText: 'read more',
-                                            trimExpandedText: 'read less',
-                                            lessStyle: const TextStyle(
-                                                fontSize: 14,
-                                                color: Color(0xFFF57C00),
-                                                fontWeight: FontWeight.bold),
-                                            moreStyle: const TextStyle(
-                                                fontSize: 14,
-                                                color: Color(0xFFF57C00),
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        Row(
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 8.0, bottom: 4.0),
-                                              child: Text(
-                                                widget.episodeList.airDate ==
-                                                        null
-                                                    ? 'Episode air date: N/A'
-                                                    : 'Episode air date:  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
-                                                style: const TextStyle(
-                                                  fontFamily: 'PoppinsSB',
+                                  child: Container(
+                                    color: const Color(0xFF202124),
+                                    child: SingleChildScrollView(
+                                      physics: const BouncingScrollPhysics(),
+                                      child: Column(
+                                        children: <Widget>[
+                                          Row(
+                                            children: const <Widget>[
+                                              Padding(
+                                                padding:
+                                                    EdgeInsets.only(left: 8.0),
+                                                child: Text(
+                                                  'Overview',
+                                                  style: kTextHeaderStyle,
                                                 ),
                                               ),
+                                            ],
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: ReadMoreText(
+                                              widget.episodeList.overview!
+                                                      .isEmpty
+                                                  ? 'This season doesn\'t have an overview'
+                                                  : widget
+                                                      .episodeList.overview!,
+                                              trimLines: 4,
+                                              style: const TextStyle(
+                                                  fontFamily: 'Poppins'),
+                                              colorClickableText:
+                                                  const Color(0xFFF57C00),
+                                              trimMode: TrimMode.Line,
+                                              trimCollapsedText: 'read more',
+                                              trimExpandedText: 'read less',
+                                              lessStyle: const TextStyle(
+                                                  fontSize: 14,
+                                                  color: Color(0xFFF57C00),
+                                                  fontWeight: FontWeight.bold),
+                                              moreStyle: const TextStyle(
+                                                  fontSize: 14,
+                                                  color: Color(0xFFF57C00),
+                                                  fontWeight: FontWeight.bold),
                                             ),
-                                          ],
-                                        ),
-                                        Container(
-                                          child: TextButton(
-                                            style: ButtonStyle(
-                                                maximumSize:
-                                                    MaterialStateProperty.all(
-                                                        const Size(150, 50)),
-                                                backgroundColor:
-                                                    MaterialStateProperty.all(
-                                                        const Color(
-                                                            0xFFF57C00))),
-                                            onPressed: () {
-                                              // mixpanel.track('Most viewed',
-                                              //     properties: {'Movies': '${widget.widget!.movie.originalTitle}'});
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) {
-                                                return TVStream(
-                                                  id: widget.tvId!,
-                                                  episodeNumber: widget
-                                                      .episodeList
-                                                      .episodeNumber!,
-                                                  seasonNumber: widget
-                                                      .episodeList
-                                                      .seasonNumber!,
-                                                );
-                                              }));
-                                            },
-                                            child: Row(
-                                              children: const [
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                      right: 10),
-                                                  child: Icon(
-                                                    Icons.play_circle,
-                                                    color: Colors.white,
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 8.0, bottom: 4.0),
+                                                child: Text(
+                                                  widget.episodeList.airDate ==
+                                                          null
+                                                      ? 'Episode air date: N/A'
+                                                      : 'Episode air date:  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
+                                                  style: const TextStyle(
+                                                    fontFamily: 'PoppinsSB',
                                                   ),
                                                 ),
-                                                Text(
-                                                  'WATCH NOW',
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                              ],
+                                              ),
+                                            ],
+                                          ),
+                                          Container(
+                                            child: TextButton(
+                                              style: ButtonStyle(
+                                                  maximumSize:
+                                                      MaterialStateProperty.all(
+                                                          const Size(150, 50)),
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          const Color(
+                                                              0xFFF57C00))),
+                                              onPressed: () {
+                                                mixpanel.track(
+                                                    'Most viewed TV series',
+                                                    properties: {
+                                                      'TV series name':
+                                                          '${widget.seriesName}',
+                                                      'TV series id':
+                                                          '${widget.tvId}',
+                                                      'TV series episode name':
+                                                          '${widget.episodeList.name}',
+                                                      'TV series season number':
+                                                          '${widget.episodeList.seasonNumber}',
+                                                      'TV series episode number':
+                                                          '${widget.episodeList.episodeNumber}'
+                                                    });
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) {
+                                                  return TVStream(
+                                                    id: widget.tvId!,
+                                                    episodeNumber: widget
+                                                        .episodeList
+                                                        .episodeNumber!,
+                                                    seasonNumber: widget
+                                                        .episodeList
+                                                        .seasonNumber!,
+                                                  );
+                                                }));
+                                              },
+                                              child: Row(
+                                                children: const [
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        right: 10),
+                                                    child: Icon(
+                                                      Icons.play_circle,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    'WATCH NOW',
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        ScrollingTVEpisodeArtists(
-                                          api: Endpoints.getEpisodeCasts(
-                                              widget.tvId!,
-                                              widget.episodeList.seasonNumber!,
-                                              widget
-                                                  .episodeList.episodeNumber!),
-                                        ),
-                                        Column(
-                                          children: <Widget>[
-                                            widget.episodeList
-                                                        .episodeGuestStars ==
-                                                    null
-                                                ? Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Row(
+                                          ScrollingTVEpisodeArtists(
+                                            api: Endpoints.getEpisodeCasts(
+                                                widget.tvId!,
+                                                widget
+                                                    .episodeList.seasonNumber!,
+                                                widget.episodeList
+                                                    .episodeNumber!),
+                                          ),
+                                          Column(
+                                            children: <Widget>[
+                                              widget.episodeList
+                                                          .episodeGuestStars ==
+                                                      null
+                                                  ? Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Row(
+                                                        children: const <
+                                                            Widget>[
+                                                          Text(
+                                                            'Guest stars',
+                                                            style:
+                                                                kTextHeaderStyle,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )
+                                                  : Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
                                                       children: const <Widget>[
-                                                        Text(
-                                                          'Guest stars',
-                                                          style:
-                                                              kTextHeaderStyle,
+                                                        Padding(
+                                                          padding:
+                                                              EdgeInsets.all(
+                                                                  8.0),
+                                                          child: Text(
+                                                            'Guest stars',
+                                                            style:
+                                                                kTextHeaderStyle,
+                                                          ),
                                                         ),
                                                       ],
                                                     ),
-                                                  )
-                                                : Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: const <Widget>[
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.all(8.0),
-                                                        child: Text(
-                                                          'Guest stars',
-                                                          style:
-                                                              kTextHeaderStyle,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                            SizedBox(
-                                              width: double.infinity,
-                                              height: 160,
-                                              child:
-                                                  widget
-                                                          .episodeList
-                                                          .episodeGuestStars!
-                                                          .isEmpty
-                                                      ? const Center(
-                                                          child: Text(
-                                                              'There are no guest stars provided for this episode :('),
-                                                        )
-                                                      : ListView.builder(
-                                                          physics:
-                                                              const BouncingScrollPhysics(),
-                                                          itemCount: widget
-                                                              .episodeList
-                                                              .episodeGuestStars!
-                                                              .length,
-                                                          scrollDirection:
-                                                              Axis.horizontal,
-                                                          itemBuilder:
-                                                              (BuildContext
-                                                                      context,
-                                                                  int index) {
-                                                            return Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child:
-                                                                  GestureDetector(
-                                                                onTap: () {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                          builder:
-                                                                              (context) {
-                                                                    return GuestStarDetailPage(
-                                                                      cast: widget
-                                                                          .episodeList
-                                                                          .episodeGuestStars![index],
-                                                                      heroId:
-                                                                          '${widget.episodeList.episodeGuestStars![index].id}',
-                                                                    );
-                                                                  }));
-                                                                },
-                                                                child: SizedBox(
-                                                                  width: 100,
-                                                                  child: Column(
-                                                                    children: <
-                                                                        Widget>[
-                                                                      Expanded(
-                                                                        flex: 6,
-                                                                        child:
-                                                                            Hero(
-                                                                          tag:
-                                                                              '${widget.episodeList.episodeGuestStars![index].id}',
+                                              SizedBox(
+                                                width: double.infinity,
+                                                height: 160,
+                                                child:
+                                                    widget
+                                                            .episodeList
+                                                            .episodeGuestStars!
+                                                            .isEmpty
+                                                        ? const Center(
+                                                            child: Text(
+                                                              'There are no guest stars provided for this episode.',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            ),
+                                                          )
+                                                        : ListView.builder(
+                                                            physics:
+                                                                const BouncingScrollPhysics(),
+                                                            itemCount: widget
+                                                                .episodeList
+                                                                .episodeGuestStars!
+                                                                .length,
+                                                            scrollDirection:
+                                                                Axis.horizontal,
+                                                            itemBuilder:
+                                                                (BuildContext
+                                                                        context,
+                                                                    int index) {
+                                                              return Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child:
+                                                                    GestureDetector(
+                                                                  onTap: () {
+                                                                    Navigator.push(
+                                                                        context,
+                                                                        MaterialPageRoute(builder:
+                                                                            (context) {
+                                                                      return GuestStarDetailPage(
+                                                                        cast: widget
+                                                                            .episodeList
+                                                                            .episodeGuestStars![index],
+                                                                        heroId:
+                                                                            '${widget.episodeList.episodeGuestStars![index].id}',
+                                                                      );
+                                                                    }));
+                                                                  },
+                                                                  child:
+                                                                      SizedBox(
+                                                                    width: 100,
+                                                                    child:
+                                                                        Column(
+                                                                      children: <
+                                                                          Widget>[
+                                                                        Expanded(
+                                                                          flex:
+                                                                              6,
                                                                           child:
-                                                                              SizedBox(
-                                                                            width:
-                                                                                75,
+                                                                              Hero(
+                                                                            tag:
+                                                                                '${widget.episodeList.episodeGuestStars![index].id}',
                                                                             child:
-                                                                                ClipRRect(
-                                                                              borderRadius: BorderRadius.circular(100.0),
-                                                                              child: widget.episodeList.episodeGuestStars![index].profilePath == null
-                                                                                  ? Image.asset(
-                                                                                      'assets/images/na_square.png',
-                                                                                      fit: BoxFit.cover,
-                                                                                    )
-                                                                                  : FadeInImage(
-                                                                                      image: NetworkImage(TMDB_BASE_IMAGE_URL + 'w500/' + widget.episodeList.episodeGuestStars![index].profilePath!),
-                                                                                      fit: BoxFit.cover,
-                                                                                      placeholder: const AssetImage('assets/images/loading.gif'),
-                                                                                    ),
+                                                                                SizedBox(
+                                                                              width: 75,
+                                                                              child: ClipRRect(
+                                                                                borderRadius: BorderRadius.circular(100.0),
+                                                                                child: widget.episodeList.episodeGuestStars![index].profilePath == null
+                                                                                    ? Image.asset(
+                                                                                        'assets/images/na_square.png',
+                                                                                        fit: BoxFit.cover,
+                                                                                      )
+                                                                                    : FadeInImage(
+                                                                                        image: NetworkImage(TMDB_BASE_IMAGE_URL + 'w500/' + widget.episodeList.episodeGuestStars![index].profilePath!),
+                                                                                        fit: BoxFit.cover,
+                                                                                        placeholder: const AssetImage('assets/images/loading.gif'),
+                                                                                      ),
+                                                                              ),
                                                                             ),
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                      Expanded(
-                                                                        flex: 6,
-                                                                        child:
-                                                                            Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.all(8.0),
+                                                                        Expanded(
+                                                                          flex:
+                                                                              6,
                                                                           child:
-                                                                              Text(
-                                                                            widget.episodeList.episodeGuestStars![index].name!,
-                                                                            maxLines:
-                                                                                2,
-                                                                            textAlign:
-                                                                                TextAlign.center,
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
+                                                                              Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.all(8.0),
+                                                                            child:
+                                                                                Text(
+                                                                              widget.episodeList.episodeGuestStars![index].name!,
+                                                                              maxLines: 2,
+                                                                              textAlign: TextAlign.center,
+                                                                              overflow: TextOverflow.ellipsis,
+                                                                            ),
                                                                           ),
-                                                                        ),
-                                                                      )
-                                                                    ],
+                                                                        )
+                                                                      ],
+                                                                    ),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            );
-                                                          },
-                                                        ),
-                                            ),
-                                          ],
-                                        ),
-                                        TVEpisodeImagesDisplay(
-                                          title: 'Images',
-                                          api: Endpoints.getTVEpisodeImagesUrl(
-                                              widget.tvId!,
-                                              widget.episodeList.seasonNumber!,
-                                              widget
-                                                  .episodeList.episodeNumber!),
-                                        ),
-                                        TVVideosDisplay(
-                                          api: Endpoints.getTVEpisodeVideosUrl(
-                                              widget.tvId!,
-                                              widget.episodeList.seasonNumber!,
-                                              widget
-                                                  .episodeList.episodeNumber!),
-                                          title: 'Videos',
-                                        ),
-                                      ],
+                                                              );
+                                                            },
+                                                          ),
+                                              ),
+                                            ],
+                                          ),
+                                          TVEpisodeImagesDisplay(
+                                            title: 'Images',
+                                            api:
+                                                Endpoints.getTVEpisodeImagesUrl(
+                                                    widget.tvId!,
+                                                    widget.episodeList
+                                                        .seasonNumber!,
+                                                    widget.episodeList
+                                                        .episodeNumber!),
+                                          ),
+                                          TVVideosDisplay(
+                                            api:
+                                                Endpoints.getTVEpisodeVideosUrl(
+                                                    widget.tvId!,
+                                                    widget.episodeList
+                                                        .seasonNumber!,
+                                                    widget.episodeList
+                                                        .episodeNumber!),
+                                            title: 'Videos',
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),

@@ -56,8 +56,12 @@ class Endpoints {
     return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY';
   }
 
-  static String genresUrl() {
+  static String movieGenresUrl() {
     return '$TMDB_API_BASE_URL/genre/movie/list?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static String tvGenresUrl() {
+    return '$TMDB_API_BASE_URL/genre/tv/list?api_key=$TMDB_API_KEY&language=en-US';
   }
 
   static String getMoviesForGenre(int genreId, int page) {
@@ -94,6 +98,16 @@ class Endpoints {
   static watchProvidersMovies(int providerId, int page) {
     return '$TMDB_API_BASE_URL'
         '/discover/movie?api_key='
+        '$TMDB_API_KEY'
+        '&language=en-US&sort_by=popularity'
+        '.desc&include_adult=false&include_video=false&page=$page'
+        '&with_watch_providers=$providerId'
+        '&watch_region=US';
+  }
+
+  static watchProvidersTVShows(int providerId, int page) {
+    return '$TMDB_API_BASE_URL'
+        '/discover/tv?api_key='
         '$TMDB_API_KEY'
         '&language=en-US&sort_by=popularity'
         '.desc&include_adult=false&include_video=false&page=$page'
@@ -235,7 +249,7 @@ class Endpoints {
         '/tv/$id/similar?api_key=$TMDB_API_KEY&language=en-US&page=$page';
   }
 
-  static String getTVForGenre(int genreId, int page) {
+  static String getTVShowsForGenre(int genreId, int page) {
     return '$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY'
         '&language=en-US'
         '&sort_by=popularity.desc'
@@ -276,5 +290,9 @@ class Endpoints {
   static String getEpisodeCasts(int id, int seasonNumber, int episodeNumber) {
     return '$TMDB_API_BASE_URL'
         '/tv/$id/season/$seasonNumber/episode/$episodeNumber/credits?api_key=$TMDB_API_KEY&language=en-US';
+  }
+
+  static String getTVWatchProviders(int id) {
+    return '$TMDB_API_BASE_URL' '/tv/$id/watch/providers?api_key=$TMDB_API_KEY';
   }
 }

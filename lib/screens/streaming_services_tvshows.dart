@@ -1,20 +1,22 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/modals/genres.dart';
 import 'package:cinemax/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:cinemax/api/endpoints.dart';
 
-class TVGenre extends StatelessWidget {
-  final Genres genres;
-  const TVGenre({Key? key, required this.genres}) : super(key: key);
+class StreamingServicesTVShows extends StatelessWidget {
+  final int providerId;
+  final String providerName;
+  const StreamingServicesTVShows(
+      {Key? key, required this.providerId, required this.providerName})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          genres.genreName!,
+          providerName,
         ),
         leading: IconButton(
           icon: const Icon(
@@ -26,9 +28,9 @@ class TVGenre extends StatelessWidget {
         ),
       ),
       body: Container(
-        child: ParticularGenreTV(
-          genreId: genres.genreID!,
-          api: Endpoints.getTVShowsForGenre(genres.genreID!, 1),
+        child: ParticularStreamingServiceTVShows(
+          providerID: providerId,
+          api: Endpoints.watchProvidersTVShows(providerId, 1),
         ),
       ),
     );

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:cinemax/modals/images.dart';
 import 'package:cinemax/modals/person.dart';
 import 'package:cinemax/modals/tv.dart';
-import 'package:cinemax/modals/tv_genres.dart';
 import 'package:cinemax/modals/videos.dart';
 import 'package:cinemax/modals/watch_providers.dart';
 import 'package:http/http.dart' as http;
@@ -82,7 +81,7 @@ Future<List<Person>> fetchPerson(String api) async {
   return credits.person ?? [];
 }
 
-Future<List<Genres>> fetchMovieGenre(String api) async {
+Future<List<Genres>> fetchGenre(String api) async {
   GenreList newGenreList;
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);
@@ -104,14 +103,6 @@ Future fetchBelongsToCollection(String api) async {
   var decodeRes = jsonDecode(res.body);
   belongsToCollection = BelongsToCollection.fromJson(decodeRes);
   return belongsToCollection;
-}
-
-Future<List<TVGenres>> fetchTVGenre(String api) async {
-  TVGenreList tvGenreList;
-  var res = await http.get(Uri.parse(api));
-  var decodeRes = jsonDecode(res.body);
-  tvGenreList = TVGenreList.fromJson(decodeRes);
-  return tvGenreList.genre ?? [];
 }
 
 Future<MovieDetails> fetchMovieDetails(String api) async {

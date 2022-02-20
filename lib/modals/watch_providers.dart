@@ -2,13 +2,15 @@ class WatchProviders {
   List<Buy>? buy;
   List<FlatRate>? flatRate;
   List<Rent>? rent;
-  WatchProviders(this.buy, this.flatRate, this.rent);
+  List<ADS>? ads;
+  WatchProviders(this.buy, this.flatRate, this.rent, this.ads);
 
   WatchProviders.fromJson(Map<String, dynamic> json) {
     if (json['results']['US'] == null) {
       buy = null;
       rent = null;
       flatRate = null;
+      ads = null;
     } else {
       if (json['results']['US']['buy'] != null) {
         buy = [];
@@ -28,6 +30,12 @@ class WatchProviders {
           rent?.add(Rent.fromJson(v));
         });
       }
+      if (json['results']['US']['ads'] != null) {
+        ads = [];
+        json['results']['US']['ads'].forEach((v) {
+          ads?.add(ADS.fromJson(v));
+        });
+      }
     }
   }
 
@@ -42,6 +50,9 @@ class WatchProviders {
     }
     if (rent != null) {
       data['results']['US']['rent'] = rent?.map((v) => v.toJson()).toList();
+    }
+    if (rent != null) {
+      data['results']['US']['ads'] = ads?.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -91,6 +102,25 @@ class Rent {
   int? providerId;
   Rent({this.logoPath, this.providerId, this.providerName});
   Rent.fromJson(Map<String, dynamic> json) {
+    logoPath = json['logo_path'];
+    providerName = json['provider_name'];
+    providerId = json['provider_id'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['logo_path'] = logoPath;
+    data['provider_name'] = providerName;
+    data['provider_id'] = providerId;
+    return data;
+  }
+}
+
+class ADS {
+  String? logoPath;
+  String? providerName;
+  int? providerId;
+  ADS({this.logoPath, this.providerId, this.providerName});
+  ADS.fromJson(Map<String, dynamic> json) {
     logoPath = json['logo_path'];
     providerName = json['provider_name'];
     providerId = json['provider_id'];
