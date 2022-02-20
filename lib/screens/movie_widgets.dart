@@ -11,7 +11,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import '/modals/function.dart';
 import '/modals/movie.dart';
 import '/api/endpoints.dart';
@@ -29,7 +28,6 @@ import 'package:cinemax/api/endpoints.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'genremovies.dart';
-import 'about.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MainMoviesDisplay extends StatelessWidget {
@@ -2675,48 +2673,6 @@ class StreamingServicesWidget extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class DrawerWidget extends StatelessWidget {
-  const DrawerWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: Column(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFFFFF),
-              ),
-              child: Image.asset('assets/images/logo.png'),
-            ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('About'),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const AboutPage();
-              }));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.share_sharp),
-            title: const Text('Share the app'),
-            onTap: () async {
-              await Share.share(
-                  'Download the Cinemax app for free and watch your favorite movies and TV shows for free! https://cinemax.beamlakaschalew.cf/');
-            },
-          ),
-        ],
       ),
     );
   }

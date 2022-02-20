@@ -81,7 +81,7 @@ class MovieSearch extends SearchDelegate<Movie?> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return SearchMovieWidget(
+    return SearchWidget(
       query: query,
     );
   }

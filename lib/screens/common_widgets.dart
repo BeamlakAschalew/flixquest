@@ -9,21 +9,23 @@ import 'package:cinemax/modals/tv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'package:share_plus/share_plus.dart';
+import 'about.dart';
 import 'movie_detail.dart';
 import 'searchedperson.dart';
 import 'tv_detail.dart';
 
-class SearchMovieWidget extends StatefulWidget {
+class SearchWidget extends StatefulWidget {
   final String? query;
-  const SearchMovieWidget({
+  const SearchWidget({
     Key? key,
     this.query,
   }) : super(key: key);
   @override
-  _SearchMovieWidgetState createState() => _SearchMovieWidgetState();
+  _SearchWidgetState createState() => _SearchWidgetState();
 }
 
-class _SearchMovieWidgetState extends State<SearchMovieWidget>
+class _SearchWidgetState extends State<SearchWidget>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   List<Movie>? moviesList;
   List<TV>? tvList;
@@ -603,4 +605,46 @@ class _SearchMovieWidgetState extends State<SearchMovieWidget>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class DrawerWidget extends StatelessWidget {
+  const DrawerWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFFFFF),
+              ),
+              child: Image.asset('assets/images/logo.png'),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('About'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const AboutPage();
+              }));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.share_sharp),
+            title: const Text('Share the app'),
+            onTap: () async {
+              await Share.share(
+                  'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.beamlakaschalew.cf/');
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }

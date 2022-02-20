@@ -2,6 +2,7 @@
 import 'package:cinemax/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'screens/common_widgets.dart';
 import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
 
