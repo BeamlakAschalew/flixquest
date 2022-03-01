@@ -4,11 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:cinemax/constants/api_constants.dart';
 
 class MovieStream extends StatefulWidget {
-  final int id;
-  const MovieStream({Key? key, required this.id}) : super(key: key);
+  final String streamUrl;
+  const MovieStream({Key? key, required this.streamUrl}) : super(key: key);
 
   @override
   _MovieStreamState createState() => _MovieStreamState();
@@ -71,8 +70,7 @@ class _MovieStreamState extends State<MovieStream> {
             children: [
               InAppWebView(
                 key: webViewKey,
-                initialUrlRequest: URLRequest(
-                    url: Uri.parse("$EMBED_BASE_MOVIE_URL${widget.id}")),
+                initialUrlRequest: URLRequest(url: Uri.parse(widget.streamUrl)),
                 initialOptions: options,
                 pullToRefreshController: pullToRefreshController,
                 onWebViewCreated: (controller) {

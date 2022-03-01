@@ -2,7 +2,6 @@
 
 import 'package:cinemax/constants/style_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/modals/movie.dart';
@@ -336,6 +335,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                 movieId: widget.movie.id,
                                                 movieName:
                                                     widget.movie.originalTitle,
+                                                api: Endpoints.movieDetailsUrl(
+                                                    widget.movie.id!),
                                               ),
                                               ScrollingArtists(
                                                 api: Endpoints.getCreditsUrl(

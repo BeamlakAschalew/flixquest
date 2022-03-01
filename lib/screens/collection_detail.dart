@@ -1,45 +1,5 @@
-// // ignore_for_file: avoid_unnecessary_containers
-
-// import 'package:cinemax/modals/movie.dart';
-// import 'package:flutter/material.dart';
-// import 'package:cinemax/api/endpoints.dart';
-// import 'package:cinemax/screens/movie_widgets.dart';
-
-// class CollectionDetailsWidget1 extends StatelessWidget {
-//   final BelongsToCollection? belongsToCollection;
-//   const CollectionDetailsWidget1({Key? key, this.belongsToCollection})
-//       : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(
-//           belongsToCollection!.name!,
-//         ),
-//         leading: IconButton(
-//           icon: const Icon(
-//             Icons.arrow_back,
-//           ),
-//           onPressed: () {
-//             Navigator.pop(context);
-//           },
-//         ),
-//       ),
-//       body: Container(
-//         child: CollectionMovies(
-//           api: Endpoints.getCollectionDetails(belongsToCollection!.id!),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// ignore_for_file: avoid_unnecessary_containers
-
 import 'package:cinemax/constants/style_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/modals/movie.dart';

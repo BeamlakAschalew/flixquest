@@ -504,34 +504,30 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
                             children: <Widget>[
                               Expanded(
                                 flex: 6,
-                                child: Hero(
-                                  tag: credits!.cast![index].id!,
-                                  child: SizedBox(
-                                    width: 75,
-                                    child: Hero(
-                                      tag: '${credits!.cast![index].id}',
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100.0),
-                                        child:
-                                            credits!.cast![index].profilePath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_square.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : FadeInImage(
-                                                    image: NetworkImage(
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
-                                                            credits!
-                                                                .cast![index]
-                                                                .profilePath!),
-                                                    fit: BoxFit.cover,
-                                                    placeholder: const AssetImage(
-                                                        'assets/images/loading.gif'),
-                                                  ),
-                                      ),
+                                child: SizedBox(
+                                  width: 75,
+                                  child: Hero(
+                                    tag: '${credits!.cast![index].id}',
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      child:
+                                          credits!.cast![index].profilePath ==
+                                                  null
+                                              ? Image.asset(
+                                                  'assets/images/na_square.png',
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : FadeInImage(
+                                                  image: NetworkImage(
+                                                      TMDB_BASE_IMAGE_URL +
+                                                          'w500/' +
+                                                          credits!.cast![index]
+                                                              .profilePath!),
+                                                  fit: BoxFit.cover,
+                                                  placeholder: const AssetImage(
+                                                      'assets/images/loading.gif'),
+                                                ),
                                     ),
                                   ),
                                 ),

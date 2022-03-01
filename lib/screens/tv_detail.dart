@@ -4,7 +4,6 @@ import 'package:cinemax/constants/style_constants.dart';
 import 'package:cinemax/modals/tv.dart';
 import 'package:cinemax/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/screens/movie_widgets.dart';

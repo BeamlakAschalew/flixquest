@@ -4,18 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:cinemax/constants/api_constants.dart';
 
 class TVStream extends StatefulWidget {
-  final int id;
-  final int seasonNumber;
-  final int episodeNumber;
-  const TVStream(
-      {Key? key,
-      required this.id,
-      required this.episodeNumber,
-      required this.seasonNumber})
-      : super(key: key);
+  final String streamUrl;
+  const TVStream({Key? key, required this.streamUrl}) : super(key: key);
 
   @override
   _TVStreamState createState() => _TVStreamState();
@@ -78,9 +70,7 @@ class _TVStreamState extends State<TVStream> {
             children: [
               InAppWebView(
                 key: webViewKey,
-                initialUrlRequest: URLRequest(
-                    url: Uri.parse(
-                        "$EMBED_BASE_TV_URL${widget.id}&s=${widget.seasonNumber}&e=${widget.episodeNumber}")),
+                initialUrlRequest: URLRequest(url: Uri.parse(widget.streamUrl)),
                 initialOptions: options,
                 pullToRefreshController: pullToRefreshController,
                 onWebViewCreated: (controller) {

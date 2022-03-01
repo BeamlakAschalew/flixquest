@@ -2,7 +2,6 @@
 
 import 'package:cinemax/modals/person.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
 

@@ -33,9 +33,9 @@ class MovieSearch extends SearchDelegate<Movie?> {
       ),
       colorScheme: const ColorScheme(
         primary: Color(0xFFF57C00),
-        primaryVariant: Color(0xFF8f4700),
+        primaryContainer: Color(0xFF8f4700),
         secondary: Color(0xFF202124),
-        secondaryVariant: Color(0xFF141517),
+        secondaryContainer: Color(0xFF141517),
         surface: Color(0xFFF57C00),
         background: Color(0xFF202124),
         error: Color(0xFFFF0000),

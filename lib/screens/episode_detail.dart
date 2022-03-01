@@ -5,13 +5,13 @@ import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/constants/style_constants.dart';
 import 'package:cinemax/modals/tv.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
+import 'package:cinemax/screens/tv_stream_select.dart';
 import 'package:cinemax/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'movie_widgets.dart';
-import 'tv_stream.dart';
 
 class EpisodeDetailPage extends StatefulWidget {
   final EpisodeList episodeList;
@@ -379,8 +379,10 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                 Navigator.push(context,
                                                     MaterialPageRoute(
                                                         builder: (context) {
-                                                  return TVStream(
-                                                    id: widget.tvId!,
+                                                  return TVStreamSelect(
+                                                    tvSeriesName:
+                                                        widget.seriesName!,
+                                                    tvSeriesId: widget.tvId!,
                                                     episodeNumber: widget
                                                         .episodeList
                                                         .episodeNumber!,

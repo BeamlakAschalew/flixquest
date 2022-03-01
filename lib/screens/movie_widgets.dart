@@ -7,7 +7,6 @@ import 'package:cinemax/modals/videos.dart';
 import 'package:cinemax/modals/watch_providers.dart';
 import 'package:cinemax/screens/cast_detail.dart';
 import 'package:cinemax/screens/streaming_services_movies.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
@@ -20,7 +19,6 @@ import 'package:cinemax/screens/movie_detail.dart';
 import 'package:cinemax/modals/credits.dart';
 import 'collection_detail.dart';
 import 'crew_detail.dart';
-import 'movie_stream.dart';
 import 'package:cinemax/modals/images.dart';
 import 'package:http/http.dart' as http;
 import 'package:cinemax/constants/api_constants.dart';
@@ -29,6 +27,8 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'genremovies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'movie_stream_select.dart';
 
 class MainMoviesDisplay extends StatelessWidget {
   const MainMoviesDisplay({
@@ -1254,6 +1254,9 @@ class WatchNowButton extends StatefulWidget {
 
 class _WatchNowButtonState extends State<WatchNowButton> {
   late Mixpanel mixpanel;
+  MovieDetails? movieDetails;
+  bool? isVisible = false;
+  double? buttonWidth = 150;
   @override
   void initState() {
     super.initState();
@@ -1270,35 +1273,62 @@ class _WatchNowButtonState extends State<WatchNowButton> {
     return Container(
       child: TextButton(
         style: ButtonStyle(
-            maximumSize: MaterialStateProperty.all(const Size(150, 50)),
+            maximumSize: MaterialStateProperty.all(Size(buttonWidth!, 50)),
             backgroundColor:
                 MaterialStateProperty.all(const Color(0xFFF57C00))),
-        onPressed: () {
+        onPressed: () async {
           mixpanel.track('Most viewed movies', properties: {
             'Movie name': '${widget.movieName}',
             'Movie id': '${widget.movieId}'
           });
+          setState(() {
+            isVisible = true;
+            buttonWidth = 170;
+          });
+          await fetchMovieDetails(widget.api!).then((value) {
+            setState(() {
+              movieDetails = value;
+            });
+          });
+          setState(() {
+            isVisible = false;
+            buttonWidth = 150;
+          });
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return MovieStream(
-              // movieName: widget.movieName!,
-              // movieId: widget.movieId!,
-              // movieImdbId: movieDetails!.imdbId!,
-              id: widget.movieId!,
+            return MovieStreamSelect(
+              movieId: widget.movieId!,
+              movieName: widget.movieName!,
+              movieImdbId: movieDetails!.imdbId!,
             );
           }));
         },
         child: Row(
-          children: const [
-            Padding(
+          children: [
+            const Padding(
               padding: EdgeInsets.only(right: 10),
               child: Icon(
                 Icons.play_circle,
                 color: Colors.white,
               ),
             ),
-            Text(
+            const Text(
               'WATCH NOW',
               style: TextStyle(color: Colors.white),
+            ),
+            Visibility(
+              visible: isVisible!,
+              child: const Padding(
+                padding: EdgeInsets.only(
+                  left: 10.0,
+                ),
+                child: SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
