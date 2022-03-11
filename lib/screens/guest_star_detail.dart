@@ -250,7 +250,7 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Hero(
-                              tag: 'tag',
+                              tag: widget.heroId,
                               child: SizedBox(
                                 width: 150,
                                 height: 150,

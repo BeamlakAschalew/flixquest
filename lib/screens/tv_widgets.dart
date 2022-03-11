@@ -134,7 +134,7 @@ class _DiscoverTVState extends State<DiscoverTV>
         ),
         SizedBox(
           width: double.infinity,
-          height: deviceHeight * 0.45,
+          height: deviceHeight * 0.417,
           child: tvList == null
               ? const Center(
                   child: CircularProgressIndicator(),
@@ -645,7 +645,7 @@ class _ScrollingTVEpisodeArtistsState extends State<ScrollingTVEpisodeArtists>
                               MaterialPageRoute(builder: (context) {
                             return CastDetailPage(
                               cast: credits!.cast![index],
-                              heroId: credits!.cast![index].id.toString(),
+                              heroId: '${credits!.cast![index].id}',
                             );
                           }));
                         },
@@ -655,10 +655,10 @@ class _ScrollingTVEpisodeArtistsState extends State<ScrollingTVEpisodeArtists>
                             children: <Widget>[
                               Expanded(
                                 flex: 6,
-                                child: Hero(
-                                  tag: credits!.cast![index].id!,
-                                  child: SizedBox(
-                                    width: 75,
+                                child: SizedBox(
+                                  width: 75,
+                                  child: Hero(
+                                    tag: '${credits!.cast![index].id}',
                                     child: ClipRRect(
                                       borderRadius:
                                           BorderRadius.circular(100.0),
@@ -1379,95 +1379,114 @@ class _TVCastTabState extends State<TVCastTab>
                 color: const Color(0xFF202124),
               )
             : Container(
-                padding: const EdgeInsets.only(
-                  left: 8.0,
-                ),
                 color: const Color(0xFF202124),
                 child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: credits!.cast!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        mixpanel.track('Most viewed person pages', properties: {
-                          'Person name': '${credits!.cast![index].name}',
-                          'Person id': '${credits!.cast![index].id}'
-                        });
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return CastDetailPage(
-                              cast: credits!.cast![index],
-                              heroId: '${credits!.cast![index].id}');
-                        }));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 8.0, right: 8.0, bottom: 16.0, top: 0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(
-                              width: 80,
-                              height: 80,
-                              child: Hero(
-                                tag: '${credits!.cast![index].id}',
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(50.0),
-                                  child:
-                                      credits!.cast![index].profilePath == null
-                                          ? Image.asset(
-                                              'assets/images/na_square.png',
-                                              fit: BoxFit.cover,
-                                            )
-                                          : FadeInImage(
-                                              image: NetworkImage(
-                                                  TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
-                                                      credits!.cast![index]
-                                                          .profilePath!),
-                                              fit: BoxFit.cover,
-                                              placeholder: const AssetImage(
-                                                  'assets/images/loading.gif'),
-                                            ),
-                                ),
-                              ),
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: credits!.cast!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name': '${credits!.cast![index].name}',
+                            'Person id': '${credits!.cast![index].id}'
+                          });
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CastDetailPage(
+                                cast: credits!.cast![index],
+                                heroId: '${credits!.cast![index].name}');
+                          }));
+                        },
+                        child: Container(
+                          color: const Color(0xFF202124),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              top: 0.0,
+                              bottom: 15.0,
+                              left: 15,
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 8.0,
-                                    bottom: 8.0,
-                                    right: 8.0,
-                                    left: 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      credits!.cast![index].name!,
-                                      overflow: TextOverflow.ellipsis,
+                            child: Column(
+                              children: [
+                                Row(
+                                  // crossAxisAlignment:
+                                  //     CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 20.0),
+                                      child: SizedBox(
+                                        width: 80,
+                                        height: 80,
+                                        child: Hero(
+                                          tag: '${credits!.cast![index].name}',
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(100.0),
+                                            child: credits!.cast![index]
+                                                        .profilePath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_logo.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            credits!
+                                                                .cast![index]
+                                                                .profilePath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                      // child: Text(tvDetails!
+                                      //     .seasons![index].seasonNumber
+                                      //     .toString()),
                                     ),
-                                    Text(
-                                      'As : '
-                                      '${credits!.cast![index].roles![0].character!.isEmpty ? 'N/A' : credits!.cast![index].roles![0].character!}',
-                                    ),
-                                    Text(
-                                      credits!.cast![index].roles![0]
-                                              .episodeCount!
-                                              .toString() +
-                                          ' episodes',
-                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            credits!.cast![index].name!,
+                                            style: const TextStyle(
+                                                fontFamily: 'PoppinsSB'),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            'As : '
+                                            '${credits!.cast![index].roles![0].character!.isEmpty ? 'N/A' : credits!.cast![index].roles![0].character!}',
+                                          ),
+                                          Text(
+                                            credits!.cast![index].roles![0]
+                                                        .episodeCount! ==
+                                                    1
+                                                ? credits!.cast![index]
+                                                        .roles![0].episodeCount!
+                                                        .toString() +
+                                                    ' episode'
+                                                : credits!.cast![index]
+                                                        .roles![0].episodeCount!
+                                                        .toString() +
+                                                    ' episodes',
+                                          ),
+                                        ],
+                                      ),
+                                    )
                                   ],
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              );
+                      );
+                    }));
   }
 
   @override
@@ -1516,87 +1535,105 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                 ),
               )
             : Container(
-                padding: const EdgeInsets.only(
-                  left: 8.0,
-                ),
                 color: const Color(0xFF202124),
                 child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: tvDetails!.seasons!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SeasonsDetail(
-                                    seriesName: widget.seriesName,
-                                    tvId: widget.tvId,
-                                    tvDetails: tvDetails!,
-                                    seasons: tvDetails!.seasons![index],
-                                    heroId:
-                                        '${tvDetails!.seasons![index].seasonId}')));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 8.0, right: 8.0, bottom: 16.0, top: 0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(
-                              width: 85,
-                              height: 130,
-                              child: Hero(
-                                tag: '${tvDetails!.seasons![index].seasonId}',
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  child:
-                                      tvDetails!.seasons![index].posterPath ==
-                                              null
-                                          ? Image.asset(
-                                              'assets/images/na_logo.png',
-                                              fit: BoxFit.cover,
-                                            )
-                                          : FadeInImage(
-                                              image: NetworkImage(
-                                                  TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
-                                                      tvDetails!.seasons![index]
-                                                          .posterPath!),
-                                              fit: BoxFit.cover,
-                                              placeholder: const AssetImage(
-                                                  'assets/images/loading.gif'),
-                                            ),
-                                ),
-                              ),
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: tvDetails!.seasons!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SeasonsDetail(
+                                      seriesName: widget.seriesName,
+                                      tvId: widget.tvId,
+                                      tvDetails: tvDetails!,
+                                      seasons: tvDetails!.seasons![index],
+                                      heroId:
+                                          '${tvDetails!.seasons![index].seasonId}')));
+                        },
+                        child: Container(
+                          color: const Color(0xFF202124),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              top: 0.0,
+                              bottom: 8.0,
+                              left: 15,
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 8.0,
-                                    bottom: 8.0,
-                                    right: 8.0,
-                                    left: 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      tvDetails!.seasons![index].name!,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontSize: 18),
+                            child: Column(
+                              children: [
+                                Row(
+                                  // crossAxisAlignment:
+                                  //     CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 30.0),
+                                      child: SizedBox(
+                                        width: 85,
+                                        height: 130,
+                                        child: Hero(
+                                          tag:
+                                              '${tvDetails!.seasons![index].seasonId}',
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            child: tvDetails!.seasons![index]
+                                                        .posterPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_logo.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            tvDetails!
+                                                                .seasons![index]
+                                                                .posterPath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                      // child: Text(tvDetails!
+                                      //     .seasons![index].seasonNumber
+                                      //     .toString()),
                                     ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            tvDetails!.seasons![index].name!,
+                                            style: const TextStyle(
+                                                fontSize: 20,
+                                                fontFamily: 'PoppinsSB',
+                                                overflow:
+                                                    TextOverflow.ellipsis),
+                                          ),
+                                        ],
+                                      ),
+                                    )
                                   ],
                                 ),
-                              ),
+                                const Divider(
+                                  color: Colors.white,
+                                  thickness: 1,
+                                  endIndent: 20,
+                                  indent: 10,
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              );
+                      );
+                    }));
   }
 
   @override
@@ -1645,93 +1682,106 @@ class _TVCrewTabState extends State<TVCrewTab>
             ? Container(
                 child: const Center(
                   child:
-                      Text('There is no data available for this TV show crew'),
+                      Text('There is no data available for this TV show cast'),
                 ),
                 color: const Color(0xFF202124),
               )
             : Container(
-                padding: const EdgeInsets.only(
-                  left: 8.0,
-                ),
                 color: const Color(0xFF202124),
                 child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: credits!.crew!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        mixpanel.track('Most viewed person pages', properties: {
-                          'Person name': '${credits!.crew![index].name}',
-                          'Person id': '${credits!.crew![index].id}'
-                        });
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return CrewDetailPage(
-                            heroId: '${credits!.crew![index].id}',
-                            crew: credits!.crew![index],
-                          );
-                        }));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 8.0, right: 8.0, bottom: 16.0, top: 0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            SizedBox(
-                              width: 80,
-                              height: 80,
-                              child: Hero(
-                                tag: '${credits!.crew![index].id}',
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(50.0),
-                                  child:
-                                      credits!.crew![index].profilePath == null
-                                          ? Image.asset(
-                                              'assets/images/na_square.png',
-                                              fit: BoxFit.cover,
-                                            )
-                                          : FadeInImage(
-                                              image: NetworkImage(
-                                                  TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
-                                                      credits!.crew![index]
-                                                          .profilePath!),
-                                              fit: BoxFit.cover,
-                                              placeholder: const AssetImage(
-                                                  'assets/images/loading.gif'),
-                                            ),
-                                ),
-                              ),
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: credits!.crew!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name': '${credits!.crew![index].name}',
+                            'Person id': '${credits!.crew![index].id}'
+                          });
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CrewDetailPage(
+                                crew: credits!.crew![index],
+                                heroId: '${credits!.crew![index].name}');
+                          }));
+                        },
+                        child: Container(
+                          color: const Color(0xFF202124),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              top: 0.0,
+                              bottom: 15.0,
+                              left: 15,
                             ),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      credits!.crew![index].name!,
-                                      // style: themeData!.textTheme.bodyText2,
-                                      overflow: TextOverflow.ellipsis,
+                            child: Column(
+                              children: [
+                                Row(
+                                  // crossAxisAlignment:
+                                  //     CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 20.0),
+                                      child: SizedBox(
+                                        width: 80,
+                                        height: 80,
+                                        child: Hero(
+                                          tag: '${credits!.crew![index].name}',
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(100.0),
+                                            child: credits!.crew![index]
+                                                        .profilePath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_logo.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            credits!
+                                                                .crew![index]
+                                                                .profilePath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                      // child: Text(tvDetails!
+                                      //     .seasons![index].seasonNumber
+                                      //     .toString()),
                                     ),
-                                    Text(
-                                      'Job : ' +
-                                          credits!.crew![index].department!,
-                                      // style: themeData!.textTheme.bodyText1,
-                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            credits!.crew![index].name!,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                                fontFamily: 'PoppinsSB'),
+                                          ),
+                                          Text(
+                                            'Job : '
+                                            '${credits!.crew![index].department!.isEmpty ? 'N/A' : credits!.crew![index].department!}',
+                                          ),
+                                        ],
+                                      ),
+                                    )
                                   ],
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              );
+                      );
+                    }));
   }
 
   @override
@@ -1740,7 +1790,9 @@ class _TVCrewTabState extends State<TVCrewTab>
 
 class TVRecommendationsTab extends StatefulWidget {
   final String api;
-  const TVRecommendationsTab({Key? key, required this.api}) : super(key: key);
+  final int tvId;
+  const TVRecommendationsTab({Key? key, required this.api, required this.tvId})
+      : super(key: key);
 
   @override
   _TVRecommendationsTabState createState() => _TVRecommendationsTabState();
@@ -1759,6 +1811,38 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
       });
     });
     initMixpanel();
+    getMoreData();
+  }
+
+  final _scrollController = ScrollController();
+
+  int pageNum = 2;
+  bool isLoading = false;
+
+  Future<String> getMoreData() async {
+    _scrollController.addListener(() async {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        setState(() {
+          isLoading = true;
+        });
+
+        var response = await http.get(Uri.parse(
+            '$TMDB_API_BASE_URL/tv/${widget.tvId}/recommendations?api_key=$TMDB_API_KEY'
+            '&language=en-US'
+            '&page=$pageNum'));
+        setState(() {
+          pageNum++;
+          isLoading = false;
+          var newlistTV = (json.decode(response.body)['results'] as List)
+              .map((i) => TV.fromJson(i))
+              .toList();
+          tvList!.addAll(newlistTV);
+        });
+      }
+    });
+
+    return "success";
   }
 
   Future<void> initMixpanel() async {
@@ -1769,121 +1853,146 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Container(
-      color: const Color(0xFF202124),
-      child: tvList == null
-          ? const Center(
+    return tvList == null
+        ? Container(
+            color: const Color(0xFF202124),
+            child: const Center(
               child: CircularProgressIndicator(),
-            )
-          : tvList!.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Text(
-                      'There is no recommendations for this TV show',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: tvList!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        mixpanel.track('Most viewed TV pages', properties: {
-                          'TV series name': '${tvList![index].originalName}',
-                          'TV series id': '${tvList![index].id}'
-                        });
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return TVDetailPage(
-                            tvSeries: tvList![index],
-                            heroId: '${tvList![index].id}',
-                          );
-                        }));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 8.0, right: 8.0, bottom: 8.0, top: 0.0),
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                SizedBox(
-                                  width: 80,
-                                  height: 125,
-                                  child: Hero(
-                                    tag: '${tvList![index].id}',
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: tvList![index].posterPath == null
-                                          ? Image.asset(
-                                              'assets/images/na_logo.png',
-                                              fit: BoxFit.cover,
-                                            )
-                                          : FadeInImage(
-                                              image: NetworkImage(
-                                                  TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
-                                                      tvList![index]
-                                                          .posterPath!),
-                                              fit: BoxFit.cover,
-                                              placeholder: const AssetImage(
-                                                  'assets/images/loading.gif'),
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          tvList![index].originalName!,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          style: const TextStyle(
-                                              fontFamily: 'Poppins'),
-                                        ),
-                                        Row(
-                                          children: <Widget>[
-                                            Text(
-                                              tvList![index]
-                                                  .voteAverage!
-                                                  .toStringAsFixed(1),
-                                              style: const TextStyle(
-                                                  fontFamily: 'Poppins'),
-                                            ),
-                                            const Icon(Icons.star,
-                                                color: Color(0xFFF57C00)),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24.0),
-                              child: Divider(
-                                color: Colors.white,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+            ),
+          )
+        : tvList!.isEmpty
+            ? Container(
+                color: const Color(0xFF202124),
+                child: const Center(
+                  child: Text('There is no season available for this TV show'),
                 ),
-    );
+              )
+            : Container(
+                color: const Color(0xFF202124),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                          controller: _scrollController,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: tvList!.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                mixpanel
+                                    .track('Most viewed TV pages', properties: {
+                                  'TV series name':
+                                      '${tvList![index].originalName}',
+                                  'TV series id': '${tvList![index].id}'
+                                });
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return TVDetailPage(
+                                    tvSeries: tvList![index],
+                                    heroId: '${tvList![index].id}',
+                                  );
+                                }));
+                              },
+                              child: Container(
+                                color: const Color(0xFF202124),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 0.0,
+                                    bottom: 8.0,
+                                    left: 10,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        // crossAxisAlignment:
+                                        //     CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 10.0),
+                                            child: SizedBox(
+                                              width: 85,
+                                              height: 130,
+                                              child: Hero(
+                                                tag: '${tvList![index].id}',
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  child: tvList![index]
+                                                              .posterPath ==
+                                                          null
+                                                      ? Image.asset(
+                                                          'assets/images/na_logo.png',
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : FadeInImage(
+                                                          image: NetworkImage(
+                                                              TMDB_BASE_IMAGE_URL +
+                                                                  'w500/' +
+                                                                  tvList![index]
+                                                                      .posterPath!),
+                                                          fit: BoxFit.cover,
+                                                          placeholder:
+                                                              const AssetImage(
+                                                                  'assets/images/loading.gif'),
+                                                        ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  tvList![index].name!,
+                                                  style: const TextStyle(
+                                                      fontFamily: 'PoppinsSB',
+                                                      fontSize: 17,
+                                                      overflow: TextOverflow
+                                                          .ellipsis),
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    const Icon(Icons.star,
+                                                        color:
+                                                            Color(0xFFF57C00)),
+                                                    Text(
+                                                      tvList![index]
+                                                          .voteAverage!
+                                                          .toStringAsFixed(1),
+                                                      style: const TextStyle(
+                                                          fontFamily:
+                                                              'Poppins'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      const Divider(
+                                        color: Colors.white,
+                                        thickness: 1,
+                                        endIndent: 20,
+                                        indent: 10,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                    ),
+                    Visibility(
+                        visible: isLoading,
+                        child:
+                            const Center(child: CircularProgressIndicator())),
+                  ],
+                ));
   }
 
   @override
@@ -1892,7 +2001,9 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
 
 class SimilarTVTab extends StatefulWidget {
   final String api;
-  const SimilarTVTab({Key? key, required this.api}) : super(key: key);
+  final int tvId;
+  const SimilarTVTab({Key? key, required this.api, required this.tvId})
+      : super(key: key);
 
   @override
   _SimilarTVTabState createState() => _SimilarTVTabState();
@@ -1911,6 +2022,38 @@ class _SimilarTVTabState extends State<SimilarTVTab>
       });
     });
     initMixpanel();
+    getMoreData();
+  }
+
+  final _scrollController = ScrollController();
+
+  int pageNum = 2;
+  bool isLoading = false;
+
+  Future<String> getMoreData() async {
+    _scrollController.addListener(() async {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        setState(() {
+          isLoading = true;
+        });
+
+        var response = await http.get(Uri.parse(
+            '$TMDB_API_BASE_URL/tv/${widget.tvId}/similar?api_key=$TMDB_API_KEY'
+            '&language=en-US'
+            '&page=$pageNum'));
+        setState(() {
+          pageNum++;
+          isLoading = false;
+          var newlistTV = (json.decode(response.body)['results'] as List)
+              .map((i) => TV.fromJson(i))
+              .toList();
+          tvList!.addAll(newlistTV);
+        });
+      }
+    });
+
+    return "success";
   }
 
   Future<void> initMixpanel() async {
@@ -1921,121 +2064,146 @@ class _SimilarTVTabState extends State<SimilarTVTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Container(
-      color: const Color(0xFF202124),
-      child: tvList == null
-          ? const Center(
+    return tvList == null
+        ? Container(
+            color: const Color(0xFF202124),
+            child: const Center(
               child: CircularProgressIndicator(),
-            )
-          : tvList!.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Center(
-                    child: Text(
-                      'There is no similars for this TV show',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: tvList!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        mixpanel.track('Most viewed TV pages', properties: {
-                          'TV series name': '${tvList![index].originalName}',
-                          'TV series id': '${tvList![index].id}'
-                        });
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) {
-                          return TVDetailPage(
-                            tvSeries: tvList![index],
-                            heroId: '${tvList![index].id}',
-                          );
-                        }));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 8.0, right: 8.0, bottom: 8.0, top: 0.0),
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: <Widget>[
-                                SizedBox(
-                                  height: 125,
-                                  width: 80,
-                                  child: Hero(
-                                    tag: '${tvList![index].id}',
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: tvList![index].posterPath == null
-                                          ? Image.asset(
-                                              'assets/images/na_logo.png',
-                                              fit: BoxFit.cover,
-                                            )
-                                          : FadeInImage(
-                                              image: NetworkImage(
-                                                  TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
-                                                      tvList![index]
-                                                          .posterPath!),
-                                              fit: BoxFit.cover,
-                                              placeholder: const AssetImage(
-                                                  'assets/images/loading.gif'),
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          tvList![index].originalName!,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          style: const TextStyle(
-                                              fontFamily: 'Poppins'),
-                                        ),
-                                        Row(
-                                          children: <Widget>[
-                                            Text(
-                                              tvList![index]
-                                                  .voteAverage!
-                                                  .toStringAsFixed(1),
-                                              style: const TextStyle(
-                                                  fontFamily: 'Poppins'),
-                                            ),
-                                            const Icon(Icons.star,
-                                                color: Color(0xFFF57C00)),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 24.0),
-                              child: Divider(
-                                color: Colors.white,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+            ),
+          )
+        : tvList!.isEmpty
+            ? Container(
+                color: const Color(0xFF202124),
+                child: const Center(
+                  child: Text('There is no season available for this TV show'),
                 ),
-    );
+              )
+            : Container(
+                color: const Color(0xFF202124),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                          controller: _scrollController,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: tvList!.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                mixpanel
+                                    .track('Most viewed TV pages', properties: {
+                                  'TV series name':
+                                      '${tvList![index].originalName}',
+                                  'TV series id': '${tvList![index].id}'
+                                });
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return TVDetailPage(
+                                    tvSeries: tvList![index],
+                                    heroId: '${tvList![index].id}',
+                                  );
+                                }));
+                              },
+                              child: Container(
+                                color: const Color(0xFF202124),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    top: 0.0,
+                                    bottom: 8.0,
+                                    left: 10,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        // crossAxisAlignment:
+                                        //     CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 10.0),
+                                            child: SizedBox(
+                                              width: 85,
+                                              height: 130,
+                                              child: Hero(
+                                                tag: '${tvList![index].id}',
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  child: tvList![index]
+                                                              .posterPath ==
+                                                          null
+                                                      ? Image.asset(
+                                                          'assets/images/na_logo.png',
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : FadeInImage(
+                                                          image: NetworkImage(
+                                                              TMDB_BASE_IMAGE_URL +
+                                                                  'w500/' +
+                                                                  tvList![index]
+                                                                      .posterPath!),
+                                                          fit: BoxFit.cover,
+                                                          placeholder:
+                                                              const AssetImage(
+                                                                  'assets/images/loading.gif'),
+                                                        ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  tvList![index].name!,
+                                                  style: const TextStyle(
+                                                      fontFamily: 'PoppinsSB',
+                                                      fontSize: 17,
+                                                      overflow: TextOverflow
+                                                          .ellipsis),
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    const Icon(Icons.star,
+                                                        color:
+                                                            Color(0xFFF57C00)),
+                                                    Text(
+                                                      tvList![index]
+                                                          .voteAverage!
+                                                          .toStringAsFixed(1),
+                                                      style: const TextStyle(
+                                                          fontFamily:
+                                                              'Poppins'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      const Divider(
+                                        color: Colors.white,
+                                        thickness: 1,
+                                        endIndent: 20,
+                                        indent: 10,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                    ),
+                    Visibility(
+                        visible: isLoading,
+                        child:
+                            const Center(child: CircularProgressIndicator())),
+                  ],
+                ));
   }
 
   @override

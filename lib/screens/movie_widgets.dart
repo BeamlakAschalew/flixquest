@@ -90,6 +90,7 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
   List<Movie>? moviesList;
   MovieDetails? movieDetails;
   late Mixpanel mixpanel;
+  late double deviceHeight;
   @override
   void initState() {
     super.initState();
@@ -114,6 +115,7 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    deviceHeight = MediaQuery.of(context).size.height;
     return Column(
       children: <Widget>[
         Row(
@@ -130,7 +132,8 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
         ),
         SizedBox(
           width: double.infinity,
-          height: 350,
+          //height: 350,
+          height: deviceHeight * 0.417,
           child: moviesList == null
               ? const Center(
                   child: CircularProgressIndicator(),
@@ -2845,7 +2848,7 @@ class _TopButtonState extends State<TopButton> {
       child: TextButton(
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(const Color(0x26F57C00)),
-            maximumSize: MaterialStateProperty.all(const Size(140, 40)),
+            maximumSize: MaterialStateProperty.all(const Size(200, 60)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
@@ -2894,7 +2897,7 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
       child: TextButton(
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(const Color(0x26F57C00)),
-            maximumSize: MaterialStateProperty.all(const Size(140, 40)),
+            maximumSize: MaterialStateProperty.all(const Size(200, 60)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),

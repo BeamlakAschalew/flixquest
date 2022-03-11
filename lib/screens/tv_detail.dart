@@ -404,9 +404,11 @@ class _TVDetailPageState extends State<TVDetailPage>
                                             widget.tvSeries.id!),
                                       ),
                                       TVRecommendationsTab(
+                                          tvId: widget.tvSeries.id!,
                                           api: Endpoints.getTVRecommendations(
                                               widget.tvSeries.id!, 1)),
                                       SimilarTVTab(
+                                          tvId: widget.tvSeries.id!,
                                           api: Endpoints.getSimilarTV(
                                               widget.tvSeries.id!, 1)),
                                     ],

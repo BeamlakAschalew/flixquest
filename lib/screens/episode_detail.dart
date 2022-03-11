@@ -525,12 +525,12 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                                           flex:
                                                                               6,
                                                                           child:
-                                                                              Hero(
-                                                                            tag:
-                                                                                '${widget.episodeList.episodeGuestStars![index].id}',
+                                                                              SizedBox(
+                                                                            width:
+                                                                                75,
                                                                             child:
-                                                                                SizedBox(
-                                                                              width: 75,
+                                                                                Hero(
+                                                                              tag: '${widget.episodeList.episodeGuestStars![index].id}',
                                                                               child: ClipRRect(
                                                                                 borderRadius: BorderRadius.circular(100.0),
                                                                                 child: widget.episodeList.episodeGuestStars![index].profilePath == null
