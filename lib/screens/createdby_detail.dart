@@ -174,11 +174,6 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                   child: TabBarView(
                                     physics: const PageScrollPhysics(),
                                     children: [
-                                      // PersonAboutWidget(
-                                      //   api: Endpoints.getPersonDetails(
-                                      //     widget.cast.id!,
-                                      //   ),
-                                      // ),
                                       SingleChildScrollView(
                                         child: Container(
                                           color: const Color(0xFF202124),

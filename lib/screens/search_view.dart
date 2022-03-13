@@ -10,16 +10,8 @@ class MovieSearch extends SearchDelegate<Movie?> {
 
   @override
   ThemeData appBarTheme(BuildContext context) {
-    // final ThemeData theme = (
-    // hintColor: themeData!.accentColor,
-    // primaryColor: Colors(0xFFF57C00),
-    // textTheme: TextTheme(
-    //   headline6: themeData!.textTheme.bodyText1,
-    // ));
     return ThemeData(
-      // primaryColor: Color(0xFFF57C00),
       appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF000000)),
-
       inputDecorationTheme: const InputDecorationTheme(
         border: InputBorder.none,
         hintStyle: TextStyle(color: Colors.white24, fontFamily: 'Poppins'),
