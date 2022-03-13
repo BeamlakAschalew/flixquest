@@ -8,11 +8,13 @@ class TVStreamSelect extends StatelessWidget {
   final int tvSeriesId;
   final String? tvSeriesImdbId;
   final int seasonNumber;
+  final String episodeName;
   final int episodeNumber;
   const TVStreamSelect({
     Key? key,
     required this.tvSeriesName,
     required this.tvSeriesId,
+    required this.episodeName,
     this.tvSeriesImdbId,
     required this.episodeNumber,
     required this.seasonNumber,
@@ -23,7 +25,9 @@ class TVStreamSelect extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Watch $tvSeriesName',
+          'Watch $tvSeriesName ${seasonNumber <= 9 ? 'S0$seasonNumber' : 'S$seasonNumber'} | '
+          '${episodeNumber <= 9 ? 'E0$episodeNumber' : 'E$episodeNumber'}'
+          ', $episodeName',
         ),
         leading: IconButton(
           icon: const Icon(
@@ -54,7 +58,7 @@ class TVStreamSelect extends StatelessWidget {
                           'https://api.123movie.cc/tmdb_api.php?se=$seasonNumber&ep=$episodeNumber&tmdb=$tvSeriesId&server_name=vcu',
                     ),
                     StreamListWidget(
-                      streamName: 'Stream three (360p/720p)',
+                      streamName: 'Stream three (360p)',
                       streamLink:
                           'https://database.gdriveplayer.us/player.php?type=series&tmdb=$tvSeriesId&season=$seasonNumber&episode=$episodeNumber',
                     ),

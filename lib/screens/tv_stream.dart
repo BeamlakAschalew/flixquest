@@ -70,7 +70,27 @@ class _TVStreamState extends State<TVStream> {
             children: [
               InAppWebView(
                 key: webViewKey,
-                initialUrlRequest: URLRequest(url: Uri.parse(widget.streamUrl)),
+                initialUrlRequest: URLRequest(
+                    url: Uri.dataFromString(
+                  '''
+            <html>
+            <header>
+            <meta name="viewport" 
+            content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+            </header>
+            <body style="margin:0;background-color:#FFF;">
+            <iframe 
+            frameborder="0"
+            width="100%" 
+            height="100%" 
+            src="${widget.streamUrl}" 
+            allowfullscreen>
+            </iframe>
+            </body>
+            </html>
+      ''',
+                  mimeType: 'text/html',
+                )),
                 initialOptions: options,
                 pullToRefreshController: pullToRefreshController,
                 onWebViewCreated: (controller) {

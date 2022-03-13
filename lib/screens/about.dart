@@ -33,7 +33,7 @@ class _AboutPageState extends State<AboutPage> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(40.0),
                         child: Image.asset(
-                          'assets/images/logo.png',
+                          'assets/images/logo_shadow.png',
                           height: 100,
                           width: 100,
                         ),
@@ -97,6 +97,10 @@ class _AboutPageState extends State<AboutPage> {
                     style: TextStyle(fontSize: 20.0),
                   ),
                 ),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('2014 EC, 2021 GC'),
+                )
               ],
             ),
           ),

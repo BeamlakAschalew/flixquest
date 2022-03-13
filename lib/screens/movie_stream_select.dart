@@ -51,7 +51,7 @@ class MovieStreamSelect extends StatelessWidget {
                           'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=vcu',
                     ),
                     StreamListWidget(
-                      streamName: 'Stream three (360p/720p)',
+                      streamName: 'Stream three (360p)',
                       streamLink:
                           'http://database.gdriveplayer.us/player.php?tmdb=$movieId',
                     ),

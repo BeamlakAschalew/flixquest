@@ -181,425 +181,480 @@ class _SearchWidgetState extends State<SearchWidget>
                   ),
                   Expanded(
                     child: TabBarView(controller: tabController, children: [
-                      moviesList!.isEmpty
-                          ? const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  'Oops! the movie you searched doesn\'t exist, if you searched for a TV show or a person select either of the tabs above',
-                                  style: TextStyle(fontFamily: 'Poppins'),
-                                  textAlign: TextAlign.center,
-                                ),
+                      moviesList == null
+                          ? Container(
+                              color: const Color(0xFF202124),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
                               ),
                             )
-                          : Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.builder(
-                                    controller: moviescrollController,
-                                    physics: const BouncingScrollPhysics(),
-                                    itemCount: moviesList!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          mixpanel.track(
-                                              'Most viewed movie pages',
-                                              properties: {
-                                                'Movie name':
-                                                    '${moviesList![index].originalTitle}',
-                                                'Movie id':
-                                                    '${moviesList![index].id}'
-                                              });
-                                          Navigator.pushReplacement(context,
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                            return MovieDetailPage(
-                                                movie: moviesList![index],
-                                                heroId:
-                                                    '${moviesList![index].id}');
-                                          }));
-                                        },
+                          : moviesList!.isEmpty
+                              ? Container(
+                                  color: const Color(0xFF202124),
+                                  child: const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Oops! the movie you searched doesn\'t exist, if you searched for a TV show or a person select either of the tabs above',
+                                        style: TextStyle(fontFamily: 'Poppins'),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  color: const Color(0xFF202124),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
                                         child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  SizedBox(
-                                                    width: 85,
-                                                    height: 130,
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8.0),
-                                                      child: moviesList![index]
-                                                                  .posterPath ==
-                                                              null
-                                                          ? Image.asset(
-                                                              'assets/images/na_logo.png',
-                                                              fit: BoxFit.cover,
-                                                            )
-                                                          : FadeInImage(
-                                                              image: NetworkImage(
-                                                                  TMDB_BASE_IMAGE_URL +
-                                                                      'w500/' +
+                                          padding:
+                                              const EdgeInsets.only(top: 8.0),
+                                          child: ListView.builder(
+                                              controller: moviescrollController,
+                                              physics:
+                                                  const BouncingScrollPhysics(),
+                                              itemCount: moviesList!.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    mixpanel.track(
+                                                        'Most viewed movie pages',
+                                                        properties: {
+                                                          'Movie name':
+                                                              '${moviesList![index].originalTitle}',
+                                                          'Movie id':
+                                                              '${moviesList![index].id}'
+                                                        });
+                                                    Navigator.pushReplacement(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) {
+                                                      return MovieDetailPage(
+                                                        movie:
+                                                            moviesList![index],
+                                                        heroId:
+                                                            '${moviesList![index].id}',
+                                                      );
+                                                    }));
+                                                  },
+                                                  child: Container(
+                                                    color:
+                                                        const Color(0xFF202124),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                        top: 0.0,
+                                                        bottom: 8.0,
+                                                        left: 10,
+                                                      ),
+                                                      child: Column(
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        right:
+                                                                            10.0),
+                                                                child: SizedBox(
+                                                                  width: 85,
+                                                                  height: 130,
+                                                                  child: Hero(
+                                                                    tag:
+                                                                        '${moviesList![index].id}',
+                                                                    child:
+                                                                        ClipRRect(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              10.0),
+                                                                      child: moviesList![index].posterPath ==
+                                                                              null
+                                                                          ? Image
+                                                                              .asset(
+                                                                              'assets/images/na_logo.png',
+                                                                              fit: BoxFit.cover,
+                                                                            )
+                                                                          : FadeInImage(
+                                                                              image: NetworkImage(TMDB_BASE_IMAGE_URL + 'w500/' + moviesList![index].posterPath!),
+                                                                              fit: BoxFit.cover,
+                                                                              placeholder: const AssetImage('assets/images/loading.gif'),
+                                                                            ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
                                                                       moviesList![
                                                                               index]
-                                                                          .posterPath!),
-                                                              fit: BoxFit.cover,
-                                                              placeholder:
-                                                                  const AssetImage(
-                                                                      'assets/images/loading.gif'),
+                                                                          .title!,
+                                                                      style: const TextStyle(
+                                                                          fontFamily:
+                                                                              'PoppinsSB',
+                                                                          fontSize:
+                                                                              15,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis),
+                                                                    ),
+                                                                    Row(
+                                                                      children: <
+                                                                          Widget>[
+                                                                        const Icon(
+                                                                            Icons
+                                                                                .star,
+                                                                            color:
+                                                                                Color(0xFFF57C00)),
+                                                                        Text(
+                                                                          moviesList![index]
+                                                                              .voteAverage!
+                                                                              .toStringAsFixed(1),
+                                                                          style:
+                                                                              const TextStyle(fontFamily: 'Poppins'),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          const Divider(
+                                                            color: Colors.white,
+                                                            thickness: 1,
+                                                            endIndent: 20,
+                                                            indent: 10,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                        ),
+                                      ),
+                                      Visibility(
+                                          visible: isLoading,
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Center(
+                                                child:
+                                                    CircularProgressIndicator()),
+                                          )),
+                                    ],
+                                  )),
+                      tvList == null
+                          ? Container(
+                              color: const Color(0xFF202124),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : tvList!.isEmpty
+                              ? Container(
+                                  color: const Color(0xFF202124),
+                                  child: const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Oops! the TV show you searched doesn\'t exist, if you searched for a movie or a person select either of the tabs above',
+                                        style: TextStyle(fontFamily: 'Poppins'),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  color: const Color(0xFF202124),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 8.0),
+                                          child: ListView.builder(
+                                              controller: tvscrollController,
+                                              physics:
+                                                  const BouncingScrollPhysics(),
+                                              itemCount: tvList!.length,
+                                              itemBuilder:
+                                                  (BuildContext context,
+                                                      int index) {
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    mixpanel.track(
+                                                        'Most viewed TV pages',
+                                                        properties: {
+                                                          'TV series name':
+                                                              '${tvList![index].originalName}',
+                                                          'TV series id':
+                                                              '${tvList![index].id}'
+                                                        });
+                                                    Navigator.pushReplacement(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) {
+                                                      return TVDetailPage(
+                                                          tvSeries:
+                                                              tvList![index],
+                                                          heroId:
+                                                              '${tvList![index].id}');
+                                                    }));
+                                                  },
+                                                  child: Container(
+                                                    color:
+                                                        const Color(0xFF202124),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                        top: 0.0,
+                                                        bottom: 8.0,
+                                                        left: 10,
+                                                      ),
+                                                      child: Column(
+                                                        children: [
+                                                          Row(
+                                                            children: [
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        right:
+                                                                            10.0),
+                                                                child: SizedBox(
+                                                                  width: 85,
+                                                                  height: 130,
+                                                                  child: Hero(
+                                                                    tag:
+                                                                        '${tvList![index].id}',
+                                                                    child:
+                                                                        ClipRRect(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              10.0),
+                                                                      child: tvList![index].posterPath ==
+                                                                              null
+                                                                          ? Image
+                                                                              .asset(
+                                                                              'assets/images/na_logo.png',
+                                                                              fit: BoxFit.cover,
+                                                                            )
+                                                                          : FadeInImage(
+                                                                              image: NetworkImage(TMDB_BASE_IMAGE_URL + 'w500/' + tvList![index].posterPath!),
+                                                                              fit: BoxFit.cover,
+                                                                              placeholder: const AssetImage('assets/images/loading.gif'),
+                                                                            ),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Expanded(
+                                                                child: Column(
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      tvList![index]
+                                                                          .originalName!,
+                                                                      style: const TextStyle(
+                                                                          fontFamily:
+                                                                              'PoppinsSB',
+                                                                          fontSize:
+                                                                              15,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis),
+                                                                    ),
+                                                                    Row(
+                                                                      children: <
+                                                                          Widget>[
+                                                                        const Icon(
+                                                                            Icons
+                                                                                .star,
+                                                                            color:
+                                                                                Color(0xFFF57C00)),
+                                                                        Text(
+                                                                          tvList![index]
+                                                                              .voteAverage!
+                                                                              .toStringAsFixed(1),
+                                                                          style:
+                                                                              const TextStyle(fontFamily: 'Poppins'),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              )
+                                                            ],
+                                                          ),
+                                                          const Divider(
+                                                            color: Colors.white,
+                                                            thickness: 1,
+                                                            endIndent: 20,
+                                                            indent: 10,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              }),
+                                        ),
+                                      ),
+                                      Visibility(
+                                          visible: isLoading,
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Center(
+                                                child:
+                                                    CircularProgressIndicator()),
+                                          )),
+                                    ],
+                                  )),
+                      personList == null
+                          ? Container(
+                              color: const Color(0xFF202124),
+                              child: const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : personList!.isEmpty
+                              ? Container(
+                                  child: const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                        'Oops! the person you searched doesn\'t exist, if you searched for a TV show or a movie select either of the tabs above',
+                                        style: TextStyle(fontFamily: 'Poppins'),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                  color: const Color(0xFF202124),
+                                )
+                              : Container(
+                                  color: const Color(0xFF202124),
+                                  child: ListView.builder(
+                                      controller: personcrollController,
+                                      physics: const BouncingScrollPhysics(),
+                                      itemCount: personList!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            mixpanel.track(
+                                                'Most viewed person pages',
+                                                properties: {
+                                                  'Person name':
+                                                      '${personList![index].name}',
+                                                  'Person id':
+                                                      '${personList![index].id}'
+                                                });
+                                            Navigator.pushReplacement(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return SearchedPersonDetailPage(
+                                                  person: personList![index],
+                                                  heroId:
+                                                      '${personList![index].id}');
+                                            }));
+                                          },
+                                          child: Container(
+                                            color: const Color(0xFF202124),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 0.0,
+                                                bottom: 15.0,
+                                                left: 15,
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                right: 20.0),
+                                                        child: SizedBox(
+                                                          width: 80,
+                                                          height: 80,
+                                                          child: Hero(
+                                                            tag:
+                                                                '${personList![index].id}',
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          100.0),
+                                                              child: personList![
+                                                                              index]
+                                                                          .profilePath ==
+                                                                      null
+                                                                  ? Image.asset(
+                                                                      'assets/images/na_square.png',
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    )
+                                                                  : FadeInImage(
+                                                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                                                          'w500/' +
+                                                                          personList![index]
+                                                                              .profilePath!),
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                      placeholder:
+                                                                          const AssetImage(
+                                                                              'assets/images/loading.gif'),
+                                                                    ),
                                                             ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            moviesList![index]
-                                                                .title!,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            maxLines: 1,
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'Poppins'),
                                                           ),
-                                                          Row(
-                                                            children: <Widget>[
-                                                              Text(
-                                                                moviesList![
-                                                                        index]
-                                                                    .voteAverage!
-                                                                    .toString(),
-                                                                style: const TextStyle(
-                                                                    fontFamily:
-                                                                        'Poppins'),
-                                                              ),
-                                                              const Icon(
-                                                                  Icons.star,
-                                                                  color: Color(
-                                                                      0xFFF57C00)),
-                                                            ],
-                                                          ),
-                                                        ],
+                                                        ),
                                                       ),
-                                                    ),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              personList![index]
+                                                                  .name!,
+                                                              style: const TextStyle(
+                                                                  fontFamily:
+                                                                      'PoppinsSB',
+                                                                  fontSize: 17),
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
                                                   ),
                                                 ],
                                               ),
-                                              const Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 24.0),
-                                                child: Divider(
-                                                  color: Colors.white,
-                                                ),
-                                              )
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Visibility(
-                                    visible: isLoading,
-                                    child: const Center(
-                                        child: CircularProgressIndicator())),
-                              ],
-                            ),
-                      tvList!.isEmpty
-                          ? const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  'Oops! the TV show you searched doesn\'t exist, if you searched for a movie or a person select either of the tabs above',
-                                  style: TextStyle(fontFamily: 'Poppins'),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          : Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.builder(
-                                    controller: moviescrollController,
-                                    physics: const BouncingScrollPhysics(),
-                                    itemCount: tvList!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          mixpanel.track('Most viewed TV pages',
-                                              properties: {
-                                                'TV series name':
-                                                    '${tvList![index].originalName}',
-                                                'TV series id':
-                                                    '${tvList![index].id}'
-                                              });
-                                          Navigator.pushReplacement(context,
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                            return TVDetailPage(
-                                                tvSeries: tvList![index],
-                                                heroId: '${tvList![index].id}');
-                                          }));
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  SizedBox(
-                                                    width: 85,
-                                                    height: 130,
-                                                    child: Hero(
-                                                      tag:
-                                                          '${tvList![index].id}',
-                                                      child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(8.0),
-                                                        child: tvList![index]
-                                                                    .posterPath ==
-                                                                null
-                                                            ? Image.asset(
-                                                                'assets/images/na_logo.png',
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              )
-                                                            : FadeInImage(
-                                                                image: NetworkImage(
-                                                                    TMDB_BASE_IMAGE_URL +
-                                                                        'w500/' +
-                                                                        tvList![index]
-                                                                            .posterPath!),
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                placeholder:
-                                                                    const AssetImage(
-                                                                        'assets/images/loading.gif'),
-                                                              ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            tvList![index]
-                                                                .originalName!,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            maxLines: 1,
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'Poppins'),
-                                                          ),
-                                                          Row(
-                                                            children: <Widget>[
-                                                              Text(
-                                                                tvList![index]
-                                                                    .voteAverage!
-                                                                    .toString(),
-                                                                style: const TextStyle(
-                                                                    fontFamily:
-                                                                        'Poppins'),
-                                                              ),
-                                                              const Icon(
-                                                                  Icons.star,
-                                                                  color: Color(
-                                                                      0xFFF57C00)),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 24.0),
-                                                child: Divider(
-                                                  color: Colors.white,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Visibility(
-                                    visible: isLoading,
-                                    child: const Center(
-                                        child: CircularProgressIndicator())),
-                              ],
-                            ),
-                      personList!.isEmpty
-                          ? const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Text(
-                                  'Oops! the person you searched doesn\'t exist, if you searched for a TV show or a movie select either of the tabs above',
-                                  style: TextStyle(fontFamily: 'Poppins'),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            )
-                          : Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.builder(
-                                    controller: personcrollController,
-                                    physics: const BouncingScrollPhysics(),
-                                    itemCount: personList!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          mixpanel.track(
-                                              'Most viewed person pages',
-                                              properties: {
-                                                'Person name':
-                                                    '${personList![index].name}',
-                                                'Person id':
-                                                    '${personList![index].id}'
-                                              });
-                                          Navigator.pushReplacement(context,
-                                              MaterialPageRoute(
-                                                  builder: (context) {
-                                            return SearchedPersonDetailPage(
-                                                person: personList![index],
-                                                heroId:
-                                                    '${personList![index].id}');
-                                          }));
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                  SizedBox(
-                                                    width: 85,
-                                                    height: 85,
-                                                    child: Hero(
-                                                      tag:
-                                                          '${personList![index].id}',
-                                                      child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(50.0),
-                                                        child: personList![
-                                                                        index]
-                                                                    .profilePath ==
-                                                                null
-                                                            ? Image.asset(
-                                                                'assets/images/na_square.png',
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              )
-                                                            : FadeInImage(
-                                                                image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                                                    'w500/' +
-                                                                    personList![
-                                                                            index]
-                                                                        .profilePath!),
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                placeholder:
-                                                                    const AssetImage(
-                                                                        'assets/images/loading.gif'),
-                                                              ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            personList![index]
-                                                                .name!,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            maxLines: 1,
-                                                            style: const TextStyle(
-                                                                fontFamily:
-                                                                    'Poppins'),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 24.0),
-                                                child: Divider(
-                                                  color: Colors.white,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Visibility(
-                                    visible: isLoading,
-                                    child: const Center(
-                                        child: CircularProgressIndicator())),
-                              ],
-                            ),
+                                        );
+                                      })),
                     ]),
                   ),
+                  Visibility(
+                      visible: isLoading,
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Center(child: CircularProgressIndicator()),
+                      )),
                 ],
               ),
       ),
@@ -626,7 +681,7 @@ class DrawerWidget extends StatelessWidget {
               decoration: const BoxDecoration(
                 color: Color(0xFFFFFFFF),
               ),
-              child: Image.asset('assets/images/logo.png'),
+              child: Image.asset('assets/images/logo_shadow.png'),
             ),
           ),
           ListTile(

@@ -380,6 +380,8 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                     MaterialPageRoute(
                                                         builder: (context) {
                                                   return TVStreamSelect(
+                                                    episodeName: widget
+                                                        .episodeList.name!,
                                                     tvSeriesName:
                                                         widget.seriesName!,
                                                     tvSeriesId: widget.tvId!,
