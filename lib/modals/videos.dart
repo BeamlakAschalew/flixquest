@@ -1,11 +1,11 @@
-class MovieVideos {
+class Videos {
   List<Results>? result;
 
-  MovieVideos({
+  Videos({
     this.result,
   });
 
-  MovieVideos.fromJson(Map<String, dynamic> json) {
+  Videos.fromJson(Map<String, dynamic> json) {
     if (json['results'] != null) {
       result = [];
       json['results'].forEach((v) {

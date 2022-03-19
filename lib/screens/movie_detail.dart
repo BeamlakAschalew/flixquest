@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cinemax/constants/style_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/modals/credits.dart';
 import 'package:cinemax/modals/movie.dart';
-import 'package:cinemax/screens/widgets.dart';
+import 'package:cinemax/screens/movie_widgets.dart';
+import 'package:intl/intl.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
@@ -48,7 +48,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                   children: <Widget>[
                     widget.movie.backdropPath == null
                         ? Image.asset(
-                            'assets/images/na.jpg',
+                            'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
                         : FadeInImage(
@@ -59,7 +59,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                 widget.movie.backdropPath!),
                             fit: BoxFit.cover,
                             placeholder:
-                                const AssetImage('assets/images/loading.gif'),
+                                const AssetImage('assets/images/loading_5.gif'),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -95,15 +95,33 @@ class _MovieDetailPageState extends State<MovieDetailPage>
               AppBar(
                 backgroundColor: Colors.transparent,
                 elevation: 0,
-                leading: IconButton(
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Color(0xFFF57C00),
+                leading: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50.0),
+                        color: Colors.black38),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFFF57C00),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
                 ),
+                actions: [
+                  GestureDetector(
+                    child: WatchProvidersButton(
+                      api: Endpoints.getMovieWatchProviders(widget.movie.id!),
+                      onTap: () {
+                        modalBottomSheetMenu();
+                      },
+                    ),
+                  ),
+                ],
               ),
               Expanded(
                 child: Container(
@@ -120,7 +138,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF202124),
+                            color: const Color(0xFF2b2c30),
                             child: Column(
                               children: <Widget>[
                                 Padding(
@@ -134,9 +152,10 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                           CrossAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
-                                          '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
-                                          // style: widget
-                                          //     .themeData.textTheme.headline5,
+                                          widget.movie.releaseDate == ""
+                                              ? widget.movie.title!
+                                              : '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
+                                          style: kTextSmallHeaderStyle,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -171,7 +190,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                           Text(
                                                             widget.movie
                                                                 .voteAverage!
-                                                                .toString(),
+                                                                .toStringAsFixed(
+                                                                    1),
                                                             // style: widget.themeData
                                                             //     .textTheme.bodyText1,
                                                           ),
@@ -259,75 +279,96 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                     children: [
                                       SingleChildScrollView(
                                         physics: const BouncingScrollPhysics(),
-                                        child: Column(
-                                          children: <Widget>[
-                                            GenreDisplay(
-                                              api: Endpoints.movieDetailsUrl(
-                                                  widget.movie.id!),
-                                            ),
-                                            Row(
-                                              children: const <Widget>[
-                                                Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 8.0),
-                                                  child: Text(
-                                                    'Overview',
-                                                    // style: widget.themeData
-                                                    //     .textTheme.bodyText1,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                widget.movie.overview!,
-                                                // style: widget
-                                                //     .themeData.textTheme.caption,
+                                        child: Container(
+                                          color: const Color(0xFF202124),
+                                          child: Column(
+                                            children: <Widget>[
+                                              GenreDisplay(
+                                                api: Endpoints.movieDetailsUrl(
+                                                    widget.movie.id!),
                                               ),
-                                            ),
-                                            Row(
-                                              children: <Widget>[
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 8.0,
-                                                          bottom: 4.0),
-                                                  child: Text(
-                                                    'Release date : ${widget.movie.releaseDate}',
-                                                    // style: widget.themeData
-                                                    //     .textTheme.bodyText1,
+                                              Row(
+                                                children: const <Widget>[
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        left: 8.0),
+                                                    child: Text(
+                                                      'Overview',
+                                                      style: kTextHeaderStyle,
+                                                    ),
                                                   ),
+                                                ],
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: widget
+                                                        .movie.overview!.isEmpty
+                                                    ? const Text(
+                                                        'There is no overview for this movie')
+                                                    : Text(
+                                                        widget.movie.overview!,
+                                                        // style: widget
+                                                        //     .themeData.textTheme.caption,
+                                                      ),
+                                              ),
+                                              Row(
+                                                children: <Widget>[
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 8.0,
+                                                            bottom: 4.0),
+                                                    child: Text(
+                                                      widget.movie.releaseDate ==
+                                                              null
+                                                          ? 'Release date: N/A'
+                                                          : 'Release date : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
+                                                      style: const TextStyle(
+                                                          fontFamily:
+                                                              'PoppinsSB'),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              WatchNowButton(
+                                                movieId: widget.movie.id,
+                                                movieName:
+                                                    widget.movie.originalTitle,
+                                                api: Endpoints.movieDetailsUrl(
+                                                    widget.movie.id!),
+                                              ),
+                                              ScrollingArtists(
+                                                api: Endpoints.getCreditsUrl(
+                                                    widget.movie.id!),
+                                                title: 'Cast',
+                                              ),
+                                              MovieImagesDisplay(
+                                                title: 'Images',
+                                                api: Endpoints.getImages(
+                                                    widget.movie.id!),
+                                              ),
+                                              MovieVideosDisplay(
+                                                api: Endpoints.getVideos(
+                                                    widget.movie.id!),
+                                                title: 'Videos',
+                                              ),
+                                              MovieSocialLinks(
+                                                api: Endpoints
+                                                    .getExternalLinksForMovie(
+                                                  widget.movie.id!,
                                                 ),
-                                              ],
-                                            ),
-                                            WatchNowButton(widget: widget),
-                                            ScrollingArtists(
-                                              api: Endpoints.getCreditsUrl(
-                                                  widget.movie.id!),
-                                              title: 'Cast',
-                                              tapButtonText:
-                                                  'See full cast & crew',
-                                              onTap: (Cast cast) {
-                                                //  modalBottomSheetMenu(cast);
-                                              },
-                                            ),
-                                            MovieImagesDisplay(
-                                              title: 'Images',
-                                              api: Endpoints.getImages(
-                                                  widget.movie.id!),
-                                            ),
-                                            MovieVideosDisplay(
-                                              api: Endpoints.getVideos(
-                                                  widget.movie.id!),
-                                              title: 'Videos',
-                                            ),
-                                            MovieInfoTable(
-                                              api: Endpoints.movieDetailsUrl(
-                                                  widget.movie.id!),
-                                            ),
-                                          ],
+                                              ),
+                                              BelongsToCollectionWidget(
+                                                api: Endpoints.movieDetailsUrl(
+                                                    widget.movie.id!),
+                                              ),
+                                              MovieInfoTable(
+                                                api: Endpoints.movieDetailsUrl(
+                                                    widget.movie.id!),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       CastTab(
@@ -339,10 +380,12 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                             widget.movie.id!),
                                       ),
                                       MovieRecommendationsTab(
-                                          api:
-                                              Endpoints.getMovieRecommendations(
-                                                  widget.movie.id!, 1)),
+                                        api: Endpoints.getMovieRecommendations(
+                                            widget.movie.id!, 1),
+                                        movieId: widget.movie.id!,
+                                      ),
                                       SimilarMoviesTab(
+                                          movieId: widget.movie.id!,
                                           api: Endpoints.getSimilarMovies(
                                               widget.movie.id!, 1)),
                                     ],
@@ -366,7 +409,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                               borderRadius: BorderRadius.circular(8.0),
                               child: widget.movie.posterPath == null
                                   ? Image.asset(
-                                      'assets/images/na.jpg',
+                                      'assets/images/na_logo.png',
                                       fit: BoxFit.cover,
                                     )
                                   : FadeInImage(
@@ -394,4 +437,15 @@ class _MovieDetailPageState extends State<MovieDetailPage>
 
   @override
   bool get wantKeepAlive => true;
+
+  void modalBottomSheetMenu() {
+    showModalBottomSheet(
+      context: context,
+      builder: (builder) {
+        return WatchProvidersDetails(
+          api: Endpoints.getMovieWatchProviders(widget.movie.id!),
+        );
+      },
+    );
+  }
 }

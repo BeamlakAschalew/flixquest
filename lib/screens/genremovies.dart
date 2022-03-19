@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/screens/widgets.dart';
+import 'package:cinemax/screens/movie_widgets.dart';
 import 'package:cinemax/modals/genres.dart';
 
 class GenreMovies extends StatelessWidget {

@@ -1,25 +1,17 @@
+import 'package:cinemax/screens/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:cinemax/modals/movie.dart';
-import 'package:cinemax/screens/widgets.dart';
 
 class MovieSearch extends SearchDelegate<Movie?> {
   MovieSearch()
       : super(
-          searchFieldLabel: 'Search for a movie',
+          searchFieldLabel: 'Search for a movie, TV show or a person',
         );
 
   @override
   ThemeData appBarTheme(BuildContext context) {
-    // final ThemeData theme = (
-    // hintColor: themeData!.accentColor,
-    // primaryColor: Colors(0xFFF57C00),
-    // textTheme: TextTheme(
-    //   headline6: themeData!.textTheme.bodyText1,
-    // ));
     return ThemeData(
-      // primaryColor: Color(0xFFF57C00),
       appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF000000)),
-
       inputDecorationTheme: const InputDecorationTheme(
         border: InputBorder.none,
         hintStyle: TextStyle(color: Colors.white24, fontFamily: 'Poppins'),
@@ -33,9 +25,9 @@ class MovieSearch extends SearchDelegate<Movie?> {
       ),
       colorScheme: const ColorScheme(
         primary: Color(0xFFF57C00),
-        primaryVariant: Color(0xFF8f4700),
+        primaryContainer: Color(0xFF8f4700),
         secondary: Color(0xFF202124),
-        secondaryVariant: Color(0xFF141517),
+        secondaryContainer: Color(0xFF141517),
         surface: Color(0xFFF57C00),
         background: Color(0xFF202124),
         error: Color(0xFFFF0000),
@@ -81,11 +73,8 @@ class MovieSearch extends SearchDelegate<Movie?> {
 
   @override
   Widget buildResults(BuildContext context) {
-    return SearchMovieWidget(
+    return SearchWidget(
       query: query,
-      onTap: (movie) {
-        close(context, movie);
-      },
     );
   }
 
@@ -108,7 +97,7 @@ class MovieSearch extends SearchDelegate<Movie?> {
             ),
           ),
           Text(
-            'Enter a Movie to search.',
+            'Enter a term to search.',
             style: TextStyle(fontFamily: 'Poppins'),
           ),
         ],

@@ -1,20 +1,22 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'package:cinemax/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
-import 'screens/widgets.dart';
-import 'api/endpoints.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'screens/common_widgets.dart';
+import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const Cinemax());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Cinemax extends StatelessWidget {
+  const Cinemax({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       title: 'Cinemax',
       theme: ThemeData.dark().copyWith(
           textTheme: ThemeData.dark().textTheme.apply(
@@ -25,9 +27,9 @@ class MyApp extends StatelessWidget {
           //backgroundColor: Colors.black,
           colorScheme: const ColorScheme(
               primary: Color(0xFFF57C00),
-              primaryVariant: Color(0xFF8f4700),
+              primaryContainer: Color(0xFF8f4700),
               secondary: Color(0xFF202124),
-              secondaryVariant: Color(0xFF141517),
+              secondaryContainer: Color(0xFF141517),
               surface: Color(0xFFF57C00),
               background: Color(0xFF202124),
               error: Color(0xFFFF0000),
@@ -37,24 +39,34 @@ class MyApp extends StatelessWidget {
               onBackground: Color(0xFFF57C00),
               onError: Color(0xFFFFFFFF),
               brightness: Brightness.dark)),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const CinemaxHomePage(title: 'Cinemax'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class CinemaxHomePage extends StatefulWidget {
+  const CinemaxHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CinemaxHomePage> createState() => _CinemaxHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _CinemaxHomePageState extends State<CinemaxHomePage>
+    with SingleTickerProviderStateMixin {
+  late TabController tabController;
+  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
+    initMixpanel();
+    tabController = TabController(length: 2, vsync: this);
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -71,49 +83,58 @@ class _MyHomePageState extends State<MyHomePage> {
           IconButton(
               onPressed: () {
                 showSearch(context: context, delegate: MovieSearch());
-                // if (result != null) {
-                //   Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //           builder: (context) => MovieDetailPage(
-                //               movie: result, heroId: '${result.id}search')));
-                // }
               },
               icon: const Icon(Icons.search)),
         ],
-      ),
-      body: Container(
-        child: ListView(
-          children: [
-            const DiscoverMovies(),
-            ScrollingMovies(
-              title: 'Popular',
-              api: Endpoints.popularMoviesUrl(1),
-              discoverType: 'popular',
-            ),
-            ScrollingMovies(
-              title: 'Top Rated',
-              api: Endpoints.topRatedUrl(1),
-              discoverType: 'top_rated',
-            ),
-            ScrollingMovies(
-              title: 'Now playing',
-              api: Endpoints.nowPlayingMoviesUrl(1),
-              discoverType: 'now_playing',
-            ),
-            ScrollingMovies(
-              title: 'Upcoming',
-              api: Endpoints.upcomingMoviesUrl(1),
-              discoverType: 'upcoming',
-            ),
-            GenreListGrid(api: Endpoints.genresUrl()),
-            // ScrollingMovies(
-            //   title: 'Popular on Apple TV+',
-            //   api: Endpoints.watchProvidersMovies(),
-            //   watchProviderId: '350',
-            // ),
+        bottom: TabBar(
+          tabs: [
+            Tab(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.only(right: 8.0),
+                  child: Icon(Icons.movie_creation_rounded),
+                ),
+                Text(
+                  'Movies',
+                ),
+              ],
+            )),
+            Tab(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Padding(
+                    padding: EdgeInsets.only(right: 8.0),
+                    child: Icon(Icons.live_tv_rounded)),
+                Text(
+                  'TV Series',
+                ),
+              ],
+            ))
           ],
+          indicatorColor: Colors.white,
+          indicatorWeight: 3,
+          //isScrollable: true,
+          labelStyle: const TextStyle(
+            fontFamily: 'PoppinsSB',
+            color: Colors.black,
+            fontSize: 17,
+          ),
+          unselectedLabelStyle:
+              const TextStyle(fontFamily: 'Poppins', color: Colors.black87),
+          labelColor: Colors.black,
+          controller: tabController,
+          indicatorSize: TabBarIndicatorSize.tab,
         ),
+      ),
+      body: TabBarView(
+        controller: tabController,
+        children: const [
+          MainMoviesDisplay(),
+          MainTVDisplay(),
+        ],
       ),
     );
   }
