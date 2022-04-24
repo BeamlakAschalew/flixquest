@@ -1,5 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
-import 'package:cinemax/screens/tv_widgets.dart';
+import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'screens/common_widgets.dart';
