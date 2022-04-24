@@ -1,8 +1,8 @@
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/constants/style_constants.dart';
-import 'package:cinemax/modals/tv.dart';
-import 'package:cinemax/screens/tv_widgets.dart';
+import '/api/endpoints.dart';
+import '/constants/api_constants.dart';
+import '/constants/style_constants.dart';
+import '/modals/tv.dart';
+import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';

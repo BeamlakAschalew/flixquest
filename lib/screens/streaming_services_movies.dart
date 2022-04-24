@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/screens/movie_widgets.dart';
+import '/api/endpoints.dart';
+import '/screens/movie_widgets.dart';
 
 class StreamingServicesMovies extends StatelessWidget {
   final int providerId;

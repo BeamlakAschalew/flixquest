@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'dart:convert';
-import 'package:cinemax/constants/style_constants.dart';
-import 'package:cinemax/modals/social_icons_icons.dart';
-import 'package:cinemax/modals/videos.dart';
-import 'package:cinemax/modals/watch_providers.dart';
-import 'package:cinemax/screens/cast_detail.dart';
-import 'package:cinemax/screens/streaming_services_movies.dart';
+import '/constants/style_constants.dart';
+import '/modals/social_icons_icons.dart';
+import '/modals/videos.dart';
+import '/modals/watch_providers.dart';
+import '/screens/cast_detail.dart';
+import '/screens/streaming_services_movies.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
@@ -15,19 +15,16 @@ import '/modals/movie.dart';
 import '/api/endpoints.dart';
 import '/modals/genres.dart';
 import '/constants/api_constants.dart';
-import 'package:cinemax/screens/movie_detail.dart';
-import 'package:cinemax/modals/credits.dart';
+import '/screens/movie_detail.dart';
+import '/modals/credits.dart';
 import 'collection_detail.dart';
 import 'crew_detail.dart';
-import 'package:cinemax/modals/images.dart';
+import '/modals/images.dart';
 import 'package:http/http.dart' as http;
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/api/endpoints.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'genremovies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import 'movie_stream_select.dart';
 
 class MainMoviesDisplay extends StatelessWidget {

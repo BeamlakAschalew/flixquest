@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/constants/style_constants.dart';
-import 'package:cinemax/modals/tv.dart';
-import 'package:cinemax/screens/guest_star_detail.dart';
-import 'package:cinemax/screens/tv_stream_select.dart';
-import 'package:cinemax/screens/tv_widgets.dart';
+import '/api/endpoints.dart';
+import '/constants/api_constants.dart';
+import '/constants/style_constants.dart';
+import '/modals/tv.dart';
+import '/screens/guest_star_detail.dart';
+import '/screens/tv_stream_select.dart';
+import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
@@ -340,8 +340,11 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                 padding: const EdgeInsets.only(
                                                     left: 8.0, bottom: 4.0),
                                                 child: Text(
-                                                  widget.episodeList.airDate ==
-                                                          null
+                                                  widget.episodeList.airDate!
+                                                              .isEmpty ||
+                                                          widget.episodeList
+                                                                  .airDate ==
+                                                              null
                                                       ? 'Episode air date: N/A'
                                                       : 'Episode air date:  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
                                                   style: const TextStyle(

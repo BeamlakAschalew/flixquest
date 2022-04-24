@@ -1,15 +1,15 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/modals/function.dart';
-import 'package:cinemax/modals/images.dart';
-import 'package:cinemax/modals/movie.dart';
-import 'package:cinemax/modals/person.dart';
-import 'package:cinemax/modals/social_icons_icons.dart';
-import 'package:cinemax/modals/tv.dart';
-import 'package:cinemax/screens/movie_detail.dart';
-import 'package:cinemax/screens/movie_widgets.dart';
-import 'package:cinemax/screens/tv_detail.dart';
+import '/constants/api_constants.dart';
+import '/modals/function.dart';
+import '/modals/images.dart';
+import '/modals/movie.dart';
+import '/modals/person.dart';
+import '/modals/social_icons_icons.dart';
+import '/modals/tv.dart';
+import '/screens/movie_detail.dart';
+import '/screens/movie_widgets.dart';
+import '/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';

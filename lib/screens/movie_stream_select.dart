@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
-
 import 'package:flutter/material.dart';
-
 import 'movie_stream.dart';
 
 class MovieStreamSelect extends StatelessWidget {

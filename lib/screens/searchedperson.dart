@@ -1,9 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/modals/person.dart';
+import '/modals/person.dart';
 import 'package:flutter/material.dart';
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/constants/api_constants.dart';
+import '/api/endpoints.dart';
+import '/constants/api_constants.dart';
 
 import 'person_widgets.dart';
 

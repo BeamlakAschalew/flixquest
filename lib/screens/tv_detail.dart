@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/constants/style_constants.dart';
-import 'package:cinemax/modals/tv.dart';
-import 'package:cinemax/screens/tv_widgets.dart';
+import '/constants/style_constants.dart';
+import '/modals/tv.dart';
+import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/screens/movie_widgets.dart';
+import '/api/endpoints.dart';
+import '/constants/api_constants.dart';
+import '/screens/movie_widgets.dart';
 import 'package:intl/intl.dart';
 
 class TVDetailPage extends StatefulWidget {
@@ -331,13 +331,9 @@ class _TVDetailPageState extends State<TVDetailPage>
                                                             left: 8.0,
                                                             bottom: 4.0),
                                                     child: Text(
-                                                      widget
-                                                                  .tvSeries
-                                                                  .firstAirDate!
-                                                                  .isEmpty ||
-                                                              widget.tvSeries
-                                                                      .firstAirDate ==
-                                                                  null
+                                                      widget.tvSeries
+                                                                  .firstAirDate ==
+                                                              null
                                                           ? 'First episode air date: N/A'
                                                           : 'First episode air date : ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
                                                       style: const TextStyle(
