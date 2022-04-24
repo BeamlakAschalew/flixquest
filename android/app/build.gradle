@@ -27,7 +27,7 @@ apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -70,7 +70,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
 }
 
-android {
-  compileSdkVersion 31
-}
+// android {
+//   compileSdkVersion 31
+// }
 

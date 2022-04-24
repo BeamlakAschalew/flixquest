@@ -1157,7 +1157,7 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                         height: 80,
                         child: Center(
                           child: Text(
-                            'This tv episode doesn\'t have an image provided',
+                            'This TV series episode doesn\'t have an image provided',
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -1261,7 +1261,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                         height: 100,
                         child: Center(
                             child: Text(
-                                'This tv season doesn\'t have a video provided',
+                                'This TV series episode doesn\'t have a video provided',
                                 textAlign: TextAlign.center)),
                       )
                     : SizedBox(
@@ -3164,7 +3164,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                         child: watchProviders?.buy == null
                             ? const Center(
                                 child: Text(
-                                    'This movie doesn\'t have an option to buy yet'))
+                                    'This TV series doesn\'t have an option to buy yet'))
                             : GridView.builder(
                                 gridDelegate:
                                     const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -3226,7 +3226,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                         child: watchProviders?.flatRate == null
                             ? const Center(
                                 child: Text(
-                                    'This movie doesn\'t have an option to stream yet'))
+                                    'This TV series doesn\'t have an option to stream yet'))
                             : GridView.builder(
                                 gridDelegate:
                                     const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -3290,7 +3290,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                         child: watchProviders?.ads == null
                             ? const Center(
                                 child: Text(
-                                    'This movie doesn\'t have an option to watch through ADS yet'))
+                                    'This TV series doesn\'t have an option to watch through ADS yet'))
                             : GridView.builder(
                                 gridDelegate:
                                     const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -3353,7 +3353,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                         child: watchProviders?.rent == null
                             ? const Center(
                                 child: Text(
-                                    'This movie doesn\'t have an option to rent yet'))
+                                    'This TV series doesn\'t have an option to rent yet'))
                             : GridView.builder(
                                 gridDelegate:
                                     const SliverGridDelegateWithMaxCrossAxisExtent(

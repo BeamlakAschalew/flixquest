@@ -42,7 +42,7 @@ class _AboutPageState extends State<AboutPage> {
                   ],
                 ),
                 const Text(
-                  'Cinemax 1.2.1',
+                  'Cinemax 1.3.0',
                   style: TextStyle(
                     fontSize: 30.0,
                   ),
@@ -99,7 +99,7 @@ class _AboutPageState extends State<AboutPage> {
                 ),
                 const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text('2014 EC, 2021 GC'),
+                  child: Text('2014 EC, 2022 GC'),
                 )
               ],
             ),
