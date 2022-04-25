@@ -278,7 +278,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                     physics: const PageScrollPhysics(),
                                     children: [
                                       SingleChildScrollView(
-                                        physics: const BouncingScrollPhysics(),
+                                        // physics: const BouncingScrollPhysics(),
                                         child: Container(
                                           color: const Color(0xFF202124),
                                           child: Column(

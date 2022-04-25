@@ -1653,7 +1653,6 @@ class _CastTabState extends State<CastTab>
             : Container(
                 color: const Color(0xFF202124),
                 child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
                     itemCount: credits!.cast!.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
@@ -1676,7 +1675,7 @@ class _CastTabState extends State<CastTab>
                             padding: const EdgeInsets.only(
                               top: 0.0,
                               bottom: 15.0,
-                              left: 15,
+                              left: 10,
                             ),
                             child: Column(
                               children: [
@@ -1685,8 +1684,8 @@ class _CastTabState extends State<CastTab>
                                   //     CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 20.0),
+                                      padding: const EdgeInsets.only(
+                                          right: 20.0, left: 10),
                                       child: SizedBox(
                                         width: 80,
                                         height: 80,
@@ -1801,7 +1800,6 @@ class _CrewTabState extends State<CrewTab>
             : Container(
                 color: const Color(0xFF202124),
                 child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
                     itemCount: credits!.crew!.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
@@ -1824,7 +1822,7 @@ class _CrewTabState extends State<CrewTab>
                             padding: const EdgeInsets.only(
                               top: 0.0,
                               bottom: 15.0,
-                              left: 15,
+                              left: 10,
                             ),
                             child: Column(
                               children: [
@@ -1833,8 +1831,8 @@ class _CrewTabState extends State<CrewTab>
                                   //     CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 20.0),
+                                      padding: const EdgeInsets.only(
+                                          right: 20.0, left: 10),
                                       child: SizedBox(
                                         width: 80,
                                         height: 80,

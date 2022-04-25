@@ -1401,7 +1401,6 @@ class _TVCastTabState extends State<TVCastTab>
             : Container(
                 color: const Color(0xFF202124),
                 child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
                     itemCount: credits!.cast!.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
@@ -1424,7 +1423,7 @@ class _TVCastTabState extends State<TVCastTab>
                             padding: const EdgeInsets.only(
                               top: 0.0,
                               bottom: 15.0,
-                              left: 15,
+                              left: 10,
                             ),
                             child: Column(
                               children: [
@@ -1433,8 +1432,8 @@ class _TVCastTabState extends State<TVCastTab>
                                   //     CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 20.0),
+                                      padding: const EdgeInsets.only(
+                                          right: 20.0, left: 10),
                                       child: SizedBox(
                                         width: 80,
                                         height: 80,
@@ -1564,7 +1563,6 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
             : Container(
                 color: const Color(0xFF202124),
                 child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
                     itemCount: tvDetails!.seasons!.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
@@ -1722,7 +1720,6 @@ class _TVCrewTabState extends State<TVCrewTab>
             : Container(
                 color: const Color(0xFF202124),
                 child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
                     itemCount: credits!.crew!.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
@@ -1745,7 +1742,7 @@ class _TVCrewTabState extends State<TVCrewTab>
                             padding: const EdgeInsets.only(
                               top: 0.0,
                               bottom: 15.0,
-                              left: 15,
+                              left: 10,
                             ),
                             child: Column(
                               children: [
@@ -1754,8 +1751,8 @@ class _TVCrewTabState extends State<TVCrewTab>
                                   //     CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 20.0),
+                                      padding: const EdgeInsets.only(
+                                          right: 20.0, left: 10),
                                       child: SizedBox(
                                         width: 80,
                                         height: 80,

@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import '/modals/credits.dart';
 import '/modals/genres.dart';
 import '/modals/movie.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
