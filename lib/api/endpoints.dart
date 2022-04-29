@@ -287,7 +287,7 @@ class Endpoints {
         '/collection/$id?api_key=$TMDB_API_KEY&language=en-US';
   }
 
-  static String getEpisodeCasts(int id, int seasonNumber, int episodeNumber) {
+  static String getEpisodeCredits(int id, int seasonNumber, int episodeNumber) {
     return '$TMDB_API_BASE_URL'
         '/tv/$id/season/$seasonNumber/episode/$episodeNumber/credits?api_key=$TMDB_API_KEY&language=en-US';
   }

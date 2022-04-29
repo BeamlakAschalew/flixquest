@@ -369,6 +369,8 @@ class _TVDetailPageState extends State<TVDetailPage>
                                               TVVideosDisplay(
                                                 api: Endpoints.getTVVideos(
                                                     widget.tvSeries.id!),
+                                                api2: Endpoints.tvDetailsUrl(
+                                                    widget.tvSeries.id!),
                                                 title: 'Videos',
                                               ),
                                               TVSocialLinks(

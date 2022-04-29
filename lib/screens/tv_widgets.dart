@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cinemax/screens/guest_star_detail.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/constants/style_constants.dart';
@@ -568,18 +569,18 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
   bool get wantKeepAlive => true;
 }
 
-class ScrollingTVEpisodeArtists extends StatefulWidget {
+class ScrollingTVEpisodeCasts extends StatefulWidget {
   final String? api;
-  const ScrollingTVEpisodeArtists({
+  const ScrollingTVEpisodeCasts({
     Key? key,
     this.api,
   }) : super(key: key);
   @override
-  _ScrollingTVEpisodeArtistsState createState() =>
-      _ScrollingTVEpisodeArtistsState();
+  _ScrollingTVEpisodeCastsState createState() =>
+      _ScrollingTVEpisodeCastsState();
 }
 
-class _ScrollingTVEpisodeArtistsState extends State<ScrollingTVEpisodeArtists>
+class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
   late Mixpanel mixpanel;
@@ -705,6 +706,330 @@ class _ScrollingTVEpisodeArtistsState extends State<ScrollingTVEpisodeArtists>
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
                                     credits!.cast![index].name!,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class ScrollingTVEpisodeGuestStars extends StatefulWidget {
+  final String? api;
+  const ScrollingTVEpisodeGuestStars({
+    Key? key,
+    this.api,
+  }) : super(key: key);
+  @override
+  _ScrollingTVEpisodeGuestStarsState createState() =>
+      _ScrollingTVEpisodeGuestStarsState();
+}
+
+class _ScrollingTVEpisodeGuestStarsState
+    extends State<ScrollingTVEpisodeGuestStars>
+    with AutomaticKeepAliveClientMixin {
+  Credits? credits;
+  late Mixpanel mixpanel;
+  @override
+  void initState() {
+    super.initState();
+    fetchCredits(widget.api!).then((value) {
+      setState(() {
+        credits = value;
+      });
+    });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Column(
+      children: <Widget>[
+        credits == null
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: const <Widget>[
+                    Text(
+                      'Guest stars',
+                      style: kTextHeaderStyle,
+                    ),
+                  ],
+                ),
+              )
+            : credits!.episodeGuestStars!.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Center(
+                        child: Text(
+                            'There is no guest star list available for this episode',
+                            textAlign: TextAlign.center)),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Guest stars',
+                          style: kTextHeaderStyle,
+                        ),
+                      ),
+                    ],
+                  ),
+        SizedBox(
+          width: double.infinity,
+          height: 160,
+          child: credits == null
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: credits!.episodeGuestStars!.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name':
+                                '${credits!.episodeGuestStars![index].name}',
+                            'Person id':
+                                '${credits!.episodeGuestStars![index].id}'
+                          });
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return GuestStarDetailPage(
+                              cast: credits!.episodeGuestStars![index],
+                              heroId:
+                                  '${credits!.episodeGuestStars![index].id}',
+                            );
+                          }));
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 6,
+                                child: SizedBox(
+                                  width: 75,
+                                  child: Hero(
+                                    tag:
+                                        '${credits!.episodeGuestStars![index].id}',
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      child: credits!.episodeGuestStars![index]
+                                                  .profilePath ==
+                                              null
+                                          ? Image.asset(
+                                              'assets/images/na_square.png',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : FadeInImage(
+                                              image: NetworkImage(
+                                                  TMDB_BASE_IMAGE_URL +
+                                                      'w500/' +
+                                                      credits!
+                                                          .episodeGuestStars![
+                                                              index]
+                                                          .profilePath!),
+                                              fit: BoxFit.cover,
+                                              placeholder: const AssetImage(
+                                                  'assets/images/loading.gif'),
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 6,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    credits!.episodeGuestStars![index].name!,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class ScrollingTVEpisodeCrew extends StatefulWidget {
+  final String? api;
+  const ScrollingTVEpisodeCrew({
+    Key? key,
+    this.api,
+  }) : super(key: key);
+  @override
+  _ScrollingTVEpisodeCrewState createState() => _ScrollingTVEpisodeCrewState();
+}
+
+class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
+    with AutomaticKeepAliveClientMixin {
+  Credits? credits;
+  late Mixpanel mixpanel;
+  @override
+  void initState() {
+    super.initState();
+    fetchCredits(widget.api!).then((value) {
+      setState(() {
+        credits = value;
+      });
+    });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Column(
+      children: <Widget>[
+        credits == null
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: const <Widget>[
+                    Text(
+                      'Crew',
+                      style: kTextHeaderStyle,
+                    ),
+                  ],
+                ),
+              )
+            : credits!.crew!.isEmpty
+                ? const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Center(
+                        child: Text(
+                            'There is no crew list available for this episode',
+                            textAlign: TextAlign.center)),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Crew',
+                          style: kTextHeaderStyle,
+                        ),
+                      ),
+                    ],
+                  ),
+        SizedBox(
+          width: double.infinity,
+          height: 160,
+          child: credits == null
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: credits!.crew!.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name': '${credits!.crew![index].name}',
+                            'Person id': '${credits!.crew![index].id}'
+                          });
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CrewDetailPage(
+                              crew: credits!.crew![index],
+                              heroId: '${credits!.crew![index].id}',
+                            );
+                          }));
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 6,
+                                child: SizedBox(
+                                  width: 75,
+                                  child: Hero(
+                                    tag: '${credits!.crew![index].id}',
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(100.0),
+                                      child:
+                                          credits!.crew![index].profilePath ==
+                                                  null
+                                              ? Image.asset(
+                                                  'assets/images/na_square.png',
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : FadeInImage(
+                                                  image: NetworkImage(
+                                                      TMDB_BASE_IMAGE_URL +
+                                                          'w500/' +
+                                                          credits!.crew![index]
+                                                              .profilePath!),
+                                                  fit: BoxFit.cover,
+                                                  placeholder: const AssetImage(
+                                                      'assets/images/loading.gif'),
+                                                ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 6,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    credits!.crew![index].name!,
                                     maxLines: 2,
                                     textAlign: TextAlign.center,
                                     overflow: TextOverflow.ellipsis,
@@ -1156,9 +1481,12 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                         width: double.infinity,
                         height: 80,
                         child: Center(
-                          child: Text(
-                            'This TV series episode doesn\'t have an image provided',
-                            textAlign: TextAlign.center,
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              'This TV series episode doesn\'t have an image provided',
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                       )
@@ -1198,8 +1526,9 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
 }
 
 class TVVideosDisplay extends StatefulWidget {
-  final String? api, title;
-  const TVVideosDisplay({Key? key, this.api, this.title}) : super(key: key);
+  final String? api, title, api2;
+  const TVVideosDisplay({Key? key, this.api, this.title, this.api2})
+      : super(key: key);
 
   @override
   _TVVideosDisplayState createState() => _TVVideosDisplayState();
@@ -1207,6 +1536,7 @@ class TVVideosDisplay extends StatefulWidget {
 
 class _TVVideosDisplayState extends State<TVVideosDisplay> {
   Videos? tvVideos;
+  TVDetails? tvDetails;
 
   @override
   void initState() {
@@ -1216,6 +1546,11 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
         tvVideos = value;
       });
     });
+    fetchTVDetails(widget.api2!).then((value) {
+      setState(() {
+        tvDetails = value;
+      });
+    });
   }
 
   @override
@@ -1223,7 +1558,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
     bool playButtonVisibility = true;
     return Column(
       children: [
-        tvVideos == null
+        tvVideos == null || tvDetails == null
             ? Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -1251,7 +1586,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
           child: SizedBox(
             width: double.infinity,
             height: 230,
-            child: tvVideos == null
+            child: tvVideos == null || tvDetails == null
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
@@ -1260,9 +1595,12 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                         width: double.infinity,
                         height: 100,
                         child: Center(
-                            child: Text(
-                                'This TV series episode doesn\'t have a video provided',
-                                textAlign: TextAlign.center)),
+                            child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                              'This TV series episode doesn\'t have a video provided',
+                              textAlign: TextAlign.center),
+                        )),
                       )
                     : SizedBox(
                         width: double.infinity,
@@ -1313,10 +1651,18 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                                                   Visibility(
                                                     visible:
                                                         playButtonVisibility,
-                                                    child: const SizedBox(
-                                                      child: Icon(
-                                                        Icons.play_arrow,
-                                                        size: 90,
+                                                    child: SizedBox(
+                                                      child: Column(
+                                                        children: [
+                                                          Icon(
+                                                            Icons.play_arrow,
+                                                            size: 90,
+                                                          ),
+                                                          //TODO: modify this shit, it was to test if the network class was working
+                                                          Text(tvDetails!
+                                                              .networks![0]
+                                                              .networkName!),
+                                                        ],
                                                       ),
                                                       height: 90,
                                                       width: 90,
@@ -3930,4 +4276,332 @@ class _ParticularStreamingServiceTVShowsState
                   ],
                 ));
   }
+}
+
+class TVEpisodeCastTab extends StatefulWidget {
+  final String? api;
+  const TVEpisodeCastTab({Key? key, this.api}) : super(key: key);
+
+  @override
+  _TVEpisodeCastTabState createState() => _TVEpisodeCastTabState();
+}
+
+class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
+    with AutomaticKeepAliveClientMixin<TVEpisodeCastTab> {
+  Credits? credits;
+  late Mixpanel mixpanel;
+  @override
+  void initState() {
+    super.initState();
+    fetchCredits(widget.api!).then((value) {
+      setState(() {
+        credits = value;
+      });
+    });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return credits == null
+        ? Container(
+            color: const Color(0xFF202124),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : credits!.cast!.isEmpty
+            ? Container(
+                child: const Center(
+                  child: Text(
+                      'There is no data available for this TV episode cast'),
+                ),
+                color: const Color(0xFF202124),
+              )
+            : Container(
+                color: const Color(0xFF202124),
+                child: ListView.builder(
+                    itemCount: credits!.cast!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name': '${credits!.cast![index].name}',
+                            'Person id': '${credits!.cast![index].id}'
+                          });
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CastDetailPage(
+                                cast: credits!.cast![index],
+                                heroId: '${credits!.cast![index].name}');
+                          }));
+                        },
+                        child: Container(
+                          color: const Color(0xFF202124),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              top: 0.0,
+                              bottom: 15.0,
+                              left: 10,
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  // crossAxisAlignment:
+                                  //     CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 20.0, left: 10),
+                                      child: SizedBox(
+                                        width: 80,
+                                        height: 80,
+                                        child: Hero(
+                                          tag: '${credits!.cast![index].name}',
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(100.0),
+                                            child: credits!.cast![index]
+                                                        .profilePath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_square.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            credits!
+                                                                .cast![index]
+                                                                .profilePath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                      // child: Text(tvDetails!
+                                      //     .seasons![index].seasonNumber
+                                      //     .toString()),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            credits!.cast![index].name!,
+                                            style: const TextStyle(
+                                                fontFamily: 'PoppinsSB'),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            'As : '
+                                            '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
+                                          ),
+                                          // Text(
+                                          //   credits!.cast![index].roles![0]
+                                          //               .episodeCount! ==
+                                          //           1
+                                          //       ? credits!.cast![index]
+                                          //               .roles![0].episodeCount!
+                                          //               .toString() +
+                                          //           ' episode'
+                                          //       : credits!.cast![index]
+                                          //               .roles![0].episodeCount!
+                                          //               .toString() +
+                                          //           ' episodes',
+                                          // ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }));
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class TVEpisodeGuestStarsTab extends StatefulWidget {
+  final String? api;
+  const TVEpisodeGuestStarsTab({Key? key, this.api}) : super(key: key);
+
+  @override
+  _TVEpisodeGuestStarsTabState createState() => _TVEpisodeGuestStarsTabState();
+}
+
+class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
+    with AutomaticKeepAliveClientMixin<TVEpisodeGuestStarsTab> {
+  Credits? credits;
+  late Mixpanel mixpanel;
+  @override
+  void initState() {
+    super.initState();
+    fetchCredits(widget.api!).then((value) {
+      setState(() {
+        credits = value;
+      });
+    });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return credits == null
+        ? Container(
+            color: const Color(0xFF202124),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : credits!.episodeGuestStars!.isEmpty
+            ? Container(
+                child: const Center(
+                  child: Text(
+                      'There is no data available for this TV episode guest stars'),
+                ),
+                color: const Color(0xFF202124),
+              )
+            : Container(
+                color: const Color(0xFF202124),
+                child: ListView.builder(
+                    itemCount: credits!.episodeGuestStars!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name':
+                                '${credits!.episodeGuestStars![index].name}',
+                            'Person id':
+                                '${credits!.episodeGuestStars![index].id}'
+                          });
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return GuestStarDetailPage(
+                                cast: credits!.episodeGuestStars![index],
+                                heroId:
+                                    '${credits!.episodeGuestStars![index].creditId}');
+                          }));
+                        },
+                        child: Container(
+                          color: const Color(0xFF202124),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              top: 0.0,
+                              bottom: 15.0,
+                              left: 10,
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  // crossAxisAlignment:
+                                  //     CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 20.0, left: 10),
+                                      child: SizedBox(
+                                        width: 80,
+                                        height: 80,
+                                        child: Hero(
+                                          tag:
+                                              '${credits!.episodeGuestStars![index].creditId}',
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(100.0),
+                                            child: credits!
+                                                        .episodeGuestStars![
+                                                            index]
+                                                        .profilePath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_square.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            credits!
+                                                                .episodeGuestStars![
+                                                                    index]
+                                                                .profilePath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                      // child: Text(tvDetails!
+                                      //     .seasons![index].seasonNumber
+                                      //     .toString()),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            credits!.episodeGuestStars![index]
+                                                .name!,
+                                            style: const TextStyle(
+                                                fontFamily: 'PoppinsSB'),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            'As : '
+                                            '${credits!.episodeGuestStars![index].character!.isEmpty ? 'N/A' : credits!.episodeGuestStars![index].character!}',
+                                          ),
+                                          // Text(
+                                          //   credits!.cast![index].roles![0]
+                                          //               .episodeCount! ==
+                                          //           1
+                                          //       ? credits!.cast![index]
+                                          //               .roles![0].episodeCount!
+                                          //               .toString() +
+                                          //           ' episode'
+                                          //       : credits!.cast![index]
+                                          //               .roles![0].episodeCount!
+                                          //               .toString() +
+                                          //           ' episodes',
+                                          // ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }));
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import '/modals/tv.dart';
+import '/modals/tv.dart' as tv;
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -9,7 +9,7 @@ import '/modals/credits.dart';
 import 'person_widgets.dart';
 
 class GuestStarDetailPage extends StatefulWidget {
-  final EpisodeGuestStars? cast;
+  final TVEpisodeGuestStars? cast;
   final String heroId;
   final Crew? crew;
 

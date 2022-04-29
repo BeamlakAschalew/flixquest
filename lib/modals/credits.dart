@@ -2,8 +2,9 @@ class Credits {
   int? id;
   List<Cast>? cast;
   List<Crew>? crew;
+  List<TVEpisodeGuestStars>? episodeGuestStars;
 
-  Credits({this.id, this.cast, this.crew});
+  Credits({this.id, this.cast, this.crew, this.episodeGuestStars});
 
   Credits.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -19,6 +20,12 @@ class Credits {
         crew?.add(Crew.fromJson(v));
       });
     }
+    if (json['guest_stars'] != null) {
+      episodeGuestStars = [];
+      json['guest_stars'].forEach((v) {
+        episodeGuestStars?.add(TVEpisodeGuestStars.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -29,6 +36,9 @@ class Credits {
     }
     if (crew != null) {
       data['crew'] = crew?.map((v) => v.toJson()).toList();
+    }
+    if (episodeGuestStars != null) {
+      data['guest_stars'] = episodeGuestStars?.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -154,6 +164,55 @@ class Crew {
     data['job'] = job;
     data['name'] = name;
     data['profile_path'] = profilePath;
+    data['adult'] = adult;
+    return data;
+  }
+}
+
+class TVEpisodeGuestStars {
+  String? character;
+  String? creditId;
+  int? gender;
+  int? id;
+  String? name;
+  int? order;
+  String? profilePath;
+  String? department;
+  bool? adult;
+
+  TVEpisodeGuestStars(
+      {this.character,
+      this.creditId,
+      this.gender,
+      this.id,
+      this.name,
+      this.order,
+      this.profilePath,
+      this.department,
+      this.adult});
+
+  TVEpisodeGuestStars.fromJson(Map<String, dynamic> json) {
+    character = json['character'];
+    creditId = json['credit_id'];
+    gender = json['gender'];
+    id = json['id'];
+    name = json['name'];
+    order = json['order'];
+    profilePath = json['profile_path'];
+    adult = json['adult'];
+    department = json['known_for_department'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['character'] = character;
+    data['credit_id'] = creditId;
+    data['gender'] = gender;
+    data['id'] = id;
+    data['name'] = name;
+    data['order'] = order;
+    data['profile_path'] = profilePath;
+    data['known_for_department'] = department;
     data['adult'] = adult;
     return data;
   }

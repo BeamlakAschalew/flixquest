@@ -183,36 +183,38 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                     ),
                                   ),
                                 ),
-                                TabBar(
-                                  isScrollable: true,
-                                  indicatorColor: const Color(0xFFF57C00),
-                                  indicatorWeight: 3,
-                                  unselectedLabelColor: Colors.white54,
-                                  labelColor: Colors.white,
-                                  tabs: const [
-                                    Tab(
-                                      child: Text('About',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
-                                    ),
-                                    Tab(
-                                      child: Text('Episodes',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
-                                    ),
-                                    Tab(
-                                      child: Text('Cast',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
-                                    ),
-                                    Tab(
-                                      child: Text('Crew',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
-                                    ),
-                                  ],
-                                  controller: tabController,
-                                  indicatorSize: TabBarIndicatorSize.tab,
+                                Center(
+                                  child: TabBar(
+                                    isScrollable: true,
+                                    indicatorColor: const Color(0xFFF57C00),
+                                    indicatorWeight: 3,
+                                    unselectedLabelColor: Colors.white54,
+                                    labelColor: Colors.white,
+                                    tabs: const [
+                                      Tab(
+                                        child: Text('About',
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins')),
+                                      ),
+                                      Tab(
+                                        child: Text('Episodes',
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins')),
+                                      ),
+                                      Tab(
+                                        child: Text('Cast',
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins')),
+                                      ),
+                                      Tab(
+                                        child: Text('Crew',
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins')),
+                                      ),
+                                    ],
+                                    controller: tabController,
+                                    indicatorSize: TabBarIndicatorSize.tab,
+                                  ),
                                 ),
                                 Expanded(
                                   child: TabBarView(
