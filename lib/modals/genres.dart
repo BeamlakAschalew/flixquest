@@ -1,15 +1,15 @@
-class GenreList {
-  List<Genres>? genre;
+class GeneralGenreList {
+  List<CommonGenres>? genre;
 
-  GenreList({
+  GeneralGenreList({
     this.genre,
   });
 
-  GenreList.fromJson(Map<String, dynamic> json) {
+  GeneralGenreList.fromJson(Map<String, dynamic> json) {
     if (json['genres'] != null) {
       genre = [];
       json['genres'].forEach((v) {
-        genre?.add(Genres.fromJson(v));
+        genre?.add(CommonGenres.fromJson(v));
       });
     }
   }
@@ -23,11 +23,11 @@ class GenreList {
   }
 }
 
-class Genres {
+class CommonGenres {
   String? genreName;
   int? genreID;
-  Genres({this.genreName, this.genreID});
-  Genres.fromJson(Map<String, dynamic> json) {
+  CommonGenres({this.genreName, this.genreID});
+  CommonGenres.fromJson(Map<String, dynamic> json) {
     genreName = json['name'];
     genreID = json['id'];
   }

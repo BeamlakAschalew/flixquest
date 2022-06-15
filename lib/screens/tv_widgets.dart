@@ -32,13 +32,20 @@ import 'package:url_launcher/url_launcher.dart';
 import 'crew_detail.dart';
 import 'movie_widgets.dart';
 
-class MainTVDisplay extends StatelessWidget {
+class MainTVDisplay extends StatefulWidget {
   const MainTVDisplay({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<MainTVDisplay> createState() => _MainTVDisplayState();
+}
+
+class _MainTVDisplayState extends State<MainTVDisplay>
+    with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
       child: ListView(
         children: [
@@ -79,6 +86,9 @@ class MainTVDisplay extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class DiscoverTV extends StatefulWidget {
@@ -2605,11 +2615,11 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
   @override
   void initState() {
     super.initState();
-    fetchGenre(widget.api!).then((value) {
-      setState(() {
-        genres = value;
-      });
-    });
+    // fetchGenre(widget.api!).then((value) {
+    //   setState(() {
+    //     genres = value;
+    //   });
+    // });
   }
 
   @override
@@ -3822,11 +3832,11 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
   @override
   void initState() {
     super.initState();
-    fetchGenre(widget.api).then((value) {
-      setState(() {
-        genreList = value;
-      });
-    });
+    // fetchGenre(widget.api).then((value) {
+    //   setState(() {
+    //     genreList = value;
+    //   });
+    // });
   }
 
   @override

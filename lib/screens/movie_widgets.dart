@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'dart:convert';
+import '../modals/genres.dart';
 import '/constants/style_constants.dart';
 import '/modals/social_icons_icons.dart';
 import '/modals/videos.dart';
@@ -13,7 +14,7 @@ import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import '/modals/function.dart';
 import '/modals/movie.dart';
 import '/api/endpoints.dart';
-import '/modals/genres.dart';
+import '/modals/genres.dart' as genreold;
 import '/constants/api_constants.dart';
 import '/screens/movie_detail.dart';
 import '/modals/credits.dart';
@@ -27,13 +28,20 @@ import 'genremovies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'movie_stream_select.dart';
 
-class MainMoviesDisplay extends StatelessWidget {
+class MainMoviesDisplay extends StatefulWidget {
   const MainMoviesDisplay({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<MainMoviesDisplay> createState() => _MainMoviesDisplayState();
+}
+
+class _MainMoviesDisplayState extends State<MainMoviesDisplay>
+    with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Container(
       child: ListView(
         children: [
@@ -74,6 +82,9 @@ class MainMoviesDisplay extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class DiscoverMovies extends StatefulWidget {
@@ -1360,11 +1371,11 @@ class _GenreDisplayState extends State<GenreDisplay>
   @override
   void initState() {
     super.initState();
-    fetchGenre(widget.api!).then((value) {
-      setState(() {
-        genreList = value;
-      });
-    });
+    // fetchGenre(widget.api!).then((value) {
+    //   setState(() {
+    //     genreList = value;
+    //   });
+    // });
   }
 
   @override
@@ -2828,11 +2839,11 @@ class _GenreListGridState extends State<GenreListGrid>
   @override
   void initState() {
     super.initState();
-    fetchGenre(widget.api).then((value) {
-      setState(() {
-        genreList = value;
-      });
-    });
+    // fetchGenre(widget.api).then((value) {
+    //   setState(() {
+    //     genreList = value;
+    //   });
+    // });
   }
 
   @override

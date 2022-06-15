@@ -1,12 +1,13 @@
 // ignore_for_file: avoid_unnecessary_containers
-
+import 'package:cinemax/modals/function.dart';
+import 'package:intl/intl.dart';
 import '/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/modals/movie.dart';
 import '/screens/movie_widgets.dart';
-import 'package:intl/intl.dart';
+import 'genremovies.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
@@ -28,11 +29,19 @@ class _MovieDetailPageState extends State<MovieDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<MovieDetailPage> {
   late TabController tabController;
+  FullMovieDetails? fullMovieDetails;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 5, vsync: this);
+
+    fetchFullMovieDetails(Endpoints.advancedMovieDetailsUrl(widget.movie.id!))
+        .then((value) {
+      setState(() {
+        fullMovieDetails = value;
+      });
+    });
   }
 
   @override
@@ -283,10 +292,70 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                           color: const Color(0xFF202124),
                                           child: Column(
                                             children: <Widget>[
-                                              GenreDisplay(
-                                                api: Endpoints.movieDetailsUrl(
-                                                    widget.movie.id!),
-                                              ),
+                                              Container(
+                                                  child: fullMovieDetails ==
+                                                          null
+                                                      ? CircularProgressIndicator()
+                                                      : SizedBox(
+                                                          height:
+                                                              fullMovieDetails ==
+                                                                      null
+                                                                  ? 0
+                                                                  : 80,
+                                                          child:
+                                                              fullMovieDetails ==
+                                                                      null
+                                                                  ? Container()
+                                                                  : ListView
+                                                                      .builder(
+                                                                      shrinkWrap:
+                                                                          true,
+                                                                      physics:
+                                                                          const BouncingScrollPhysics(),
+                                                                      scrollDirection:
+                                                                          Axis.horizontal,
+                                                                      itemCount: fullMovieDetails!
+                                                                          .genres!
+                                                                          .length,
+                                                                      itemBuilder:
+                                                                          (BuildContext context,
+                                                                              int index) {
+                                                                        return Padding(
+                                                                          padding:
+                                                                              const EdgeInsets.symmetric(horizontal: 4.0),
+                                                                          child:
+                                                                              GestureDetector(
+                                                                            onTap:
+                                                                                () {
+                                                                              Navigator.push(
+                                                                                  context,
+                                                                                  MaterialPageRoute(
+                                                                                      builder: (context) => GenreMovies(
+                                                                                            genres: fullMovieDetails!.genres![index],
+                                                                                          )));
+                                                                            },
+                                                                            child:
+                                                                                Chip(
+                                                                              shape: RoundedRectangleBorder(
+                                                                                side: const BorderSide(width: 2, style: BorderStyle.solid, color: Color(0xFFad5700)),
+                                                                                borderRadius: BorderRadius.circular(20.0),
+                                                                              ),
+                                                                              label: Text(
+                                                                                fullMovieDetails!.genres![index].genreName!,
+                                                                                style: const TextStyle(fontFamily: 'Poppins'),
+                                                                                // style: widget.themeData.textTheme.bodyText1,
+                                                                              ),
+                                                                              backgroundColor: Colors.transparent,
+                                                                            ),
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                    ),
+                                                        )),
+                                              // GenreDisplay(
+                                              //   api: Endpoints.movieDetailsUrl(
+                                              //       widget.movie.id!),
+                                              // ),
                                               Row(
                                                 children: const <Widget>[
                                                   Padding(

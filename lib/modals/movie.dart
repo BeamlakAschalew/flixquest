@@ -64,6 +64,22 @@ class CollectionDetails {
   }
 }
 
+class Genres {
+  String? genreName;
+  int? genreID;
+  Genres({this.genreName, this.genreID});
+  Genres.fromJson(Map<String, dynamic> json) {
+    genreName = json['name'];
+    genreID = json['id'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = genreName;
+    data['id'] = genreID;
+    return data;
+  }
+}
+
 class Movie {
   int? voteCount;
   int? id;
@@ -74,7 +90,6 @@ class Movie {
   String? posterPath;
   String? originalLanguage;
   String? originalTitle;
-  List<int>? genreIds;
   String? backdropPath;
   bool? adult;
   String? overview;
@@ -91,7 +106,6 @@ class Movie {
     this.posterPath,
     this.originalLanguage,
     this.originalTitle,
-    this.genreIds,
     this.backdropPath,
     this.adult,
     this.overview,
@@ -109,7 +123,6 @@ class Movie {
     posterPath = json['poster_path'];
     originalLanguage = json['original_language'];
     originalTitle = json['original_title'];
-    genreIds = json['genre_ids'].cast<int>();
     backdropPath = json['backdrop_path'];
     adult = json['adult'];
     overview = json['overview'];
@@ -128,12 +141,92 @@ class Movie {
     data['poster_path'] = posterPath;
     data['original_language'] = originalLanguage;
     data['original_title'] = originalTitle;
-    data['genre_ids'] = genreIds;
     data['backdrop_path'] = backdropPath;
     data['adult'] = adult;
     data['overview'] = overview;
     data['release_date'] = releaseDate;
     data['runtime'] = runtime;
+
+    return data;
+  }
+}
+
+class FullMovieDetails {
+  int? voteCount;
+  int? id;
+  bool? video;
+  num? voteAverage;
+  String? title;
+  num? popularity;
+  String? posterPath;
+  String? originalLanguage;
+  String? originalTitle;
+  List<Genres>? genres;
+  String? backdropPath;
+  bool? adult;
+  String? overview;
+  String? releaseDate;
+  int? runtime;
+
+  FullMovieDetails({
+    this.voteCount,
+    this.id,
+    this.video,
+    this.voteAverage,
+    this.title,
+    this.popularity,
+    this.posterPath,
+    this.originalLanguage,
+    this.originalTitle,
+    this.genres,
+    this.backdropPath,
+    this.adult,
+    this.overview,
+    this.releaseDate,
+    this.runtime,
+  });
+  FullMovieDetails.fromJson(Map<String, dynamic> json) {
+    if (json['genres'] != null) {
+      genres = [];
+      json['genres'].forEach((v) {
+        genres?.add(Genres.fromJson(v));
+      });
+    }
+    voteCount = json['vote_count'];
+    id = json['id'];
+    video = json['video'];
+    voteAverage = json['vote_average'];
+    title = json['title'];
+    popularity = json['popularity'];
+    posterPath = json['poster_path'];
+    originalLanguage = json['original_language'];
+    originalTitle = json['original_title'];
+    backdropPath = json['backdrop_path'];
+    adult = json['adult'];
+    overview = json['overview'];
+    releaseDate = json['release_date'];
+    runtime = json['runtime'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['vote_count'] = voteCount;
+    data['id'] = id;
+    data['video'] = video;
+    data['vote_average'] = voteAverage;
+    data['title'] = title;
+    data['popularity'] = popularity;
+    data['poster_path'] = posterPath;
+    data['original_language'] = originalLanguage;
+    data['original_title'] = originalTitle;
+    data['backdrop_path'] = backdropPath;
+    data['adult'] = adult;
+    data['overview'] = overview;
+    data['release_date'] = releaseDate;
+    data['runtime'] = runtime;
+    if (genres != null) {
+      data['genres'] = genres?.map((v) => v.toJson()).toList();
+    }
 
     return data;
   }
