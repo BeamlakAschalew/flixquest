@@ -1,53 +1,87 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'package:cinemax/screens/landing_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'modals/prefs.dart';
 import 'screens/common_widgets.dart';
 import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
 
 void main() {
-  runApp(const Cinemax());
+  runApp(Cinemax());
 }
 
-class Cinemax extends StatelessWidget {
-  const Cinemax({Key? key}) : super(key: key);
+class Cinemax extends StatefulWidget {
+  Cinemax({Key? key}) : super(key: key);
+
+  @override
+  State<Cinemax> createState() => _CinemaxState();
+}
+
+class _CinemaxState extends State<Cinemax> {
+  late bool isFirstLaunch = true;
+  void firstTimeCheck() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      if (prefs.getBool('isFirstRun') == null) {
+        isFirstLaunch = true;
+      } else {
+        isFirstLaunch = false;
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    firstTimeCheck();
+    super.initState();
+  }
+
+  // void sharedState() {
+  //   MySharedPreferences.instance
+  //       .getBooleanValue('isfirstRun')
+  //       .then((value) => setState(() {
+  //             isFirstLaunch = true;
+  //           }));
+  // }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: true,
-      title: 'Cinemax',
-      theme: ThemeData.dark().copyWith(
-          textTheme: ThemeData.dark().textTheme.apply(
-                fontFamily: 'Poppins',
-              ),
-          //primaryColor: const Color(0xFFF57C00),
-          iconTheme: const IconThemeData(color: Color(0xFFF57C00)),
-          //backgroundColor: Colors.black,
-          colorScheme: const ColorScheme(
-              primary: Color(0xFFF57C00),
-              primaryContainer: Color(0xFF8f4700),
-              secondary: Color(0xFF202124),
-              secondaryContainer: Color(0xFF141517),
-              surface: Color(0xFFF57C00),
-              background: Color(0xFF202124),
-              error: Color(0xFFFF0000),
-              onPrimary: Color(0xFF202124),
-              onSecondary: Color(0xFF141517),
-              onSurface: Color(0xFF141517),
-              onBackground: Color(0xFFF57C00),
-              onError: Color(0xFFFFFFFF),
-              brightness: Brightness.dark)),
-      home: const CinemaxHomePage(title: 'Cinemax'),
-    );
+        debugShowCheckedModeBanner: true,
+        title: 'Cinemax',
+        theme: ThemeData.dark().copyWith(
+            useMaterial3: true,
+            textTheme: ThemeData.dark().textTheme.apply(
+                  fontFamily: 'Poppins',
+                ),
+            //primaryColor: const Color(0xFFF57C00),
+            iconTheme: const IconThemeData(color: Color(0xFFF57C00)),
+            //backgroundColor: Colors.black,
+            colorScheme: const ColorScheme(
+                primary: Color(0xFFF57C00),
+                primaryContainer: Color(0xFF8f4700),
+                secondary: Color(0xFF202124),
+                secondaryContainer: Color(0xFF141517),
+                surface: Color(0xFFF57C00),
+                background: Color(0xFF202124),
+                error: Color(0xFFFF0000),
+                onPrimary: Color(0xFF202124),
+                onSecondary: Color(0xFF141517),
+                onSurface: Color(0xFF141517),
+                onBackground: Color(0xFFF57C00),
+                onError: Color(0xFFFFFFFF),
+                brightness: Brightness.dark)),
+        home: isFirstLaunch ? LandingScreen() : CinemaxHomePage());
   }
 }
 
 class CinemaxHomePage extends StatefulWidget {
-  const CinemaxHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const CinemaxHomePage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<CinemaxHomePage> createState() => _CinemaxHomePageState();

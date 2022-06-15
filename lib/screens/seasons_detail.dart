@@ -223,7 +223,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                       SingleChildScrollView(
                                         physics: const BouncingScrollPhysics(),
                                         child: Container(
-                                          color: const Color(0xFF202124),
+                                          // color: const Color(0xFF202124),
                                           child: Column(
                                             children: <Widget>[
                                               Row(

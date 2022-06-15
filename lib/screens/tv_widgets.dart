@@ -167,14 +167,16 @@ class _DiscoverTVState extends State<DiscoverTV>
                           tag: '${tvList![index].id}',
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: FadeInImage(
-                              image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                  'w500/' +
-                                  tvList![index].posterPath!),
-                              fit: BoxFit.cover,
-                              placeholder:
-                                  const AssetImage('assets/images/loading.gif'),
-                            ),
+                            child: tvList![index].posterPath == null
+                                ? Image.asset('assets/images/na_square.png')
+                                : FadeInImage(
+                                    image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                        'w500/' +
+                                        tvList![index].posterPath!),
+                                    fit: BoxFit.cover,
+                                    placeholder: const AssetImage(
+                                        'assets/images/loading.gif'),
+                                  ),
                           ),
                         ),
                       ),
@@ -1546,11 +1548,11 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
         tvVideos = value;
       });
     });
-    fetchTVDetails(widget.api2!).then((value) {
-      setState(() {
-        tvDetails = value;
-      });
-    });
+    // fetchTVDetails(widget.api2!).then((value) {
+    //   setState(() {
+    //     tvDetails = value;
+    //   });
+    // });
   }
 
   @override
@@ -1653,15 +1655,12 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                                                         playButtonVisibility,
                                                     child: SizedBox(
                                                       child: Column(
-                                                        children: [
+                                                        children: const [
                                                           Icon(
                                                             Icons.play_arrow,
                                                             size: 90,
                                                           ),
                                                           //TODO: modify this shit, it was to test if the network class was working
-                                                          Text(tvDetails!
-                                                              .networks![0]
-                                                              .networkName!),
                                                         ],
                                                       ),
                                                       height: 90,
