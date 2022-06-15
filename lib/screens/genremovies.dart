@@ -1,9 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
-
 import 'package:flutter/material.dart';
+import '../modals/movie.dart';
 import '/api/endpoints.dart';
 import '/screens/movie_widgets.dart';
-import '/modals/genres.dart';
+import '/modals/genres.dart' as gen;
 
 class GenreMovies extends StatelessWidget {
   final Genres genres;

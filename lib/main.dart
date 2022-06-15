@@ -4,17 +4,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import 'modals/prefs.dart';
 import 'screens/common_widgets.dart';
 import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
 
 void main() {
-  runApp(Cinemax());
+  runApp(const Cinemax());
 }
 
 class Cinemax extends StatefulWidget {
-  Cinemax({Key? key}) : super(key: key);
+  const Cinemax({Key? key}) : super(key: key);
 
   @override
   State<Cinemax> createState() => _CinemaxState();
@@ -74,7 +73,7 @@ class _CinemaxState extends State<Cinemax> {
                 onBackground: Color(0xFFF57C00),
                 onError: Color(0xFFFFFFFF),
                 brightness: Brightness.dark)),
-        home: isFirstLaunch ? LandingScreen() : CinemaxHomePage());
+        home: isFirstLaunch ? const LandingScreen() : const CinemaxHomePage());
   }
 }
 
@@ -91,6 +90,21 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
   late Mixpanel mixpanel;
+  late int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    MainMoviesDisplay(),
+    MainTVDisplay(),
+    Center(
+      child: Text('Coming soon'),
+    )
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -122,55 +136,78 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
               },
               icon: const Icon(Icons.search)),
         ],
-        bottom: TabBar(
-          tabs: [
-            Tab(
-                child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Padding(
-                  padding: EdgeInsets.only(right: 8.0),
-                  child: Icon(Icons.movie_creation_rounded),
-                ),
-                Text(
-                  'Movies',
-                ),
-              ],
-            )),
-            Tab(
-                child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Padding(
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: Icon(Icons.live_tv_rounded)),
-                Text(
-                  'TV series',
-                ),
-              ],
-            ))
-          ],
-          indicatorColor: Colors.white,
-          indicatorWeight: 3,
-          //isScrollable: true,
-          labelStyle: const TextStyle(
-            fontFamily: 'PoppinsSB',
-            color: Colors.black,
-            fontSize: 17,
-          ),
-          unselectedLabelStyle:
-              const TextStyle(fontFamily: 'Poppins', color: Colors.black87),
-          labelColor: Colors.black,
-          controller: tabController,
-          indicatorSize: TabBarIndicatorSize.tab,
-        ),
+        // bottom: TabBar(
+        //   tabs: [
+        //     Tab(
+        //         child: Row(
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: const [
+        //         Padding(
+        //           padding: EdgeInsets.only(right: 8.0),
+        //           child: Icon(Icons.movie_creation_rounded),
+        //         ),
+        //         Text(
+        //           'Movies',
+        //         ),
+        //       ],
+        //     )),
+        //     Tab(
+        //         child: Row(
+        //       mainAxisAlignment: MainAxisAlignment.center,
+        //       children: const [
+        //         Padding(
+        //             padding: EdgeInsets.only(right: 8.0),
+        //             child: Icon(Icons.live_tv_rounded)),
+        //         Text(
+        //           'TV series',
+        //         ),
+        //       ],
+        //     ))
+        //   ],
+        //   indicatorColor: Colors.white,
+        //   indicatorWeight: 3,
+        //   //isScrollable: true,
+        //   labelStyle: const TextStyle(
+        //     fontFamily: 'PoppinsSB',
+        //     color: Colors.black,
+        //     fontSize: 17,
+        //   ),
+        //   unselectedLabelStyle:
+        //       const TextStyle(fontFamily: 'Poppins', color: Colors.black87),
+        //   labelColor: Colors.black,
+        //   controller: tabController,
+        //   indicatorSize: TabBarIndicatorSize.tab,
+        // ),
       ),
-      body: TabBarView(
-        controller: tabController,
-        children: const [
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.movie_creation_rounded), label: 'Movies'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.live_tv_rounded), label: 'TV Shows'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.explore_rounded), label: 'Discover')
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
+      // body: TabBarView(
+      //   controller: tabController,
+      //   children: const [
+      //     MainMoviesDisplay(),
+      //     MainTVDisplay(),
+      //   ],
+      // ),
+      body: IndexedStack(
+        children: const <Widget>[
           MainMoviesDisplay(),
           MainTVDisplay(),
+          Center(
+            child: Text('Coming soon'),
+          )
         ],
+        index: _selectedIndex,
       ),
     );
   }
