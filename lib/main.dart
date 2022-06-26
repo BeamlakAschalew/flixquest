@@ -97,10 +97,11 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
     });
   }
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    MainMoviesDisplay(),
-    MainTVDisplay(),
-    Center(
+  static final List<Widget> _widgetOptions = <Widget>[
+    const MainMoviesDisplay(),
+    //MainTVDisplay(),
+    Container(),
+    const Center(
       child: Text('Coming soon'),
     )
   ];

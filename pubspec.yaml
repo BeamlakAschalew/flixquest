@@ -30,6 +30,7 @@ dependencies:
   mixpanel_flutter: ^1.4.5
   animated_text_kit: ^4.2.1
   shared_preferences: ^2.0.15
+  cached_network_image: ^3.2.1
 
 
 dev_dependencies:

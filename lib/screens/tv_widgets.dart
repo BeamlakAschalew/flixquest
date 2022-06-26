@@ -2,15 +2,17 @@
 
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
+import '../modals/tv_genres.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/constants/style_constants.dart';
-import '/modals/credits.dart';
+import '/modals/credits.dart' as old;
 import '/modals/function.dart';
 import '/modals/genres.dart';
-import '/modals/images.dart';
+import '/modals/images.dart' as old_images;
 import '/modals/movie.dart';
 import '/modals/social_icons_icons.dart';
 import '/modals/tv.dart';
@@ -22,7 +24,7 @@ import '/screens/episode_detail.dart';
 import '/screens/seasons_detail.dart';
 import '/screens/streaming_services_tvshows.dart';
 import '/screens/tv_detail.dart';
-import '/screens/genre_tv.dart';
+import '/screens/genre_tv.dart' as tvg;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -360,22 +362,50 @@ class _ScrollingTVState extends State<ScrollingTV>
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8.0),
-                                          child:
-                                              tvList![index].posterPath == null
-                                                  ? Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : FadeInImage(
-                                                      image: NetworkImage(
-                                                          TMDB_BASE_IMAGE_URL +
-                                                              'w500/' +
-                                                              tvList![index]
-                                                                  .posterPath!),
-                                                      fit: BoxFit.cover,
-                                                      placeholder: const AssetImage(
-                                                          'assets/images/loading.gif'),
+                                          child: tvList![index].posterPath ==
+                                                  null
+                                              ? Image.asset(
+                                                  'assets/images/na_logo.png',
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : CachedNetworkImage(
+                                                  imageUrl:
+                                                      TMDB_BASE_IMAGE_URL +
+                                                          'w500/' +
+                                                          tvList![index]
+                                                              .posterPath!,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover,
+                                                      ),
                                                     ),
+                                                  ),
+                                                  placeholder: (context, url) =>
+                                                      Image.asset(
+                                                    'assets/images/loading.gif',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Image.asset(
+                                                    'assets/images/na_logo.png',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                          // : FadeInImage(
+                                          //     image: NetworkImage(
+                                          //         TMDB_BASE_IMAGE_URL +
+                                          //             'w500/' +
+                                          //             tvList![index]
+                                          //                 .posterPath!),
+                                          //     fit: BoxFit.cover,
+                                          //     placeholder: const AssetImage(
+                                          //         'assets/images/loading.gif'),
+                                          //   ),
                                         ),
                                       ),
                                     ),
@@ -756,6 +786,7 @@ class _ScrollingTVEpisodeGuestStarsState
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
   late Mixpanel mixpanel;
+  FullMovieDetails? fullMovieDetails;
   @override
   void initState() {
     super.initState();
@@ -789,7 +820,7 @@ class _ScrollingTVEpisodeGuestStarsState
                   ],
                 ),
               )
-            : credits!.episodeGuestStars!.isEmpty
+            : fullMovieDetails!.episodeGuestStars!.isEmpty
                 ? const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Center(
@@ -818,7 +849,7 @@ class _ScrollingTVEpisodeGuestStarsState
                 )
               : ListView.builder(
                   physics: const BouncingScrollPhysics(),
-                  itemCount: credits!.episodeGuestStars!.length,
+                  itemCount: fullMovieDetails!.episodeGuestStars!.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
@@ -828,18 +859,18 @@ class _ScrollingTVEpisodeGuestStarsState
                           mixpanel
                               .track('Most viewed person pages', properties: {
                             'Person name':
-                                '${credits!.episodeGuestStars![index].name}',
+                                '${fullMovieDetails!.episodeGuestStars![index].name}',
                             'Person id':
-                                '${credits!.episodeGuestStars![index].id}'
+                                '${fullMovieDetails!.episodeGuestStars![index].id}'
                           });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return GuestStarDetailPage(
-                              cast: credits!.episodeGuestStars![index],
-                              heroId:
-                                  '${credits!.episodeGuestStars![index].id}',
-                            );
-                          }));
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) {
+                          //   return GuestStarDetailPage(
+                          //     cast: fullMovieDetails!.episodeGuestStars![index],
+                          //     heroId:
+                          //         '${fullMovieDetails!.episodeGuestStars![index].id}',
+                          //   );
+                          // }));
                         },
                         child: SizedBox(
                           width: 100,
@@ -851,11 +882,12 @@ class _ScrollingTVEpisodeGuestStarsState
                                   width: 75,
                                   child: Hero(
                                     tag:
-                                        '${credits!.episodeGuestStars![index].id}',
+                                        '${fullMovieDetails!.episodeGuestStars![index].id}',
                                     child: ClipRRect(
                                       borderRadius:
                                           BorderRadius.circular(100.0),
-                                      child: credits!.episodeGuestStars![index]
+                                      child: fullMovieDetails!
+                                                  .episodeGuestStars![index]
                                                   .profilePath ==
                                               null
                                           ? Image.asset(
@@ -866,7 +898,7 @@ class _ScrollingTVEpisodeGuestStarsState
                                               image: NetworkImage(
                                                   TMDB_BASE_IMAGE_URL +
                                                       'w500/' +
-                                                      credits!
+                                                      fullMovieDetails!
                                                           .episodeGuestStars![
                                                               index]
                                                           .profilePath!),
@@ -883,7 +915,8 @@ class _ScrollingTVEpisodeGuestStarsState
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
-                                    credits!.episodeGuestStars![index].name!,
+                                    fullMovieDetails!
+                                        .episodeGuestStars![index].name!,
                                     maxLines: 2,
                                     textAlign: TextAlign.center,
                                     overflow: TextOverflow.ellipsis,
@@ -920,6 +953,7 @@ class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
   late Mixpanel mixpanel;
+  FullMovieDetails? fullMovieDetails;
   @override
   void initState() {
     super.initState();
@@ -994,13 +1028,13 @@ class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                             'Person name': '${credits!.crew![index].name}',
                             'Person id': '${credits!.crew![index].id}'
                           });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CrewDetailPage(
-                              crew: credits!.crew![index],
-                              heroId: '${credits!.crew![index].id}',
-                            );
-                          }));
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) {
+                          //   return CrewDetailPage(
+                          //     crew: fullMovieDetails!.crew![index],
+                          //     heroId: '${credits!.crew![index].id}',
+                          //   );
+                          // }));
                         },
                         child: SizedBox(
                           width: 100,
@@ -1235,6 +1269,7 @@ class TVImagesDisplay extends StatefulWidget {
 }
 
 class _TVImagesDisplayState extends State<TVImagesDisplay> {
+  FullMovieDetails? fullMovieDetails;
   Images? tvImages;
   @override
   void initState() {
@@ -1928,16 +1963,16 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                             'TV series season number':
                                 '${tvDetails!.seasons![index].seasonNumber}'
                           });
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => SeasonsDetail(
-                                      seriesName: widget.seriesName,
-                                      tvId: widget.tvId,
-                                      tvDetails: tvDetails!,
-                                      seasons: tvDetails!.seasons![index],
-                                      heroId:
-                                          '${tvDetails!.seasons![index].seasonId}')));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => SeasonsDetail(
+                          //             seriesName: widget.seriesName,
+                          //             tvId: widget.tvId,
+                          //             tvDetails: tvDetails!,
+                          //             seasons: tvDetails!.seasons![index],
+                          //             heroId:
+                          //                 '${tvDetails!.seasons![index].seasonId}')));
                         },
                         child: Container(
                           color: const Color(0xFF202124),
@@ -2084,12 +2119,12 @@ class _TVCrewTabState extends State<TVCrewTab>
                             'Person name': '${credits!.crew![index].name}',
                             'Person id': '${credits!.crew![index].id}'
                           });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CrewDetailPage(
-                                crew: credits!.crew![index],
-                                heroId: '${credits!.crew![index].name}');
-                          }));
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) {
+                          //   return CrewDetailPage(
+                          //       crew: credits!.crew![index],
+                          //       heroId: '${credits!.crew![index].name}');
+                          // }));
                         },
                         child: Container(
                           color: const Color(0xFF202124),
@@ -2611,7 +2646,7 @@ class TVGenreDisplay extends StatefulWidget {
 
 class _TVGenreDisplayState extends State<TVGenreDisplay>
     with AutomaticKeepAliveClientMixin<TVGenreDisplay> {
-  List<Genres>? genres;
+  List<MovieGenres>? genres;
   @override
   void initState() {
     super.initState();
@@ -2643,7 +2678,7 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => TVGenre(
+                              builder: (context) => tvg.TVGenre(
                                     genres: genres![index],
                                   )));
                     },
@@ -3252,17 +3287,17 @@ class _SeasonsListState extends State<SeasonsList> {
                                           'TV series season number':
                                               '${tvDetails!.seasons![index].seasonNumber}'
                                         });
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SeasonsDetail(
-                                                tvId: widget.tvId,
-                                                seriesName: widget.seriesName,
-                                                tvDetails: tvDetails!,
-                                                seasons:
-                                                    tvDetails!.seasons![index],
-                                                heroId:
-                                                    '${tvDetails!.seasons![index].seasonNumber}')));
+                                    // Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) => SeasonsDetail(
+                                    //             tvId: widget.tvId,
+                                    //             seriesName: widget.seriesName,
+                                    //             tvDetails: tvDetails!,
+                                    //             seasons:
+                                    //                 tvDetails!.seasons![index],
+                                    //             heroId:
+                                    //                 '${tvDetails!.seasons![index].seasonNumber}')));
                                   },
                                   child: SizedBox(
                                     width: 105,
@@ -3828,15 +3863,15 @@ class TVGenreListGrid extends StatefulWidget {
 
 class _TVGenreListGridState extends State<TVGenreListGrid>
     with AutomaticKeepAliveClientMixin<TVGenreListGrid> {
-  List<Genres>? genreList;
+  FullMovieDetails? genreList;
   @override
   void initState() {
     super.initState();
-    // fetchGenre(widget.api).then((value) {
-    //   setState(() {
-    //     genreList = value;
-    //   });
-    // });
+    fetchFullMovieDetails(Endpoints.tvGenresUrl()).then((value) {
+      setState(() {
+        genreList = value;
+      });
+    });
   }
 
   @override
@@ -3890,13 +3925,14 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
                       Expanded(
                         child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: genreList!.length,
+                            itemCount: genreList!.genres!.length,
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
                                 onTap: () {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return TVGenre(genres: genreList![index]);
+                                    return tvg.TVGenre(
+                                        genres: genreList!.genres![index]);
                                   }));
                                 },
                                 child: Padding(
@@ -3904,7 +3940,8 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
                                   child: Container(
                                     width: 125,
                                     alignment: Alignment.center,
-                                    child: Text(genreList![index].genreName!,
+                                    child: Text(
+                                        genreList!.genres![index].genreName!,
                                         textAlign: TextAlign.center),
                                     decoration: BoxDecoration(
                                         color: const Color(0xFFF57C00),
@@ -4034,12 +4071,12 @@ class TVStreamingServicesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return StreamingServicesTVShows(
-            providerId: providerID,
-            providerName: title,
-          );
-        }));
+        // Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //   return StreamingServicesTVShows(
+        //     providerId: providerID,
+        //     providerName: title,
+        //   );
+        // }));
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -4459,6 +4496,7 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     with AutomaticKeepAliveClientMixin<TVEpisodeGuestStarsTab> {
   Credits? credits;
   late Mixpanel mixpanel;
+  FullMovieDetails? fullMovieDetails;
   @override
   void initState() {
     super.initState();
@@ -4485,7 +4523,7 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
               child: CircularProgressIndicator(),
             ),
           )
-        : credits!.episodeGuestStars!.isEmpty
+        : fullMovieDetails!.episodeGuestStars!.isEmpty
             ? Container(
                 child: const Center(
                   child: Text(
@@ -4496,24 +4534,24 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
             : Container(
                 color: const Color(0xFF202124),
                 child: ListView.builder(
-                    itemCount: credits!.episodeGuestStars!.length,
+                    itemCount: fullMovieDetails!.episodeGuestStars!.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                         onTap: () {
                           mixpanel
                               .track('Most viewed person pages', properties: {
                             'Person name':
-                                '${credits!.episodeGuestStars![index].name}',
+                                '${fullMovieDetails!.episodeGuestStars![index].name}',
                             'Person id':
-                                '${credits!.episodeGuestStars![index].id}'
+                                '${fullMovieDetails!.episodeGuestStars![index].id}'
                           });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return GuestStarDetailPage(
-                                cast: credits!.episodeGuestStars![index],
-                                heroId:
-                                    '${credits!.episodeGuestStars![index].creditId}');
-                          }));
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) {
+                          //   return GuestStarDetailPage(
+                          //       cast: fullMovieDetails!.episodeGuestStars![index],
+                          //       heroId:
+                          //           '${fullMovieDetails!.episodeGuestStars![index].creditId}');
+                          // }));
                         },
                         child: Container(
                           color: const Color(0xFF202124),
@@ -4537,11 +4575,11 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                         height: 80,
                                         child: Hero(
                                           tag:
-                                              '${credits!.episodeGuestStars![index].creditId}',
+                                              '${fullMovieDetails!.episodeGuestStars![index].creditId}',
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(100.0),
-                                            child: credits!
+                                            child: fullMovieDetails!
                                                         .episodeGuestStars![
                                                             index]
                                                         .profilePath ==
@@ -4554,7 +4592,7 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
                                                             'w500/' +
-                                                            credits!
+                                                            fullMovieDetails!
                                                                 .episodeGuestStars![
                                                                     index]
                                                                 .profilePath!),
@@ -4575,7 +4613,8 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            credits!.episodeGuestStars![index]
+                                            fullMovieDetails!
+                                                .episodeGuestStars![index]
                                                 .name!,
                                             style: const TextStyle(
                                                 fontFamily: 'PoppinsSB'),
@@ -4583,7 +4622,7 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                           ),
                                           Text(
                                             'As : '
-                                            '${credits!.episodeGuestStars![index].character!.isEmpty ? 'N/A' : credits!.episodeGuestStars![index].character!}',
+                                            '${fullMovieDetails!.episodeGuestStars![index].character!.isEmpty ? 'N/A' : fullMovieDetails!.episodeGuestStars![index].character!}',
                                           ),
                                           // Text(
                                           //   credits!.cast![index].roles![0]

@@ -1,13 +1,17 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cinemax/modals/function.dart';
 import 'package:intl/intl.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import '/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/modals/movie.dart';
 import '/screens/movie_widgets.dart';
+import 'cast_detail.dart';
 import 'genremovies.dart';
+import 'movie_stream_select.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
@@ -30,11 +34,16 @@ class _MovieDetailPageState extends State<MovieDetailPage>
         AutomaticKeepAliveClientMixin<MovieDetailPage> {
   late TabController tabController;
   FullMovieDetails? fullMovieDetails;
+  late Mixpanel mixpanel;
+  bool? isVisible = false;
+  double? buttonWidth = 150;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 5, vsync: this);
+
+    initMixpanel();
 
     fetchFullMovieDetails(Endpoints.advancedMovieDetailsUrl(widget.movie.id!))
         .then((value) {
@@ -42,6 +51,11 @@ class _MovieDetailPageState extends State<MovieDetailPage>
         fullMovieDetails = value;
       });
     });
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
+        optOutTrackingDefault: false);
   }
 
   @override
@@ -400,23 +414,341 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                   ),
                                                 ],
                                               ),
-                                              WatchNowButton(
-                                                movieId: widget.movie.id,
-                                                movieName:
-                                                    widget.movie.originalTitle,
-                                                api: Endpoints.movieDetailsUrl(
-                                                    widget.movie.id!),
+                                              Container(
+                                                child: fullMovieDetails == null
+                                                    ? CircularProgressIndicator()
+                                                    : TextButton(
+                                                        style: ButtonStyle(
+                                                            maximumSize:
+                                                                MaterialStateProperty
+                                                                    .all(Size(
+                                                                        buttonWidth!,
+                                                                        50)),
+                                                            backgroundColor:
+                                                                MaterialStateProperty.all(
+                                                                    const Color(
+                                                                        0xFFF57C00))),
+                                                        onPressed: () async {
+                                                          mixpanel.track(
+                                                              'Most viewed movies',
+                                                              properties: {
+                                                                'Movie name':
+                                                                    '${widget.movie.originalTitle}',
+                                                                'Movie id':
+                                                                    '${widget.movie.originalTitle}'
+                                                              });
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) {
+                                                            return MovieStreamSelect(
+                                                              movieId: widget
+                                                                  .movie.id!,
+                                                              movieName: widget
+                                                                  .movie
+                                                                  .originalTitle!,
+                                                              movieImdbId:
+                                                                  fullMovieDetails!
+                                                                      .imdbId!,
+                                                            );
+                                                          }));
+                                                        },
+                                                        child: Row(
+                                                          children: const [
+                                                            Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      right:
+                                                                          10),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .play_circle,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              'WATCH NOW',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .white),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
                                               ),
-                                              ScrollingArtists(
-                                                api: Endpoints.getCreditsUrl(
-                                                    widget.movie.id!),
-                                                title: 'Cast',
+                                              Column(
+                                                children: <Widget>[
+                                                  fullMovieDetails == null
+                                                      ? Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Row(
+                                                            children: const <
+                                                                Widget>[
+                                                              Text(
+                                                                'Cast',
+                                                                style:
+                                                                    kTextHeaderStyle,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      : fullMovieDetails!
+                                                              .cast!.isEmpty
+                                                          ? const Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Center(
+                                                                  child: Text(
+                                                                      'There are no casts available for this movie',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center)),
+                                                            )
+                                                          : Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: const <
+                                                                  Widget>[
+                                                                Padding(
+                                                                  padding:
+                                                                      EdgeInsets
+                                                                          .all(
+                                                                              8.0),
+                                                                  child: Text(
+                                                                    'Cast',
+                                                                    style:
+                                                                        kTextHeaderStyle,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                  SizedBox(
+                                                    width: double.infinity,
+                                                    height: 160,
+                                                    child:
+                                                        fullMovieDetails == null
+                                                            ? const Center(
+                                                                child:
+                                                                    CircularProgressIndicator(),
+                                                              )
+                                                            : ListView.builder(
+                                                                physics:
+                                                                    const BouncingScrollPhysics(),
+                                                                itemCount:
+                                                                    fullMovieDetails!
+                                                                        .cast!
+                                                                        .length,
+                                                                scrollDirection:
+                                                                    Axis.horizontal,
+                                                                itemBuilder:
+                                                                    (BuildContext
+                                                                            context,
+                                                                        int index) {
+                                                                  return Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child:
+                                                                        GestureDetector(
+                                                                      onTap:
+                                                                          () {
+                                                                        mixpanel.track(
+                                                                            'Most viewed person pages',
+                                                                            properties: {
+                                                                              'Person name': '${fullMovieDetails!.cast![index].name}',
+                                                                              'Person id': '${fullMovieDetails!.cast![index].id}'
+                                                                            });
+                                                                        Navigator.push(
+                                                                            context,
+                                                                            MaterialPageRoute(builder:
+                                                                                (context) {
+                                                                          return CastDetailPage(
+                                                                            cast:
+                                                                                fullMovieDetails!.cast![index],
+                                                                            heroId:
+                                                                                '${fullMovieDetails!.cast![index].id}',
+                                                                          );
+                                                                        }));
+                                                                      },
+                                                                      child:
+                                                                          SizedBox(
+                                                                        width:
+                                                                            100,
+                                                                        child:
+                                                                            Column(
+                                                                          children: <
+                                                                              Widget>[
+                                                                            Expanded(
+                                                                              flex: 6,
+                                                                              child: Hero(
+                                                                                tag: '${fullMovieDetails!.cast![index].id}',
+                                                                                child: SizedBox(
+                                                                                  width: 75,
+                                                                                  child: ClipRRect(
+                                                                                    borderRadius: BorderRadius.circular(100.0),
+                                                                                    child: fullMovieDetails!.cast![index].profilePath == null
+                                                                                        ? Image.asset(
+                                                                                            'assets/images/na_square.png',
+                                                                                            fit: BoxFit.cover,
+                                                                                          )
+                                                                                        : FadeInImage(
+                                                                                            image: NetworkImage(TMDB_BASE_IMAGE_URL + 'w500/' + fullMovieDetails!.cast![index].profilePath!),
+                                                                                            fit: BoxFit.cover,
+                                                                                            placeholder: const AssetImage('assets/images/loading.gif'),
+                                                                                          ),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                            Expanded(
+                                                                              flex: 6,
+                                                                              child: Padding(
+                                                                                padding: const EdgeInsets.all(8.0),
+                                                                                child: Text(
+                                                                                  fullMovieDetails!.cast![index].name!,
+                                                                                  maxLines: 2,
+                                                                                  textAlign: TextAlign.center,
+                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              ),
+                                                  ),
+                                                ],
                                               ),
-                                              MovieImagesDisplay(
-                                                title: 'Images',
-                                                api: Endpoints.getImages(
-                                                    widget.movie.id!),
+                                              // ScrollingArtists(
+                                              //   api: Endpoints.getCreditsUrl(
+                                              //       widget.movie.id!),
+                                              //   title: 'Cast',
+                                              // ),
+                                              Column(
+                                                children: [
+                                                  fullMovieDetails == null
+                                                      ? Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Row(
+                                                            children: const <
+                                                                Widget>[
+                                                              Text(
+                                                                'Images',
+                                                                style:
+                                                                    kTextHeaderStyle, /* style: widget.themeData!.textTheme.bodyText1*/
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        )
+                                                      : Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: const <
+                                                              Widget>[
+                                                            Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Text(
+                                                                'Images',
+                                                                style:
+                                                                    kTextHeaderStyle, /*style: widget.themeData!.textTheme.bodyText1*/
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                  Container(
+                                                    child: SizedBox(
+                                                      width: double.infinity,
+                                                      height: 180,
+                                                      child: fullMovieDetails ==
+                                                              null
+                                                          ? const Center(
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            )
+                                                          : fullMovieDetails!
+                                                                  .backdrops!
+                                                                  .isEmpty
+                                                              ? const SizedBox(
+                                                                  width: double
+                                                                      .infinity,
+                                                                  height: 80,
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      'This movie doesn\'t have an image provided',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              : CarouselSlider
+                                                                  .builder(
+                                                                  options:
+                                                                      CarouselOptions(
+                                                                    disableCenter:
+                                                                        true,
+                                                                    viewportFraction:
+                                                                        0.8,
+                                                                    enlargeCenterPage:
+                                                                        false,
+                                                                    autoPlay:
+                                                                        true,
+                                                                  ),
+                                                                  itemBuilder: (BuildContext
+                                                                          context,
+                                                                      int index,
+                                                                      pageViewIndex) {
+                                                                    return Container(
+                                                                      child:
+                                                                          Padding(
+                                                                        padding:
+                                                                            const EdgeInsets.all(8.0),
+                                                                        child:
+                                                                            ClipRRect(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(8.0),
+                                                                          child:
+                                                                              FadeInImage(
+                                                                            image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                                                                'w500/' +
+                                                                                fullMovieDetails!.backdrops![index].filePath!),
+                                                                            fit:
+                                                                                BoxFit.cover,
+                                                                            placeholder:
+                                                                                const AssetImage('assets/images/loading.gif'),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                  itemCount:
+                                                                      fullMovieDetails!
+                                                                          .backdrops!
+                                                                          .length,
+                                                                ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
+                                              // MovieImagesDisplay(
+                                              //   title: 'Images',
+                                              //   api: Endpoints.getImages(
+                                              //       widget.movie.id!),
+                                              // ),
                                               MovieVideosDisplay(
                                                 api: Endpoints.getVideos(
                                                     widget.movie.id!),

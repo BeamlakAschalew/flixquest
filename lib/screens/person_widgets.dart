@@ -2,7 +2,7 @@
 
 import '/constants/api_constants.dart';
 import '/modals/function.dart';
-import '/modals/images.dart';
+import '/modals/images.dart' as old_images;
 import '/modals/movie.dart';
 import '/modals/person.dart';
 import '/modals/social_icons_icons.dart';

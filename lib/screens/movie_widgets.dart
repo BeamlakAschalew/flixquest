@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '../modals/genres.dart';
 import '/constants/style_constants.dart';
 import '/modals/social_icons_icons.dart';
@@ -17,10 +19,10 @@ import '/api/endpoints.dart';
 import '/modals/genres.dart' as genreold;
 import '/constants/api_constants.dart';
 import '/screens/movie_detail.dart';
-import '/modals/credits.dart';
+import '/modals/credits.dart' as oldCredits;
 import 'collection_detail.dart';
 import 'crew_detail.dart';
-import '/modals/images.dart';
+import '/modals/images.dart'as old_images;
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -355,23 +357,51 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8.0),
-                                          child:
-                                              moviesList![index].posterPath ==
-                                                      null
-                                                  ? Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : FadeInImage(
-                                                      image: NetworkImage(
-                                                          TMDB_BASE_IMAGE_URL +
-                                                              'w500/' +
-                                                              moviesList![index]
-                                                                  .posterPath!),
-                                                      fit: BoxFit.cover,
-                                                      placeholder: const AssetImage(
-                                                          'assets/images/loading.gif'),
+                                          child: moviesList![index]
+                                                      .posterPath ==
+                                                  null
+                                              ? Image.asset(
+                                                  'assets/images/na_logo.png',
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : CachedNetworkImage(
+                                                  imageUrl:
+                                                      TMDB_BASE_IMAGE_URL +
+                                                          'w500/' +
+                                                          moviesList![index]
+                                                              .posterPath!,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover,
+                                                      ),
                                                     ),
+                                                  ),
+                                                  placeholder: (context, url) =>
+                                                      Image.asset(
+                                                    'assets/images/loading.gif',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Image.asset(
+                                                    'assets/images/na_logo.png',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                          // : FadeInImage(
+                                          //     image: NetworkImage(
+                                          //         TMDB_BASE_IMAGE_URL +
+                                          //             'w500/' +
+                                          //             moviesList![index]
+                                          //                 .posterPath!),
+                                          //     fit: BoxFit.cover,
+                                          //     placeholder: const AssetImage(
+                                          //         'assets/images/loading.gif'),
+                                          //   ),
                                         ),
                                       ),
                                     ),
@@ -505,13 +535,13 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                             'Person name': '${credits!.cast![index].name}',
                             'Person id': '${credits!.cast![index].id}'
                           });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CastDetailPage(
-                              cast: credits!.cast![index],
-                              heroId: '${credits!.cast![index].id}',
-                            );
-                          }));
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) {
+                          //   return CastDetailPage(
+                          //     cast: credits!.cast![index],
+                          //     heroId: '${credits!.cast![index].id}',
+                          //   );
+                          // }));
                         },
                         child: SizedBox(
                           width: 100,
@@ -1367,7 +1397,7 @@ class GenreDisplay extends StatefulWidget {
 
 class _GenreDisplayState extends State<GenreDisplay>
     with AutomaticKeepAliveClientMixin<GenreDisplay> {
-  List<Genres>? genreList;
+  List<MovieGenres>? genreList;
   @override
   void initState() {
     super.initState();
@@ -1673,12 +1703,12 @@ class _CastTabState extends State<CastTab>
                             'Person name': '${credits!.cast![index].name}',
                             'Person id': '${credits!.cast![index].id}'
                           });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CastDetailPage(
-                                cast: credits!.cast![index],
-                                heroId: '${credits!.cast![index].name}');
-                          }));
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) {
+                          //   return CastDetailPage(
+                          //       cast: credits!.cast![index],
+                          //       heroId: '${credits!.cast![index].name}');
+                          // }));
                         },
                         child: Container(
                           color: const Color(0xFF202124),
@@ -1820,12 +1850,12 @@ class _CrewTabState extends State<CrewTab>
                             'Person name': '${credits!.crew![index].name}',
                             'Person id': '${credits!.crew![index].id}'
                           });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CrewDetailPage(
-                                crew: credits!.crew![index],
-                                heroId: '${credits!.crew![index].creditId}');
-                          }));
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) {
+                          //   return CrewDetailPage(
+                          //       crew: credits!.crew![index],
+                          //       heroId: '${credits!.crew![index].creditId}');
+                          // }));
                         },
                         child: Container(
                           color: const Color(0xFF202124),
@@ -2835,15 +2865,15 @@ class GenreListGrid extends StatefulWidget {
 
 class _GenreListGridState extends State<GenreListGrid>
     with AutomaticKeepAliveClientMixin<GenreListGrid> {
-  List<Genres>? genreList;
+  List<MovieGenres>? movieGenres;
   @override
   void initState() {
     super.initState();
-    // fetchGenre(widget.api).then((value) {
-    //   setState(() {
-    //     genreList = value;
-    //   });
-    // });
+    fetchMovieGenres(Endpoints.movieGenresUrl()).then((value) {
+      setState(() {
+        movieGenres = value;
+      });
+    });
   }
 
   @override
@@ -2851,7 +2881,7 @@ class _GenreListGridState extends State<GenreListGrid>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return genreList == null
+    return movieGenres == null
         ? Column(
             children: [
               Row(
@@ -2897,14 +2927,14 @@ class _GenreListGridState extends State<GenreListGrid>
                       Expanded(
                         child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: genreList!.length,
+                            itemCount: movieGenres!.length,
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
                                 onTap: () {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
                                     return GenreMovies(
-                                        genres: genreList![index]);
+                                        genres: movieGenres![index]);
                                   }));
                                 },
                                 child: Padding(
@@ -2912,7 +2942,7 @@ class _GenreListGridState extends State<GenreListGrid>
                                   child: Container(
                                     width: 125,
                                     alignment: Alignment.center,
-                                    child: Text(genreList![index].genreName!),
+                                    child: Text(movieGenres![index].genreName!),
                                     decoration: BoxDecoration(
                                         color: const Color(0xFFF57C00),
                                         borderRadius:

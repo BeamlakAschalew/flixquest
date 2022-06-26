@@ -1,11 +1,11 @@
 import 'dart:convert';
-import '/modals/images.dart';
+import '/modals/images.dart' as old_images;
 import '/modals/person.dart';
 import '/modals/tv.dart';
 import '/modals/videos.dart';
 import '/modals/watch_providers.dart';
 import 'package:http/http.dart' as http;
-import '/modals/credits.dart';
+import '/modals/credits.dart' as oldCredits;
 import '/modals/genres.dart' as oldgenre;
 import '/modals/movie.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
@@ -120,6 +120,14 @@ Future<FullMovieDetails> fetchFullMovieDetails(String api) async {
   var decodeRes = jsonDecode(res.body);
   fullMovieDetails = FullMovieDetails.fromJson(decodeRes);
   return fullMovieDetails;
+}
+
+Future<List<MovieGenres>> fetchMovieGenres(String api) async {
+  MovieGenreList movieGenres;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  movieGenres = MovieGenreList.fromJson(decodeRes);
+  return movieGenres.genre ?? [];
 }
 
 // Future<Credits> fetchPerson(String api) async {

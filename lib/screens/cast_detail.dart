@@ -3,8 +3,9 @@
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '/modals/credits.dart';
+import '/modals/credits.dart' as old_credits;
 import 'person_widgets.dart';
+import '/modals/movie.dart';
 
 class CastDetailPage extends StatefulWidget {
   final Cast? cast;
