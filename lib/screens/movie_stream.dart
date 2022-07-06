@@ -80,7 +80,7 @@ class _MovieStreamState extends State<MovieStream> {
             </style>
             </head>
             <body>
-<span id='frame'>CINEMAX</span>
+<span id='frame'>${widget.movie.title!}</span>
 <div class='show-video'>
    <iframe 
       allowfullscreen="true" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width='100%' height='360' 
