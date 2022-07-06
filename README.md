@@ -37,7 +37,7 @@ If opening an issue without following the issue template, we will ignore the iss
 
 The developers of this application does not have any affiliation with the content providers available.
 
-Kotatsu does not host any content on the app, and has no control over what media is put up or taken down.
+Cinemax does not host any content on the app, and has no control over what media is put up or taken down.
 
 In case of copyright infringement, please directly contact the responsible parties or the streaming websites.
 
