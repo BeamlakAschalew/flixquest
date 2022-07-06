@@ -41,27 +41,35 @@ class MovieStreamSelect extends StatelessWidget {
                     StreamListWidget(
                       streamName: 'Stream one (multiple player options)',
                       streamLink:
-                          'https://www.2embed.ru/embed/tmdb/movie?id=$movieId',
+                          'https://2embed.org/embed/movie?tmdb=$movieId',
                     ),
                     StreamListWidget(
                       streamName: 'Stream two (multiple player options)',
                       streamLink:
-                          'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=vcu',
+                          'https://moviehungershaven.xyz/tplayer/npls1.php?id==$movieId',
                     ),
                     StreamListWidget(
                       streamName: 'Stream three (360p)',
                       streamLink:
-                          'http://database.gdriveplayer.us/player.php?tmdb=$movieId',
+                          'https://databasegdriveplayer.co/player.php?tmdb=$movieId',
                     ),
                     StreamListWidget(
                       streamName: 'Stream four (multiple player options)',
+                      streamLink: 'https://openvids.io/tmdb/movie/$movieId',
+                    ),
+                    StreamListWidget(
+                      streamName: 'Stream five (multiple player options)',
                       streamLink: 'https://fsapi.xyz/tmdb-movie/$movieId',
                     ),
                     StreamListWidget(
+                      streamName: 'Stream six (multiple player options)',
+                      streamLink: 'https://gomo.to/movie/$movieImdbId',
+                    ),
+                    StreamListWidget(
                       streamName:
-                          'Stream five (360p/480p/720p/1080p - might have ads)',
+                          'Stream seven (360p/480p/720p/1080p - might have ads)',
                       streamLink:
-                          'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=hydrax',
+                          'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=serverf4',
                     ),
                   ],
                 ),
