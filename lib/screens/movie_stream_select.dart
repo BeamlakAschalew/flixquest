@@ -46,7 +46,7 @@ class MovieStreamSelect extends StatelessWidget {
                     StreamListWidget(
                       streamName: 'Stream two (multiple player options)',
                       streamLink:
-                          'https://moviehungershaven.xyz/tplayer/npls1.php?id==$movieId',
+                          'https://moviehungershaven.xyz/tplayer/plr7.php?id=$movieId',
                     ),
                     StreamListWidget(
                       streamName: 'Stream three (360p)',
