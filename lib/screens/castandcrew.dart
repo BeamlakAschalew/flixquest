@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/modals/credits.dart';
+import '/constants/api_constants.dart';
+import '/modals/credits.dart';
 
 class CastAndCrew extends StatelessWidget {
   final Credits? credits;

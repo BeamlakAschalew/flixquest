@@ -112,6 +112,7 @@ class TVDetails {
   List<Seasons>? seasons;
   List<EpisodeList>? episodes;
   List<CreatedBy>? createdBy;
+  List<Networks>? networks;
 
   TVDetails(
       {this.runtime,
@@ -126,7 +127,8 @@ class TVDetails {
       this.spokenLanguages,
       this.id,
       this.backdropPath,
-      this.createdBy});
+      this.createdBy,
+      this.networks});
   TVDetails.fromJson(Map<String, dynamic> json) {
     runtime = json['episode_run_time'];
     tagline = json['tagline'];
@@ -171,6 +173,12 @@ class TVDetails {
       createdBy = [];
       json['created_by'].forEach((v) {
         createdBy?.add(CreatedBy.fromJson(v));
+      });
+    }
+    if (json['networks'] != null) {
+      networks = [];
+      json['networks'].forEach((v) {
+        networks?.add(Networks.fromJson(v));
       });
     }
   }
@@ -222,6 +230,25 @@ class Seasons {
     data['overview'] = overview;
     data['air_date'] = airDate;
     data['episode_count'] = episodeCount;
+    return data;
+  }
+}
+
+class Networks {
+  String? networkName;
+  String? networkLogoPath;
+  int? id;
+  Networks({this.networkLogoPath, this.networkName});
+  Networks.fromJson(Map<String, dynamic> json) {
+    networkName = json['name'];
+    networkLogoPath = json['logo_path'];
+    id = json['id'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = networkName;
+    data['id'] = id;
+    data['logo_path'] = networkLogoPath;
     return data;
   }
 }

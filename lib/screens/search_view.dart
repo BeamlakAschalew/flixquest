@@ -1,6 +1,6 @@
-import 'package:cinemax/screens/common_widgets.dart';
+import '/screens/common_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:cinemax/modals/movie.dart';
+import '/modals/movie.dart';
 
 class MovieSearch extends SearchDelegate<Movie?> {
   MovieSearch()

@@ -1,11 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/modals/credits.dart';
-
+import '/api/endpoints.dart';
+import '/constants/api_constants.dart';
+import '/modals/credits.dart' as old_credits;
 import 'person_widgets.dart';
+import '/modals/movie.dart';
 
 class CastDetailPage extends StatefulWidget {
   final Cast? cast;

@@ -1,8 +1,8 @@
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/constants/style_constants.dart';
-import 'package:cinemax/modals/tv.dart';
-import 'package:cinemax/screens/tv_widgets.dart';
+import '/api/endpoints.dart';
+import '/constants/api_constants.dart';
+import '/constants/style_constants.dart';
+import '/modals/tv.dart';
+import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
@@ -183,36 +183,38 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                     ),
                                   ),
                                 ),
-                                TabBar(
-                                  isScrollable: true,
-                                  indicatorColor: const Color(0xFFF57C00),
-                                  indicatorWeight: 3,
-                                  unselectedLabelColor: Colors.white54,
-                                  labelColor: Colors.white,
-                                  tabs: const [
-                                    Tab(
-                                      child: Text('About',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
-                                    ),
-                                    Tab(
-                                      child: Text('Episodes',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
-                                    ),
-                                    Tab(
-                                      child: Text('Cast',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
-                                    ),
-                                    Tab(
-                                      child: Text('Crew',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
-                                    ),
-                                  ],
-                                  controller: tabController,
-                                  indicatorSize: TabBarIndicatorSize.tab,
+                                Center(
+                                  child: TabBar(
+                                    isScrollable: true,
+                                    indicatorColor: const Color(0xFFF57C00),
+                                    indicatorWeight: 3,
+                                    unselectedLabelColor: Colors.white54,
+                                    labelColor: Colors.white,
+                                    tabs: const [
+                                      Tab(
+                                        child: Text('About',
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins')),
+                                      ),
+                                      Tab(
+                                        child: Text('Episodes',
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins')),
+                                      ),
+                                      Tab(
+                                        child: Text('Cast',
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins')),
+                                      ),
+                                      Tab(
+                                        child: Text('Crew',
+                                            style: TextStyle(
+                                                fontFamily: 'Poppins')),
+                                      ),
+                                    ],
+                                    controller: tabController,
+                                    indicatorSize: TabBarIndicatorSize.tab,
+                                  ),
                                 ),
                                 Expanded(
                                   child: TabBarView(
@@ -221,7 +223,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                       SingleChildScrollView(
                                         physics: const BouncingScrollPhysics(),
                                         child: Container(
-                                          color: const Color(0xFF202124),
+                                          // color: const Color(0xFF202124),
                                           child: Column(
                                             children: <Widget>[
                                               Row(

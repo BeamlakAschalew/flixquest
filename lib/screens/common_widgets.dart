@@ -1,15 +1,16 @@
 import 'dart:convert';
 
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/modals/function.dart';
-import 'package:cinemax/modals/movie.dart';
-import 'package:cinemax/modals/person.dart';
-import 'package:cinemax/modals/tv.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '/api/endpoints.dart';
+import '/constants/api_constants.dart';
+import '/modals/function.dart';
+import '/modals/movie.dart';
+import '/modals/person.dart';
+import '/modals/tv.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import 'package:share_plus/share_plus.dart';
 import 'about.dart';
 import 'movie_detail.dart';
 import 'searchedperson.dart';

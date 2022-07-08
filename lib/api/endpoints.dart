@@ -56,6 +56,10 @@ class Endpoints {
     return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY';
   }
 
+  static String advancedMovieDetailsUrl(int movieId) {
+    return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY$FULL_MOVIEDETAILS_API_REQUEST';
+  }
+
   static String movieGenresUrl() {
     return '$TMDB_API_BASE_URL/genre/movie/list?api_key=$TMDB_API_KEY&language=en-US';
   }
@@ -287,7 +291,7 @@ class Endpoints {
         '/collection/$id?api_key=$TMDB_API_KEY&language=en-US';
   }
 
-  static String getEpisodeCasts(int id, int seasonNumber, int episodeNumber) {
+  static String getEpisodeCredits(int id, int seasonNumber, int episodeNumber) {
     return '$TMDB_API_BASE_URL'
         '/tv/$id/season/$seasonNumber/episode/$episodeNumber/credits?api_key=$TMDB_API_KEY&language=en-US';
   }

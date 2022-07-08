@@ -50,7 +50,7 @@ class TVStreamSelect extends StatelessWidget {
                     StreamListWidget(
                       streamName: 'Stream one (multiple player options)',
                       streamLink:
-                          'https://www.2embed.ru/embed/tmdb/tv?id=$tvSeriesId&s=$seasonNumber&e=$episodeNumber',
+                          'https://2embed.org/embed/series?tmdb=$tvSeriesId&sea=$seasonNumber&epi=$episodeNumber',
                     ),
                     StreamListWidget(
                       streamName: 'Stream two (multiple player options)',
@@ -64,6 +64,11 @@ class TVStreamSelect extends StatelessWidget {
                     ),
                     StreamListWidget(
                       streamName: 'Stream four (multiple player options)',
+                      streamLink:
+                          'https://openvids.io/tmdb/episode/$tvSeriesId-$seasonNumber-$episodeNumber',
+                    ),
+                    StreamListWidget(
+                      streamName: 'Stream five (multiple player options)',
                       streamLink:
                           'https://fsapi.xyz/tv-tmdb/$tvSeriesId-$seasonNumber-$episodeNumber',
                     ),
