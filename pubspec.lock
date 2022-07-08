@@ -140,35 +140,45 @@ packages:
       name: firebase_analytics_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
+
     version: "3.1.7"
+
   firebase_analytics_web:
     dependency: transitive
     description:
       name: firebase_analytics_web
       url: "https://pub.dartlang.org"
     source: hosted
+
     version: "0.4.0+14"
+
   firebase_core:
     dependency: "direct main"
     description:
       name: firebase_core
       url: "https://pub.dartlang.org"
     source: hosted
+
     version: "1.17.1"
+
   firebase_core_platform_interface:
     dependency: transitive
     description:
       name: firebase_core_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
+
     version: "4.4.0"
+
   firebase_core_web:
     dependency: transitive
     description:
       name: firebase_core_web
       url: "https://pub.dartlang.org"
     source: hosted
+
     version: "1.6.4"
+
   flutter:
     dependency: "direct main"
     description: flutter
@@ -302,6 +312,7 @@ packages:
       name: mixpanel_flutter
       url: "https://pub.dartlang.org"
     source: hosted
+
     version: "1.5.1"
   octo_image:
     dependency: transitive
@@ -310,6 +321,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+
   path:
     dependency: transitive
     description:
@@ -414,6 +426,7 @@ packages:
       name: readmore
       url: "https://pub.dartlang.org"
     source: hosted
+
     version: "2.1.0"
   rxdart:
     dependency: transitive
@@ -422,6 +435,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.27.4"
+
   share_plus:
     dependency: "direct main"
     description:
@@ -650,7 +664,7 @@ packages:
       name: url_launcher_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.5"
+    version: "2.1.0"
   url_launcher_web:
     dependency: transitive
     description:

@@ -2869,11 +2869,13 @@ class _GenreListGridState extends State<GenreListGrid>
   @override
   void initState() {
     super.initState();
+
     fetchMovieGenres(Endpoints.movieGenresUrl()).then((value) {
       setState(() {
         movieGenres = value;
       });
     });
+
   }
 
   @override
