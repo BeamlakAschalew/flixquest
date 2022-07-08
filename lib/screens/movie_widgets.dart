@@ -1363,11 +1363,11 @@ class _GenreDisplayState extends State<GenreDisplay>
   @override
   void initState() {
     super.initState();
-    fetchGenre(widget.api!).then((value) {
-      setState(() {
-        genreList = value;
-      });
-    });
+    // fetchGenre(widget.api!).then((value) {
+    //   setState(() {
+    //     genreList = value;
+    //   });
+    // });
   }
 
   @override
@@ -2833,11 +2833,11 @@ class _GenreListGridState extends State<GenreListGrid>
   @override
   void initState() {
     super.initState();
-    fetchGenre(widget.api).then((value) {
-      setState(() {
-        genreList = value;
-      });
-    });
+    // fetchGenre(widget.api).then((value) {
+    //   setState(() {
+    //     genreList = value;
+    //   });
+    // });
   }
 
   @override
