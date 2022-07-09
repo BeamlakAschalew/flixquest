@@ -2906,6 +2906,68 @@ class _TVInfoTableState extends State<TVInfoTable> {
           )
         : Column(
             children: [
+              tvDetails!.lastEpisodeToAir == null
+                  ? Container()
+                  : Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Last episode to air',
+                              style: kTextHeaderStyle,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 8.0, bottom: 15.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      height: 84.4,
+                                      width: 150,
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        child: FadeInImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                              TMDB_BASE_IMAGE_URL +
+                                                  'w500/' +
+                                                  tvDetails!
+                                                      .lastEpisodeStillPath!),
+                                          placeholder: const AssetImage(
+                                              'assets/images/loading.gif'),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            tvDetails!.lastEpisodeName!,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                              'S${tvDetails!.lastEpisodeSeasonNumber!}E${tvDetails!.lastEpisodeNumber}'),
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
               const Text(
                 'TV series Info',
                 style: kTextHeaderStyle,
@@ -4604,4 +4666,67 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class LastEpisodeToAir extends StatefulWidget {
+  final String? api;
+  const LastEpisodeToAir({
+    Key? key,
+    this.api,
+  }) : super(key: key);
+
+  @override
+  State<LastEpisodeToAir> createState() => _LastEpisodeToAirState();
+}
+
+class _LastEpisodeToAirState extends State<LastEpisodeToAir> {
+  TVDetails? tvDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTVDetails(widget.api!).then((value) {
+      setState(() {
+        tvDetails = value;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: tvDetails == null
+          ? Center(child: CircularProgressIndicator())
+          : Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Last episode to air'),
+                  Row(
+                    children: [
+                      Container(
+                        height: 80,
+                        width: 150,
+                        child: Image.network(TMDB_BASE_IMAGE_URL +
+                            'w500/' +
+                            tvDetails!.lastEpisodeStillPath!),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text(tvDetails!.lastEpisodeName!),
+                            Text(
+                                'S${tvDetails!.lastEpisodeSeasonNumber!}E${tvDetails!.lastEpisodeNumber}'),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
 }

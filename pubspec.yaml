@@ -33,6 +33,7 @@ dependencies:
   cached_network_image: ^3.2.1
   custom_navigation_bar: ^0.8.2
   google_nav_bar: ^5.0.6
+  firebase_messaging: ^11.4.4
 
 
 dev_dependencies:
