@@ -51,26 +51,31 @@ class TVStreamSelect extends StatelessWidget {
                       streamName: 'Stream one (multiple player options)',
                       streamLink:
                           'https://2embed.org/embed/series?tmdb=$tvSeriesId&sea=$seasonNumber&epi=$episodeNumber',
+                      tvSeriesName: tvSeriesName,
                     ),
                     StreamListWidget(
                       streamName: 'Stream two (multiple player options)',
                       streamLink:
                           'https://api.123movie.cc/tmdb_api.php?se=$seasonNumber&ep=$episodeNumber&tmdb=$tvSeriesId&server_name=vcu',
+                      tvSeriesName: tvSeriesName,
                     ),
                     StreamListWidget(
                       streamName: 'Stream three (360p)',
                       streamLink:
                           'https://database.gdriveplayer.us/player.php?type=series&tmdb=$tvSeriesId&season=$seasonNumber&episode=$episodeNumber',
+                      tvSeriesName: tvSeriesName,
                     ),
                     StreamListWidget(
                       streamName: 'Stream four (multiple player options)',
                       streamLink:
                           'https://openvids.io/tmdb/episode/$tvSeriesId-$seasonNumber-$episodeNumber',
+                      tvSeriesName: tvSeriesName,
                     ),
                     StreamListWidget(
                       streamName: 'Stream five (multiple player options)',
                       streamLink:
                           'https://fsapi.xyz/tv-tmdb/$tvSeriesId-$seasonNumber-$episodeNumber',
+                      tvSeriesName: tvSeriesName,
                     ),
                   ],
                 ),
@@ -86,10 +91,12 @@ class TVStreamSelect extends StatelessWidget {
 class StreamListWidget extends StatelessWidget {
   final String streamName;
   final String streamLink;
+  final String tvSeriesName;
   const StreamListWidget({
     Key? key,
     required this.streamName,
     required this.streamLink,
+    required this.tvSeriesName,
   }) : super(key: key);
 
   @override
@@ -99,6 +106,7 @@ class StreamListWidget extends StatelessWidget {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return TVStream(
             streamUrl: streamLink,
+            tvSeriesName: tvSeriesName,
           );
         }));
       },

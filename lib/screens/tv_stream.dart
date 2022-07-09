@@ -7,7 +7,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class TVStream extends StatefulWidget {
   final String streamUrl;
-  const TVStream({Key? key, required this.streamUrl}) : super(key: key);
+  final String tvSeriesName;
+  const TVStream(
+      {Key? key, required this.streamUrl, required this.tvSeriesName})
+      : super(key: key);
 
   @override
   _TVStreamState createState() => _TVStreamState();
@@ -81,7 +84,7 @@ class _TVStreamState extends State<TVStream> {
             </style>
             </head>
             <body>
-<span id='frame'>${widget.movie.title!}</span>
+<span id='frame'>${widget.tvSeriesName}</span>
 <div class='show-video'>
    <iframe 
       allowfullscreen="true" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width='100%' height='360' 

@@ -42,34 +42,41 @@ class MovieStreamSelect extends StatelessWidget {
                       streamName: 'Stream one (multiple player options)',
                       streamLink:
                           'https://2embed.org/embed/movie?tmdb=$movieId',
+                      movieName: movieName,
                     ),
                     StreamListWidget(
                       streamName: 'Stream two (multiple player options)',
                       streamLink:
                           'https://moviehungershaven.xyz/tplayer/plr7.php?id=$movieId',
+                      movieName: movieName,
                     ),
                     StreamListWidget(
                       streamName: 'Stream three (360p)',
                       streamLink:
                           'https://databasegdriveplayer.co/player.php?tmdb=$movieId',
+                      movieName: movieName,
                     ),
                     StreamListWidget(
                       streamName: 'Stream four (multiple player options)',
                       streamLink: 'https://openvids.io/tmdb/movie/$movieId',
+                      movieName: movieName,
                     ),
                     StreamListWidget(
                       streamName: 'Stream five (multiple player options)',
                       streamLink: 'https://fsapi.xyz/tmdb-movie/$movieId',
+                      movieName: movieName,
                     ),
                     StreamListWidget(
                       streamName: 'Stream six (multiple player options)',
                       streamLink: 'https://gomo.to/movie/$movieImdbId',
+                      movieName: movieName,
                     ),
                     StreamListWidget(
                       streamName:
                           'Stream seven (360p/480p/720p/1080p - might have ads)',
                       streamLink:
                           'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=serverf4',
+                      movieName: movieName,
                     ),
                   ],
                 ),
@@ -85,10 +92,12 @@ class MovieStreamSelect extends StatelessWidget {
 class StreamListWidget extends StatelessWidget {
   final String streamName;
   final String streamLink;
+  final String movieName;
   const StreamListWidget({
     Key? key,
     required this.streamName,
     required this.streamLink,
+    required this.movieName,
   }) : super(key: key);
 
   @override
@@ -98,6 +107,7 @@ class StreamListWidget extends StatelessWidget {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return MovieStream(
             streamUrl: streamLink,
+            movieName: movieName,
           );
         }));
       },

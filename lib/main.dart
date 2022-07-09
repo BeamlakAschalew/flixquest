@@ -7,6 +7,8 @@ import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'screens/common_widgets.dart';
 import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
   runApp(const Cinemax());
@@ -97,15 +99,6 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
     });
   }
 
-  static final List<Widget> _widgetOptions = <Widget>[
-    const MainMoviesDisplay(),
-    //MainTVDisplay(),
-    Container(),
-    const Center(
-      child: Text('Coming soon'),
-    )
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -180,19 +173,71 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
         //   indicatorSize: TabBarIndicatorSize.tab,
         // ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.movie_creation_rounded), label: 'Movies'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.live_tv_rounded), label: 'TV Shows'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.explore_rounded), label: 'Discover')
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          color: const Color(0xFFF57C00),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 20,
+              color: Colors.black.withOpacity(.1),
+            )
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+            child: GNav(
+              rippleColor: Colors.grey[300]!,
+              hoverColor: Colors.grey[100]!,
+              gap: 8,
+              activeColor: Colors.black,
+              iconSize: 24,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 400),
+              tabBackgroundColor: Colors.grey[100]!,
+              color: Colors.black,
+              tabs: const [
+                GButton(
+                  icon: FontAwesomeIcons.clapperboard,
+                  text: 'Movies',
+                ),
+                GButton(
+                  icon: FontAwesomeIcons.tv,
+                  text: ' TV Shows',
+                ),
+                GButton(
+                  icon: FontAwesomeIcons.compass,
+                  text: 'Discover',
+                ),
+                GButton(
+                  icon: FontAwesomeIcons.user,
+                  text: 'Profile',
+                ),
+              ],
+              selectedIndex: _selectedIndex,
+              onTabChange: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+            ),
+          ),
+        ),
       ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: const [
+      //     BottomNavigationBarItem(
+      //         icon: Icon(Icons.movie_creation_rounded), label: 'Movies'),
+      //     BottomNavigationBarItem(
+      //         icon: Icon(Icons.live_tv_rounded), label: 'TV Shows'),
+      //     BottomNavigationBarItem(
+      //         icon: Icon(Icons.explore_rounded), label: 'Discover')
+      //   ],
+      //   currentIndex: _selectedIndex,
+      //   selectedItemColor: Colors.amber[800],
+      //   onTap: _onItemTapped,
+      // ),
       // body: TabBarView(
       //   controller: tabController,
       //   children: const [
@@ -204,6 +249,9 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
         children: const <Widget>[
           MainMoviesDisplay(),
           MainTVDisplay(),
+          Center(
+            child: Text('Coming soon'),
+          ),
           Center(
             child: Text('Coming soon'),
           )
