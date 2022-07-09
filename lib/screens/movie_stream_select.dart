@@ -66,18 +66,6 @@ class MovieStreamSelect extends StatelessWidget {
                       streamLink: 'https://fsapi.xyz/tmdb-movie/$movieId',
                       movieName: movieName,
                     ),
-                    StreamListWidget(
-                      streamName: 'Stream six (multiple player options)',
-                      streamLink: 'https://gomo.to/movie/$movieImdbId',
-                      movieName: movieName,
-                    ),
-                    StreamListWidget(
-                      streamName:
-                          'Stream seven (360p/480p/720p/1080p - might have ads)',
-                      streamLink:
-                          'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=serverf4',
-                      movieName: movieName,
-                    ),
                   ],
                 ),
               ),
