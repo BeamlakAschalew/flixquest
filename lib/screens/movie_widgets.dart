@@ -354,6 +354,13 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                                   fit: BoxFit.cover,
                                                 )
                                               : CachedNetworkImage(
+                                                  fadeOutDuration:
+                                                      const Duration(
+                                                          milliseconds: 300),
+                                                  fadeOutCurve: Curves.easeOut,
+                                                  fadeInDuration: Duration(
+                                                      milliseconds: 700),
+                                                  fadeInCurve: Curves.easeIn,
                                                   imageUrl:
                                                       TMDB_BASE_IMAGE_URL +
                                                           'w500/' +

@@ -113,44 +113,45 @@ class TVDetails {
   List<EpisodeList>? episodes;
   List<CreatedBy>? createdBy;
   List<Networks>? networks;
-  dynamic lastEpisodeToAir;
-  String? lastEpisodeAirDate;
-  int? lastEpisodeNumber;
-  int? lastEpisodeId;
-  String? lastEpisodeOverview;
-  String? lastEpisodeName;
-  int? lastEpisodeRunTime;
-  int? lastEpisodeSeasonNumber;
-  num? lastEpisodeVoteAverage;
-  num? lastEpisodeVoteCount;
-  String? lastEpisodeStillPath;
+  // dynamic lastEpisodeToAir;
+  // String? lastEpisodeAirDate;
+  // int? lastEpisodeNumber;
+  // int? lastEpisodeId;
+  // String? lastEpisodeOverview;
+  // String? lastEpisodeName;
+  // int? lastEpisodeRunTime;
+  // int? lastEpisodeSeasonNumber;
+  // num? lastEpisodeVoteAverage;
+  // num? lastEpisodeVoteCount;
+  // String? lastEpisodeStillPath;
 
-  TVDetails(
-      {this.runtime,
-      this.tagline,
-      this.status,
-      this.originalTitle,
-      this.inProduction,
-      this.numberOfEpisodes,
-      this.numberOfSeasons,
-      this.productionCompanies,
-      this.productionCountries,
-      this.spokenLanguages,
-      this.id,
-      this.backdropPath,
-      this.createdBy,
-      this.networks,
-      this.lastEpisodeAirDate,
-      this.lastEpisodeNumber,
-      this.lastEpisodeId,
-      this.lastEpisodeOverview,
-      this.lastEpisodeName,
-      this.lastEpisodeRunTime,
-      this.lastEpisodeSeasonNumber,
-      this.lastEpisodeVoteAverage,
-      this.lastEpisodeVoteCount,
-      this.lastEpisodeStillPath,
-      this.lastEpisodeToAir});
+  TVDetails({
+    this.runtime,
+    this.tagline,
+    this.status,
+    this.originalTitle,
+    this.inProduction,
+    this.numberOfEpisodes,
+    this.numberOfSeasons,
+    this.productionCompanies,
+    this.productionCountries,
+    this.spokenLanguages,
+    this.id,
+    this.backdropPath,
+    this.createdBy,
+    this.networks,
+  });
+  // this.lastEpisodeAirDate,
+  // this.lastEpisodeNumber,
+  // this.lastEpisodeId,
+  // this.lastEpisodeOverview,
+  // this.lastEpisodeName,
+  // this.lastEpisodeRunTime,
+  // this.lastEpisodeSeasonNumber,
+  // this.lastEpisodeVoteAverage,
+  // this.lastEpisodeVoteCount,
+  // this.lastEpisodeStillPath,
+  // this.lastEpisodeToAir});
 
   TVDetails.fromJson(Map<String, dynamic> json) {
     runtime = json['episode_run_time'];
@@ -162,17 +163,17 @@ class TVDetails {
     numberOfEpisodes = json['number_of_episodes'];
     numberOfSeasons = json['number_of_seasons'];
     inProduction = json['in_production'];
-    lastEpisodeToAir = json['last_episode_to_air'];
-    lastEpisodeAirDate = json['last_episode_to_air']['air_date'];
-    lastEpisodeNumber = json['last_episode_to_air']['episode_number'];
-    lastEpisodeId = json['last_episode_to_air']['id'];
-    lastEpisodeOverview = json['last_episode_to_air']['overview'];
-    lastEpisodeName = json['last_episode_to_air']['name'];
-    lastEpisodeRunTime = json['last_episode_to_air']['runtime'];
-    lastEpisodeSeasonNumber = json['last_episode_to_air']['season_number'];
-    lastEpisodeVoteAverage = json['last_episode_to_air']['vote_average'];
-    lastEpisodeVoteCount = json['last_episode_to_air']['vote_count'];
-    lastEpisodeStillPath = json['last_episode_to_air']['still_path'];
+    // lastEpisodeToAir = json['last_episode_to_air'];
+    // lastEpisodeAirDate = json['last_episode_to_air']['air_date'];
+    // lastEpisodeNumber = json['last_episode_to_air']['episode_number'];
+    // lastEpisodeId = json['last_episode_to_air']['id'];
+    // lastEpisodeOverview = json['last_episode_to_air']['overview'];
+    // lastEpisodeName = json['last_episode_to_air']['name'];
+    // lastEpisodeRunTime = json['last_episode_to_air']['runtime'];
+    // lastEpisodeSeasonNumber = json['last_episode_to_air']['season_number'];
+    // lastEpisodeVoteAverage = json['last_episode_to_air']['vote_average'];
+    // lastEpisodeVoteCount = json['last_episode_to_air']['vote_count'];
+    // lastEpisodeStillPath = json['last_episode_to_air']['still_path'];
     if (json['production_companies'] != null) {
       productionCompanies = [];
       json['production_companies'].forEach((v) {

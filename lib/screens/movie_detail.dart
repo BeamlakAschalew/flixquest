@@ -354,7 +354,11 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                             bottom: 4.0),
                                                     child: Text(
                                                       widget.movie.releaseDate ==
-                                                              null
+                                                                  null ||
+                                                              widget
+                                                                  .movie
+                                                                  .releaseDate!
+                                                                  .isEmpty
                                                           ? 'Release date: N/A'
                                                           : 'Release date : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
                                                       style: const TextStyle(
@@ -475,14 +479,6 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                         fit: BoxFit.cover,
                                       ),
                                     ),
-                              // : FadeInImage(
-                              //     image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                              //         'w500/' +
-                              //         widget.movie.posterPath!),
-                              //     fit: BoxFit.cover,
-                              //     placeholder: const AssetImage(
-                              //         'assets/images/loading.gif'),
-                              //   ),
                             ),
                           ),
                         ),

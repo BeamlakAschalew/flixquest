@@ -354,9 +354,12 @@ class _TVDetailPageState extends State<TVDetailPage>
                                                             left: 8.0,
                                                             bottom: 4.0),
                                                     child: Text(
-                                                      widget.tvSeries
-                                                                  .firstAirDate ==
-                                                              null
+                                                      widget.tvSeries.firstAirDate ==
+                                                                  null ||
+                                                              widget
+                                                                  .tvSeries
+                                                                  .firstAirDate!
+                                                                  .isEmpty
                                                           ? 'First episode air date: N/A'
                                                           : 'First episode air date : ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
                                                       style: const TextStyle(

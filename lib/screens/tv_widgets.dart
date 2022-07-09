@@ -355,6 +355,13 @@ class _ScrollingTVState extends State<ScrollingTV>
                                                   fit: BoxFit.cover,
                                                 )
                                               : CachedNetworkImage(
+                                                  fadeOutDuration:
+                                                      const Duration(
+                                                          milliseconds: 300),
+                                                  fadeOutCurve: Curves.easeOut,
+                                                  fadeInDuration: Duration(
+                                                      milliseconds: 700),
+                                                  fadeInCurve: Curves.easeIn,
                                                   imageUrl:
                                                       TMDB_BASE_IMAGE_URL +
                                                           'w500/' +
@@ -2910,68 +2917,6 @@ class _TVInfoTableState extends State<TVInfoTable> {
           )
         : Column(
             children: [
-              tvDetails!.lastEpisodeToAir == null
-                  ? Container()
-                  : Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Last episode to air',
-                              style: kTextHeaderStyle,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 8.0, bottom: 15.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      height: 84.4,
-                                      width: 150,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: FadeInImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                              TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
-                                                  tvDetails!
-                                                      .lastEpisodeStillPath!),
-                                          placeholder: const AssetImage(
-                                              'assets/images/loading.gif'),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            tvDetails!.lastEpisodeName!,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                              'S${tvDetails!.lastEpisodeSeasonNumber!}E${tvDetails!.lastEpisodeNumber}'),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
               const Text(
                 'TV series Info',
                 style: kTextHeaderStyle,
@@ -3449,18 +3394,44 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                         padding: const EdgeInsets.only(
                           top: 0.0,
                           bottom: 8.0,
-                          left: 30,
+                          left: 10,
                         ),
                         child: Column(
                           children: [
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text(tvDetails!.episodes![index].episodeNumber!
+                                    .toString()),
                                 Padding(
-                                  padding: const EdgeInsets.only(right: 30.0),
-                                  child: Text(tvDetails!
-                                      .episodes![index].episodeNumber!
-                                      .toString()),
+                                  padding: const EdgeInsets.only(
+                                      right: 10.0, left: 5.0),
+                                  child: Container(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(6.0),
+                                      child: tvDetails!.episodes![index]
+                                                      .stillPath ==
+                                                  null ||
+                                              tvDetails!.episodes![index]
+                                                  .stillPath!.isEmpty
+                                          ? Image.asset(
+                                              'assets/images/na_logo.png')
+                                          : FadeInImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(
+                                                  TMDB_BASE_IMAGE_URL +
+                                                      'w500/' +
+                                                      tvDetails!
+                                                          .episodes![index]
+                                                          .stillPath!),
+                                              placeholder: AssetImage(
+                                                'assets/images/loading.gif',
+                                              ),
+                                            ),
+                                    ),
+                                    height: 56.4,
+                                    width: 100,
+                                  ),
                                 ),
                                 Expanded(
                                   child: Column(
@@ -3482,6 +3453,19 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                         style: const TextStyle(
                                             color: Colors.white54),
                                       ),
+                                      Row(children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 3.0),
+                                          child: Icon(
+                                            Icons.star,
+                                            size: 20,
+                                          ),
+                                        ),
+                                        Text(tvDetails!
+                                            .episodes![index].voteAverage!
+                                            .toStringAsFixed(1))
+                                      ]),
                                     ],
                                   ),
                                 )
@@ -4670,67 +4654,4 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
 
   @override
   bool get wantKeepAlive => true;
-}
-
-class LastEpisodeToAir extends StatefulWidget {
-  final String? api;
-  const LastEpisodeToAir({
-    Key? key,
-    this.api,
-  }) : super(key: key);
-
-  @override
-  State<LastEpisodeToAir> createState() => _LastEpisodeToAirState();
-}
-
-class _LastEpisodeToAirState extends State<LastEpisodeToAir> {
-  TVDetails? tvDetails;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchTVDetails(widget.api!).then((value) {
-      setState(() {
-        tvDetails = value;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: tvDetails == null
-          ? Center(child: CircularProgressIndicator())
-          : Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Last episode to air'),
-                  Row(
-                    children: [
-                      Container(
-                        height: 80,
-                        width: 150,
-                        child: Image.network(TMDB_BASE_IMAGE_URL +
-                            'w500/' +
-                            tvDetails!.lastEpisodeStillPath!),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text(tvDetails!.lastEpisodeName!),
-                            Text(
-                                'S${tvDetails!.lastEpisodeSeasonNumber!}E${tvDetails!.lastEpisodeNumber}'),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-    );
-  }
 }

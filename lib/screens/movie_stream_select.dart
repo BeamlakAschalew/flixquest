@@ -44,39 +44,46 @@ class MovieStreamSelect extends StatelessWidget {
                           'https://2embed.to/embed/tmdb/movie?id=$movieId',
                       movieName: movieName,
                     ),
+                    Visibility(
+                      visible: movieImdbId == null ? false : true,
+                      child: StreamListWidget(
+                        streamName: 'Stream two (multiple player options)',
+                        streamLink:
+                            'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=vcu',
+                        movieName: movieName,
+                      ),
+                    ),
                     StreamListWidget(
-                      streamName: 'Stream two (multiple player options)',
+                      streamName: 'Stream three (multiple player options)',
                       streamLink:
                           'https://moviehungershaven.xyz/tplayer/plr7.php?id=$movieId',
                       movieName: movieName,
                     ),
                     StreamListWidget(
-                      streamName: 'Stream three (360p)',
+                      streamName: 'Stream four (360p)',
                       streamLink:
                           'https://databasegdriveplayer.co/player.php?tmdb=$movieId',
                       movieName: movieName,
                     ),
                     StreamListWidget(
-                      streamName: 'Stream four (multiple player options)',
+                      streamName: 'Stream five (multiple player options)',
                       streamLink: 'https://openvids.io/tmdb/movie/$movieId',
                       movieName: movieName,
                     ),
                     StreamListWidget(
-                      streamName: 'Stream five (multiple player options)',
+                      streamName: 'Stream six (multiple player options)',
                       streamLink: 'https://fsapi.xyz/tmdb-movie/$movieId',
                       movieName: movieName,
                     ),
-                    StreamListWidget(
-                      streamName: 'Stream six (multiple player options)',
-                      streamLink: 'https://gomo.to/movie/$movieImdbId',
-                      movieName: movieName,
-                    ),
-                    StreamListWidget(
-                      streamName:
-                          'Stream seven (360p/480p/720p/1080p - might have ads)',
-                      streamLink:
-                          'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=serverf4',
-                      movieName: movieName,
+                    Visibility(
+                      visible: movieImdbId == null ? false : true,
+                      child: StreamListWidget(
+                        streamName:
+                            'Stream seven (360p/480p/720p/1080p - might have ads)',
+                        streamLink:
+                            'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=hydrax',
+                        movieName: movieName,
+                      ),
                     ),
                   ],
                 ),
