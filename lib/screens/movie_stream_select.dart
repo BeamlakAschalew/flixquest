@@ -80,11 +80,16 @@ class MovieStreamSelect extends StatelessWidget {
                       streamLink: 'https://api.movieshunters.com/api/movie?id=$movieId',
                       movieName: movieName,
                     ),
+                    StreamListWidget(
+                      streamName: 'Stream eight (multiple player options)',
+                      streamLink: 'https://imdbembed.xyz/movie/tmdb/$movieId',
+                      movieName: movieName,
+                    ),
                     Visibility(
                       visible: movieImdbId == null ? false : true,
                       child: StreamListWidget(
                         streamName:
-                            'Stream eight (360p/480p/720p/1080p - might have ads)',
+                            'Stream nine (360p/480p/720p/1080p - might have ads)',
                         streamLink:
                             'https://api.123movie.cc/imdb.php?imdb=$movieImdbId&server=hydrax',
                         movieName: movieName,
