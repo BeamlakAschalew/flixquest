@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
-
 import 'dart:convert';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
 import '/api/endpoints.dart';
@@ -31,6 +29,7 @@ import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'crew_detail.dart';
 import 'movie_widgets.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MainTVDisplay extends StatelessWidget {
   const MainTVDisplay({
@@ -168,9 +167,10 @@ class _DiscoverTVState extends State<DiscoverTV>
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: FadeInImage(
-                              image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                  'w500/' +
-                                  tvList![index].posterPath!),
+                              image: CachedNetworkImageProvider(
+                                  TMDB_BASE_IMAGE_URL +
+                                      'w500/' +
+                                      tvList![index].posterPath!),
                               fit: BoxFit.cover,
                               placeholder:
                                   const AssetImage('assets/images/loading.gif'),
@@ -348,22 +348,40 @@ class _ScrollingTVState extends State<ScrollingTV>
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8.0),
-                                          child:
-                                              tvList![index].posterPath == null
-                                                  ? Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : FadeInImage(
-                                                      image: NetworkImage(
-                                                          TMDB_BASE_IMAGE_URL +
-                                                              'w500/' +
-                                                              tvList![index]
-                                                                  .posterPath!),
-                                                      fit: BoxFit.cover,
-                                                      placeholder: const AssetImage(
-                                                          'assets/images/loading.gif'),
+                                          child: tvList![index].posterPath ==
+                                                  null
+                                              ? Image.asset(
+                                                  'assets/images/na_logo.png',
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : CachedNetworkImage(
+                                                  imageUrl:
+                                                      TMDB_BASE_IMAGE_URL +
+                                                          'w500/' +
+                                                          tvList![index]
+                                                              .posterPath!,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover,
+                                                      ),
                                                     ),
+                                                  ),
+                                                  placeholder: (context, url) =>
+                                                      Image.asset(
+                                                    'assets/images/loading.gif',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Image.asset(
+                                                    'assets/images/na_logo.png',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
                                         ),
                                       ),
                                     ),
@@ -1536,7 +1554,6 @@ class TVVideosDisplay extends StatefulWidget {
 
 class _TVVideosDisplayState extends State<TVVideosDisplay> {
   Videos? tvVideos;
-  TVDetails? tvDetails;
 
   @override
   void initState() {
@@ -1546,11 +1563,6 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
         tvVideos = value;
       });
     });
-    fetchTVDetails(widget.api2!).then((value) {
-      setState(() {
-        tvDetails = value;
-      });
-    });
   }
 
   @override
@@ -1558,7 +1570,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
     bool playButtonVisibility = true;
     return Column(
       children: [
-        tvVideos == null || tvDetails == null
+        tvVideos == null
             ? Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -1586,7 +1598,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
           child: SizedBox(
             width: double.infinity,
             height: 230,
-            child: tvVideos == null || tvDetails == null
+            child: tvVideos == null
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
@@ -1651,18 +1663,10 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                                                   Visibility(
                                                     visible:
                                                         playButtonVisibility,
-                                                    child: SizedBox(
-                                                      child: Column(
-                                                        children: [
-                                                          Icon(
-                                                            Icons.play_arrow,
-                                                            size: 90,
-                                                          ),
-                                                          //TODO: modify this shit, it was to test if the network class was working
-                                                          Text(tvDetails!
-                                                              .networks![0]
-                                                              .networkName!),
-                                                        ],
+                                                    child: const SizedBox(
+                                                      child: Icon(
+                                                        Icons.play_arrow,
+                                                        size: 90,
                                                       ),
                                                       height: 90,
                                                       width: 90,

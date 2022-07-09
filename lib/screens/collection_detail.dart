@@ -50,7 +50,7 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                 widget.belongsToCollection!.backdropPath!),
                             fit: BoxFit.cover,
                             placeholder:
-                                const AssetImage('assets/images/loading_8.gif'),
+                                const AssetImage('assets/images/loading_5.gif'),
                           ),
                     Container(
                       decoration: BoxDecoration(

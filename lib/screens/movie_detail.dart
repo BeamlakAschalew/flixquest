@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '/constants/style_constants.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
@@ -51,16 +53,41 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                             'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
-                        : FadeInImage(
-                            width: double.infinity,
-                            height: double.infinity,
-                            image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                        : CachedNetworkImage(
+                            fadeOutDuration: const Duration(milliseconds: 300),
+                            fadeOutCurve: Curves.easeOut,
+                            fadeInDuration: Duration(milliseconds: 700),
+                            fadeInCurve: Curves.easeIn,
+                            imageUrl: TMDB_BASE_IMAGE_URL +
                                 'original/' +
-                                widget.movie.backdropPath!),
-                            fit: BoxFit.cover,
-                            placeholder:
-                                const AssetImage('assets/images/loading_5.gif'),
+                                widget.movie.backdropPath!,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) => Image.asset(
+                              'assets/images/loading_5.gif',
+                              fit: BoxFit.cover,
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              'assets/images/na_logo.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
+                    // : FadeInImage(
+                    //     width: double.infinity,
+                    //     height: double.infinity,
+                    //     image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                    //         'original/' +
+                    //         widget.movie.backdropPath!),
+                    //     fit: BoxFit.cover,
+                    //     placeholder:
+                    //         const AssetImage('assets/images/loading_5.gif'),
+                    //   ),
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -280,7 +307,13 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                       SingleChildScrollView(
                                         // physics: const BouncingScrollPhysics(),
                                         child: Container(
-                                          color: const Color(0xFF202124),
+                                          decoration: const BoxDecoration(
+                                              color: Color(0xFF202124),
+                                              borderRadius: BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(8.0),
+                                                  bottomRight:
+                                                      Radius.circular(8.0))),
                                           child: Column(
                                             children: <Widget>[
                                               GenreDisplay(
@@ -412,14 +445,44 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                       'assets/images/na_logo.png',
                                       fit: BoxFit.cover,
                                     )
-                                  : FadeInImage(
-                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                  : CachedNetworkImage(
+                                      fadeOutDuration:
+                                          const Duration(milliseconds: 300),
+                                      fadeOutCurve: Curves.easeOut,
+                                      fadeInDuration:
+                                          Duration(milliseconds: 700),
+                                      fadeInCurve: Curves.easeIn,
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
                                           'w500/' +
-                                          widget.movie.posterPath!),
-                                      fit: BoxFit.cover,
-                                      placeholder: const AssetImage(
-                                          'assets/images/loading.gif'),
+                                          widget.movie.posterPath!,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
+                              // : FadeInImage(
+                              //     image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                              //         'w500/' +
+                              //         widget.movie.posterPath!),
+                              //     fit: BoxFit.cover,
+                              //     placeholder: const AssetImage(
+                              //         'assets/images/loading.gif'),
+                              //   ),
                             ),
                           ),
                         ),
