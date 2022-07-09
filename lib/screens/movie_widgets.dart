@@ -1,9 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
-
-import '../modals/genres.dart';
 import '/constants/style_constants.dart';
 import '/modals/social_icons_icons.dart';
 import '/modals/videos.dart';
@@ -16,13 +13,13 @@ import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import '/modals/function.dart';
 import '/modals/movie.dart';
 import '/api/endpoints.dart';
-import '/modals/genres.dart' as genreold;
+import '/modals/genres.dart';
 import '/constants/api_constants.dart';
 import '/screens/movie_detail.dart';
-import '/modals/credits.dart' as oldCredits;
+import '/modals/credits.dart';
 import 'collection_detail.dart';
 import 'crew_detail.dart';
-import '/modals/images.dart'as old_images;
+import '/modals/images.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -30,20 +27,13 @@ import 'genremovies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'movie_stream_select.dart';
 
-class MainMoviesDisplay extends StatefulWidget {
+class MainMoviesDisplay extends StatelessWidget {
   const MainMoviesDisplay({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<MainMoviesDisplay> createState() => _MainMoviesDisplayState();
-}
-
-class _MainMoviesDisplayState extends State<MainMoviesDisplay>
-    with AutomaticKeepAliveClientMixin {
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Container(
       child: ListView(
         children: [
@@ -84,9 +74,6 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
 
 class DiscoverMovies extends StatefulWidget {
@@ -357,51 +344,23 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8.0),
-                                          child: moviesList![index]
-                                                      .posterPath ==
-                                                  null
-                                              ? Image.asset(
-                                                  'assets/images/na_logo.png',
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : CachedNetworkImage(
-                                                  imageUrl:
-                                                      TMDB_BASE_IMAGE_URL +
-                                                          'w500/' +
-                                                          moviesList![index]
-                                                              .posterPath!,
-                                                  imageBuilder: (context,
-                                                          imageProvider) =>
-                                                      Container(
-                                                    decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                        image: imageProvider,
-                                                        fit: BoxFit.cover,
-                                                      ),
+                                          child:
+                                              moviesList![index].posterPath ==
+                                                      null
+                                                  ? Image.asset(
+                                                      'assets/images/na_logo.png',
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : FadeInImage(
+                                                      image: NetworkImage(
+                                                          TMDB_BASE_IMAGE_URL +
+                                                              'w500/' +
+                                                              moviesList![index]
+                                                                  .posterPath!),
+                                                      fit: BoxFit.cover,
+                                                      placeholder: const AssetImage(
+                                                          'assets/images/loading.gif'),
                                                     ),
-                                                  ),
-                                                  placeholder: (context, url) =>
-                                                      Image.asset(
-                                                    'assets/images/loading.gif',
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                          // : FadeInImage(
-                                          //     image: NetworkImage(
-                                          //         TMDB_BASE_IMAGE_URL +
-                                          //             'w500/' +
-                                          //             moviesList![index]
-                                          //                 .posterPath!),
-                                          //     fit: BoxFit.cover,
-                                          //     placeholder: const AssetImage(
-                                          //         'assets/images/loading.gif'),
-                                          //   ),
                                         ),
                                       ),
                                     ),
@@ -535,13 +494,13 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                             'Person name': '${credits!.cast![index].name}',
                             'Person id': '${credits!.cast![index].id}'
                           });
-                          // Navigator.push(context,
-                          //     MaterialPageRoute(builder: (context) {
-                          //   return CastDetailPage(
-                          //     cast: credits!.cast![index],
-                          //     heroId: '${credits!.cast![index].id}',
-                          //   );
-                          // }));
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CastDetailPage(
+                              cast: credits!.cast![index],
+                              heroId: '${credits!.cast![index].id}',
+                            );
+                          }));
                         },
                         child: SizedBox(
                           width: 100,
@@ -1397,15 +1356,15 @@ class GenreDisplay extends StatefulWidget {
 
 class _GenreDisplayState extends State<GenreDisplay>
     with AutomaticKeepAliveClientMixin<GenreDisplay> {
-  List<MovieGenres>? genreList;
+  List<Genres>? genreList;
   @override
   void initState() {
     super.initState();
-    // fetchGenre(widget.api!).then((value) {
-    //   setState(() {
-    //     genreList = value;
-    //   });
-    // });
+    fetchGenre(widget.api!).then((value) {
+      setState(() {
+        genreList = value;
+      });
+    });
   }
 
   @override
@@ -1703,12 +1662,12 @@ class _CastTabState extends State<CastTab>
                             'Person name': '${credits!.cast![index].name}',
                             'Person id': '${credits!.cast![index].id}'
                           });
-                          // Navigator.push(context,
-                          //     MaterialPageRoute(builder: (context) {
-                          //   return CastDetailPage(
-                          //       cast: credits!.cast![index],
-                          //       heroId: '${credits!.cast![index].name}');
-                          // }));
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CastDetailPage(
+                                cast: credits!.cast![index],
+                                heroId: '${credits!.cast![index].name}');
+                          }));
                         },
                         child: Container(
                           color: const Color(0xFF202124),
@@ -1850,12 +1809,12 @@ class _CrewTabState extends State<CrewTab>
                             'Person name': '${credits!.crew![index].name}',
                             'Person id': '${credits!.crew![index].id}'
                           });
-                          // Navigator.push(context,
-                          //     MaterialPageRoute(builder: (context) {
-                          //   return CrewDetailPage(
-                          //       crew: credits!.crew![index],
-                          //       heroId: '${credits!.crew![index].creditId}');
-                          // }));
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CrewDetailPage(
+                                crew: credits!.crew![index],
+                                heroId: '${credits!.crew![index].creditId}');
+                          }));
                         },
                         child: Container(
                           color: const Color(0xFF202124),
@@ -2865,17 +2824,15 @@ class GenreListGrid extends StatefulWidget {
 
 class _GenreListGridState extends State<GenreListGrid>
     with AutomaticKeepAliveClientMixin<GenreListGrid> {
-  List<MovieGenres>? movieGenres;
+  List<Genres>? genreList;
   @override
   void initState() {
     super.initState();
-
-    fetchMovieGenres(Endpoints.movieGenresUrl()).then((value) {
+    fetchGenre(widget.api).then((value) {
       setState(() {
-        movieGenres = value;
+        genreList = value;
       });
     });
-
   }
 
   @override
@@ -2883,7 +2840,7 @@ class _GenreListGridState extends State<GenreListGrid>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return movieGenres == null
+    return genreList == null
         ? Column(
             children: [
               Row(
@@ -2929,14 +2886,14 @@ class _GenreListGridState extends State<GenreListGrid>
                       Expanded(
                         child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: movieGenres!.length,
+                            itemCount: genreList!.length,
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
                                 onTap: () {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
                                     return GenreMovies(
-                                        genres: movieGenres![index]);
+                                        genres: genreList![index]);
                                   }));
                                 },
                                 child: Padding(
@@ -2944,7 +2901,7 @@ class _GenreListGridState extends State<GenreListGrid>
                                   child: Container(
                                     width: 125,
                                     alignment: Alignment.center,
-                                    child: Text(movieGenres![index].genreName!),
+                                    child: Text(genreList![index].genreName!),
                                     decoration: BoxDecoration(
                                         color: const Color(0xFFF57C00),
                                         borderRadius:

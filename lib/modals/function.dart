@@ -1,12 +1,12 @@
 import 'dart:convert';
-import '/modals/images.dart' as old_images;
+import '/modals/images.dart';
 import '/modals/person.dart';
 import '/modals/tv.dart';
 import '/modals/videos.dart';
 import '/modals/watch_providers.dart';
 import 'package:http/http.dart' as http;
-import '/modals/credits.dart' as oldCredits;
-import '/modals/genres.dart' as oldgenre;
+import '/modals/credits.dart';
+import '/modals/genres.dart';
 import '/modals/movie.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
@@ -82,13 +82,13 @@ Future<List<Person>> fetchPerson(String api) async {
   return credits.person ?? [];
 }
 
-// Future<List<Genres>> fetchGenre(String api) async {
-//   GenreList newGenreList;
-//   var res = await http.get(Uri.parse(api));
-//   var decodeRes = jsonDecode(res.body);
-//   newGenreList = GenreList.fromJson(decodeRes);
-//   return newGenreList.genre ?? [];
-// }
+Future<List<Genres>> fetchGenre(String api) async {
+  GenreList newGenreList;
+  var res = await http.get(Uri.parse(api));
+  var decodeRes = jsonDecode(res.body);
+  newGenreList = GenreList.fromJson(decodeRes);
+  return newGenreList.genre ?? [];
+}
 
 Future fetchSocialLinks(String api) async {
   ExternalLinks externalLinks;
@@ -112,22 +112,6 @@ Future<MovieDetails> fetchMovieDetails(String api) async {
   var decodeRes = jsonDecode(res.body);
   movieDetails = MovieDetails.fromJson(decodeRes);
   return movieDetails;
-}
-
-Future<FullMovieDetails> fetchFullMovieDetails(String api) async {
-  FullMovieDetails fullMovieDetails;
-  var res = await http.get(Uri.parse(api));
-  var decodeRes = jsonDecode(res.body);
-  fullMovieDetails = FullMovieDetails.fromJson(decodeRes);
-  return fullMovieDetails;
-}
-
-Future<List<MovieGenres>> fetchMovieGenres(String api) async {
-  MovieGenreList movieGenres;
-  var res = await http.get(Uri.parse(api));
-  var decodeRes = jsonDecode(res.body);
-  movieGenres = MovieGenreList.fromJson(decodeRes);
-  return movieGenres.genre ?? [];
 }
 
 // Future<Credits> fetchPerson(String api) async {

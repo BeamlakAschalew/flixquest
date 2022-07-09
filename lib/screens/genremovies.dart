@@ -1,13 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers
+
 import 'package:flutter/material.dart';
-import '../modals/genres.dart';
-import '../modals/movie.dart';
 import '/api/endpoints.dart';
 import '/screens/movie_widgets.dart';
-import '/modals/genres.dart' as gen;
+import '/modals/genres.dart';
 
 class GenreMovies extends StatelessWidget {
-  final MovieGenres genres;
+  final Genres genres;
   const GenreMovies({Key? key, required this.genres}) : super(key: key);
 
   @override
