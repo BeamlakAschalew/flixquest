@@ -77,6 +77,12 @@ class TVStreamSelect extends StatelessWidget {
                           'https://fsapi.xyz/tv-tmdb/$tvSeriesId-$seasonNumber-$episodeNumber',
                       tvSeriesName: tvSeriesName,
                     ),
+                    StreamListWidget(
+                      streamName: 'Stream six (multiple player options)',
+                      streamLink:
+                          'https://imdbembed.xyz/tv/tmdb/$tvSeriesId-$seasonNumber-$episodeNumber',
+                      tvSeriesName: tvSeriesName,
+                    ),
                   ],
                 ),
               ),
