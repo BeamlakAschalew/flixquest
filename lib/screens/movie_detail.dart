@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:readmore/readmore.dart';
 
 import '/constants/style_constants.dart';
 import 'package:flutter/material.dart';
@@ -339,10 +340,36 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                         .movie.overview!.isEmpty
                                                     ? const Text(
                                                         'There is no overview for this movie')
-                                                    : Text(
+                                                    : ReadMoreText(
                                                         widget.movie.overview!,
-                                                        // style: widget
-                                                        //     .themeData.textTheme.caption,
+                                                        trimLines: 4,
+                                                        style: const TextStyle(
+                                                            fontFamily:
+                                                                'Poppins'),
+                                                        colorClickableText:
+                                                            const Color(
+                                                                0xFFF57C00),
+                                                        trimMode: TrimMode.Line,
+                                                        trimCollapsedText:
+                                                            'read more',
+                                                        trimExpandedText:
+                                                            'read less',
+                                                        lessStyle:
+                                                            const TextStyle(
+                                                                fontSize: 14,
+                                                                color: Color(
+                                                                    0xFFF57C00),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                        moreStyle:
+                                                            const TextStyle(
+                                                                fontSize: 14,
+                                                                color: Color(
+                                                                    0xFFF57C00),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
                                                       ),
                                               ),
                                               Row(

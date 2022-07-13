@@ -5,7 +5,6 @@ import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/modals/credits.dart';
 import 'person_widgets.dart';
-import '/modals/movie.dart';
 
 class CastDetailPage extends StatefulWidget {
   final Cast? cast;

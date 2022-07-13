@@ -126,52 +126,11 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
         actions: [
           IconButton(
               onPressed: () {
-                showSearch(context: context, delegate: MovieSearch());
+                showSearch(
+                    context: context, delegate: Search(mixpanel: mixpanel));
               },
               icon: const Icon(Icons.search)),
         ],
-        // bottom: TabBar(
-        //   tabs: [
-        //     Tab(
-        //         child: Row(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       children: const [
-        //         Padding(
-        //           padding: EdgeInsets.only(right: 8.0),
-        //           child: Icon(Icons.movie_creation_rounded),
-        //         ),
-        //         Text(
-        //           'Movies',
-        //         ),
-        //       ],
-        //     )),
-        //     Tab(
-        //         child: Row(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       children: const [
-        //         Padding(
-        //             padding: EdgeInsets.only(right: 8.0),
-        //             child: Icon(Icons.live_tv_rounded)),
-        //         Text(
-        //           'TV series',
-        //         ),
-        //       ],
-        //     ))
-        //   ],
-        //   indicatorColor: Colors.white,
-        //   indicatorWeight: 3,
-        //   //isScrollable: true,
-        //   labelStyle: const TextStyle(
-        //     fontFamily: 'PoppinsSB',
-        //     color: Colors.black,
-        //     fontSize: 17,
-        //   ),
-        //   unselectedLabelStyle:
-        //       const TextStyle(fontFamily: 'Poppins', color: Colors.black87),
-        //   labelColor: Colors.black,
-        //   controller: tabController,
-        //   indicatorSize: TabBarIndicatorSize.tab,
-        // ),
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -225,26 +184,6 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           ),
         ),
       ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   items: const [
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.movie_creation_rounded), label: 'Movies'),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.live_tv_rounded), label: 'TV Shows'),
-      //     BottomNavigationBarItem(
-      //         icon: Icon(Icons.explore_rounded), label: 'Discover')
-      //   ],
-      //   currentIndex: _selectedIndex,
-      //   selectedItemColor: Colors.amber[800],
-      //   onTap: _onItemTapped,
-      // ),
-      // body: TabBarView(
-      //   controller: tabController,
-      //   children: const [
-      //     MainMoviesDisplay(),
-      //     MainTVDisplay(),
-      //   ],
-      // ),
       body: IndexedStack(
         children: const <Widget>[
           MainMoviesDisplay(),

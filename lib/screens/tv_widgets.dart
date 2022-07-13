@@ -166,14 +166,32 @@ class _DiscoverTVState extends State<DiscoverTV>
                           tag: '${tvList![index].id}',
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: FadeInImage(
-                              image: CachedNetworkImageProvider(
-                                  TMDB_BASE_IMAGE_URL +
-                                      'w500/' +
-                                      tvList![index].posterPath!),
-                              fit: BoxFit.cover,
-                              placeholder:
-                                  const AssetImage('assets/images/loading.gif'),
+                            child: CachedNetworkImage(
+                              fadeOutDuration:
+                                  const Duration(milliseconds: 300),
+                              fadeOutCurve: Curves.easeOut,
+                              fadeInDuration: Duration(milliseconds: 700),
+                              fadeInCurve: Curves.easeIn,
+                              imageUrl: TMDB_BASE_IMAGE_URL +
+                                  'w500/' +
+                                  tvList![index].posterPath!,
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: imageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              placeholder: (context, url) => Image.asset(
+                                'assets/images/loading.gif',
+                                fit: BoxFit.cover,
+                              ),
+                              errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/na_logo.png',
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
