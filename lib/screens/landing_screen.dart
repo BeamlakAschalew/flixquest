@@ -16,8 +16,6 @@ class _LandingScreenState extends State<LandingScreen> {
     void updateFirstRunData() async {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isFirstRun', false);
-      final bool? firstTimeRun = prefs.getBool('isFirstRun');
-      print(firstTimeRun);
     }
 
     double deviceHeight = MediaQuery.of(context).size.height;

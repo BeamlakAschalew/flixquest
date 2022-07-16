@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '/constants/app_constants.dart';
 import '/modals/social_icons_icons.dart';
 import '/modals/videos.dart';
@@ -86,28 +87,34 @@ class DiscoverMovies extends StatefulWidget {
 class _DiscoverMoviesState extends State<DiscoverMovies>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? moviesList;
-  MovieDetails? movieDetails;
   late Mixpanel mixpanel;
   late double deviceHeight;
+  bool? includeAdult;
   @override
   void initState() {
     super.initState();
-    fetchMovies(Endpoints.discoverMoviesUrl(1)).then((value) {
-      setState(() {
-        moviesList = value;
-      });
-    });
-    fetchMovieDetails(Endpoints.discoverMoviesUrl(1)).then((value) {
-      setState(() {
-        movieDetails = value;
-      });
-    });
+    fetchAdultValueAndData();
     initMixpanel();
   }
 
   Future<void> initMixpanel() async {
     mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
         optOutTrackingDefault: false);
+  }
+
+  Future<void> getAdultbool() async {
+    final prefs = await SharedPreferences.getInstance();
+    includeAdult = prefs.getBool('adultMode') == null ? false : true;
+  }
+
+  Future<void> fetchAdultValueAndData() async {
+    await getAdultbool();
+    fetchMovies(Endpoints.discoverMoviesUrl(1) + '&inculde_adult=$includeAdult')
+        .then((value) {
+      setState(() {
+        moviesList = value;
+      });
+    });
   }
 
   @override
@@ -213,6 +220,7 @@ class ScrollingMovies extends StatefulWidget {
   final dynamic discoverType;
   final String? watchProviderId;
   final bool isTrending;
+
   const ScrollingMovies({
     Key? key,
     this.api,
@@ -230,6 +238,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
   late int index;
   List<Movie>? moviesList;
   MovieDetails? movieDetails;
+  bool? includeAdult;
   late Mixpanel mixpanel;
   final ScrollController _scrollController = ScrollController();
 
@@ -260,7 +269,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
         } else if (widget.isTrending == true) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=false&page=" +
+                "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=$includeAdult&page=" +
                     pageNum.toString()),
           );
           setState(() {
@@ -278,14 +287,24 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
     return "success";
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchMovies(widget.api!).then((value) {
+  Future<void> getAdultbool() async {
+    final prefs = await SharedPreferences.getInstance();
+    includeAdult = prefs.getBool('adultMode') == null ? false : true;
+  }
+
+  Future<void> fetchAdultValueAndData() async {
+    await getAdultbool();
+    fetchMovies(widget.api! + '&include_adult=$includeAdult').then((value) {
       setState(() {
         moviesList = value;
       });
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAdultValueAndData();
     getMoreData();
     initMixpanel();
   }
@@ -321,7 +340,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
         SizedBox(
           width: double.infinity,
           height: 250,
-          child: moviesList == null
+          child: moviesList == null || includeAdult == null
               ? const Center(
                   child: CircularProgressIndicator(),
                 )

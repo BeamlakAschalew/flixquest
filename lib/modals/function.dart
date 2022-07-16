@@ -11,6 +11,7 @@ import '/modals/movie.dart';
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
+  print(api);
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);
   movieList = MovieList.fromJson(decodeRes);
@@ -75,6 +76,7 @@ Future<Credits> fetchCredits(String api) async {
 
 Future<List<Person>> fetchPerson(String api) async {
   PersonList credits;
+  // print(api);
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);
   credits = PersonList.fromJson(decodeRes);

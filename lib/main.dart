@@ -40,18 +40,10 @@ class _CinemaxState extends State<Cinemax> {
     super.initState();
   }
 
-  // void sharedState() {
-  //   MySharedPreferences.instance
-  //       .getBooleanValue('isfirstRun')
-  //       .then((value) => setState(() {
-  //             isFirstLaunch = true;
-  //           }));
-  // }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: true,
+        debugShowCheckedModeBanner: false,
         title: 'Cinemax',
         theme: ThemeData.dark().copyWith(
             useMaterial3: true,
@@ -92,16 +84,24 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
     with SingleTickerProviderStateMixin {
   late Mixpanel mixpanel;
   late int _selectedIndex = 0;
+  bool isAdult = false;
 
   @override
   void initState() {
     super.initState();
     initMixpanel();
+    getAdultbool();
   }
 
   Future<void> initMixpanel() async {
     mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
         optOutTrackingDefault: false);
+  }
+
+  void getAdultbool() async {
+    final prefs = await SharedPreferences.getInstance();
+    isAdult = prefs.getBool('adultMode') == null ? false : true;
+    // print(isAdult);
   }
 
   @override
@@ -120,14 +120,17 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           IconButton(
               onPressed: () {
                 showSearch(
-                    context: context, delegate: Search(mixpanel: mixpanel));
+                    context: context,
+                    delegate:
+                        Search(mixpanel: mixpanel, includeAdult: isAdult));
               },
               icon: const Icon(Icons.search)),
         ],
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(20), topRight: Radius.circular(20)),
           color: const Color(0xFFF57C00),
           boxShadow: [
             BoxShadow(
@@ -162,10 +165,6 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                   icon: FontAwesomeIcons.compass,
                   text: 'Discover',
                 ),
-                GButton(
-                  icon: FontAwesomeIcons.user,
-                  text: 'Profile',
-                ),
               ],
               selectedIndex: _selectedIndex,
               onTabChange: (index) {
@@ -184,9 +183,6 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           Center(
             child: Text('Coming soon'),
           ),
-          Center(
-            child: Text('Coming soon'),
-          )
         ],
         index: _selectedIndex,
       ),

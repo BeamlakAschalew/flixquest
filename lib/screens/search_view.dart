@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/modals/function.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '/constants/api_constants.dart';
 import '/modals/person.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,8 @@ import 'tv_detail.dart';
 
 class Search extends SearchDelegate<String> {
   final Mixpanel mixpanel;
-  Search({required this.mixpanel})
+  final bool includeAdult;
+  Search({required this.mixpanel, required this.includeAdult})
       : super(
           searchFieldLabel: 'Search for a movie, TV show or a person',
         );
@@ -116,7 +118,8 @@ class Search extends SearchDelegate<String> {
               Expanded(
                   child: TabBarView(children: [
                 FutureBuilder<List<Movie>>(
-                  future: fetchMovies(Endpoints.movieSearchUrl(query)),
+                  future: fetchMovies(
+                      Endpoints.movieSearchUrl(query, includeAdult)),
                   builder: (context, snapshot) {
                     if (query.isEmpty) return searchATermWidget();
 
@@ -133,7 +136,7 @@ class Search extends SearchDelegate<String> {
                   },
                 ),
                 FutureBuilder<List<TV>>(
-                  future: fetchTV(Endpoints.tvSearchUrl(query)),
+                  future: fetchTV(Endpoints.tvSearchUrl(query, includeAdult)),
                   builder: (context, snapshot) {
                     if (query.isEmpty) return searchATermWidget();
 
@@ -150,7 +153,8 @@ class Search extends SearchDelegate<String> {
                   },
                 ),
                 FutureBuilder<List<Person>>(
-                  future: fetchPerson(Endpoints.personSearchUrl(query)),
+                  future: fetchPerson(
+                      Endpoints.personSearchUrl(query, includeAdult)),
                   builder: (context, snapshot) {
                     if (query.isEmpty) return searchATermWidget();
                     switch (snapshot.connectionState) {
@@ -174,13 +178,16 @@ class Search extends SearchDelegate<String> {
   }
 
   Widget errorMessageWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('assets/images/404.png'),
-          const Text('The term you entered didn\'t bring any results')
-        ],
+    return Container(
+      color: const Color(0xFF202124),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/404.png'),
+            const Text('The term you entered didn\'t bring any results')
+          ],
+        ),
       ),
     );
   }
@@ -258,38 +265,51 @@ class Search extends SearchDelegate<String> {
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(10.0),
-                                            child: CachedNetworkImage(
-                                              fadeOutDuration: const Duration(
-                                                  milliseconds: 300),
-                                              fadeOutCurve: Curves.easeOut,
-                                              fadeInDuration: const Duration(
-                                                  milliseconds: 700),
-                                              fadeInCurve: Curves.easeIn,
-                                              imageUrl: TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
-                                                  moviesList[index].posterPath!,
-                                              imageBuilder:
-                                                  (context, imageProvider) =>
-                                                      Container(
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: imageProvider,
+                                            child: moviesList[index]
+                                                        .posterPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_logo.png',
                                                     fit: BoxFit.cover,
+                                                  )
+                                                : CachedNetworkImage(
+                                                    fadeOutDuration:
+                                                        const Duration(
+                                                            milliseconds: 300),
+                                                    fadeOutCurve:
+                                                        Curves.easeOut,
+                                                    fadeInDuration:
+                                                        const Duration(
+                                                            milliseconds: 700),
+                                                    fadeInCurve: Curves.easeIn,
+                                                    imageUrl:
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            moviesList[index]
+                                                                .posterPath!,
+                                                    imageBuilder: (context,
+                                                            imageProvider) =>
+                                                        Container(
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: imageProvider,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    placeholder:
+                                                        (context, url) =>
+                                                            Image.asset(
+                                                      'assets/images/loading.gif',
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Image.asset(
+                                                      'assets/images/na_logo.png',
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                              placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Image.asset(
-                                                'assets/images/na_logo.png',
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
                                           ),
                                         ),
                                       ),
@@ -391,38 +411,50 @@ class Search extends SearchDelegate<String> {
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(10.0),
-                                            child: CachedNetworkImage(
-                                              fadeOutDuration: const Duration(
-                                                  milliseconds: 300),
-                                              fadeOutCurve: Curves.easeOut,
-                                              fadeInDuration:
-                                                  Duration(milliseconds: 700),
-                                              fadeInCurve: Curves.easeIn,
-                                              imageUrl: TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
-                                                  tvList[index].posterPath!,
-                                              imageBuilder:
-                                                  (context, imageProvider) =>
-                                                      Container(
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: imageProvider,
+                                            child: tvList[index].posterPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_logo.png',
                                                     fit: BoxFit.cover,
+                                                  )
+                                                : CachedNetworkImage(
+                                                    fadeOutDuration:
+                                                        const Duration(
+                                                            milliseconds: 300),
+                                                    fadeOutCurve:
+                                                        Curves.easeOut,
+                                                    fadeInDuration:
+                                                        const Duration(
+                                                            milliseconds: 700),
+                                                    fadeInCurve: Curves.easeIn,
+                                                    imageUrl:
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            tvList[index]
+                                                                .posterPath!,
+                                                    imageBuilder: (context,
+                                                            imageProvider) =>
+                                                        Container(
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: imageProvider,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    placeholder:
+                                                        (context, url) =>
+                                                            Image.asset(
+                                                      'assets/images/loading.gif',
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Image.asset(
+                                                      'assets/images/na_logo.png',
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                              placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Image.asset(
-                                                'assets/images/na_logo.png',
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
                                           ),
                                         ),
                                       ),
@@ -516,36 +548,43 @@ class Search extends SearchDelegate<String> {
                                   tag: '${personList[index].id}',
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(100.0),
-                                    child: CachedNetworkImage(
-                                      fadeOutDuration:
-                                          const Duration(milliseconds: 300),
-                                      fadeOutCurve: Curves.easeOut,
-                                      fadeInDuration:
-                                          const Duration(milliseconds: 700),
-                                      fadeInCurve: Curves.easeIn,
-                                      imageUrl: TMDB_BASE_IMAGE_URL +
-                                          'w500/' +
-                                          personList[index].profilePath!,
-                                      imageBuilder: (context, imageProvider) =>
-                                          Container(
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: imageProvider,
+                                    child: personList[index].profilePath == null
+                                        ? Image.asset(
+                                            'assets/images/na_logo.png',
                                             fit: BoxFit.cover,
+                                          )
+                                        : CachedNetworkImage(
+                                            fadeOutDuration: const Duration(
+                                                milliseconds: 300),
+                                            fadeOutCurve: Curves.easeOut,
+                                            fadeInDuration: const Duration(
+                                                milliseconds: 700),
+                                            fadeInCurve: Curves.easeIn,
+                                            imageUrl: TMDB_BASE_IMAGE_URL +
+                                                'w500/' +
+                                                personList[index].profilePath!,
+                                            imageBuilder:
+                                                (context, imageProvider) =>
+                                                    Container(
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            placeholder: (context, url) =>
+                                                Image.asset(
+                                              'assets/images/loading.gif',
+                                              fit: BoxFit.cover,
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Image.asset(
+                                              'assets/images/na_logo.png',
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                      placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Image.asset(
-                                        'assets/images/na_logo.png',
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
                                   ),
                                 ),
                               ),
