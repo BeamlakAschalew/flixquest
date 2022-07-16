@@ -4,7 +4,7 @@ import 'package:cinemax/screens/crew_detail.dart';
 
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '/constants/style_constants.dart';
+import '../constants/app_constants.dart';
 import '/modals/tv.dart';
 import '/screens/guest_star_detail.dart';
 import '/screens/tv_stream_select.dart';

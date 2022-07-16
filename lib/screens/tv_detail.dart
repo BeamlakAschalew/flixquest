@@ -3,7 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:readmore/readmore.dart';
 
-import '/constants/style_constants.dart';
+import '../constants/app_constants.dart';
 import '/modals/tv.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';

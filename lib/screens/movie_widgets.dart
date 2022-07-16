@@ -2,8 +2,7 @@
 
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
-
-import '/constants/style_constants.dart';
+import '/constants/app_constants.dart';
 import '/modals/social_icons_icons.dart';
 import '/modals/videos.dart';
 import '/modals/watch_providers.dart';

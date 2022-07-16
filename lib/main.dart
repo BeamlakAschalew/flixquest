@@ -90,20 +90,13 @@ class CinemaxHomePage extends StatefulWidget {
 
 class _CinemaxHomePageState extends State<CinemaxHomePage>
     with SingleTickerProviderStateMixin {
-  late TabController tabController;
   late Mixpanel mixpanel;
   late int _selectedIndex = 0;
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     initMixpanel();
-    tabController = TabController(length: 2, vsync: this);
   }
 
   Future<void> initMixpanel() async {

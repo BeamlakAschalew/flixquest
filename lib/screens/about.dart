@@ -67,7 +67,7 @@ class _AboutPageState extends State<AboutPage> {
                     ),
                   ),
                   onTap: () {
-                    launch('https://themoviedb.org');
+                    launchUrl(Uri.parse('https://themoviedb.org'));
                   },
                 ),
                 Padding(
@@ -81,7 +81,7 @@ class _AboutPageState extends State<AboutPage> {
                           decorationStyle: TextDecorationStyle.solid),
                     ),
                     onTap: () {
-                      launch('https://t.me/beamlakaschalew');
+                      launchUrl(Uri.parse('https://t.me/beamlakaschalew'));
                     },
                   ),
                 ),

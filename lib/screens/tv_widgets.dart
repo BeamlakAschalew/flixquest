@@ -4,7 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '/constants/style_constants.dart';
+import '../constants/app_constants.dart';
 import '/modals/credits.dart';
 import '/modals/function.dart';
 import '/modals/genres.dart';

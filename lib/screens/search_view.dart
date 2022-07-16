@@ -1,10 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/modals/function.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-
-import '../constants/api_constants.dart';
-import '../modals/person.dart';
-import '/screens/common_widgets.dart';
+import '/constants/api_constants.dart';
+import '/modals/person.dart';
 import 'package:flutter/material.dart';
 import '/modals/movie.dart';
 import '/modals/tv.dart';
@@ -97,17 +96,20 @@ class Search extends SearchDelegate<String> {
           color: Colors.black,
           child: Column(
             children: [
-              TabBar(
+              const TabBar(
+                indicatorColor: Color(0xFFF57C00),
                 tabs: [
                   Tab(
                     child:
                         Text('Movies', style: TextStyle(fontFamily: 'Poppins')),
                   ),
                   Tab(
-                    text: 'TV',
+                    child: Text('TV Shows',
+                        style: TextStyle(fontFamily: 'Poppins')),
                   ),
                   Tab(
-                    text: 'Actor / Actress',
+                    child:
+                        Text('Person', style: TextStyle(fontFamily: 'Poppins')),
                   )
                 ],
               ),
@@ -116,14 +118,14 @@ class Search extends SearchDelegate<String> {
                 FutureBuilder<List<Movie>>(
                   future: fetchMovies(Endpoints.movieSearchUrl(query)),
                   builder: (context, snapshot) {
-                    if (query.isEmpty) return Text('search a damn thing');
+                    if (query.isEmpty) return searchATermWidget();
 
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return Center(child: CircularProgressIndicator());
+                        return searchLoadingWidget();
                       default:
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
-                          return ErrorMessageWidget();
+                          return errorMessageWidget();
                         } else {
                           return activeMovieSearch(snapshot.data!, mixpanel);
                         }
@@ -133,16 +135,14 @@ class Search extends SearchDelegate<String> {
                 FutureBuilder<List<TV>>(
                   future: fetchTV(Endpoints.tvSearchUrl(query)),
                   builder: (context, snapshot) {
-                    if (query.isEmpty) return Text('search a damn thing');
+                    if (query.isEmpty) return searchATermWidget();
 
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return Center(child: CircularProgressIndicator());
+                        return searchLoadingWidget();
                       default:
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
-                          return Container(
-                            child: Text('no data'),
-                          );
+                          return errorMessageWidget();
                         } else {
                           return activeTVSearch(snapshot.data!);
                         }
@@ -152,16 +152,13 @@ class Search extends SearchDelegate<String> {
                 FutureBuilder<List<Person>>(
                   future: fetchPerson(Endpoints.personSearchUrl(query)),
                   builder: (context, snapshot) {
-                    if (query.isEmpty) return Text('search a damn thing');
-
+                    if (query.isEmpty) return searchATermWidget();
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return Center(child: CircularProgressIndicator());
+                        return searchLoadingWidget();
                       default:
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
-                          return Container(
-                            child: Text('no data'),
-                          );
+                          return errorMessageWidget();
                         } else {
                           return activePersonSearch(snapshot.data!);
                         }
@@ -176,16 +173,37 @@ class Search extends SearchDelegate<String> {
     );
   }
 
-  Widget ErrorMessageWidget() {
+  Widget errorMessageWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/404.png'),
+          const Text('The term you entered didn\'t bring any results')
+        ],
+      ),
+    );
+  }
+
+  Widget searchLoadingWidget() {
     return Container(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset('assets/images/404.png'),
-            Text('The term you entered didn\'t bring any results')
-          ],
-        ),
+      color: const Color(0xFF202124),
+      child: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Widget searchATermWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/search.png'),
+          const Padding(padding: EdgeInsets.only(top: 10, bottom: 5)),
+          const Text('Enter a word to search',
+              style: TextStyle(color: Colors.white, fontFamily: 'Poppins'))
+        ],
       ),
     );
   }
@@ -240,23 +258,38 @@ class Search extends SearchDelegate<String> {
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(10.0),
-                                            child: moviesList[index]
-                                                        .posterPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
+                                            child: CachedNetworkImage(
+                                              fadeOutDuration: const Duration(
+                                                  milliseconds: 300),
+                                              fadeOutCurve: Curves.easeOut,
+                                              fadeInDuration: const Duration(
+                                                  milliseconds: 700),
+                                              fadeInCurve: Curves.easeIn,
+                                              imageUrl: TMDB_BASE_IMAGE_URL +
+                                                  'w500/' +
+                                                  moviesList[index].posterPath!,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: imageProvider,
                                                     fit: BoxFit.cover,
-                                                  )
-                                                : FadeInImage(
-                                                    image: NetworkImage(
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
-                                                            moviesList[index]
-                                                                .posterPath!),
-                                                    fit: BoxFit.cover,
-                                                    placeholder: const AssetImage(
-                                                        'assets/images/loading.gif'),
                                                   ),
+                                                ),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  Image.asset(
+                                                'assets/images/loading.gif',
+                                                fit: BoxFit.cover,
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Image.asset(
+                                                'assets/images/na_logo.png',
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -328,7 +361,7 @@ class Search extends SearchDelegate<String> {
                             'TV series name': '${tvList[index].originalName}',
                             'TV series id': '${tvList[index].id}'
                           });
-                          Navigator.pushReplacement(context,
+                          Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return TVDetailPage(
                                 tvSeries: tvList[index],
@@ -358,22 +391,38 @@ class Search extends SearchDelegate<String> {
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(10.0),
-                                            child: tvList[index].posterPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
+                                            child: CachedNetworkImage(
+                                              fadeOutDuration: const Duration(
+                                                  milliseconds: 300),
+                                              fadeOutCurve: Curves.easeOut,
+                                              fadeInDuration:
+                                                  Duration(milliseconds: 700),
+                                              fadeInCurve: Curves.easeIn,
+                                              imageUrl: TMDB_BASE_IMAGE_URL +
+                                                  'w500/' +
+                                                  tvList[index].posterPath!,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: imageProvider,
                                                     fit: BoxFit.cover,
-                                                  )
-                                                : FadeInImage(
-                                                    image: NetworkImage(
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
-                                                            tvList[index]
-                                                                .posterPath!),
-                                                    fit: BoxFit.cover,
-                                                    placeholder: const AssetImage(
-                                                        'assets/images/loading.gif'),
                                                   ),
+                                                ),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  Image.asset(
+                                                'assets/images/loading.gif',
+                                                fit: BoxFit.cover,
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Image.asset(
+                                                'assets/images/na_logo.png',
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -440,8 +489,7 @@ class Search extends SearchDelegate<String> {
                     'Person name': '${personList[index].name}',
                     'Person id': '${personList[index].id}'
                   });
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return SearchedPersonDetailPage(
                         person: personList[index],
                         heroId: '${personList[index].id}');
@@ -468,21 +516,36 @@ class Search extends SearchDelegate<String> {
                                   tag: '${personList[index].id}',
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(100.0),
-                                    child: personList[index].profilePath == null
-                                        ? Image.asset(
-                                            'assets/images/na_square.png',
+                                    child: CachedNetworkImage(
+                                      fadeOutDuration:
+                                          const Duration(milliseconds: 300),
+                                      fadeOutCurve: Curves.easeOut,
+                                      fadeInDuration:
+                                          const Duration(milliseconds: 700),
+                                      fadeInCurve: Curves.easeIn,
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          'w500/' +
+                                          personList[index].profilePath!,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
                                             fit: BoxFit.cover,
-                                          )
-                                        : FadeInImage(
-                                            image: NetworkImage(
-                                                TMDB_BASE_IMAGE_URL +
-                                                    'w500/' +
-                                                    personList[index]
-                                                        .profilePath!),
-                                            fit: BoxFit.cover,
-                                            placeholder: const AssetImage(
-                                                'assets/images/loading.gif'),
                                           ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -515,40 +578,22 @@ class Search extends SearchDelegate<String> {
       length: 3,
       initialIndex: 0,
       child: Scaffold(
-        body: Container(
-          child: Column(
-            children: [
-              TabBar(
-                tabs: [
-                  Tab(
-                    text: 'Movies',
-                  ),
-                  Tab(
-                    text: 'TV',
-                  ),
-                  Tab(
-                    text: 'Person',
-                  )
-                ],
-              ),
-              Expanded(
-                child: TabBarView(children: [
-                  ListView.builder(
-                      itemCount: moviesList.length,
-                      itemBuilder: (context, index) {
-                        final movieName = moviesList[index].originalName;
-                        return Text(movieName!);
-                      }),
-                  Center(
-                    child: Text('2'),
-                  ),
-                  Center(
-                    child: Text('3'),
-                  )
-                ]),
-              ),
-            ],
-          ),
+        body: Column(
+          children: const [
+            TabBar(
+              tabs: [
+                Tab(
+                  text: 'Movies',
+                ),
+                Tab(
+                  text: 'TV',
+                ),
+                Tab(
+                  text: 'Person',
+                )
+              ],
+            ),
+          ],
         ),
       ),
     );
