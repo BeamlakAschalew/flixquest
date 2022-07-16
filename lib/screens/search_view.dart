@@ -1,6 +1,5 @@
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/modals/function.dart';
-import 'package:cinemax/screens/search_suggestions.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
 import '../constants/api_constants.dart';
