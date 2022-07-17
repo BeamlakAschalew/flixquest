@@ -81,7 +81,7 @@ Future<List<Person>> fetchPerson(String api) async {
   return credits.person ?? [];
 }
 
-Future<List<Genres>> fetchGenre(String api) async {
+Future<List<Genres>?> fetchGenre(String api) async {
   GenreList newGenreList;
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);
