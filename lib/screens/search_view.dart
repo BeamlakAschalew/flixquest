@@ -202,15 +202,18 @@ class Search extends SearchDelegate<String> {
   }
 
   Widget searchATermWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('assets/images/search.png'),
-          const Padding(padding: EdgeInsets.only(top: 10, bottom: 5)),
-          const Text('Enter a word to search',
-              style: TextStyle(color: Colors.white, fontFamily: 'Poppins'))
-        ],
+    return Container(
+      color: const Color(0xFF202124),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/images/search.png'),
+            const Padding(padding: EdgeInsets.only(top: 10, bottom: 5)),
+            const Text('Enter a word to search',
+                style: TextStyle(color: Colors.white, fontFamily: 'Poppins'))
+          ],
+        ),
       ),
     );
   }
