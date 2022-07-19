@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://user-images.githubusercontent.com/72562470/179736437-3e8f7dfe-2132-496d-956a-3e10de35eb96.png" width="auto" height="auto" alt="kotatsu">
+  <img src="https://user-images.githubusercontent.com/72562470/179736437-3e8f7dfe-2132-496d-956a-3e10de35eb96.png" width="200" height="200" alt="cinemax_logo">
 </div>
 
 Cinemax is a free and open source Android app for streaming Movies and TV-Series.
