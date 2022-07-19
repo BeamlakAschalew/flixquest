@@ -29,10 +29,6 @@ Some UI and API functionality from: [Here](https://github.com/bimsina/Matinee-Fl
 
 You need to use your own TMDB and Mixpanel API keys. Just replace the TMDB_API_KEY and mixpanelKey found in /main/lib/constants/api_constants.dart, with your own keys.
 
-### 🗝 Using your own firebase setup
-
-You need to use your own flutter firebase setup, just signup for firebase and place your google_services.json file in android/app directory.
-
 ### 😇 Contributing
 
 Whether you have ideas, translations, design changes, code cleaning, or real heavy code changes, help is always welcome. The more is done the better it gets!
