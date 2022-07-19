@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'constants/api_constants.dart';
 import 'screens/common_widgets.dart';
 import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
@@ -46,7 +47,7 @@ class _CinemaxState extends State<Cinemax> {
         debugShowCheckedModeBanner: false,
         title: 'Cinemax',
         theme: ThemeData.dark().copyWith(
-            useMaterial3: true,
+            useMaterial3: false,
             textTheme: ThemeData.dark().textTheme.apply(
                   fontFamily: 'Poppins',
                 ),
@@ -94,14 +95,16 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   void getAdultbool() async {
     final prefs = await SharedPreferences.getInstance();
-    isAdult = prefs.getBool('adultMode') == null ? false : true;
-    // print(isAdult);
+    isAdult = prefs.getBool('adultMode') == null
+        ? false
+        : prefs.getBool('adultMode') == true
+            ? true
+            : false;
   }
 
   @override

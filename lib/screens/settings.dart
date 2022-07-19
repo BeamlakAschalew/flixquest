@@ -48,7 +48,7 @@ class _SettingsState extends State<Settings> {
               activeColor: const Color(0xFFF57C00),
               value: adultModeFromShared,
               secondary: const Icon(Icons.explicit),
-              title: const Text('Adult'),
+              title: const Text('Include Adult'),
               onChanged: (bool value) {
                 setState(() {
                   adultModeFromShared = value;

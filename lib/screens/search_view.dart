@@ -185,7 +185,10 @@ class Search extends SearchDelegate<String> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('assets/images/404.png'),
-            const Text('The term you entered didn\'t bring any results')
+            const Text(
+              'The term you entered didn\'t bring any results',
+              style: TextStyle(fontFamily: 'Poppins'),
+            )
           ],
         ),
       ),
