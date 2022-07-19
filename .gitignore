@@ -49,5 +49,4 @@ app.*.map.json
 /lib/api/api_keys.dart
 
 # Google firebase
-/android/app/google-services.json
-android/app/google-services.json
+*.json
