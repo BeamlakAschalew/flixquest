@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://rawcdn.githack.com/OshekharO/Cinemax/154e755aa808585ae24ea1c4784e7e3d82fd395d/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" width="auto" height="auto" alt="kotatsu">
+  <img src="https://user-images.githubusercontent.com/72562470/179736437-3e8f7dfe-2132-496d-956a-3e10de35eb96.png" width="auto" height="auto" alt="kotatsu">
 </div>
 
 Cinemax is a free and open source Android app for streaming Movies and TV-Series.
@@ -24,6 +24,14 @@ Some UI and API functionality from: [Here](https://github.com/bimsina/Matinee-Fl
     <td><img src="https://user-images.githubusercontent.com/72562470/179374787-25819a72-c096-42be-8fd3-deadac3d3761.png" alt="Screenshot 1"/></td>
   </tr>
 </table>
+
+### 🔐 Replacing API keys
+
+You need to use your own TMDB and Mixpanel API keys. Just replace the TMDB_API_KEY and mixpanelKey found in /main/lib/constants/api_constants.dart, with your own keys.
+
+### 🗝 Using your own firebase setup
+
+You need to use your own flutter firebase setup, just signup for firebase and place your google_services.json file in android/app directory.
 
 ### 😇 Contributing
 
