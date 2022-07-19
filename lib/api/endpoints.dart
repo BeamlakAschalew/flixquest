@@ -56,10 +56,6 @@ class Endpoints {
     return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY';
   }
 
-  static String advancedMovieDetailsUrl(int movieId) {
-    return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY$FULL_MOVIEDETAILS_API_REQUEST';
-  }
-
   static String movieGenresUrl() {
     return '$TMDB_API_BASE_URL/genre/movie/list?api_key=$TMDB_API_KEY&language=en-US';
   }
