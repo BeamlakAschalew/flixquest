@@ -98,13 +98,16 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   Future<void> getAdultbool() async {
     final prefs = await SharedPreferences.getInstance();
-    includeAdult = prefs.getBool('adultMode') == null ? false : true;
+    includeAdult = prefs.getBool('adultMode') == null
+        ? false
+        : prefs.getBool('adultMode') == true
+            ? true
+            : false;
   }
 
   Future<void> fetchAdultValueAndData() async {
@@ -289,7 +292,11 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
 
   Future<void> getAdultbool() async {
     final prefs = await SharedPreferences.getInstance();
-    includeAdult = prefs.getBool('adultMode') == null ? false : true;
+    includeAdult = prefs.getBool('adultMode') == null
+        ? false
+        : prefs.getBool('adultMode') == true
+            ? true
+            : false;
   }
 
   Future<void> fetchAdultValueAndData() async {
@@ -310,8 +317,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -497,8 +503,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -896,8 +901,7 @@ class _PartsListState extends State<PartsList> {
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -1337,8 +1341,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -1693,8 +1696,7 @@ class _CastTabState extends State<CastTab>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -1839,8 +1841,7 @@ class _CrewTabState extends State<CrewTab>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -2023,8 +2024,7 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -2238,8 +2238,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -2455,8 +2454,7 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -2672,8 +2670,7 @@ class _ParticularStreamingServiceMoviesState
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -3493,8 +3490,7 @@ class _CollectionMoviesState extends State<CollectionMovies> {
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override

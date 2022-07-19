@@ -151,8 +151,7 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -319,8 +318,7 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override

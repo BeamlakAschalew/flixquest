@@ -47,8 +47,7 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
   }
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
