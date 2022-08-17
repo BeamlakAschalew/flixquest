@@ -1,10 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/provider/adultmode_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 
 import '../constants/app_constants.dart';
-import '/modals/tv.dart';
+import '/models/tv.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
@@ -456,10 +458,18 @@ class _TVDetailPageState extends State<TVDetailPage>
                                             widget.tvSeries.id!),
                                       ),
                                       TVRecommendationsTab(
+                                          includeAdult:
+                                              Provider.of<AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
                                           tvId: widget.tvSeries.id!,
                                           api: Endpoints.getTVRecommendations(
                                               widget.tvSeries.id!, 1)),
                                       SimilarTVTab(
+                                          includeAdult:
+                                              Provider.of<AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
                                           tvId: widget.tvSeries.id!,
                                           api: Endpoints.getSimilarTV(
                                               widget.tvSeries.id!, 1)),

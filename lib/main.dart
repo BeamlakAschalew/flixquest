@@ -11,6 +11,7 @@ import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'provider/adultmode_provider.dart';
 
 void main() {
   runApp(const Cinemax());
@@ -37,58 +38,59 @@ class _CinemaxState extends State<Cinemax> {
     });
   }
 
-  void getAdultbool() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isAdult = prefs.getBool('adultMode') == null
-          ? false
-          : prefs.getBool('adultMode') == true
-              ? true
-              : false;
-    });
-    print(isAdult);
-  }
-
   @override
   void initState() {
     super.initState();
     firstTimeCheck();
-    getAdultbool();
+    getCurrentAdultMode();
+  }
+
+  AdultmodeProvider adultmodeProvider = AdultmodeProvider();
+
+  void getCurrentAdultMode() async {
+    adultmodeProvider.isAdult =
+        await adultmodeProvider.adultModePreferences.getAdultMode();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Provider(create: (_) {
-      return isAdult;
-    }, builder: (context, child) {
-      return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Cinemax',
-          theme: ThemeData.dark().copyWith(
-              useMaterial3: false,
-              textTheme: ThemeData.dark().textTheme.apply(
-                    fontFamily: 'Poppins',
-                  ),
-              //primaryColor: const Color(0xFFF57C00),
-              iconTheme: const IconThemeData(color: Color(0xFFF57C00)),
-              //backgroundColor: Colors.black,
-              colorScheme: const ColorScheme(
-                  primary: Color(0xFFF57C00),
-                  primaryContainer: Color(0xFF8f4700),
-                  secondary: Color(0xFF202124),
-                  secondaryContainer: Color(0xFF141517),
-                  surface: Color(0xFFF57C00),
-                  background: Color(0xFF202124),
-                  error: Color(0xFFFF0000),
-                  onPrimary: Color(0xFF202124),
-                  onSecondary: Color(0xFF141517),
-                  onSurface: Color(0xFF141517),
-                  onBackground: Color(0xFFF57C00),
-                  onError: Color(0xFFFFFFFF),
-                  brightness: Brightness.dark)),
-          home:
-              isFirstLaunch ? const LandingScreen() : const CinemaxHomePage());
-    });
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) {
+            return adultmodeProvider;
+          })
+        ],
+        child: Consumer<AdultmodeProvider>(
+            builder: (context, adultmodeProvider, snapshot) {
+          return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Cinemax',
+              theme: ThemeData.dark().copyWith(
+                  useMaterial3: false,
+                  textTheme: ThemeData.dark().textTheme.apply(
+                        fontFamily: 'Poppins',
+                      ),
+                  //primaryColor: const Color(0xFFF57C00),
+                  iconTheme: const IconThemeData(color: Color(0xFFF57C00)),
+                  //backgroundColor: Colors.black,
+                  colorScheme: const ColorScheme(
+                      primary: Color(0xFFF57C00),
+                      primaryContainer: Color(0xFF8f4700),
+                      secondary: Color(0xFF202124),
+                      secondaryContainer: Color(0xFF141517),
+                      surface: Color(0xFFF57C00),
+                      background: Color(0xFF202124),
+                      error: Color(0xFFFF0000),
+                      onPrimary: Color(0xFF202124),
+                      onSecondary: Color(0xFF141517),
+                      onSurface: Color(0xFF141517),
+                      onBackground: Color(0xFFF57C00),
+                      onError: Color(0xFFFFFFFF),
+                      brightness: Brightness.dark)),
+              home: isFirstLaunch
+                  ? const LandingScreen()
+                  : const CinemaxHomePage());
+        }));
   }
 }
 
@@ -118,7 +120,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Provider.of<bool?>(context) == null
+    return Provider.of<AdultmodeProvider?>(context) == null
         ? Center(
             child: CircularProgressIndicator(),
           )
@@ -139,8 +141,10 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                           context: context,
                           delegate: Search(
                               mixpanel: mixpanel,
-                              includeAdult:
-                                  Provider.of<bool>(context, listen: false)));
+                              includeAdult: Provider.of<AdultmodeProvider>(
+                                      context,
+                                      listen: false)
+                                  .isAdult));
                     },
                     icon: const Icon(Icons.search)),
               ],
@@ -186,6 +190,10 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                         icon: FontAwesomeIcons.compass,
                         text: 'Discover',
                       ),
+                      GButton(
+                        icon: FontAwesomeIcons.user,
+                        text: 'Profile',
+                      )
                     ],
                     selectedIndex: _selectedIndex,
                     onTabChange: (index) {
@@ -204,6 +212,9 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                 Center(
                   child: Text('Coming soon'),
                 ),
+                Center(
+                  child: Text('Coming soon'),
+                )
               ],
               index: _selectedIndex,
             ));

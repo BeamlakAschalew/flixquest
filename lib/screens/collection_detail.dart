@@ -2,7 +2,7 @@ import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '/modals/movie.dart';
+import '/models/movie.dart';
 import '/screens/movie_widgets.dart';
 
 class CollectionDetailsWidget extends StatefulWidget {

@@ -1,6 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import '/modals/person.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/adultmode_provider.dart';
+import '/models/person.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -227,7 +230,11 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                       Container(
                                         color: const Color(0xFF202124),
                                         child: PersonMovieListWidget(
-                                          isAdult: widget.person!.adult!,
+                                          isPersonAdult: widget.person!.adult!,
+                                          includeAdult:
+                                              Provider.of<AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
                                                   widget.person!.id!),
@@ -236,7 +243,12 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                       Container(
                                         color: const Color(0xFF202124),
                                         child: PersonTVListWidget(
-                                            isAdult: widget.person!.adult!,
+                                            isPersonAdult:
+                                                widget.person!.adult!,
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
                                             api:
                                                 Endpoints.getTVCreditsForPerson(
                                                     widget.person!.id!)),

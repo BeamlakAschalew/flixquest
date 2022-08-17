@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../provider/adultmode_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '/modals/credits.dart';
+import '/models/credits.dart';
 import 'person_widgets.dart';
 
 class CrewDetailPage extends StatefulWidget {
@@ -219,7 +221,11 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                       Container(
                                         color: const Color(0xFF202124),
                                         child: PersonMovieListWidget(
-                                          isAdult: widget.crew!.adult!,
+                                          includeAdult:
+                                              Provider.of<AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
+                                          isPersonAdult: widget.crew!.adult!,
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
                                                   widget.crew!.id!),
@@ -228,7 +234,11 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                       Container(
                                         color: const Color(0xFF202124),
                                         child: PersonTVListWidget(
-                                            isAdult: widget.crew!.adult!,
+                                            isPersonAdult: widget.crew!.adult!,
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
                                             api:
                                                 Endpoints.getTVCreditsForPerson(
                                                     widget.crew!.id!)),

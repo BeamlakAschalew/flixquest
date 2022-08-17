@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/modals/function.dart';
+import 'package:cinemax/models/function.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '/constants/api_constants.dart';
-import '/modals/person.dart';
+import '/models/person.dart';
 import 'package:flutter/material.dart';
-import '/modals/movie.dart';
-import '/modals/tv.dart';
+import '/models/movie.dart';
+import '/models/tv.dart';
 import 'movie_detail.dart';
 import 'searchedperson.dart';
 import 'tv_detail.dart';

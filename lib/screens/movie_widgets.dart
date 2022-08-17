@@ -3,25 +3,26 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../provider/adultmode_provider.dart';
 import '/constants/app_constants.dart';
-import '/modals/social_icons_icons.dart';
-import '/modals/videos.dart';
-import '/modals/watch_providers.dart';
+import '/models/social_icons_icons.dart';
+import '/models/videos.dart';
+import '/models/watch_providers.dart';
 import '/screens/cast_detail.dart';
 import '/screens/streaming_services_movies.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import '/modals/function.dart';
-import '/modals/movie.dart';
+import '/models/function.dart';
+import '/models/movie.dart';
 import '/api/endpoints.dart';
-import '/modals/genres.dart';
+import '/models/genres.dart';
 import '/constants/api_constants.dart';
 import '/screens/movie_detail.dart';
-import '/modals/credits.dart';
+import '/models/credits.dart';
 import 'collection_detail.dart';
 import 'crew_detail.dart';
-import '/modals/images.dart';
+import '/models/images.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -40,41 +41,42 @@ class MainMoviesDisplay extends StatelessWidget {
     return Container(
       child: ListView(
         children: [
-          DiscoverMovies(includeAdult: Provider.of(context)),
+          DiscoverMovies(
+              includeAdult: Provider.of<AdultmodeProvider>(context).isAdult),
           ScrollingMovies(
             title: 'Popular',
             api: Endpoints.popularMoviesUrl(1),
             discoverType: 'popular',
             isTrending: false,
-            includeAdult: Provider.of(context),
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
           ),
           ScrollingMovies(
             title: 'Trending',
             api: Endpoints.trendingMoviesUrl(1),
             discoverType: 1,
             isTrending: true,
-            includeAdult: Provider.of(context),
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
           ),
           ScrollingMovies(
             title: 'Top Rated',
             api: Endpoints.topRatedUrl(1),
             discoverType: 'top_rated',
             isTrending: false,
-            includeAdult: Provider.of(context),
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
           ),
           ScrollingMovies(
             title: 'Now playing',
             api: Endpoints.nowPlayingMoviesUrl(1),
             discoverType: 'now_playing',
             isTrending: false,
-            includeAdult: Provider.of(context),
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
           ),
           ScrollingMovies(
             title: 'Upcoming',
             api: Endpoints.upcomingMoviesUrl(1),
             discoverType: 'upcoming',
             isTrending: false,
-            includeAdult: Provider.of(context),
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
           ),
           GenreListGrid(api: Endpoints.movieGenresUrl()),
           const MoviesFromWatchProviders(),
@@ -253,7 +255,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
         if (widget.isTrending == false) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/movie/${widget.discoverType}?api_key=$TMDB_API_KEY&page=" +
+                "$TMDB_API_BASE_URL/movie/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=" +
                     pageNum.toString()),
           );
           setState(() {
@@ -1949,8 +1951,12 @@ class _CrewTabState extends State<CrewTab>
 class MovieRecommendationsTab extends StatefulWidget {
   final String api;
   final int movieId;
+  final bool? includeAdult;
   const MovieRecommendationsTab(
-      {Key? key, required this.api, required this.movieId})
+      {Key? key,
+      required this.api,
+      required this.movieId,
+      required this.includeAdult})
       : super(key: key);
 
   @override
@@ -1977,7 +1983,7 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
 
         var response = await http.get(Uri.parse(
             '$TMDB_API_BASE_URL/movie/${widget.movieId}/recommendations?api_key=$TMDB_API_KEY'
-            '&language=en-US'
+            '&language=en-US&include_adult=${widget.includeAdult}'
             '&page=$pageNum'));
         setState(() {
           pageNum++;
@@ -1996,7 +2002,8 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   @override
   void initState() {
     super.initState();
-    fetchMovies(widget.api).then((value) {
+    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+        .then((value) {
       setState(() {
         movieList = value;
       });
@@ -2165,8 +2172,12 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
 class SimilarMoviesTab extends StatefulWidget {
   final String api;
   final int movieId;
-
-  const SimilarMoviesTab({Key? key, required this.api, required this.movieId})
+  final bool? includeAdult;
+  const SimilarMoviesTab(
+      {Key? key,
+      required this.api,
+      required this.movieId,
+      required this.includeAdult})
       : super(key: key);
 
   @override
@@ -2191,7 +2202,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
 
         var response = await http.get(Uri.parse(
             '$TMDB_API_BASE_URL/movie/${widget.movieId}/similar?api_key=$TMDB_API_KEY'
-            '&language=en-US'
+            '&language=en-US&include_adult=${widget.includeAdult}'
             '&page=$pageNum'));
         setState(() {
           pageNum++;
@@ -2210,7 +2221,8 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
   @override
   void initState() {
     super.initState();
-    fetchMovies(widget.api).then((value) {
+    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+        .then((value) {
       setState(() {
         movieList = value;
       });
@@ -2378,8 +2390,12 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
 class ParticularGenreMovies extends StatefulWidget {
   final String api;
   final int genreId;
+  final bool? includeAdult;
   const ParticularGenreMovies(
-      {Key? key, required this.api, required this.genreId})
+      {Key? key,
+      required this.api,
+      required this.genreId,
+      required this.includeAdult})
       : super(key: key);
   @override
   _ParticularGenreMoviesState createState() => _ParticularGenreMoviesState();
@@ -2404,7 +2420,7 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
             Uri.parse('$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY'
                 '&language=en-US'
                 '&sort_by=popularity.desc'
-                '&include_adult=false'
+                '&include_adult=${widget.includeAdult}'
                 '&include_video=false'
                 '&watch_region=US'
                 '&page=$pageNum'
@@ -2426,7 +2442,8 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   @override
   void initState() {
     super.initState();
-    fetchMovies(widget.api).then((value) {
+    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+        .then((value) {
       setState(() {
         moviesList = value;
       });
@@ -2592,10 +2609,12 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
 class ParticularStreamingServiceMovies extends StatefulWidget {
   final String api;
   final int providerID;
+  final bool? includeAdult;
   const ParticularStreamingServiceMovies({
     Key? key,
     required this.api,
     required this.providerID,
+    required this.includeAdult,
   }) : super(key: key);
   @override
   _ParticularStreamingServiceMoviesState createState() =>
@@ -2622,7 +2641,7 @@ class _ParticularStreamingServiceMoviesState
             '/discover/movie?api_key='
             '$TMDB_API_KEY'
             '&language=en-US&sort_by=popularity'
-            '.desc&include_adult=false&include_video=false&page=$pageNum'
+            '.desc&include_adult=${widget.includeAdult}&include_video=false&page=$pageNum'
             '&with_watch_providers=${widget.providerID}'
             '&watch_region=US'));
         setState(() {
@@ -2642,7 +2661,8 @@ class _ParticularStreamingServiceMoviesState
   @override
   void initState() {
     super.initState();
-    fetchMovies(widget.api).then((value) {
+    fetchMovies(widget.api + 'include_adult=${widget.includeAdult}')
+        .then((value) {
       setState(() {
         moviesList = value;
       });
@@ -2859,7 +2879,10 @@ class StreamingServicesWidget extends StatelessWidget {
 
 class GenreListGrid extends StatefulWidget {
   final String api;
-  const GenreListGrid({Key? key, required this.api}) : super(key: key);
+  const GenreListGrid({
+    Key? key,
+    required this.api,
+  }) : super(key: key);
 
   @override
   _GenreListGridState createState() => _GenreListGridState();

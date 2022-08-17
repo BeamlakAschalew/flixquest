@@ -1,17 +1,16 @@
 import 'dart:convert';
-import '/modals/images.dart';
-import '/modals/person.dart';
-import '/modals/tv.dart';
-import '/modals/videos.dart';
-import '/modals/watch_providers.dart';
+import '/models/images.dart';
+import '/models/person.dart';
+import '/models/tv.dart';
+import '/models/videos.dart';
+import '/models/watch_providers.dart';
 import 'package:http/http.dart' as http;
-import '/modals/credits.dart';
-import '/modals/genres.dart';
-import '/modals/movie.dart';
+import '/models/credits.dart';
+import '/models/genres.dart';
+import '/models/movie.dart';
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
-  print(api);
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);
   movieList = MovieList.fromJson(decodeRes);
@@ -140,6 +139,7 @@ Future<WatchProviders> fetchWatchProviders(String api) async {
 }
 
 Future<List<TV>> fetchTV(String api) async {
+  print(api);
   TVList tvList;
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);

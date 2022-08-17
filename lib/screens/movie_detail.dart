@@ -1,13 +1,15 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 
 import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import '../provider/adultmode_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '/modals/movie.dart';
+import '/models/movie.dart';
 import '/screens/movie_widgets.dart';
 import 'package:intl/intl.dart';
 
@@ -444,11 +446,19 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                             widget.movie.id!),
                                       ),
                                       MovieRecommendationsTab(
+                                        includeAdult:
+                                            Provider.of<AdultmodeProvider>(
+                                                    context)
+                                                .isAdult,
                                         api: Endpoints.getMovieRecommendations(
                                             widget.movie.id!, 1),
                                         movieId: widget.movie.id!,
                                       ),
                                       SimilarMoviesTab(
+                                          includeAdult:
+                                              Provider.of<AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
                                           movieId: widget.movie.id!,
                                           api: Endpoints.getSimilarMovies(
                                               widget.movie.id!, 1)),

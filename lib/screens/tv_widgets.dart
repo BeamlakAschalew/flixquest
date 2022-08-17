@@ -1,19 +1,21 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
+import 'package:provider/provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
-import '/modals/credits.dart';
-import '/modals/function.dart';
-import '/modals/genres.dart';
-import '/modals/images.dart';
-import '/modals/movie.dart';
-import '/modals/social_icons_icons.dart';
-import '/modals/tv.dart';
-import '/modals/videos.dart';
-import '/modals/watch_providers.dart';
+import '/models/credits.dart';
+import '/models/function.dart';
+import '/models/genres.dart';
+import '/models/images.dart';
+import '/models/movie.dart';
+import '/models/social_icons_icons.dart';
+import '/models/tv.dart';
+import '/models/videos.dart';
+import '/models/watch_providers.dart';
 import '/screens/cast_detail.dart';
 import '/screens/createdby_detail.dart';
 import '/screens/episode_detail.dart';
@@ -41,32 +43,38 @@ class MainTVDisplay extends StatelessWidget {
     return Container(
       child: ListView(
         children: [
-          const DiscoverTV(),
+          DiscoverTV(
+              includeAdult: Provider.of<AdultmodeProvider>(context).isAdult),
           ScrollingTV(
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
             title: 'Popular',
             api: Endpoints.popularTVUrl(1),
             discoverType: 'popular',
             isTrending: false,
           ),
           ScrollingTV(
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
             title: 'Trending',
             api: Endpoints.trendingTVUrl(1),
             discoverType: 1,
             isTrending: true,
           ),
           ScrollingTV(
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
             title: 'Top Rated',
             api: Endpoints.topRatedTVUrl(1),
             discoverType: 'top_rated',
             isTrending: false,
           ),
           ScrollingTV(
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
             title: 'Airing today',
             api: Endpoints.airingTodayUrl(1),
             discoverType: 'airing_today',
             isTrending: false,
           ),
           ScrollingTV(
+            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
             title: 'On the air',
             api: Endpoints.onTheAirUrl(1),
             discoverType: 'on_the_air',
@@ -81,7 +89,8 @@ class MainTVDisplay extends StatelessWidget {
 }
 
 class DiscoverTV extends StatefulWidget {
-  const DiscoverTV({Key? key}) : super(key: key);
+  final bool? includeAdult;
+  const DiscoverTV({required this.includeAdult, Key? key}) : super(key: key);
   @override
   _DiscoverTVState createState() => _DiscoverTVState();
 }
@@ -98,7 +107,9 @@ class _DiscoverTVState extends State<DiscoverTV>
   @override
   void initState() {
     super.initState();
-    fetchTV(Endpoints.discoverTVUrl(1)).then((value) {
+    fetchTV(Endpoints.discoverTVUrl(1) +
+            '&include_adult=${widget.includeAdult}')
+        .then((value) {
       setState(() {
         tvList = value;
       });
@@ -213,6 +224,7 @@ class ScrollingTV extends StatefulWidget {
   final dynamic discoverType;
   final String? watchProviderId;
   final bool isTrending;
+  final bool? includeAdult;
   const ScrollingTV({
     Key? key,
     this.api,
@@ -220,6 +232,7 @@ class ScrollingTV extends StatefulWidget {
     this.discoverType,
     this.watchProviderId,
     required this.isTrending,
+    required this.includeAdult,
   }) : super(key: key);
   @override
   _ScrollingTVState createState() => _ScrollingTVState();
@@ -230,7 +243,6 @@ class _ScrollingTVState extends State<ScrollingTV>
   late int index;
   List<TV>? tvList;
   late Mixpanel mixpanel;
-  // MovieDetails? movieDetails;
   final ScrollController _scrollController = ScrollController();
 
   int pageNum = 2;
@@ -246,7 +258,7 @@ class _ScrollingTVState extends State<ScrollingTV>
         if (widget.isTrending == false) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/tv/${widget.discoverType}?api_key=$TMDB_API_KEY&page=" +
+                "$TMDB_API_BASE_URL/tv/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=" +
                     pageNum.toString()),
           );
           setState(() {
@@ -260,7 +272,7 @@ class _ScrollingTVState extends State<ScrollingTV>
         } else if (widget.isTrending == true) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/trending/tv/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=false&page=" +
+                "$TMDB_API_BASE_URL/trending/tv/week?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}language=en-US&include_adult=false&page=" +
                     pageNum.toString()),
           );
           setState(() {
@@ -281,7 +293,8 @@ class _ScrollingTVState extends State<ScrollingTV>
   @override
   void initState() {
     super.initState();
-    fetchTV(widget.api!).then((value) {
+    fetchTV(widget.api! + '&include_adult=${widget.includeAdult}')
+        .then((value) {
       setState(() {
         tvList = value;
       });
@@ -2186,7 +2199,12 @@ class _TVCrewTabState extends State<TVCrewTab>
 class TVRecommendationsTab extends StatefulWidget {
   final String api;
   final int tvId;
-  const TVRecommendationsTab({Key? key, required this.api, required this.tvId})
+  final bool? includeAdult;
+  const TVRecommendationsTab(
+      {Key? key,
+      required this.api,
+      required this.tvId,
+      required this.includeAdult})
       : super(key: key);
 
   @override
@@ -2200,7 +2218,7 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
   @override
   void initState() {
     super.initState();
-    fetchTV(widget.api).then((value) {
+    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
@@ -2223,7 +2241,7 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
         });
 
         var response = await http.get(Uri.parse(
-            '$TMDB_API_BASE_URL/tv/${widget.tvId}/recommendations?api_key=$TMDB_API_KEY'
+            '$TMDB_API_BASE_URL/tv/${widget.tvId}/recommendations?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}'
             '&language=en-US'
             '&page=$pageNum'));
         setState(() {
@@ -2399,7 +2417,12 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
 class SimilarTVTab extends StatefulWidget {
   final String api;
   final int tvId;
-  const SimilarTVTab({Key? key, required this.api, required this.tvId})
+  final bool? includeAdult;
+  const SimilarTVTab(
+      {Key? key,
+      required this.api,
+      required this.tvId,
+      required this.includeAdult})
       : super(key: key);
 
   @override
@@ -2413,7 +2436,7 @@ class _SimilarTVTabState extends State<SimilarTVTab>
   @override
   void initState() {
     super.initState();
-    fetchTV(widget.api).then((value) {
+    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
@@ -2436,7 +2459,7 @@ class _SimilarTVTabState extends State<SimilarTVTab>
         });
 
         var response = await http.get(Uri.parse(
-            '$TMDB_API_BASE_URL/tv/${widget.tvId}/similar?api_key=$TMDB_API_KEY'
+            '$TMDB_API_BASE_URL/tv/${widget.tvId}/similar?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}'
             '&language=en-US'
             '&page=$pageNum'));
         setState(() {
@@ -2684,7 +2707,12 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
 class ParticularGenreTV extends StatefulWidget {
   final String api;
   final int genreId;
-  const ParticularGenreTV({Key? key, required this.api, required this.genreId})
+  final bool? includeAdult;
+  const ParticularGenreTV(
+      {Key? key,
+      required this.api,
+      required this.genreId,
+      required this.includeAdult})
       : super(key: key);
   @override
   _ParticularGenreTVState createState() => _ParticularGenreTVState();
@@ -2709,7 +2737,7 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
             Uri.parse('$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY'
                 '&language=en-US'
                 '&sort_by=popularity.desc'
-                '&watch_region=US'
+                '&watch_region=US&include_adult=${widget.includeAdult}'
                 '&page=$pageNum'
                 '&with_genres=${widget.genreId}'));
         setState(() {
@@ -2729,7 +2757,7 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
   @override
   void initState() {
     super.initState();
-    fetchTV(widget.api).then((value) {
+    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
@@ -4117,10 +4145,12 @@ class TVStreamingServicesWidget extends StatelessWidget {
 class ParticularStreamingServiceTVShows extends StatefulWidget {
   final String api;
   final int providerID;
+  final bool? includeAdult;
   const ParticularStreamingServiceTVShows({
     Key? key,
     required this.api,
     required this.providerID,
+    required this.includeAdult,
   }) : super(key: key);
   @override
   _ParticularStreamingServiceTVShowsState createState() =>
@@ -4147,7 +4177,7 @@ class _ParticularStreamingServiceTVShowsState
         var response = await http.get(Uri.parse('$TMDB_API_BASE_URL'
             '/discover/tv?api_key='
             '$TMDB_API_KEY'
-            '&language=en-US&sort_by=popularity'
+            '&language=en-US&sort_by=popularity&include_adult=${widget.includeAdult}'
             '.desc&include_adult=false&include_video=false&page=$pageNum'
             '&with_watch_providers=${widget.providerID}'
             '&watch_region=US'));
@@ -4168,7 +4198,7 @@ class _ParticularStreamingServiceTVShowsState
   @override
   void initState() {
     super.initState();
-    fetchTV(widget.api).then((value) {
+    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });

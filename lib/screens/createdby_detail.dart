@@ -1,5 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
-import '/modals/tv.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/adultmode_provider.dart';
+import '/models/tv.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -215,6 +218,10 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                       Container(
                                         color: const Color(0xFF202124),
                                         child: PersonMovieListWidget(
+                                          includeAdult:
+                                              Provider.of<AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
                                           api: Endpoints
                                               .getMovieCreditsForPerson(
                                                   widget.createdBy!.id!),
@@ -223,6 +230,10 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                       Container(
                                         color: const Color(0xFF202124),
                                         child: PersonTVListWidget(
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
                                             api:
                                                 Endpoints.getTVCreditsForPerson(
                                                     widget.createdBy!.id!)),

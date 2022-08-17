@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import '/constants/api_constants.dart';
-import '/modals/function.dart';
-import '/modals/images.dart';
-import '/modals/movie.dart';
-import '/modals/person.dart';
-import '/modals/social_icons_icons.dart';
-import '/modals/tv.dart';
+import '/models/function.dart';
+import '/models/images.dart';
+import '/models/movie.dart';
+import '/models/person.dart';
+import '/models/social_icons_icons.dart';
+import '/models/tv.dart';
 import '/screens/movie_detail.dart';
 import '/screens/movie_widgets.dart';
 import '/screens/tv_detail.dart';
@@ -127,8 +127,13 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
 
 class PersonMovieListWidget extends StatefulWidget {
   final String api;
-  final bool? isAdult;
-  const PersonMovieListWidget({Key? key, required this.api, this.isAdult})
+  final bool? isPersonAdult;
+  final bool? includeAdult;
+  const PersonMovieListWidget(
+      {Key? key,
+      required this.api,
+      this.isPersonAdult,
+      required this.includeAdult})
       : super(key: key);
 
   @override
@@ -163,12 +168,12 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
         ? const Center(
             child: CircularProgressIndicator(),
           )
-        : widget.isAdult == true
+        : widget.isPersonAdult == true && widget.includeAdult == false
             ? const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
-                    'This section contains NSFW & 18+ content, thus it can\'t be displayed on this version of the app',
+                    'This section contains NSFW & 18+ content',
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -294,8 +299,13 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
 
 class PersonTVListWidget extends StatefulWidget {
   final String api;
-  final bool? isAdult;
-  const PersonTVListWidget({Key? key, required this.api, this.isAdult})
+  final bool? isPersonAdult;
+  final bool? includeAdult;
+  const PersonTVListWidget(
+      {Key? key,
+      required this.api,
+      this.isPersonAdult,
+      required this.includeAdult})
       : super(key: key);
 
   @override
@@ -330,12 +340,12 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
         ? const Center(
             child: CircularProgressIndicator(),
           )
-        : widget.isAdult == true
+        : widget.isPersonAdult == true && widget.includeAdult == false
             ? const Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
-                    'This section contains NSFW & 18+ content, thus it can\'t be displayed on this version of the app',
+                    'This section contains NSFW & 18+ content',
                     textAlign: TextAlign.center,
                   ),
                 ),
