@@ -28,6 +28,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'genremovies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'movie_stream_select.dart';
+import 'package:provider/provider.dart';
 
 class MainMoviesDisplay extends StatelessWidget {
   const MainMoviesDisplay({
@@ -39,36 +40,41 @@ class MainMoviesDisplay extends StatelessWidget {
     return Container(
       child: ListView(
         children: [
-          const DiscoverMovies(),
+          DiscoverMovies(includeAdult: Provider.of(context)),
           ScrollingMovies(
             title: 'Popular',
             api: Endpoints.popularMoviesUrl(1),
             discoverType: 'popular',
             isTrending: false,
+            includeAdult: Provider.of(context),
           ),
           ScrollingMovies(
             title: 'Trending',
             api: Endpoints.trendingMoviesUrl(1),
             discoverType: 1,
             isTrending: true,
+            includeAdult: Provider.of(context),
           ),
           ScrollingMovies(
             title: 'Top Rated',
             api: Endpoints.topRatedUrl(1),
             discoverType: 'top_rated',
             isTrending: false,
+            includeAdult: Provider.of(context),
           ),
           ScrollingMovies(
             title: 'Now playing',
             api: Endpoints.nowPlayingMoviesUrl(1),
             discoverType: 'now_playing',
             isTrending: false,
+            includeAdult: Provider.of(context),
           ),
           ScrollingMovies(
             title: 'Upcoming',
             api: Endpoints.upcomingMoviesUrl(1),
             discoverType: 'upcoming',
             isTrending: false,
+            includeAdult: Provider.of(context),
           ),
           GenreListGrid(api: Endpoints.movieGenresUrl()),
           const MoviesFromWatchProviders(),
@@ -79,7 +85,9 @@ class MainMoviesDisplay extends StatelessWidget {
 }
 
 class DiscoverMovies extends StatefulWidget {
-  const DiscoverMovies({Key? key}) : super(key: key);
+  const DiscoverMovies({Key? key, required this.includeAdult})
+      : super(key: key);
+  final bool includeAdult;
   @override
   _DiscoverMoviesState createState() => _DiscoverMoviesState();
 }
@@ -89,35 +97,21 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
   List<Movie>? moviesList;
   late Mixpanel mixpanel;
   late double deviceHeight;
-  bool? includeAdult;
   @override
   void initState() {
     super.initState();
-    fetchAdultValueAndData();
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
-  }
-
-  Future<void> getAdultbool() async {
-    final prefs = await SharedPreferences.getInstance();
-    includeAdult = prefs.getBool('adultMode') == null
-        ? false
-        : prefs.getBool('adultMode') == true
-            ? true
-            : false;
-  }
-
-  Future<void> fetchAdultValueAndData() async {
-    await getAdultbool();
-    fetchMovies(Endpoints.discoverMoviesUrl(1) + '&inculde_adult=$includeAdult')
+    fetchMovies(Endpoints.discoverMoviesUrl(1) +
+            '&inculde_adult=${widget.includeAdult}')
         .then((value) {
       setState(() {
         moviesList = value;
       });
     });
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -223,6 +217,7 @@ class ScrollingMovies extends StatefulWidget {
   final dynamic discoverType;
   final String? watchProviderId;
   final bool isTrending;
+  final bool? includeAdult;
 
   const ScrollingMovies({
     Key? key,
@@ -231,6 +226,7 @@ class ScrollingMovies extends StatefulWidget {
     this.discoverType,
     this.watchProviderId,
     required this.isTrending,
+    required this.includeAdult,
   }) : super(key: key);
   @override
   _ScrollingMoviesState createState() => _ScrollingMoviesState();
@@ -241,7 +237,6 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
   late int index;
   List<Movie>? moviesList;
   MovieDetails? movieDetails;
-  bool? includeAdult;
   late Mixpanel mixpanel;
   final ScrollController _scrollController = ScrollController();
 
@@ -272,7 +267,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
         } else if (widget.isTrending == true) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=$includeAdult&page=" +
+                "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=${widget.includeAdult}&page=" +
                     pageNum.toString()),
           );
           setState(() {
@@ -290,28 +285,15 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
     return "success";
   }
 
-  Future<void> getAdultbool() async {
-    final prefs = await SharedPreferences.getInstance();
-    includeAdult = prefs.getBool('adultMode') == null
-        ? false
-        : prefs.getBool('adultMode') == true
-            ? true
-            : false;
-  }
-
-  Future<void> fetchAdultValueAndData() async {
-    await getAdultbool();
-    fetchMovies(widget.api! + '&include_adult=$includeAdult').then((value) {
+  @override
+  void initState() {
+    super.initState();
+    fetchMovies(widget.api! + '&include_adult=${widget.includeAdult}')
+        .then((value) {
       setState(() {
         moviesList = value;
       });
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchAdultValueAndData();
     getMoreData();
     initMixpanel();
   }
@@ -346,7 +328,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
         SizedBox(
           width: double.infinity,
           height: 250,
-          child: moviesList == null || includeAdult == null
+          child: moviesList == null || widget.includeAdult == null
               ? const Center(
                   child: CircularProgressIndicator(),
                 )

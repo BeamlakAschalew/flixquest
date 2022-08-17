@@ -43,7 +43,7 @@ class AboutPage extends StatelessWidget {
                   ),
                 ),
                 const Text(
-                  'This app uses TMDB as a data provider',
+                  'This product uses the TMDB API but is not endorsed or certified by TMDB.',
                   textAlign: TextAlign.center,
                   style:
                       TextStyle(fontSize: 20.0, overflow: TextOverflow.visible),
