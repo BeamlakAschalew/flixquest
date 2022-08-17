@@ -139,7 +139,6 @@ Future<WatchProviders> fetchWatchProviders(String api) async {
 }
 
 Future<List<TV>> fetchTV(String api) async {
-  print(api);
   TVList tvList;
   var res = await http.get(Uri.parse(api));
   var decodeRes = jsonDecode(res.body);

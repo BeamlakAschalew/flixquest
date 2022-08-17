@@ -16,13 +16,11 @@ import 'package:intl/intl.dart';
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
   final String heroId;
-  final MovieDetails? md;
 
   const MovieDetailPage({
     Key? key,
     required this.movie,
     required this.heroId,
-    this.md,
   }) : super(key: key);
   @override
   _MovieDetailPageState createState() => _MovieDetailPageState();

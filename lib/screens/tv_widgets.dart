@@ -54,7 +54,7 @@ class MainTVDisplay extends StatelessWidget {
           ),
           ScrollingTV(
             includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
-            title: 'Trending',
+            title: 'Trending this week',
             api: Endpoints.trendingTVUrl(1),
             discoverType: 1,
             isTrending: true,
@@ -89,7 +89,7 @@ class MainTVDisplay extends StatelessWidget {
 }
 
 class DiscoverTV extends StatefulWidget {
-  final bool? includeAdult;
+  final bool includeAdult;
   const DiscoverTV({required this.includeAdult, Key? key}) : super(key: key);
   @override
   _DiscoverTVState createState() => _DiscoverTVState();
@@ -220,17 +220,15 @@ class _DiscoverTVState extends State<DiscoverTV>
 }
 
 class ScrollingTV extends StatefulWidget {
-  final String? api, title;
+  final String api, title;
   final dynamic discoverType;
-  final String? watchProviderId;
   final bool isTrending;
   final bool? includeAdult;
   const ScrollingTV({
     Key? key,
-    this.api,
-    this.title,
+    required this.api,
+    required this.title,
     this.discoverType,
-    this.watchProviderId,
     required this.isTrending,
     required this.includeAdult,
   }) : super(key: key);
@@ -293,8 +291,7 @@ class _ScrollingTVState extends State<ScrollingTV>
   @override
   void initState() {
     super.initState();
-    fetchTV(widget.api! + '&include_adult=${widget.includeAdult}')
-        .then((value) {
+    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
@@ -325,7 +322,7 @@ class _ScrollingTVState extends State<ScrollingTV>
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                widget.title!,
+                widget.title,
                 style: kTextHeaderStyle,
               ),
             ),
@@ -2845,16 +2842,51 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                                             'assets/images/na_logo.png',
                                                             fit: BoxFit.cover,
                                                           )
-                                                        : FadeInImage(
-                                                            image: NetworkImage(
-                                                                TMDB_BASE_IMAGE_URL +
-                                                                    'w500/' +
-                                                                    tvList![index]
-                                                                        .posterPath!),
-                                                            fit: BoxFit.cover,
+                                                        : CachedNetworkImage(
+                                                            fadeOutDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                            fadeOutCurve:
+                                                                Curves.easeOut,
+                                                            fadeInDuration:
+                                                                Duration(
+                                                                    milliseconds:
+                                                                        700),
+                                                            fadeInCurve:
+                                                                Curves.easeIn,
+                                                            imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                'w500/' +
+                                                                tvList![index]
+                                                                    .posterPath!,
+                                                            imageBuilder: (context,
+                                                                    imageProvider) =>
+                                                                Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image:
+                                                                      imageProvider,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                              ),
+                                                            ),
                                                             placeholder:
-                                                                const AssetImage(
-                                                                    'assets/images/loading.gif'),
+                                                                (context,
+                                                                        url) =>
+                                                                    Image.asset(
+                                                              'assets/images/loading.gif',
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                            errorWidget:
+                                                                (context, url,
+                                                                        error) =>
+                                                                    Image.asset(
+                                                              'assets/images/na_logo.png',
+                                                              fit: BoxFit.cover,
+                                                            ),
                                                           ),
                                                   ),
                                                 ),
@@ -4287,16 +4319,51 @@ class _ParticularStreamingServiceTVShowsState
                                                             'assets/images/na_logo.png',
                                                             fit: BoxFit.cover,
                                                           )
-                                                        : FadeInImage(
-                                                            image: NetworkImage(
-                                                                TMDB_BASE_IMAGE_URL +
-                                                                    'w500/' +
-                                                                    tvList![index]
-                                                                        .posterPath!),
-                                                            fit: BoxFit.cover,
+                                                        : CachedNetworkImage(
+                                                            fadeOutDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                            fadeOutCurve:
+                                                                Curves.easeOut,
+                                                            fadeInDuration:
+                                                                Duration(
+                                                                    milliseconds:
+                                                                        700),
+                                                            fadeInCurve:
+                                                                Curves.easeIn,
+                                                            imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                'w500/' +
+                                                                tvList![index]
+                                                                    .posterPath!,
+                                                            imageBuilder: (context,
+                                                                    imageProvider) =>
+                                                                Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image:
+                                                                      imageProvider,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                              ),
+                                                            ),
                                                             placeholder:
-                                                                const AssetImage(
-                                                                    'assets/images/loading.gif'),
+                                                                (context,
+                                                                        url) =>
+                                                                    Image.asset(
+                                                              'assets/images/loading.gif',
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                            errorWidget:
+                                                                (context, url,
+                                                                        error) =>
+                                                                    Image.asset(
+                                                              'assets/images/na_logo.png',
+                                                              fit: BoxFit.cover,
+                                                            ),
                                                           ),
                                                   ),
                                                 ),

@@ -11,12 +11,10 @@ import 'person_widgets.dart';
 class CastDetailPage extends StatefulWidget {
   final Cast? cast;
   final String heroId;
-  final Crew? crew;
 
   const CastDetailPage({
     Key? key,
     this.cast,
-    this.crew,
     required this.heroId,
   }) : super(key: key);
   @override
