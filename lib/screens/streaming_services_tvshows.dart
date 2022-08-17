@@ -19,7 +19,7 @@ class StreamingServicesTVShows extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          providerName,
+          'TV shows from $providerName',
         ),
         leading: IconButton(
           icon: const Icon(

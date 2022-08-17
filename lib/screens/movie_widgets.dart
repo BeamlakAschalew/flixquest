@@ -1421,7 +1421,7 @@ class _GenreDisplayState extends State<GenreDisplay>
     super.build(context);
     return Container(
         child: SizedBox(
-      height: genreList == null ? 0 : 80,
+      height: genreList == null || genreList!.isEmpty ? 0 : 80,
       child: genreList == null
           ? Container()
           : ListView.builder(

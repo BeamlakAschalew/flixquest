@@ -2655,7 +2655,7 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
     super.build(context);
     return Container(
         child: SizedBox(
-      height: genres == null ? 0 : 80,
+      height: genres == null || genres!.isEmpty ? 0 : 80,
       child: genres == null
           ? Container()
           : ListView.builder(
@@ -3478,7 +3478,9 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                               tvDetails!.episodes![index]
                                                   .stillPath!.isEmpty
                                           ? Image.asset(
-                                              'assets/images/na_logo.png')
+                                              'assets/images/na_logo.png',
+                                              fit: BoxFit.cover,
+                                            )
                                           : FadeInImage(
                                               fit: BoxFit.cover,
                                               image: NetworkImage(
@@ -3505,14 +3507,12 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                           style: const TextStyle(
                                               overflow: TextOverflow.ellipsis)),
                                       Text(
-                                        tvDetails!.episodes![index].airDate!
-                                                .isEmpty
+                                        tvDetails!.episodes![index].airDate ==
+                                                    null ||
+                                                tvDetails!.episodes![index]
+                                                    .airDate!.isEmpty
                                             ? 'Air date unknown'
-                                            : tvDetails!.episodes![index]
-                                                        .airDate ==
-                                                    null
-                                                ? 'Air date unknown'
-                                                : '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
+                                            : '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
                                         style: const TextStyle(
                                             color: Colors.white54),
                                       ),

@@ -17,7 +17,7 @@ class GenreMovies extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          genres.genreName!,
+          '${genres.genreName!} movies',
         ),
         leading: IconButton(
           icon: const Icon(

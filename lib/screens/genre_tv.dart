@@ -17,7 +17,7 @@ class TVGenre extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          genres.genreName!,
+          '${genres.genreName!} TV shows',
         ),
         leading: IconButton(
           icon: const Icon(

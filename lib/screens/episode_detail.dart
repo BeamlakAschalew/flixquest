@@ -386,13 +386,13 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                             left: 8.0,
                                                             bottom: 4.0),
                                                     child: Text(
-                                                      widget
+                                                      widget.episodeList
+                                                                      .airDate ==
+                                                                  null ||
+                                                              widget
                                                                   .episodeList
                                                                   .airDate!
-                                                                  .isEmpty ||
-                                                              widget.episodeList
-                                                                      .airDate ==
-                                                                  null
+                                                                  .isEmpty
                                                           ? 'Episode air date: N/A'
                                                           : 'Episode air date:  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
                                                       style: const TextStyle(

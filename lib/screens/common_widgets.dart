@@ -709,7 +709,7 @@ class DrawerWidget extends StatelessWidget {
             title: const Text('Share the app'),
             onTap: () async {
               await Share.share(
-                  'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.beamlakaschalew.cf/');
+                  'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
             },
           ),
         ],
