@@ -1,4 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'package:cinemax/constants/theme_data.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/landing_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,6 +48,7 @@ class _CinemaxState extends State<Cinemax> {
   }
 
   AdultmodeProvider adultmodeProvider = AdultmodeProvider();
+  DarkthemeProvider themeChangeProvider = DarkthemeProvider();
 
   void getCurrentAdultMode() async {
     adultmodeProvider.isAdult =
@@ -58,35 +61,39 @@ class _CinemaxState extends State<Cinemax> {
         providers: [
           ChangeNotifierProvider(create: (_) {
             return adultmodeProvider;
+          }),
+          ChangeNotifierProvider(create: (_) {
+            return themeChangeProvider;
           })
         ],
-        child: Consumer<AdultmodeProvider>(
-            builder: (context, adultmodeProvider, snapshot) {
+        child: Consumer2<AdultmodeProvider, DarkthemeProvider>(builder:
+            (context, adultmodeProvider, themeChangeProvider, snapshot) {
           return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Cinemax',
-              theme: ThemeData.dark().copyWith(
-                  useMaterial3: false,
-                  textTheme: ThemeData.dark().textTheme.apply(
-                        fontFamily: 'Poppins',
-                      ),
-                  //primaryColor: const Color(0xFFF57C00),
-                  iconTheme: const IconThemeData(color: Color(0xFFF57C00)),
-                  //backgroundColor: Colors.black,
-                  colorScheme: const ColorScheme(
-                      primary: Color(0xFFF57C00),
-                      primaryContainer: Color(0xFF8f4700),
-                      secondary: Color(0xFF202124),
-                      secondaryContainer: Color(0xFF141517),
-                      surface: Color(0xFFF57C00),
-                      background: Color(0xFF202124),
-                      error: Color(0xFFFF0000),
-                      onPrimary: Color(0xFF202124),
-                      onSecondary: Color(0xFF141517),
-                      onSurface: Color(0xFF141517),
-                      onBackground: Color(0xFFF57C00),
-                      onError: Color(0xFFFFFFFF),
-                      brightness: Brightness.dark)),
+              // theme: ThemeData.dark().copyWith(
+              //     useMaterial3: false,
+              //     textTheme: ThemeData.dark().textTheme.apply(
+              //           fontFamily: 'Poppins',
+              //         ),
+              //     //primaryColor: const Color(0xFFF57C00),
+              //     iconTheme: const IconThemeData(color: Color(0xFFF57C00)),
+              //     //backgroundColor: Colors.black,
+              //     colorScheme: const ColorScheme(
+              //         primary: Color(0xFFF57C00),
+              //         primaryContainer: Color(0xFF8f4700),
+              //         secondary: Color(0xFF202124),
+              //         secondaryContainer: Color(0xFF141517),
+              //         surface: Color(0xFFF57C00),
+              //         background: Color(0xFF202124),
+              //         error: Color(0xFFFF0000),
+              //         onPrimary: Color(0xFF202124),
+              //         onSecondary: Color(0xFF141517),
+              //         onSurface: Color(0xFF141517),
+              //         onBackground: Color(0xFFF57C00),
+              //         onError: Color(0xFFFFFFFF),
+              //         brightness: Brightness.dark)),
+              theme: Styles.themeData(themeChangeProvider.darktheme, context),
               home: isFirstLaunch
                   ? const LandingScreen()
                   : const CinemaxHomePage());
@@ -126,7 +133,6 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           )
         : Scaffold(
             drawer: const DrawerWidget(),
-            backgroundColor: const Color(0xFF1f1f1e),
             appBar: AppBar(
               title: const Text(
                 'Cinemax',
