@@ -174,72 +174,77 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                   indicatorSize: TabBarIndicatorSize.tab,
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    physics: const PageScrollPhysics(),
-                                    children: [
-                                      SingleChildScrollView(
-                                        child: Container(
-                                          color: const Color(0xFF202124),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 10.0,
-                                                    right: 10,
-                                                    top: 10.0),
-                                                child: Column(
-                                                  children: [
-                                                    PersonAboutWidget(
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(1, 0, 1, 3),
+                                    child: TabBarView(
+                                      physics: const PageScrollPhysics(),
+                                      children: [
+                                        SingleChildScrollView(
+                                          child: Container(
+                                            color: const Color(0xFF202124),
+                                            child: Column(
+                                              children: <Widget>[
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10.0,
+                                                          right: 10,
+                                                          top: 10.0),
+                                                  child: Column(
+                                                    children: [
+                                                      PersonAboutWidget(
+                                                          api: Endpoints
+                                                              .getPersonDetails(
+                                                                  widget
+                                                                      .createdBy!
+                                                                      .id!)),
+                                                      PersonSocialLinks(
                                                         api: Endpoints
-                                                            .getPersonDetails(
+                                                            .getExternalLinksForPerson(
                                                                 widget
                                                                     .createdBy!
-                                                                    .id!)),
-                                                    PersonSocialLinks(
-                                                      api: Endpoints
-                                                          .getExternalLinksForPerson(
-                                                              widget.createdBy!
-                                                                  .id!),
-                                                    ),
-                                                    PersonImagesDisplay(
-                                                      api: Endpoints
-                                                          .getPersonImages(
-                                                        widget.createdBy!.id!,
+                                                                    .id!),
                                                       ),
-                                                      title: 'Images',
-                                                    ),
-                                                  ],
+                                                      PersonImagesDisplay(
+                                                        api: Endpoints
+                                                            .getPersonImages(
+                                                          widget.createdBy!.id!,
+                                                        ),
+                                                        title: 'Images',
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonMovieListWidget(
-                                          includeAdult:
-                                              Provider.of<AdultmodeProvider>(
-                                                      context)
-                                                  .isAdult,
-                                          api: Endpoints
-                                              .getMovieCreditsForPerson(
-                                                  widget.createdBy!.id!),
-                                        ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonTVListWidget(
+                                        Container(
+                                          color: const Color(0xFF202124),
+                                          child: PersonMovieListWidget(
                                             includeAdult:
                                                 Provider.of<AdultmodeProvider>(
                                                         context)
                                                     .isAdult,
-                                            api:
-                                                Endpoints.getTVCreditsForPerson(
-                                                    widget.createdBy!.id!)),
-                                      ),
-                                    ],
-                                    controller: tabController,
+                                            api: Endpoints
+                                                .getMovieCreditsForPerson(
+                                                    widget.createdBy!.id!),
+                                          ),
+                                        ),
+                                        Container(
+                                          color: const Color(0xFF202124),
+                                          child: PersonTVListWidget(
+                                              includeAdult: Provider.of<
+                                                          AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
+                                              api: Endpoints
+                                                  .getTVCreditsForPerson(
+                                                      widget.createdBy!.id!)),
+                                        ),
+                                      ],
+                                      controller: tabController,
+                                    ),
                                   ),
                                 ),
                               ],

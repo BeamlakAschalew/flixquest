@@ -1,5 +1,8 @@
+import 'package:provider/provider.dart';
+
 import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import '../provider/darktheme_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/movie.dart';
@@ -29,6 +32,7 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -91,7 +95,7 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50.0),
-                        color: Colors.black38),
+                        color: isDark ? Colors.black38 : Colors.white38),
                     child: IconButton(
                       icon: const Icon(
                         Icons.arrow_back,
@@ -120,7 +124,8 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF202124),
+                            color:
+                                isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                             child: Column(
                               children: <Widget>[
                                 Padding(

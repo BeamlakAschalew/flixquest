@@ -326,200 +326,212 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                   ),
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    controller: tabController,
-                                    children: [
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: SingleChildScrollView(
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Row(
-                                                children: const <Widget>[
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 8.0),
-                                                    child: Text(
-                                                      'Overview',
-                                                      style: kTextHeaderStyle,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: ReadMoreText(
-                                                  widget.episodeList.overview!
-                                                          .isEmpty
-                                                      ? 'This season doesn\'t have an overview'
-                                                      : widget.episodeList
-                                                          .overview!,
-                                                  trimLines: 4,
-                                                  style: const TextStyle(
-                                                      fontFamily: 'Poppins'),
-                                                  colorClickableText:
-                                                      const Color(0xFFF57C00),
-                                                  trimMode: TrimMode.Line,
-                                                  trimCollapsedText:
-                                                      'read more',
-                                                  trimExpandedText: 'read less',
-                                                  lessStyle: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: Color(0xFFF57C00),
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                  moreStyle: const TextStyle(
-                                                      fontSize: 14,
-                                                      color: Color(0xFFF57C00),
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0,
-                                                            bottom: 4.0),
-                                                    child: Text(
-                                                      widget.episodeList
-                                                                      .airDate ==
-                                                                  null ||
-                                                              widget
-                                                                  .episodeList
-                                                                  .airDate!
-                                                                  .isEmpty
-                                                          ? 'Episode air date: N/A'
-                                                          : 'Episode air date:  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
-                                                      style: const TextStyle(
-                                                        fontFamily: 'PoppinsSB',
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(1, 0, 1, 3),
+                                    child: TabBarView(
+                                      controller: tabController,
+                                      children: [
+                                        Container(
+                                          color: const Color(0xFF202124),
+                                          child: SingleChildScrollView(
+                                            physics:
+                                                const BouncingScrollPhysics(),
+                                            child: Column(
+                                              children: <Widget>[
+                                                Row(
+                                                  children: const <Widget>[
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 8.0),
+                                                      child: Text(
+                                                        'Overview',
+                                                        style: kTextHeaderStyle,
                                                       ),
                                                     ),
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: ReadMoreText(
+                                                    widget.episodeList.overview!
+                                                            .isEmpty
+                                                        ? 'This season doesn\'t have an overview'
+                                                        : widget.episodeList
+                                                            .overview!,
+                                                    trimLines: 4,
+                                                    style: const TextStyle(
+                                                        fontFamily: 'Poppins'),
+                                                    colorClickableText:
+                                                        const Color(0xFFF57C00),
+                                                    trimMode: TrimMode.Line,
+                                                    trimCollapsedText:
+                                                        'read more',
+                                                    trimExpandedText:
+                                                        'read less',
+                                                    lessStyle: const TextStyle(
+                                                        fontSize: 14,
+                                                        color:
+                                                            Color(0xFFF57C00),
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                    moreStyle: const TextStyle(
+                                                        fontSize: 14,
+                                                        color:
+                                                            Color(0xFFF57C00),
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                   ),
-                                                ],
-                                              ),
-                                              Container(
-                                                child: TextButton(
-                                                  style: ButtonStyle(
-                                                      maximumSize:
-                                                          MaterialStateProperty
-                                                              .all(const Size(
-                                                                  150, 50)),
-                                                      backgroundColor:
-                                                          MaterialStateProperty
-                                                              .all(const Color(
-                                                                  0xFFF57C00))),
-                                                  onPressed: () {
-                                                    mixpanel.track(
-                                                        'Most viewed TV series',
-                                                        properties: {
-                                                          'TV series name':
-                                                              '${widget.seriesName}',
-                                                          'TV series id':
-                                                              '${widget.tvId}',
-                                                          'TV series episode name':
-                                                              '${widget.episodeList.name}',
-                                                          'TV series season number':
-                                                              '${widget.episodeList.seasonNumber}',
-                                                          'TV series episode number':
-                                                              '${widget.episodeList.episodeNumber}'
-                                                        });
-                                                    Navigator.push(context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) {
-                                                      return TVStreamSelect(
-                                                        episodeName: widget
-                                                            .episodeList.name!,
-                                                        tvSeriesName:
-                                                            widget.seriesName!,
-                                                        tvSeriesId:
-                                                            widget.tvId!,
-                                                        episodeNumber: widget
-                                                            .episodeList
-                                                            .episodeNumber!,
-                                                        seasonNumber: widget
-                                                            .episodeList
-                                                            .seasonNumber!,
-                                                      );
-                                                    }));
-                                                  },
-                                                  child: Row(
-                                                    children: const [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                right: 10),
-                                                        child: Icon(
-                                                          Icons.play_circle,
-                                                          color: Colors.white,
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0,
+                                                              bottom: 4.0),
+                                                      child: Text(
+                                                        widget.episodeList
+                                                                        .airDate ==
+                                                                    null ||
+                                                                widget
+                                                                    .episodeList
+                                                                    .airDate!
+                                                                    .isEmpty
+                                                            ? 'Episode air date: N/A'
+                                                            : 'Episode air date:  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'PoppinsSB',
                                                         ),
                                                       ),
-                                                      Text(
-                                                        'WATCH NOW',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                    ],
+                                                    ),
+                                                  ],
+                                                ),
+                                                Container(
+                                                  child: TextButton(
+                                                    style: ButtonStyle(
+                                                        maximumSize:
+                                                            MaterialStateProperty
+                                                                .all(const Size(
+                                                                    150, 50)),
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all(const Color(
+                                                                    0xFFF57C00))),
+                                                    onPressed: () {
+                                                      mixpanel.track(
+                                                          'Most viewed TV series',
+                                                          properties: {
+                                                            'TV series name':
+                                                                '${widget.seriesName}',
+                                                            'TV series id':
+                                                                '${widget.tvId}',
+                                                            'TV series episode name':
+                                                                '${widget.episodeList.name}',
+                                                            'TV series season number':
+                                                                '${widget.episodeList.seasonNumber}',
+                                                            'TV series episode number':
+                                                                '${widget.episodeList.episodeNumber}'
+                                                          });
+                                                      Navigator.push(context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) {
+                                                        return TVStreamSelect(
+                                                          episodeName: widget
+                                                              .episodeList
+                                                              .name!,
+                                                          tvSeriesName: widget
+                                                              .seriesName!,
+                                                          tvSeriesId:
+                                                              widget.tvId!,
+                                                          episodeNumber: widget
+                                                              .episodeList
+                                                              .episodeNumber!,
+                                                          seasonNumber: widget
+                                                              .episodeList
+                                                              .seasonNumber!,
+                                                        );
+                                                      }));
+                                                    },
+                                                    child: Row(
+                                                      children: const [
+                                                        Padding(
+                                                          padding:
+                                                              EdgeInsets.only(
+                                                                  right: 10),
+                                                          child: Icon(
+                                                            Icons.play_circle,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'WATCH NOW',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                              ScrollingTVEpisodeCasts(
-                                                api:
-                                                    Endpoints.getEpisodeCredits(
-                                                        widget.tvId!,
-                                                        widget.episodeList
-                                                            .seasonNumber!,
-                                                        widget.episodeList
-                                                            .episodeNumber!),
-                                              ),
-                                              TVEpisodeImagesDisplay(
-                                                title: 'Images',
-                                                api: Endpoints
-                                                    .getTVEpisodeImagesUrl(
-                                                        widget.tvId!,
-                                                        widget.episodeList
-                                                            .seasonNumber!,
-                                                        widget.episodeList
-                                                            .episodeNumber!),
-                                              ),
-                                              TVVideosDisplay(
-                                                api: Endpoints
-                                                    .getTVEpisodeVideosUrl(
-                                                        widget.tvId!,
-                                                        widget.episodeList
-                                                            .seasonNumber!,
-                                                        widget.episodeList
-                                                            .episodeNumber!),
-                                                title: 'Videos',
-                                              ),
-                                            ],
+                                                ScrollingTVEpisodeCasts(
+                                                  api: Endpoints
+                                                      .getEpisodeCredits(
+                                                          widget.tvId!,
+                                                          widget.episodeList
+                                                              .seasonNumber!,
+                                                          widget.episodeList
+                                                              .episodeNumber!),
+                                                ),
+                                                TVEpisodeImagesDisplay(
+                                                  title: 'Images',
+                                                  api: Endpoints
+                                                      .getTVEpisodeImagesUrl(
+                                                          widget.tvId!,
+                                                          widget.episodeList
+                                                              .seasonNumber!,
+                                                          widget.episodeList
+                                                              .episodeNumber!),
+                                                ),
+                                                TVVideosDisplay(
+                                                  api: Endpoints
+                                                      .getTVEpisodeVideosUrl(
+                                                          widget.tvId!,
+                                                          widget.episodeList
+                                                              .seasonNumber!,
+                                                          widget.episodeList
+                                                              .episodeNumber!),
+                                                  title: 'Videos',
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      TVEpisodeCastTab(
-                                          api: Endpoints.getEpisodeCredits(
-                                              widget.tvId!,
-                                              widget.episodeList.seasonNumber!,
-                                              widget
-                                                  .episodeList.episodeNumber!)),
-                                      TVCrewTab(
-                                          api: Endpoints.getEpisodeCredits(
-                                              widget.tvId!,
-                                              widget.episodeList.seasonNumber!,
-                                              widget
-                                                  .episodeList.episodeNumber!)),
-                                      TVEpisodeGuestStarsTab(
-                                          api: Endpoints.getEpisodeCredits(
-                                              widget.tvId!,
-                                              widget.episodeList.seasonNumber!,
-                                              widget
-                                                  .episodeList.episodeNumber!)),
-                                    ],
+                                        TVEpisodeCastTab(
+                                            api: Endpoints.getEpisodeCredits(
+                                                widget.tvId!,
+                                                widget
+                                                    .episodeList.seasonNumber!,
+                                                widget.episodeList
+                                                    .episodeNumber!)),
+                                        TVCrewTab(
+                                            api: Endpoints.getEpisodeCredits(
+                                                widget.tvId!,
+                                                widget
+                                                    .episodeList.seasonNumber!,
+                                                widget.episodeList
+                                                    .episodeNumber!)),
+                                        TVEpisodeGuestStarsTab(
+                                            api: Endpoints.getEpisodeCredits(
+                                                widget.tvId!,
+                                                widget
+                                                    .episodeList.seasonNumber!,
+                                                widget.episodeList
+                                                    .episodeNumber!)),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],

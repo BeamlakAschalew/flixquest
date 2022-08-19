@@ -179,77 +179,83 @@ class _CastDetailPageState extends State<CastDetailPage>
                                   indicatorSize: TabBarIndicatorSize.tab,
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    physics: const PageScrollPhysics(),
-                                    children: [
-                                      // PersonAboutWidget(
-                                      //   api: Endpoints.getPersonDetails(
-                                      //     widget.cast.id!,
-                                      //   ),
-                                      // ),
-                                      SingleChildScrollView(
-                                        child: Container(
-                                          color: const Color(0xFF202124),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 10.0,
-                                                    right: 10,
-                                                    top: 10.0),
-                                                child: Column(
-                                                  children: [
-                                                    PersonAboutWidget(
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(1, 0, 1, 3),
+                                    child: TabBarView(
+                                      physics: const PageScrollPhysics(),
+                                      children: [
+                                        // PersonAboutWidget(
+                                        //   api: Endpoints.getPersonDetails(
+                                        //     widget.cast.id!,
+                                        //   ),
+                                        // ),
+                                        SingleChildScrollView(
+                                          child: Container(
+                                            color: const Color(0xFF202124),
+                                            child: Column(
+                                              children: <Widget>[
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10.0,
+                                                          right: 10,
+                                                          top: 10.0),
+                                                  child: Column(
+                                                    children: [
+                                                      PersonAboutWidget(
+                                                          api: Endpoints
+                                                              .getPersonDetails(
+                                                                  widget.cast!
+                                                                      .id!)),
+                                                      PersonSocialLinks(
                                                         api: Endpoints
-                                                            .getPersonDetails(
-                                                                widget.cast!
-                                                                    .id!)),
-                                                    PersonSocialLinks(
-                                                      api: Endpoints
-                                                          .getExternalLinksForPerson(
-                                                              widget.cast!.id!),
-                                                    ),
-                                                    PersonImagesDisplay(
-                                                      api: Endpoints
-                                                          .getPersonImages(
-                                                        widget.cast!.id!,
+                                                            .getExternalLinksForPerson(
+                                                                widget
+                                                                    .cast!.id!),
                                                       ),
-                                                      title: 'Images',
-                                                    ),
-                                                  ],
+                                                      PersonImagesDisplay(
+                                                        api: Endpoints
+                                                            .getPersonImages(
+                                                          widget.cast!.id!,
+                                                        ),
+                                                        title: 'Images',
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonMovieListWidget(
-                                          isPersonAdult: widget.cast!.adult!,
-                                          includeAdult:
-                                              Provider.of<AdultmodeProvider>(
-                                                      context)
-                                                  .isAdult,
-                                          api: Endpoints
-                                              .getMovieCreditsForPerson(
-                                                  widget.cast!.id!),
-                                        ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonTVListWidget(
+                                        Container(
+                                          color: const Color(0xFF202124),
+                                          child: PersonMovieListWidget(
                                             isPersonAdult: widget.cast!.adult!,
                                             includeAdult:
                                                 Provider.of<AdultmodeProvider>(
                                                         context)
                                                     .isAdult,
-                                            api:
-                                                Endpoints.getTVCreditsForPerson(
-                                                    widget.cast!.id!)),
-                                      ),
-                                    ],
-                                    controller: tabController,
+                                            api: Endpoints
+                                                .getMovieCreditsForPerson(
+                                                    widget.cast!.id!),
+                                          ),
+                                        ),
+                                        Container(
+                                          color: const Color(0xFF202124),
+                                          child: PersonTVListWidget(
+                                              isPersonAdult:
+                                                  widget.cast!.adult!,
+                                              includeAdult: Provider.of<
+                                                          AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
+                                              api: Endpoints
+                                                  .getTVCreditsForPerson(
+                                                      widget.cast!.id!)),
+                                        ),
+                                      ],
+                                      controller: tabController,
+                                    ),
                                   ),
                                 ),
                               ],

@@ -302,179 +302,187 @@ class _TVDetailPageState extends State<TVDetailPage>
                                   indicatorSize: TabBarIndicatorSize.tab,
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    physics: const PageScrollPhysics(),
-                                    children: [
-                                      SingleChildScrollView(
-                                        //  physics: const BouncingScrollPhysics(),
-                                        child: Container(
-                                          decoration: const BoxDecoration(
-                                              color: Color(0xFF202124),
-                                              borderRadius: BorderRadius.only(
-                                                  bottomLeft:
-                                                      Radius.circular(8.0),
-                                                  bottomRight:
-                                                      Radius.circular(8.0))),
-                                          child: Column(
-                                            children: <Widget>[
-                                              TVGenreDisplay(
-                                                api: Endpoints.tvDetailsUrl(
-                                                    widget.tvSeries.id!),
-                                              ),
-                                              Row(
-                                                children: const <Widget>[
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 8.0),
-                                                    child: Text(
-                                                      'Overview',
-                                                      style: kTextHeaderStyle,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(1, 0, 1, 3),
+                                    child: TabBarView(
+                                      physics: const PageScrollPhysics(),
+                                      children: [
+                                        SingleChildScrollView(
+                                          //  physics: const BouncingScrollPhysics(),
+                                          child: Container(
+                                            decoration: const BoxDecoration(
+                                                color: Color(0xFF202124),
+                                                borderRadius: BorderRadius.only(
+                                                    bottomLeft:
+                                                        Radius.circular(8.0),
+                                                    bottomRight:
+                                                        Radius.circular(8.0))),
+                                            child: Column(
+                                              children: <Widget>[
+                                                TVGenreDisplay(
+                                                  api: Endpoints.tvDetailsUrl(
+                                                      widget.tvSeries.id!),
+                                                ),
+                                                Row(
+                                                  children: const <Widget>[
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 8.0),
+                                                      child: Text(
+                                                        'Overview',
+                                                        style: kTextHeaderStyle,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: widget.tvSeries.overview!
-                                                            .isEmpty ||
-                                                        widget.tvSeries
-                                                                .overview ==
-                                                            null
-                                                    ? Text(
-                                                        'There is no overview for this TV series :(')
-                                                    : ReadMoreText(
-                                                        widget
-                                                            .tvSeries.overview!,
-                                                        trimLines: 4,
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: widget
+                                                              .tvSeries
+                                                              .overview!
+                                                              .isEmpty ||
+                                                          widget.tvSeries
+                                                                  .overview ==
+                                                              null
+                                                      ? Text(
+                                                          'There is no overview for this TV series :(')
+                                                      : ReadMoreText(
+                                                          widget.tvSeries
+                                                              .overview!,
+                                                          trimLines: 4,
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                          colorClickableText:
+                                                              const Color(
+                                                                  0xFFF57C00),
+                                                          trimMode:
+                                                              TrimMode.Line,
+                                                          trimCollapsedText:
+                                                              'read more',
+                                                          trimExpandedText:
+                                                              'read less',
+                                                          lessStyle:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xFFF57C00),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                          moreStyle:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xFFF57C00),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                        ),
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0,
+                                                              bottom: 4.0),
+                                                      child: Text(
+                                                        widget.tvSeries.firstAirDate ==
+                                                                    null ||
+                                                                widget
+                                                                    .tvSeries
+                                                                    .firstAirDate!
+                                                                    .isEmpty
+                                                            ? 'First episode air date: N/A'
+                                                            : 'First episode air date : ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
                                                         style: const TextStyle(
-                                                            fontFamily:
-                                                                'Poppins'),
-                                                        colorClickableText:
-                                                            const Color(
-                                                                0xFFF57C00),
-                                                        trimMode: TrimMode.Line,
-                                                        trimCollapsedText:
-                                                            'read more',
-                                                        trimExpandedText:
-                                                            'read less',
-                                                        lessStyle:
-                                                            const TextStyle(
-                                                                fontSize: 14,
-                                                                color: Color(
-                                                                    0xFFF57C00),
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                        moreStyle:
-                                                            const TextStyle(
-                                                                fontSize: 14,
-                                                                color: Color(
-                                                                    0xFFF57C00),
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                      ),
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0,
-                                                            bottom: 4.0),
-                                                    child: Text(
-                                                      widget.tvSeries.firstAirDate ==
-                                                                  null ||
-                                                              widget
-                                                                  .tvSeries
-                                                                  .firstAirDate!
-                                                                  .isEmpty
-                                                          ? 'First episode air date: N/A'
-                                                          : 'First episode air date : ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
-                                                      style: const TextStyle(
-                                                        fontFamily: 'PoppinsSB',
+                                                          fontFamily:
+                                                              'PoppinsSB',
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              ScrollingTVArtists(
-                                                api: Endpoints.getTVCreditsUrl(
-                                                    widget.tvSeries.id!),
-                                                title: 'Cast',
-                                              ),
-                                              ScrollingTVCreators(
-                                                api: Endpoints.tvDetailsUrl(
-                                                    widget.tvSeries.id!),
-                                                title: 'Created by',
-                                              ),
-                                              SeasonsList(
-                                                tvId: widget.tvSeries.id!,
-                                                seriesName: widget
-                                                    .tvSeries.originalName!,
-                                                title: 'Seasons',
-                                                api: Endpoints.getTVSeasons(
-                                                    widget.tvSeries.id!),
-                                              ),
-                                              TVImagesDisplay(
-                                                title: 'Images',
-                                                api: Endpoints.getTVImages(
-                                                    widget.tvSeries.id!),
-                                              ),
-                                              TVVideosDisplay(
-                                                api: Endpoints.getTVVideos(
-                                                    widget.tvSeries.id!),
-                                                api2: Endpoints.tvDetailsUrl(
-                                                    widget.tvSeries.id!),
-                                                title: 'Videos',
-                                              ),
-                                              TVSocialLinks(
-                                                api: Endpoints
-                                                    .getExternalLinksForTV(
-                                                        widget.tvSeries.id!),
-                                              ),
-                                              TVInfoTable(
-                                                api: Endpoints.tvDetailsUrl(
-                                                    widget.tvSeries.id!),
-                                              ),
-                                            ],
+                                                  ],
+                                                ),
+                                                ScrollingTVArtists(
+                                                  api:
+                                                      Endpoints.getTVCreditsUrl(
+                                                          widget.tvSeries.id!),
+                                                  title: 'Cast',
+                                                ),
+                                                ScrollingTVCreators(
+                                                  api: Endpoints.tvDetailsUrl(
+                                                      widget.tvSeries.id!),
+                                                  title: 'Created by',
+                                                ),
+                                                SeasonsList(
+                                                  tvId: widget.tvSeries.id!,
+                                                  seriesName: widget
+                                                      .tvSeries.originalName!,
+                                                  title: 'Seasons',
+                                                  api: Endpoints.getTVSeasons(
+                                                      widget.tvSeries.id!),
+                                                ),
+                                                TVImagesDisplay(
+                                                  title: 'Images',
+                                                  api: Endpoints.getTVImages(
+                                                      widget.tvSeries.id!),
+                                                ),
+                                                TVVideosDisplay(
+                                                  api: Endpoints.getTVVideos(
+                                                      widget.tvSeries.id!),
+                                                  api2: Endpoints.tvDetailsUrl(
+                                                      widget.tvSeries.id!),
+                                                  title: 'Videos',
+                                                ),
+                                                TVSocialLinks(
+                                                  api: Endpoints
+                                                      .getExternalLinksForTV(
+                                                          widget.tvSeries.id!),
+                                                ),
+                                                TVInfoTable(
+                                                  api: Endpoints.tvDetailsUrl(
+                                                      widget.tvSeries.id!),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      TVSeasonsTab(
-                                        tvId: widget.tvSeries.id!,
-                                        seriesName:
-                                            widget.tvSeries.originalName!,
-                                        api: Endpoints.getTVSeasons(
-                                            widget.tvSeries.id!),
-                                      ),
-                                      TVCastTab(
-                                        api: Endpoints.getFullTVCreditsUrl(
-                                            widget.tvSeries.id!),
-                                      ),
-                                      TVCrewTab(
-                                        api: Endpoints.getFullTVCreditsUrl(
-                                            widget.tvSeries.id!),
-                                      ),
-                                      TVRecommendationsTab(
-                                          includeAdult:
-                                              Provider.of<AdultmodeProvider>(
-                                                      context)
-                                                  .isAdult,
+                                        TVSeasonsTab(
                                           tvId: widget.tvSeries.id!,
-                                          api: Endpoints.getTVRecommendations(
-                                              widget.tvSeries.id!, 1)),
-                                      SimilarTVTab(
-                                          includeAdult:
-                                              Provider.of<AdultmodeProvider>(
-                                                      context)
-                                                  .isAdult,
-                                          tvId: widget.tvSeries.id!,
-                                          api: Endpoints.getSimilarTV(
-                                              widget.tvSeries.id!, 1)),
-                                    ],
-                                    controller: tabController,
+                                          seriesName:
+                                              widget.tvSeries.originalName!,
+                                          api: Endpoints.getTVSeasons(
+                                              widget.tvSeries.id!),
+                                        ),
+                                        TVCastTab(
+                                          api: Endpoints.getFullTVCreditsUrl(
+                                              widget.tvSeries.id!),
+                                        ),
+                                        TVCrewTab(
+                                          api: Endpoints.getFullTVCreditsUrl(
+                                              widget.tvSeries.id!),
+                                        ),
+                                        TVRecommendationsTab(
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
+                                            tvId: widget.tvSeries.id!,
+                                            api: Endpoints.getTVRecommendations(
+                                                widget.tvSeries.id!, 1)),
+                                        SimilarTVTab(
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
+                                            tvId: widget.tvSeries.id!,
+                                            api: Endpoints.getSimilarTV(
+                                                widget.tvSeries.id!, 1)),
+                                      ],
+                                      controller: tabController,
+                                    ),
                                   ),
                                 ),
                               ],

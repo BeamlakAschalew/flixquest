@@ -179,72 +179,78 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                   indicatorSize: TabBarIndicatorSize.tab,
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    physics: const PageScrollPhysics(),
-                                    children: [
-                                      SingleChildScrollView(
-                                        child: Container(
-                                          color: const Color(0xFF202124),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 10.0,
-                                                    right: 10,
-                                                    top: 10.0),
-                                                child: Column(
-                                                  children: [
-                                                    PersonAboutWidget(
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(1, 0, 1, 3),
+                                    child: TabBarView(
+                                      physics: const PageScrollPhysics(),
+                                      children: [
+                                        SingleChildScrollView(
+                                          child: Container(
+                                            color: const Color(0xFF202124),
+                                            child: Column(
+                                              children: <Widget>[
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10.0,
+                                                          right: 10,
+                                                          top: 10.0),
+                                                  child: Column(
+                                                    children: [
+                                                      PersonAboutWidget(
+                                                          api: Endpoints
+                                                              .getPersonDetails(
+                                                                  widget.crew!
+                                                                      .id!)),
+                                                      PersonSocialLinks(
                                                         api: Endpoints
-                                                            .getPersonDetails(
-                                                                widget.crew!
-                                                                    .id!)),
-                                                    PersonSocialLinks(
-                                                      api: Endpoints
-                                                          .getExternalLinksForPerson(
-                                                              widget.crew!.id!),
-                                                    ),
-                                                    PersonImagesDisplay(
-                                                      api: Endpoints
-                                                          .getPersonImages(
-                                                        widget.crew!.id!,
+                                                            .getExternalLinksForPerson(
+                                                                widget
+                                                                    .crew!.id!),
                                                       ),
-                                                      title: 'Images',
-                                                    ),
-                                                  ],
+                                                      PersonImagesDisplay(
+                                                        api: Endpoints
+                                                            .getPersonImages(
+                                                          widget.crew!.id!,
+                                                        ),
+                                                        title: 'Images',
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonMovieListWidget(
-                                          includeAdult:
-                                              Provider.of<AdultmodeProvider>(
-                                                      context)
-                                                  .isAdult,
-                                          isPersonAdult: widget.crew!.adult!,
-                                          api: Endpoints
-                                              .getMovieCreditsForPerson(
-                                                  widget.crew!.id!),
-                                        ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonTVListWidget(
-                                            isPersonAdult: widget.crew!.adult!,
+                                        Container(
+                                          color: const Color(0xFF202124),
+                                          child: PersonMovieListWidget(
                                             includeAdult:
                                                 Provider.of<AdultmodeProvider>(
                                                         context)
                                                     .isAdult,
-                                            api:
-                                                Endpoints.getTVCreditsForPerson(
-                                                    widget.crew!.id!)),
-                                      ),
-                                    ],
-                                    controller: tabController,
+                                            isPersonAdult: widget.crew!.adult!,
+                                            api: Endpoints
+                                                .getMovieCreditsForPerson(
+                                                    widget.crew!.id!),
+                                          ),
+                                        ),
+                                        Container(
+                                          color: const Color(0xFF202124),
+                                          child: PersonTVListWidget(
+                                              isPersonAdult:
+                                                  widget.crew!.adult!,
+                                              includeAdult: Provider.of<
+                                                          AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
+                                              api: Endpoints
+                                                  .getTVCreditsForPerson(
+                                                      widget.crew!.id!)),
+                                        ),
+                                      ],
+                                      controller: tabController,
+                                    ),
                                   ),
                                 ),
                               ],

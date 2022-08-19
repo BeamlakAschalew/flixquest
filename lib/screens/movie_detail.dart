@@ -316,168 +316,178 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                   indicatorSize: TabBarIndicatorSize.tab,
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    physics: const PageScrollPhysics(),
-                                    children: [
-                                      SingleChildScrollView(
-                                        // physics: const BouncingScrollPhysics(),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              color: isDark
-                                                  ? Color(0xFF202124)
-                                                  : Color(0xFFFFFFFF),
-                                              borderRadius: BorderRadius.only(
-                                                  bottomLeft:
-                                                      Radius.circular(8.0),
-                                                  bottomRight:
-                                                      Radius.circular(8.0))),
-                                          child: Column(
-                                            children: <Widget>[
-                                              GenreDisplay(
-                                                api: Endpoints.movieDetailsUrl(
-                                                    widget.movie.id!),
-                                              ),
-                                              Row(
-                                                children: const <Widget>[
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 8.0),
-                                                    child: Text(
-                                                      'Overview',
-                                                      style: kTextHeaderStyle,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(1, 0, 1, 3),
+                                    child: TabBarView(
+                                      physics: const PageScrollPhysics(),
+                                      children: [
+                                        SingleChildScrollView(
+                                          // physics: const BouncingScrollPhysics(),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? Color(0xFF202124)
+                                                    : Color(0xFFFFFFFF),
+                                                borderRadius: BorderRadius.only(
+                                                    bottomLeft:
+                                                        Radius.circular(8.0),
+                                                    bottomRight:
+                                                        Radius.circular(8.0))),
+                                            child: Column(
+                                              children: <Widget>[
+                                                GenreDisplay(
+                                                  api:
+                                                      Endpoints.movieDetailsUrl(
+                                                          widget.movie.id!),
+                                                ),
+                                                Row(
+                                                  children: const <Widget>[
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 8.0),
+                                                      child: Text(
+                                                        'Overview',
+                                                        style: kTextHeaderStyle,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: widget
-                                                        .movie.overview!.isEmpty
-                                                    ? const Text(
-                                                        'There is no overview for this movie')
-                                                    : ReadMoreText(
-                                                        widget.movie.overview!,
-                                                        trimLines: 4,
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: widget.movie.overview!
+                                                          .isEmpty
+                                                      ? const Text(
+                                                          'There is no overview for this movie')
+                                                      : ReadMoreText(
+                                                          widget
+                                                              .movie.overview!,
+                                                          trimLines: 4,
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                          colorClickableText:
+                                                              const Color(
+                                                                  0xFFF57C00),
+                                                          trimMode:
+                                                              TrimMode.Line,
+                                                          trimCollapsedText:
+                                                              'read more',
+                                                          trimExpandedText:
+                                                              'read less',
+                                                          lessStyle:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xFFF57C00),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                          moreStyle:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xFFF57C00),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                        ),
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0,
+                                                              bottom: 4.0),
+                                                      child: Text(
+                                                        widget.movie.releaseDate ==
+                                                                    null ||
+                                                                widget
+                                                                    .movie
+                                                                    .releaseDate!
+                                                                    .isEmpty
+                                                            ? 'Release date: N/A'
+                                                            : 'Release date : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
                                                         style: const TextStyle(
                                                             fontFamily:
-                                                                'Poppins'),
-                                                        colorClickableText:
-                                                            const Color(
-                                                                0xFFF57C00),
-                                                        trimMode: TrimMode.Line,
-                                                        trimCollapsedText:
-                                                            'read more',
-                                                        trimExpandedText:
-                                                            'read less',
-                                                        lessStyle:
-                                                            const TextStyle(
-                                                                fontSize: 14,
-                                                                color: Color(
-                                                                    0xFFF57C00),
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                        moreStyle:
-                                                            const TextStyle(
-                                                                fontSize: 14,
-                                                                color: Color(
-                                                                    0xFFF57C00),
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
+                                                                'PoppinsSB'),
                                                       ),
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0,
-                                                            bottom: 4.0),
-                                                    child: Text(
-                                                      widget.movie.releaseDate ==
-                                                                  null ||
-                                                              widget
-                                                                  .movie
-                                                                  .releaseDate!
-                                                                  .isEmpty
-                                                          ? 'Release date: N/A'
-                                                          : 'Release date : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
-                                                      style: const TextStyle(
-                                                          fontFamily:
-                                                              'PoppinsSB'),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              WatchNowButton(
-                                                movieId: widget.movie.id,
-                                                movieName:
-                                                    widget.movie.originalTitle,
-                                                api: Endpoints.movieDetailsUrl(
-                                                    widget.movie.id!),
-                                              ),
-                                              ScrollingArtists(
-                                                api: Endpoints.getCreditsUrl(
-                                                    widget.movie.id!),
-                                                title: 'Cast',
-                                              ),
-                                              MovieImagesDisplay(
-                                                title: 'Images',
-                                                api: Endpoints.getImages(
-                                                    widget.movie.id!),
-                                              ),
-                                              MovieVideosDisplay(
-                                                api: Endpoints.getVideos(
-                                                    widget.movie.id!),
-                                                title: 'Videos',
-                                              ),
-                                              MovieSocialLinks(
-                                                api: Endpoints
-                                                    .getExternalLinksForMovie(
-                                                  widget.movie.id!,
+                                                  ],
                                                 ),
-                                              ),
-                                              BelongsToCollectionWidget(
-                                                api: Endpoints.movieDetailsUrl(
-                                                    widget.movie.id!),
-                                              ),
-                                              MovieInfoTable(
-                                                api: Endpoints.movieDetailsUrl(
-                                                    widget.movie.id!),
-                                              ),
-                                            ],
+                                                WatchNowButton(
+                                                  movieId: widget.movie.id,
+                                                  movieName: widget
+                                                      .movie.originalTitle,
+                                                  api:
+                                                      Endpoints.movieDetailsUrl(
+                                                          widget.movie.id!),
+                                                ),
+                                                ScrollingArtists(
+                                                  api: Endpoints.getCreditsUrl(
+                                                      widget.movie.id!),
+                                                  title: 'Cast',
+                                                ),
+                                                MovieImagesDisplay(
+                                                  title: 'Images',
+                                                  api: Endpoints.getImages(
+                                                      widget.movie.id!),
+                                                ),
+                                                MovieVideosDisplay(
+                                                  api: Endpoints.getVideos(
+                                                      widget.movie.id!),
+                                                  title: 'Videos',
+                                                ),
+                                                MovieSocialLinks(
+                                                  api: Endpoints
+                                                      .getExternalLinksForMovie(
+                                                    widget.movie.id!,
+                                                  ),
+                                                ),
+                                                BelongsToCollectionWidget(
+                                                  api:
+                                                      Endpoints.movieDetailsUrl(
+                                                          widget.movie.id!),
+                                                ),
+                                                MovieInfoTable(
+                                                  api:
+                                                      Endpoints.movieDetailsUrl(
+                                                          widget.movie.id!),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      CastTab(
-                                        api: Endpoints.getCreditsUrl(
-                                            widget.movie.id!),
-                                      ),
-                                      CrewTab(
-                                        api: Endpoints.getCreditsUrl(
-                                            widget.movie.id!),
-                                      ),
-                                      MovieRecommendationsTab(
-                                        includeAdult:
-                                            Provider.of<AdultmodeProvider>(
-                                                    context)
-                                                .isAdult,
-                                        api: Endpoints.getMovieRecommendations(
-                                            widget.movie.id!, 1),
-                                        movieId: widget.movie.id!,
-                                      ),
-                                      SimilarMoviesTab(
+                                        CastTab(
+                                          api: Endpoints.getCreditsUrl(
+                                              widget.movie.id!),
+                                        ),
+                                        CrewTab(
+                                          api: Endpoints.getCreditsUrl(
+                                              widget.movie.id!),
+                                        ),
+                                        MovieRecommendationsTab(
                                           includeAdult:
                                               Provider.of<AdultmodeProvider>(
                                                       context)
                                                   .isAdult,
+                                          api:
+                                              Endpoints.getMovieRecommendations(
+                                                  widget.movie.id!, 1),
                                           movieId: widget.movie.id!,
-                                          api: Endpoints.getSimilarMovies(
-                                              widget.movie.id!, 1)),
-                                    ],
-                                    controller: tabController,
+                                        ),
+                                        SimilarMoviesTab(
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
+                                            movieId: widget.movie.id!,
+                                            api: Endpoints.getSimilarMovies(
+                                                widget.movie.id!, 1)),
+                                      ],
+                                      controller: tabController,
+                                    ),
                                   ),
                                 ),
                               ],

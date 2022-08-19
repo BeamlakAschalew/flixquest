@@ -639,6 +639,7 @@ class _MovieSocialLinksState extends State<MovieSocialLinks> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -667,55 +668,63 @@ class _MovieSocialLinksState extends State<MovieSocialLinks> {
                             textAlign: TextAlign.center,
                           ),
                         )
-                      : ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            SocialIconWidget(
-                              isNull: externalLinks?.facebookUsername == null,
-                              url: externalLinks?.facebookUsername == null
-                                  ? ''
-                                  : FACEBOOK_BASE_URL +
-                                      externalLinks!.facebookUsername!,
-                              icon: const Icon(
-                                SocialIcons.facebook_f,
-                                color: Color(0xFFF57C00),
-                              ),
-                            ),
-                            SocialIconWidget(
-                              isNull: externalLinks?.instagramUsername == null,
-                              url: externalLinks?.instagramUsername == null
-                                  ? ''
-                                  : INSTAGRAM_BASE_URL +
-                                      externalLinks!.instagramUsername!,
-                              icon: const Icon(
-                                SocialIcons.instagram,
-                                color: Color(0xFFF57C00),
-                              ),
-                            ),
-                            SocialIconWidget(
-                              isNull: externalLinks?.twitterUsername == null,
-                              url: externalLinks?.twitterUsername == null
-                                  ? ''
-                                  : TWITTER_BASE_URL +
-                                      externalLinks!.twitterUsername!,
-                              icon: const Icon(
-                                SocialIcons.twitter,
-                                color: Color(0xFFF57C00),
-                              ),
-                            ),
-                            SocialIconWidget(
-                              isNull: externalLinks?.imdbId == null,
-                              url: externalLinks?.imdbId == null
-                                  ? ''
-                                  : IMDB_BASE_URL + externalLinks!.imdbId!,
-                              icon: const Center(
-                                child: FaIcon(
-                                  FontAwesomeIcons.imdb,
-                                  size: 30,
+                      : Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color:
+                                isDark ? Colors.transparent : Color(0xFFDFDEDE),
+                          ),
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              SocialIconWidget(
+                                isNull: externalLinks?.facebookUsername == null,
+                                url: externalLinks?.facebookUsername == null
+                                    ? ''
+                                    : FACEBOOK_BASE_URL +
+                                        externalLinks!.facebookUsername!,
+                                icon: const Icon(
+                                  SocialIcons.facebook_f,
+                                  color: Color(0xFFF57C00),
                                 ),
                               ),
-                            ),
-                          ],
+                              SocialIconWidget(
+                                isNull:
+                                    externalLinks?.instagramUsername == null,
+                                url: externalLinks?.instagramUsername == null
+                                    ? ''
+                                    : INSTAGRAM_BASE_URL +
+                                        externalLinks!.instagramUsername!,
+                                icon: const Icon(
+                                  SocialIcons.instagram,
+                                  color: Color(0xFFF57C00),
+                                ),
+                              ),
+                              SocialIconWidget(
+                                isNull: externalLinks?.twitterUsername == null,
+                                url: externalLinks?.twitterUsername == null
+                                    ? ''
+                                    : TWITTER_BASE_URL +
+                                        externalLinks!.twitterUsername!,
+                                icon: const Icon(
+                                  SocialIcons.twitter,
+                                  color: Color(0xFFF57C00),
+                                ),
+                              ),
+                              SocialIconWidget(
+                                isNull: externalLinks?.imdbId == null,
+                                url: externalLinks?.imdbId == null
+                                    ? ''
+                                    : IMDB_BASE_URL + externalLinks!.imdbId!,
+                                icon: const Center(
+                                  child: FaIcon(
+                                    FontAwesomeIcons.imdb,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
             ),
           ],
@@ -784,7 +793,7 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                               'Belongs to the ${belongsToCollection!.name!}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(
-                                  backgroundColor: Colors.black38),
+                                  backgroundColor: Color(0xFFF57C00)),
                             ),
                           ),
                         ),
@@ -1703,100 +1712,104 @@ class _CastTabState extends State<CastTab>
                 color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
             : Container(
+                width: 100,
+                height: 100,
+                child: Center(child: Text('heyy')),
                 color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: ListView.builder(
-                    itemCount: credits!.cast!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          mixpanel
-                              .track('Most viewed person pages', properties: {
-                            'Person name': '${credits!.cast![index].name}',
-                            'Person id': '${credits!.cast![index].id}'
-                          });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CastDetailPage(
-                                cast: credits!.cast![index],
-                                heroId: '${credits!.cast![index].name}');
-                          }));
-                        },
-                        child: Container(
-                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 0.0,
-                              bottom: 15.0,
-                              left: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  // crossAxisAlignment:
-                                  //     CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 20.0, left: 10),
-                                      child: SizedBox(
-                                        width: 80,
-                                        height: 80,
-                                        child: Hero(
-                                          tag: '${credits!.cast![index].name}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            child: credits!.cast![index]
-                                                        .profilePath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_square.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : FadeInImage(
-                                                    image: NetworkImage(
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
-                                                            credits!
-                                                                .cast![index]
-                                                                .profilePath!),
-                                                    fit: BoxFit.cover,
-                                                    placeholder: const AssetImage(
-                                                        'assets/images/loading.gif'),
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                      // child: Text(tvDetails!
-                                      //     .seasons![index].seasonNumber
-                                      //     .toString()),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            credits!.cast![index].name!,
-                                            style: const TextStyle(
-                                                fontFamily: 'PoppinsSB'),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            'As : '
-                                            '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }));
+                // child: ListView.builder(
+                //     itemCount: credits!.cast!.length,
+                //     itemBuilder: (BuildContext context, int index) {
+                //       return GestureDetector(
+                //         onTap: () {
+                //           mixpanel
+                //               .track('Most viewed person pages', properties: {
+                //             'Person name': '${credits!.cast![index].name}',
+                //             'Person id': '${credits!.cast![index].id}'
+                //           });
+                //           Navigator.push(context,
+                //               MaterialPageRoute(builder: (context) {
+                //             return CastDetailPage(
+                //                 cast: credits!.cast![index],
+                //                 heroId: '${credits!.cast![index].name}');
+                //           }));
+                //         },
+                //         child: Container(
+                //           color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                //           child: Padding(
+                //             padding: const EdgeInsets.only(
+                //               top: 0.0,
+                //               bottom: 15.0,
+                //               left: 10,
+                //             ),
+                //             child: Column(
+                //               children: [
+                //                 Row(
+                //                   // crossAxisAlignment:
+                //                   //     CrossAxisAlignment.start,
+                //                   children: [
+                //                     Padding(
+                //                       padding: const EdgeInsets.only(
+                //                           right: 20.0, left: 10),
+                //                       child: SizedBox(
+                //                         width: 80,
+                //                         height: 80,
+                //                         child: Hero(
+                //                           tag: '${credits!.cast![index].name}',
+                //                           child: ClipRRect(
+                //                             borderRadius:
+                //                                 BorderRadius.circular(100.0),
+                //                             child: credits!.cast![index]
+                //                                         .profilePath ==
+                //                                     null
+                //                                 ? Image.asset(
+                //                                     'assets/images/na_square.png',
+                //                                     fit: BoxFit.cover,
+                //                                   )
+                //                                 : FadeInImage(
+                //                                     image: NetworkImage(
+                //                                         TMDB_BASE_IMAGE_URL +
+                //                                             'w500/' +
+                //                                             credits!
+                //                                                 .cast![index]
+                //                                                 .profilePath!),
+                //                                     fit: BoxFit.cover,
+                //                                     placeholder: const AssetImage(
+                //                                         'assets/images/loading.gif'),
+                //                                   ),
+                //                           ),
+                //                         ),
+                //                       ),
+                //                       // child: Text(tvDetails!
+                //                       //     .seasons![index].seasonNumber
+                //                       //     .toString()),
+                //                     ),
+                //                     Expanded(
+                //                       child: Column(
+                //                         crossAxisAlignment:
+                //                             CrossAxisAlignment.start,
+                //                         children: [
+                //                           Text(
+                //                             credits!.cast![index].name!,
+                //                             style: const TextStyle(
+                //                                 fontFamily: 'PoppinsSB'),
+                //                             overflow: TextOverflow.ellipsis,
+                //                           ),
+                //                           Text(
+                //                             'As : '
+                //                             '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
+                //                           ),
+                //                         ],
+                //                       ),
+                //                     )
+                //                   ],
+                //                 ),
+                //               ],
+                //             ),
+                //           ),
+                //         ),
+                //       );
+                //     }));
+              );
   }
 
   @override
@@ -3193,33 +3206,53 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return watchProviders == null
         ? const Center(child: CircularProgressIndicator())
         : Container(
             child: Column(
               children: [
-                TabBar(
-                  controller: tabController,
-                  isScrollable: true,
-                  indicatorColor: const Color(0xFFF57C00),
-                  indicatorWeight: 3,
-                  unselectedLabelColor: Colors.white54,
-                  labelColor: Colors.white,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  tabs: const [
-                    Tab(
-                      child: Text('Buy'),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
+                  ),
+                  child: Center(
+                    child: TabBar(
+                      controller: tabController,
+                      isScrollable: true,
+                      indicatorColor: const Color(0xFFF57C00),
+                      indicatorWeight: 3,
+                      unselectedLabelColor: Colors.white54,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      tabs: [
+                        Tab(
+                          child: Text('Buy',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Stream',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Rent',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Free',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        )
+                      ],
                     ),
-                    Tab(
-                      child: Text('Stream'),
-                    ),
-                    Tab(
-                      child: Text('Rent'),
-                    ),
-                    Tab(
-                      child: Text('Free'),
-                    )
-                  ],
+                  ),
                 ),
                 Expanded(
                   child: TabBarView(

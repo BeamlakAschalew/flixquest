@@ -36,7 +36,7 @@ class _SettingsState extends State<Settings> {
               activeColor: const Color(0xFFF57C00),
               value: themeChange.darktheme,
               secondary: const Icon(Icons.dark_mode),
-              title: const Text('Dark theme'),
+              title: const Text('Dark mode'),
               onChanged: (bool value) {
                 setState(() {
                   themeChange.darktheme = value;
