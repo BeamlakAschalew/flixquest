@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cinemax/provider/adultmode_provider.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/api/endpoints.dart';
@@ -36,6 +37,7 @@ class _CastDetailPageState extends State<CastDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -122,7 +124,8 @@ class _CastDetailPageState extends State<CastDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF2b2c30),
+                            color:
+                                isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
@@ -145,9 +148,11 @@ class _CastDetailPageState extends State<CastDetailPage>
                                       ),
                                       Text(
                                         '${widget.cast!.department}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                             fontSize: 15,
-                                            color: Colors.white54),
+                                            color: isDark
+                                                ? Colors.white54
+                                                : Colors.black54),
                                       ),
                                     ],
                                   ),
@@ -158,21 +163,30 @@ class _CastDetailPageState extends State<CastDetailPage>
                                   indicatorWeight: 3,
                                   unselectedLabelColor: Colors.white54,
                                   labelColor: Colors.white,
-                                  tabs: const [
+                                  tabs: [
                                     Tab(
                                       child: Text('About',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Movies',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('TV Shows',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                   ],
                                   controller: tabController,
@@ -180,7 +194,8 @@ class _CastDetailPageState extends State<CastDetailPage>
                                 ),
                                 Expanded(
                                   child: Padding(
-                                    padding: EdgeInsets.fromLTRB(1, 0, 1, 3),
+                                    padding:
+                                        EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
                                       children: [
@@ -191,7 +206,9 @@ class _CastDetailPageState extends State<CastDetailPage>
                                         // ),
                                         SingleChildScrollView(
                                           child: Container(
-                                            color: const Color(0xFF202124),
+                                            color: isDark
+                                                ? Color(0xFF202124)
+                                                : Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
                                                 Padding(
@@ -228,7 +245,9 @@ class _CastDetailPageState extends State<CastDetailPage>
                                           ),
                                         ),
                                         Container(
-                                          color: const Color(0xFF202124),
+                                          color: isDark
+                                              ? Color(0xFF202124)
+                                              : Color(0xFFFFFFFF),
                                           child: PersonMovieListWidget(
                                             isPersonAdult: widget.cast!.adult!,
                                             includeAdult:
@@ -241,7 +260,9 @@ class _CastDetailPageState extends State<CastDetailPage>
                                           ),
                                         ),
                                         Container(
-                                          color: const Color(0xFF202124),
+                                          color: isDark
+                                              ? Color(0xFF202124)
+                                              : Color(0xFFFFFFFF),
                                           child: PersonTVListWidget(
                                               isPersonAdult:
                                                   widget.cast!.adult!,

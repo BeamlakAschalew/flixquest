@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
 import 'package:provider/provider.dart';
+import '../provider/darktheme_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
@@ -1760,9 +1761,10 @@ class _TVCastTabState extends State<TVCastTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return credits == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -1773,10 +1775,10 @@ class _TVCastTabState extends State<TVCastTab>
                   child:
                       Text('There is no data available for this TV show cast'),
                 ),
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: ListView.builder(
                     itemCount: credits!.cast!.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -1795,7 +1797,7 @@ class _TVCastTabState extends State<TVCastTab>
                           }));
                         },
                         child: Container(
-                          color: const Color(0xFF202124),
+                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -1921,23 +1923,24 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
     return tvDetails == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           )
         : tvDetails!.seasons!.isEmpty
             ? Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text('There is no season available for this TV show'),
                 ),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: ListView.builder(
                     itemCount: tvDetails!.seasons!.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -1961,7 +1964,7 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                                           '${tvDetails!.seasons![index].seasonId}')));
                         },
                         child: Container(
-                          color: const Color(0xFF202124),
+                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -2029,8 +2032,10 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                                     )
                                   ],
                                 ),
-                                const Divider(
-                                  color: Colors.white,
+                                Divider(
+                                  color: !isDark
+                                      ? Color(0xFF202124)
+                                      : Color(0xFFFFFFFF),
                                   thickness: 1,
                                   endIndent: 20,
                                   indent: 10,
@@ -2077,9 +2082,10 @@ class _TVCrewTabState extends State<TVCrewTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return credits == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -2090,10 +2096,10 @@ class _TVCrewTabState extends State<TVCrewTab>
                   child:
                       Text('There is no data available for this TV show cast'),
                 ),
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: ListView.builder(
                     itemCount: credits!.crew!.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -2112,7 +2118,7 @@ class _TVCrewTabState extends State<TVCrewTab>
                           }));
                         },
                         child: Container(
-                          color: const Color(0xFF202124),
+                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -2262,23 +2268,27 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return tvList == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           )
         : tvList!.isEmpty
             ? Container(
-                color: const Color(0xFF202124),
-                child: const Center(
-                  child: Text(
-                      'There is no recommendations available for this TV show'),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Center(
+                    child: Text(
+                        'There is no recommendations available for this TV show'),
+                  ),
                 ),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: Column(
                   children: [
                     Expanded(
@@ -2304,7 +2314,9 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                 }));
                               },
                               child: Container(
-                                color: const Color(0xFF202124),
+                                color: isDark
+                                    ? Color(0xFF202124)
+                                    : Color(0xFFFFFFFF),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     top: 0.0,
@@ -2384,8 +2396,10 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                           )
                                         ],
                                       ),
-                                      const Divider(
-                                        color: Colors.white,
+                                      Divider(
+                                        color: !isDark
+                                            ? Color(0xFF202124)
+                                            : Color(0xFFFFFFFF),
                                         thickness: 1,
                                         endIndent: 20,
                                         indent: 10,
@@ -2480,23 +2494,24 @@ class _SimilarTVTabState extends State<SimilarTVTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return tvList == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           )
         : tvList!.isEmpty
             ? Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: const Center(
                   child:
                       Text('There are no similars available for this TV show'),
                 ),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: Column(
                   children: [
                     Expanded(
@@ -2522,7 +2537,9 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                 }));
                               },
                               child: Container(
-                                color: const Color(0xFF202124),
+                                color: isDark
+                                    ? Color(0xFF202124)
+                                    : Color(0xFFFFFFFF),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     top: 0.0,
@@ -2602,8 +2619,10 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                           )
                                         ],
                                       ),
-                                      const Divider(
-                                        color: Colors.white,
+                                      Divider(
+                                        color: !isDark
+                                            ? Color(0xFF202124)
+                                            : Color(0xFFFFFFFF),
                                         thickness: 1,
                                         endIndent: 20,
                                         indent: 10,
@@ -2653,6 +2672,7 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Container(
         child: SizedBox(
       height: genres == null || genres!.isEmpty ? 0 : 80,
@@ -2688,7 +2708,8 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
                         style: const TextStyle(fontFamily: 'Poppins'),
                         // style: widget.themeData.textTheme.bodyText1,
                       ),
-                      backgroundColor: Colors.transparent,
+                      backgroundColor:
+                          isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
                     ),
                   ),
                 );
@@ -2769,22 +2790,23 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return tvList == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           )
         : tvList!.isEmpty
             ? Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text('Oops! movies for this genre doesn\'t exist :('),
                 ),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: Column(
                   children: [
                     Expanded(
@@ -2812,7 +2834,9 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                   }));
                                 },
                                 child: Container(
-                                  color: const Color(0xFF202124),
+                                  color: isDark
+                                      ? Color(0xFF202124)
+                                      : Color(0xFFFFFFFF),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                       top: 0.0,
@@ -2925,8 +2949,10 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                             )
                                           ],
                                         ),
-                                        const Divider(
-                                          color: Colors.white,
+                                        Divider(
+                                          color: !isDark
+                                              ? Color(0xFF202124)
+                                              : Color(0xFFFFFFFF),
                                           thickness: 1,
                                           endIndent: 20,
                                           indent: 10,
@@ -3149,6 +3175,7 @@ class _TVSocialLinksState extends State<TVSocialLinks> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -3177,55 +3204,63 @@ class _TVSocialLinksState extends State<TVSocialLinks> {
                             textAlign: TextAlign.center,
                           ),
                         )
-                      : ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            SocialIconWidget(
-                              isNull: externalLinks?.facebookUsername == null,
-                              url: externalLinks?.facebookUsername == null
-                                  ? ''
-                                  : FACEBOOK_BASE_URL +
-                                      externalLinks!.facebookUsername!,
-                              icon: const Icon(
-                                SocialIcons.facebook_f,
-                                color: Color(0xFFF57C00),
-                              ),
-                            ),
-                            SocialIconWidget(
-                              isNull: externalLinks?.instagramUsername == null,
-                              url: externalLinks?.instagramUsername == null
-                                  ? ''
-                                  : INSTAGRAM_BASE_URL +
-                                      externalLinks!.instagramUsername!,
-                              icon: const Icon(
-                                SocialIcons.instagram,
-                                color: Color(0xFFF57C00),
-                              ),
-                            ),
-                            SocialIconWidget(
-                              isNull: externalLinks?.twitterUsername == null,
-                              url: externalLinks?.twitterUsername == null
-                                  ? ''
-                                  : TWITTER_BASE_URL +
-                                      externalLinks!.twitterUsername!,
-                              icon: const Icon(
-                                SocialIcons.twitter,
-                                color: Color(0xFFF57C00),
-                              ),
-                            ),
-                            SocialIconWidget(
-                              isNull: externalLinks?.imdbId == null,
-                              url: externalLinks?.imdbId == null
-                                  ? ''
-                                  : IMDB_BASE_URL + externalLinks!.imdbId!,
-                              icon: const Center(
-                                child: FaIcon(
-                                  FontAwesomeIcons.imdb,
-                                  size: 30,
+                      : Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color:
+                                isDark ? Colors.transparent : Color(0xFFDFDEDE),
+                          ),
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              SocialIconWidget(
+                                isNull: externalLinks?.facebookUsername == null,
+                                url: externalLinks?.facebookUsername == null
+                                    ? ''
+                                    : FACEBOOK_BASE_URL +
+                                        externalLinks!.facebookUsername!,
+                                icon: const Icon(
+                                  SocialIcons.facebook_f,
+                                  color: Color(0xFFF57C00),
                                 ),
                               ),
-                            ),
-                          ],
+                              SocialIconWidget(
+                                isNull:
+                                    externalLinks?.instagramUsername == null,
+                                url: externalLinks?.instagramUsername == null
+                                    ? ''
+                                    : INSTAGRAM_BASE_URL +
+                                        externalLinks!.instagramUsername!,
+                                icon: const Icon(
+                                  SocialIcons.instagram,
+                                  color: Color(0xFFF57C00),
+                                ),
+                              ),
+                              SocialIconWidget(
+                                isNull: externalLinks?.twitterUsername == null,
+                                url: externalLinks?.twitterUsername == null
+                                    ? ''
+                                    : TWITTER_BASE_URL +
+                                        externalLinks!.twitterUsername!,
+                                icon: const Icon(
+                                  SocialIcons.twitter,
+                                  color: Color(0xFFF57C00),
+                                ),
+                              ),
+                              SocialIconWidget(
+                                isNull: externalLinks?.imdbId == null,
+                                url: externalLinks?.imdbId == null
+                                    ? ''
+                                    : IMDB_BASE_URL + externalLinks!.imdbId!,
+                                icon: const Center(
+                                  child: FaIcon(
+                                    FontAwesomeIcons.imdb,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
             ),
           ],
@@ -3580,36 +3615,60 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return watchProviders == null
         ? const Center(child: CircularProgressIndicator())
         : Container(
             child: Column(
               children: [
-                TabBar(
-                  controller: tabController,
-                  isScrollable: true,
-                  indicatorColor: const Color(0xFFF57C00),
-                  indicatorWeight: 3,
-                  unselectedLabelColor: Colors.white54,
-                  labelColor: Colors.white,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  tabs: const [
-                    Tab(
-                      child: Text('Buy'),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
+                  ),
+                  child: Center(
+                    child: TabBar(
+                      controller: tabController,
+                      isScrollable: true,
+                      indicatorColor: const Color(0xFFF57C00),
+                      indicatorWeight: 3,
+                      unselectedLabelColor: Colors.white54,
+                      labelColor: Colors.white,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      tabs: [
+                        Tab(
+                          child: Text('Buy',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Stream',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('ADS',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Rent',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Free',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                      ],
                     ),
-                    Tab(
-                      child: Text('Stream'),
-                    ),
-                    Tab(
-                      child: Text('ADS'),
-                    ),
-                    Tab(
-                      child: Text('Rent'),
-                    ),
-                    Tab(
-                      child: Text('Free'),
-                    ),
-                  ],
+                  ),
                 ),
                 Expanded(
                   child: TabBarView(
@@ -4009,7 +4068,8 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
                                     width: 125,
                                     alignment: Alignment.center,
                                     child: Text(genreList![index].genreName!,
-                                        textAlign: TextAlign.center),
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.white)),
                                     decoration: BoxDecoration(
                                         color: const Color(0xFFF57C00),
                                         borderRadius:
@@ -4164,7 +4224,7 @@ class TVStreamingServicesWidget extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child: Text(title),
+                child: Text(title, style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -4245,23 +4305,24 @@ class _ParticularStreamingServiceTVShowsState
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return tvList == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           )
         : tvList!.isEmpty
             ? Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text(
                       'Oops! TV shows for this watch provider doesn\'t exist :('),
                 ),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: Column(
                   children: [
                     Expanded(
@@ -4289,7 +4350,9 @@ class _ParticularStreamingServiceTVShowsState
                                   }));
                                 },
                                 child: Container(
-                                  color: const Color(0xFF202124),
+                                  color: isDark
+                                      ? Color(0xFF202124)
+                                      : Color(0xFFFFFFFF),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                       top: 0.0,
@@ -4402,8 +4465,10 @@ class _ParticularStreamingServiceTVShowsState
                                             )
                                           ],
                                         ),
-                                        const Divider(
-                                          color: Colors.white,
+                                        Divider(
+                                          color: !isDark
+                                              ? Color(0xFF202124)
+                                              : Color(0xFFFFFFFF),
                                           thickness: 1,
                                           endIndent: 20,
                                           indent: 10,

@@ -3073,8 +3073,11 @@ class _GenreListGridState extends State<GenreListGrid>
                                   child: Container(
                                     width: 125,
                                     alignment: Alignment.center,
-                                    child: Text(genreList![index].genreName!,
-                                        style: TextStyle(color: Colors.white)),
+                                    child: Text(
+                                      genreList![index].genreName!,
+                                      style: TextStyle(color: Colors.white),
+                                      textAlign: TextAlign.center,
+                                    ),
                                     decoration: BoxDecoration(
                                         color: const Color(0xFFF57C00),
                                         borderRadius:

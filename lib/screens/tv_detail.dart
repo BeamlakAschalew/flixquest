@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 
 import '../constants/app_constants.dart';
+import '../provider/darktheme_provider.dart';
 import '/models/tv.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class _TVDetailPageState extends State<TVDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -119,7 +121,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50.0),
-                        color: Colors.black38),
+                        color: isDark ? Colors.black38 : Colors.white38),
                     child: IconButton(
                       icon: const Icon(
                         Icons.arrow_back,
@@ -158,7 +160,8 @@ class _TVDetailPageState extends State<TVDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF2b2c30),
+                            color:
+                                isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
                             child: Column(
                               children: <Widget>[
                                 Padding(
@@ -266,36 +269,54 @@ class _TVDetailPageState extends State<TVDetailPage>
                                   indicatorWeight: 3,
                                   unselectedLabelColor: Colors.white54,
                                   labelColor: Colors.white,
-                                  tabs: const [
+                                  tabs: [
                                     Tab(
                                       child: Text('About',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Seasons',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Cast',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Crew',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Recommendations',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Similar',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                   ],
                                   controller: tabController,
@@ -303,15 +324,18 @@ class _TVDetailPageState extends State<TVDetailPage>
                                 ),
                                 Expanded(
                                   child: Padding(
-                                    padding: EdgeInsets.fromLTRB(1, 0, 1, 3),
+                                    padding:
+                                        EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
                                       children: [
                                         SingleChildScrollView(
                                           //  physics: const BouncingScrollPhysics(),
                                           child: Container(
-                                            decoration: const BoxDecoration(
-                                                color: Color(0xFF202124),
+                                            decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? Color(0xFF202124)
+                                                    : Color(0xFFFFFFFF),
                                                 borderRadius: BorderRadius.only(
                                                     bottomLeft:
                                                         Radius.circular(8.0),

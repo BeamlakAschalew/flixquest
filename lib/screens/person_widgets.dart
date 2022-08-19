@@ -1,5 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:provider/provider.dart';
+
+import '../provider/darktheme_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/function.dart';
 import '/models/images.dart';
@@ -497,15 +500,17 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return personDetails == null
         ? const CircularProgressIndicator()
         : Column(
             children: [
               Row(
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'Age',
-                    style: TextStyle(color: Colors.white54),
+                    style: TextStyle(
+                        color: isDark ? Colors.white54 : Colors.black54),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 10.0),
@@ -517,9 +522,10 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
               ),
               Row(
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'Born on',
-                    style: TextStyle(color: Colors.white54),
+                    style: TextStyle(
+                        color: isDark ? Colors.white54 : Colors.black54),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -535,9 +541,10 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  const Text(
+                  Text(
                     'From',
-                    style: TextStyle(color: Colors.white54),
+                    style: TextStyle(
+                        color: isDark ? Colors.white54 : Colors.black54),
                   ),
                   Expanded(
                     child: Padding(
@@ -625,6 +632,7 @@ class _PersonSocialLinksState extends State<PersonSocialLinks> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: Container(
@@ -653,55 +661,63 @@ class _PersonSocialLinksState extends State<PersonSocialLinks> {
                             textAlign: TextAlign.center,
                           ),
                         )
-                      : ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            SocialIconWidget(
-                              isNull: externalLinks?.facebookUsername == null,
-                              url: externalLinks?.facebookUsername == null
-                                  ? ''
-                                  : FACEBOOK_BASE_URL +
-                                      externalLinks!.facebookUsername!,
-                              icon: const Icon(
-                                SocialIcons.facebook_f,
-                                color: Color(0xFFF57C00),
-                              ),
-                            ),
-                            SocialIconWidget(
-                              isNull: externalLinks?.instagramUsername == null,
-                              url: externalLinks?.instagramUsername == null
-                                  ? ''
-                                  : INSTAGRAM_BASE_URL +
-                                      externalLinks!.instagramUsername!,
-                              icon: const Icon(
-                                SocialIcons.instagram,
-                                color: Color(0xFFF57C00),
-                              ),
-                            ),
-                            SocialIconWidget(
-                              isNull: externalLinks?.twitterUsername == null,
-                              url: externalLinks?.twitterUsername == null
-                                  ? ''
-                                  : TWITTER_BASE_URL +
-                                      externalLinks!.twitterUsername!,
-                              icon: const Icon(
-                                SocialIcons.twitter,
-                                color: Color(0xFFF57C00),
-                              ),
-                            ),
-                            SocialIconWidget(
-                              isNull: externalLinks?.imdbId == null,
-                              url: externalLinks?.imdbId == null
-                                  ? ''
-                                  : IMDB_BASE_URL + externalLinks!.imdbId!,
-                              icon: const Center(
-                                child: FaIcon(
-                                  FontAwesomeIcons.imdb,
-                                  size: 30,
+                      : Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color:
+                                isDark ? Colors.transparent : Color(0xFFDFDEDE),
+                          ),
+                          child: ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: [
+                              SocialIconWidget(
+                                isNull: externalLinks?.facebookUsername == null,
+                                url: externalLinks?.facebookUsername == null
+                                    ? ''
+                                    : FACEBOOK_BASE_URL +
+                                        externalLinks!.facebookUsername!,
+                                icon: const Icon(
+                                  SocialIcons.facebook_f,
+                                  color: Color(0xFFF57C00),
                                 ),
                               ),
-                            ),
-                          ],
+                              SocialIconWidget(
+                                isNull:
+                                    externalLinks?.instagramUsername == null,
+                                url: externalLinks?.instagramUsername == null
+                                    ? ''
+                                    : INSTAGRAM_BASE_URL +
+                                        externalLinks!.instagramUsername!,
+                                icon: const Icon(
+                                  SocialIcons.instagram,
+                                  color: Color(0xFFF57C00),
+                                ),
+                              ),
+                              SocialIconWidget(
+                                isNull: externalLinks?.twitterUsername == null,
+                                url: externalLinks?.twitterUsername == null
+                                    ? ''
+                                    : TWITTER_BASE_URL +
+                                        externalLinks!.twitterUsername!,
+                                icon: const Icon(
+                                  SocialIcons.twitter,
+                                  color: Color(0xFFF57C00),
+                                ),
+                              ),
+                              SocialIconWidget(
+                                isNull: externalLinks?.imdbId == null,
+                                url: externalLinks?.imdbId == null
+                                    ? ''
+                                    : IMDB_BASE_URL + externalLinks!.imdbId!,
+                                icon: const Center(
+                                  child: FaIcon(
+                                    FontAwesomeIcons.imdb,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
             ),
           ],

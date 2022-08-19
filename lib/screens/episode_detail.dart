@@ -327,7 +327,8 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                 ),
                                 Expanded(
                                   child: Padding(
-                                    padding: EdgeInsets.fromLTRB(1, 0, 1, 3),
+                                    padding:
+                                        EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       controller: tabController,
                                       children: [
