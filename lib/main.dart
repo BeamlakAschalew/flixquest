@@ -127,6 +127,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
 
   @override
   Widget build(BuildContext context) {
+    final themeChange = Provider.of<DarkthemeProvider>(context);
     return Provider.of<AdultmodeProvider?>(context) == null
         ? Center(
             child: CircularProgressIndicator(),

@@ -2680,7 +2680,7 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
                         side: const BorderSide(
                             width: 2,
                             style: BorderStyle.solid,
-                            color: Color(0xFFad5700)),
+                            color: Color(0xFFF57C00)),
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       label: Text(

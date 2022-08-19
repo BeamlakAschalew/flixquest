@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../provider/adultmode_provider.dart';
 import '/constants/app_constants.dart';
@@ -1418,6 +1419,7 @@ class _GenreDisplayState extends State<GenreDisplay>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
     return Container(
         child: SizedBox(
@@ -1446,7 +1448,7 @@ class _GenreDisplayState extends State<GenreDisplay>
                         side: const BorderSide(
                             width: 2,
                             style: BorderStyle.solid,
-                            color: Color(0xFFad5700)),
+                            color: Color(0xFFF57C00)),
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       label: Text(
@@ -1454,7 +1456,8 @@ class _GenreDisplayState extends State<GenreDisplay>
                         style: const TextStyle(fontFamily: 'Poppins'),
                         // style: widget.themeData.textTheme.bodyText1,
                       ),
-                      backgroundColor: Colors.transparent,
+                      backgroundColor:
+                          isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
                     ),
                   ),
                 );
@@ -1683,10 +1686,11 @@ class _CastTabState extends State<CastTab>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
     return credits == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -1696,10 +1700,10 @@ class _CastTabState extends State<CastTab>
                 child: const Center(
                   child: Text('There is no cast available for this movie'),
                 ),
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: ListView.builder(
                     itemCount: credits!.cast!.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -1718,7 +1722,7 @@ class _CastTabState extends State<CastTab>
                           }));
                         },
                         child: Container(
-                          color: const Color(0xFF202124),
+                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -1828,10 +1832,11 @@ class _CrewTabState extends State<CrewTab>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
     return credits == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -1845,7 +1850,7 @@ class _CrewTabState extends State<CrewTab>
                 color: const Color(0xFF202124),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: ListView.builder(
                     itemCount: credits!.crew!.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -1864,7 +1869,7 @@ class _CrewTabState extends State<CrewTab>
                           }));
                         },
                         child: Container(
-                          color: const Color(0xFF202124),
+                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -2016,24 +2021,25 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
     return movieList == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           )
         : movieList!.isEmpty
             ? Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text(
                       'There is no recommendations available for this movie'),
                 ),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: Column(
                   children: [
                     Expanded(
@@ -2059,7 +2065,9 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                 }));
                               },
                               child: Container(
-                                color: const Color(0xFF202124),
+                                color: isDark
+                                    ? Color(0xFF202124)
+                                    : Color(0xFFFFFFFF),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     top: 0.0,
@@ -2140,8 +2148,10 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                           )
                                         ],
                                       ),
-                                      const Divider(
-                                        color: Colors.white,
+                                      Divider(
+                                        color: !isDark
+                                            ? Color(0xFF202124)
+                                            : Color(0xFFFFFFFF),
                                         thickness: 1,
                                         endIndent: 20,
                                         indent: 10,
@@ -2235,23 +2245,24 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
     return movieList == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           )
         : movieList!.isEmpty
             ? Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text('There are no similars available for this movie'),
                 ),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: Column(
                   children: [
                     Expanded(
@@ -2277,7 +2288,9 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                 }));
                               },
                               child: Container(
-                                color: const Color(0xFF202124),
+                                color: isDark
+                                    ? Color(0xFF202124)
+                                    : Color(0xFFFFFFFF),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     top: 0.0,
@@ -2358,8 +2371,10 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                           )
                                         ],
                                       ),
-                                      const Divider(
-                                        color: Colors.white,
+                                      Divider(
+                                        color: !isDark
+                                            ? Color(0xFF202124)
+                                            : Color(0xFFFFFFFF),
                                         thickness: 1,
                                         endIndent: 20,
                                         indent: 10,
@@ -2456,22 +2471,23 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return moviesList == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           )
         : moviesList!.isEmpty
             ? Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text('Oops! movies for this genre doesn\'t exist :('),
                 ),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: Column(
                   children: [
                     Expanded(
@@ -2499,7 +2515,9 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                   }));
                                 },
                                 child: Container(
-                                  color: const Color(0xFF202124),
+                                  color: isDark
+                                      ? Color(0xFF202124)
+                                      : Color(0xFFFFFFFF),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                       top: 0.0,
@@ -2614,8 +2632,10 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                             )
                                           ],
                                         ),
-                                        const Divider(
-                                          color: Colors.white,
+                                        Divider(
+                                          color: !isDark
+                                              ? Color(0xFF202124)
+                                              : Color(0xFFFFFFFF),
                                           thickness: 1,
                                           endIndent: 20,
                                           indent: 10,
@@ -2710,23 +2730,24 @@ class _ParticularStreamingServiceMoviesState
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return moviesList == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
           )
         : moviesList!.isEmpty
             ? Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text(
                       'Oops! movies for this watch provider doesn\'t exist :('),
                 ),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: Column(
                   children: [
                     Expanded(
@@ -2754,7 +2775,9 @@ class _ParticularStreamingServiceMoviesState
                                   }));
                                 },
                                 child: Container(
-                                  color: const Color(0xFF202124),
+                                  color: isDark
+                                      ? Color(0xFF202124)
+                                      : Color(0xFFFFFFFF),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                       top: 0.0,
@@ -2869,8 +2892,10 @@ class _ParticularStreamingServiceMoviesState
                                             )
                                           ],
                                         ),
-                                        const Divider(
-                                          color: Colors.white,
+                                        Divider(
+                                          color: !isDark
+                                              ? Color(0xFF202124)
+                                              : Color(0xFFFFFFFF),
                                           thickness: 1,
                                           endIndent: 20,
                                           indent: 10,
@@ -2935,7 +2960,7 @@ class StreamingServicesWidget extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child: Text(title),
+                child: Text(title, style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -3035,7 +3060,8 @@ class _GenreListGridState extends State<GenreListGrid>
                                   child: Container(
                                     width: 125,
                                     alignment: Alignment.center,
-                                    child: Text(genreList![index].genreName!),
+                                    child: Text(genreList![index].genreName!,
+                                        style: TextStyle(color: Colors.white)),
                                     decoration: BoxDecoration(
                                         color: const Color(0xFFF57C00),
                                         borderRadius:

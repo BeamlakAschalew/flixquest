@@ -138,7 +138,10 @@ class _LandingScreenState extends State<LandingScreen> {
                               return const CinemaxHomePage();
                             }));
                           },
-                          child: const Text('GET STARTED')),
+                          child: const Text(
+                            'GET STARTED',
+                            style: TextStyle(color: Colors.black),
+                          )),
                     ),
                   ],
                 ),
