@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '/constants/api_constants.dart';
 import '/models/person.dart';
@@ -22,38 +24,43 @@ class Search extends SearchDelegate<String> {
 
   @override
   ThemeData appBarTheme(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return ThemeData(
-      appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF000000)),
-      inputDecorationTheme: const InputDecorationTheme(
+      appBarTheme: AppBarTheme(
+          backgroundColor: isDark ? Color(0xFF000000) : Color(0xFFFFFFFF)),
+      inputDecorationTheme: InputDecorationTheme(
         border: InputBorder.none,
-        hintStyle: TextStyle(color: Colors.white24, fontFamily: 'Poppins'),
+        hintStyle: TextStyle(
+            color: isDark ? Colors.white24 : Colors.black26,
+            fontFamily: 'Poppins'),
         focusedBorder: InputBorder.none,
         enabledBorder: InputBorder.none,
         errorBorder: InputBorder.none,
         disabledBorder: InputBorder.none,
       ),
-      textTheme: const TextTheme(
-        headline6: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+      textTheme: TextTheme(
+        headline6: TextStyle(
+            color: isDark ? Colors.white : Colors.black, fontFamily: 'Poppins'),
       ),
-      colorScheme: const ColorScheme(
-        primary: Color(0xFFF57C00),
-        primaryContainer: Color(0xFF8f4700),
-        secondary: Color(0xFF202124),
-        secondaryContainer: Color(0xFF141517),
-        surface: Color(0xFFF57C00),
-        background: Color(0xFF202124),
-        error: Color(0xFFFF0000),
-        onPrimary: Color(0xFF202124),
-        onSecondary: Color(0xFF141517),
-        onSurface: Color(0xFF141517),
-        onBackground: Color(0xFFF57C00),
-        onError: Color(0xFFFFFFFF),
-        brightness: Brightness.dark,
-      ),
-      textSelectionTheme: const TextSelectionThemeData(
+      // colorScheme: const ColorScheme(
+      //   primary: Color(0xFFF57C00),
+      //   primaryContainer: Color(0xFF8f4700),
+      //   secondary: Color(0xFF202124),
+      //   secondaryContainer: Color(0xFF141517),
+      //   surface: Color(0xFFF57C00),
+      //   background: Color(0xFF202124),
+      //   error: Color(0xFFFF0000),
+      //   onPrimary: Color(0xFF202124),
+      //   onSecondary: Color(0xFF141517),
+      //   onSurface: Color(0xFF141517),
+      //   onBackground: Color(0xFFF57C00),
+      //   onError: Color(0xFFFFFFFF),
+      //   brightness: Brightness.dark,
+      // ),
+      textSelectionTheme: TextSelectionThemeData(
         cursorColor: Color(0xFFF57C00),
-        selectionHandleColor: Color(0xFFFFFFFF),
-        selectionColor: Colors.white12,
+        selectionHandleColor: isDark ? Color(0xFFFFFFFF) : Color(0xFF000000),
+        selectionColor: isDark ? Colors.white12 : Colors.black12,
       ),
     );
   }
@@ -90,28 +97,35 @@ class Search extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
       child: Scaffold(
         body: Container(
-          color: Colors.black,
+          color: isDark ? Colors.black : Colors.white,
           child: Column(
             children: [
-              const TabBar(
+              TabBar(
                 indicatorColor: Color(0xFFF57C00),
                 tabs: [
                   Tab(
-                    child:
-                        Text('Movies', style: TextStyle(fontFamily: 'Poppins')),
+                    child: Text('Movies',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: isDark ? Colors.white : Colors.black)),
                   ),
                   Tab(
                     child: Text('TV Shows',
-                        style: TextStyle(fontFamily: 'Poppins')),
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: isDark ? Colors.white : Colors.black)),
                   ),
                   Tab(
-                    child:
-                        Text('Person', style: TextStyle(fontFamily: 'Poppins')),
+                    child: Text('Person',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: isDark ? Colors.white : Colors.black)),
                   )
                 ],
               ),
@@ -121,16 +135,16 @@ class Search extends SearchDelegate<String> {
                   future: fetchMovies(
                       Endpoints.movieSearchUrl(query, includeAdult)),
                   builder: (context, snapshot) {
-                    if (query.isEmpty) return searchATermWidget();
+                    if (query.isEmpty) return searchATermWidget(isDark);
 
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return searchLoadingWidget();
+                        return searchLoadingWidget(isDark);
                       default:
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
-                          return errorMessageWidget();
+                          return errorMessageWidget(isDark);
                         } else {
-                          return activeMovieSearch(snapshot.data!, mixpanel);
+                          return activeMovieSearch(snapshot.data!, isDark);
                         }
                     }
                   },
@@ -138,16 +152,16 @@ class Search extends SearchDelegate<String> {
                 FutureBuilder<List<TV>>(
                   future: fetchTV(Endpoints.tvSearchUrl(query, includeAdult)),
                   builder: (context, snapshot) {
-                    if (query.isEmpty) return searchATermWidget();
+                    if (query.isEmpty) return searchATermWidget(isDark);
 
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return searchLoadingWidget();
+                        return searchLoadingWidget(isDark);
                       default:
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
-                          return errorMessageWidget();
+                          return errorMessageWidget(isDark);
                         } else {
-                          return activeTVSearch(snapshot.data!);
+                          return activeTVSearch(snapshot.data!, isDark);
                         }
                     }
                   },
@@ -156,15 +170,15 @@ class Search extends SearchDelegate<String> {
                   future: fetchPerson(
                       Endpoints.personSearchUrl(query, includeAdult)),
                   builder: (context, snapshot) {
-                    if (query.isEmpty) return searchATermWidget();
+                    if (query.isEmpty) return searchATermWidget(isDark);
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return searchLoadingWidget();
+                        return searchLoadingWidget(isDark);
                       default:
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
-                          return errorMessageWidget();
+                          return errorMessageWidget(isDark);
                         } else {
-                          return activePersonSearch(snapshot.data!);
+                          return activePersonSearch(snapshot.data!, isDark);
                         }
                     }
                   },
@@ -177,9 +191,9 @@ class Search extends SearchDelegate<String> {
     );
   }
 
-  Widget errorMessageWidget() {
+  Widget errorMessageWidget(bool isDark) {
     return Container(
-      color: const Color(0xFF202124),
+      color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -195,35 +209,37 @@ class Search extends SearchDelegate<String> {
     );
   }
 
-  Widget searchLoadingWidget() {
+  Widget searchLoadingWidget(bool isDark) {
     return Container(
-      color: const Color(0xFF202124),
+      color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
       child: const Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(color: Color(0xFFF57C00)),
       ),
     );
   }
 
-  Widget searchATermWidget() {
+  Widget searchATermWidget(bool isDark) {
     return Container(
-      color: const Color(0xFF202124),
+      color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('assets/images/search.png'),
             const Padding(padding: EdgeInsets.only(top: 10, bottom: 5)),
-            const Text('Enter a word to search',
-                style: TextStyle(color: Colors.white, fontFamily: 'Poppins'))
+            Text('Enter a word to search',
+                style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black,
+                    fontFamily: 'Poppins'))
           ],
         ),
       ),
     );
   }
 
-  Widget activeMovieSearch(List<Movie> moviesList, Mixpanel mixpanel) {
+  Widget activeMovieSearch(List<Movie> moviesList, bool isDark) {
     return Container(
-        color: const Color(0xFF202124),
+        color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
         child: Column(
           children: [
             Expanded(
@@ -249,11 +265,11 @@ class Search extends SearchDelegate<String> {
                           }));
                         },
                         child: Container(
-                          color: const Color(0xFF202124),
+                          color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
-                              bottom: 8.0,
+                              bottom: 3.0,
                               left: 10,
                             ),
                             child: Column(
@@ -351,8 +367,9 @@ class Search extends SearchDelegate<String> {
                                     )
                                   ],
                                 ),
-                                const Divider(
-                                  color: Colors.white,
+                                Divider(
+                                  color:
+                                      !isDark ? Colors.black54 : Colors.white54,
                                   thickness: 1,
                                   endIndent: 20,
                                   indent: 10,
@@ -369,9 +386,9 @@ class Search extends SearchDelegate<String> {
         ));
   }
 
-  Widget activeTVSearch(List<TV> tvList) {
+  Widget activeTVSearch(List<TV> tvList, bool isDark) {
     return Container(
-        color: const Color(0xFF202124),
+        color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
         child: Column(
           children: [
             Expanded(
@@ -395,11 +412,11 @@ class Search extends SearchDelegate<String> {
                           }));
                         },
                         child: Container(
-                          color: const Color(0xFF202124),
+                          color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
-                              bottom: 8.0,
+                              bottom: 3.0,
                               left: 10,
                             ),
                             child: Column(
@@ -496,8 +513,9 @@ class Search extends SearchDelegate<String> {
                                     )
                                   ],
                                 ),
-                                const Divider(
-                                  color: Colors.white,
+                                Divider(
+                                  color:
+                                      !isDark ? Colors.black54 : Colors.white54,
                                   thickness: 1,
                                   endIndent: 20,
                                   indent: 10,
@@ -514,9 +532,9 @@ class Search extends SearchDelegate<String> {
         ));
   }
 
-  Widget activePersonSearch(List<Person>? personList) {
+  Widget activePersonSearch(List<Person>? personList, bool isDark) {
     return Container(
-        color: const Color(0xFF202124),
+        color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
         child: ListView.builder(
             physics: const BouncingScrollPhysics(),
             itemCount: personList!.length,
@@ -534,11 +552,11 @@ class Search extends SearchDelegate<String> {
                   }));
                 },
                 child: Container(
-                  color: const Color(0xFF202124),
+                  color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
                   child: Padding(
                     padding: const EdgeInsets.only(
-                      top: 10.0,
-                      bottom: 15.0,
+                      top: 3.0,
+                      bottom: 3.0,
                       left: 15,
                     ),
                     child: Column(
@@ -609,6 +627,12 @@ class Search extends SearchDelegate<String> {
                               ),
                             )
                           ],
+                        ),
+                        Divider(
+                          color: !isDark ? Colors.black54 : Colors.white54,
+                          thickness: 1,
+                          endIndent: 20,
+                          indent: 10,
                         ),
                       ],
                     ),

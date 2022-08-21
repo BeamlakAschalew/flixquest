@@ -1822,7 +1822,7 @@ class _CastTabState extends State<CastTab>
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
-                              bottom: 15.0,
+                              bottom: 5.0,
                               left: 10,
                             ),
                             child: Column(
@@ -1886,6 +1886,13 @@ class _CastTabState extends State<CastTab>
                                       ),
                                     )
                                   ],
+                                ),
+                                Divider(
+                                  color:
+                                      !isDark ? Colors.black54 : Colors.white54,
+                                  thickness: 1,
+                                  endIndent: 20,
+                                  indent: 10,
                                 ),
                               ],
                             ),
@@ -1969,7 +1976,7 @@ class _CrewTabState extends State<CrewTab>
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
-                              bottom: 15.0,
+                              bottom: 5.0,
                               left: 10,
                             ),
                             child: Column(
@@ -2034,6 +2041,13 @@ class _CrewTabState extends State<CrewTab>
                                       ),
                                     )
                                   ],
+                                ),
+                                Divider(
+                                  color:
+                                      !isDark ? Colors.black54 : Colors.white54,
+                                  thickness: 1,
+                                  endIndent: 20,
+                                  indent: 10,
                                 ),
                               ],
                             ),
@@ -2202,7 +2216,7 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     top: 0.0,
-                                    bottom: 8.0,
+                                    bottom: 3.0,
                                     left: 10,
                                   ),
                                   child: Column(
@@ -2281,8 +2295,8 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                       ),
                                       Divider(
                                         color: !isDark
-                                            ? Color(0xFF202124)
-                                            : Color(0xFFFFFFFF),
+                                            ? Colors.black54
+                                            : Colors.white54,
                                         thickness: 1,
                                         endIndent: 20,
                                         indent: 10,
@@ -2460,7 +2474,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     top: 0.0,
-                                    bottom: 8.0,
+                                    bottom: 3.0,
                                     left: 10,
                                   ),
                                   child: Column(
@@ -2539,8 +2553,8 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                       ),
                                       Divider(
                                         color: !isDark
-                                            ? Color(0xFF202124)
-                                            : Color(0xFFFFFFFF),
+                                            ? Colors.black54
+                                            : Colors.white54,
                                         thickness: 1,
                                         endIndent: 20,
                                         indent: 10,
@@ -2687,7 +2701,7 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                       top: 0.0,
-                                      bottom: 8.0,
+                                      bottom: 3.0,
                                       left: 10,
                                     ),
                                     child: Column(
@@ -2800,8 +2814,8 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                         ),
                                         Divider(
                                           color: !isDark
-                                              ? Color(0xFF202124)
-                                              : Color(0xFFFFFFFF),
+                                              ? Colors.black54
+                                              : Colors.white54,
                                           thickness: 1,
                                           endIndent: 20,
                                           indent: 10,
@@ -2947,7 +2961,7 @@ class _ParticularStreamingServiceMoviesState
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                       top: 0.0,
-                                      bottom: 8.0,
+                                      bottom: 3.0,
                                       left: 10,
                                     ),
                                     child: Column(
@@ -3060,8 +3074,8 @@ class _ParticularStreamingServiceMoviesState
                                         ),
                                         Divider(
                                           color: !isDark
-                                              ? Color(0xFF202124)
-                                              : Color(0xFFFFFFFF),
+                                              ? Colors.black54
+                                              : Colors.white54,
                                           thickness: 1,
                                           endIndent: 20,
                                           indent: 10,

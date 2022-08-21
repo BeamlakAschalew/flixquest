@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:provider/provider.dart';
 
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -46,6 +48,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -123,7 +126,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50.0),
-                        color: Colors.black38),
+                        color: isDark ? Colors.black38 : Colors.white38),
                     child: IconButton(
                       icon: const Icon(
                         Icons.arrow_back,
@@ -158,7 +161,8 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF2b2c30),
+                            color:
+                                isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,9 +193,11 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                             children: [
                                               Text(
                                                 widget.tvDetails.originalTitle!,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                     fontSize: 15,
-                                                    color: Colors.white54),
+                                                    color: isDark
+                                                        ? Colors.white54
+                                                        : Colors.black54),
                                               ),
                                             ],
                                           ),
@@ -207,26 +213,38 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                     indicatorWeight: 3,
                                     unselectedLabelColor: Colors.white54,
                                     labelColor: Colors.white,
-                                    tabs: const [
+                                    tabs: [
                                       Tab(
                                         child: Text('About',
                                             style: TextStyle(
-                                                fontFamily: 'Poppins')),
+                                                fontFamily: 'Poppins',
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black)),
                                       ),
                                       Tab(
                                         child: Text('Episodes',
                                             style: TextStyle(
-                                                fontFamily: 'Poppins')),
+                                                fontFamily: 'Poppins',
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black)),
                                       ),
                                       Tab(
                                         child: Text('Cast',
                                             style: TextStyle(
-                                                fontFamily: 'Poppins')),
+                                                fontFamily: 'Poppins',
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black)),
                                       ),
                                       Tab(
                                         child: Text('Crew',
                                             style: TextStyle(
-                                                fontFamily: 'Poppins')),
+                                                fontFamily: 'Poppins',
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black)),
                                       ),
                                     ],
                                     controller: tabController,
@@ -244,7 +262,9 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                           physics:
                                               const BouncingScrollPhysics(),
                                           child: Container(
-                                            color: const Color(0xFF202124),
+                                            color: isDark
+                                                ? Color(0xFF202124)
+                                                : Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
                                                 Row(

@@ -1,14 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers
-
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:provider/provider.dart';
-
-import '/models/tv.dart' as tv;
 import 'package:flutter/material.dart';
+import '../provider/darktheme_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/credits.dart';
-
 import 'person_widgets.dart';
 
 class GuestStarDetailPage extends StatefulWidget {
@@ -41,6 +38,7 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -127,7 +125,8 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF2b2c30),
+                            color:
+                                isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
@@ -157,21 +156,30 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
                                   indicatorWeight: 3,
                                   unselectedLabelColor: Colors.white54,
                                   labelColor: Colors.white,
-                                  tabs: const [
+                                  tabs: [
                                     Tab(
                                       child: Text('About',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Movies',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('TV Shows',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                   ],
                                   controller: tabController,
@@ -191,7 +199,9 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
                                         // ),
                                         SingleChildScrollView(
                                           child: Container(
-                                            color: const Color(0xFF202124),
+                                            color: isDark
+                                                ? Color(0xFF202124)
+                                                : Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
                                                 Padding(
@@ -228,7 +238,9 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
                                           ),
                                         ),
                                         Container(
-                                          color: const Color(0xFF202124),
+                                          color: isDark
+                                              ? Color(0xFF202124)
+                                              : Color(0xFFFFFFFF),
                                           child: PersonMovieListWidget(
                                             includeAdult:
                                                 Provider.of<AdultmodeProvider>(
@@ -241,7 +253,9 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
                                           ),
                                         ),
                                         Container(
-                                          color: const Color(0xFF202124),
+                                          color: isDark
+                                              ? Color(0xFF202124)
+                                              : Color(0xFFFFFFFF),
                                           child: PersonTVListWidget(
                                               isPersonAdult:
                                                   widget.cast!.adult!,

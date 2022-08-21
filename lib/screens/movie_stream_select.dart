@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
 import 'movie_stream.dart';
 
@@ -42,6 +44,7 @@ class _MovieStreamSelectState extends State<MovieStreamSelect> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return WillPopScope(
       onWillPop: () async {
         print('backbutton pressed');
@@ -185,6 +188,7 @@ class StreamListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -216,8 +220,8 @@ class StreamListWidget extends StatelessWidget {
               ),
             ],
           ),
-          const Divider(
-            color: Colors.white54,
+          Divider(
+            color: isDark ? Colors.white54 : Colors.black54,
           )
         ],
       ),

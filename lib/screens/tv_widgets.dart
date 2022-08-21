@@ -1888,7 +1888,7 @@ class _TVCastTabState extends State<TVCastTab>
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
-                              bottom: 15.0,
+                              bottom: 5.0,
                               left: 10,
                             ),
                             child: Column(
@@ -1965,6 +1965,13 @@ class _TVCastTabState extends State<TVCastTab>
                                       ),
                                     )
                                   ],
+                                ),
+                                Divider(
+                                  color:
+                                      !isDark ? Colors.black54 : Colors.white54,
+                                  thickness: 1,
+                                  endIndent: 20,
+                                  indent: 10,
                                 ),
                               ],
                             ),
@@ -2055,7 +2062,7 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
-                              bottom: 8.0,
+                              bottom: 5.0,
                               left: 15,
                             ),
                             child: Column(
@@ -2120,9 +2127,8 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                                   ],
                                 ),
                                 Divider(
-                                  color: !isDark
-                                      ? Color(0xFF202124)
-                                      : Color(0xFFFFFFFF),
+                                  color:
+                                      !isDark ? Colors.black54 : Colors.white54,
                                   thickness: 1,
                                   endIndent: 20,
                                   indent: 10,
@@ -2209,7 +2215,7 @@ class _TVCrewTabState extends State<TVCrewTab>
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
-                              bottom: 15.0,
+                              bottom: 5.0,
                               left: 10,
                             ),
                             child: Column(
@@ -2273,6 +2279,13 @@ class _TVCrewTabState extends State<TVCrewTab>
                                       ),
                                     )
                                   ],
+                                ),
+                                Divider(
+                                  color:
+                                      !isDark ? Colors.black54 : Colors.white54,
+                                  thickness: 1,
+                                  endIndent: 20,
+                                  indent: 10,
                                 ),
                               ],
                             ),
@@ -2407,7 +2420,7 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     top: 0.0,
-                                    bottom: 8.0,
+                                    bottom: 3.0,
                                     left: 10,
                                   ),
                                   child: Column(
@@ -2485,8 +2498,8 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                       ),
                                       Divider(
                                         color: !isDark
-                                            ? Color(0xFF202124)
-                                            : Color(0xFFFFFFFF),
+                                            ? Colors.black54
+                                            : Colors.white54,
                                         thickness: 1,
                                         endIndent: 20,
                                         indent: 10,
@@ -2630,7 +2643,7 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     top: 0.0,
-                                    bottom: 8.0,
+                                    bottom: 3.0,
                                     left: 10,
                                   ),
                                   child: Column(
@@ -2708,8 +2721,8 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                       ),
                                       Divider(
                                         color: !isDark
-                                            ? Color(0xFF202124)
-                                            : Color(0xFFFFFFFF),
+                                            ? Colors.black54
+                                            : Colors.white54,
                                         thickness: 1,
                                         endIndent: 20,
                                         indent: 10,
@@ -2927,7 +2940,7 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                       top: 0.0,
-                                      bottom: 8.0,
+                                      bottom: 3.0,
                                       left: 10,
                                     ),
                                     child: Column(
@@ -3038,8 +3051,8 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                         ),
                                         Divider(
                                           color: !isDark
-                                              ? Color(0xFF202124)
-                                              : Color(0xFFFFFFFF),
+                                              ? Colors.black54
+                                              : Colors.white54,
                                           thickness: 1,
                                           endIndent: 20,
                                           indent: 10,
@@ -3547,8 +3560,9 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Container(
-        color: const Color(0xFF202124),
+        color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
         child: tvDetails == null
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -3574,7 +3588,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                       }));
                     },
                     child: Container(
-                      color: const Color(0xFF202124),
+                      color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                       child: Padding(
                         padding: const EdgeInsets.only(
                           top: 0.0,
@@ -3603,16 +3617,37 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                               'assets/images/na_logo.png',
                                               fit: BoxFit.cover,
                                             )
-                                          : FadeInImage(
-                                              fit: BoxFit.cover,
-                                              image: NetworkImage(
-                                                  TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
-                                                      tvDetails!
-                                                          .episodes![index]
-                                                          .stillPath!),
-                                              placeholder: AssetImage(
+                                          : CachedNetworkImage(
+                                              fadeOutDuration: const Duration(
+                                                  milliseconds: 300),
+                                              fadeOutCurve: Curves.easeOut,
+                                              fadeInDuration:
+                                                  Duration(milliseconds: 700),
+                                              fadeInCurve: Curves.easeIn,
+                                              imageUrl: TMDB_BASE_IMAGE_URL +
+                                                  'w500/' +
+                                                  tvDetails!.episodes![index]
+                                                      .stillPath!,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  Image.asset(
                                                 'assets/images/loading.gif',
+                                                fit: BoxFit.cover,
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Image.asset(
+                                                'assets/images/na_logo.png',
+                                                fit: BoxFit.cover,
                                               ),
                                             ),
                                     ),
@@ -3635,8 +3670,11 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                                     .airDate!.isEmpty
                                             ? 'Air date unknown'
                                             : '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
-                                        style: const TextStyle(
-                                            color: Colors.white54),
+                                        style: TextStyle(
+                                          color: isDark
+                                              ? Colors.white54
+                                              : Colors.black54,
+                                        ),
                                       ),
                                       Row(children: [
                                         Padding(
@@ -3658,8 +3696,9 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                             ),
                             const Divider(
                               color: Color(0xFFF57C00),
-                              thickness: 2,
-                              endIndent: 40,
+                              thickness: 1.5,
+                              endIndent: 30,
+                              indent: 5,
                             ),
                           ],
                         ),
@@ -4443,7 +4482,7 @@ class _ParticularStreamingServiceTVShowsState
                                   child: Padding(
                                     padding: const EdgeInsets.only(
                                       top: 0.0,
-                                      bottom: 8.0,
+                                      bottom: 3.0,
                                       left: 10,
                                     ),
                                     child: Column(
@@ -4554,8 +4593,8 @@ class _ParticularStreamingServiceTVShowsState
                                         ),
                                         Divider(
                                           color: !isDark
-                                              ? Color(0xFF202124)
-                                              : Color(0xFFFFFFFF),
+                                              ? Colors.black54
+                                              : Colors.white54,
                                           thickness: 1,
                                           endIndent: 20,
                                           indent: 10,
@@ -4609,9 +4648,10 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return credits == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -4622,10 +4662,10 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                   child: Text(
                       'There is no data available for this TV episode cast'),
                 ),
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: ListView.builder(
                     itemCount: credits!.cast!.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -4644,11 +4684,11 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                           }));
                         },
                         child: Container(
-                          color: const Color(0xFF202124),
+                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
-                              bottom: 15.0,
+                              bottom: 5.0,
                               left: 10,
                             ),
                             child: Column(
@@ -4726,6 +4766,13 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                     )
                                   ],
                                 ),
+                                Divider(
+                                  color:
+                                      !isDark ? Colors.black54 : Colors.white54,
+                                  thickness: 1,
+                                  endIndent: 20,
+                                  indent: 10,
+                                ),
                               ],
                             ),
                           ),
@@ -4768,9 +4815,10 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return credits == null
         ? Container(
-            color: const Color(0xFF202124),
+            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
             child: const Center(
               child: CircularProgressIndicator(),
             ),
@@ -4781,10 +4829,10 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                   child: Text(
                       'There is no data available for this TV episode guest stars'),
                 ),
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
             : Container(
-                color: const Color(0xFF202124),
+                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                 child: ListView.builder(
                     itemCount: credits!.episodeGuestStars!.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -4806,11 +4854,11 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                           }));
                         },
                         child: Container(
-                          color: const Color(0xFF202124),
+                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
-                              bottom: 15.0,
+                              bottom: 5.0,
                               left: 10,
                             ),
                             child: Column(
@@ -4892,6 +4940,13 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                       ),
                                     )
                                   ],
+                                ),
+                                Divider(
+                                  color:
+                                      !isDark ? Colors.black54 : Colors.white54,
+                                  thickness: 1,
+                                  endIndent: 20,
+                                  indent: 10,
                                 ),
                               ],
                             ),
