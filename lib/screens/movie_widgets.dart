@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:startapp_sdk/startapp.dart';
+import '../provider/ads_provider.dart';
 import '../provider/adultmode_provider.dart';
 import '/constants/app_constants.dart';
 import '/models/social_icons_icons.dart';
@@ -39,11 +41,20 @@ class MainMoviesDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var bannerAd0 = Provider.of<ADSProvider>(context).bannerAd0;
+    var bannerAd1 = Provider.of<ADSProvider>(context).bannerAd1;
+    var bannerAd2 = Provider.of<ADSProvider>(context).bannerAd2;
     return Container(
       child: ListView(
         children: [
           DiscoverMovies(
               includeAdult: Provider.of<AdultmodeProvider>(context).isAdult),
+          bannerAd0 != null
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: StartAppBanner(bannerAd0),
+                )
+              : Container(),
           ScrollingMovies(
             title: 'Popular',
             api: Endpoints.popularMoviesUrl(1),
@@ -65,6 +76,12 @@ class MainMoviesDisplay extends StatelessWidget {
             isTrending: false,
             includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
           ),
+          bannerAd1 != null
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: StartAppBanner(bannerAd1),
+                )
+              : Container(),
           ScrollingMovies(
             title: 'Now playing',
             api: Endpoints.nowPlayingMoviesUrl(1),
@@ -81,6 +98,12 @@ class MainMoviesDisplay extends StatelessWidget {
           ),
           GenreListGrid(api: Endpoints.movieGenresUrl()),
           const MoviesFromWatchProviders(),
+          bannerAd2 != null
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: StartAppBanner(bannerAd2),
+                )
+              : Container(),
         ],
       ),
     );

@@ -31,10 +31,10 @@ dependencies:
   animated_text_kit: ^4.2.1
   shared_preferences: ^2.0.15
   cached_network_image: ^3.2.1
-  custom_navigation_bar: ^0.8.2
   google_nav_bar: ^5.0.6
   firebase_messaging: ^11.4.4
   provider: ^6.0.3
+  startapp_sdk: ^0.4.0
 
 
 dev_dependencies:

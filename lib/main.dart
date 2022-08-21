@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cinemax/constants/theme_data.dart';
+import 'package:cinemax/provider/ads_provider.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/landing_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:startapp_sdk/startapp.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
@@ -26,9 +28,13 @@ class Cinemax extends StatefulWidget {
   State<Cinemax> createState() => _CinemaxState();
 }
 
-class _CinemaxState extends State<Cinemax> {
+class _CinemaxState extends State<Cinemax> with ChangeNotifier {
   late bool isFirstLaunch = true;
   bool? isAdult;
+  AdultmodeProvider adultmodeProvider = AdultmodeProvider();
+  DarkthemeProvider themeChangeProvider = DarkthemeProvider();
+  ADSProvider adsProvider = ADSProvider();
+
   void firstTimeCheck() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -45,14 +51,53 @@ class _CinemaxState extends State<Cinemax> {
     super.initState();
     firstTimeCheck();
     getCurrentAdultMode();
+    adsProvider.getBannerAD();
   }
-
-  AdultmodeProvider adultmodeProvider = AdultmodeProvider();
-  DarkthemeProvider themeChangeProvider = DarkthemeProvider();
 
   void getCurrentAdultMode() async {
     adultmodeProvider.isAdult =
         await adultmodeProvider.adultModePreferences.getAdultMode();
+  }
+
+  void getBannerAD() {
+    adsProvider.startAppSdk
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      adsProvider.bannerAd0 = bannerAd;
+      notifyListeners();
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+
+    adsProvider.startAppSdk1
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      adsProvider.bannerAd1 = bannerAd;
+      notifyListeners();
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+
+    adsProvider.startAppSdk2
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      adsProvider.bannerAd2 = bannerAd;
+      notifyListeners();
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
   }
 
   @override
@@ -64,10 +109,14 @@ class _CinemaxState extends State<Cinemax> {
           }),
           ChangeNotifierProvider(create: (_) {
             return themeChangeProvider;
+          }),
+          ChangeNotifierProvider(create: (_) {
+            return adsProvider;
           })
         ],
-        child: Consumer2<AdultmodeProvider, DarkthemeProvider>(builder:
-            (context, adultmodeProvider, themeChangeProvider, snapshot) {
+        child: Consumer3<AdultmodeProvider, DarkthemeProvider, ADSProvider>(
+            builder: (context, adultmodeProvider, themeChangeProvider,
+                adsProvider, snapshot) {
           return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Cinemax',
@@ -118,6 +167,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
   @override
   void initState() {
     super.initState();
+
     initMixpanel();
   }
 
@@ -128,6 +178,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkthemeProvider>(context);
+    var bannerAd = Provider.of<ADSProvider>(context).bannerAd0;
     return Provider.of<AdultmodeProvider?>(context) == null
         ? Center(
             child: CircularProgressIndicator(),

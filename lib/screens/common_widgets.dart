@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:cinemax/provider/ads_provider.dart';
 import 'package:cinemax/screens/settings.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -667,51 +670,89 @@ import 'tv_detail.dart';
 //   bool get wantKeepAlive => true;
 // }
 
-class DrawerWidget extends StatelessWidget {
+class DrawerWidget extends StatefulWidget {
   const DrawerWidget({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<DrawerWidget> createState() => _DrawerWidgetState();
+}
+
+class _DrawerWidgetState extends State<DrawerWidget> {
+  // var startAppSdk = StartAppSdk();
+
+  // StartAppBannerAd? bannerAd2;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // // TODO use one of the following types: BANNER, MREC, COVER
+    // startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
+    //   setState(() {
+    //     this.bannerAd2 = bannerAd;
+    //   });
+    // }).onError<StartAppException>((ex, stackTrace) {
+    //   debugPrint("Error loading Banner ad: ${ex.message}");
+    // }).onError((error, stackTrace) {
+    //   debugPrint("Error loading Banner ad: $error");
+    // });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var bannerAd1 = Provider.of<ADSProvider>(context).bannerAd1;
     return Drawer(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(
-            width: double.infinity,
-            child: DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFFFFF),
+          Column(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: DrawerHeader(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFFFFF),
+                  ),
+                  child: Image.asset('assets/images/logo_shadow.png'),
+                ),
               ),
-              child: Image.asset('assets/images/logo_shadow.png'),
-            ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) {
+                    return const Settings();
+                  })));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('About'),
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const AboutPage();
+                  }));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.share_sharp),
+                title: const Text('Share the app'),
+                onTap: () async {
+                  await Share.share(
+                      'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
+                },
+              ),
+            ],
           ),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: ((context) {
-                return const Settings();
-              })));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('About'),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return const AboutPage();
-              }));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.share_sharp),
-            title: const Text('Share the app'),
-            onTap: () async {
-              await Share.share(
-                  'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
-            },
-          ),
+          bannerAd1 != null
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: StartAppBanner(bannerAd1),
+                )
+              : Container(),
         ],
       ),
     );
