@@ -680,29 +680,29 @@ class DrawerWidget extends StatefulWidget {
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
-  // var startAppSdk = StartAppSdk();
-
-  // StartAppBannerAd? bannerAd2;
-
+  var startAppSdk = StartAppSdk();
+  StartAppBannerAd? bannerAd;
   @override
   void initState() {
+    print('state called');
     super.initState();
-
-    // // TODO use one of the following types: BANNER, MREC, COVER
-    // startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
-    //   setState(() {
-    //     this.bannerAd2 = bannerAd;
-    //   });
-    // }).onError<StartAppException>((ex, stackTrace) {
-    //   debugPrint("Error loading Banner ad: ${ex.message}");
-    // }).onError((error, stackTrace) {
-    //   debugPrint("Error loading Banner ad: $error");
-    // });
+    startAppSdk
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAd = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var bannerAd1 = Provider.of<ADSProvider>(context).bannerAd1;
     return Drawer(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -747,12 +747,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               ),
             ],
           ),
-          bannerAd1 != null
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: StartAppBanner(bannerAd1),
-                )
-              : Container(),
+          bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
         ],
       ),
     );

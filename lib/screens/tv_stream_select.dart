@@ -25,7 +25,7 @@ class TVStreamSelect extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Watch $tvSeriesName ${seasonNumber <= 9 ? 'S0$seasonNumber' : 'S$seasonNumber'} | '
+          'Watch: $tvSeriesName ${seasonNumber <= 9 ? 'S0$seasonNumber' : 'S$seasonNumber'} | '
           '${episodeNumber <= 9 ? 'E0$episodeNumber' : 'E$episodeNumber'}'
           ', $episodeName',
         ),

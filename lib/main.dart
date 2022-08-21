@@ -28,12 +28,15 @@ class Cinemax extends StatefulWidget {
   State<Cinemax> createState() => _CinemaxState();
 }
 
-class _CinemaxState extends State<Cinemax> with ChangeNotifier {
+class _CinemaxState extends State<Cinemax>
+    with ChangeNotifier, WidgetsBindingObserver {
   late bool isFirstLaunch = true;
   bool? isAdult;
   AdultmodeProvider adultmodeProvider = AdultmodeProvider();
   DarkthemeProvider themeChangeProvider = DarkthemeProvider();
   ADSProvider adsProvider = ADSProvider();
+  var startAppSdk = StartAppSdk();
+  StartAppInterstitialAd? interstitialAd;
 
   void firstTimeCheck() async {
     final prefs = await SharedPreferences.getInstance();
@@ -47,57 +50,55 @@ class _CinemaxState extends State<Cinemax> with ChangeNotifier {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final isResumed = state == AppLifecycleState.resumed;
+    if (isResumed == true) {
+      if (interstitialAd != null) {
+        interstitialAd!.show().then((shown) {
+          if (shown) {
+            setState(() {
+              interstitialAd = null;
+            });
+          }
+
+          return null;
+        }).onError((error, stackTrace) {
+          debugPrint("Error showing Interstitial ad: $error");
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     firstTimeCheck();
     getCurrentAdultMode();
-    adsProvider.getBannerAD();
+    getInterstitialAdForResume();
+  }
+
+  void getInterstitialAdForResume() {
+    startAppSdk.loadInterstitialAd().then((interstitialAd) {
+      setState(() {
+        this.interstitialAd = interstitialAd;
+      });
+    }).onError((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
+    });
   }
 
   void getCurrentAdultMode() async {
     adultmodeProvider.isAdult =
         await adultmodeProvider.adultModePreferences.getAdultMode();
-  }
-
-  void getBannerAD() {
-    adsProvider.startAppSdk
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      adsProvider.bannerAd0 = bannerAd;
-      notifyListeners();
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-
-    adsProvider.startAppSdk1
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      adsProvider.bannerAd1 = bannerAd;
-      notifyListeners();
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-
-    adsProvider.startAppSdk2
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      adsProvider.bannerAd2 = bannerAd;
-      notifyListeners();
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
   }
 
   @override
@@ -177,10 +178,8 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
 
   @override
   Widget build(BuildContext context) {
-    final themeChange = Provider.of<DarkthemeProvider>(context);
-    var bannerAd = Provider.of<ADSProvider>(context).bannerAd0;
     return Provider.of<AdultmodeProvider?>(context) == null
-        ? Center(
+        ? const Center(
             child: CircularProgressIndicator(),
           )
         : Scaffold(

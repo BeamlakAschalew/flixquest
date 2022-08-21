@@ -4,9 +4,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import '../provider/ads_provider.dart';
 import '../provider/adultmode_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -32,16 +34,44 @@ class _MovieDetailPageState extends State<MovieDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<MovieDetailPage> {
   late TabController tabController;
+  var startAppSdk = StartAppSdk();
+  var startAppSdk1 = StartAppSdk();
+  StartAppBannerAd? bannerAd;
+  StartAppBannerAd? bannerAd1;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 5, vsync: this);
+    getBannerADForMovieDetail();
+  }
+
+  void getBannerADForMovieDetail() {
+    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+
+    startAppSdk1.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
+      setState(() {
+        bannerAd1 = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    // var movieDetailBanner1 = Provider.of<ADSProvider>(context).bannerAd7;
     super.build(context);
     return Scaffold(
       body: Stack(
@@ -425,6 +455,9 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                       Endpoints.movieDetailsUrl(
                                                           widget.movie.id!),
                                                 ),
+                                                bannerAd != null
+                                                    ? StartAppBanner(bannerAd!)
+                                                    : Container(),
                                                 ScrollingArtists(
                                                   api: Endpoints.getCreditsUrl(
                                                       widget.movie.id!),
@@ -446,6 +479,9 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                     widget.movie.id!,
                                                   ),
                                                 ),
+                                                bannerAd1 != null
+                                                    ? StartAppBanner(bannerAd1!)
+                                                    : Container(),
                                                 BelongsToCollectionWidget(
                                                   api:
                                                       Endpoints.movieDetailsUrl(

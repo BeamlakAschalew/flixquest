@@ -4,6 +4,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
+import '../provider/ads_provider.dart';
 import '../provider/darktheme_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -33,19 +35,92 @@ import 'package:url_launcher/url_launcher.dart';
 import 'crew_detail.dart';
 import 'movie_widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
-class MainTVDisplay extends StatelessWidget {
+class MainTVDisplay extends StatefulWidget {
   const MainTVDisplay({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<MainTVDisplay> createState() => _MainTVDisplayState();
+}
+
+class _MainTVDisplayState extends State<MainTVDisplay> {
+  var startAppSdk3 = StartAppSdk();
+  var startAppSdk4 = StartAppSdk();
+  var startAppSdk5 = StartAppSdk();
+
+  StartAppBannerAd? bannerAd3;
+  StartAppBannerAd? bannerAd4;
+  StartAppBannerAd? bannerAd5;
+
+  @override
+  void initState() {
+    super.initState();
+    getBannerADForTVDisplay();
+  }
+
+  void getBannerADForTVDisplay() {
+    startAppSdk4
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAd4 = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+
+    startAppSdk5
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAd5 = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+
+    startAppSdk5
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAd5 = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // var bannerAd6 = Provider.of<ADSProvider>(context).bannerAd6;
+    // var bannerAd5 = Provider.of<ADSProvider>(context).bannerAd5;
+    // var bannerAd4 = Provider.of<ADSProvider>(context).bannerAd4;
     return Container(
       child: ListView(
         children: [
           DiscoverTV(
               includeAdult: Provider.of<AdultmodeProvider>(context).isAdult),
+          bannerAd3 != null
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: StartAppBanner(bannerAd3!),
+                )
+              : Container(),
           ScrollingTV(
             includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
             title: 'Popular',
@@ -67,6 +142,12 @@ class MainTVDisplay extends StatelessWidget {
             discoverType: 'top_rated',
             isTrending: false,
           ),
+          bannerAd5 != null
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: StartAppBanner(bannerAd5!),
+                )
+              : Container(),
           ScrollingTV(
             includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
             title: 'Airing today',
@@ -83,6 +164,12 @@ class MainTVDisplay extends StatelessWidget {
           ),
           TVGenreListGrid(api: Endpoints.tvGenresUrl()),
           const TVShowsFromWatchProviders(),
+          bannerAd4 != null
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: StartAppBanner(bannerAd4!),
+                )
+              : Container(),
         ],
       ),
     );

@@ -34,16 +34,79 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'movie_stream_select.dart';
 import 'package:provider/provider.dart';
 
-class MainMoviesDisplay extends StatelessWidget {
+class MainMoviesDisplay extends StatefulWidget {
   const MainMoviesDisplay({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<MainMoviesDisplay> createState() => _MainMoviesDisplayState();
+}
+
+class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
+  var startAppSdk = StartAppSdk();
+  var startAppSdk1 = StartAppSdk();
+  var startAppSdk2 = StartAppSdk();
+
+  StartAppBannerAd? bannerAd0;
+  StartAppBannerAd? bannerAd1;
+  StartAppBannerAd? bannerAd2;
+
+  @override
+  void initState() {
+    super.initState();
+    getBannerADForMainMovieDisplay();
+  }
+
+  void getBannerADForMainMovieDisplay() {
+    startAppSdk
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAd0 = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+
+    startAppSdk1
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAd1 = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+
+    startAppSdk2
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAd2 = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var bannerAd0 = Provider.of<ADSProvider>(context).bannerAd0;
-    var bannerAd1 = Provider.of<ADSProvider>(context).bannerAd1;
-    var bannerAd2 = Provider.of<ADSProvider>(context).bannerAd2;
+    // var bannerAd0 = Provider.of<ADSProvider>(context).bannerAd0;
+    // var bannerAd1 = Provider.of<ADSProvider>(context).bannerAd1;
+    // var bannerAd2 = Provider.of<ADSProvider>(context).bannerAd2;
     return Container(
       child: ListView(
         children: [
@@ -52,7 +115,7 @@ class MainMoviesDisplay extends StatelessWidget {
           bannerAd0 != null
               ? Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: StartAppBanner(bannerAd0),
+                  child: StartAppBanner(bannerAd0!),
                 )
               : Container(),
           ScrollingMovies(
@@ -79,7 +142,7 @@ class MainMoviesDisplay extends StatelessWidget {
           bannerAd1 != null
               ? Padding(
                   padding: const EdgeInsets.only(top: 8.0),
-                  child: StartAppBanner(bannerAd1),
+                  child: StartAppBanner(bannerAd1!),
                 )
               : Container(),
           ScrollingMovies(
@@ -101,7 +164,7 @@ class MainMoviesDisplay extends StatelessWidget {
           bannerAd2 != null
               ? Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
-                  child: StartAppBanner(bannerAd2),
+                  child: StartAppBanner(bannerAd2!),
                 )
               : Container(),
         ],
@@ -1349,6 +1412,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
   MovieDetails? movieDetails;
   bool? isVisible = false;
   double? buttonWidth = 150;
+
   @override
   void initState() {
     super.initState();
@@ -1735,104 +1799,100 @@ class _CastTabState extends State<CastTab>
                 color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
             : Container(
-                width: 100,
-                height: 100,
-                child: Center(child: Text('heyy')),
                 color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                // child: ListView.builder(
-                //     itemCount: credits!.cast!.length,
-                //     itemBuilder: (BuildContext context, int index) {
-                //       return GestureDetector(
-                //         onTap: () {
-                //           mixpanel
-                //               .track('Most viewed person pages', properties: {
-                //             'Person name': '${credits!.cast![index].name}',
-                //             'Person id': '${credits!.cast![index].id}'
-                //           });
-                //           Navigator.push(context,
-                //               MaterialPageRoute(builder: (context) {
-                //             return CastDetailPage(
-                //                 cast: credits!.cast![index],
-                //                 heroId: '${credits!.cast![index].name}');
-                //           }));
-                //         },
-                //         child: Container(
-                //           color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                //           child: Padding(
-                //             padding: const EdgeInsets.only(
-                //               top: 0.0,
-                //               bottom: 15.0,
-                //               left: 10,
-                //             ),
-                //             child: Column(
-                //               children: [
-                //                 Row(
-                //                   // crossAxisAlignment:
-                //                   //     CrossAxisAlignment.start,
-                //                   children: [
-                //                     Padding(
-                //                       padding: const EdgeInsets.only(
-                //                           right: 20.0, left: 10),
-                //                       child: SizedBox(
-                //                         width: 80,
-                //                         height: 80,
-                //                         child: Hero(
-                //                           tag: '${credits!.cast![index].name}',
-                //                           child: ClipRRect(
-                //                             borderRadius:
-                //                                 BorderRadius.circular(100.0),
-                //                             child: credits!.cast![index]
-                //                                         .profilePath ==
-                //                                     null
-                //                                 ? Image.asset(
-                //                                     'assets/images/na_square.png',
-                //                                     fit: BoxFit.cover,
-                //                                   )
-                //                                 : FadeInImage(
-                //                                     image: NetworkImage(
-                //                                         TMDB_BASE_IMAGE_URL +
-                //                                             'w500/' +
-                //                                             credits!
-                //                                                 .cast![index]
-                //                                                 .profilePath!),
-                //                                     fit: BoxFit.cover,
-                //                                     placeholder: const AssetImage(
-                //                                         'assets/images/loading.gif'),
-                //                                   ),
-                //                           ),
-                //                         ),
-                //                       ),
-                //                       // child: Text(tvDetails!
-                //                       //     .seasons![index].seasonNumber
-                //                       //     .toString()),
-                //                     ),
-                //                     Expanded(
-                //                       child: Column(
-                //                         crossAxisAlignment:
-                //                             CrossAxisAlignment.start,
-                //                         children: [
-                //                           Text(
-                //                             credits!.cast![index].name!,
-                //                             style: const TextStyle(
-                //                                 fontFamily: 'PoppinsSB'),
-                //                             overflow: TextOverflow.ellipsis,
-                //                           ),
-                //                           Text(
-                //                             'As : '
-                //                             '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
-                //                           ),
-                //                         ],
-                //                       ),
-                //                     )
-                //                   ],
-                //                 ),
-                //               ],
-                //             ),
-                //           ),
-                //         ),
-                //       );
-                //     }));
-              );
+                child: ListView.builder(
+                    itemCount: credits!.cast!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          mixpanel
+                              .track('Most viewed person pages', properties: {
+                            'Person name': '${credits!.cast![index].name}',
+                            'Person id': '${credits!.cast![index].id}'
+                          });
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CastDetailPage(
+                                cast: credits!.cast![index],
+                                heroId: '${credits!.cast![index].name}');
+                          }));
+                        },
+                        child: Container(
+                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              top: 0.0,
+                              bottom: 15.0,
+                              left: 10,
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  // crossAxisAlignment:
+                                  //     CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 20.0, left: 10),
+                                      child: SizedBox(
+                                        width: 80,
+                                        height: 80,
+                                        child: Hero(
+                                          tag: '${credits!.cast![index].name}',
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(100.0),
+                                            child: credits!.cast![index]
+                                                        .profilePath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_square.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : FadeInImage(
+                                                    image: NetworkImage(
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            'w500/' +
+                                                            credits!
+                                                                .cast![index]
+                                                                .profilePath!),
+                                                    fit: BoxFit.cover,
+                                                    placeholder: const AssetImage(
+                                                        'assets/images/loading.gif'),
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                      // child: Text(tvDetails!
+                                      //     .seasons![index].seasonNumber
+                                      //     .toString()),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            credits!.cast![index].name!,
+                                            style: const TextStyle(
+                                                fontFamily: 'PoppinsSB'),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            'As : '
+                                            '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }));
   }
 
   @override
@@ -2008,9 +2068,25 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   List<Movie>? movieList;
   late Mixpanel mixpanel;
   final _scrollController = ScrollController();
+  var startAppSdk = StartAppSdk();
+  StartAppInterstitialAd? interstitialAd;
 
   int pageNum = 2;
   bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+        .then((value) {
+      setState(() {
+        movieList = value;
+      });
+    });
+    getMoreData();
+    initMixpanel();
+    getInterstitialAdForMovieRecommendation();
+  }
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -2038,17 +2114,16 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     return "success";
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
-        .then((value) {
+  void getInterstitialAdForMovieRecommendation() {
+    startAppSdk.loadInterstitialAd().then((interstitialAd) {
       setState(() {
-        movieList = value;
+        this.interstitialAd = interstitialAd;
       });
+    }).onError((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
     });
-    getMoreData();
-    initMixpanel();
   }
 
   Future<void> initMixpanel() async {
@@ -2092,6 +2167,7 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                           '${movieList![index].originalTitle}',
                                       'Movie id': '${movieList![index].id}'
                                     });
+
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return MovieDetailPage(
@@ -2099,6 +2175,25 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                     heroId: '${movieList![index].id}',
                                   );
                                 }));
+
+                                if (interstitialAd != null) {
+                                  interstitialAd!.show().then((shown) {
+                                    if (shown) {
+                                      setState(() {
+                                        // NOTE interstitial ad can be shown only once
+                                        interstitialAd = null;
+
+                                        // NOTE load again
+                                        getInterstitialAdForMovieRecommendation();
+                                      });
+                                    }
+
+                                    return null;
+                                  }).onError((error, stackTrace) {
+                                    debugPrint(
+                                        "Error showing Interstitial ad: $error");
+                                  });
+                                }
                               },
                               child: Container(
                                 color: isDark
@@ -2235,6 +2330,22 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
   late Mixpanel mixpanel;
   int pageNum = 2;
   bool isLoading = false;
+  var startAppSdk = StartAppSdk();
+  StartAppInterstitialAd? interstitialAd;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+        .then((value) {
+      setState(() {
+        movieList = value;
+      });
+    });
+    getMoreData();
+    initMixpanel();
+    getInterstitialAdForMovieSimilars();
+  }
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -2262,21 +2373,20 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
     return "success";
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
-        .then((value) {
-      setState(() {
-        movieList = value;
-      });
-    });
-    getMoreData();
-    initMixpanel();
-  }
-
   Future<void> initMixpanel() async {
     mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
+  }
+
+  void getInterstitialAdForMovieSimilars() {
+    startAppSdk.loadInterstitialAd().then((interstitialAd) {
+      setState(() {
+        this.interstitialAd = interstitialAd;
+      });
+    }).onError((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
+    });
   }
 
   @override
@@ -2315,6 +2425,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                           '${movieList![index].originalTitle}',
                                       'Movie id': '${movieList![index].id}'
                                     });
+
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return MovieDetailPage(
@@ -2322,6 +2433,25 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                     heroId: '${movieList![index].id}',
                                   );
                                 }));
+
+                                if (interstitialAd != null) {
+                                  interstitialAd!.show().then((shown) {
+                                    if (shown) {
+                                      setState(() {
+                                        // NOTE interstitial ad can be shown only once
+                                        this.interstitialAd = null;
+
+                                        // NOTE load again
+                                        getInterstitialAdForMovieSimilars();
+                                      });
+                                    }
+
+                                    return null;
+                                  }).onError((error, stackTrace) {
+                                    debugPrint(
+                                        "Error showing Interstitial ad: $error");
+                                  });
+                                }
                               },
                               child: Container(
                                 color: isDark
