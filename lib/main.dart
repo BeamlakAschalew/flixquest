@@ -101,6 +101,11 @@ class _CinemaxState extends State<Cinemax>
         await adultmodeProvider.adultModePreferences.getAdultMode();
   }
 
+  void getCurrentThemeMode() async {
+    themeChangeProvider.darktheme =
+        await themeChangeProvider.themeModePreferences.getThemeMode();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
