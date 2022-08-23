@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cinemax/provider/ads_provider.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/settings.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -684,7 +685,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   StartAppBannerAd? bannerAd;
   @override
   void initState() {
-    print('state called');
     super.initState();
     startAppSdk
         .loadBannerAd(
@@ -703,6 +703,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Drawer(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -712,14 +713,17 @@ class _DrawerWidgetState extends State<DrawerWidget> {
               SizedBox(
                 width: double.infinity,
                 child: DrawerHeader(
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFFFFFF),
+                  decoration: BoxDecoration(
+                    color: isDark ? Color(0xFFFFFFFF) : Color(0xFF363636),
                   ),
                   child: Image.asset('assets/images/logo_shadow.png'),
                 ),
               ),
               ListTile(
-                leading: const Icon(Icons.settings),
+                leading: const Icon(
+                  Icons.settings,
+                  color: Color(0xFFF57C00),
+                ),
                 title: const Text('Settings'),
                 onTap: () {
                   Navigator.push(context,
@@ -729,7 +733,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.info_outline),
+                leading: const Icon(
+                  Icons.info_outline,
+                  color: Color(0xFFF57C00),
+                ),
                 title: const Text('About'),
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -738,7 +745,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.share_sharp),
+                leading: const Icon(
+                  Icons.share_sharp,
+                  color: Color(0xFFF57C00),
+                ),
                 title: const Text('Share the app'),
                 onTap: () async {
                   await Share.share(

@@ -31,7 +31,6 @@ class Cinemax extends StatefulWidget {
 class _CinemaxState extends State<Cinemax>
     with ChangeNotifier, WidgetsBindingObserver {
   late bool isFirstLaunch = true;
-  bool? isAdult;
   AdultmodeProvider adultmodeProvider = AdultmodeProvider();
   DarkthemeProvider themeChangeProvider = DarkthemeProvider();
   ADSProvider adsProvider = ADSProvider();
@@ -81,6 +80,7 @@ class _CinemaxState extends State<Cinemax>
     WidgetsBinding.instance.addObserver(this);
     firstTimeCheck();
     getCurrentAdultMode();
+    getCurrentThemeMode();
     getInterstitialAdForResume();
   }
 

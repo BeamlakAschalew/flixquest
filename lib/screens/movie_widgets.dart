@@ -2099,7 +2099,6 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     });
     getMoreData();
     initMixpanel();
-    getInterstitialAdForMovieRecommendation();
   }
 
   Future<String> getMoreData() async {
@@ -2126,18 +2125,6 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     });
 
     return "success";
-  }
-
-  void getInterstitialAdForMovieRecommendation() {
-    startAppSdk.loadInterstitialAd().then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
   }
 
   Future<void> initMixpanel() async {
@@ -2189,25 +2176,6 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                     heroId: '${movieList![index].id}',
                                   );
                                 }));
-
-                                if (interstitialAd != null) {
-                                  interstitialAd!.show().then((shown) {
-                                    if (shown) {
-                                      setState(() {
-                                        // NOTE interstitial ad can be shown only once
-                                        interstitialAd = null;
-
-                                        // NOTE load again
-                                        getInterstitialAdForMovieRecommendation();
-                                      });
-                                    }
-
-                                    return null;
-                                  }).onError((error, stackTrace) {
-                                    debugPrint(
-                                        "Error showing Interstitial ad: $error");
-                                  });
-                                }
                               },
                               child: Container(
                                 color: isDark
@@ -2358,7 +2326,6 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
     });
     getMoreData();
     initMixpanel();
-    getInterstitialAdForMovieSimilars();
   }
 
   Future<String> getMoreData() async {
@@ -2389,18 +2356,6 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
 
   Future<void> initMixpanel() async {
     mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
-  }
-
-  void getInterstitialAdForMovieSimilars() {
-    startAppSdk.loadInterstitialAd().then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
   }
 
   @override
@@ -2447,25 +2402,6 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                     heroId: '${movieList![index].id}',
                                   );
                                 }));
-
-                                if (interstitialAd != null) {
-                                  interstitialAd!.show().then((shown) {
-                                    if (shown) {
-                                      setState(() {
-                                        // NOTE interstitial ad can be shown only once
-                                        this.interstitialAd = null;
-
-                                        // NOTE load again
-                                        getInterstitialAdForMovieSimilars();
-                                      });
-                                    }
-
-                                    return null;
-                                  }).onError((error, stackTrace) {
-                                    debugPrint(
-                                        "Error showing Interstitial ad: $error");
-                                  });
-                                }
                               },
                               child: Container(
                                 color: isDark

@@ -24,7 +24,10 @@ class _SettingsState extends State<Settings> {
             SwitchListTile(
               activeColor: const Color(0xFFF57C00),
               value: adultChange.isAdult,
-              secondary: const Icon(Icons.explicit),
+              secondary: const Icon(
+                Icons.explicit,
+                color: Color(0xFFF57C00),
+              ),
               title: const Text('Include Adult'),
               onChanged: (bool value) {
                 setState(() {
@@ -35,7 +38,10 @@ class _SettingsState extends State<Settings> {
             SwitchListTile(
               activeColor: const Color(0xFFF57C00),
               value: themeChange.darktheme,
-              secondary: const Icon(Icons.dark_mode),
+              secondary: const Icon(
+                Icons.dark_mode,
+                color: Color(0xFFF57C00),
+              ),
               title: const Text('Dark mode'),
               onChanged: (bool value) {
                 setState(() {

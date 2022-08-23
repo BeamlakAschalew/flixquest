@@ -6,38 +6,6 @@ import 'package:flutter/material.dart';
 
 class Styles {
   static ThemeData themeData(bool isDarkTheme, BuildContext context) {
-    // if (isDarkTheme == true) {
-    //   return ThemeData.dark().copyWith(
-    //     iconTheme: const IconThemeData(color: const Color(0xFFF57C00)),
-    //     appBarTheme: const AppBarTheme(
-    //       backgroundColor: Color(0xFFF57C00),
-    //       iconTheme: const IconThemeData(
-    //         color: Color(0xFF000000),
-    //       ),
-    //       titleTextStyle: TextStyle(
-    //           color: Colors.black, fontFamily: 'PoppinsSB', fontSize: 21),
-    //     ),
-    //   );
-    // } else {
-    //   return ThemeData.light().copyWith(
-    //     iconTheme: const IconThemeData(
-    //       color: Color(0xFFF57C00),
-    //     ),
-    //     appBarTheme: const AppBarTheme(
-    //         backgroundColor: Color(0xFFF57C00),
-    //         iconTheme: const IconThemeData(
-    //           color: Color(0xFF000000),
-    //         ),
-    //         titleTextStyle: TextStyle(
-    //             color: Colors.black, fontFamily: 'PoppinsSB', fontSize: 21)),
-    //     tabBarTheme: TabBarTheme(
-    //       unselectedLabelColor: Colors.white54,
-    //       labelColor: Colors.white,
-    //       labelStyle: TextStyle(color: Colors.black),
-    //       indicatorSize: TabBarIndicatorSize.tab,
-    //     ),
-    //   );
-    // }
     return ThemeData(
       useMaterial3: false,
       textTheme: isDarkTheme
