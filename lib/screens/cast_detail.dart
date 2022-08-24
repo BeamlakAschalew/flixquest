@@ -4,6 +4,7 @@ import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/credits.dart';
@@ -27,11 +28,30 @@ class _CastDetailPageState extends State<CastDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CastDetailPage> {
   late TabController tabController;
+  var startAppSdkCastDetail = StartAppSdk();
+  StartAppBannerAd? bannerAdCastDetail;
+
+  void getBannerADForCastDetail() {
+    startAppSdkCastDetail
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAdCastDetail = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
+    getBannerADForCastDetail();
   }
 
   @override
@@ -224,6 +244,20 @@ class _CastDetailPageState extends State<CastDetailPage>
                                                               .getPersonDetails(
                                                                   widget.cast!
                                                                       .id!)),
+                                                      bannerAdCastDetail != null
+                                                          ? Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      bottom:
+                                                                          5.0,
+                                                                      top: 5.0),
+                                                              child:
+                                                                  StartAppBanner(
+                                                                bannerAdCastDetail!,
+                                                              ),
+                                                            )
+                                                          : Container(),
                                                       PersonSocialLinks(
                                                         api: Endpoints
                                                             .getExternalLinksForPerson(

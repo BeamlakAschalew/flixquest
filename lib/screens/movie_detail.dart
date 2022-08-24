@@ -34,10 +34,10 @@ class _MovieDetailPageState extends State<MovieDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<MovieDetailPage> {
   late TabController tabController;
-  var startAppSdk = StartAppSdk();
-  var startAppSdk1 = StartAppSdk();
-  StartAppBannerAd? bannerAd;
-  StartAppBannerAd? bannerAd1;
+  var startAppSdkMovieDetail = StartAppSdk();
+  var startAppSdkMovieDetail1 = StartAppSdk();
+  StartAppBannerAd? bannerAdMovieDetail;
+  StartAppBannerAd? bannerAdMovieDetail1;
 
   @override
   void initState() {
@@ -47,9 +47,11 @@ class _MovieDetailPageState extends State<MovieDetailPage>
   }
 
   void getBannerADForMovieDetail() {
-    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
+    startAppSdkMovieDetail
+        .loadBannerAd(StartAppBannerType.BANNER)
+        .then((bannerAd) {
       setState(() {
-        this.bannerAd = bannerAd;
+        bannerAdMovieDetail = bannerAd;
       });
     }).onError<StartAppException>((ex, stackTrace) {
       debugPrint("Error loading Banner ad: ${ex.message}");
@@ -57,9 +59,11 @@ class _MovieDetailPageState extends State<MovieDetailPage>
       debugPrint("Error loading Banner ad: $error");
     });
 
-    startAppSdk1.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
+    startAppSdkMovieDetail1
+        .loadBannerAd(StartAppBannerType.BANNER)
+        .then((bannerAd) {
       setState(() {
-        bannerAd1 = bannerAd;
+        bannerAdMovieDetail1 = bannerAd;
       });
     }).onError<StartAppException>((ex, stackTrace) {
       debugPrint("Error loading Banner ad: ${ex.message}");
@@ -455,8 +459,9 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                       Endpoints.movieDetailsUrl(
                                                           widget.movie.id!),
                                                 ),
-                                                bannerAd != null
-                                                    ? StartAppBanner(bannerAd!)
+                                                bannerAdMovieDetail != null
+                                                    ? StartAppBanner(
+                                                        bannerAdMovieDetail!)
                                                     : Container(),
                                                 ScrollingArtists(
                                                   api: Endpoints.getCreditsUrl(
@@ -468,6 +473,10 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                   api: Endpoints.getImages(
                                                       widget.movie.id!),
                                                 ),
+                                                bannerAdMovieDetail1 != null
+                                                    ? StartAppBanner(
+                                                        bannerAdMovieDetail1!)
+                                                    : Container(),
                                                 MovieVideosDisplay(
                                                   api: Endpoints.getVideos(
                                                       widget.movie.id!),
@@ -479,9 +488,6 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                     widget.movie.id!,
                                                   ),
                                                 ),
-                                                bannerAd1 != null
-                                                    ? StartAppBanner(bannerAd1!)
-                                                    : Container(),
                                                 BelongsToCollectionWidget(
                                                   api:
                                                       Endpoints.movieDetailsUrl(

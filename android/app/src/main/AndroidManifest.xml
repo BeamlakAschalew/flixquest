@@ -68,6 +68,9 @@
         <meta-data
             android:name="com.startapp.sdk.APPLICATION_ID"
             android:value="207531974" />
+            <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5980157262992751~3210299612"/>
     </application>
 </manifest>
 

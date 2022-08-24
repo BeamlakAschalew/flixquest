@@ -33,9 +33,6 @@ class _CinemaxState extends State<Cinemax>
   late bool isFirstLaunch = true;
   AdultmodeProvider adultmodeProvider = AdultmodeProvider();
   DarkthemeProvider themeChangeProvider = DarkthemeProvider();
-  ADSProvider adsProvider = ADSProvider();
-  var startAppSdk = StartAppSdk();
-  StartAppInterstitialAd? interstitialAd;
 
   void firstTimeCheck() async {
     final prefs = await SharedPreferences.getInstance();
@@ -46,26 +43,6 @@ class _CinemaxState extends State<Cinemax>
         isFirstLaunch = false;
       }
     });
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final isResumed = state == AppLifecycleState.resumed;
-    if (isResumed == true) {
-      if (interstitialAd != null) {
-        interstitialAd!.show().then((shown) {
-          if (shown) {
-            setState(() {
-              interstitialAd = null;
-            });
-          }
-
-          return null;
-        }).onError((error, stackTrace) {
-          debugPrint("Error showing Interstitial ad: $error");
-        });
-      }
-    }
   }
 
   @override
@@ -81,19 +58,6 @@ class _CinemaxState extends State<Cinemax>
     firstTimeCheck();
     getCurrentAdultMode();
     getCurrentThemeMode();
-    getInterstitialAdForResume();
-  }
-
-  void getInterstitialAdForResume() {
-    startAppSdk.loadInterstitialAd().then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
   }
 
   void getCurrentAdultMode() async {
@@ -116,38 +80,12 @@ class _CinemaxState extends State<Cinemax>
           ChangeNotifierProvider(create: (_) {
             return themeChangeProvider;
           }),
-          ChangeNotifierProvider(create: (_) {
-            return adsProvider;
-          })
         ],
-        child: Consumer3<AdultmodeProvider, DarkthemeProvider, ADSProvider>(
-            builder: (context, adultmodeProvider, themeChangeProvider,
-                adsProvider, snapshot) {
+        child: Consumer2<AdultmodeProvider, DarkthemeProvider>(builder:
+            (context, adultmodeProvider, themeChangeProvider, snapshot) {
           return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Cinemax',
-              // theme: ThemeData.dark().copyWith(
-              //     useMaterial3: false,
-              //     textTheme: ThemeData.dark().textTheme.apply(
-              //           fontFamily: 'Poppins',
-              //         ),
-              //     //primaryColor: const Color(0xFFF57C00),
-              //     iconTheme: const IconThemeData(color: Color(0xFFF57C00)),
-              //     //backgroundColor: Colors.black,
-              //     colorScheme: const ColorScheme(
-              //         primary: Color(0xFFF57C00),
-              //         primaryContainer: Color(0xFF8f4700),
-              //         secondary: Color(0xFF202124),
-              //         secondaryContainer: Color(0xFF141517),
-              //         surface: Color(0xFFF57C00),
-              //         background: Color(0xFF202124),
-              //         error: Color(0xFFFF0000),
-              //         onPrimary: Color(0xFF202124),
-              //         onSecondary: Color(0xFF141517),
-              //         onSurface: Color(0xFF141517),
-              //         onBackground: Color(0xFFF57C00),
-              //         onError: Color(0xFFFFFFFF),
-              //         brightness: Brightness.dark)),
               theme: Styles.themeData(themeChangeProvider.darktheme, context),
               home: isFirstLaunch
                   ? const LandingScreen()

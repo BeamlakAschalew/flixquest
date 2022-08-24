@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -38,11 +39,30 @@ class _SeasonsDetailState extends State<SeasonsDetail>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<SeasonsDetail> {
   late TabController tabController;
+  var startAppSdkSeasonDetail = StartAppSdk();
+  StartAppBannerAd? bannerAdSeasonDetail;
+
+  void getBannerADForSeasonDetail() {
+    startAppSdkSeasonDetail
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAdSeasonDetail = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 4, vsync: this);
+    getBannerADForSeasonDetail();
   }
 
   @override
@@ -341,6 +361,22 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                                               .seasonNumber!),
                                                   title: 'Cast',
                                                 ),
+                                                bannerAdSeasonDetail != null
+                                                    ? Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                bottom: 5.0),
+                                                        child: SizedBox(
+                                                          height: 60,
+                                                          width:
+                                                              double.infinity,
+                                                          child: StartAppBanner(
+                                                            bannerAdSeasonDetail!,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : Container(),
                                                 TVSeasonImagesDisplay(
                                                   title: 'Images',
                                                   api: Endpoints

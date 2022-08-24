@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 import '../provider/adultmode_provider.dart';
 import '/models/tv.dart';
@@ -28,11 +29,30 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CreatedByPersonDetailPage> {
   late TabController tabController;
+  var startAppSdkCreatedbyDetail = StartAppSdk();
+  StartAppBannerAd? bannerAdCreatedbyDetail;
+
+  void getBannerADForCreatedByDetail() {
+    startAppSdkCreatedbyDetail
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAdCreatedbyDetail = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
+    getBannerADForCreatedByDetail();
   }
 
   @override
@@ -211,6 +231,21 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                                                   widget
                                                                       .createdBy!
                                                                       .id!)),
+                                                      bannerAdCreatedbyDetail !=
+                                                              null
+                                                          ? Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                          .only(
+                                                                      bottom:
+                                                                          5.0,
+                                                                      top: 5.0),
+                                                              child:
+                                                                  StartAppBanner(
+                                                                bannerAdCreatedbyDetail!,
+                                                              ),
+                                                            )
+                                                          : Container(),
                                                       PersonSocialLinks(
                                                         api: Endpoints
                                                             .getExternalLinksForPerson(

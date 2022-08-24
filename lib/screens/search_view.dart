@@ -42,21 +42,6 @@ class Search extends SearchDelegate<String> {
         headline6: TextStyle(
             color: isDark ? Colors.white : Colors.black, fontFamily: 'Poppins'),
       ),
-      // colorScheme: const ColorScheme(
-      //   primary: Color(0xFFF57C00),
-      //   primaryContainer: Color(0xFF8f4700),
-      //   secondary: Color(0xFF202124),
-      //   secondaryContainer: Color(0xFF141517),
-      //   surface: Color(0xFFF57C00),
-      //   background: Color(0xFF202124),
-      //   error: Color(0xFFFF0000),
-      //   onPrimary: Color(0xFF202124),
-      //   onSecondary: Color(0xFF141517),
-      //   onSurface: Color(0xFF141517),
-      //   onBackground: Color(0xFFF57C00),
-      //   onError: Color(0xFFFFFFFF),
-      //   brightness: Brightness.dark,
-      // ),
       textSelectionTheme: TextSelectionThemeData(
         cursorColor: Color(0xFFF57C00),
         selectionHandleColor: isDark ? Color(0xFFFFFFFF) : Color(0xFF000000),
@@ -199,9 +184,11 @@ class Search extends SearchDelegate<String> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('assets/images/404.png'),
-            const Text(
+            Text(
               'The term you entered didn\'t bring any results',
-              style: TextStyle(fontFamily: 'Poppins'),
+              style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: isDark ? Colors.white : Colors.black),
             )
           ],
         ),
@@ -343,11 +330,13 @@ class Search extends SearchDelegate<String> {
                                         children: [
                                           Text(
                                             moviesList[index].title!,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                                 fontFamily: 'PoppinsSB',
                                                 fontSize: 15,
-                                                overflow:
-                                                    TextOverflow.ellipsis),
+                                                overflow: TextOverflow.ellipsis,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black),
                                           ),
                                           Row(
                                             children: <Widget>[
@@ -357,8 +346,11 @@ class Search extends SearchDelegate<String> {
                                                 moviesList[index]
                                                     .voteAverage!
                                                     .toStringAsFixed(1),
-                                                style: const TextStyle(
-                                                    fontFamily: 'Poppins'),
+                                                style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : Colors.black),
                                               ),
                                             ],
                                           ),
@@ -489,11 +481,13 @@ class Search extends SearchDelegate<String> {
                                         children: [
                                           Text(
                                             tvList[index].originalName!,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                                 fontFamily: 'PoppinsSB',
                                                 fontSize: 15,
-                                                overflow:
-                                                    TextOverflow.ellipsis),
+                                                overflow: TextOverflow.ellipsis,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black),
                                           ),
                                           Row(
                                             children: <Widget>[
@@ -503,8 +497,11 @@ class Search extends SearchDelegate<String> {
                                                 tvList[index]
                                                     .voteAverage!
                                                     .toStringAsFixed(1),
-                                                style: const TextStyle(
-                                                    fontFamily: 'Poppins'),
+                                                style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : Colors.black),
                                               ),
                                             ],
                                           ),
@@ -619,8 +616,12 @@ class Search extends SearchDelegate<String> {
                                 children: [
                                   Text(
                                     personList[index].name!,
-                                    style: const TextStyle(
-                                        fontFamily: 'PoppinsSB', fontSize: 17),
+                                    style: TextStyle(
+                                        fontFamily: 'PoppinsSB',
+                                        fontSize: 17,
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ],

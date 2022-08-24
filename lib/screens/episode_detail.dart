@@ -3,6 +3,7 @@
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/crew_detail.dart';
 import 'package:provider/provider.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -41,11 +42,31 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
         AutomaticKeepAliveClientMixin<EpisodeDetailPage> {
   late TabController tabController;
   late Mixpanel mixpanel;
+  var startAppSdkEpisodeDetail = StartAppSdk();
+  StartAppBannerAd? bannerAdEpisodeDetail;
+
+  void getBannerADForEpisodeDetail() {
+    startAppSdkEpisodeDetail
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        bannerAdEpisodeDetail = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     initMixpanel();
     tabController = TabController(length: 4, vsync: this);
+    getBannerADForEpisodeDetail();
   }
 
   Future<void> initMixpanel() async {
@@ -497,6 +518,15 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                     ),
                                                   ),
                                                 ),
+                                                bannerAdEpisodeDetail != null
+                                                    ? SizedBox(
+                                                        height: 60,
+                                                        width: double.infinity,
+                                                        child: StartAppBanner(
+                                                          bannerAdEpisodeDetail!,
+                                                        ),
+                                                      )
+                                                    : Container(),
                                                 ScrollingTVEpisodeCasts(
                                                   api: Endpoints
                                                       .getEpisodeCredits(
