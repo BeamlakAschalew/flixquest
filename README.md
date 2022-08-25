@@ -44,7 +44,7 @@ If opening an issue without following the issue template, we will ignore the iss
 
 ### Disclaimer
 
-The developers of this application does not have any affiliation with the content providers available.
+The developers of this application does not have any affiliation with the content providers like TMDB or third party websites.
 
 Cinemax does not host any content on the app, and has no control over what media is put up or taken down.
 
@@ -55,5 +55,5 @@ It merely scrapes 3rd-party websites that are publicly accessable via any regula
 ---
 <h4 align='center'>© 2022 ツ BeamlakAschalew</h4>
 
-<!-- DO NOT REMOVE THIS CREDIT 🤬 🤬 -->
+<!-- DO NOT REMOVE THIS CREDIT 🤬 -->
 
