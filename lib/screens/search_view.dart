@@ -5,6 +5,7 @@ import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../provider/imagequality_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/person.dart';
 import 'package:flutter/material.dart';
@@ -129,7 +130,8 @@ class Search extends SearchDelegate<String> {
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
                           return errorMessageWidget(isDark);
                         } else {
-                          return activeMovieSearch(snapshot.data!, isDark);
+                          return activeMovieSearch(
+                              snapshot.data!, isDark, context);
                         }
                     }
                   },
@@ -146,7 +148,8 @@ class Search extends SearchDelegate<String> {
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
                           return errorMessageWidget(isDark);
                         } else {
-                          return activeTVSearch(snapshot.data!, isDark);
+                          return activeTVSearch(
+                              snapshot.data!, isDark, context);
                         }
                     }
                   },
@@ -163,7 +166,8 @@ class Search extends SearchDelegate<String> {
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
                           return errorMessageWidget(isDark);
                         } else {
-                          return activePersonSearch(snapshot.data!, isDark);
+                          return activePersonSearch(
+                              snapshot.data!, isDark, context);
                         }
                     }
                   },
@@ -224,7 +228,10 @@ class Search extends SearchDelegate<String> {
     );
   }
 
-  Widget activeMovieSearch(List<Movie> moviesList, bool isDark) {
+  Widget activeMovieSearch(
+      List<Movie> moviesList, bool isDark, BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
         color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
         child: Column(
@@ -293,7 +300,7 @@ class Search extends SearchDelegate<String> {
                                                     fadeInCurve: Curves.easeIn,
                                                     imageUrl:
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             moviesList[index]
                                                                 .posterPath!,
                                                     imageBuilder: (context,
@@ -378,7 +385,9 @@ class Search extends SearchDelegate<String> {
         ));
   }
 
-  Widget activeTVSearch(List<TV> tvList, bool isDark) {
+  Widget activeTVSearch(List<TV> tvList, bool isDark, BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
         color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
         child: Column(
@@ -444,7 +453,7 @@ class Search extends SearchDelegate<String> {
                                                     fadeInCurve: Curves.easeIn,
                                                     imageUrl:
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             tvList[index]
                                                                 .posterPath!,
                                                     imageBuilder: (context,
@@ -529,7 +538,10 @@ class Search extends SearchDelegate<String> {
         ));
   }
 
-  Widget activePersonSearch(List<Person>? personList, bool isDark) {
+  Widget activePersonSearch(
+      List<Person>? personList, bool isDark, BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
         color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
         child: ListView.builder(
@@ -582,7 +594,7 @@ class Search extends SearchDelegate<String> {
                                                 milliseconds: 700),
                                             fadeInCurve: Curves.easeIn,
                                             imageUrl: TMDB_BASE_IMAGE_URL +
-                                                'w500/' +
+                                                imageQuality +
                                                 personList[index].profilePath!,
                                             imageBuilder:
                                                 (context, imageProvider) =>

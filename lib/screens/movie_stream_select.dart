@@ -10,7 +10,7 @@ import 'movie_stream.dart';
 class MovieStreamSelect extends StatefulWidget {
   final String movieName;
   final int movieId;
-  final String? movieImdbId;
+  final dynamic? movieImdbId;
   const MovieStreamSelect({
     Key? key,
     required this.movieName,

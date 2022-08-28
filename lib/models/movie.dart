@@ -146,7 +146,7 @@ class MovieDetails {
   String? status;
   int? budget;
   int? revenue;
-  String? imdbId;
+  dynamic imdbId;
 
   List<ProductionCompanies>? productionCompanies;
   List<ProductionCountries>? productionCountries;

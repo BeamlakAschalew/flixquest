@@ -3,6 +3,7 @@
 import 'package:provider/provider.dart';
 
 import '../provider/darktheme_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/function.dart';
 import '/models/images.dart';
@@ -49,6 +50,8 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
@@ -99,7 +102,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                             child: FadeInImage(
                                               image: NetworkImage(
                                                   TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
+                                                      imageQuality +
                                                       personImages!
                                                           .profile![index]
                                                           .filePath!),
@@ -167,6 +170,8 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return personMoviesList == null
         ? const Center(
             child: CircularProgressIndicator(),
@@ -257,12 +262,11 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                               fit: BoxFit.cover,
                                                             )
                                                           : FadeInImage(
-                                                              image: NetworkImage(
-                                                                  TMDB_BASE_IMAGE_URL +
-                                                                      'w500/' +
-                                                                      personMoviesList![
-                                                                              index]
-                                                                          .posterPath!),
+                                                              image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                                                  imageQuality +
+                                                                  personMoviesList![
+                                                                          index]
+                                                                      .posterPath!),
                                                               fit: BoxFit.cover,
                                                               placeholder:
                                                                   const AssetImage(
@@ -339,6 +343,8 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return personTVList == null
         ? const Center(
             child: CircularProgressIndicator(),
@@ -429,12 +435,11 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
                                                               fit: BoxFit.cover,
                                                             )
                                                           : FadeInImage(
-                                                              image: NetworkImage(
-                                                                  TMDB_BASE_IMAGE_URL +
-                                                                      'w500/' +
-                                                                      personTVList![
-                                                                              index]
-                                                                          .posterPath!),
+                                                              image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                                                  imageQuality +
+                                                                  personTVList![
+                                                                          index]
+                                                                      .posterPath!),
                                                               fit: BoxFit.cover,
                                                               placeholder:
                                                                   const AssetImage(

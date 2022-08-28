@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../provider/adultmode_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/credits.dart';
@@ -58,6 +59,8 @@ class _CrewDetailPageState extends State<CrewDetailPage>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -332,7 +335,7 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                       : FadeInImage(
                                           image: NetworkImage(
                                               TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
+                                                  imageQuality +
                                                   '${widget.crew!.profilePath}'),
                                           fit: BoxFit.cover,
                                           placeholder: const AssetImage(

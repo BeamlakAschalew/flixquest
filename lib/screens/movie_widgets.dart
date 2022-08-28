@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../provider/ads_provider.dart';
 import '../provider/adultmode_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/constants/app_constants.dart';
 import '/models/social_icons_icons.dart';
 import '/models/videos.dart';
@@ -207,6 +208,8 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
   Widget build(BuildContext context) {
     super.build(context);
     deviceHeight = MediaQuery.of(context).size.height;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         Row(
@@ -265,7 +268,7 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
                               fadeInDuration: Duration(milliseconds: 700),
                               fadeInCurve: Curves.easeIn,
                               imageUrl: TMDB_BASE_IMAGE_URL +
-                                  'w500/' +
+                                  imageQuality +
                                   moviesList![index].posterPath!,
                               imageBuilder: (context, imageProvider) =>
                                   Container(
@@ -398,6 +401,8 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         Row(
@@ -475,7 +480,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                                   fadeInCurve: Curves.easeIn,
                                                   imageUrl:
                                                       TMDB_BASE_IMAGE_URL +
-                                                          'w500/' +
+                                                          imageQuality +
                                                           moviesList![index]
                                                               .posterPath!,
                                                   imageBuilder: (context,
@@ -577,6 +582,8 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
 
   @override
   Widget build(BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         credits == null
@@ -663,7 +670,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                                               : FadeInImage(
                                                   image: NetworkImage(
                                                       TMDB_BASE_IMAGE_URL +
-                                                          'w500/' +
+                                                          imageQuality +
                                                           credits!.cast![index]
                                                               .profilePath!),
                                                   fit: BoxFit.cover,
@@ -846,6 +853,8 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return belongsToCollection == null
         ? const Center(child: CircularProgressIndicator())
         : belongsToCollection?.id == null
@@ -865,7 +874,7 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                               placeholder:
                                   const AssetImage('assets/images/loading.gif'),
                               image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                  'w500/' +
+                                  imageQuality +
                                   belongsToCollection!.backdropPath!)),
                     ),
                     Column(
@@ -984,6 +993,8 @@ class _PartsListState extends State<PartsList> {
 
   @override
   Widget build(BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         Row(
@@ -1054,7 +1065,7 @@ class _PartsListState extends State<PartsList> {
                                               : FadeInImage(
                                                   image: NetworkImage(
                                                       TMDB_BASE_IMAGE_URL +
-                                                          'w500/' +
+                                                          imageQuality +
                                                           collectionMovieList![
                                                                   index]
                                                               .posterPath!),
@@ -1151,6 +1162,8 @@ class _MovieImagesState extends State<MovieImagesDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: [
         movieImages == null
@@ -1214,7 +1227,7 @@ class _MovieImagesState extends State<MovieImagesDisplay> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: FadeInImage(
                                   image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                      'w500/' +
+                                      imageQuality +
                                       movieImages!.backdrop![index].filePath!),
                                   fit: BoxFit.cover,
                                   placeholder: const AssetImage(
@@ -1453,7 +1466,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
             return MovieStreamSelect(
               movieId: widget.movieId!,
               movieName: widget.movieName!,
-              movieImdbId: movieDetails!.imdbId!,
+              movieImdbId: movieDetails!.imdbId,
             );
           }));
         },
@@ -1784,6 +1797,8 @@ class _CastTabState extends State<CastTab>
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -1852,7 +1867,7 @@ class _CastTabState extends State<CastTab>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             credits!
                                                                 .cast![index]
                                                                 .profilePath!),
@@ -1936,6 +1951,8 @@ class _CrewTabState extends State<CrewTab>
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     super.build(context);
     return credits == null
         ? Container(
@@ -2007,7 +2024,7 @@ class _CrewTabState extends State<CrewTab>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             credits!
                                                                 .crew![index]
                                                                 .profilePath!),
@@ -2151,6 +2168,8 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return movieList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2231,7 +2250,7 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                                       : FadeInImage(
                                                           image: NetworkImage(
                                                               TMDB_BASE_IMAGE_URL +
-                                                                  'w500/' +
+                                                                  imageQuality +
                                                                   movieList![
                                                                           index]
                                                                       .posterPath!),
@@ -2407,6 +2426,8 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return movieList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2486,7 +2507,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                                       : FadeInImage(
                                                           image: NetworkImage(
                                                               TMDB_BASE_IMAGE_URL +
-                                                                  'w500/' +
+                                                                  imageQuality +
                                                                   movieList![
                                                                           index]
                                                                       .posterPath!),
@@ -2664,6 +2685,8 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return moviesList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2767,7 +2790,7 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                                                       Curves
                                                                           .easeIn,
                                                                   imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                      'w500/' +
+                                                                      imageQuality +
                                                                       moviesList![
                                                                               index]
                                                                           .posterPath!,
@@ -2980,6 +3003,8 @@ class _ParticularStreamingServiceMoviesState
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return moviesList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -3084,7 +3109,7 @@ class _ParticularStreamingServiceMoviesState
                                                                       Curves
                                                                           .easeIn,
                                                                   imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                      'w500/' +
+                                                                      imageQuality +
                                                                       moviesList![
                                                                               index]
                                                                           .posterPath!,
@@ -3179,18 +3204,6 @@ class _ParticularStreamingServiceMoviesState
                                     );
                                   }),
                             ),
-                            bannerAdMovieProviders != null
-                                ? Padding(
-                                    padding: const EdgeInsets.only(bottom: 5.0),
-                                    child: SizedBox(
-                                      height: 60,
-                                      width: double.infinity,
-                                      child: StartAppBanner(
-                                        bannerAdMovieProviders!,
-                                      ),
-                                    ),
-                                  )
-                                : Container(),
                           ],
                         ),
                       ),
@@ -3201,6 +3214,18 @@ class _ParticularStreamingServiceMoviesState
                           padding: EdgeInsets.all(8.0),
                           child: Center(child: CircularProgressIndicator()),
                         )),
+                    bannerAdMovieProviders != null
+                        ? Padding(
+                            padding: const EdgeInsets.only(bottom: 5.0),
+                            child: SizedBox(
+                              height: 60,
+                              width: double.infinity,
+                              child: StartAppBanner(
+                                bannerAdMovieProviders!,
+                              ),
+                            ),
+                          )
+                        : Container(),
                   ],
                 ));
   }
@@ -3484,6 +3509,8 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return watchProviders == null
         ? const Center(child: CircularProgressIndicator())
         : Container(
@@ -3570,7 +3597,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             watchProviders!
                                                                 .buy![index]
                                                                 .logoPath!),
@@ -3633,7 +3660,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             watchProviders!
                                                                 .flatRate![
                                                                     index]
@@ -3696,7 +3723,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             watchProviders!
                                                                 .rent![index]
                                                                 .logoPath!),
@@ -3904,6 +3931,8 @@ class _CollectionMoviesState extends State<CollectionMovies> {
 
   @override
   Widget build(BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
       color: const Color(0xFF202124),
       child: moviesList == null
@@ -3964,7 +3993,7 @@ class _CollectionMoviesState extends State<CollectionMovies> {
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             moviesList![index]
                                                                 .posterPath!),
                                                     fit: BoxFit.cover,

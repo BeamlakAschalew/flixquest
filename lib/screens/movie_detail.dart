@@ -10,6 +10,7 @@ import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../provider/ads_provider.dart';
 import '../provider/adultmode_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/movie.dart';
@@ -75,7 +76,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    // var movieDetailBanner1 = Provider.of<ADSProvider>(context).bannerAd7;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     super.build(context);
     return Scaffold(
       body: Stack(
@@ -115,16 +117,6 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                               fit: BoxFit.cover,
                             ),
                           ),
-                    // : FadeInImage(
-                    //     width: double.infinity,
-                    //     height: double.infinity,
-                    //     image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                    //         'original/' +
-                    //         widget.movie.backdropPath!),
-                    //     fit: BoxFit.cover,
-                    //     placeholder:
-                    //         const AssetImage('assets/images/loading_5.gif'),
-                    //   ),
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -561,7 +553,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                           Duration(milliseconds: 700),
                                       fadeInCurve: Curves.easeIn,
                                       imageUrl: TMDB_BASE_IMAGE_URL +
-                                          'w500/' +
+                                          imageQuality +
                                           widget.movie.posterPath!,
                                       imageBuilder: (context, imageProvider) =>
                                           Container(

@@ -376,8 +376,6 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                               ? Color(0xFF202124)
                                               : Color(0xFFFFFFFF),
                                           child: SingleChildScrollView(
-                                            physics:
-                                                const BouncingScrollPhysics(),
                                             child: Column(
                                               children: <Widget>[
                                                 Row(

@@ -7,6 +7,7 @@ import 'package:readmore/readmore.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../constants/app_constants.dart';
 import '../provider/darktheme_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/models/tv.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,8 @@ class _TVDetailPageState extends State<TVDetailPage>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -576,7 +579,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                                           Duration(milliseconds: 700),
                                       fadeInCurve: Curves.easeIn,
                                       imageUrl: TMDB_BASE_IMAGE_URL +
-                                          'w500/' +
+                                          imageQuality +
                                           widget.tvSeries.posterPath!,
                                       imageBuilder: (context, imageProvider) =>
                                           Container(

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
 
 import '../provider/adultmode_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/models/person.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
@@ -61,6 +62,8 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -341,7 +344,7 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         )
                                       : FadeInImage(
                                           image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                              'w500/' +
+                                              imageQuality +
                                               '${widget.person!.profilePath}'),
                                           fit: BoxFit.cover,
                                           placeholder: const AssetImage(

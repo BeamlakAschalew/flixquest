@@ -4,6 +4,7 @@ import 'package:startapp_sdk/startapp.dart';
 import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../provider/darktheme_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/movie.dart';
@@ -53,6 +54,8 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -241,7 +244,7 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                   )
                                 : FadeInImage(
                                     image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                        'w500/' +
+                                        imageQuality +
                                         widget
                                             .belongsToCollection!.posterPath!),
                                     fit: BoxFit.cover,

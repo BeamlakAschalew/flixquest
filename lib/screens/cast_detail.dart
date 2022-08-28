@@ -2,6 +2,7 @@
 
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
@@ -58,6 +59,8 @@ class _CastDetailPageState extends State<CastDetailPage>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -337,7 +340,7 @@ class _CastDetailPageState extends State<CastDetailPage>
                                       : FadeInImage(
                                           image: NetworkImage(
                                               TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
+                                                  imageQuality +
                                                   '${widget.cast!.profilePath}'),
                                           fit: BoxFit.cover,
                                           placeholder: const AssetImage(

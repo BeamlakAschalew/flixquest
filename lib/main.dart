@@ -2,6 +2,7 @@
 import 'package:cinemax/constants/theme_data.dart';
 import 'package:cinemax/provider/ads_provider.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:cinemax/screens/landing_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,6 +34,7 @@ class _CinemaxState extends State<Cinemax>
   late bool isFirstLaunch = true;
   AdultmodeProvider adultmodeProvider = AdultmodeProvider();
   DarkthemeProvider themeChangeProvider = DarkthemeProvider();
+  ImagequalityProvider imagequalityProvider = ImagequalityProvider();
 
   void firstTimeCheck() async {
     final prefs = await SharedPreferences.getInstance();
@@ -80,9 +82,14 @@ class _CinemaxState extends State<Cinemax>
           ChangeNotifierProvider(create: (_) {
             return themeChangeProvider;
           }),
+          ChangeNotifierProvider(create: (_) {
+            return imagequalityProvider;
+          })
         ],
-        child: Consumer2<AdultmodeProvider, DarkthemeProvider>(builder:
-            (context, adultmodeProvider, themeChangeProvider, snapshot) {
+        child: Consumer3<AdultmodeProvider, DarkthemeProvider,
+                ImagequalityProvider>(
+            builder: (context, adultmodeProvider, themeChangeProvider,
+                imagequalityProvider, snapshot) {
           return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Cinemax',
@@ -121,7 +128,9 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Provider.of<AdultmodeProvider?>(context) == null
+    return Provider.of<AdultmodeProvider?>(context) == null ||
+            Provider.of<ImagequalityProvider?>(context) == null ||
+            Provider.of<DarkthemeProvider?>(context) == null
         ? const Center(
             child: CircularProgressIndicator(),
           )

@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../provider/ads_provider.dart';
 import '../provider/darktheme_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
@@ -213,8 +214,8 @@ class _DiscoverTVState extends State<DiscoverTV>
   Widget build(BuildContext context) {
     super.build(context);
     deviceHeight = MediaQuery.of(context).size.height;
-    deviceWidth = MediaQuery.of(context).size.width;
-    deviceAspectRatio = MediaQuery.of(context).size.aspectRatio;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
 
     return Column(
       children: <Widget>[
@@ -271,7 +272,7 @@ class _DiscoverTVState extends State<DiscoverTV>
                               fadeInDuration: Duration(milliseconds: 700),
                               fadeInCurve: Curves.easeIn,
                               imageUrl: TMDB_BASE_IMAGE_URL +
-                                  'w500/' +
+                                  imageQuality +
                                   tvList![index].posterPath!,
                               imageBuilder: (context, imageProvider) =>
                                   Container(
@@ -402,6 +403,8 @@ class _ScrollingTVState extends State<ScrollingTV>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         Row(
@@ -478,7 +481,7 @@ class _ScrollingTVState extends State<ScrollingTV>
                                                   fadeInCurve: Curves.easeIn,
                                                   imageUrl:
                                                       TMDB_BASE_IMAGE_URL +
-                                                          'w500/' +
+                                                          imageQuality +
                                                           tvList![index]
                                                               .posterPath!,
                                                   imageBuilder: (context,
@@ -582,6 +585,8 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         credits == null
@@ -668,7 +673,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                               : FadeInImage(
                                                   image: NetworkImage(
                                                       TMDB_BASE_IMAGE_URL +
-                                                          'w500/' +
+                                                          imageQuality +
                                                           credits!.cast![index]
                                                               .profilePath!),
                                                   fit: BoxFit.cover,
@@ -740,6 +745,8 @@ class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         credits == null
@@ -826,7 +833,7 @@ class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                                               : FadeInImage(
                                                   image: NetworkImage(
                                                       TMDB_BASE_IMAGE_URL +
-                                                          'w500/' +
+                                                          imageQuality +
                                                           credits!.cast![index]
                                                               .profilePath!),
                                                   fit: BoxFit.cover,
@@ -899,6 +906,8 @@ class _ScrollingTVEpisodeGuestStarsState
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         credits == null
@@ -989,7 +998,7 @@ class _ScrollingTVEpisodeGuestStarsState
                                           : FadeInImage(
                                               image: NetworkImage(
                                                   TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
+                                                      imageQuality +
                                                       credits!
                                                           .episodeGuestStars![
                                                               index]
@@ -1062,6 +1071,8 @@ class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         credits == null
@@ -1148,7 +1159,7 @@ class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                                               : FadeInImage(
                                                   image: NetworkImage(
                                                       TMDB_BASE_IMAGE_URL +
-                                                          'w500/' +
+                                                          imageQuality +
                                                           credits!.crew![index]
                                                               .profilePath!),
                                                   fit: BoxFit.cover,
@@ -1221,6 +1232,8 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         tvDetails == null
@@ -1308,7 +1321,7 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                                           : FadeInImage(
                                               image: NetworkImage(
                                                   TMDB_BASE_IMAGE_URL +
-                                                      'w500/' +
+                                                      imageQuality +
                                                       tvDetails!
                                                           .createdBy![index]
                                                           .profilePath!),
@@ -1370,6 +1383,8 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: [
         tvImages == null
@@ -1431,7 +1446,7 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: FadeInImage(
                                   image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                      'w500/' +
+                                      imageQuality +
                                       tvImages!.backdrop![index].filePath!),
                                   fit: BoxFit.cover,
                                   placeholder: const AssetImage(
@@ -1473,6 +1488,8 @@ class _TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: [
         tvImages == null
@@ -1534,7 +1551,7 @@ class _TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: FadeInImage(
                                   image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                      'w500/' +
+                                      imageQuality +
                                       tvImages!.poster![index].posterPath!),
                                   fit: BoxFit.cover,
                                   placeholder: const AssetImage(
@@ -1576,6 +1593,8 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
 
   @override
   Widget build(BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: [
         tvImages == null
@@ -1640,7 +1659,7 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: FadeInImage(
                                   image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                      'w500/' +
+                                      imageQuality +
                                       tvImages!.still![index].stillPath!),
                                   fit: BoxFit.cover,
                                   placeholder: const AssetImage(
@@ -1849,6 +1868,8 @@ class _TVCastTabState extends State<TVCastTab>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -1918,7 +1939,7 @@ class _TVCastTabState extends State<TVCastTab>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             credits!
                                                                 .cast![index]
                                                                 .profilePath!),
@@ -2037,6 +2058,8 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return tvDetails == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2118,7 +2141,7 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                                                       : FadeInImage(
                                                           image: NetworkImage(
                                                               TMDB_BASE_IMAGE_URL +
-                                                                  'w500/' +
+                                                                  imageQuality +
                                                                   tvDetails!
                                                                       .seasons![
                                                                           index]
@@ -2217,6 +2240,8 @@ class _TVCrewTabState extends State<TVCrewTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return credits == null
         ? Container(
@@ -2287,7 +2312,7 @@ class _TVCrewTabState extends State<TVCrewTab>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             credits!
                                                                 .crew![index]
                                                                 .profilePath!),
@@ -2430,6 +2455,8 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return tvList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2512,7 +2539,7 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                                       : FadeInImage(
                                                           image: NetworkImage(
                                                               TMDB_BASE_IMAGE_URL +
-                                                                  'w500/' +
+                                                                  imageQuality +
                                                                   tvList![index]
                                                                       .posterPath!),
                                                           fit: BoxFit.cover,
@@ -2687,6 +2714,8 @@ class _SimilarTVTabState extends State<SimilarTVTab>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return tvList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2766,7 +2795,7 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                                       : FadeInImage(
                                                           image: NetworkImage(
                                                               TMDB_BASE_IMAGE_URL +
-                                                                  'w500/' +
+                                                                  imageQuality +
                                                                   tvList![index]
                                                                       .posterPath!),
                                                           fit: BoxFit.cover,
@@ -3014,6 +3043,8 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return tvList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -3115,7 +3146,7 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                                                       Curves
                                                                           .easeIn,
                                                                   imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                      'w500/' +
+                                                                      imageQuality +
                                                                       tvList![index]
                                                                           .posterPath!,
                                                                   imageBuilder:
@@ -3561,6 +3592,8 @@ class _SeasonsListState extends State<SeasonsList> {
 
   @override
   Widget build(BuildContext context) {
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Column(
       children: <Widget>[
         Row(
@@ -3644,7 +3677,7 @@ class _SeasonsListState extends State<SeasonsList> {
                                                   : FadeInImage(
                                                       image: NetworkImage(
                                                           TMDB_BASE_IMAGE_URL +
-                                                              'w500/' +
+                                                              imageQuality +
                                                               tvDetails!
                                                                   .seasons![
                                                                       index]
@@ -3718,6 +3751,8 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
         color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
         child: tvDetails == null
@@ -3782,7 +3817,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                                   Duration(milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
                                               imageUrl: TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
+                                                  imageQuality +
                                                   tvDetails!.episodes![index]
                                                       .stillPath!,
                                               imageBuilder:
@@ -3899,6 +3934,8 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return watchProviders == null
         ? const Center(child: CircularProgressIndicator())
         : Container(
@@ -3992,7 +4029,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             watchProviders!
                                                                 .buy![index]
                                                                 .logoPath!),
@@ -4055,7 +4092,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             watchProviders!
                                                                 .flatRate![
                                                                     index]
@@ -4118,7 +4155,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             watchProviders!
                                                                 .ads![index]
                                                                 .logoPath!),
@@ -4181,7 +4218,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             watchProviders!
                                                                 .rent![index]
                                                                 .logoPath!),
@@ -4607,6 +4644,8 @@ class _ParticularStreamingServiceTVShowsState
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return tvList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -4709,7 +4748,7 @@ class _ParticularStreamingServiceTVShowsState
                                                                       Curves
                                                                           .easeIn,
                                                                   imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                      'w500/' +
+                                                                      imageQuality +
                                                                       tvList![index]
                                                                           .posterPath!,
                                                                   imageBuilder:
@@ -4860,6 +4899,8 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -4929,7 +4970,7 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             credits!
                                                                 .cast![index]
                                                                 .profilePath!),
@@ -5027,6 +5068,8 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -5102,7 +5145,7 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                                 : FadeInImage(
                                                     image: NetworkImage(
                                                         TMDB_BASE_IMAGE_URL +
-                                                            'w500/' +
+                                                            imageQuality +
                                                             credits!
                                                                 .episodeGuestStars![
                                                                     index]

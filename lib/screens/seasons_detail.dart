@@ -3,6 +3,7 @@ import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
 
+import '../provider/imagequality_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
@@ -69,6 +70,8 @@ class _SeasonsDetailState extends State<SeasonsDetail>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -279,8 +282,6 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                       physics: const PageScrollPhysics(),
                                       children: [
                                         SingleChildScrollView(
-                                          physics:
-                                              const BouncingScrollPhysics(),
                                           child: Container(
                                             color: isDark
                                                 ? Color(0xFF202124)
@@ -449,7 +450,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                           Duration(milliseconds: 700),
                                       fadeInCurve: Curves.easeIn,
                                       imageUrl: TMDB_BASE_IMAGE_URL +
-                                          'w500/' +
+                                          imageQuality +
                                           widget.tvDetails.backdropPath!,
                                       imageBuilder: (context, imageProvider) =>
                                           Container(
