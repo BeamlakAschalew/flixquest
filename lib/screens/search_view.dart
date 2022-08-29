@@ -403,7 +403,8 @@ class Search extends SearchDelegate<String> {
                         onTap: () {
                           mixpanel.track('Most viewed TV pages', properties: {
                             'TV series name': '${tvList[index].originalName}',
-                            'TV series id': '${tvList[index].id}'
+                            'TV series id': '${tvList[index].id}',
+                            'Is TV series adult?': '${tvList[index].adult}'
                           });
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
@@ -552,7 +553,8 @@ class Search extends SearchDelegate<String> {
                 onTap: () {
                   mixpanel.track('Most viewed person pages', properties: {
                     'Person name': '${personList[index].name}',
-                    'Person id': '${personList[index].id}'
+                    'Person id': '${personList[index].id}',
+                    'Is Person adult?': '${personList[index].adult}'
                   });
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return SearchedPersonDetailPage(

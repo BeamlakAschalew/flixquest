@@ -8,6 +8,7 @@ import 'package:startapp_sdk/startapp.dart';
 import '../provider/ads_provider.dart';
 import '../provider/adultmode_provider.dart';
 import '../provider/imagequality_provider.dart';
+import '../provider/mixpanel_provider.dart';
 import '/constants/app_constants.dart';
 import '/models/social_icons_icons.dart';
 import '/models/videos.dart';
@@ -185,7 +186,6 @@ class DiscoverMovies extends StatefulWidget {
 class _DiscoverMoviesState extends State<DiscoverMovies>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? moviesList;
-  late Mixpanel mixpanel;
   late double deviceHeight;
   @override
   void initState() {
@@ -197,11 +197,6 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
         moviesList = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -210,6 +205,7 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
     deviceHeight = MediaQuery.of(context).size.height;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         Row(
@@ -327,7 +323,6 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
   late int index;
   List<Movie>? moviesList;
   MovieDetails? movieDetails;
-  late Mixpanel mixpanel;
   final ScrollController _scrollController = ScrollController();
 
   int pageNum = 2;
@@ -385,11 +380,6 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
       });
     });
     getMoreData();
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -403,6 +393,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         Row(
@@ -441,7 +432,9 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                                     properties: {
                                       'Movie name':
                                           '${moviesList![index].originalTitle}',
-                                      'Movie id': '${moviesList![index].id}'
+                                      'Movie id': '${moviesList![index].id}',
+                                      'Is Movie adult?':
+                                          '${moviesList![index].adult}'
                                     });
                                 Navigator.push(
                                     context,
@@ -564,7 +557,6 @@ class ScrollingArtists extends StatefulWidget {
 
 class _ScrollingArtistsState extends State<ScrollingArtists> {
   Credits? credits;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -573,17 +565,13 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         credits == null
@@ -975,7 +963,6 @@ class PartsList extends StatefulWidget {
 
 class _PartsListState extends State<PartsList> {
   List<Movie>? collectionMovieList;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -984,17 +971,13 @@ class _PartsListState extends State<PartsList> {
         collectionMovieList = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         Row(
@@ -1033,7 +1016,9 @@ class _PartsListState extends State<PartsList> {
                                       'Movie name':
                                           '${collectionMovieList![index].originalTitle}',
                                       'Movie id':
-                                          '${collectionMovieList![index].id}'
+                                          '${collectionMovieList![index].id}',
+                                      'Is Movie adult?':
+                                          '${collectionMovieList![index].adult}'
                                     });
                                 Navigator.push(
                                     context,
@@ -1410,10 +1395,12 @@ class WatchNowButton extends StatefulWidget {
     this.movieName,
     this.movieImdbId,
     this.api,
+    required this.adult,
   }) : super(key: key);
   final String? movieName;
   final int? movieId;
   final int? movieImdbId;
+  final bool? adult;
   final String? api;
 
   @override
@@ -1421,7 +1408,6 @@ class WatchNowButton extends StatefulWidget {
 }
 
 class _WatchNowButtonState extends State<WatchNowButton> {
-  late Mixpanel mixpanel;
   MovieDetails? movieDetails;
   bool? isVisible = false;
   double? buttonWidth = 150;
@@ -1429,15 +1415,11 @@ class _WatchNowButtonState extends State<WatchNowButton> {
   @override
   void initState() {
     super.initState();
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
   Widget build(BuildContext context) {
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Container(
       child: TextButton(
         style: ButtonStyle(
@@ -1447,7 +1429,8 @@ class _WatchNowButtonState extends State<WatchNowButton> {
         onPressed: () async {
           mixpanel.track('Most viewed movies', properties: {
             'Movie name': '${widget.movieName}',
-            'Movie id': '${widget.movieId}'
+            'Movie id': '${widget.movieId}',
+            'Is Movie adult?': '${widget.adult}'
           });
           setState(() {
             isVisible = true;
@@ -1777,7 +1760,6 @@ class CastTab extends StatefulWidget {
 class _CastTabState extends State<CastTab>
     with AutomaticKeepAliveClientMixin<CastTab> {
   Credits? credits;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -1786,11 +1768,6 @@ class _CastTabState extends State<CastTab>
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -1799,6 +1776,7 @@ class _CastTabState extends State<CastTab>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -1932,7 +1910,6 @@ class CrewTab extends StatefulWidget {
 class _CrewTabState extends State<CrewTab>
     with AutomaticKeepAliveClientMixin<CrewTab> {
   Credits? credits;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -1941,19 +1918,15 @@ class _CrewTabState extends State<CrewTab>
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    super.build(context);
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2097,7 +2070,6 @@ class MovieRecommendationsTab extends StatefulWidget {
 class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? movieList;
-  late Mixpanel mixpanel;
   final _scrollController = ScrollController();
   var startAppSdkMovieRecommendation = StartAppSdk();
   StartAppBannerAd? bannerAdMovieRecommendation;
@@ -2115,7 +2087,6 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
       });
     });
     getMoreData();
-    initMixpanel();
   }
 
   Future<String> getMoreData() async {
@@ -2160,14 +2131,11 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     });
   }
 
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     return movieList == null
@@ -2201,7 +2169,9 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                     properties: {
                                       'Movie name':
                                           '${movieList![index].originalTitle}',
-                                      'Movie id': '${movieList![index].id}'
+                                      'Movie id': '${movieList![index].id}',
+                                      'Is Movie adult?':
+                                          '${movieList![index].adult}'
                                     });
 
                                 Navigator.push(context,
@@ -2356,7 +2326,6 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? movieList;
   final _scrollController = ScrollController();
-  late Mixpanel mixpanel;
   int pageNum = 2;
   bool isLoading = false;
   var startAppSdkMovieSimilars = StartAppSdk();
@@ -2373,7 +2342,6 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
       });
     });
     getMoreData();
-    initMixpanel();
   }
 
   void getBannerADForMovieSimilars() {
@@ -2418,16 +2386,13 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
     return "success";
   }
 
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return movieList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2458,7 +2423,9 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                     properties: {
                                       'Movie name':
                                           '${movieList![index].originalTitle}',
-                                      'Movie id': '${movieList![index].id}'
+                                      'Movie id': '${movieList![index].id}',
+                                      'Is Movie adult?':
+                                          '${movieList![index].adult}'
                                     });
 
                                 Navigator.push(context,
@@ -2611,7 +2578,6 @@ class ParticularGenreMovies extends StatefulWidget {
 class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   List<Movie>? moviesList;
   final _scrollController = ScrollController();
-  late Mixpanel mixpanel;
   int pageNum = 2;
   bool isLoading = false;
   var startAppSdkMovieGenre = StartAppSdk();
@@ -2675,11 +2641,6 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
       });
     });
     getMoreData();
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -2687,6 +2648,7 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return moviesList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2725,7 +2687,9 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                               'Movie name':
                                                   '${moviesList![index].originalTitle}',
                                               'Movie id':
-                                                  '${moviesList![index].id}'
+                                                  '${moviesList![index].id}',
+                                              'Is Movie adult?':
+                                                  '${moviesList![index].adult}'
                                             });
                                         Navigator.push(context,
                                             MaterialPageRoute(
@@ -2931,7 +2895,6 @@ class _ParticularStreamingServiceMoviesState
     extends State<ParticularStreamingServiceMovies> {
   List<Movie>? moviesList;
   final _scrollController = ScrollController();
-  late Mixpanel mixpanel;
   int pageNum = 2;
   bool isLoading = false;
   var startAppSdkMovieProviders = StartAppSdk();
@@ -2993,11 +2956,6 @@ class _ParticularStreamingServiceMoviesState
       });
     });
     getMoreData();
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -3005,6 +2963,7 @@ class _ParticularStreamingServiceMoviesState
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return moviesList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -3044,7 +3003,9 @@ class _ParticularStreamingServiceMoviesState
                                               'Movie name':
                                                   '${moviesList![index].originalTitle}',
                                               'Movie id':
-                                                  '${moviesList![index].id}'
+                                                  '${moviesList![index].id}',
+                                              'Is Movie adult?':
+                                                  '${moviesList![index].adult}'
                                             });
                                         Navigator.push(context,
                                             MaterialPageRoute(
@@ -3913,7 +3874,6 @@ class CollectionMovies extends StatefulWidget {
 
 class _CollectionMoviesState extends State<CollectionMovies> {
   List<Movie>? moviesList;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -3922,17 +3882,13 @@ class _CollectionMoviesState extends State<CollectionMovies> {
         moviesList = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Container(
       color: const Color(0xFF202124),
       child: moviesList == null
@@ -3959,7 +3915,9 @@ class _CollectionMoviesState extends State<CollectionMovies> {
                                   properties: {
                                     'Movie name':
                                         '${moviesList![index].originalTitle}',
-                                    'Movie id': '${moviesList![index].id}'
+                                    'Movie id': '${moviesList![index].id}',
+                                    'Is Movie adult?':
+                                        '${moviesList![index].adult}'
                                   });
                               Navigator.push(
                                   context,

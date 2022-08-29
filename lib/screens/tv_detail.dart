@@ -483,6 +483,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                                                   seriesName: widget
                                                       .tvSeries.originalName!,
                                                   title: 'Seasons',
+                                                  adult: widget.tvSeries.adult,
                                                   api: Endpoints.getTVSeasons(
                                                       widget.tvSeries.id!),
                                                 ),
@@ -517,6 +518,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                                         ),
                                         TVSeasonsTab(
                                           tvId: widget.tvSeries.id!,
+                                          adult: widget.tvSeries.adult,
                                           seriesName:
                                               widget.tvSeries.originalName!,
                                           api: Endpoints.getTVSeasons(

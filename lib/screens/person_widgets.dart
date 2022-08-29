@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
+import '../provider/mixpanel_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/function.dart';
 import '/models/images.dart';
@@ -149,7 +150,6 @@ class PersonMovieListWidget extends StatefulWidget {
 class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
     with AutomaticKeepAliveClientMixin<PersonMovieListWidget> {
   List<Movie>? personMoviesList;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -158,11 +158,6 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
         personMoviesList = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -172,6 +167,7 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return personMoviesList == null
         ? const Center(
             child: CircularProgressIndicator(),
@@ -228,7 +224,9 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                   'Movie name':
                                                       '${personMoviesList![index].originalTitle}',
                                                   'Movie id':
-                                                      '${personMoviesList![index].id}'
+                                                      '${personMoviesList![index].id}',
+                                                  'Is Movie adult?':
+                                                      '${personMoviesList![index].adult}'
                                                 });
                                             Navigator.push(context,
                                                 MaterialPageRoute(
@@ -322,7 +320,6 @@ class PersonTVListWidget extends StatefulWidget {
 class _PersonTVListWidgetState extends State<PersonTVListWidget>
     with AutomaticKeepAliveClientMixin<PersonTVListWidget> {
   List<TV>? personTVList;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -331,11 +328,6 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
         personTVList = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -345,6 +337,7 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return personTVList == null
         ? const Center(
             child: CircularProgressIndicator(),
@@ -401,7 +394,9 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
                                                   'TV series name':
                                                       '${personTVList![index].name}',
                                                   'TV series id':
-                                                      '${personTVList![index].id}'
+                                                      '${personTVList![index].id}',
+                                                  'Is TV series adult?':
+                                                      '${personTVList![index].adult}'
                                                 });
                                             Navigator.push(context,
                                                 MaterialPageRoute(

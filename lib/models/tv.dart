@@ -43,6 +43,7 @@ class TV {
   String? backdropPath;
   String? overview;
   String? firstAirDate;
+  bool? adult;
   // String? originCountry;
 
   TV({
@@ -58,12 +59,14 @@ class TV {
     this.backdropPath,
     this.overview,
     this.firstAirDate,
+    this.adult,
     // this.originCountry,
   });
 
   TV.fromJson(Map<String, dynamic> json) {
     voteCount = json['vote_count'];
     id = json['id'];
+    adult = json['adult'];
     voteAverage = json['vote_average'];
     name = json['name'];
     popularity = json['popularity'];
@@ -81,6 +84,7 @@ class TV {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['vote_count'] = voteCount;
     data['id'] = id;
+    data['adult'] = adult;
     data['vote_average'] = voteAverage;
     data['name'] = name;
     data['popularity'] = popularity;

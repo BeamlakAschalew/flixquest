@@ -20,11 +20,13 @@ class SeasonsDetail extends StatefulWidget {
   final String heroId;
   final int? tvId;
   final String? seriesName;
+  final bool? adult;
   final TVDetails tvDetails;
 
   const SeasonsDetail({
     Key? key,
     required this.seasons,
+    required this.adult,
     required this.heroId,
     required this.tvDetails,
     this.seriesName,
@@ -399,6 +401,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                           ),
                                         ),
                                         EpisodeListWidget(
+                                          adult: widget.adult,
                                           seriesName: widget.seriesName,
                                           tvId: widget.tvDetails.id,
                                           api: Endpoints.getSeasonDetails(

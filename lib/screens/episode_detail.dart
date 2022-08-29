@@ -5,6 +5,7 @@ import 'package:cinemax/screens/crew_detail.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
 
+import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
@@ -23,6 +24,7 @@ class EpisodeDetailPage extends StatefulWidget {
   final List<EpisodeList>? episodes;
   final int? tvId;
   final String? seriesName;
+  final bool? adult;
 
   const EpisodeDetailPage({
     Key? key,
@@ -30,6 +32,7 @@ class EpisodeDetailPage extends StatefulWidget {
     this.episodes,
     this.tvId,
     this.seriesName,
+    required this.adult,
   }) : super(key: key);
 
   @override
@@ -41,7 +44,6 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<EpisodeDetailPage> {
   late TabController tabController;
-  late Mixpanel mixpanel;
   var startAppSdkEpisodeDetail = StartAppSdk();
   StartAppBannerAd? bannerAdEpisodeDetail;
 
@@ -64,19 +66,15 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
   @override
   void initState() {
     super.initState();
-    initMixpanel();
     tabController = TabController(length: 4, vsync: this);
     getBannerADForEpisodeDetail();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -472,7 +470,9 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                             'TV series season number':
                                                                 '${widget.episodeList.seasonNumber}',
                                                             'TV series episode number':
-                                                                '${widget.episodeList.episodeNumber}'
+                                                                '${widget.episodeList.episodeNumber}',
+                                                            'Is TV series adult?':
+                                                                '${widget.adult}'
                                                           });
                                                       Navigator.push(context,
                                                           MaterialPageRoute(

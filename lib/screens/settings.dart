@@ -56,7 +56,7 @@ class _SettingsState extends State<Settings> {
           ListTile(
             leading: const Icon(
               Icons.image,
-              color: const Color(0xFFF57C00),
+              color: Color(0xFFF57C00),
             ),
             title: const Text('Image quality'),
             trailing: DropdownButton(
@@ -75,7 +75,6 @@ class _SettingsState extends State<Settings> {
                 onChanged: (String? value) {
                   setState(() {
                     imagequalityChange.imageQuality = value!;
-                    print(imagequalityChange.imageQuality);
                   });
                 }),
           ),

@@ -1,12 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cinemax/constants/theme_data.dart';
-import 'package:cinemax/provider/ads_provider.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/provider/imagequality_provider.dart';
+import 'package:cinemax/provider/mixpanel_provider.dart';
 import 'package:cinemax/screens/landing_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
@@ -35,6 +34,8 @@ class _CinemaxState extends State<Cinemax>
   AdultmodeProvider adultmodeProvider = AdultmodeProvider();
   DarkthemeProvider themeChangeProvider = DarkthemeProvider();
   ImagequalityProvider imagequalityProvider = ImagequalityProvider();
+  MixpanelProvider mixpanelProvider = MixpanelProvider();
+  late Mixpanel mixpanel;
 
   void firstTimeCheck() async {
     final prefs = await SharedPreferences.getInstance();
@@ -48,16 +49,11 @@ class _CinemaxState extends State<Cinemax>
   }
 
   @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     firstTimeCheck();
+    mixpanelProvider.initMixpanel();
+    getCurrentImageQuality();
     getCurrentAdultMode();
     getCurrentThemeMode();
   }
@@ -72,6 +68,11 @@ class _CinemaxState extends State<Cinemax>
         await themeChangeProvider.themeModePreferences.getThemeMode();
   }
 
+  void getCurrentImageQuality() async {
+    imagequalityProvider.imageQuality =
+        await imagequalityProvider.imagePreferences.getImageQuality();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -84,12 +85,15 @@ class _CinemaxState extends State<Cinemax>
           }),
           ChangeNotifierProvider(create: (_) {
             return imagequalityProvider;
+          }),
+          ChangeNotifierProvider(create: (_) {
+            return mixpanelProvider;
           })
         ],
-        child: Consumer3<AdultmodeProvider, DarkthemeProvider,
-                ImagequalityProvider>(
+        child: Consumer4<AdultmodeProvider, DarkthemeProvider,
+                ImagequalityProvider, MixpanelProvider>(
             builder: (context, adultmodeProvider, themeChangeProvider,
-                imagequalityProvider, snapshot) {
+                imagequalityProvider, mixpanelProvider, snapshot) {
           return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Cinemax',
@@ -112,25 +116,20 @@ class CinemaxHomePage extends StatefulWidget {
 
 class _CinemaxHomePageState extends State<CinemaxHomePage>
     with SingleTickerProviderStateMixin {
-  late Mixpanel mixpanel;
   late int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
   Widget build(BuildContext context) {
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Provider.of<AdultmodeProvider?>(context) == null ||
             Provider.of<ImagequalityProvider?>(context) == null ||
-            Provider.of<DarkthemeProvider?>(context) == null
+            Provider.of<DarkthemeProvider?>(context) == null ||
+            Provider.of<MixpanelProvider?>(context)?.mixpanel == null
         ? const Center(
             child: CircularProgressIndicator(),
           )

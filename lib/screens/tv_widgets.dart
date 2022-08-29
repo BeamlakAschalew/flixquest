@@ -8,6 +8,7 @@ import 'package:startapp_sdk/startapp.dart';
 import '../provider/ads_provider.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
+import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
@@ -189,10 +190,7 @@ class _DiscoverTVState extends State<DiscoverTV>
   late double deviceHeight;
   late double deviceWidth;
   late double deviceAspectRatio;
-  late Mixpanel mixpanel;
-
   List<TV>? tvList;
-  // MovieDetails? movieDetails;
   @override
   void initState() {
     super.initState();
@@ -203,11 +201,6 @@ class _DiscoverTVState extends State<DiscoverTV>
         tvList = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -216,7 +209,7 @@ class _DiscoverTVState extends State<DiscoverTV>
     deviceHeight = MediaQuery.of(context).size.height;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         Row(
@@ -252,7 +245,8 @@ class _DiscoverTVState extends State<DiscoverTV>
                         onTap: () {
                           mixpanel.track('Most viewed TV pages', properties: {
                             'TV series name': '${tvList![index].originalName}',
-                            'TV series id': '${tvList![index].id}'
+                            'TV series id': '${tvList![index].id}',
+                            'Is TV series adult?': '${tvList![index].adult}'
                           });
                           Navigator.push(
                               context,
@@ -329,7 +323,6 @@ class _ScrollingTVState extends State<ScrollingTV>
     with AutomaticKeepAliveClientMixin {
   late int index;
   List<TV>? tvList;
-  late Mixpanel mixpanel;
   final ScrollController _scrollController = ScrollController();
 
   int pageNum = 2;
@@ -385,13 +378,7 @@ class _ScrollingTVState extends State<ScrollingTV>
         tvList = value;
       });
     });
-
     getMoreData();
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -405,6 +392,7 @@ class _ScrollingTVState extends State<ScrollingTV>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         Row(
@@ -566,7 +554,6 @@ class ScrollingTVArtists extends StatefulWidget {
 class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -575,11 +562,6 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -587,6 +569,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         credits == null
@@ -726,7 +709,6 @@ class ScrollingTVEpisodeCasts extends StatefulWidget {
 class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -735,11 +717,6 @@ class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -747,6 +724,7 @@ class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         credits == null
@@ -887,7 +865,7 @@ class _ScrollingTVEpisodeGuestStarsState
     extends State<ScrollingTVEpisodeGuestStars>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
-  late Mixpanel mixpanel;
+
   @override
   void initState() {
     super.initState();
@@ -896,11 +874,6 @@ class _ScrollingTVEpisodeGuestStarsState
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -908,6 +881,7 @@ class _ScrollingTVEpisodeGuestStarsState
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         credits == null
@@ -1052,7 +1026,6 @@ class ScrollingTVEpisodeCrew extends StatefulWidget {
 class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -1061,11 +1034,6 @@ class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -1073,6 +1041,7 @@ class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         credits == null
@@ -1213,7 +1182,7 @@ class ScrollingTVCreators extends StatefulWidget {
 class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
     with AutomaticKeepAliveClientMixin {
   TVDetails? tvDetails;
-  late Mixpanel mixpanel;
+
   @override
   void initState() {
     super.initState();
@@ -1222,11 +1191,6 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
         tvDetails = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -1234,6 +1198,7 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         tvDetails == null
@@ -1848,7 +1813,7 @@ class TVCastTab extends StatefulWidget {
 class _TVCastTabState extends State<TVCastTab>
     with AutomaticKeepAliveClientMixin<TVCastTab> {
   Credits? credits;
-  late Mixpanel mixpanel;
+
   @override
   void initState() {
     super.initState();
@@ -1857,11 +1822,6 @@ class _TVCastTabState extends State<TVCastTab>
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -1870,6 +1830,7 @@ class _TVCastTabState extends State<TVCastTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2010,7 +1971,9 @@ class TVSeasonsTab extends StatefulWidget {
   final String? api;
   final int? tvId;
   final String? seriesName;
-  const TVSeasonsTab({Key? key, this.api, this.tvId, this.seriesName})
+  final bool? adult;
+  const TVSeasonsTab(
+      {Key? key, this.api, this.tvId, this.seriesName, required this.adult})
       : super(key: key);
 
   @override
@@ -2020,7 +1983,6 @@ class TVSeasonsTab extends StatefulWidget {
 class _TVSeasonsTabState extends State<TVSeasonsTab>
     with AutomaticKeepAliveClientMixin<TVSeasonsTab> {
   TVDetails? tvDetails;
-  late Mixpanel mixpanel;
   var startAppSdkTVSeason = StartAppSdk();
   StartAppBannerAd? bannerAdTVSeason;
 
@@ -2047,11 +2009,6 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
         tvDetails = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -2060,6 +2017,7 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvDetails == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2088,12 +2046,14 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                                     properties: {
                                       'TV series name': '${widget.seriesName}',
                                       'TV series season number':
-                                          '${tvDetails!.seasons![index].seasonNumber}'
+                                          '${tvDetails!.seasons![index].seasonNumber}',
+                                      'Is TV series adult?': '${widget.adult}'
                                     });
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => SeasonsDetail(
+                                            adult: widget.adult,
                                             seriesName: widget.seriesName,
                                             tvId: widget.tvId,
                                             tvDetails: tvDetails!,
@@ -2221,7 +2181,7 @@ class TVCrewTab extends StatefulWidget {
 class _TVCrewTabState extends State<TVCrewTab>
     with AutomaticKeepAliveClientMixin<TVCrewTab> {
   Credits? credits;
-  late Mixpanel mixpanel;
+
   @override
   void initState() {
     super.initState();
@@ -2230,11 +2190,6 @@ class _TVCrewTabState extends State<TVCrewTab>
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -2243,6 +2198,7 @@ class _TVCrewTabState extends State<TVCrewTab>
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2384,7 +2340,6 @@ class TVRecommendationsTab extends StatefulWidget {
 class _TVRecommendationsTabState extends State<TVRecommendationsTab>
     with AutomaticKeepAliveClientMixin {
   List<TV>? tvList;
-  late Mixpanel mixpanel;
   var startAppSdkTVRecommendation = StartAppSdk();
   StartAppBannerAd? bannerAdTVRecommendation;
   @override
@@ -2396,7 +2351,6 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
         tvList = value;
       });
     });
-    initMixpanel();
     getMoreData();
   }
 
@@ -2447,16 +2401,13 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
     return "success";
   }
 
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2643,7 +2594,6 @@ class SimilarTVTab extends StatefulWidget {
 class _SimilarTVTabState extends State<SimilarTVTab>
     with AutomaticKeepAliveClientMixin {
   List<TV>? tvList;
-  late Mixpanel mixpanel;
   var startAppSdkTVSimilars = StartAppSdk();
   StartAppBannerAd? bannerAdTVSimilars;
   @override
@@ -2655,7 +2605,6 @@ class _SimilarTVTabState extends State<SimilarTVTab>
         tvList = value;
       });
     });
-    initMixpanel();
     getMoreData();
   }
 
@@ -2706,16 +2655,13 @@ class _SimilarTVTabState extends State<SimilarTVTab>
     return "success";
   }
 
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -2972,7 +2918,6 @@ class ParticularGenreTV extends StatefulWidget {
 class _ParticularGenreTVState extends State<ParticularGenreTV> {
   List<TV>? tvList;
   final _scrollController = ScrollController();
-  late Mixpanel mixpanel;
   int pageNum = 2;
   bool isLoading = false;
   var startAppSdkTVGenres = StartAppSdk();
@@ -3033,11 +2978,6 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
       });
     });
     getMoreData();
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -3045,6 +2985,7 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -3082,7 +3023,9 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                               'TV series name':
                                                   '${tvList![index].originalName}',
                                               'TV series id':
-                                                  '${tvList![index].id}'
+                                                  '${tvList![index].id}',
+                                              'Is TV series adult?':
+                                                  '${tvList![index].adult}'
                                             });
                                         Navigator.push(context,
                                             MaterialPageRoute(
@@ -3563,9 +3506,15 @@ class SeasonsList extends StatefulWidget {
   final String? title;
   final int? tvId;
   final String? seriesName;
+  final bool? adult;
 
   const SeasonsList(
-      {Key? key, this.api, this.title, this.tvId, this.seriesName})
+      {Key? key,
+      this.api,
+      this.title,
+      this.tvId,
+      this.seriesName,
+      required this.adult})
       : super(key: key);
 
   @override
@@ -3574,7 +3523,6 @@ class SeasonsList extends StatefulWidget {
 
 class _SeasonsListState extends State<SeasonsList> {
   TVDetails? tvDetails;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -3583,17 +3531,13 @@ class _SeasonsListState extends State<SeasonsList> {
         tvDetails = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         Row(
@@ -3641,13 +3585,16 @@ class _SeasonsListState extends State<SeasonsList> {
                                           'TV series name':
                                               '${widget.seriesName}',
                                           'TV series season number':
-                                              '${tvDetails!.seasons![index].seasonNumber}'
+                                              '${tvDetails!.seasons![index].seasonNumber}',
+                                          'Is TV series adult?':
+                                              '${widget.adult}'
                                         });
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => SeasonsDetail(
                                                 tvId: widget.tvId,
+                                                adult: widget.adult,
                                                 seriesName: widget.seriesName,
                                                 tvDetails: tvDetails!,
                                                 seasons:
@@ -3721,7 +3668,9 @@ class EpisodeListWidget extends StatefulWidget {
   final int? tvId;
   final String? api;
   final String? seriesName;
-  const EpisodeListWidget({Key? key, this.api, this.tvId, this.seriesName})
+  final bool? adult;
+  const EpisodeListWidget(
+      {Key? key, this.api, this.tvId, this.seriesName, required this.adult})
       : super(key: key);
 
   @override
@@ -3731,7 +3680,7 @@ class EpisodeListWidget extends StatefulWidget {
 class _EpisodeListWidgetState extends State<EpisodeListWidget>
     with AutomaticKeepAliveClientMixin {
   TVDetails? tvDetails;
-  late Mixpanel mixpanel;
+
   @override
   void initState() {
     super.initState();
@@ -3740,11 +3689,6 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
         tvDetails = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -3753,6 +3697,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Container(
         color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
         child: tvDetails == null
@@ -3773,6 +3718,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return EpisodeDetailPage(
+                            adult: widget.adult,
                             seriesName: widget.seriesName,
                             tvId: widget.tvId,
                             episodes: tvDetails!.episodes,
@@ -4572,7 +4518,6 @@ class ParticularStreamingServiceTVShows extends StatefulWidget {
 class _ParticularStreamingServiceTVShowsState
     extends State<ParticularStreamingServiceTVShows> {
   List<TV>? tvList;
-  late Mixpanel mixpanel;
   final _scrollController = ScrollController();
   var startAppSdkTVProviders = StartAppSdk();
   StartAppBannerAd? bannerAdTVProviders;
@@ -4634,11 +4579,6 @@ class _ParticularStreamingServiceTVShowsState
       });
     });
     getMoreData();
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -4646,6 +4586,7 @@ class _ParticularStreamingServiceTVShowsState
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -4684,7 +4625,9 @@ class _ParticularStreamingServiceTVShowsState
                                               'TV series name':
                                                   '${tvList![index].originalName}',
                                               'TV series id':
-                                                  '${tvList![index].id}'
+                                                  '${tvList![index].id}',
+                                              'Is Movie adult?':
+                                                  '${tvList![index].adult}'
                                             });
                                         Navigator.push(context,
                                             MaterialPageRoute(
@@ -4879,7 +4822,6 @@ class TVEpisodeCastTab extends StatefulWidget {
 class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     with AutomaticKeepAliveClientMixin<TVEpisodeCastTab> {
   Credits? credits;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -4888,11 +4830,6 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -4901,6 +4838,7 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
@@ -5048,7 +4986,6 @@ class TVEpisodeGuestStarsTab extends StatefulWidget {
 class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     with AutomaticKeepAliveClientMixin<TVEpisodeGuestStarsTab> {
   Credits? credits;
-  late Mixpanel mixpanel;
   @override
   void initState() {
     super.initState();
@@ -5057,11 +4994,6 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
         credits = value;
       });
     });
-    initMixpanel();
-  }
-
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
   }
 
   @override
@@ -5070,6 +5002,7 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),

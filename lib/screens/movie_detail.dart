@@ -447,6 +447,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                                   movieId: widget.movie.id,
                                                   movieName: widget
                                                       .movie.originalTitle,
+                                                  adult: widget.movie.adult,
                                                   api:
                                                       Endpoints.movieDetailsUrl(
                                                           widget.movie.id!),
