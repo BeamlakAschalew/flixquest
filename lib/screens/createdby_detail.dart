@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
@@ -323,13 +324,36 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                           'assets/images/na_square.png',
                                           fit: BoxFit.cover,
                                         )
-                                      : FadeInImage(
-                                          image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                      : CachedNetworkImage(
+                                          fadeOutDuration:
+                                              const Duration(milliseconds: 300),
+                                          fadeOutCurve: Curves.easeOut,
+                                          fadeInDuration:
+                                              Duration(milliseconds: 700),
+                                          fadeInCurve: Curves.easeIn,
+                                          imageUrl: TMDB_BASE_IMAGE_URL +
                                               imageQuality +
-                                              '${widget.createdBy!.profilePath}'),
-                                          fit: BoxFit.cover,
-                                          placeholder: const AssetImage(
-                                              'assets/images/loading.gif'),
+                                              '${widget.createdBy!.profilePath}',
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                          placeholder: (context, url) =>
+                                              Image.asset(
+                                            'assets/images/loading.gif',
+                                            fit: BoxFit.cover,
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Image.asset(
+                                            'assets/images/na_square.png',
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                 ),
                               ),

@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/provider/imagequality_provider.dart';
@@ -337,14 +338,36 @@ class _CastDetailPageState extends State<CastDetailPage>
                                           'assets/images/na_square.png',
                                           fit: BoxFit.cover,
                                         )
-                                      : FadeInImage(
-                                          image: NetworkImage(
-                                              TMDB_BASE_IMAGE_URL +
-                                                  imageQuality +
-                                                  '${widget.cast!.profilePath}'),
-                                          fit: BoxFit.cover,
-                                          placeholder: const AssetImage(
-                                              'assets/images/loading.gif'),
+                                      : CachedNetworkImage(
+                                          fadeOutDuration:
+                                              const Duration(milliseconds: 300),
+                                          fadeOutCurve: Curves.easeOut,
+                                          fadeInDuration:
+                                              Duration(milliseconds: 700),
+                                          fadeInCurve: Curves.easeIn,
+                                          imageUrl: TMDB_BASE_IMAGE_URL +
+                                              imageQuality +
+                                              widget.cast!.profilePath!,
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                          placeholder: (context, url) =>
+                                              Image.asset(
+                                            'assets/images/loading.gif',
+                                            fit: BoxFit.cover,
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Image.asset(
+                                            'assets/images/na_square.png',
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                 ),
                               ),

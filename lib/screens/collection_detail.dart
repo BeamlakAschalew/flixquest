@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
 
@@ -69,15 +70,32 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                             'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
-                        : FadeInImage(
+                        : CachedNetworkImage(
                             width: double.infinity,
                             height: double.infinity,
-                            image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                            fadeOutDuration: const Duration(milliseconds: 300),
+                            fadeOutCurve: Curves.easeOut,
+                            fadeInDuration: Duration(milliseconds: 700),
+                            fadeInCurve: Curves.easeIn,
+                            imageUrl: TMDB_BASE_IMAGE_URL +
                                 'original/' +
-                                widget.belongsToCollection!.backdropPath!),
-                            fit: BoxFit.cover,
-                            placeholder:
-                                const AssetImage('assets/images/loading_5.gif'),
+                                widget.belongsToCollection!.backdropPath!,
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) => Image.asset(
+                              'assets/images/loading_5.gif',
+                              fit: BoxFit.cover,
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              'assets/images/na_logo.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -242,14 +260,33 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                     'assets/images/na_logo.png',
                                     fit: BoxFit.cover,
                                   )
-                                : FadeInImage(
-                                    image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                : CachedNetworkImage(
+                                    fadeOutDuration:
+                                        const Duration(milliseconds: 300),
+                                    fadeOutCurve: Curves.easeOut,
+                                    fadeInDuration: Duration(milliseconds: 700),
+                                    fadeInCurve: Curves.easeIn,
+                                    imageUrl: TMDB_BASE_IMAGE_URL +
                                         imageQuality +
-                                        widget
-                                            .belongsToCollection!.posterPath!),
-                                    fit: BoxFit.cover,
-                                    placeholder: const AssetImage(
-                                        'assets/images/loading.gif'),
+                                        widget.belongsToCollection!.posterPath!,
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    placeholder: (context, url) => Image.asset(
+                                      'assets/images/loading.gif',
+                                      fit: BoxFit.cover,
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                           ),
                         ),

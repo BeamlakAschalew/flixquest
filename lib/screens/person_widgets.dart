@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/darktheme_provider.dart';
@@ -100,16 +101,38 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(8.0),
-                                            child: FadeInImage(
-                                              image: NetworkImage(
-                                                  TMDB_BASE_IMAGE_URL +
-                                                      imageQuality +
-                                                      personImages!
-                                                          .profile![index]
-                                                          .filePath!),
-                                              fit: BoxFit.cover,
-                                              placeholder: const AssetImage(
-                                                  'assets/images/loading.gif'),
+                                            child: CachedNetworkImage(
+                                              fadeOutDuration: const Duration(
+                                                  milliseconds: 300),
+                                              fadeOutCurve: Curves.easeOut,
+                                              fadeInDuration:
+                                                  Duration(milliseconds: 700),
+                                              fadeInCurve: Curves.easeIn,
+                                              imageUrl: TMDB_BASE_IMAGE_URL +
+                                                  imageQuality +
+                                                  personImages!.profile![index]
+                                                      .filePath!,
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
+                                                      Container(
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: imageProvider,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                              placeholder: (context, url) =>
+                                                  Image.asset(
+                                                'assets/images/loading.gif',
+                                                fit: BoxFit.cover,
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Image.asset(
+                                                'assets/images/na_square.png',
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -259,16 +282,57 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                               'assets/images/na_logo.png',
                                                               fit: BoxFit.cover,
                                                             )
-                                                          : FadeInImage(
-                                                              image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                                          : CachedNetworkImage(
+                                                              fadeOutDuration:
+                                                                  const Duration(
+                                                                      milliseconds:
+                                                                          300),
+                                                              fadeOutCurve:
+                                                                  Curves
+                                                                      .easeOut,
+                                                              fadeInDuration:
+                                                                  Duration(
+                                                                      milliseconds:
+                                                                          700),
+                                                              fadeInCurve:
+                                                                  Curves.easeIn,
+                                                              imageUrl: TMDB_BASE_IMAGE_URL +
                                                                   imageQuality +
                                                                   personMoviesList![
                                                                           index]
-                                                                      .posterPath!),
-                                                              fit: BoxFit.cover,
+                                                                      .posterPath!,
+                                                              imageBuilder:
+                                                                  (context,
+                                                                          imageProvider) =>
+                                                                      Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  image:
+                                                                      DecorationImage(
+                                                                    image:
+                                                                        imageProvider,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  ),
+                                                                ),
+                                                              ),
                                                               placeholder:
-                                                                  const AssetImage(
-                                                                      'assets/images/loading.gif'),
+                                                                  (context,
+                                                                          url) =>
+                                                                      Image
+                                                                          .asset(
+                                                                'assets/images/loading.gif',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                              errorWidget: (context,
+                                                                      url,
+                                                                      error) =>
+                                                                  Image.asset(
+                                                                'assets/images/na_logo.png',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
                                                             ),
                                                     ),
                                                   ),
@@ -429,16 +493,57 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
                                                               'assets/images/na_logo.png',
                                                               fit: BoxFit.cover,
                                                             )
-                                                          : FadeInImage(
-                                                              image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                                          : CachedNetworkImage(
+                                                              fadeOutDuration:
+                                                                  const Duration(
+                                                                      milliseconds:
+                                                                          300),
+                                                              fadeOutCurve:
+                                                                  Curves
+                                                                      .easeOut,
+                                                              fadeInDuration:
+                                                                  Duration(
+                                                                      milliseconds:
+                                                                          700),
+                                                              fadeInCurve:
+                                                                  Curves.easeIn,
+                                                              imageUrl: TMDB_BASE_IMAGE_URL +
                                                                   imageQuality +
                                                                   personTVList![
                                                                           index]
-                                                                      .posterPath!),
-                                                              fit: BoxFit.cover,
+                                                                      .posterPath!,
+                                                              imageBuilder:
+                                                                  (context,
+                                                                          imageProvider) =>
+                                                                      Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  image:
+                                                                      DecorationImage(
+                                                                    image:
+                                                                        imageProvider,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  ),
+                                                                ),
+                                                              ),
                                                               placeholder:
-                                                                  const AssetImage(
-                                                                      'assets/images/loading.gif'),
+                                                                  (context,
+                                                                          url) =>
+                                                                      Image
+                                                                          .asset(
+                                                                'assets/images/loading.gif',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                              errorWidget: (context,
+                                                                      url,
+                                                                      error) =>
+                                                                  Image.asset(
+                                                                'assets/images/na_logo.png',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
                                                             ),
                                                     ),
                                                   ),
