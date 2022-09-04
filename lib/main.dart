@@ -217,6 +217,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
               children: const <Widget>[
                 MainMoviesDisplay(),
                 MainTVDisplay(),
+
                 Center(
                   child: Text('Coming soon'),
                 ),

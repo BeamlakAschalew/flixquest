@@ -109,9 +109,6 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    // var bannerAd6 = Provider.of<ADSProvider>(context).bannerAd6;
-    // var bannerAd5 = Provider.of<ADSProvider>(context).bannerAd5;
-    // var bannerAd4 = Provider.of<ADSProvider>(context).bannerAd4;
     return Container(
       child: ListView(
         children: [
@@ -191,15 +188,28 @@ class _DiscoverTVState extends State<DiscoverTV>
   late double deviceWidth;
   late double deviceAspectRatio;
   List<TV>? tvList;
+  bool requestFailed = false;
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  void getData() {
     fetchTV(Endpoints.discoverTVUrl(1) +
             '&include_adult=${widget.includeAdult}')
         .then((value) {
       setState(() {
         tvList = value;
       });
+    });
+    Future.delayed(const Duration(seconds: 11), () {
+      if (tvList == null) {
+        setState(() {
+          requestFailed = true;
+          tvList = [];
+        });
+      }
     });
   }
 
@@ -231,70 +241,110 @@ class _DiscoverTVState extends State<DiscoverTV>
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : CarouselSlider.builder(
-                  options: CarouselOptions(
-                    disableCenter: true,
-                    viewportFraction: 0.8,
-                    enlargeCenterPage: true,
-                    autoPlay: true,
-                  ),
-                  itemBuilder:
-                      (BuildContext context, int index, pageViewIndex) {
-                    return Container(
-                      child: GestureDetector(
-                        onTap: () {
-                          mixpanel.track('Most viewed TV pages', properties: {
-                            'TV series name': '${tvList![index].originalName}',
-                            'TV series id': '${tvList![index].id}',
-                            'Is TV series adult?': '${tvList![index].adult}'
-                          });
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => TVDetailPage(
-                                      tvSeries: tvList![index],
-                                      heroId: '${tvList![index].id}')));
-                        },
-                        child: Hero(
-                          tag: '${tvList![index].id}',
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: CachedNetworkImage(
-                              fadeOutDuration:
-                                  const Duration(milliseconds: 300),
-                              fadeOutCurve: Curves.easeOut,
-                              fadeInDuration: Duration(milliseconds: 700),
-                              fadeInCurve: Curves.easeIn,
-                              imageUrl: TMDB_BASE_IMAGE_URL +
-                                  imageQuality +
-                                  tvList![index].posterPath!,
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: imageProvider,
+              : requestFailed == true
+                  ? retryWidget()
+                  : CarouselSlider.builder(
+                      options: CarouselOptions(
+                        disableCenter: true,
+                        viewportFraction: 0.8,
+                        enlargeCenterPage: true,
+                        autoPlay: true,
+                      ),
+                      itemBuilder:
+                          (BuildContext context, int index, pageViewIndex) {
+                        return Container(
+                          child: GestureDetector(
+                            onTap: () {
+                              mixpanel
+                                  .track('Most viewed TV pages', properties: {
+                                'TV series name':
+                                    '${tvList![index].originalName}',
+                                'TV series id': '${tvList![index].id}',
+                                'Is TV series adult?': '${tvList![index].adult}'
+                              });
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TVDetailPage(
+                                          tvSeries: tvList![index],
+                                          heroId: '${tvList![index].id}')));
+                            },
+                            child: Hero(
+                              tag: '${tvList![index].id}',
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: CachedNetworkImage(
+                                  fadeOutDuration:
+                                      const Duration(milliseconds: 300),
+                                  fadeOutCurve: Curves.easeOut,
+                                  fadeInDuration: Duration(milliseconds: 700),
+                                  fadeInCurve: Curves.easeIn,
+                                  imageUrl: TMDB_BASE_IMAGE_URL +
+                                      imageQuality +
+                                      tvList![index].posterPath!,
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) => Image.asset(
+                                    'assets/images/loading.gif',
+                                    fit: BoxFit.cover,
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      Image.asset(
+                                    'assets/images/na_logo.png',
                                     fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
-                              placeholder: (context, url) => Image.asset(
-                                'assets/images/loading.gif',
-                                fit: BoxFit.cover,
-                              ),
-                              errorWidget: (context, url, error) => Image.asset(
-                                'assets/images/na_logo.png',
-                                fit: BoxFit.cover,
-                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    );
-                  },
-                  itemCount: tvList!.length,
-                ),
+                        );
+                      },
+                      itemCount: tvList!.length,
+                    ),
         ),
       ],
+    );
+  }
+
+  Widget retryWidget() {
+    return Center(
+      child: Container(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/network-signal.png',
+              width: 60, height: 60),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text('Please connect to the Internet and try again',
+                textAlign: TextAlign.center),
+          ),
+          TextButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all(const Color(0x0DF57C00)),
+                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          side: const BorderSide(color: Color(0xFFF57C00))))),
+              onPressed: () {
+                setState(() {
+                  requestFailed = false;
+                  tvList = null;
+                });
+                getData();
+              },
+              child: Text('Retry')),
+        ],
+      )),
     );
   }
 
@@ -324,7 +374,7 @@ class _ScrollingTVState extends State<ScrollingTV>
   late int index;
   List<TV>? tvList;
   final ScrollController _scrollController = ScrollController();
-
+  bool requestFailed = false;
   int pageNum = 2;
   bool isLoading = false;
 
@@ -370,14 +420,26 @@ class _ScrollingTVState extends State<ScrollingTV>
     return "success";
   }
 
-  @override
-  void initState() {
-    super.initState();
+  void getData() {
     fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
     });
+    Future.delayed(const Duration(seconds: 11), () {
+      if (tvList == null) {
+        setState(() {
+          requestFailed = true;
+          tvList = [];
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
     getMoreData();
   }
 
@@ -414,124 +476,170 @@ class _ScrollingTVState extends State<ScrollingTV>
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : Row(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: tvList!.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                mixpanel
-                                    .track('Most viewed TV pages', properties: {
-                                  'TV series name':
-                                      '${tvList![index].originalName}',
-                                  'TV series id': '${tvList![index].id}'
-                                });
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => TVDetailPage(
-                                            tvSeries: tvList![index],
-                                            heroId:
-                                                '${tvList![index].id}${widget.title}')));
-                              },
-                              child: SizedBox(
-                                width: 105,
-                                child: Column(
-                                  children: <Widget>[
-                                    Expanded(
-                                      flex: 6,
-                                      child: Hero(
-                                        tag:
-                                            '${tvList![index].id}${widget.title}',
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                          child: tvList![index].posterPath ==
-                                                  null
-                                              ? Image.asset(
-                                                  'assets/images/na_logo.png',
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : CachedNetworkImage(
-                                                  fadeOutDuration:
-                                                      const Duration(
-                                                          milliseconds: 300),
-                                                  fadeOutCurve: Curves.easeOut,
-                                                  fadeInDuration: Duration(
-                                                      milliseconds: 700),
-                                                  fadeInCurve: Curves.easeIn,
-                                                  imageUrl:
-                                                      TMDB_BASE_IMAGE_URL +
-                                                          imageQuality +
-                                                          tvList![index]
-                                                              .posterPath!,
-                                                  imageBuilder: (context,
-                                                          imageProvider) =>
-                                                      Container(
-                                                    decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                        image: imageProvider,
+              : requestFailed == true
+                  ? retryWidget()
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            controller: _scrollController,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: tvList!.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    mixpanel.track('Most viewed TV pages',
+                                        properties: {
+                                          'TV series name':
+                                              '${tvList![index].originalName}',
+                                          'TV series id': '${tvList![index].id}'
+                                        });
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => TVDetailPage(
+                                                tvSeries: tvList![index],
+                                                heroId:
+                                                    '${tvList![index].id}${widget.title}')));
+                                  },
+                                  child: SizedBox(
+                                    width: 105,
+                                    child: Column(
+                                      children: <Widget>[
+                                        Expanded(
+                                          flex: 6,
+                                          child: Hero(
+                                            tag:
+                                                '${tvList![index].id}${widget.title}',
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              child: tvList![index]
+                                                          .posterPath ==
+                                                      null
+                                                  ? Image.asset(
+                                                      'assets/images/na_logo.png',
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      fadeOutDuration:
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  300),
+                                                      fadeOutCurve:
+                                                          Curves.easeOut,
+                                                      fadeInDuration: Duration(
+                                                          milliseconds: 700),
+                                                      fadeInCurve:
+                                                          Curves.easeIn,
+                                                      imageUrl:
+                                                          TMDB_BASE_IMAGE_URL +
+                                                              imageQuality +
+                                                              tvList![index]
+                                                                  .posterPath!,
+                                                      imageBuilder: (context,
+                                                              imageProvider) =>
+                                                          Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          image:
+                                                              DecorationImage(
+                                                            image:
+                                                                imageProvider,
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      placeholder:
+                                                          (context, url) =>
+                                                              Image.asset(
+                                                        'assets/images/loading.gif',
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          Image.asset(
+                                                        'assets/images/na_logo.png',
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
-                                                  ),
-                                                  placeholder: (context, url) =>
-                                                      Image.asset(
-                                                    'assets/images/loading.gif',
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        Expanded(
+                                          flex: 3,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              tvList![index].name!,
+                                              maxLines: 2,
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          tvList![index].name!,
-                                          maxLines: 2,
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    )
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0, right: 5.0),
-                      child: Visibility(
-                        child: const SizedBox(
-                          height: 30,
-                          width: 30,
-                          child: CircularProgressIndicator(),
+                              );
+                            },
+                          ),
                         ),
-                        visible: isLoading,
-                      ),
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(left: 10.0, right: 5.0),
+                          child: Visibility(
+                            child: const SizedBox(
+                              height: 30,
+                              width: 30,
+                              child: CircularProgressIndicator(),
+                            ),
+                            visible: isLoading,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
         ),
       ],
+    );
+  }
+
+  Widget retryWidget() {
+    return Center(
+      child: Container(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset('assets/images/network-signal.png',
+              width: 60, height: 60),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text('Please connect to the Internet and try again',
+                textAlign: TextAlign.center),
+          ),
+          TextButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all(const Color(0x0DF57C00)),
+                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                          side: const BorderSide(color: Color(0xFFF57C00))))),
+              onPressed: () {
+                setState(() {
+                  requestFailed = false;
+                  tvList = null;
+                });
+                getData();
+              },
+              child: Text('Retry')),
+        ],
+      )),
     );
   }
 
@@ -4745,13 +4853,27 @@ class TVGenreListGrid extends StatefulWidget {
 class _TVGenreListGridState extends State<TVGenreListGrid>
     with AutomaticKeepAliveClientMixin<TVGenreListGrid> {
   List<Genres>? genreList;
+  bool requestFailed = false;
+
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  void getData() {
     fetchGenre(widget.api).then((value) {
       setState(() {
         genreList = value;
       });
+    });
+    Future.delayed(const Duration(seconds: 11), () {
+      if (genreList == null) {
+        setState(() {
+          requestFailed = true;
+          genreList = [];
+        });
+      }
     });
   }
 
@@ -4776,68 +4898,143 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
                 ],
               ),
               const Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-            ],
-          )
-        : Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: const <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Genres',
-                      style: kTextHeaderStyle,
-                    ),
-                  ),
-                ],
-              ),
-              Padding(
                 padding:
                     const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 10.0),
                 child: SizedBox(
-                  width: double.infinity,
-                  height: 75,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: genreList!.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return TVGenre(genres: genreList![index]);
-                                  }));
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    width: 125,
-                                    alignment: Alignment.center,
-                                    child: Text(genreList![index].genreName!,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(color: Colors.white)),
-                                    decoration: BoxDecoration(
-                                        color: const Color(0xFFF57C00),
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                  ),
-                                ),
-                              );
-                            }),
+                    width: double.infinity,
+                    height: 80,
+                    child: Center(child: CircularProgressIndicator())),
+              ),
+            ],
+          )
+        : requestFailed == true
+            ? retryWidget()
+            : Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Genres',
+                          style: kTextHeaderStyle,
+                        ),
                       ),
                     ],
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 8.0, right: 8.0, bottom: 10.0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 80,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: genreList!.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return TVGenre(
+                                            genres: genreList![index]);
+                                      }));
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Container(
+                                        width: 125,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                            genreList![index].genreName!,
+                                            textAlign: TextAlign.center,
+                                            style:
+                                                TextStyle(color: Colors.white)),
+                                        decoration: BoxDecoration(
+                                            color: const Color(0xFFF57C00),
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+  }
+
+  Widget retryWidget() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: const <Widget>[
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Genres',
+                style: kTextHeaderStyle,
               ),
-            ],
-          );
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 10.0),
+          child: SizedBox(
+            width: double.infinity,
+            height: 80,
+            child: Center(
+              child: Container(
+                  child: Row(
+                children: [
+                  Image.asset('assets/images/network-signal.png',
+                      width: 50, height: 50),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                            'Please connect to the Internet and try again',
+                            textAlign: TextAlign.center),
+                      ),
+                      TextButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(
+                                  const Color(0x0DF57C00)),
+                              maximumSize: MaterialStateProperty.all(
+                                  const Size(200, 60)),
+                              shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      side: const BorderSide(
+                                          color: Color(0xFFF57C00))))),
+                          onPressed: () {
+                            setState(() {
+                              requestFailed = false;
+                              genreList = null;
+                            });
+                            getData();
+                          },
+                          child: Text('Retry')),
+                    ],
+                  ),
+                ],
+              )),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 

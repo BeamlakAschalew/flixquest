@@ -13,7 +13,10 @@ import '/models/movie.dart';
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   movieList = MovieList.fromJson(decodeRes);
   return movieList.movies ?? [];
@@ -21,7 +24,10 @@ Future<List<Movie>> fetchMovies(String api) async {
 
 Future<List<Movie>> fetchCollectionMovies(String api) async {
   CollectionMovieList collectionMovieList;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   collectionMovieList = CollectionMovieList.fromJson(decodeRes);
   return collectionMovieList.movies ?? [];
@@ -29,7 +35,10 @@ Future<List<Movie>> fetchCollectionMovies(String api) async {
 
 Future fetchCollectionDetails(String api) async {
   CollectionDetails collectionDetails;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   collectionDetails = CollectionDetails.fromJson(decodeRes);
   return collectionDetails;
@@ -37,7 +46,10 @@ Future fetchCollectionDetails(String api) async {
 
 Future<List<Movie>> fetchPersonMovies(String api) async {
   PersonMoviesList personMoviesList;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   personMoviesList = PersonMoviesList.fromJson(decodeRes);
   return personMoviesList.movies ?? [];
@@ -45,7 +57,10 @@ Future<List<Movie>> fetchPersonMovies(String api) async {
 
 Future<Images> fetchImages(String api) async {
   Images images;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   images = Images.fromJson(decodeRes);
   return images;
@@ -53,7 +68,10 @@ Future<Images> fetchImages(String api) async {
 
 Future<PersonImages> fetchPersonImages(String api) async {
   PersonImages personImages;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   personImages = PersonImages.fromJson(decodeRes);
   return personImages;
@@ -61,7 +79,10 @@ Future<PersonImages> fetchPersonImages(String api) async {
 
 Future<Videos> fetchVideos(String api) async {
   Videos videos;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   videos = Videos.fromJson(decodeRes);
   return videos;
@@ -69,7 +90,10 @@ Future<Videos> fetchVideos(String api) async {
 
 Future<Credits> fetchCredits(String api) async {
   Credits credits;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   credits = Credits.fromJson(decodeRes);
   return credits;
@@ -77,8 +101,10 @@ Future<Credits> fetchCredits(String api) async {
 
 Future<List<Person>> fetchPerson(String api) async {
   PersonList credits;
-  // print(api);
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   credits = PersonList.fromJson(decodeRes);
   return credits.person ?? [];
@@ -86,7 +112,10 @@ Future<List<Person>> fetchPerson(String api) async {
 
 Future<List<Genres>> fetchGenre(String api) async {
   GenreList newGenreList;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   newGenreList = GenreList.fromJson(decodeRes);
   return newGenreList.genre ?? [];
@@ -94,7 +123,10 @@ Future<List<Genres>> fetchGenre(String api) async {
 
 Future fetchSocialLinks(String api) async {
   ExternalLinks externalLinks;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   externalLinks = ExternalLinks.fromJson(decodeRes);
   return externalLinks;
@@ -102,7 +134,10 @@ Future fetchSocialLinks(String api) async {
 
 Future fetchBelongsToCollection(String api) async {
   BelongsToCollection belongsToCollection;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   belongsToCollection = BelongsToCollection.fromJson(decodeRes);
   return belongsToCollection;
@@ -110,7 +145,10 @@ Future fetchBelongsToCollection(String api) async {
 
 Future<MovieDetails> fetchMovieDetails(String api) async {
   MovieDetails movieDetails;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   movieDetails = MovieDetails.fromJson(decodeRes);
   return movieDetails;
@@ -126,7 +164,10 @@ Future<MovieDetails> fetchMovieDetails(String api) async {
 
 Future<PersonDetails> fetchPersonDetails(String api) async {
   PersonDetails personDetails;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   personDetails = PersonDetails.fromJson(decodeRes);
   return personDetails;
@@ -134,7 +175,10 @@ Future<PersonDetails> fetchPersonDetails(String api) async {
 
 Future<WatchProviders> fetchWatchProviders(String api) async {
   WatchProviders watchProviders;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   watchProviders = WatchProviders.fromJson(decodeRes);
   return watchProviders;
@@ -142,7 +186,10 @@ Future<WatchProviders> fetchWatchProviders(String api) async {
 
 Future<List<TV>> fetchTV(String api) async {
   TVList tvList;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   tvList = TVList.fromJson(decodeRes);
   return tvList.tvSeries ?? [];
@@ -150,7 +197,10 @@ Future<List<TV>> fetchTV(String api) async {
 
 Future<TVDetails> fetchTVDetails(String api) async {
   TVDetails tvDetails;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   tvDetails = TVDetails.fromJson(decodeRes);
   return tvDetails;
@@ -158,7 +208,10 @@ Future<TVDetails> fetchTVDetails(String api) async {
 
 Future<List<TV>> fetchPersonTV(String api) async {
   PersonTVList personTVList;
-  var res = await http.get(Uri.parse(api));
+  var res = await http.get(Uri.parse(api)).timeout(Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   personTVList = PersonTVList.fromJson(decodeRes);
   return personTVList.movies ?? [];

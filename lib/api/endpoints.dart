@@ -38,7 +38,7 @@ class Endpoints {
         '&page=$page';
   }
 
-  static String trendingMoviesUrl(int page) {
+  static String trendingMoviesUrl(int page, bool includeAdult) {
     return '$TMDB_API_BASE_URL'
         '/trending/movie/week?api_key='
         '$TMDB_API_KEY'
