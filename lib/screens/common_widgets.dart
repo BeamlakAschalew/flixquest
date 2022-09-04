@@ -40,60 +40,64 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Drawer(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: isDark ? Color(0xFFFFFFFF) : Color(0xFF363636),
+      child: Container(
+        color: isDark ? Color(0xFF202124) : Color(0xFFF7F7F7),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: isDark ? Color(0xFFFFFFFF) : Color(0xFF363636),
+                    ),
+                    child: Image.asset('assets/images/logo_shadow.png'),
                   ),
-                  child: Image.asset('assets/images/logo_shadow.png'),
                 ),
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.settings,
-                  color: Color(0xFFF57C00),
+                ListTile(
+                  leading: const Icon(
+                    Icons.settings,
+                    color: Color(0xFFF57C00),
+                  ),
+                  title: const Text('Settings'),
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return const Settings();
+                    })));
+                  },
                 ),
-                title: const Text('Settings'),
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) {
-                    return const Settings();
-                  })));
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.info_outline,
-                  color: Color(0xFFF57C00),
+                ListTile(
+                  leading: const Icon(
+                    Icons.info_outline,
+                    color: Color(0xFFF57C00),
+                  ),
+                  title: const Text('About'),
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const AboutPage();
+                    }));
+                  },
                 ),
-                title: const Text('About'),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const AboutPage();
-                  }));
-                },
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.share_sharp,
-                  color: Color(0xFFF57C00),
+                ListTile(
+                  leading: const Icon(
+                    Icons.share_sharp,
+                    color: Color(0xFFF57C00),
+                  ),
+                  title: const Text('Share the app'),
+                  onTap: () async {
+                    await Share.share(
+                        'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
+                  },
                 ),
-                title: const Text('Share the app'),
-                onTap: () async {
-                  await Share.share(
-                      'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
-                },
-              ),
-            ],
-          ),
-          bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
-        ],
+              ],
+            ),
+            bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
+          ],
+        ),
       ),
     );
   }

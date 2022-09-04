@@ -125,6 +125,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Provider.of<AdultmodeProvider?>(context) == null ||
             Provider.of<ImagequalityProvider?>(context) == null ||
@@ -213,19 +214,21 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                 ),
               ),
             ),
-            body: IndexedStack(
-              children: const <Widget>[
-                MainMoviesDisplay(),
-                MainTVDisplay(),
-
-                Center(
-                  child: Text('Coming soon'),
-                ),
-                Center(
-                  child: Text('Coming soon'),
-                )
-              ],
-              index: _selectedIndex,
+            body: Container(
+              color: isDark ? Color(0xFF202124) : Color(0xFFF7F7F7),
+              child: IndexedStack(
+                children: const <Widget>[
+                  MainMoviesDisplay(),
+                  MainTVDisplay(),
+                  Center(
+                    child: Text('Coming soon'),
+                  ),
+                  Center(
+                    child: Text('Coming soon'),
+                  )
+                ],
+                index: _selectedIndex,
+              ),
             ));
   }
 }
