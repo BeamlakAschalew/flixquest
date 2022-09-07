@@ -3,7 +3,7 @@ class WatchProviders {
   List<FlatRate>? flatRate;
   List<Rent>? rent;
   List<ADS>? ads;
-  WatchProviders(this.buy, this.flatRate, this.rent, this.ads);
+  WatchProviders({this.buy, this.flatRate, this.rent, this.ads});
 
   WatchProviders.fromJson(Map<String, dynamic> json) {
     if (json['results']['US'] == null) {

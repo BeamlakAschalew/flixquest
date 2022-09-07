@@ -38,6 +38,7 @@ import 'crew_detail.dart';
 import 'movie_widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
+import 'common_widgets.dart';
 
 class MainTVDisplay extends StatefulWidget {
   const MainTVDisplay({
@@ -220,6 +221,7 @@ class _DiscoverTVState extends State<DiscoverTV>
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         Row(
@@ -238,15 +240,13 @@ class _DiscoverTVState extends State<DiscoverTV>
           width: double.infinity,
           height: deviceHeight * 0.417,
           child: tvList == null
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
+              ? DiscoverMoviesAndTVShimmer(isDark: isDark)
               : requestFailed == true
                   ? retryWidget()
                   : CarouselSlider.builder(
                       options: CarouselOptions(
                         disableCenter: true,
-                        viewportFraction: 0.8,
+                        viewportFraction: 0.6,
                         enlargeCenterPage: true,
                         autoPlay: true,
                       ),
@@ -291,10 +291,8 @@ class _DiscoverTVState extends State<DiscoverTV>
                                       ),
                                     ),
                                   ),
-                                  placeholder: (context, url) => Image.asset(
-                                    'assets/images/loading.gif',
-                                    fit: BoxFit.cover,
-                                  ),
+                                  placeholder: (context, url) =>
+                                      discoverImageShimmer(isDark),
                                   errorWidget: (context, url, error) =>
                                       Image.asset(
                                     'assets/images/na_logo.png',
@@ -455,6 +453,7 @@ class _ScrollingTVState extends State<ScrollingTV>
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         Row(
@@ -473,9 +472,7 @@ class _ScrollingTVState extends State<ScrollingTV>
           width: double.infinity,
           height: 250,
           child: tvList == null
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
+              ? ScrollingMoviesAndTVShimmer(isDark: isDark)
               : requestFailed == true
                   ? retryWidget()
                   : Row(
@@ -506,7 +503,7 @@ class _ScrollingTVState extends State<ScrollingTV>
                                                     '${tvList![index].id}${widget.title}')));
                                   },
                                   child: SizedBox(
-                                    width: 105,
+                                    width: 100,
                                     child: Column(
                                       children: <Widget>[
                                         Expanded(
@@ -553,12 +550,10 @@ class _ScrollingTVState extends State<ScrollingTV>
                                                           ),
                                                         ),
                                                       ),
-                                                      placeholder:
-                                                          (context, url) =>
-                                                              Image.asset(
-                                                        'assets/images/loading.gif',
-                                                        fit: BoxFit.cover,
-                                                      ),
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          scrollingImageShimmer(
+                                                              isDark),
                                                       errorWidget: (context,
                                                               url, error) =>
                                                           Image.asset(
@@ -589,17 +584,12 @@ class _ScrollingTVState extends State<ScrollingTV>
                             },
                           ),
                         ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(left: 10.0, right: 5.0),
-                          child: Visibility(
-                            child: const SizedBox(
-                              height: 30,
-                              width: 30,
-                              child: CircularProgressIndicator(),
-                            ),
-                            visible: isLoading,
+                        Visibility(
+                          child: SizedBox(
+                            width: 110,
+                            child: horizontalLoadMoreShimmer(isDark),
                           ),
+                          visible: isLoading,
                         ),
                       ],
                     ),
@@ -2121,14 +2111,27 @@ class TVCastTab extends StatefulWidget {
 class _TVCastTabState extends State<TVCastTab>
     with AutomaticKeepAliveClientMixin<TVCastTab> {
   Credits? credits;
+  bool requestFailed = false;
 
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  void getData() {
     fetchCredits(widget.api!).then((value) {
       setState(() {
         credits = value;
       });
+    });
+    Future.delayed(const Duration(seconds: 11), () {
+      if (credits == null) {
+        setState(() {
+          requestFailed = true;
+          credits = Credits(cast: [Cast()]);
+        });
+      }
     });
   }
 
@@ -2154,145 +2157,204 @@ class _TVCastTabState extends State<TVCastTab>
                 ),
                 color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
-            : Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: ListView.builder(
-                    itemCount: credits!.cast!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          mixpanel
-                              .track('Most viewed person pages', properties: {
-                            'Person name': '${credits!.cast![index].name}',
-                            'Person id': '${credits!.cast![index].id}'
-                          });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CastDetailPage(
-                                cast: credits!.cast![index],
-                                heroId: '${credits!.cast![index].name}');
-                          }));
-                        },
-                        child: Container(
-                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 0.0,
-                              bottom: 5.0,
-                              left: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  // crossAxisAlignment:
-                                  //     CrossAxisAlignment.start,
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : Container(
+                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    child: ListView.builder(
+                        itemCount: credits!.cast!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              mixpanel.track('Most viewed person pages',
+                                  properties: {
+                                    'Person name':
+                                        '${credits!.cast![index].name}',
+                                    'Person id': '${credits!.cast![index].id}'
+                                  });
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return CastDetailPage(
+                                    cast: credits!.cast![index],
+                                    heroId: '${credits!.cast![index].name}');
+                              }));
+                            },
+                            child: Container(
+                              color: isDark
+                                  ? Color(0xFF202124)
+                                  : Color(0xFFFFFFFF),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 0.0,
+                                  bottom: 5.0,
+                                  left: 10,
+                                ),
+                                child: Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 20.0, left: 10),
-                                      child: SizedBox(
-                                        width: 80,
-                                        height: 80,
-                                        child: Hero(
-                                          tag: '${credits!.cast![index].name}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            child: credits!.cast![index]
-                                                        .profilePath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_square.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            credits!
-                                                                .cast![index]
-                                                                .profilePath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
+                                    Row(
+                                      // crossAxisAlignment:
+                                      //     CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 20.0, left: 10),
+                                          child: SizedBox(
+                                            width: 80,
+                                            height: 80,
+                                            child: Hero(
+                                              tag:
+                                                  '${credits!.cast![index].name}',
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100.0),
+                                                child: credits!.cast![index]
+                                                            .profilePath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_square.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                credits!
+                                                                    .cast![
+                                                                        index]
+                                                                    .profilePath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                Image.asset(
+                                                          'assets/images/loading.gif',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_sqaure.png',
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                    ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_sqaure.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                credits!.cast![index].name!,
+                                                style: const TextStyle(
+                                                    fontFamily: 'PoppinsSB'),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                'As : '
+                                                '${credits!.cast![index].roles![0].character!.isEmpty ? 'N/A' : credits!.cast![index].roles![0].character!}',
+                                              ),
+                                              Text(
+                                                credits!.cast![index].roles![0]
+                                                            .episodeCount! ==
+                                                        1
+                                                    ? credits!
+                                                            .cast![index]
+                                                            .roles![0]
+                                                            .episodeCount!
+                                                            .toString() +
+                                                        ' episode'
+                                                    : credits!
+                                                            .cast![index]
+                                                            .roles![0]
+                                                            .episodeCount!
+                                                            .toString() +
+                                                        ' episodes',
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            credits!.cast![index].name!,
-                                            style: const TextStyle(
-                                                fontFamily: 'PoppinsSB'),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            'As : '
-                                            '${credits!.cast![index].roles![0].character!.isEmpty ? 'N/A' : credits!.cast![index].roles![0].character!}',
-                                          ),
-                                          Text(
-                                            credits!.cast![index].roles![0]
-                                                        .episodeCount! ==
-                                                    1
-                                                ? credits!.cast![index]
-                                                        .roles![0].episodeCount!
-                                                        .toString() +
-                                                    ' episode'
-                                                : credits!.cast![index]
-                                                        .roles![0].episodeCount!
-                                                        .toString() +
-                                                    ' episodes',
-                                          ),
-                                        ],
-                                      ),
-                                    )
+                                    Divider(
+                                      color: !isDark
+                                          ? Colors.black54
+                                          : Colors.white54,
+                                      thickness: 1,
+                                      endIndent: 20,
+                                      indent: 10,
+                                    ),
                                   ],
                                 ),
-                                Divider(
-                                  color:
-                                      !isDark ? Colors.black54 : Colors.white54,
-                                  thickness: 1,
-                                  endIndent: 20,
-                                  indent: 10,
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    }));
+                          );
+                        }));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      credits = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 
   @override
@@ -2317,6 +2379,7 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
   TVDetails? tvDetails;
   var startAppSdkTVSeason = StartAppSdk();
   StartAppBannerAd? bannerAdTVSeason;
+  bool requestFailed = false;
 
   void getBannerADForMovieDetail() {
     startAppSdkTVSeason
@@ -2336,10 +2399,23 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
   void initState() {
     super.initState();
     getBannerADForMovieDetail();
+    getData();
+  }
+
+  void getData() {
     fetchTVDetails(widget.api!).then((value) {
       setState(() {
         tvDetails = value;
       });
+    });
+    Future.delayed(const Duration(seconds: 11), () {
+      if (tvDetails == null) {
+        print('tv details still null');
+        setState(() {
+          requestFailed = true;
+          tvDetails = TVDetails(seasons: [Seasons()]);
+        });
+      }
     });
   }
 
@@ -2364,169 +2440,221 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                   child: Text('There is no season available for this TV show'),
                 ),
               )
-            : Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                          itemCount: tvDetails!.seasons!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return GestureDetector(
-                              onTap: () {
-                                mixpanel.track('Most viewed season details',
-                                    properties: {
-                                      'TV series name': '${widget.seriesName}',
-                                      'TV series season number':
-                                          '${tvDetails!.seasons![index].seasonNumber}',
-                                      'Is TV series adult?': '${widget.adult}'
-                                    });
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SeasonsDetail(
-                                            adult: widget.adult,
-                                            seriesName: widget.seriesName,
-                                            tvId: widget.tvId,
-                                            tvDetails: tvDetails!,
-                                            seasons: tvDetails!.seasons![index],
-                                            heroId:
-                                                '${tvDetails!.seasons![index].seasonId}')));
-                              },
-                              child: Container(
-                                color: isDark
-                                    ? Color(0xFF202124)
-                                    : Color(0xFFFFFFFF),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 0.0,
-                                    bottom: 5.0,
-                                    left: 15,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        // crossAxisAlignment:
-                                        //     CrossAxisAlignment.start,
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : Container(
+                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                              itemCount: tvDetails!.seasons!.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    mixpanel.track('Most viewed season details',
+                                        properties: {
+                                          'TV series name':
+                                              '${widget.seriesName}',
+                                          'TV series season number':
+                                              '${tvDetails!.seasons![index].seasonNumber}',
+                                          'Is TV series adult?':
+                                              '${widget.adult}'
+                                        });
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => SeasonsDetail(
+                                                adult: widget.adult,
+                                                seriesName: widget.seriesName,
+                                                tvId: widget.tvId,
+                                                tvDetails: tvDetails!,
+                                                seasons:
+                                                    tvDetails!.seasons![index],
+                                                heroId:
+                                                    '${tvDetails!.seasons![index].seasonId}')));
+                                  },
+                                  child: Container(
+                                    color: isDark
+                                        ? Color(0xFF202124)
+                                        : Color(0xFFFFFFFF),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 0.0,
+                                        bottom: 5.0,
+                                        left: 15,
+                                      ),
+                                      child: Column(
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 30.0),
-                                            child: SizedBox(
-                                              width: 85,
-                                              height: 130,
-                                              child: Hero(
-                                                tag:
-                                                    '${tvDetails!.seasons![index].seasonId}',
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  child: tvDetails!
-                                                              .seasons![index]
-                                                              .posterPath ==
-                                                          null
-                                                      ? Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        )
-                                                      : CachedNetworkImage(
-                                                          fadeOutDuration:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      300),
-                                                          fadeOutCurve:
-                                                              Curves.easeOut,
-                                                          fadeInDuration:
-                                                              Duration(
-                                                                  milliseconds:
-                                                                      700),
-                                                          fadeInCurve:
-                                                              Curves.easeIn,
-                                                          imageUrl:
-                                                              TMDB_BASE_IMAGE_URL +
+                                          Row(
+                                            // crossAxisAlignment:
+                                            //     CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 30.0),
+                                                child: SizedBox(
+                                                  width: 85,
+                                                  height: 130,
+                                                  child: Hero(
+                                                    tag:
+                                                        '${tvDetails!.seasons![index].seasonId}',
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.0),
+                                                      child: tvDetails!
+                                                                  .seasons![
+                                                                      index]
+                                                                  .posterPath ==
+                                                              null
+                                                          ? Image.asset(
+                                                              'assets/images/na_logo.png',
+                                                              fit: BoxFit.cover,
+                                                            )
+                                                          : CachedNetworkImage(
+                                                              fadeOutDuration:
+                                                                  const Duration(
+                                                                      milliseconds:
+                                                                          300),
+                                                              fadeOutCurve:
+                                                                  Curves
+                                                                      .easeOut,
+                                                              fadeInDuration:
+                                                                  Duration(
+                                                                      milliseconds:
+                                                                          700),
+                                                              fadeInCurve:
+                                                                  Curves.easeIn,
+                                                              imageUrl: TMDB_BASE_IMAGE_URL +
                                                                   imageQuality +
                                                                   tvDetails!
                                                                       .seasons![
                                                                           index]
                                                                       .posterPath!,
-                                                          imageBuilder: (context,
-                                                                  imageProvider) =>
-                                                              Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              image:
-                                                                  DecorationImage(
-                                                                image:
-                                                                    imageProvider,
+                                                              imageBuilder:
+                                                                  (context,
+                                                                          imageProvider) =>
+                                                                      Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  image:
+                                                                      DecorationImage(
+                                                                    image:
+                                                                        imageProvider,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              placeholder:
+                                                                  (context,
+                                                                          url) =>
+                                                                      Image
+                                                                          .asset(
+                                                                'assets/images/loading.gif',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                              errorWidget: (context,
+                                                                      url,
+                                                                      error) =>
+                                                                  Image.asset(
+                                                                'assets/images/na_logo.png',
                                                                 fit: BoxFit
                                                                     .cover,
                                                               ),
                                                             ),
-                                                          ),
-                                                          placeholder:
-                                                              (context, url) =>
-                                                                  Image.asset(
-                                                            'assets/images/loading.gif',
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
-                                                              Image.asset(
-                                                            'assets/images/na_logo.png',
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  tvDetails!
-                                                      .seasons![index].name!,
-                                                  style: const TextStyle(
-                                                      fontSize: 20,
-                                                      fontFamily: 'PoppinsSB',
-                                                      overflow: TextOverflow
-                                                          .ellipsis),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      tvDetails!.seasons![index]
+                                                          .name!,
+                                                      style: const TextStyle(
+                                                          fontSize: 20,
+                                                          fontFamily:
+                                                              'PoppinsSB',
+                                                          overflow: TextOverflow
+                                                              .ellipsis),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
-                                          )
+                                              )
+                                            ],
+                                          ),
+                                          Divider(
+                                            color: !isDark
+                                                ? Colors.black54
+                                                : Colors.white54,
+                                            thickness: 1,
+                                            endIndent: 20,
+                                            indent: 10,
+                                          ),
                                         ],
                                       ),
-                                      Divider(
-                                        color: !isDark
-                                            ? Colors.black54
-                                            : Colors.white54,
-                                        thickness: 1,
-                                        endIndent: 20,
-                                        indent: 10,
-                                      ),
-                                    ],
+                                    ),
                                   ),
+                                );
+                              }),
+                        ),
+                        bannerAdTVSeason != null
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 5.0),
+                                child: SizedBox(
+                                  height: 60,
+                                  width: double.infinity,
+                                  child: StartAppBanner(bannerAdTVSeason!),
                                 ),
-                              ),
-                            );
-                          }),
-                    ),
-                    bannerAdTVSeason != null
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 5.0),
-                            child: SizedBox(
-                              height: 60,
-                              width: double.infinity,
-                              child: StartAppBanner(bannerAdTVSeason!),
-                            ),
-                          )
-                        : Container(),
-                  ],
-                ));
+                              )
+                            : Container(),
+                      ],
+                    ));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      tvDetails = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 
   @override
@@ -2544,14 +2672,27 @@ class TVCrewTab extends StatefulWidget {
 class _TVCrewTabState extends State<TVCrewTab>
     with AutomaticKeepAliveClientMixin<TVCrewTab> {
   Credits? credits;
+  bool requestFailed = false;
 
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  void getData() {
     fetchCredits(widget.api!).then((value) {
       setState(() {
         credits = value;
       });
+    });
+    Future.delayed(const Duration(seconds: 11), () {
+      if (credits == null) {
+        setState(() {
+          requestFailed = true;
+          credits = Credits(crew: [Crew()]);
+        });
+      }
     });
   }
 
@@ -2577,132 +2718,187 @@ class _TVCrewTabState extends State<TVCrewTab>
                 ),
                 color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
-            : Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: ListView.builder(
-                    itemCount: credits!.crew!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          mixpanel
-                              .track('Most viewed person pages', properties: {
-                            'Person name': '${credits!.crew![index].name}',
-                            'Person id': '${credits!.crew![index].id}'
-                          });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CrewDetailPage(
-                                crew: credits!.crew![index],
-                                heroId: '${credits!.crew![index].name}');
-                          }));
-                        },
-                        child: Container(
-                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 0.0,
-                              bottom: 5.0,
-                              left: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  // crossAxisAlignment:
-                                  //     CrossAxisAlignment.start,
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : Container(
+                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    child: ListView.builder(
+                        itemCount: credits!.crew!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              mixpanel.track('Most viewed person pages',
+                                  properties: {
+                                    'Person name':
+                                        '${credits!.crew![index].name}',
+                                    'Person id': '${credits!.crew![index].id}'
+                                  });
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return CrewDetailPage(
+                                    crew: credits!.crew![index],
+                                    heroId: '${credits!.crew![index].name}');
+                              }));
+                            },
+                            child: Container(
+                              color: isDark
+                                  ? Color(0xFF202124)
+                                  : Color(0xFFFFFFFF),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 0.0,
+                                  bottom: 5.0,
+                                  left: 10,
+                                ),
+                                child: Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 20.0, left: 10),
-                                      child: SizedBox(
-                                        width: 80,
-                                        height: 80,
-                                        child: Hero(
-                                          tag: '${credits!.crew![index].name}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            child: credits!.crew![index]
-                                                        .profilePath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_square.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            credits!
-                                                                .crew![index]
-                                                                .profilePath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
+                                    Row(
+                                      // crossAxisAlignment:
+                                      //     CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 20.0, left: 10),
+                                          child: SizedBox(
+                                            width: 80,
+                                            height: 80,
+                                            child: Hero(
+                                              tag:
+                                                  '${credits!.crew![index].name}',
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100.0),
+                                                child: credits!.crew![index]
+                                                            .profilePath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_square.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                credits!
+                                                                    .crew![
+                                                                        index]
+                                                                    .profilePath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                Image.asset(
+                                                          'assets/images/loading.gif',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_sqaure.png',
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                    ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_sqaure.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                credits!.crew![index].name!,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                    fontFamily: 'PoppinsSB'),
+                                              ),
+                                              Text(
+                                                'Job : '
+                                                '${credits!.crew![index].department!.isEmpty ? 'N/A' : credits!.crew![index].department!}',
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            credits!.crew![index].name!,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                                fontFamily: 'PoppinsSB'),
-                                          ),
-                                          Text(
-                                            'Job : '
-                                            '${credits!.crew![index].department!.isEmpty ? 'N/A' : credits!.crew![index].department!}',
-                                          ),
-                                        ],
-                                      ),
-                                    )
+                                    Divider(
+                                      color: !isDark
+                                          ? Colors.black54
+                                          : Colors.white54,
+                                      thickness: 1,
+                                      endIndent: 20,
+                                      indent: 10,
+                                    ),
                                   ],
                                 ),
-                                Divider(
-                                  color:
-                                      !isDark ? Colors.black54 : Colors.white54,
-                                  thickness: 1,
-                                  endIndent: 20,
-                                  indent: 10,
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    }));
+                          );
+                        }));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      credits = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 
   @override
@@ -2729,16 +2925,29 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
   List<TV>? tvList;
   var startAppSdkTVRecommendation = StartAppSdk();
   StartAppBannerAd? bannerAdTVRecommendation;
+  bool requestFailed = false;
   @override
   void initState() {
     super.initState();
     getBannerADForMovieRecommendation();
+    getData();
+    getMoreData();
+  }
+
+  void getData() {
     fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
     });
-    getMoreData();
+    Future.delayed(const Duration(seconds: 11), () {
+      if (tvList == null) {
+        setState(() {
+          requestFailed = true;
+          tvList = [TV()];
+        });
+      }
+    });
   }
 
   void getBannerADForMovieRecommendation() {
@@ -2813,184 +3022,233 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                   ),
                 ),
               )
-            : Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                          controller: _scrollController,
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: tvList!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return GestureDetector(
-                              onTap: () {
-                                mixpanel
-                                    .track('Most viewed TV pages', properties: {
-                                  'TV series name':
-                                      '${tvList![index].originalName}',
-                                  'TV series id': '${tvList![index].id}'
-                                });
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return TVDetailPage(
-                                    tvSeries: tvList![index],
-                                    heroId: '${tvList![index].id}',
-                                  );
-                                }));
-                              },
-                              child: Container(
-                                color: isDark
-                                    ? Color(0xFF202124)
-                                    : Color(0xFFFFFFFF),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 0.0,
-                                    bottom: 3.0,
-                                    left: 10,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        // crossAxisAlignment:
-                                        //     CrossAxisAlignment.start,
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : Container(
+                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                              controller: _scrollController,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: tvList!.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    mixpanel.track('Most viewed TV pages',
+                                        properties: {
+                                          'TV series name':
+                                              '${tvList![index].originalName}',
+                                          'TV series id': '${tvList![index].id}'
+                                        });
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return TVDetailPage(
+                                        tvSeries: tvList![index],
+                                        heroId: '${tvList![index].id}',
+                                      );
+                                    }));
+                                  },
+                                  child: Container(
+                                    color: isDark
+                                        ? Color(0xFF202124)
+                                        : Color(0xFFFFFFFF),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 0.0,
+                                        bottom: 3.0,
+                                        left: 10,
+                                      ),
+                                      child: Column(
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 10.0),
-                                            child: SizedBox(
-                                              width: 85,
-                                              height: 130,
-                                              child: Hero(
-                                                tag: '${tvList![index].id}',
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  child: tvList![index]
-                                                              .posterPath ==
-                                                          null
-                                                      ? Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        )
-                                                      : CachedNetworkImage(
-                                                          fadeOutDuration:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      300),
-                                                          fadeOutCurve:
-                                                              Curves.easeOut,
-                                                          fadeInDuration:
-                                                              Duration(
-                                                                  milliseconds:
-                                                                      700),
-                                                          fadeInCurve:
-                                                              Curves.easeIn,
-                                                          imageUrl:
-                                                              TMDB_BASE_IMAGE_URL +
+                                          Row(
+                                            // crossAxisAlignment:
+                                            //     CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 10.0),
+                                                child: SizedBox(
+                                                  width: 85,
+                                                  height: 130,
+                                                  child: Hero(
+                                                    tag: '${tvList![index].id}',
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.0),
+                                                      child: tvList![index]
+                                                                  .posterPath ==
+                                                              null
+                                                          ? Image.asset(
+                                                              'assets/images/na_logo.png',
+                                                              fit: BoxFit.cover,
+                                                            )
+                                                          : CachedNetworkImage(
+                                                              fadeOutDuration:
+                                                                  const Duration(
+                                                                      milliseconds:
+                                                                          300),
+                                                              fadeOutCurve:
+                                                                  Curves
+                                                                      .easeOut,
+                                                              fadeInDuration:
+                                                                  Duration(
+                                                                      milliseconds:
+                                                                          700),
+                                                              fadeInCurve:
+                                                                  Curves.easeIn,
+                                                              imageUrl: TMDB_BASE_IMAGE_URL +
                                                                   imageQuality +
                                                                   tvList![index]
                                                                       .posterPath!,
-                                                          imageBuilder: (context,
-                                                                  imageProvider) =>
-                                                              Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              image:
-                                                                  DecorationImage(
-                                                                image:
-                                                                    imageProvider,
+                                                              imageBuilder:
+                                                                  (context,
+                                                                          imageProvider) =>
+                                                                      Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  image:
+                                                                      DecorationImage(
+                                                                    image:
+                                                                        imageProvider,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              placeholder:
+                                                                  (context,
+                                                                          url) =>
+                                                                      Image
+                                                                          .asset(
+                                                                'assets/images/loading.gif',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                              errorWidget: (context,
+                                                                      url,
+                                                                      error) =>
+                                                                  Image.asset(
+                                                                'assets/images/na_logo.png',
                                                                 fit: BoxFit
                                                                     .cover,
                                                               ),
                                                             ),
-                                                          ),
-                                                          placeholder:
-                                                              (context, url) =>
-                                                                  Image.asset(
-                                                            'assets/images/loading.gif',
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
-                                                              Image.asset(
-                                                            'assets/images/na_logo.png',
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  tvList![index].name!,
-                                                  style: const TextStyle(
-                                                      fontFamily: 'PoppinsSB',
-                                                      fontSize: 15,
-                                                      overflow: TextOverflow
-                                                          .ellipsis),
-                                                ),
-                                                Row(
-                                                  children: <Widget>[
-                                                    const Icon(Icons.star,
-                                                        color:
-                                                            Color(0xFFF57C00)),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
                                                     Text(
-                                                      tvList![index]
-                                                          .voteAverage!
-                                                          .toStringAsFixed(1),
+                                                      tvList![index].name!,
                                                       style: const TextStyle(
                                                           fontFamily:
-                                                              'Poppins'),
+                                                              'PoppinsSB',
+                                                          fontSize: 15,
+                                                          overflow: TextOverflow
+                                                              .ellipsis),
+                                                    ),
+                                                    Row(
+                                                      children: <Widget>[
+                                                        const Icon(Icons.star,
+                                                            color: Color(
+                                                                0xFFF57C00)),
+                                                        Text(
+                                                          tvList![index]
+                                                              .voteAverage!
+                                                              .toStringAsFixed(
+                                                                  1),
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ],
                                                 ),
-                                              ],
-                                            ),
-                                          )
+                                              )
+                                            ],
+                                          ),
+                                          Divider(
+                                            color: !isDark
+                                                ? Colors.black54
+                                                : Colors.white54,
+                                            thickness: 1,
+                                            endIndent: 20,
+                                            indent: 10,
+                                          ),
                                         ],
                                       ),
-                                      Divider(
-                                        color: !isDark
-                                            ? Colors.black54
-                                            : Colors.white54,
-                                        thickness: 1,
-                                        endIndent: 20,
-                                        indent: 10,
-                                      ),
-                                    ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                        Visibility(
+                            visible: isLoading,
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            )),
+                        bannerAdTVRecommendation != null
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 5.0),
+                                child: SizedBox(
+                                  height: 60,
+                                  width: double.infinity,
+                                  child: StartAppBanner(
+                                    bannerAdTVRecommendation!,
                                   ),
                                 ),
-                              ),
-                            );
-                          }),
-                    ),
-                    Visibility(
-                        visible: isLoading,
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(child: CircularProgressIndicator()),
-                        )),
-                    bannerAdTVRecommendation != null
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 5.0),
-                            child: SizedBox(
-                              height: 60,
-                              width: double.infinity,
-                              child: StartAppBanner(
-                                bannerAdTVRecommendation!,
-                              ),
-                            ),
-                          )
-                        : Container(),
-                  ],
-                ));
+                              )
+                            : Container(),
+                      ],
+                    ));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      tvList = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 
   @override
@@ -3017,16 +3275,30 @@ class _SimilarTVTabState extends State<SimilarTVTab>
   List<TV>? tvList;
   var startAppSdkTVSimilars = StartAppSdk();
   StartAppBannerAd? bannerAdTVSimilars;
+  bool requestFailed = false;
+
   @override
   void initState() {
     super.initState();
     getBannerADForTVSimilars();
+    getData();
+    getMoreData();
+  }
+
+  void getData() {
     fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
     });
-    getMoreData();
+    Future.delayed(const Duration(seconds: 11), () {
+      if (tvList == null) {
+        setState(() {
+          requestFailed = true;
+          tvList = [TV()];
+        });
+      }
+    });
   }
 
   void getBannerADForTVSimilars() {
@@ -3098,184 +3370,233 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                       Text('There are no similars available for this TV show'),
                 ),
               )
-            : Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                          controller: _scrollController,
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: tvList!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return GestureDetector(
-                              onTap: () {
-                                mixpanel
-                                    .track('Most viewed TV pages', properties: {
-                                  'TV series name':
-                                      '${tvList![index].originalName}',
-                                  'TV series id': '${tvList![index].id}'
-                                });
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return TVDetailPage(
-                                    tvSeries: tvList![index],
-                                    heroId: '${tvList![index].id}',
-                                  );
-                                }));
-                              },
-                              child: Container(
-                                color: isDark
-                                    ? Color(0xFF202124)
-                                    : Color(0xFFFFFFFF),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 0.0,
-                                    bottom: 3.0,
-                                    left: 10,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        // crossAxisAlignment:
-                                        //     CrossAxisAlignment.start,
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : Container(
+                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                              controller: _scrollController,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: tvList!.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    mixpanel.track('Most viewed TV pages',
+                                        properties: {
+                                          'TV series name':
+                                              '${tvList![index].originalName}',
+                                          'TV series id': '${tvList![index].id}'
+                                        });
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return TVDetailPage(
+                                        tvSeries: tvList![index],
+                                        heroId: '${tvList![index].id}',
+                                      );
+                                    }));
+                                  },
+                                  child: Container(
+                                    color: isDark
+                                        ? Color(0xFF202124)
+                                        : Color(0xFFFFFFFF),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 0.0,
+                                        bottom: 3.0,
+                                        left: 10,
+                                      ),
+                                      child: Column(
                                         children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 10.0),
-                                            child: SizedBox(
-                                              width: 85,
-                                              height: 130,
-                                              child: Hero(
-                                                tag: '${tvList![index].id}',
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  child: tvList![index]
-                                                              .posterPath ==
-                                                          null
-                                                      ? Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        )
-                                                      : CachedNetworkImage(
-                                                          fadeOutDuration:
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      300),
-                                                          fadeOutCurve:
-                                                              Curves.easeOut,
-                                                          fadeInDuration:
-                                                              Duration(
-                                                                  milliseconds:
-                                                                      700),
-                                                          fadeInCurve:
-                                                              Curves.easeIn,
-                                                          imageUrl:
-                                                              TMDB_BASE_IMAGE_URL +
+                                          Row(
+                                            // crossAxisAlignment:
+                                            //     CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 10.0),
+                                                child: SizedBox(
+                                                  width: 85,
+                                                  height: 130,
+                                                  child: Hero(
+                                                    tag: '${tvList![index].id}',
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.0),
+                                                      child: tvList![index]
+                                                                  .posterPath ==
+                                                              null
+                                                          ? Image.asset(
+                                                              'assets/images/na_logo.png',
+                                                              fit: BoxFit.cover,
+                                                            )
+                                                          : CachedNetworkImage(
+                                                              fadeOutDuration:
+                                                                  const Duration(
+                                                                      milliseconds:
+                                                                          300),
+                                                              fadeOutCurve:
+                                                                  Curves
+                                                                      .easeOut,
+                                                              fadeInDuration:
+                                                                  Duration(
+                                                                      milliseconds:
+                                                                          700),
+                                                              fadeInCurve:
+                                                                  Curves.easeIn,
+                                                              imageUrl: TMDB_BASE_IMAGE_URL +
                                                                   imageQuality +
                                                                   tvList![index]
                                                                       .posterPath!,
-                                                          imageBuilder: (context,
-                                                                  imageProvider) =>
-                                                              Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              image:
-                                                                  DecorationImage(
-                                                                image:
-                                                                    imageProvider,
+                                                              imageBuilder:
+                                                                  (context,
+                                                                          imageProvider) =>
+                                                                      Container(
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  image:
+                                                                      DecorationImage(
+                                                                    image:
+                                                                        imageProvider,
+                                                                    fit: BoxFit
+                                                                        .cover,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              placeholder:
+                                                                  (context,
+                                                                          url) =>
+                                                                      Image
+                                                                          .asset(
+                                                                'assets/images/loading.gif',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                              errorWidget: (context,
+                                                                      url,
+                                                                      error) =>
+                                                                  Image.asset(
+                                                                'assets/images/na_logo.png',
                                                                 fit: BoxFit
                                                                     .cover,
                                                               ),
                                                             ),
-                                                          ),
-                                                          placeholder:
-                                                              (context, url) =>
-                                                                  Image.asset(
-                                                            'assets/images/loading.gif',
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
-                                                              Image.asset(
-                                                            'assets/images/na_logo.png',
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  tvList![index].name!,
-                                                  style: const TextStyle(
-                                                      fontFamily: 'PoppinsSB',
-                                                      fontSize: 15,
-                                                      overflow: TextOverflow
-                                                          .ellipsis),
-                                                ),
-                                                Row(
-                                                  children: <Widget>[
-                                                    const Icon(Icons.star,
-                                                        color:
-                                                            Color(0xFFF57C00)),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
                                                     Text(
-                                                      tvList![index]
-                                                          .voteAverage!
-                                                          .toStringAsFixed(1),
+                                                      tvList![index].name!,
                                                       style: const TextStyle(
                                                           fontFamily:
-                                                              'Poppins'),
+                                                              'PoppinsSB',
+                                                          fontSize: 15,
+                                                          overflow: TextOverflow
+                                                              .ellipsis),
+                                                    ),
+                                                    Row(
+                                                      children: <Widget>[
+                                                        const Icon(Icons.star,
+                                                            color: Color(
+                                                                0xFFF57C00)),
+                                                        Text(
+                                                          tvList![index]
+                                                              .voteAverage!
+                                                              .toStringAsFixed(
+                                                                  1),
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ],
                                                 ),
-                                              ],
-                                            ),
-                                          )
+                                              )
+                                            ],
+                                          ),
+                                          Divider(
+                                            color: !isDark
+                                                ? Colors.black54
+                                                : Colors.white54,
+                                            thickness: 1,
+                                            endIndent: 20,
+                                            indent: 10,
+                                          ),
                                         ],
                                       ),
-                                      Divider(
-                                        color: !isDark
-                                            ? Colors.black54
-                                            : Colors.white54,
-                                        thickness: 1,
-                                        endIndent: 20,
-                                        indent: 10,
-                                      ),
-                                    ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                        Visibility(
+                            visible: isLoading,
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            )),
+                        bannerAdTVSimilars != null
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 5.0),
+                                child: SizedBox(
+                                  height: 60,
+                                  width: double.infinity,
+                                  child: StartAppBanner(
+                                    bannerAdTVSimilars!,
                                   ),
                                 ),
-                              ),
-                            );
-                          }),
-                    ),
-                    Visibility(
-                        visible: isLoading,
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(child: CircularProgressIndicator()),
-                        )),
-                    bannerAdTVSimilars != null
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 5.0),
-                            child: SizedBox(
-                              height: 60,
-                              width: double.infinity,
-                              child: StartAppBanner(
-                                bannerAdTVSimilars!,
-                              ),
-                            ),
-                          )
-                        : Container(),
-                  ],
-                ));
+                              )
+                            : Container(),
+                      ],
+                    ));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      tvList = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 
   @override
@@ -3377,6 +3698,7 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
   bool isLoading = false;
   var startAppSdkTVGenres = StartAppSdk();
   StartAppBannerAd? bannerAdTVGenres;
+  bool requestFailed = false;
 
   void getBannerADForTVGenres() {
     startAppSdkTVGenres
@@ -3427,12 +3749,24 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
   void initState() {
     super.initState();
     getBannerADForTVGenres();
+    getData();
+    getMoreData();
+  }
+
+  void getData() {
     fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
     });
-    getMoreData();
+    Future.delayed(const Duration(seconds: 11), () {
+      if (tvList == null) {
+        setState(() {
+          requestFailed = true;
+          tvList = [TV()];
+        });
+      }
+    });
   }
 
   @override
@@ -3455,210 +3789,252 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                   child: Text('Oops! movies for this genre doesn\'t exist :('),
                 ),
               )
-            : Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: ListView.builder(
-                                  controller: _scrollController,
-                                  physics: const BouncingScrollPhysics(),
-                                  itemCount: tvList!.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        mixpanel.track('Most viewed TV pages',
-                                            properties: {
-                                              'TV series name':
-                                                  '${tvList![index].originalName}',
-                                              'TV series id':
-                                                  '${tvList![index].id}',
-                                              'Is TV series adult?':
-                                                  '${tvList![index].adult}'
-                                            });
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return TVDetailPage(
-                                            tvSeries: tvList![index],
-                                            heroId: '${tvList![index].id}',
-                                          );
-                                        }));
-                                      },
-                                      child: Container(
-                                        color: isDark
-                                            ? Color(0xFF202124)
-                                            : Color(0xFFFFFFFF),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 0.0,
-                                            bottom: 3.0,
-                                            left: 10,
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Row(
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : Container(
+                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: ListView.builder(
+                                      controller: _scrollController,
+                                      physics: const BouncingScrollPhysics(),
+                                      itemCount: tvList!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            mixpanel.track(
+                                                'Most viewed TV pages',
+                                                properties: {
+                                                  'TV series name':
+                                                      '${tvList![index].originalName}',
+                                                  'TV series id':
+                                                      '${tvList![index].id}',
+                                                  'Is TV series adult?':
+                                                      '${tvList![index].adult}'
+                                                });
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return TVDetailPage(
+                                                tvSeries: tvList![index],
+                                                heroId: '${tvList![index].id}',
+                                              );
+                                            }));
+                                          },
+                                          child: Container(
+                                            color: isDark
+                                                ? Color(0xFF202124)
+                                                : Color(0xFFFFFFFF),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 0.0,
+                                                bottom: 3.0,
+                                                left: 10,
+                                              ),
+                                              child: Column(
                                                 children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 10.0),
-                                                    child: SizedBox(
-                                                      width: 85,
-                                                      height: 130,
-                                                      child: Hero(
-                                                        tag:
-                                                            '${tvList![index].id}',
-                                                        child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.0),
-                                                          child: tvList![index]
-                                                                      .posterPath ==
-                                                                  null
-                                                              ? Image.asset(
-                                                                  'assets/images/na_logo.png',
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                )
-                                                              : CachedNetworkImage(
-                                                                  fadeOutDuration:
-                                                                      const Duration(
-                                                                          milliseconds:
-                                                                              300),
-                                                                  fadeOutCurve:
-                                                                      Curves
-                                                                          .easeOut,
-                                                                  fadeInDuration:
-                                                                      Duration(
-                                                                          milliseconds:
-                                                                              700),
-                                                                  fadeInCurve:
-                                                                      Curves
-                                                                          .easeIn,
-                                                                  imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                      imageQuality +
-                                                                      tvList![index]
-                                                                          .posterPath!,
-                                                                  imageBuilder:
-                                                                      (context,
-                                                                              imageProvider) =>
-                                                                          Container(
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      image:
-                                                                          DecorationImage(
-                                                                        image:
-                                                                            imageProvider,
+                                                  Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                right: 10.0),
+                                                        child: SizedBox(
+                                                          width: 85,
+                                                          height: 130,
+                                                          child: Hero(
+                                                            tag:
+                                                                '${tvList![index].id}',
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10.0),
+                                                              child: tvList![index]
+                                                                          .posterPath ==
+                                                                      null
+                                                                  ? Image.asset(
+                                                                      'assets/images/na_logo.png',
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    )
+                                                                  : CachedNetworkImage(
+                                                                      fadeOutDuration:
+                                                                          const Duration(
+                                                                              milliseconds: 300),
+                                                                      fadeOutCurve:
+                                                                          Curves
+                                                                              .easeOut,
+                                                                      fadeInDuration:
+                                                                          Duration(
+                                                                              milliseconds: 700),
+                                                                      fadeInCurve:
+                                                                          Curves
+                                                                              .easeIn,
+                                                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                          imageQuality +
+                                                                          tvList![index]
+                                                                              .posterPath!,
+                                                                      imageBuilder:
+                                                                          (context, imageProvider) =>
+                                                                              Container(
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          image:
+                                                                              DecorationImage(
+                                                                            image:
+                                                                                imageProvider,
+                                                                            fit:
+                                                                                BoxFit.cover,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      placeholder: (context,
+                                                                              url) =>
+                                                                          Image
+                                                                              .asset(
+                                                                        'assets/images/loading.gif',
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                      ),
+                                                                      errorWidget: (context,
+                                                                              url,
+                                                                              error) =>
+                                                                          Image
+                                                                              .asset(
+                                                                        'assets/images/na_logo.png',
                                                                         fit: BoxFit
                                                                             .cover,
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  placeholder: (context,
-                                                                          url) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/loading.gif',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
-                                                                  errorWidget: (context,
-                                                                          url,
-                                                                          error) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/na_logo.png',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
-                                                                ),
+                                                            ),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          tvList![index].name!,
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'PoppinsSB',
-                                                              fontSize: 15,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
-                                                        ),
-                                                        Row(
-                                                          children: <Widget>[
-                                                            const Icon(
-                                                                Icons.star,
-                                                                color: Color(
-                                                                    0xFFF57C00)),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
                                                             Text(
                                                               tvList![index]
-                                                                  .voteAverage!
-                                                                  .toStringAsFixed(
-                                                                      1),
+                                                                  .name!,
                                                               style: const TextStyle(
                                                                   fontFamily:
-                                                                      'Poppins'),
+                                                                      'PoppinsSB',
+                                                                  fontSize: 15,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis),
+                                                            ),
+                                                            Row(
+                                                              children: <
+                                                                  Widget>[
+                                                                const Icon(
+                                                                    Icons.star,
+                                                                    color: Color(
+                                                                        0xFFF57C00)),
+                                                                Text(
+                                                                  tvList![index]
+                                                                      .voteAverage!
+                                                                      .toStringAsFixed(
+                                                                          1),
+                                                                  style: const TextStyle(
+                                                                      fontFamily:
+                                                                          'Poppins'),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ],
                                                         ),
-                                                      ],
-                                                    ),
-                                                  )
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Divider(
+                                                    color: !isDark
+                                                        ? Colors.black54
+                                                        : Colors.white54,
+                                                    thickness: 1,
+                                                    endIndent: 20,
+                                                    indent: 10,
+                                                  ),
                                                 ],
                                               ),
-                                              Divider(
-                                                color: !isDark
-                                                    ? Colors.black54
-                                                    : Colors.white54,
-                                                thickness: 1,
-                                                endIndent: 20,
-                                                indent: 10,
-                                              ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    );
-                                  }),
+                                        );
+                                      }),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    Visibility(
-                        visible: isLoading,
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(child: CircularProgressIndicator()),
-                        )),
-                    bannerAdTVGenres != null
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 5.0),
-                            child: SizedBox(
-                              height: 60,
-                              width: double.infinity,
-                              child: StartAppBanner(bannerAdTVGenres!),
-                            ),
-                          )
-                        : Container(),
-                  ],
-                ));
+                        Visibility(
+                            visible: isLoading,
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            )),
+                        bannerAdTVGenres != null
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 5.0),
+                                child: SizedBox(
+                                  height: 60,
+                                  width: double.infinity,
+                                  child: StartAppBanner(bannerAdTVGenres!),
+                                ),
+                              )
+                            : Container(),
+                      ],
+                    ));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      tvList = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 }
 
@@ -4167,14 +4543,27 @@ class EpisodeListWidget extends StatefulWidget {
 class _EpisodeListWidgetState extends State<EpisodeListWidget>
     with AutomaticKeepAliveClientMixin {
   TVDetails? tvDetails;
+  bool requestFailed = false;
 
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  void getData() {
     fetchTVDetails(widget.api!).then((value) {
       setState(() {
         tvDetails = value;
       });
+    });
+    Future.delayed(const Duration(seconds: 11), () {
+      if (tvDetails == null) {
+        setState(() {
+          requestFailed = true;
+          tvDetails = TVDetails(episodes: [EpisodeList()]);
+        });
+      }
     });
   }
 
@@ -4191,146 +4580,216 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : ListView.builder(
-                itemCount: tvDetails!.episodes!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () {
-                      mixpanel
-                          .track('Most viewed episode details', properties: {
-                        'TV series name': '${widget.seriesName}',
-                        'TV series episode name':
-                            '${tvDetails!.episodes![index].name}',
-                      });
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return EpisodeDetailPage(
-                            adult: widget.adult,
-                            seriesName: widget.seriesName,
-                            tvId: widget.tvId,
-                            episodes: tvDetails!.episodes,
-                            episodeList: tvDetails!.episodes![index]);
-                      }));
-                    },
-                    child: Container(
-                      color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 0.0,
-                          bottom: 8.0,
-                          left: 10,
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(tvDetails!.episodes![index].episodeNumber!
-                                    .toString()),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 10.0, left: 5.0),
-                                  child: Container(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(6.0),
-                                      child: tvDetails!.episodes![index]
-                                                      .stillPath ==
-                                                  null ||
-                                              tvDetails!.episodes![index]
-                                                  .stillPath!.isEmpty
-                                          ? Image.asset(
-                                              'assets/images/na_logo.png',
-                                              fit: BoxFit.cover,
-                                            )
-                                          : CachedNetworkImage(
-                                              fadeOutDuration: const Duration(
-                                                  milliseconds: 300),
-                                              fadeOutCurve: Curves.easeOut,
-                                              fadeInDuration:
-                                                  Duration(milliseconds: 700),
-                                              fadeInCurve: Curves.easeIn,
-                                              imageUrl: TMDB_BASE_IMAGE_URL +
-                                                  imageQuality +
-                                                  tvDetails!.episodes![index]
-                                                      .stillPath!,
-                                              imageBuilder:
-                                                  (context, imageProvider) =>
-                                                      Container(
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                              ),
-                                              placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Image.asset(
-                                                'assets/images/na_logo.png',
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                    ),
-                                    height: 56.4,
-                                    width: 100,
-                                  ),
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : tvDetails!.episodes!.isEmpty
+                    ? Center(
+                        child: Text('This season doesn\'t have episodes'),
+                      )
+                    : ListView.builder(
+                        itemCount: tvDetails!.episodes!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              mixpanel.track('Most viewed episode details',
+                                  properties: {
+                                    'TV series name': '${widget.seriesName}',
+                                    'TV series episode name':
+                                        '${tvDetails!.episodes![index].name}',
+                                  });
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return EpisodeDetailPage(
+                                    adult: widget.adult,
+                                    seriesName: widget.seriesName,
+                                    tvId: widget.tvId,
+                                    episodes: tvDetails!.episodes,
+                                    episodeList: tvDetails!.episodes![index]);
+                              }));
+                            },
+                            child: Container(
+                              color: isDark
+                                  ? Color(0xFF202124)
+                                  : Color(0xFFFFFFFF),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 0.0,
+                                  bottom: 8.0,
+                                  left: 10,
                                 ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(tvDetails!.episodes![index].name!,
-                                          style: const TextStyle(
-                                              overflow: TextOverflow.ellipsis)),
-                                      Text(
-                                        tvDetails!.episodes![index].airDate ==
-                                                    null ||
-                                                tvDetails!.episodes![index]
-                                                    .airDate!.isEmpty
-                                            ? 'Air date unknown'
-                                            : '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
-                                        style: TextStyle(
-                                          color: isDark
-                                              ? Colors.white54
-                                              : Colors.black54,
-                                        ),
-                                      ),
-                                      Row(children: [
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(tvDetails!
+                                            .episodes![index].episodeNumber!
+                                            .toString()),
                                         Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 3.0),
-                                          child: Icon(
-                                            Icons.star,
-                                            size: 20,
+                                          padding: const EdgeInsets.only(
+                                              right: 10.0, left: 5.0),
+                                          child: Container(
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(6.0),
+                                              child: tvDetails!.episodes![index]
+                                                              .stillPath ==
+                                                          null ||
+                                                      tvDetails!
+                                                          .episodes![index]
+                                                          .stillPath!
+                                                          .isEmpty
+                                                  ? Image.asset(
+                                                      'assets/images/na_logo.png',
+                                                      fit: BoxFit.cover,
+                                                    )
+                                                  : CachedNetworkImage(
+                                                      fadeOutDuration:
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  300),
+                                                      fadeOutCurve:
+                                                          Curves.easeOut,
+                                                      fadeInDuration: Duration(
+                                                          milliseconds: 700),
+                                                      fadeInCurve:
+                                                          Curves.easeIn,
+                                                      imageUrl:
+                                                          TMDB_BASE_IMAGE_URL +
+                                                              imageQuality +
+                                                              tvDetails!
+                                                                  .episodes![
+                                                                      index]
+                                                                  .stillPath!,
+                                                      imageBuilder: (context,
+                                                              imageProvider) =>
+                                                          Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          image:
+                                                              DecorationImage(
+                                                            image:
+                                                                imageProvider,
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      placeholder:
+                                                          (context, url) =>
+                                                              Image.asset(
+                                                        'assets/images/loading.gif',
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                            ),
+                                            height: 56.4,
+                                            width: 100,
                                           ),
                                         ),
-                                        Text(tvDetails!
-                                            .episodes![index].voteAverage!
-                                            .toStringAsFixed(1))
-                                      ]),
-                                    ],
-                                  ),
-                                )
-                              ],
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  tvDetails!
+                                                      .episodes![index].name!,
+                                                  style: const TextStyle(
+                                                      overflow: TextOverflow
+                                                          .ellipsis)),
+                                              Text(
+                                                tvDetails!.episodes![index]
+                                                                .airDate ==
+                                                            null ||
+                                                        tvDetails!
+                                                            .episodes![index]
+                                                            .airDate!
+                                                            .isEmpty
+                                                    ? 'Air date unknown'
+                                                    : '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
+                                                style: TextStyle(
+                                                  color: isDark
+                                                      ? Colors.white54
+                                                      : Colors.black54,
+                                                ),
+                                              ),
+                                              Row(children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 3.0),
+                                                  child: Icon(
+                                                    Icons.star,
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                                Text(tvDetails!.episodes![index]
+                                                    .voteAverage!
+                                                    .toStringAsFixed(1))
+                                              ]),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    const Divider(
+                                      color: Color(0xFFF57C00),
+                                      thickness: 1.5,
+                                      endIndent: 30,
+                                      indent: 5,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                            const Divider(
-                              color: Color(0xFFF57C00),
-                              thickness: 1.5,
-                              endIndent: 30,
-                              indent: 5,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }));
+                          );
+                        }));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      tvDetails = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 
   @override
@@ -4353,15 +4812,29 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
     with SingleTickerProviderStateMixin {
   WatchProviders? watchProviders;
   late TabController tabController;
+  bool requestFailed = false;
+
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  void getData() {
     fetchWatchProviders(widget.api).then((value) {
       setState(() {
         watchProviders = value;
       });
     });
     tabController = TabController(length: 5, vsync: this);
+    Future.delayed(const Duration(seconds: 11), () {
+      if (watchProviders == null) {
+        setState(() {
+          requestFailed = true;
+          watchProviders = WatchProviders();
+        });
+      }
+    });
   }
 
   @override
@@ -4371,474 +4844,564 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
         Provider.of<ImagequalityProvider>(context).imageQuality;
     return watchProviders == null
         ? const Center(child: CircularProgressIndicator())
-        : Container(
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
-                  ),
-                  child: Center(
-                    child: TabBar(
-                      controller: tabController,
-                      isScrollable: true,
-                      indicatorColor: const Color(0xFFF57C00),
-                      indicatorWeight: 3,
-                      unselectedLabelColor: Colors.white54,
-                      labelColor: Colors.white,
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      tabs: [
-                        Tab(
-                          child: Text('Buy',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: isDark ? Colors.white : Colors.black)),
-                        ),
-                        Tab(
-                          child: Text('Stream',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: isDark ? Colors.white : Colors.black)),
-                        ),
-                        Tab(
-                          child: Text('ADS',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: isDark ? Colors.white : Colors.black)),
-                        ),
-                        Tab(
-                          child: Text('Rent',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: isDark ? Colors.white : Colors.black)),
-                        ),
-                        Tab(
-                          child: Text('Free',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: isDark ? Colors.white : Colors.black)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: TabBarView(
-                    controller: tabController,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: watchProviders?.buy == null
-                            ? const Center(
-                                child: Text(
-                                    'This TV series doesn\'t have an option to buy yet'))
-                            : GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 100,
-                                  childAspectRatio: 0.65,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
-                                ),
-                                itemCount: watchProviders!.buy!.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Column(
-                                      children: [
-                                        Expanded(
-                                          flex: 6,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            child: watchProviders!
-                                                        .buy![index].logoPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            watchProviders!
-                                                                .buy![index]
-                                                                .logoPath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        Expanded(
-                                            flex: 6,
-                                            child: Text(
-                                              watchProviders!
-                                                  .buy![index].providerName!,
-                                              textAlign: TextAlign.center,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            )),
-                                      ],
-                                    ),
-                                  );
-                                }),
+        : requestFailed == true
+            ? retryWidget(isDark)
+            : Container(
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: watchProviders?.flatRate == null
-                            ? const Center(
-                                child: Text(
-                                    'This TV series doesn\'t have an option to stream yet'))
-                            : GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 100,
-                                  childAspectRatio: 0.65,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
-                                ),
-                                itemCount: watchProviders!.flatRate!.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Column(
-                                      children: [
-                                        Expanded(
-                                          flex: 6,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            child: watchProviders!
-                                                        .flatRate![index]
-                                                        .logoPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            watchProviders!
-                                                                .flatRate![
-                                                                    index]
-                                                                .logoPath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        Expanded(
-                                            flex: 6,
-                                            child: Text(
-                                              watchProviders!.flatRate![index]
-                                                  .providerName!,
-                                              textAlign: TextAlign.center,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            )),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: watchProviders?.ads == null
-                            ? const Center(
-                                child: Text(
-                                    'This TV series doesn\'t have an option to watch through ADS yet'))
-                            : GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 100,
-                                  childAspectRatio: 0.65,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
-                                ),
-                                itemCount: watchProviders!.ads!.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Column(
-                                      children: [
-                                        Expanded(
-                                          flex: 6,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            child: watchProviders!
-                                                        .ads![index].logoPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            watchProviders!
-                                                                .ads![index]
-                                                                .logoPath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        Expanded(
-                                          flex: 6,
-                                          child: Text(
-                                            watchProviders!
-                                                .ads![index].providerName!,
-                                            textAlign: TextAlign.center,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: watchProviders?.rent == null
-                            ? const Center(
-                                child: Text(
-                                    'This TV series doesn\'t have an option to rent yet'))
-                            : GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 100,
-                                  childAspectRatio: 0.65,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
-                                ),
-                                itemCount: watchProviders!.rent!.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Column(
-                                      children: [
-                                        Expanded(
-                                          flex: 6,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            child: watchProviders!.rent![index]
-                                                        .logoPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            watchProviders!
-                                                                .rent![index]
-                                                                .logoPath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        Expanded(
-                                          flex: 6,
-                                          child: Text(
-                                            watchProviders!
-                                                .rent![index].providerName!,
-                                            textAlign: TextAlign.center,
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 100,
-                              childAspectRatio: 0.65,
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5,
+                      child: Center(
+                        child: TabBar(
+                          controller: tabController,
+                          isScrollable: true,
+                          indicatorColor: const Color(0xFFF57C00),
+                          indicatorWeight: 3,
+                          unselectedLabelColor: Colors.white54,
+                          labelColor: Colors.white,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          tabs: [
+                            Tab(
+                              child: Text('Buy',
+                                  style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black)),
                             ),
-                            itemCount: 1,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      flex: 6,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: const FadeInImage(
-                                          image: AssetImage(
-                                              'assets/images/logo_shadow.png'),
-                                          fit: BoxFit.cover,
-                                          placeholder: AssetImage(
-                                              'assets/images/loading.gif'),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    const Expanded(
-                                        flex: 6,
-                                        child: Text(
-                                          'Cinemax',
-                                          textAlign: TextAlign.center,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        )),
-                                  ],
-                                ),
-                              );
-                            }),
+                            Tab(
+                              child: Text('Stream',
+                                  style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black)),
+                            ),
+                            Tab(
+                              child: Text('ADS',
+                                  style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black)),
+                            ),
+                            Tab(
+                              child: Text('Rent',
+                                  style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black)),
+                            ),
+                            Tab(
+                              child: Text('Free',
+                                  style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color: isDark
+                                          ? Colors.white
+                                          : Colors.black)),
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          );
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        controller: tabController,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: watchProviders?.buy == null
+                                ? const Center(
+                                    child: Text(
+                                        'This TV series doesn\'t have an option to buy yet'))
+                                : GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 100,
+                                      childAspectRatio: 0.65,
+                                      crossAxisSpacing: 5,
+                                      mainAxisSpacing: 5,
+                                    ),
+                                    itemCount: watchProviders!.buy!.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          children: [
+                                            Expanded(
+                                              flex: 6,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: watchProviders!
+                                                            .buy![index]
+                                                            .logoPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                watchProviders!
+                                                                    .buy![index]
+                                                                    .logoPath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                Image.asset(
+                                                          'assets/images/loading.gif',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_logo.png',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Expanded(
+                                                flex: 6,
+                                                child: Text(
+                                                  watchProviders!.buy![index]
+                                                      .providerName!,
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                )),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: watchProviders?.flatRate == null
+                                ? const Center(
+                                    child: Text(
+                                        'This TV series doesn\'t have an option to stream yet'))
+                                : GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 100,
+                                      childAspectRatio: 0.65,
+                                      crossAxisSpacing: 5,
+                                      mainAxisSpacing: 5,
+                                    ),
+                                    itemCount: watchProviders!.flatRate!.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          children: [
+                                            Expanded(
+                                              flex: 6,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: watchProviders!
+                                                            .flatRate![index]
+                                                            .logoPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                watchProviders!
+                                                                    .flatRate![
+                                                                        index]
+                                                                    .logoPath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                Image.asset(
+                                                          'assets/images/loading.gif',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_logo.png',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Expanded(
+                                                flex: 6,
+                                                child: Text(
+                                                  watchProviders!
+                                                      .flatRate![index]
+                                                      .providerName!,
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                )),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: watchProviders?.ads == null
+                                ? const Center(
+                                    child: Text(
+                                        'This TV series doesn\'t have an option to watch through ADS yet'))
+                                : GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 100,
+                                      childAspectRatio: 0.65,
+                                      crossAxisSpacing: 5,
+                                      mainAxisSpacing: 5,
+                                    ),
+                                    itemCount: watchProviders!.ads!.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          children: [
+                                            Expanded(
+                                              flex: 6,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: watchProviders!
+                                                            .ads![index]
+                                                            .logoPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                watchProviders!
+                                                                    .ads![index]
+                                                                    .logoPath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                Image.asset(
+                                                          'assets/images/loading.gif',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_logo.png',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Expanded(
+                                              flex: 6,
+                                              child: Text(
+                                                watchProviders!
+                                                    .ads![index].providerName!,
+                                                textAlign: TextAlign.center,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: watchProviders?.rent == null
+                                ? const Center(
+                                    child: Text(
+                                        'This TV series doesn\'t have an option to rent yet'))
+                                : GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 100,
+                                      childAspectRatio: 0.65,
+                                      crossAxisSpacing: 5,
+                                      mainAxisSpacing: 5,
+                                    ),
+                                    itemCount: watchProviders!.rent!.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          children: [
+                                            Expanded(
+                                              flex: 6,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: watchProviders!
+                                                            .rent![index]
+                                                            .logoPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                watchProviders!
+                                                                    .rent![
+                                                                        index]
+                                                                    .logoPath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                Image.asset(
+                                                          'assets/images/loading.gif',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_logo.png',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Expanded(
+                                              flex: 6,
+                                              child: Text(
+                                                watchProviders!
+                                                    .rent![index].providerName!,
+                                                textAlign: TextAlign.center,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 100,
+                                  childAspectRatio: 0.65,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5,
+                                ),
+                                itemCount: 1,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                          flex: 6,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            child: const FadeInImage(
+                                              image: AssetImage(
+                                                  'assets/images/logo_shadow.png'),
+                                              fit: BoxFit.cover,
+                                              placeholder: AssetImage(
+                                                  'assets/images/loading.gif'),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 5,
+                                        ),
+                                        const Expanded(
+                                            flex: 6,
+                                            child: Text(
+                                              'Cinemax',
+                                              textAlign: TextAlign.center,
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            )),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              );
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      watchProviders = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 }
 
@@ -4882,96 +5445,7 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return genreList == null
-        ? Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: const <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Genres',
-                      style: kTextHeaderStyle,
-                    ),
-                  ),
-                ],
-              ),
-              const Padding(
-                padding:
-                    const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 10.0),
-                child: SizedBox(
-                    width: double.infinity,
-                    height: 80,
-                    child: Center(child: CircularProgressIndicator())),
-              ),
-            ],
-          )
-        : requestFailed == true
-            ? retryWidget()
-            : Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: const <Widget>[
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Genres',
-                          style: kTextHeaderStyle,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 8.0, right: 8.0, bottom: 10.0),
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 80,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: genreList!.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) {
-                                        return TVGenre(
-                                            genres: genreList![index]);
-                                      }));
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        width: 125,
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                            genreList![index].genreName!,
-                                            textAlign: TextAlign.center,
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                        decoration: BoxDecoration(
-                                            color: const Color(0xFFF57C00),
-                                            borderRadius:
-                                                BorderRadius.circular(15)),
-                                      ),
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-  }
-
-  Widget retryWidget() {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: [
         Row(
@@ -4987,53 +5461,96 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
           ],
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 10.0),
-          child: SizedBox(
-            width: double.infinity,
-            height: 80,
-            child: Center(
-              child: Container(
-                  child: Row(
-                children: [
-                  Image.asset('assets/images/network-signal.png',
-                      width: 50, height: 50),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                            'Please connect to the Internet and try again',
-                            textAlign: TextAlign.center),
-                      ),
-                      TextButton(
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                  const Color(0x0DF57C00)),
-                              maximumSize: MaterialStateProperty.all(
-                                  const Size(200, 60)),
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      side: const BorderSide(
-                                          color: Color(0xFFF57C00))))),
-                          onPressed: () {
-                            setState(() {
-                              requestFailed = false;
-                              genreList = null;
-                            });
-                            getData();
-                          },
-                          child: Text('Retry')),
-                    ],
-                  ),
-                ],
-              )),
-            ),
-          ),
-        ),
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 10.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 80,
+              child: genreList == null
+                  ? genreListGridShimmer(isDark)
+                  : requestFailed == true
+                      ? retryWidget(isDark)
+                      : Row(
+                          children: [
+                            Expanded(
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: genreList!.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return TVGenre(
+                                              genres: genreList![index]);
+                                        }));
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          width: 125,
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                              genreList![index].genreName!,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  color: Colors.white)),
+                                          decoration: BoxDecoration(
+                                              color: const Color(0xFFF57C00),
+                                              borderRadius:
+                                                  BorderRadius.circular(15)),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                            ),
+                          ],
+                        ),
+            )),
       ],
+    );
+  }
+
+  Widget retryWidget(isDark) {
+    return Container(
+      color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+      child: Center(
+          child: Row(
+        children: [
+          Image.asset('assets/images/network-signal.png',
+              width: 50, height: 50),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      genreList = null;
+                    });
+                    getData();
+                  },
+                  child: Text('Retry')),
+            ],
+          ),
+        ],
+      )),
     );
   }
 }
@@ -5207,6 +5724,7 @@ class _ParticularStreamingServiceTVShowsState
   StartAppBannerAd? bannerAdTVProviders;
   int pageNum = 2;
   bool isLoading = false;
+  bool requestFailed = false;
 
   void getBannerADForTVProviders() {
     startAppSdkTVProviders
@@ -5257,12 +5775,24 @@ class _ParticularStreamingServiceTVShowsState
   void initState() {
     super.initState();
     getBannerADForTVProviders();
+    getData();
+    getMoreData();
+  }
+
+  void getData() {
     fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
     });
-    getMoreData();
+    Future.delayed(const Duration(seconds: 11), () {
+      if (tvList == null) {
+        setState(() {
+          requestFailed = true;
+          tvList = [TV()];
+        });
+      }
+    });
   }
 
   @override
@@ -5286,212 +5816,254 @@ class _ParticularStreamingServiceTVShowsState
                       'Oops! TV shows for this watch provider doesn\'t exist :('),
                 ),
               )
-            : Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: ListView.builder(
-                                  controller: _scrollController,
-                                  physics: const BouncingScrollPhysics(),
-                                  itemCount: tvList!.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        mixpanel.track('Most viewed TV pages',
-                                            properties: {
-                                              'TV series name':
-                                                  '${tvList![index].originalName}',
-                                              'TV series id':
-                                                  '${tvList![index].id}',
-                                              'Is Movie adult?':
-                                                  '${tvList![index].adult}'
-                                            });
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return TVDetailPage(
-                                            tvSeries: tvList![index],
-                                            heroId: '${tvList![index].id}',
-                                          );
-                                        }));
-                                      },
-                                      child: Container(
-                                        color: isDark
-                                            ? Color(0xFF202124)
-                                            : Color(0xFFFFFFFF),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                            top: 0.0,
-                                            bottom: 3.0,
-                                            left: 10,
-                                          ),
-                                          child: Column(
-                                            children: [
-                                              Row(
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : Container(
+                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: ListView.builder(
+                                      controller: _scrollController,
+                                      physics: const BouncingScrollPhysics(),
+                                      itemCount: tvList!.length,
+                                      itemBuilder:
+                                          (BuildContext context, int index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            mixpanel.track(
+                                                'Most viewed TV pages',
+                                                properties: {
+                                                  'TV series name':
+                                                      '${tvList![index].originalName}',
+                                                  'TV series id':
+                                                      '${tvList![index].id}',
+                                                  'Is Movie adult?':
+                                                      '${tvList![index].adult}'
+                                                });
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return TVDetailPage(
+                                                tvSeries: tvList![index],
+                                                heroId: '${tvList![index].id}',
+                                              );
+                                            }));
+                                          },
+                                          child: Container(
+                                            color: isDark
+                                                ? Color(0xFF202124)
+                                                : Color(0xFFFFFFFF),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                top: 0.0,
+                                                bottom: 3.0,
+                                                left: 10,
+                                              ),
+                                              child: Column(
                                                 children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 10.0),
-                                                    child: SizedBox(
-                                                      width: 85,
-                                                      height: 130,
-                                                      child: Hero(
-                                                        tag:
-                                                            '${tvList![index].id}',
-                                                        child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      10.0),
-                                                          child: tvList![index]
-                                                                      .posterPath ==
-                                                                  null
-                                                              ? Image.asset(
-                                                                  'assets/images/na_logo.png',
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                )
-                                                              : CachedNetworkImage(
-                                                                  fadeOutDuration:
-                                                                      const Duration(
-                                                                          milliseconds:
-                                                                              300),
-                                                                  fadeOutCurve:
-                                                                      Curves
-                                                                          .easeOut,
-                                                                  fadeInDuration:
-                                                                      Duration(
-                                                                          milliseconds:
-                                                                              700),
-                                                                  fadeInCurve:
-                                                                      Curves
-                                                                          .easeIn,
-                                                                  imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                      imageQuality +
-                                                                      tvList![index]
-                                                                          .posterPath!,
-                                                                  imageBuilder:
-                                                                      (context,
-                                                                              imageProvider) =>
-                                                                          Container(
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      image:
-                                                                          DecorationImage(
-                                                                        image:
-                                                                            imageProvider,
+                                                  Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                right: 10.0),
+                                                        child: SizedBox(
+                                                          width: 85,
+                                                          height: 130,
+                                                          child: Hero(
+                                                            tag:
+                                                                '${tvList![index].id}',
+                                                            child: ClipRRect(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10.0),
+                                                              child: tvList![index]
+                                                                          .posterPath ==
+                                                                      null
+                                                                  ? Image.asset(
+                                                                      'assets/images/na_logo.png',
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    )
+                                                                  : CachedNetworkImage(
+                                                                      fadeOutDuration:
+                                                                          const Duration(
+                                                                              milliseconds: 300),
+                                                                      fadeOutCurve:
+                                                                          Curves
+                                                                              .easeOut,
+                                                                      fadeInDuration:
+                                                                          Duration(
+                                                                              milliseconds: 700),
+                                                                      fadeInCurve:
+                                                                          Curves
+                                                                              .easeIn,
+                                                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                          imageQuality +
+                                                                          tvList![index]
+                                                                              .posterPath!,
+                                                                      imageBuilder:
+                                                                          (context, imageProvider) =>
+                                                                              Container(
+                                                                        decoration:
+                                                                            BoxDecoration(
+                                                                          image:
+                                                                              DecorationImage(
+                                                                            image:
+                                                                                imageProvider,
+                                                                            fit:
+                                                                                BoxFit.cover,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      placeholder: (context,
+                                                                              url) =>
+                                                                          Image
+                                                                              .asset(
+                                                                        'assets/images/loading.gif',
+                                                                        fit: BoxFit
+                                                                            .cover,
+                                                                      ),
+                                                                      errorWidget: (context,
+                                                                              url,
+                                                                              error) =>
+                                                                          Image
+                                                                              .asset(
+                                                                        'assets/images/na_logo.png',
                                                                         fit: BoxFit
                                                                             .cover,
                                                                       ),
                                                                     ),
-                                                                  ),
-                                                                  placeholder: (context,
-                                                                          url) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/loading.gif',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
-                                                                  errorWidget: (context,
-                                                                          url,
-                                                                          error) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/na_logo.png',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
-                                                                ),
+                                                            ),
+                                                          ),
                                                         ),
                                                       ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          tvList![index].name!,
-                                                          style: const TextStyle(
-                                                              fontFamily:
-                                                                  'PoppinsSB',
-                                                              fontSize: 15,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis),
-                                                        ),
-                                                        Row(
-                                                          children: <Widget>[
-                                                            const Icon(
-                                                                Icons.star,
-                                                                color: Color(
-                                                                    0xFFF57C00)),
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
                                                             Text(
                                                               tvList![index]
-                                                                  .voteAverage!
-                                                                  .toStringAsFixed(
-                                                                      1),
+                                                                  .name!,
                                                               style: const TextStyle(
                                                                   fontFamily:
-                                                                      'Poppins'),
+                                                                      'PoppinsSB',
+                                                                  fontSize: 15,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis),
+                                                            ),
+                                                            Row(
+                                                              children: <
+                                                                  Widget>[
+                                                                const Icon(
+                                                                    Icons.star,
+                                                                    color: Color(
+                                                                        0xFFF57C00)),
+                                                                Text(
+                                                                  tvList![index]
+                                                                      .voteAverage!
+                                                                      .toStringAsFixed(
+                                                                          1),
+                                                                  style: const TextStyle(
+                                                                      fontFamily:
+                                                                          'Poppins'),
+                                                                ),
+                                                              ],
                                                             ),
                                                           ],
                                                         ),
-                                                      ],
-                                                    ),
-                                                  )
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Divider(
+                                                    color: !isDark
+                                                        ? Colors.black54
+                                                        : Colors.white54,
+                                                    thickness: 1,
+                                                    endIndent: 20,
+                                                    indent: 10,
+                                                  ),
                                                 ],
                                               ),
-                                              Divider(
-                                                color: !isDark
-                                                    ? Colors.black54
-                                                    : Colors.white54,
-                                                thickness: 1,
-                                                endIndent: 20,
-                                                indent: 10,
-                                              ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    );
-                                  }),
+                                        );
+                                      }),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                    Visibility(
-                        visible: isLoading,
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(child: CircularProgressIndicator()),
-                        )),
-                    bannerAdTVProviders != null
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 5.0),
-                            child: SizedBox(
-                              height: 60,
-                              width: double.infinity,
-                              child: StartAppBanner(
-                                bannerAdTVProviders!,
-                              ),
-                            ),
-                          )
-                        : Container(),
-                  ],
-                ));
+                        Visibility(
+                            visible: isLoading,
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            )),
+                        bannerAdTVProviders != null
+                            ? Padding(
+                                padding: const EdgeInsets.only(bottom: 5.0),
+                                child: SizedBox(
+                                  height: 60,
+                                  width: double.infinity,
+                                  child: StartAppBanner(
+                                    bannerAdTVProviders!,
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                      ],
+                    ));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      tvList = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 }
 
@@ -5506,13 +6078,26 @@ class TVEpisodeCastTab extends StatefulWidget {
 class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     with AutomaticKeepAliveClientMixin<TVEpisodeCastTab> {
   Credits? credits;
+  bool requestFailed = false;
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  void getData() {
     fetchCredits(widget.api!).then((value) {
       setState(() {
         credits = value;
       });
+    });
+    Future.delayed(const Duration(seconds: 11), () {
+      if (credits == null) {
+        setState(() {
+          requestFailed = true;
+          credits = Credits(cast: [Cast()]);
+        });
+      }
     });
   }
 
@@ -5538,145 +6123,200 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                 ),
                 color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
-            : Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: ListView.builder(
-                    itemCount: credits!.cast!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          mixpanel
-                              .track('Most viewed person pages', properties: {
-                            'Person name': '${credits!.cast![index].name}',
-                            'Person id': '${credits!.cast![index].id}'
-                          });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CastDetailPage(
-                                cast: credits!.cast![index],
-                                heroId: '${credits!.cast![index].name}');
-                          }));
-                        },
-                        child: Container(
-                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 0.0,
-                              bottom: 5.0,
-                              left: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  // crossAxisAlignment:
-                                  //     CrossAxisAlignment.start,
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : Container(
+                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    child: ListView.builder(
+                        itemCount: credits!.cast!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              mixpanel.track('Most viewed person pages',
+                                  properties: {
+                                    'Person name':
+                                        '${credits!.cast![index].name}',
+                                    'Person id': '${credits!.cast![index].id}'
+                                  });
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return CastDetailPage(
+                                    cast: credits!.cast![index],
+                                    heroId: '${credits!.cast![index].name}');
+                              }));
+                            },
+                            child: Container(
+                              color: isDark
+                                  ? Color(0xFF202124)
+                                  : Color(0xFFFFFFFF),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 0.0,
+                                  bottom: 5.0,
+                                  left: 10,
+                                ),
+                                child: Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 20.0, left: 10),
-                                      child: SizedBox(
-                                        width: 80,
-                                        height: 80,
-                                        child: Hero(
-                                          tag: '${credits!.cast![index].name}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            child: credits!.cast![index]
-                                                        .profilePath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_square.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            credits!
-                                                                .cast![index]
-                                                                .profilePath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
+                                    Row(
+                                      // crossAxisAlignment:
+                                      //     CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 20.0, left: 10),
+                                          child: SizedBox(
+                                            width: 80,
+                                            height: 80,
+                                            child: Hero(
+                                              tag:
+                                                  '${credits!.cast![index].name}',
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100.0),
+                                                child: credits!.cast![index]
+                                                            .profilePath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_square.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                credits!
+                                                                    .cast![
+                                                                        index]
+                                                                    .profilePath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                Image.asset(
+                                                          'assets/images/loading.gif',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_square.png',
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                    ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_square.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                credits!.cast![index].name!,
+                                                style: const TextStyle(
+                                                    fontFamily: 'PoppinsSB'),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                'As : '
+                                                '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
+                                              ),
+                                              // Text(
+                                              //   credits!.cast![index].roles![0]
+                                              //               .episodeCount! ==
+                                              //           1
+                                              //       ? credits!.cast![index]
+                                              //               .roles![0].episodeCount!
+                                              //               .toString() +
+                                              //           ' episode'
+                                              //       : credits!.cast![index]
+                                              //               .roles![0].episodeCount!
+                                              //               .toString() +
+                                              //           ' episodes',
+                                              // ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            credits!.cast![index].name!,
-                                            style: const TextStyle(
-                                                fontFamily: 'PoppinsSB'),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            'As : '
-                                            '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
-                                          ),
-                                          // Text(
-                                          //   credits!.cast![index].roles![0]
-                                          //               .episodeCount! ==
-                                          //           1
-                                          //       ? credits!.cast![index]
-                                          //               .roles![0].episodeCount!
-                                          //               .toString() +
-                                          //           ' episode'
-                                          //       : credits!.cast![index]
-                                          //               .roles![0].episodeCount!
-                                          //               .toString() +
-                                          //           ' episodes',
-                                          // ),
-                                        ],
-                                      ),
-                                    )
+                                    Divider(
+                                      color: !isDark
+                                          ? Colors.black54
+                                          : Colors.white54,
+                                      thickness: 1,
+                                      endIndent: 20,
+                                      indent: 10,
+                                    ),
                                   ],
                                 ),
-                                Divider(
-                                  color:
-                                      !isDark ? Colors.black54 : Colors.white54,
-                                  thickness: 1,
-                                  endIndent: 20,
-                                  indent: 10,
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    }));
+                          );
+                        }));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      credits = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 
   @override
@@ -5694,13 +6334,26 @@ class TVEpisodeGuestStarsTab extends StatefulWidget {
 class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     with AutomaticKeepAliveClientMixin<TVEpisodeGuestStarsTab> {
   Credits? credits;
+  bool requestFailed = false;
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  void getData() {
     fetchCredits(widget.api!).then((value) {
       setState(() {
         credits = value;
       });
+    });
+    Future.delayed(const Duration(seconds: 11), () {
+      if (credits == null) {
+        setState(() {
+          requestFailed = true;
+          credits = Credits(episodeGuestStars: [TVEpisodeGuestStars()]);
+        });
+      }
     });
   }
 
@@ -5726,152 +6379,205 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                 ),
                 color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
               )
-            : Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: ListView.builder(
-                    itemCount: credits!.episodeGuestStars!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          mixpanel
-                              .track('Most viewed person pages', properties: {
-                            'Person name':
-                                '${credits!.episodeGuestStars![index].name}',
-                            'Person id':
-                                '${credits!.episodeGuestStars![index].id}'
-                          });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return GuestStarDetailPage(
-                                cast: credits!.episodeGuestStars![index],
-                                heroId:
-                                    '${credits!.episodeGuestStars![index].creditId}');
-                          }));
-                        },
-                        child: Container(
-                          color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 0.0,
-                              bottom: 5.0,
-                              left: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  // crossAxisAlignment:
-                                  //     CrossAxisAlignment.start,
+            : requestFailed == true
+                ? retryWidget(isDark)
+                : Container(
+                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    child: ListView.builder(
+                        itemCount: credits!.episodeGuestStars!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              mixpanel.track('Most viewed person pages',
+                                  properties: {
+                                    'Person name':
+                                        '${credits!.episodeGuestStars![index].name}',
+                                    'Person id':
+                                        '${credits!.episodeGuestStars![index].id}'
+                                  });
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return GuestStarDetailPage(
+                                    cast: credits!.episodeGuestStars![index],
+                                    heroId:
+                                        '${credits!.episodeGuestStars![index].creditId}');
+                              }));
+                            },
+                            child: Container(
+                              color: isDark
+                                  ? Color(0xFF202124)
+                                  : Color(0xFFFFFFFF),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 0.0,
+                                  bottom: 5.0,
+                                  left: 10,
+                                ),
+                                child: Column(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 20.0, left: 10),
-                                      child: SizedBox(
-                                        width: 80,
-                                        height: 80,
-                                        child: Hero(
-                                          tag:
-                                              '${credits!.episodeGuestStars![index].creditId}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            child: credits!
-                                                        .episodeGuestStars![
-                                                            index]
-                                                        .profilePath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_square.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl: TMDB_BASE_IMAGE_URL +
-                                                        imageQuality +
-                                                        credits!
+                                    Row(
+                                      // crossAxisAlignment:
+                                      //     CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 20.0, left: 10),
+                                          child: SizedBox(
+                                            width: 80,
+                                            height: 80,
+                                            child: Hero(
+                                              tag:
+                                                  '${credits!.episodeGuestStars![index].creditId}',
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100.0),
+                                                child: credits!
                                                             .episodeGuestStars![
                                                                 index]
-                                                            .profilePath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
+                                                            .profilePath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_square.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl: TMDB_BASE_IMAGE_URL +
+                                                            imageQuality +
+                                                            credits!
+                                                                .episodeGuestStars![
+                                                                    index]
+                                                                .profilePath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                Image.asset(
+                                                          'assets/images/loading.gif',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_square.png',
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                    ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_square.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                credits!
+                                                    .episodeGuestStars![index]
+                                                    .name!,
+                                                style: const TextStyle(
+                                                    fontFamily: 'PoppinsSB'),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                'As : '
+                                                '${credits!.episodeGuestStars![index].character!.isEmpty ? 'N/A' : credits!.episodeGuestStars![index].character!}',
+                                              ),
+                                              // Text(
+                                              //   credits!.cast![index].roles![0]
+                                              //               .episodeCount! ==
+                                              //           1
+                                              //       ? credits!.cast![index]
+                                              //               .roles![0].episodeCount!
+                                              //               .toString() +
+                                              //           ' episode'
+                                              //       : credits!.cast![index]
+                                              //               .roles![0].episodeCount!
+                                              //               .toString() +
+                                              //           ' episodes',
+                                              // ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            credits!.episodeGuestStars![index]
-                                                .name!,
-                                            style: const TextStyle(
-                                                fontFamily: 'PoppinsSB'),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            'As : '
-                                            '${credits!.episodeGuestStars![index].character!.isEmpty ? 'N/A' : credits!.episodeGuestStars![index].character!}',
-                                          ),
-                                          // Text(
-                                          //   credits!.cast![index].roles![0]
-                                          //               .episodeCount! ==
-                                          //           1
-                                          //       ? credits!.cast![index]
-                                          //               .roles![0].episodeCount!
-                                          //               .toString() +
-                                          //           ' episode'
-                                          //       : credits!.cast![index]
-                                          //               .roles![0].episodeCount!
-                                          //               .toString() +
-                                          //           ' episodes',
-                                          // ),
-                                        ],
-                                      ),
-                                    )
+                                    Divider(
+                                      color: !isDark
+                                          ? Colors.black54
+                                          : Colors.white54,
+                                      thickness: 1,
+                                      endIndent: 20,
+                                      indent: 10,
+                                    ),
                                   ],
                                 ),
-                                Divider(
-                                  color:
-                                      !isDark ? Colors.black54 : Colors.white54,
-                                  thickness: 1,
-                                  endIndent: 20,
-                                  indent: 10,
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      );
-                    }));
+                          );
+                        }));
+  }
+
+  Widget retryWidget(isDark) {
+    return Center(
+      child: Container(
+          width: double.infinity,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/network-signal.png',
+                  width: 60, height: 60),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text('Please connect to the Internet and try again',
+                    textAlign: TextAlign.center),
+              ),
+              TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(const Color(0x0DF57C00)),
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                              side:
+                                  const BorderSide(color: Color(0xFFF57C00))))),
+                  onPressed: () {
+                    setState(() {
+                      requestFailed = false;
+                      credits = null;
+                    });
+                    getData();
+                  },
+                  child: const Text('Retry')),
+            ],
+          )),
+    );
   }
 
   @override

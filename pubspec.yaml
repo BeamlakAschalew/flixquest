@@ -25,9 +25,9 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   share_plus: ^4.0.7
   share_plus_web: ^3.0.0
-  firebase_analytics: ^9.1.0
-  firebase_core: ^1.12.0
-  mixpanel_flutter: ^1.4.5
+  firebase_analytics: ^9.3.3
+  firebase_core: ^1.21.1
+  mixpanel_flutter: ^1.6.0
   animated_text_kit: ^4.2.1
   shared_preferences: ^2.0.15
   cached_network_image: ^3.2.1

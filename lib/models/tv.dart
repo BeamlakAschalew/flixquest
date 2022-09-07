@@ -133,6 +133,7 @@ class TVDetails {
     this.runtime,
     this.tagline,
     this.status,
+    this.episodes,
     this.originalTitle,
     this.inProduction,
     this.numberOfEpisodes,
@@ -143,6 +144,7 @@ class TVDetails {
     this.id,
     this.backdropPath,
     this.createdBy,
+    this.seasons,
     this.networks,
   });
   // this.lastEpisodeAirDate,

@@ -1,10 +1,8 @@
 // ignore_for_file: non_constant_identifier_names, constant_identifier_names
 
-import '/api/api_keys.dart';
-
 const String TMDB_API_BASE_URL = "https://api.themoviedb.org/3";
-String TMDB_API_KEY = tmdbApiKey;
-String mixpanelKey = mixpanelApiKey;
+String TMDB_API_KEY = '4e597266d3068a1a7951bd1d1631637d';
+String mixpanelKey = '4e597266d3068a1a7951bd1d1631637d';
 const String TMDB_BASE_IMAGE_URL = "https://image.tmdb.org/t/p/";
 const String EMBED_BASE_MOVIE_URL =
     "https://www.2embed.to/embed/tmdb/movie?id=";

@@ -585,7 +585,7 @@ class Search extends SearchDelegate<String> {
                                     borderRadius: BorderRadius.circular(100.0),
                                     child: personList[index].profilePath == null
                                         ? Image.asset(
-                                            'assets/images/na_logo.png',
+                                            'assets/images/na_square.png',
                                             fit: BoxFit.cover,
                                           )
                                         : CachedNetworkImage(
@@ -616,7 +616,7 @@ class Search extends SearchDelegate<String> {
                                             errorWidget:
                                                 (context, url, error) =>
                                                     Image.asset(
-                                              'assets/images/na_logo.png',
+                                              'assets/images/na_sqaure.png',
                                               fit: BoxFit.cover,
                                             ),
                                           ),
