@@ -240,7 +240,7 @@ class _DiscoverTVState extends State<DiscoverTV>
           width: double.infinity,
           height: deviceHeight * 0.417,
           child: tvList == null
-              ? DiscoverMoviesAndTVShimmer(isDark: isDark)
+              ? discoverMoviesAndTVShimmer(isDark)
               : requestFailed == true
                   ? retryWidget()
                   : CarouselSlider.builder(
@@ -472,7 +472,7 @@ class _ScrollingTVState extends State<ScrollingTV>
           width: double.infinity,
           height: 250,
           child: tvList == null
-              ? ScrollingMoviesAndTVShimmer(isDark: isDark)
+              ? scrollingMoviesAndTVShimmer(isDark)
               : requestFailed == true
                   ? retryWidget()
                   : Row(

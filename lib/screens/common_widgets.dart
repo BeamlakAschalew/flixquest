@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/settings.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:startapp_sdk/startapp.dart';
 import 'package:flutter/material.dart';
+import '../constants/api_constants.dart';
 import 'about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -105,17 +107,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
 }
 
-class ScrollingMoviesAndTVShimmer extends StatelessWidget {
-  const ScrollingMoviesAndTVShimmer({
-    Key? key,
-    required this.isDark,
-  }) : super(key: key);
-
-  final bool isDark;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
+Widget scrollingMoviesAndTVShimmer(isDark) => Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Expanded(
@@ -164,20 +156,8 @@ class ScrollingMoviesAndTVShimmer extends StatelessWidget {
         ),
       ],
     );
-  }
-}
 
-class DiscoverMoviesAndTVShimmer extends StatelessWidget {
-  const DiscoverMoviesAndTVShimmer({
-    Key? key,
-    required this.isDark,
-  }) : super(key: key);
-
-  final bool isDark;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
+Widget discoverMoviesAndTVShimmer(isDark) => Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Expanded(
@@ -212,8 +192,6 @@ class DiscoverMoviesAndTVShimmer extends StatelessWidget {
         )
       ],
     );
-  }
-}
 
 Widget scrollingImageShimmer(isDark) => Shimmer.fromColors(
     baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
@@ -302,3 +280,727 @@ Widget horizontalLoadMoreShimmer(isDark) => Padding(
         ),
       ),
     );
+
+Widget detailGenreShimmer(isDark) => Shimmer.fromColors(
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+      direction: ShimmerDirection.ltr,
+      child: ListView.builder(
+        shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
+        scrollDirection: Axis.horizontal,
+        itemCount: 4,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: Chip(
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(
+                  width: 2, style: BorderStyle.solid, color: Colors.white),
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            label: Text(
+              'Placeholder',
+            ),
+            backgroundColor:
+                isDark ? const Color(0xFF2b2c30) : const Color(0xFFDFDEDE),
+          ),
+        ),
+      ),
+    );
+
+Widget detailCastShimmer(isDark) => Column(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        Expanded(
+          child: Shimmer.fromColors(
+            baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+            highlightColor:
+                isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+            direction: ShimmerDirection.ltr,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  width: 100,
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 6,
+                        child: Container(
+                          width: 75.0,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.0),
+                              color: Colors.white),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 6,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 30),
+                          child: Container(
+                            width: 75.0,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5.0),
+                                color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              itemCount: 5,
+            ),
+          ),
+        ),
+      ],
+    );
+
+Widget detailImageShimmer(isDark) => Shimmer.fromColors(
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+      direction: ShimmerDirection.ltr,
+      child: CarouselSlider.builder(
+        options: CarouselOptions(
+          disableCenter: true,
+          viewportFraction: 0.8,
+          enlargeCenterPage: false,
+          autoPlay: true,
+        ),
+        itemBuilder: (context, index, pageViewIndex) => Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.0), color: Colors.white),
+          ),
+        ),
+        itemCount: 5,
+      ),
+    );
+
+Widget detailCastImageShimmer(isDark) => Shimmer.fromColors(
+    baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+    highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+    direction: ShimmerDirection.ltr,
+    child: Container(
+      width: 75.0,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100.0), color: Colors.white),
+    ));
+
+Widget detailImageImageSimmer(isDark) => Shimmer.fromColors(
+    baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+    highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+    direction: ShimmerDirection.ltr,
+    child: Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0), color: Colors.white),
+    ));
+
+Widget detailVideoShimmer(isDark) => SizedBox(
+      width: double.infinity,
+      child: Shimmer.fromColors(
+        baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+        highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+        direction: ShimmerDirection.ltr,
+        child: CarouselSlider.builder(
+          options: CarouselOptions(
+            disableCenter: true,
+            viewportFraction: 0.8,
+            enlargeCenterPage: false,
+            autoPlay: true,
+          ),
+          itemBuilder: (context, index, pageViewIndex) => Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SizedBox(
+              height: 205,
+              width: double.infinity,
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Colors.white),
+                      padding: EdgeInsets.all(8),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5.0),
+                              color: Colors.white),
+                        )),
+                  )
+                ],
+              ),
+            ),
+          ),
+          itemCount: 5,
+        ),
+      ),
+    );
+
+Widget socialMediaShimmer(isDark) => Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: isDark ? Colors.transparent : const Color(0xFFDFDEDE),
+      ),
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: 3,
+          itemBuilder: (BuildContext context, int index) {
+            return Shimmer.fromColors(
+              baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              highlightColor:
+                  isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+              direction: ShimmerDirection.ltr,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: 40,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            );
+          }),
+    );
+
+Widget detailInfoTableItemShimmer(isDark) => Shimmer.fromColors(
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+      direction: ShimmerDirection.ltr,
+      child: Container(
+        color: Colors.white,
+        height: 15,
+        width: 75,
+      ),
+    );
+
+Widget detailInfoTableShimmer(isDark) => DataTable(dataRowHeight: 40, columns: [
+      // const DataColumn(
+      //     label: Text(
+      //   'Original Title',
+      //   style: TextStyle(overflow: TextOverflow.ellipsis),
+      // )),
+      DataColumn(label: detailInfoTableItemShimmer(isDark)),
+      DataColumn(label: detailInfoTableItemShimmer(isDark)),
+    ], rows: [
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(isDark)),
+      ]),
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(isDark)),
+      ]),
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(SizedBox(
+            height: 20, width: 200, child: detailInfoTableItemShimmer(isDark))),
+      ]),
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(isDark)),
+      ]),
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(isDark)),
+      ]),
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(isDark)),
+      ]),
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(SizedBox(
+                height: 20,
+                width: 200,
+                child: detailInfoTableItemShimmer(isDark))
+            // movieDetails!.productionCompanies!.isEmpty
+            //     ? const Text('-')
+            //     : Text(
+            //         movieDetails!.productionCompanies![0].name!),
+            ),
+      ]),
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(SizedBox(
+                height: 20,
+                width: 200,
+                child: detailInfoTableItemShimmer(isDark))
+            // movieDetails!.productionCompanies!.isEmpty
+            //     ? const Text('-')
+            //     : Text(
+            //         movieDetails!.productionCountries![0].name!),
+            ),
+      ]),
+    ]);
+
+Widget castAndCrewTabShimmer(isDark) => Container(
+    color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+    child: ListView.builder(
+        itemCount: 10,
+        scrollDirection: Axis.vertical,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: Shimmer.fromColors(
+              baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              highlightColor:
+                  isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+              direction: ShimmerDirection.ltr,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 0.0,
+                  bottom: 5.0,
+                  left: 10,
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20.0, left: 10),
+                          child: SizedBox(
+                            height: 80,
+                            width: 80,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100.0),
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 8.0),
+                                child: Container(
+                                  width: 150,
+                                  height: 20,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Container(
+                                width: 100,
+                                height: 20,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    Divider(
+                      color: !isDark ? Colors.black54 : Colors.white54,
+                      thickness: 1,
+                      endIndent: 20,
+                      indent: 10,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }));
+
+Widget detailsRecommendationsAndSimilarShimmer(
+        isDark, _scrollController, bannerAdMovieRecommendation, isLoading) =>
+    Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              itemCount: 10,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  color: isDark
+                      ? const Color(0xFF202124)
+                      : const Color(0xFFFFFFFF),
+                  child: Shimmer.fromColors(
+                    baseColor:
+                        isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                    highlightColor:
+                        isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+                    direction: ShimmerDirection.ltr,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 3.0,
+                        left: 10,
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            // crossAxisAlignment:
+                            //     CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10.0),
+                                child: SizedBox(
+                                  width: 85,
+                                  height: 130,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 8.0),
+                                      child: Container(
+                                          height: 20,
+                                          width: 150,
+                                          color: Colors.white),
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 1.0),
+                                          child: Container(
+                                            height: 20,
+                                            width: 20,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Container(
+                                            height: 20,
+                                            width: 30,
+                                            color: Colors.white),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          Divider(
+                            color: !isDark ? Colors.black54 : Colors.white54,
+                            thickness: 1,
+                            endIndent: 20,
+                            indent: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+        ),
+        Visibility(
+            visible: isLoading,
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Center(child: CircularProgressIndicator()),
+            )),
+      ],
+    );
+
+Widget watchProvidersTabData(
+        {required bool isDark,
+        required String imageQuality,
+        required String noOptionMessage,
+        required List? watchOptions}) =>
+    Container(
+      color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+      padding: const EdgeInsets.all(8.0),
+      child: watchOptions == null
+          ? Center(child: Text(noOptionMessage))
+          : GridView.builder(
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 100,
+                childAspectRatio: 0.65,
+                crossAxisSpacing: 5,
+                mainAxisSpacing: 5,
+              ),
+              itemCount: watchOptions.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 6,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: watchOptions[index].logoPath == null
+                              ? Image.asset(
+                                  'assets/images/na_logo.png',
+                                  fit: BoxFit.cover,
+                                )
+                              : CachedNetworkImage(
+                                  fadeOutDuration:
+                                      const Duration(milliseconds: 300),
+                                  fadeOutCurve: Curves.easeOut,
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 700),
+                                  fadeInCurve: Curves.easeIn,
+                                  imageUrl: TMDB_BASE_IMAGE_URL +
+                                      imageQuality +
+                                      watchOptions[index].logoPath!,
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) =>
+                                      watchProvidersImageShimmer(isDark),
+                                  errorWidget: (context, url, error) =>
+                                      Image.asset(
+                                    'assets/images/na_logo.png',
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Expanded(
+                          flex: 3,
+                          child: Text(
+                            watchOptions[index].providerName!,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          )),
+                    ],
+                  ),
+                );
+              }),
+    );
+
+Widget watchProvidersShimmer(isDark) => Container(
+      color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+      padding: const EdgeInsets.all(8.0),
+      child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 100,
+            childAspectRatio: 0.65,
+            crossAxisSpacing: 5,
+            mainAxisSpacing: 5,
+          ),
+          itemCount: 6,
+          itemBuilder: (BuildContext context, int index) {
+            return Shimmer.fromColors(
+              baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              highlightColor:
+                  isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+              direction: ShimmerDirection.ltr,
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Expanded(
+                        flex: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Container(
+                              height: 10, width: 80, color: Colors.white),
+                        )),
+                  ],
+                ),
+              ),
+            );
+          }),
+    );
+
+Widget castAndCrewTabImageShimmer(isDark) => Shimmer.fromColors(
+    baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+    highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+    direction: ShimmerDirection.ltr,
+    child: Container(
+      width: 80.0,
+      height: 80.0,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100.0), color: Colors.white),
+    ));
+
+Widget recommendationAndSimilarTabImageShimmer(isDark) => Shimmer.fromColors(
+    baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+    highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+    direction: ShimmerDirection.ltr,
+    child: Container(
+      width: 85.0,
+      height: 130.0,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+    ));
+
+Widget watchProvidersImageShimmer(isDark) => Shimmer.fromColors(
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+      direction: ShimmerDirection.ltr,
+      child: Container(
+        color: Colors.white,
+      ),
+    );
+
+Widget mainPageVerticalScrollShimmer(
+        bannerAdMovieGenre, isDark, isLoading, _scrollController) =>
+    Container(
+      color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+      child: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 3.0),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                        controller: _scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: 10,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            color: isDark
+                                ? const Color(0xFF202124)
+                                : const Color(0xFFFFFFFF),
+                            child: Shimmer.fromColors(
+                              baseColor: isDark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade300,
+                              highlightColor: isDark
+                                  ? Colors.grey.shade700
+                                  : Colors.grey.shade100,
+                              direction: ShimmerDirection.ltr,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 0.0,
+                                  bottom: 3.0,
+                                  left: 10,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 10.0),
+                                          child: SizedBox(
+                                            width: 85,
+                                            height: 130,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 8.0),
+                                                child: Container(
+                                                  width: 150,
+                                                  height: 20,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              Row(
+                                                children: <Widget>[
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 1.0),
+                                                    child: Container(
+                                                      height: 20,
+                                                      width: 20,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    width: 30,
+                                                    height: 20,
+                                                    color: Colors.white,
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    Divider(
+                                      color: !isDark
+                                          ? Colors.black54
+                                          : Colors.white54,
+                                      thickness: 1,
+                                      endIndent: 20,
+                                      indent: 10,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Visibility(
+              visible: isLoading,
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Center(child: CircularProgressIndicator()),
+              )),
+        ],
+      ),
+    );
+
+Widget mainPageVerticalScrollImageShimmer(isDark) => Shimmer.fromColors(
+    baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+    highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+    direction: ShimmerDirection.ltr,
+    child: Container(
+      width: 85.0,
+      height: 130.0,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+    ));

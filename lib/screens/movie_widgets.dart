@@ -241,7 +241,7 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
           //height: 350,
           height: deviceHeight * 0.417,
           child: moviesList == null
-              ? DiscoverMoviesAndTVShimmer(isDark: isDark)
+              ? discoverMoviesAndTVShimmer(isDark)
               : requestFailed == true
                   ? retryWidget()
                   : CarouselSlider.builder(
@@ -477,7 +477,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
           width: double.infinity,
           height: 250,
           child: moviesList == null || widget.includeAdult == null
-              ? ScrollingMoviesAndTVShimmer(isDark: isDark)
+              ? scrollingMoviesAndTVShimmer(isDark)
               : requestFailed == true
                   ? retryWidget()
                   : Row(
@@ -676,6 +676,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         credits == null
@@ -714,9 +715,7 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
           width: double.infinity,
           height: 160,
           child: credits == null
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
+              ? detailCastShimmer(isDark)
               : ListView.builder(
                   physics: const BouncingScrollPhysics(),
                   itemCount: credits!.cast!.length,
@@ -781,10 +780,8 @@ class _ScrollingArtistsState extends State<ScrollingArtists> {
                                                 ),
                                               ),
                                               placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
+                                                  detailCastImageShimmer(
+                                                      isDark),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
@@ -863,9 +860,7 @@ class _MovieSocialLinksState extends State<MovieSocialLinks> {
               height: 55,
               width: double.infinity,
               child: externalLinks == null
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
+                  ? socialMediaShimmer(isDark)
                   : externalLinks?.facebookUsername == null &&
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
@@ -971,99 +966,98 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return belongsToCollection == null
-        ? const Center(child: CircularProgressIndicator())
+        ? Shimmer.fromColors(
+            baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+            highlightColor:
+                isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+            direction: ShimmerDirection.ltr,
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: Container(
+                width: double.infinity,
+                height: 200,
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+          )
         : belongsToCollection?.id == null
             ? Container()
             : Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
+                child: SizedBox(
+                    width: double.infinity,
+                    height: 200,
                     child: Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: belongsToCollection!.backdropPath == null
-                          ? Image.asset(
-                              'assets/images/na_logo.png',
-                            )
-                          : CachedNetworkImage(
-                              fadeOutDuration:
-                                  const Duration(milliseconds: 300),
-                              fadeOutCurve: Curves.easeOut,
-                              fadeInDuration: const Duration(milliseconds: 700),
-                              fadeInCurve: Curves.easeIn,
-                              imageUrl: TMDB_BASE_IMAGE_URL +
-                                  imageQuality +
-                                  belongsToCollection!.backdropPath!,
-                              imageBuilder: (context, imageProvider) =>
-                                  Container(
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: imageProvider,
-                                    fit: BoxFit.cover,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: belongsToCollection!.backdropPath == null
+                              ? Image.asset(
+                                  'assets/images/na_logo.png',
+                                )
+                              : FadeInImage(
+                                  fit: BoxFit.fill,
+                                  placeholder: const AssetImage(
+                                      'assets/images/loading.gif'),
+                                  image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                      'w500/' +
+                                      belongsToCollection!.backdropPath!)),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Belongs to the ${belongsToCollection!.name!}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      backgroundColor: Color(0xFFF57C00)),
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: TextButton(
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              const Color(0x26F57C00)),
+                                      maximumSize: MaterialStateProperty.all(
+                                          const Size(200, 40)),
+                                      shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                              side: const BorderSide(
+                                                  color: Color(0xFFF57C00))))),
+                                  onPressed: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return CollectionDetailsWidget(
+                                          belongsToCollection:
+                                              belongsToCollection!);
+                                    }));
+                                  },
+                                  child: const Text(
+                                    'View the collection',
+                                    style: TextStyle(color: Colors.white),
                                   ),
                                 ),
                               ),
-                              placeholder: (context, url) => Image.asset(
-                                'assets/images/loading.gif',
-                                fit: BoxFit.cover,
-                              ),
-                              errorWidget: (context, url, error) => Image.asset(
-                                'assets/images/na_logo.png',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Belongs to the ${belongsToCollection!.name!}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  backgroundColor: Color(0xFFF57C00)),
-                            ),
-                          ),
-                        ),
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: TextButton(
-                              style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all(
-                                      const Color(0x26F57C00)),
-                                  maximumSize: MaterialStateProperty.all(
-                                      const Size(200, 40)),
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                          side: const BorderSide(
-                                              color: Color(0xFFF57C00))))),
-                              onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return CollectionDetailsWidget(
-                                      belongsToCollection:
-                                          belongsToCollection!);
-                                }));
-                              },
-                              child: const Text(
-                                'View the collection',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
+                            )
+                          ],
                         )
                       ],
-                    )
-                  ],
-                )),
+                    )),
               );
   }
 }
@@ -1444,6 +1438,7 @@ class _MovieImagesState extends State<MovieImagesDisplay> {
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: [
         movieImages == null
@@ -1477,9 +1472,7 @@ class _MovieImagesState extends State<MovieImagesDisplay> {
             width: double.infinity,
             height: 180,
             child: movieImages == null
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
+                ? detailImageShimmer(isDark)
                 : movieImages!.backdrop!.isEmpty
                     ? const SizedBox(
                         width: double.infinity,
@@ -1533,10 +1526,7 @@ class _MovieImagesState extends State<MovieImagesDisplay> {
                                           ),
                                         ),
                                         placeholder: (context, url) =>
-                                            Image.asset(
-                                          'assets/images/loading.gif',
-                                          fit: BoxFit.cover,
-                                        ),
+                                            detailImageImageSimmer(isDark),
                                         errorWidget: (context, url, error) =>
                                             Image.asset(
                                           'assets/images/na_logo.png',
@@ -1580,6 +1570,7 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
   @override
   Widget build(BuildContext context) {
     bool playButtonVisibility = true;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: [
         movieVideos == null
@@ -1613,9 +1604,7 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
             width: double.infinity,
             height: 230,
             child: movieVideos == null
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
+                ? detailVideoShimmer(isDark)
                 : movieVideos!.result!.isEmpty
                     ? const SizedBox(
                         width: double.infinity,
@@ -1686,12 +1675,30 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
                                                         ),
                                                       ),
                                                     ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
+                                                    placeholder: (context, url) =>
+                                                        Shimmer.fromColors(
+                                                            baseColor: isDark
+                                                                ? Colors.grey
+                                                                    .shade800
+                                                                : Colors.grey
+                                                                    .shade300,
+                                                            highlightColor: isDark
+                                                                ? Colors.grey
+                                                                    .shade700
+                                                                : Colors.grey
+                                                                    .shade100,
+                                                            direction:
+                                                                ShimmerDirection
+                                                                    .ltr,
+                                                            child: Container(
+                                                              decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              8.0),
+                                                                  color: Colors
+                                                                      .white),
+                                                            )),
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
@@ -1868,9 +1875,9 @@ class _GenreDisplayState extends State<GenreDisplay>
     super.build(context);
     return Container(
         child: SizedBox(
-      height: genreList == null || genreList!.isEmpty ? 0 : 80,
+      height: 80,
       child: genreList == null
-          ? Container()
+          ? detailGenreShimmer(isDark)
           : ListView.builder(
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
@@ -1940,25 +1947,21 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
 
   @override
   Widget build(BuildContext context) {
-    return movieDetails == null
-        ? const Padding(
-            padding: EdgeInsets.only(bottom: 8.0),
-            child: SizedBox(
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : Column(
-            children: [
-              const Text(
-                'Movie Info',
-                style: kTextHeaderStyle,
-              ),
-              Container(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(dataRowHeight: 40, columns: [
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    return Column(
+      children: [
+        const Text(
+          'Movie Info',
+          style: kTextHeaderStyle,
+        ),
+        Container(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: movieDetails == null
+                  ? detailInfoTableShimmer(isDark)
+                  : DataTable(dataRowHeight: 40, columns: [
                       const DataColumn(
                           label: Text(
                         'Original Title',
@@ -2095,11 +2098,11 @@ class _MovieInfoTableState extends State<MovieInfoTable> {
                             ),
                       ]),
                     ]),
-                  ),
-                ),
-              ),
-            ],
-          );
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -2128,9 +2131,7 @@ class _CastTabState extends State<CastTab>
         credits = value;
       });
     });
-    if (credits == null) {
-      print('object');
-    }
+
     Future.delayed(const Duration(seconds: 11), () {
       if (credits == null) {
         setState(() {
@@ -2149,12 +2150,7 @@ class _CastTabState extends State<CastTab>
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
-        ? Container(
-            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+        ? castAndCrewTabShimmer(isDark)
         : credits!.cast!.isEmpty
             ? Container(
                 child: const Center(
@@ -2256,12 +2252,10 @@ class _CastTabState extends State<CastTab>
                                                             ),
                                                           ),
                                                         ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            castAndCrewTabImageShimmer(
+                                                                isDark),
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
@@ -2397,10 +2391,7 @@ class _CrewTabState extends State<CrewTab>
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            child: castAndCrewTabShimmer(isDark))
         : credits!.crew!.isEmpty
             ? Container(
                 child: const Center(
@@ -2503,12 +2494,10 @@ class _CrewTabState extends State<CrewTab>
                                                             ),
                                                           ),
                                                         ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            castAndCrewTabImageShimmer(
+                                                                isDark),
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
@@ -2703,10 +2692,8 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     return movieList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            child: detailsRecommendationsAndSimilarShimmer(isDark,
+                _scrollController, bannerAdMovieRecommendation, isLoading))
         : movieList!.isEmpty
             ? Container(
                 color:
@@ -2821,15 +2808,10 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                                                   ),
                                                                 ),
                                                               ),
-                                                              placeholder:
-                                                                  (context,
-                                                                          url) =>
-                                                                      Image
-                                                                          .asset(
-                                                                'assets/images/loading.gif',
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              ),
+                                                              placeholder: (context,
+                                                                      url) =>
+                                                                  recommendationAndSimilarTabImageShimmer(
+                                                                      isDark),
                                                               errorWidget: (context,
                                                                       url,
                                                                       error) =>
@@ -3060,10 +3042,8 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
     return movieList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            child: detailsRecommendationsAndSimilarShimmer(
+                isDark, _scrollController, bannerAdMovieSimilars, isLoading))
         : movieList!.isEmpty
             ? Container(
                 color:
@@ -3175,15 +3155,10 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                                                                   ),
                                                                 ),
                                                               ),
-                                                              placeholder:
-                                                                  (context,
-                                                                          url) =>
-                                                                      Image
-                                                                          .asset(
-                                                                'assets/images/loading.gif',
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              ),
+                                                              placeholder: (context,
+                                                                      url) =>
+                                                                  recommendationAndSimilarTabImageShimmer(
+                                                                      isDark),
                                                               errorWidget: (context,
                                                                       url,
                                                                       error) =>
@@ -3415,12 +3390,8 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return moviesList == null
-        ? Container(
-            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+        ? mainPageVerticalScrollShimmer(
+            bannerAdMovieGenre, isDark, isLoading, _scrollController)
         : moviesList!.isEmpty
             ? Container(
                 color:
@@ -3543,12 +3514,8 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                                                       ),
                                                                       placeholder: (context,
                                                                               url) =>
-                                                                          Image
-                                                                              .asset(
-                                                                        'assets/images/loading.gif',
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                      ),
+                                                                          mainPageVerticalScrollImageShimmer(
+                                                                              isDark),
                                                                       errorWidget: (context,
                                                                               url,
                                                                               error) =>
@@ -3786,10 +3753,8 @@ class _ParticularStreamingServiceMoviesState
     return moviesList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            child: mainPageVerticalScrollShimmer(
+                bannerAdMovieProviders, isDark, isLoading, _scrollController))
         : moviesList!.isEmpty
             ? Container(
                 color:
@@ -3913,12 +3878,8 @@ class _ParticularStreamingServiceMoviesState
                                                                       ),
                                                                       placeholder: (context,
                                                                               url) =>
-                                                                          Image
-                                                                              .asset(
-                                                                        'assets/images/loading.gif',
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                      ),
+                                                                          mainPageVerticalScrollImageShimmer(
+                                                                              isDark),
                                                                       errorWidget: (context,
                                                                               url,
                                                                               error) =>
@@ -4386,433 +4347,140 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    return watchProviders == null
-        ? const Center(child: CircularProgressIndicator())
-        : requestFailed == true
-            ? retryWidget(isDark)
-            : Container(
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF2b2c30)
-                            : const Color(0xFFDFDEDE),
-                      ),
-                      child: Center(
-                        child: TabBar(
-                          controller: tabController,
-                          isScrollable: true,
-                          indicatorColor: const Color(0xFFF57C00),
-                          indicatorWeight: 3,
-                          unselectedLabelColor: Colors.white54,
-                          indicatorSize: TabBarIndicatorSize.tab,
-                          tabs: [
-                            Tab(
-                              child: Text('Buy',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black)),
-                            ),
-                            Tab(
-                              child: Text('Stream',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black)),
-                            ),
-                            Tab(
-                              child: Text('Rent',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black)),
-                            ),
-                            Tab(
-                              child: Text('Free',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black)),
-                            )
-                          ],
+    return requestFailed == true
+        ? retryWidget(isDark)
+        : Container(
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF2b2c30)
+                        : const Color(0xFFDFDEDE),
+                  ),
+                  child: Center(
+                    child: TabBar(
+                      controller: tabController,
+                      isScrollable: true,
+                      indicatorColor: const Color(0xFFF57C00),
+                      indicatorWeight: 3,
+                      unselectedLabelColor: Colors.white54,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      tabs: [
+                        Tab(
+                          child: Text('Buy',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
                         ),
-                      ),
+                        Tab(
+                          child: Text('Stream',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Rent',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Free',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        )
+                      ],
                     ),
-                    Expanded(
-                      child: TabBarView(
-                        controller: tabController,
-                        children: [
-                          Container(
-                            color: isDark
-                                ? const Color(0xFF202124)
-                                : const Color(0xFFF7F7F7),
-                            padding: const EdgeInsets.all(8.0),
-                            child: watchProviders?.buy == null
-                                ? const Center(
-                                    child: Text(
-                                        'This movie doesn\'t have an option to buy yet'))
-                                : GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 100,
-                                      childAspectRatio: 0.65,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                    ),
-                                    itemCount: watchProviders!.buy!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              flex: 6,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: watchProviders!
-                                                            .buy![index]
-                                                            .logoPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                watchProviders!
-                                                                    .buy![index]
-                                                                    .logoPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: tabController,
+                    children: watchProviders == null
+                        ? [
+                            watchProvidersShimmer(isDark),
+                            watchProvidersShimmer(isDark),
+                            watchProvidersShimmer(isDark),
+                            watchProvidersShimmer(isDark),
+                          ]
+                        : [
+                            watchProvidersTabData(
+                                isDark: isDark,
+                                imageQuality: imageQuality,
+                                noOptionMessage:
+                                    'This movie doesn\'t have an option to buy yet',
+                                watchOptions: watchProviders!.buy),
+                            watchProvidersTabData(
+                                isDark: isDark,
+                                imageQuality: imageQuality,
+                                noOptionMessage:
+                                    'This movie doesn\'t have an option to stream yet',
+                                watchOptions: watchProviders!.flatRate),
+                            watchProvidersTabData(
+                                isDark: isDark,
+                                imageQuality: imageQuality,
+                                noOptionMessage:
+                                    'This movie doesn\'t have an option to rent yet',
+                                watchOptions: watchProviders!.rent),
+                            Container(
+                              color: isDark
+                                  ? const Color(0xFF202124)
+                                  : const Color(0xFFF7F7F7),
+                              padding: const EdgeInsets.all(8.0),
+                              child: GridView.builder(
+                                  gridDelegate:
+                                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 100,
+                                    childAspectRatio: 0.65,
+                                    crossAxisSpacing: 5,
+                                    mainAxisSpacing: 5,
+                                  ),
+                                  itemCount: 1,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            flex: 6,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              child: const FadeInImage(
+                                                image: AssetImage(
+                                                    'assets/images/logo_shadow.png'),
+                                                fit: BoxFit.cover,
+                                                placeholder: AssetImage(
+                                                    'assets/images/loading.gif'),
                                               ),
                                             ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Expanded(
-                                                flex: 6,
-                                                child: Text(
-                                                  watchProviders!.buy![index]
-                                                      .providerName!,
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                )),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                          ),
-                          Container(
-                            color: isDark
-                                ? const Color(0xFF202124)
-                                : const Color(0xFFF7F7F7),
-                            padding: const EdgeInsets.all(8.0),
-                            child: watchProviders?.flatRate == null
-                                ? const Center(
-                                    child: Text(
-                                        'This movie doesn\'t have an option to stream yet'))
-                                : GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 100,
-                                      childAspectRatio: 0.65,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                    ),
-                                    itemCount: watchProviders!.flatRate!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              flex: 6,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: watchProviders!
-                                                            .flatRate![index]
-                                                            .logoPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                watchProviders!
-                                                                    .flatRate![
-                                                                        index]
-                                                                    .logoPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Expanded(
-                                                flex: 6,
-                                                child: Text(
-                                                  watchProviders!
-                                                      .flatRate![index]
-                                                      .providerName!,
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                )),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                          ),
-                          Container(
-                            color: isDark
-                                ? const Color(0xFF202124)
-                                : const Color(0xFFF7F7F7),
-                            padding: const EdgeInsets.all(8.0),
-                            child: watchProviders?.rent == null
-                                ? const Center(
-                                    child: Text(
-                                        'This movie doesn\'t have an option to rent yet'))
-                                : GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 100,
-                                      childAspectRatio: 0.65,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                    ),
-                                    itemCount: watchProviders!.rent!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              flex: 6,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: watchProviders!
-                                                            .rent![index]
-                                                            .logoPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                watchProviders!
-                                                                    .rent![
-                                                                        index]
-                                                                    .logoPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Expanded(
+                                          ),
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          const Expanded(
                                               flex: 6,
                                               child: Text(
-                                                watchProviders!
-                                                    .rent![index].providerName!,
+                                                'Cinemax',
                                                 textAlign: TextAlign.center,
                                                 maxLines: 2,
                                                 overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                          ),
-                          Container(
-                            color: isDark
-                                ? const Color(0xFF202124)
-                                : const Color(0xFFF7F7F7),
-                            padding: const EdgeInsets.all(8.0),
-                            child: GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 100,
-                                  childAspectRatio: 0.65,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
-                                ),
-                                itemCount: 1,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Column(
-                                      children: [
-                                        Expanded(
-                                          flex: 6,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            child: const FadeInImage(
-                                              image: AssetImage(
-                                                  'assets/images/logo_shadow.png'),
-                                              fit: BoxFit.cover,
-                                              placeholder: AssetImage(
-                                                  'assets/images/loading.gif'),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        const Expanded(
-                                            flex: 6,
-                                            child: Text(
-                                              'Cinemax',
-                                              textAlign: TextAlign.center,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            )),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              );
+                                              )),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                            ),
+                          ],
+                  ),
+                )
+              ],
+            ),
+          );
   }
 
   Widget retryWidget(isDark) {
