@@ -151,8 +151,9 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color:
-                                isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
+                            color: isDark
+                                ? const Color(0xFF2b2c30)
+                                : const Color(0xFFDFDEDE),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
@@ -221,8 +222,8 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                 ),
                                 Expanded(
                                   child: Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
                                       children: [
@@ -234,8 +235,8 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         SingleChildScrollView(
                                           child: Container(
                                             color: isDark
-                                                ? Color(0xFF202124)
-                                                : Color(0xFFFFFFFF),
+                                                ? const Color(0xFF202124)
+                                                : const Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
                                                 Padding(
@@ -288,8 +289,8 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? Color(0xFF202124)
-                                              : Color(0xFFFFFFFF),
+                                              ? const Color(0xFF202124)
+                                              : const Color(0xFFFFFFFF),
                                           child: PersonMovieListWidget(
                                             isPersonAdult:
                                                 widget.person!.adult!,
@@ -304,8 +305,8 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? Color(0xFF202124)
-                                              : Color(0xFFFFFFFF),
+                                              ? const Color(0xFF202124)
+                                              : const Color(0xFFFFFFFF),
                                           child: PersonTVListWidget(
                                               isPersonAdult:
                                                   widget.person!.adult!,
@@ -348,7 +349,7 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                               const Duration(milliseconds: 300),
                                           fadeOutCurve: Curves.easeOut,
                                           fadeInDuration:
-                                              Duration(milliseconds: 700),
+                                              const Duration(milliseconds: 700),
                                           fadeInCurve: Curves.easeIn,
                                           imageUrl: TMDB_BASE_IMAGE_URL +
                                               imageQuality +

@@ -4,8 +4,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:startapp_sdk/startapp.dart';
-import '../provider/ads_provider.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '../provider/mixpanel_provider.dart';
@@ -32,12 +32,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'crew_detail.dart';
 import 'movie_widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:provider/provider.dart';
 import 'common_widgets.dart';
 
 class MainTVDisplay extends StatefulWidget {
@@ -277,7 +275,8 @@ class _DiscoverTVState extends State<DiscoverTV>
                                   fadeOutDuration:
                                       const Duration(milliseconds: 300),
                                   fadeOutCurve: Curves.easeOut,
-                                  fadeInDuration: Duration(milliseconds: 700),
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 700),
                                   fadeInCurve: Curves.easeIn,
                                   imageUrl: TMDB_BASE_IMAGE_URL +
                                       imageQuality +
@@ -319,8 +318,8 @@ class _DiscoverTVState extends State<DiscoverTV>
         children: [
           Image.asset('assets/images/network-signal.png',
               width: 60, height: 60),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
             child: Text('Please connect to the Internet and try again',
                 textAlign: TextAlign.center),
           ),
@@ -340,7 +339,7 @@ class _DiscoverTVState extends State<DiscoverTV>
                 });
                 getData();
               },
-              child: Text('Retry')),
+              child: const Text('Retry')),
         ],
       )),
     );
@@ -528,8 +527,10 @@ class _ScrollingTVState extends State<ScrollingTV>
                                                                   300),
                                                       fadeOutCurve:
                                                           Curves.easeOut,
-                                                      fadeInDuration: Duration(
-                                                          milliseconds: 700),
+                                                      fadeInDuration:
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  700),
                                                       fadeInCurve:
                                                           Curves.easeIn,
                                                       imageUrl:
@@ -594,6 +595,12 @@ class _ScrollingTVState extends State<ScrollingTV>
                       ],
                     ),
         ),
+        Divider(
+          color: !isDark ? Colors.black54 : Colors.white54,
+          thickness: 1,
+          endIndent: 20,
+          indent: 10,
+        ),
       ],
     );
   }
@@ -606,8 +613,8 @@ class _ScrollingTVState extends State<ScrollingTV>
         children: [
           Image.asset('assets/images/network-signal.png',
               width: 60, height: 60),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
             child: Text('Please connect to the Internet and try again',
                 textAlign: TextAlign.center),
           ),
@@ -627,7 +634,7 @@ class _ScrollingTVState extends State<ScrollingTV>
                 });
                 getData();
               },
-              child: Text('Retry')),
+              child: const Text('Retry')),
         ],
       )),
     );
@@ -668,6 +675,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         credits == null
@@ -706,9 +714,7 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
           width: double.infinity,
           height: 160,
           child: credits == null
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
+              ? detailCastShimmer(isDark)
               : ListView.builder(
                   physics: const BouncingScrollPhysics(),
                   itemCount: credits!.cast!.length,
@@ -755,8 +761,8 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
-                                              fadeInDuration:
-                                                  Duration(milliseconds: 700),
+                                              fadeInDuration: const Duration(
+                                                  milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
                                               imageUrl: TMDB_BASE_IMAGE_URL +
                                                   imageQuality +
@@ -773,10 +779,8 @@ class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                                 ),
                                               ),
                                               placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
+                                                  detailCastImageShimmer(
+                                                      isDark),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
@@ -846,6 +850,7 @@ class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         credits == null
@@ -884,9 +889,7 @@ class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
           width: double.infinity,
           height: 160,
           child: credits == null
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
+              ? detailCastShimmer(isDark)
               : ListView.builder(
                   physics: const BouncingScrollPhysics(),
                   itemCount: credits!.cast!.length,
@@ -933,8 +936,8 @@ class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
-                                              fadeInDuration:
-                                                  Duration(milliseconds: 700),
+                                              fadeInDuration: const Duration(
+                                                  milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
                                               imageUrl: TMDB_BASE_IMAGE_URL +
                                                   imageQuality +
@@ -951,10 +954,8 @@ class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                                                 ),
                                               ),
                                               placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
+                                                  detailCastImageShimmer(
+                                                      isDark),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
@@ -1117,8 +1118,8 @@ class _ScrollingTVEpisodeGuestStarsState
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
-                                              fadeInDuration:
-                                                  Duration(milliseconds: 700),
+                                              fadeInDuration: const Duration(
+                                                  milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
                                               imageUrl: TMDB_BASE_IMAGE_URL +
                                                   imageQuality +
@@ -1295,8 +1296,8 @@ class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
-                                              fadeInDuration:
-                                                  Duration(milliseconds: 700),
+                                              fadeInDuration: const Duration(
+                                                  milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
                                               imageUrl: TMDB_BASE_IMAGE_URL +
                                                   imageQuality +
@@ -1388,6 +1389,7 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         tvDetails == null
@@ -1426,9 +1428,7 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
           width: double.infinity,
           height: 160,
           child: tvDetails == null
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
+              ? detailCastShimmer(isDark)
               : ListView.builder(
                   physics: const BouncingScrollPhysics(),
                   itemCount: tvDetails!.createdBy!.length,
@@ -1476,8 +1476,8 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
-                                              fadeInDuration:
-                                                  Duration(milliseconds: 700),
+                                              fadeInDuration: const Duration(
+                                                  milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
                                               imageUrl: TMDB_BASE_IMAGE_URL +
                                                   imageQuality +
@@ -1494,10 +1494,8 @@ class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                                                 ),
                                               ),
                                               placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
+                                                  detailCastImageShimmer(
+                                                      isDark),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
@@ -1561,6 +1559,7 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: [
         tvImages == null
@@ -1592,9 +1591,7 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
             width: double.infinity,
             height: 180,
             child: tvImages == null
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
+                ? detailImageShimmer(isDark)
                 : tvImages!.backdrop!.isEmpty
                     ? const SizedBox(
                         width: double.infinity,
@@ -1624,7 +1621,8 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
                                   fadeOutDuration:
                                       const Duration(milliseconds: 300),
                                   fadeOutCurve: Curves.easeOut,
-                                  fadeInDuration: Duration(milliseconds: 700),
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 700),
                                   fadeInCurve: Curves.easeIn,
                                   imageUrl: TMDB_BASE_IMAGE_URL +
                                       imageQuality +
@@ -1638,10 +1636,8 @@ class _TVImagesDisplayState extends State<TVImagesDisplay> {
                                       ),
                                     ),
                                   ),
-                                  placeholder: (context, url) => Image.asset(
-                                    'assets/images/loading.gif',
-                                    fit: BoxFit.cover,
-                                  ),
+                                  placeholder: (context, url) =>
+                                      detailImageImageSimmer(isDark),
                                   errorWidget: (context, url, error) =>
                                       Image.asset(
                                     'assets/images/na_logo.png',
@@ -1686,6 +1682,7 @@ class _TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: [
         tvImages == null
@@ -1717,9 +1714,7 @@ class _TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
             width: double.infinity,
             height: 160,
             child: tvImages == null
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
+                ? detailImageShimmer(isDark)
                 : tvImages!.poster!.isEmpty
                     ? const SizedBox(
                         width: double.infinity,
@@ -1749,7 +1744,8 @@ class _TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                                   fadeOutDuration:
                                       const Duration(milliseconds: 300),
                                   fadeOutCurve: Curves.easeOut,
-                                  fadeInDuration: Duration(milliseconds: 700),
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 700),
                                   fadeInCurve: Curves.easeIn,
                                   imageUrl: TMDB_BASE_IMAGE_URL +
                                       imageQuality +
@@ -1811,6 +1807,7 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: [
         tvImages == null
@@ -1842,9 +1839,7 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
             width: double.infinity,
             height: 180,
             child: tvImages == null
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
+                ? detailImageShimmer(isDark)
                 : tvImages!.still!.isEmpty
                     ? const SizedBox(
                         width: double.infinity,
@@ -1853,7 +1848,7 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                           child: Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
-                              'This TV series episode doesn\'t have an image provided',
+                              'No images found :(',
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -1877,7 +1872,8 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                                   fadeOutDuration:
                                       const Duration(milliseconds: 300),
                                   fadeOutCurve: Curves.easeOut,
-                                  fadeInDuration: Duration(milliseconds: 700),
+                                  fadeInDuration:
+                                      const Duration(milliseconds: 700),
                                   fadeInCurve: Curves.easeIn,
                                   imageUrl: TMDB_BASE_IMAGE_URL +
                                       imageQuality +
@@ -1891,10 +1887,8 @@ class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                                       ),
                                     ),
                                   ),
-                                  placeholder: (context, url) => Image.asset(
-                                    'assets/images/loading.gif',
-                                    fit: BoxFit.cover,
-                                  ),
+                                  placeholder: (context, url) =>
+                                      detailImageImageSimmer(isDark),
                                   errorWidget: (context, url, error) =>
                                       Image.asset(
                                     'assets/images/na_logo.png',
@@ -1939,6 +1933,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
   @override
   Widget build(BuildContext context) {
     bool playButtonVisibility = true;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: [
         tvVideos == null
@@ -1970,9 +1965,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
             width: double.infinity,
             height: 230,
             child: tvVideos == null
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
+                ? detailVideoShimmer(isDark)
                 : tvVideos!.result!.isEmpty
                     ? const SizedBox(
                         width: double.infinity,
@@ -1980,8 +1973,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                         child: Center(
                             child: Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Text(
-                              'This TV series episode doesn\'t have a video provided',
+                          child: Text('No video found :(',
                               textAlign: TextAlign.center),
                         )),
                       )
@@ -2001,8 +1993,8 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                               padding: const EdgeInsets.all(8.0),
                               child: GestureDetector(
                                 onTap: () {
-                                  launch(YOUTUBE_BASE_URL +
-                                      tvVideos!.result![index].videoLink!);
+                                  launchUrl(Uri.parse(YOUTUBE_BASE_URL +
+                                      tvVideos!.result![index].videoLink!));
                                 },
                                 child: SizedBox(
                                   height: 150,
@@ -2026,8 +2018,9 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                                                             milliseconds: 300),
                                                     fadeOutCurve:
                                                         Curves.easeOut,
-                                                    fadeInDuration: Duration(
-                                                        milliseconds: 700),
+                                                    fadeInDuration:
+                                                        const Duration(
+                                                            milliseconds: 700),
                                                     fadeInCurve: Curves.easeIn,
                                                     imageUrl:
                                                         YOUTUBE_THUMBNAIL_URL +
@@ -2045,12 +2038,10 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                                                         ),
                                                       ),
                                                     ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        detailVideoImageShimmer(
+                                                            isDark),
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
@@ -2144,23 +2135,23 @@ class _TVCastTabState extends State<TVCastTab>
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
-            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: tvCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
             ? Container(
                 child: const Center(
                   child:
                       Text('There is no data available for this TV show cast'),
                 ),
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               )
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
                     child: ListView.builder(
                         itemCount: credits!.cast!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -2181,8 +2172,8 @@ class _TVCastTabState extends State<TVCastTab>
                             },
                             child: Container(
                               color: isDark
-                                  ? Color(0xFF202124)
-                                  : Color(0xFFFFFFFF),
+                                  ? const Color(0xFF202124)
+                                  : const Color(0xFFFFFFFF),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 0.0,
@@ -2223,7 +2214,7 @@ class _TVCastTabState extends State<TVCastTab>
                                                         fadeOutCurve:
                                                             Curves.easeOut,
                                                         fadeInDuration:
-                                                            Duration(
+                                                            const Duration(
                                                                 milliseconds:
                                                                     700),
                                                         fadeInCurve:
@@ -2248,12 +2239,10 @@ class _TVCastTabState extends State<TVCastTab>
                                                             ),
                                                           ),
                                                         ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            castAndCrewTabImageShimmer(
+                                                                isDark),
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
@@ -2410,7 +2399,6 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
     });
     Future.delayed(const Duration(seconds: 11), () {
       if (tvDetails == null) {
-        print('tv details still null');
         setState(() {
           requestFailed = true;
           tvDetails = TVDetails(seasons: [Seasons()]);
@@ -2428,14 +2416,12 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvDetails == null
         ? Container(
-            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: tvDetailsSeasonsTabShimmer(bannerAdTVSeason, isDark))
         : tvDetails!.seasons!.isEmpty
             ? Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text('There is no season available for this TV show'),
                 ),
@@ -2443,7 +2429,9 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
                     child: Column(
                       children: [
                         Expanded(
@@ -2476,8 +2464,8 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                                   },
                                   child: Container(
                                     color: isDark
-                                        ? Color(0xFF202124)
-                                        : Color(0xFFFFFFFF),
+                                        ? const Color(0xFF202124)
+                                        : const Color(0xFFFFFFFF),
                                     child: Padding(
                                       padding: const EdgeInsets.only(
                                         top: 0.0,
@@ -2521,7 +2509,7 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                                                                   Curves
                                                                       .easeOut,
                                                               fadeInDuration:
-                                                                  Duration(
+                                                                  const Duration(
                                                                       milliseconds:
                                                                           700),
                                                               fadeInCurve:
@@ -2547,15 +2535,10 @@ class _TVSeasonsTabState extends State<TVSeasonsTab>
                                                                   ),
                                                                 ),
                                                               ),
-                                                              placeholder:
-                                                                  (context,
-                                                                          url) =>
-                                                                      Image
-                                                                          .asset(
-                                                                'assets/images/loading.gif',
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              ),
+                                                              placeholder: (context,
+                                                                      url) =>
+                                                                  recommendationAndSimilarTabImageShimmer(
+                                                                      isDark),
                                                               errorWidget: (context,
                                                                       url,
                                                                       error) =>
@@ -2705,23 +2688,23 @@ class _TVCrewTabState extends State<TVCrewTab>
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
-            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: movieCastAndCrewTabShimmer(isDark))
         : credits!.crew!.isEmpty
             ? Container(
                 child: const Center(
                   child:
                       Text('There is no data available for this TV show cast'),
                 ),
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               )
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
                     child: ListView.builder(
                         itemCount: credits!.crew!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -2742,8 +2725,8 @@ class _TVCrewTabState extends State<TVCrewTab>
                             },
                             child: Container(
                               color: isDark
-                                  ? Color(0xFF202124)
-                                  : Color(0xFFFFFFFF),
+                                  ? const Color(0xFF202124)
+                                  : const Color(0xFFFFFFFF),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 0.0,
@@ -2784,7 +2767,7 @@ class _TVCrewTabState extends State<TVCrewTab>
                                                         fadeOutCurve:
                                                             Curves.easeOut,
                                                         fadeInDuration:
-                                                            Duration(
+                                                            const Duration(
                                                                 milliseconds:
                                                                     700),
                                                         fadeInCurve:
@@ -2809,12 +2792,10 @@ class _TVCrewTabState extends State<TVCrewTab>
                                                             ),
                                                           ),
                                                         ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            castAndCrewTabImageShimmer(
+                                                                isDark),
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
@@ -3006,17 +2987,16 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
-            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: detailsRecommendationsAndSimilarShimmer(
+                isDark, _scrollController, bannerAdTVRecommendation, isLoading))
         : tvList!.isEmpty
             ? Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: const Center(
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(
                     child: Text(
                         'There is no recommendations available for this TV show'),
                   ),
@@ -3025,7 +3005,9 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
                     child: Column(
                       children: [
                         Expanded(
@@ -3052,8 +3034,8 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                   },
                                   child: Container(
                                     color: isDark
-                                        ? Color(0xFF202124)
-                                        : Color(0xFFFFFFFF),
+                                        ? const Color(0xFF202124)
+                                        : const Color(0xFFFFFFFF),
                                     child: Padding(
                                       padding: const EdgeInsets.only(
                                         top: 0.0,
@@ -3094,7 +3076,7 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                                                   Curves
                                                                       .easeOut,
                                                               fadeInDuration:
-                                                                  Duration(
+                                                                  const Duration(
                                                                       milliseconds:
                                                                           700),
                                                               fadeInCurve:
@@ -3118,15 +3100,10 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
                                                                   ),
                                                                 ),
                                                               ),
-                                                              placeholder:
-                                                                  (context,
-                                                                          url) =>
-                                                                      Image
-                                                                          .asset(
-                                                                'assets/images/loading.gif',
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              ),
+                                                              placeholder: (context,
+                                                                      url) =>
+                                                                  recommendationAndSimilarTabImageShimmer(
+                                                                      isDark),
                                                               errorWidget: (context,
                                                                       url,
                                                                       error) =>
@@ -3357,14 +3334,13 @@ class _SimilarTVTabState extends State<SimilarTVTab>
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
-            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: detailsRecommendationsAndSimilarShimmer(
+                isDark, _scrollController, bannerAdTVSimilars, isLoading))
         : tvList!.isEmpty
             ? Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child:
                       Text('There are no similars available for this TV show'),
@@ -3373,7 +3349,9 @@ class _SimilarTVTabState extends State<SimilarTVTab>
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
                     child: Column(
                       children: [
                         Expanded(
@@ -3400,8 +3378,8 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                   },
                                   child: Container(
                                     color: isDark
-                                        ? Color(0xFF202124)
-                                        : Color(0xFFFFFFFF),
+                                        ? const Color(0xFF202124)
+                                        : const Color(0xFFFFFFFF),
                                     child: Padding(
                                       padding: const EdgeInsets.only(
                                         top: 0.0,
@@ -3442,7 +3420,7 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                                                   Curves
                                                                       .easeOut,
                                                               fadeInDuration:
-                                                                  Duration(
+                                                                  const Duration(
                                                                       milliseconds:
                                                                           700),
                                                               fadeInCurve:
@@ -3466,15 +3444,10 @@ class _SimilarTVTabState extends State<SimilarTVTab>
                                                                   ),
                                                                 ),
                                                               ),
-                                                              placeholder:
-                                                                  (context,
-                                                                          url) =>
-                                                                      Image
-                                                                          .asset(
-                                                                'assets/images/loading.gif',
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              ),
+                                                              placeholder: (context,
+                                                                      url) =>
+                                                                  recommendationAndSimilarTabImageShimmer(
+                                                                      isDark),
                                                               errorWidget: (context,
                                                                       url,
                                                                       error) =>
@@ -3630,9 +3603,9 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Container(
         child: SizedBox(
-      height: genres == null || genres!.isEmpty ? 0 : 80,
+      height: 80,
       child: genres == null
-          ? Container()
+          ? detailGenreShimmer(isDark)
           : ListView.builder(
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
@@ -3663,8 +3636,9 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
                         style: const TextStyle(fontFamily: 'Poppins'),
                         // style: widget.themeData.textTheme.bodyText1,
                       ),
-                      backgroundColor:
-                          isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
+                      backgroundColor: isDark
+                          ? const Color(0xFF2b2c30)
+                          : const Color(0xFFDFDEDE),
                     ),
                   ),
                 );
@@ -3777,14 +3751,13 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
-            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: mainPageVerticalScrollShimmer(
+                bannerAdTVGenres, isDark, isLoading, _scrollController))
         : tvList!.isEmpty
             ? Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text('Oops! movies for this genre doesn\'t exist :('),
                 ),
@@ -3792,7 +3765,9 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
                     child: Column(
                       children: [
                         Expanded(
@@ -3830,8 +3805,8 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                           },
                                           child: Container(
                                             color: isDark
-                                                ? Color(0xFF202124)
-                                                : Color(0xFFFFFFFF),
+                                                ? const Color(0xFF202124)
+                                                : const Color(0xFFFFFFFF),
                                             child: Padding(
                                               padding: const EdgeInsets.only(
                                                 top: 0.0,
@@ -3874,7 +3849,7 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                                                           Curves
                                                                               .easeOut,
                                                                       fadeInDuration:
-                                                                          Duration(
+                                                                          const Duration(
                                                                               milliseconds: 700),
                                                                       fadeInCurve:
                                                                           Curves
@@ -3899,12 +3874,8 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                                                                       ),
                                                                       placeholder: (context,
                                                                               url) =>
-                                                                          Image
-                                                                              .asset(
-                                                                        'assets/images/loading.gif',
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                      ),
+                                                                          mainPageVerticalScrollImageShimmer(
+                                                                              isDark),
                                                                       errorWidget: (context,
                                                                               url,
                                                                               error) =>
@@ -4061,25 +4032,21 @@ class _TVInfoTableState extends State<TVInfoTable> {
 
   @override
   Widget build(BuildContext context) {
-    return tvDetails == null
-        ? const Padding(
-            padding: EdgeInsets.only(bottom: 8.0),
-            child: SizedBox(
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : Column(
-            children: [
-              const Text(
-                'TV series Info',
-                style: kTextHeaderStyle,
-              ),
-              Container(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(dataRowHeight: 40, columns: [
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    return Column(
+      children: [
+        const Text(
+          'TV series Info',
+          style: kTextHeaderStyle,
+        ),
+        Container(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: tvDetails == null
+                  ? detailInfoTableShimmer(isDark)
+                  : DataTable(dataRowHeight: 40, columns: [
                       const DataColumn(
                           label: Text(
                         'Original Title',
@@ -4203,11 +4170,11 @@ class _TVInfoTableState extends State<TVInfoTable> {
                         )),
                       ]),
                     ]),
-                  ),
-                ),
-              ),
-            ],
-          );
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -4253,9 +4220,7 @@ class _TVSocialLinksState extends State<TVSocialLinks> {
               height: 55,
               width: double.infinity,
               child: externalLinks == null
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
+                  ? socialMediaShimmer(isDark)
                   : externalLinks?.facebookUsername == null &&
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
@@ -4269,8 +4234,9 @@ class _TVSocialLinksState extends State<TVSocialLinks> {
                       : Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color:
-                                isDark ? Colors.transparent : Color(0xFFDFDEDE),
+                            color: isDark
+                                ? Colors.transparent
+                                : const Color(0xFFDFDEDE),
                           ),
                           child: ListView(
                             scrollDirection: Axis.horizontal,
@@ -4369,6 +4335,7 @@ class _SeasonsListState extends State<SeasonsList> {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         Row(
@@ -4387,9 +4354,7 @@ class _SeasonsListState extends State<SeasonsList> {
           width: double.infinity,
           height: 250,
           child: tvDetails == null
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
+              ? horizontalScrollingSeasonsList(isDark)
               : tvDetails!.seasons!.isEmpty
                   ? Container(
                       color: const Color(0xFF202124),
@@ -4403,7 +4368,6 @@ class _SeasonsListState extends State<SeasonsList> {
                       children: [
                         Expanded(
                           child: ListView.builder(
-                            physics: const BouncingScrollPhysics(),
                             itemCount: tvDetails!.seasons!.length,
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (BuildContext context, int index) {
@@ -4459,8 +4423,10 @@ class _SeasonsListState extends State<SeasonsList> {
                                                                   300),
                                                       fadeOutCurve:
                                                           Curves.easeOut,
-                                                      fadeInDuration: Duration(
-                                                          milliseconds: 700),
+                                                      fadeInDuration:
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  700),
                                                       fadeInCurve:
                                                           Curves.easeIn,
                                                       imageUrl:
@@ -4483,12 +4449,10 @@ class _SeasonsListState extends State<SeasonsList> {
                                                           ),
                                                         ),
                                                       ),
-                                                      placeholder:
-                                                          (context, url) =>
-                                                              Image.asset(
-                                                        'assets/images/loading.gif',
-                                                        fit: BoxFit.cover,
-                                                      ),
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          scrollingImageShimmer(
+                                                              isDark),
                                                       errorWidget: (context,
                                                               url, error) =>
                                                           Image.asset(
@@ -4575,16 +4539,105 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Container(
-        color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+        color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
         child: tvDetails == null
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
+            ? ListView.builder(
+                itemCount: 10,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 0.0,
+                        bottom: 8.0,
+                        left: 10,
+                      ),
+                      child: Column(
+                        children: [
+                          Shimmer.fromColors(
+                            baseColor: isDark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade300,
+                            highlightColor: isDark
+                                ? Colors.grey.shade700
+                                : Colors.grey.shade100,
+                            direction: ShimmerDirection.ltr,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                    color: Colors.white, width: 10, height: 15),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 10.0, left: 5.0),
+                                  child: Container(
+                                    height: 56.4,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6.0),
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 2.0),
+                                        child: Container(
+                                            color: Colors.white,
+                                            height: 19,
+                                            width: 150),
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 2.0),
+                                        child: Container(
+                                            color: Colors.white,
+                                            height: 19,
+                                            width: 110),
+                                      ),
+                                      Row(children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 3.0),
+                                          child: Container(
+                                              color: Colors.white,
+                                              height: 20,
+                                              width: 20),
+                                        ),
+                                        Container(
+                                            color: Colors.white,
+                                            height: 20,
+                                            width: 25),
+                                      ]),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          const Divider(
+                            color: Color(0xFFF57C00),
+                            thickness: 1.5,
+                            endIndent: 30,
+                            indent: 5,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                })
             : requestFailed == true
                 ? retryWidget(isDark)
                 : tvDetails!.episodes!.isEmpty
-                    ? Center(
-                        child: Text('This season doesn\'t have episodes'),
+                    ? const Center(
+                        child: Text('No episodes found :('),
                       )
                     : ListView.builder(
                         itemCount: tvDetails!.episodes!.length,
@@ -4609,8 +4662,8 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                             },
                             child: Container(
                               color: isDark
-                                  ? Color(0xFF202124)
-                                  : Color(0xFFFFFFFF),
+                                  ? const Color(0xFF202124)
+                                  : const Color(0xFFFFFFFF),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 0.0,
@@ -4629,7 +4682,7 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                         Padding(
                                           padding: const EdgeInsets.only(
                                               right: 10.0, left: 5.0),
-                                          child: Container(
+                                          child: SizedBox(
                                             child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(6.0),
@@ -4651,8 +4704,10 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                                                   300),
                                                       fadeOutCurve:
                                                           Curves.easeOut,
-                                                      fadeInDuration: Duration(
-                                                          milliseconds: 700),
+                                                      fadeInDuration:
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  700),
                                                       fadeInCurve:
                                                           Curves.easeIn,
                                                       imageUrl:
@@ -4721,10 +4776,9 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                                 ),
                                               ),
                                               Row(children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 3.0),
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 3.0),
                                                   child: Icon(
                                                     Icons.star,
                                                     size: 20,
@@ -4842,527 +4896,154 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    return watchProviders == null
-        ? const Center(child: CircularProgressIndicator())
-        : requestFailed == true
-            ? retryWidget(isDark)
-            : Container(
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
-                      ),
-                      child: Center(
-                        child: TabBar(
-                          controller: tabController,
-                          isScrollable: true,
-                          indicatorColor: const Color(0xFFF57C00),
-                          indicatorWeight: 3,
-                          unselectedLabelColor: Colors.white54,
-                          labelColor: Colors.white,
-                          indicatorSize: TabBarIndicatorSize.tab,
-                          tabs: [
-                            Tab(
-                              child: Text('Buy',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black)),
-                            ),
-                            Tab(
-                              child: Text('Stream',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black)),
-                            ),
-                            Tab(
-                              child: Text('ADS',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black)),
-                            ),
-                            Tab(
-                              child: Text('Rent',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black)),
-                            ),
-                            Tab(
-                              child: Text('Free',
-                                  style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      color: isDark
-                                          ? Colors.white
-                                          : Colors.black)),
-                            ),
-                          ],
+    return requestFailed == true
+        ? retryWidget(isDark)
+        : Container(
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF2b2c30)
+                        : const Color(0xFFDFDEDE),
+                  ),
+                  child: Center(
+                    child: TabBar(
+                      controller: tabController,
+                      isScrollable: true,
+                      indicatorColor: const Color(0xFFF57C00),
+                      indicatorWeight: 3,
+                      unselectedLabelColor: Colors.white54,
+                      labelColor: Colors.white,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      tabs: [
+                        Tab(
+                          child: Text('Buy',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
                         ),
-                      ),
+                        Tab(
+                          child: Text('Stream',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('ADS',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Rent',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                        Tab(
+                          child: Text('Free',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: isDark ? Colors.white : Colors.black)),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: TabBarView(
-                        controller: tabController,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: watchProviders?.buy == null
-                                ? const Center(
-                                    child: Text(
-                                        'This TV series doesn\'t have an option to buy yet'))
-                                : GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 100,
-                                      childAspectRatio: 0.65,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                    ),
-                                    itemCount: watchProviders!.buy!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              flex: 6,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: watchProviders!
-                                                            .buy![index]
-                                                            .logoPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                watchProviders!
-                                                                    .buy![index]
-                                                                    .logoPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
+                  ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: tabController,
+                    children: watchProviders == null
+                        ? [
+                            watchProvidersShimmer(isDark),
+                            watchProvidersShimmer(isDark),
+                            watchProvidersShimmer(isDark),
+                            watchProvidersShimmer(isDark),
+                            watchProvidersShimmer(isDark),
+                          ]
+                        : [
+                            watchProvidersTabData(
+                                isDark: isDark,
+                                imageQuality: imageQuality,
+                                noOptionMessage:
+                                    'This TV series doesn\'t have an option to buy yet',
+                                watchOptions: watchProviders!.buy),
+                            watchProvidersTabData(
+                                isDark: isDark,
+                                imageQuality: imageQuality,
+                                noOptionMessage:
+                                    'This TV series doesn\'t have an option to stream yet',
+                                watchOptions: watchProviders!.flatRate),
+                            watchProvidersTabData(
+                                isDark: isDark,
+                                imageQuality: imageQuality,
+                                noOptionMessage:
+                                    'This TV series doesn\'t have an option to watch through ADS yet',
+                                watchOptions: watchProviders!.ads),
+                            watchProvidersTabData(
+                                isDark: isDark,
+                                imageQuality: imageQuality,
+                                noOptionMessage:
+                                    'This TV series doesn\'t have an option to rent yet',
+                                watchOptions: watchProviders!.rent),
+                            Container(
+                              color: isDark
+                                  ? const Color(0xFF202124)
+                                  : const Color(0xFFF7F7F7),
+                              padding: const EdgeInsets.all(8.0),
+                              child: GridView.builder(
+                                  gridDelegate:
+                                      const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 100,
+                                    childAspectRatio: 0.65,
+                                    crossAxisSpacing: 5,
+                                    mainAxisSpacing: 5,
+                                  ),
+                                  itemCount: 1,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            flex: 6,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              child: const FadeInImage(
+                                                image: AssetImage(
+                                                    'assets/images/logo_shadow.png'),
+                                                fit: BoxFit.cover,
+                                                placeholder: AssetImage(
+                                                    'assets/images/loading.gif'),
                                               ),
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Expanded(
-                                                flex: 6,
-                                                child: Text(
-                                                  watchProviders!.buy![index]
-                                                      .providerName!,
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                )),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: watchProviders?.flatRate == null
-                                ? const Center(
-                                    child: Text(
-                                        'This TV series doesn\'t have an option to stream yet'))
-                                : GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 100,
-                                      childAspectRatio: 0.65,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                    ),
-                                    itemCount: watchProviders!.flatRate!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              flex: 6,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: watchProviders!
-                                                            .flatRate![index]
-                                                            .logoPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                watchProviders!
-                                                                    .flatRate![
-                                                                        index]
-                                                                    .logoPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Expanded(
-                                                flex: 6,
-                                                child: Text(
-                                                  watchProviders!
-                                                      .flatRate![index]
-                                                      .providerName!,
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                )),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: watchProviders?.ads == null
-                                ? const Center(
-                                    child: Text(
-                                        'This TV series doesn\'t have an option to watch through ADS yet'))
-                                : GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 100,
-                                      childAspectRatio: 0.65,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                    ),
-                                    itemCount: watchProviders!.ads!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              flex: 6,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: watchProviders!
-                                                            .ads![index]
-                                                            .logoPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                watchProviders!
-                                                                    .ads![index]
-                                                                    .logoPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Expanded(
-                                              flex: 6,
-                                              child: Text(
-                                                watchProviders!
-                                                    .ads![index].providerName!,
-                                                textAlign: TextAlign.center,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: watchProviders?.rent == null
-                                ? const Center(
-                                    child: Text(
-                                        'This TV series doesn\'t have an option to rent yet'))
-                                : GridView.builder(
-                                    gridDelegate:
-                                        const SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 100,
-                                      childAspectRatio: 0.65,
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                    ),
-                                    itemCount: watchProviders!.rent!.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              flex: 6,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: watchProviders!
-                                                            .rent![index]
-                                                            .logoPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                watchProviders!
-                                                                    .rent![
-                                                                        index]
-                                                                    .logoPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                              ),
-                                            ),
-                                            const SizedBox(
-                                              height: 5,
-                                            ),
-                                            Expanded(
-                                              flex: 6,
-                                              child: Text(
-                                                watchProviders!
-                                                    .rent![index].providerName!,
-                                                textAlign: TextAlign.center,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    }),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 100,
-                                  childAspectRatio: 0.65,
-                                  crossAxisSpacing: 5,
-                                  mainAxisSpacing: 5,
-                                ),
-                                itemCount: 1,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: Column(
-                                      children: [
-                                        Expanded(
-                                          flex: 6,
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            child: const FadeInImage(
-                                              image: AssetImage(
-                                                  'assets/images/logo_shadow.png'),
-                                              fit: BoxFit.cover,
-                                              placeholder: AssetImage(
-                                                  'assets/images/loading.gif'),
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        const Expanded(
-                                            flex: 6,
-                                            child: Text(
-                                              'Cinemax',
-                                              textAlign: TextAlign.center,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            )),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              );
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          const Expanded(
+                                              flex: 6,
+                                              child: Text(
+                                                'Cinemax',
+                                                textAlign: TextAlign.center,
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              )),
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                            ),
+                          ],
+                  ),
+                )
+              ],
+            ),
+          );
   }
 
   Widget retryWidget(isDark) {
@@ -5494,7 +5175,7 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
                                           child: Text(
                                               genreList![index].genreName!,
                                               textAlign: TextAlign.center,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   color: Colors.white)),
                                           decoration: BoxDecoration(
                                               color: const Color(0xFFF57C00),
@@ -5523,8 +5204,8 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
@@ -5546,7 +5227,7 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
                     });
                     getData();
                   },
-                  child: Text('Retry')),
+                  child: const Text('Retry')),
             ],
           ),
         ],
@@ -5691,7 +5372,7 @@ class TVStreamingServicesWidget extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child: Text(title, style: TextStyle(color: Colors.white)),
+                child: Text(title, style: const TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -5803,14 +5484,13 @@ class _ParticularStreamingServiceTVShowsState
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
-            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: mainPageVerticalScrollShimmer(
+                bannerAdTVProviders, isDark, isLoading, _scrollController))
         : tvList!.isEmpty
             ? Container(
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text(
                       'Oops! TV shows for this watch provider doesn\'t exist :('),
@@ -5819,7 +5499,9 @@ class _ParticularStreamingServiceTVShowsState
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
                     child: Column(
                       children: [
                         Expanded(
@@ -5857,8 +5539,8 @@ class _ParticularStreamingServiceTVShowsState
                                           },
                                           child: Container(
                                             color: isDark
-                                                ? Color(0xFF202124)
-                                                : Color(0xFFFFFFFF),
+                                                ? const Color(0xFF202124)
+                                                : const Color(0xFFFFFFFF),
                                             child: Padding(
                                               padding: const EdgeInsets.only(
                                                 top: 0.0,
@@ -5901,7 +5583,7 @@ class _ParticularStreamingServiceTVShowsState
                                                                           Curves
                                                                               .easeOut,
                                                                       fadeInDuration:
-                                                                          Duration(
+                                                                          const Duration(
                                                                               milliseconds: 700),
                                                                       fadeInCurve:
                                                                           Curves
@@ -5926,12 +5608,8 @@ class _ParticularStreamingServiceTVShowsState
                                                                       ),
                                                                       placeholder: (context,
                                                                               url) =>
-                                                                          Image
-                                                                              .asset(
-                                                                        'assets/images/loading.gif',
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                      ),
+                                                                          mainPageVerticalScrollImageShimmer(
+                                                                              isDark),
                                                                       errorWidget: (context,
                                                                               url,
                                                                               error) =>
@@ -6110,23 +5788,22 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
-            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: movieCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
             ? Container(
                 child: const Center(
-                  child: Text(
-                      'There is no data available for this TV episode cast'),
+                  child: Text('No cast available :('),
                 ),
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               )
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
                     child: ListView.builder(
                         itemCount: credits!.cast!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -6147,8 +5824,8 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                             },
                             child: Container(
                               color: isDark
-                                  ? Color(0xFF202124)
-                                  : Color(0xFFFFFFFF),
+                                  ? const Color(0xFF202124)
+                                  : const Color(0xFFFFFFFF),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 0.0,
@@ -6189,7 +5866,7 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                                         fadeOutCurve:
                                                             Curves.easeOut,
                                                         fadeInDuration:
-                                                            Duration(
+                                                            const Duration(
                                                                 milliseconds:
                                                                     700),
                                                         fadeInCurve:
@@ -6214,12 +5891,10 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                                             ),
                                                           ),
                                                         ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            castAndCrewTabImageShimmer(
+                                                                isDark),
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
@@ -6366,23 +6041,23 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
-            color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
-            child: const Center(
-              child: CircularProgressIndicator(),
-            ),
-          )
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            child: movieCastAndCrewTabShimmer(isDark))
         : credits!.episodeGuestStars!.isEmpty
             ? Container(
                 child: const Center(
                   child: Text(
                       'There is no data available for this TV episode guest stars'),
                 ),
-                color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               )
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                    color: isDark
+                        ? const Color(0xFF202124)
+                        : const Color(0xFFFFFFFF),
                     child: ListView.builder(
                         itemCount: credits!.episodeGuestStars!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -6405,8 +6080,8 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                             },
                             child: Container(
                               color: isDark
-                                  ? Color(0xFF202124)
-                                  : Color(0xFFFFFFFF),
+                                  ? const Color(0xFF202124)
+                                  : const Color(0xFFFFFFFF),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 0.0,
@@ -6449,7 +6124,7 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                                         fadeOutCurve:
                                                             Curves.easeOut,
                                                         fadeInDuration:
-                                                            Duration(
+                                                            const Duration(
                                                                 milliseconds:
                                                                     700),
                                                         fadeInCurve:
@@ -6473,12 +6148,10 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                                             ),
                                                           ),
                                                         ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                Image.asset(
-                                                          'assets/images/loading.gif',
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            castAndCrewTabImageShimmer(
+                                                                isDark),
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
@@ -6583,3 +6256,81 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
   @override
   bool get wantKeepAlive => true;
 }
+
+// Widget tvWatchProvidersTabData({required bool isDark,
+//         required String imageQuality,
+//         required String noOptionMessage,
+//         required List? watchOptions}) => Padding(
+//       padding: const EdgeInsets.all(8.0),
+//       child: watchOptions == null
+//           ? Center(
+//               child: Text(noOptionMessage))
+//           : GridView.builder(
+//               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+//                 maxCrossAxisExtent: 100,
+//                 childAspectRatio: 0.65,
+//                 crossAxisSpacing: 5,
+//                 mainAxisSpacing: 5,
+//               ),
+//               itemCount: watchProviders!.buy!.length,
+//               itemBuilder: (BuildContext context, int index) {
+//                 return Padding(
+//                   padding: const EdgeInsets.all(4.0),
+//                   child: Column(
+//                     children: [
+//                       Expanded(
+//                         flex: 6,
+//                         child: ClipRRect(
+//                           borderRadius: BorderRadius.circular(8.0),
+//                           child: watchProviders!.buy![index].logoPath == null
+//                               ? Image.asset(
+//                                   'assets/images/na_logo.png',
+//                                   fit: BoxFit.cover,
+//                                 )
+//                               : CachedNetworkImage(
+//                                   fadeOutDuration:
+//                                       const Duration(milliseconds: 300),
+//                                   fadeOutCurve: Curves.easeOut,
+//                                   fadeInDuration:
+//                                       const Duration(milliseconds: 700),
+//                                   fadeInCurve: Curves.easeIn,
+//                                   imageUrl: TMDB_BASE_IMAGE_URL +
+//                                       imageQuality +
+//                                       watchProviders!.buy![index].logoPath!,
+//                                   imageBuilder: (context, imageProvider) =>
+//                                       Container(
+//                                     decoration: BoxDecoration(
+//                                       image: DecorationImage(
+//                                         image: imageProvider,
+//                                         fit: BoxFit.cover,
+//                                       ),
+//                                     ),
+//                                   ),
+//                                   placeholder: (context, url) => Image.asset(
+//                                     'assets/images/loading.gif',
+//                                     fit: BoxFit.cover,
+//                                   ),
+//                                   errorWidget: (context, url, error) =>
+//                                       Image.asset(
+//                                     'assets/images/na_logo.png',
+//                                     fit: BoxFit.cover,
+//                                   ),
+//                                 ),
+//                         ),
+//                       ),
+//                       const SizedBox(
+//                         height: 5,
+//                       ),
+//                       Expanded(
+//                           flex: 6,
+//                           child: Text(
+//                             watchProviders!.buy![index].providerName!,
+//                             textAlign: TextAlign.center,
+//                             maxLines: 2,
+//                             overflow: TextOverflow.ellipsis,
+//                           )),
+//                     ],
+//                   ),
+//                 );
+//               }),
+//     );

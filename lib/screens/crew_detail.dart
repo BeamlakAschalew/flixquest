@@ -148,8 +148,9 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color:
-                                isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
+                            color: isDark
+                                ? const Color(0xFF2b2c30)
+                                : const Color(0xFFDFDEDE),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
@@ -218,16 +219,16 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                 ),
                                 Expanded(
                                   child: Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
                                       children: [
                                         SingleChildScrollView(
                                           child: Container(
                                             color: isDark
-                                                ? Color(0xFF202124)
-                                                : Color(0xFFFFFFFF),
+                                                ? const Color(0xFF202124)
+                                                : const Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
                                                 Padding(
@@ -279,8 +280,8 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? Color(0xFF202124)
-                                              : Color(0xFFFFFFFF),
+                                              ? const Color(0xFF202124)
+                                              : const Color(0xFFFFFFFF),
                                           child: PersonMovieListWidget(
                                             includeAdult:
                                                 Provider.of<AdultmodeProvider>(
@@ -294,8 +295,8 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? Color(0xFF202124)
-                                              : Color(0xFFFFFFFF),
+                                              ? const Color(0xFF202124)
+                                              : const Color(0xFFFFFFFF),
                                           child: PersonTVListWidget(
                                               isPersonAdult:
                                                   widget.crew!.adult!,
@@ -338,7 +339,7 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                               const Duration(milliseconds: 300),
                                           fadeOutCurve: Curves.easeOut,
                                           fadeInDuration:
-                                              Duration(milliseconds: 700),
+                                              const Duration(milliseconds: 700),
                                           fadeInCurve: Curves.easeIn,
                                           imageUrl: TMDB_BASE_IMAGE_URL +
                                               imageQuality +

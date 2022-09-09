@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ImagePreferences {

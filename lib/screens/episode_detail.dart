@@ -2,21 +2,17 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:cinemax/screens/crew_detail.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
-
 import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
 import '/models/tv.dart';
-import '/screens/guest_star_detail.dart';
 import '/screens/tv_stream_select.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:readmore/readmore.dart';
 import 'movie_widgets.dart';
 
@@ -92,7 +88,7 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                         : CachedNetworkImage(
                             fadeOutDuration: const Duration(milliseconds: 300),
                             fadeOutCurve: Curves.easeOut,
-                            fadeInDuration: Duration(milliseconds: 700),
+                            fadeInDuration: const Duration(milliseconds: 700),
                             fadeInCurve: Curves.easeIn,
                             imageUrl: TMDB_BASE_IMAGE_URL +
                                 'original/' +
@@ -186,8 +182,9 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color:
-                                isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
+                            color: isDark
+                                ? const Color(0xFF2b2c30)
+                                : const Color(0xFFDFDEDE),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,15 +377,15 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                 ),
                                 Expanded(
                                   child: Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       controller: tabController,
                                       children: [
                                         Container(
                                           color: isDark
-                                              ? Color(0xFF202124)
-                                              : Color(0xFFFFFFFF),
+                                              ? const Color(0xFF202124)
+                                              : const Color(0xFFFFFFFF),
                                           child: SingleChildScrollView(
                                             child: Column(
                                               children: <Widget>[

@@ -4,7 +4,6 @@ import 'package:cinemax/models/function.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../provider/imagequality_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/person.dart';
@@ -28,7 +27,8 @@ class Search extends SearchDelegate<String> {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return ThemeData(
       appBarTheme: AppBarTheme(
-          backgroundColor: isDark ? Color(0xFF000000) : Color(0xFFFFFFFF)),
+          backgroundColor:
+              isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF)),
       inputDecorationTheme: InputDecorationTheme(
         border: InputBorder.none,
         hintStyle: TextStyle(
@@ -44,8 +44,9 @@ class Search extends SearchDelegate<String> {
             color: isDark ? Colors.white : Colors.black, fontFamily: 'Poppins'),
       ),
       textSelectionTheme: TextSelectionThemeData(
-        cursorColor: Color(0xFFF57C00),
-        selectionHandleColor: isDark ? Color(0xFFFFFFFF) : Color(0xFF000000),
+        cursorColor: const Color(0xFFF57C00),
+        selectionHandleColor:
+            isDark ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
         selectionColor: isDark ? Colors.white12 : Colors.black12,
       ),
     );
@@ -93,7 +94,7 @@ class Search extends SearchDelegate<String> {
           child: Column(
             children: [
               TabBar(
-                indicatorColor: Color(0xFFF57C00),
+                indicatorColor: const Color(0xFFF57C00),
                 tabs: [
                   Tab(
                     child: Text('Movies',
@@ -182,7 +183,7 @@ class Search extends SearchDelegate<String> {
 
   Widget errorMessageWidget(bool isDark) {
     return Container(
-      color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
+      color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -202,7 +203,7 @@ class Search extends SearchDelegate<String> {
 
   Widget searchLoadingWidget(bool isDark) {
     return Container(
-      color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
+      color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
       child: const Center(
         child: CircularProgressIndicator(color: Color(0xFFF57C00)),
       ),
@@ -211,7 +212,7 @@ class Search extends SearchDelegate<String> {
 
   Widget searchATermWidget(bool isDark) {
     return Container(
-      color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
+      color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -233,7 +234,7 @@ class Search extends SearchDelegate<String> {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
-        color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
+        color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
         child: Column(
           children: [
             Expanded(
@@ -259,7 +260,9 @@ class Search extends SearchDelegate<String> {
                           }));
                         },
                         child: Container(
-                          color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
+                          color: isDark
+                              ? const Color(0xFF202124)
+                              : const Color(0xFFDFDEDE),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -389,7 +392,7 @@ class Search extends SearchDelegate<String> {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
-        color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
+        color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
         child: Column(
           children: [
             Expanded(
@@ -414,7 +417,9 @@ class Search extends SearchDelegate<String> {
                           }));
                         },
                         child: Container(
-                          color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
+                          color: isDark
+                              ? const Color(0xFF202124)
+                              : const Color(0xFFDFDEDE),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -544,7 +549,7 @@ class Search extends SearchDelegate<String> {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
-        color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
+        color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
         child: ListView.builder(
             physics: const BouncingScrollPhysics(),
             itemCount: personList!.length,
@@ -563,7 +568,9 @@ class Search extends SearchDelegate<String> {
                   }));
                 },
                 child: Container(
-                  color: isDark ? Color(0xFF202124) : Color(0xFFDFDEDE),
+                  color: isDark
+                      ? const Color(0xFF202124)
+                      : const Color(0xFFDFDEDE),
                   child: Padding(
                     padding: const EdgeInsets.only(
                       top: 3.0,

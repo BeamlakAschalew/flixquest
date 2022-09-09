@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_unnecessary_containers
-import 'dart:ui';
 
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ import 'movie_stream.dart';
 class MovieStreamSelect extends StatefulWidget {
   final String movieName;
   final int movieId;
-  final dynamic? movieImdbId;
+  final dynamic movieImdbId;
   const MovieStreamSelect({
     Key? key,
     required this.movieName,

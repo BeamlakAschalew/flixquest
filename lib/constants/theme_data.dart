@@ -1,7 +1,4 @@
 // ignore_for_file: unnecessary_const, prefer_const_constructors
-
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class Styles {

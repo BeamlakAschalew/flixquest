@@ -3,13 +3,14 @@ import 'package:cinemax/constants/theme_data.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:cinemax/provider/mixpanel_provider.dart';
+import 'package:cinemax/screens/discover.dart';
 import 'package:cinemax/screens/landing_screen.dart';
+import 'package:cinemax/screens/playground.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import 'constants/api_constants.dart';
 import 'screens/common_widgets.dart';
 import 'screens/movie_widgets.dart';
 import 'screens/search_view.dart';
@@ -215,17 +216,13 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
               ),
             ),
             body: Container(
-              color: isDark ? Color(0xFF202124) : Color(0xFFF7F7F7),
+              color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
               child: IndexedStack(
                 children: const <Widget>[
                   MainMoviesDisplay(),
                   MainTVDisplay(),
-                  Center(
-                    child: Text('Coming soon'),
-                  ),
-                  Center(
-                    child: Text('Coming soon'),
-                  )
+                  MyThreeOptions(),
+                  DiscoverPage()
                 ],
                 index: _selectedIndex,
               ),

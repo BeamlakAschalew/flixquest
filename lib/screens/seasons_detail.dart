@@ -90,7 +90,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                         : CachedNetworkImage(
                             fadeOutDuration: const Duration(milliseconds: 300),
                             fadeOutCurve: Curves.easeOut,
-                            fadeInDuration: Duration(milliseconds: 700),
+                            fadeInDuration: const Duration(milliseconds: 700),
                             fadeInCurve: Curves.easeIn,
                             imageUrl: TMDB_BASE_IMAGE_URL +
                                 'original/' +
@@ -186,8 +186,9 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color:
-                                isDark ? Color(0xFF2b2c30) : Color(0xFFDFDEDE),
+                            color: isDark
+                                ? const Color(0xFF2b2c30)
+                                : const Color(0xFFDFDEDE),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,16 +279,16 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                 ),
                                 Expanded(
                                   child: Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
+                                    padding: const EdgeInsets.fromLTRB(
+                                        1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
                                       children: [
                                         SingleChildScrollView(
                                           child: Container(
                                             color: isDark
-                                                ? Color(0xFF202124)
-                                                : Color(0xFFFFFFFF),
+                                                ? const Color(0xFF202124)
+                                                : const Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
                                                 Row(
@@ -450,7 +451,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                           const Duration(milliseconds: 300),
                                       fadeOutCurve: Curves.easeOut,
                                       fadeInDuration:
-                                          Duration(milliseconds: 700),
+                                          const Duration(milliseconds: 700),
                                       fadeInCurve: Curves.easeIn,
                                       imageUrl: TMDB_BASE_IMAGE_URL +
                                           imageQuality +

@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/models/adultmode_preferences.dart';
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

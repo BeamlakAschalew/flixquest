@@ -123,7 +123,7 @@ class _TVStreamState extends State<TVStream> {
                     "javascript",
                     "about"
                   ].contains(uri.scheme)) {
-                    if (await canLaunch(url)) {
+                    if (await canLaunchUrl(Uri.parse(url))) {
                       // Launch the App
 
                       // and cancel the request

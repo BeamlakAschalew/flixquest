@@ -1,13 +1,10 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:startapp_sdk/startapp.dart';
-import '../provider/ads_provider.dart';
 import '../provider/adultmode_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '../provider/mixpanel_provider.dart';
@@ -19,7 +16,6 @@ import '/screens/cast_detail.dart';
 import '/screens/streaming_services_movies.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import '/models/function.dart';
 import '/models/movie.dart';
 import '/api/endpoints.dart';
@@ -323,7 +319,7 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
               width: 60, height: 60),
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
-            child: const Text('Please connect to the Internet and try again',
+            child: Text('Please connect to the Internet and try again',
                 textAlign: TextAlign.center),
           ),
           TextButton(
@@ -603,7 +599,13 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                         ),
                       ],
                     ),
-        )
+        ),
+        Divider(
+          color: !isDark ? Colors.black54 : Colors.white54,
+          thickness: 1,
+          endIndent: 20,
+          indent: 10,
+        ),
       ],
     );
   }
@@ -964,8 +966,6 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return belongsToCollection == null
         ? Shimmer.fromColors(
@@ -974,7 +974,7 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                 isDark ? Colors.grey.shade700 : Colors.grey.shade100,
             direction: ShimmerDirection.ltr,
             child: Padding(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(8),
               child: Container(
                 width: double.infinity,
                 height: 200,
@@ -991,71 +991,80 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                 child: SizedBox(
                     width: double.infinity,
                     height: 200,
-                    child: Stack(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: belongsToCollection!.backdropPath == null
-                              ? Image.asset(
-                                  'assets/images/na_logo.png',
-                                )
-                              : FadeInImage(
-                                  fit: BoxFit.fill,
-                                  placeholder: const AssetImage(
-                                      'assets/images/loading.gif'),
-                                  image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                      'w500/' +
-                                      belongsToCollection!.backdropPath!)),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                        Stack(
                           children: [
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  'Belongs to the ${belongsToCollection!.name!}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      backgroundColor: Color(0xFFF57C00)),
-                                ),
-                              ),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: belongsToCollection!.backdropPath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                    )
+                                  : FadeInImage(
+                                      fit: BoxFit.fill,
+                                      placeholder: const AssetImage(
+                                          'assets/images/loading.gif'),
+                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
+                                          'w500/' +
+                                          belongsToCollection!.backdropPath!)),
                             ),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: TextButton(
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              const Color(0x26F57C00)),
-                                      maximumSize: MaterialStateProperty.all(
-                                          const Size(200, 40)),
-                                      shape: MaterialStateProperty.all<
-                                              RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(5.0),
-                                              side: const BorderSide(
-                                                  color: Color(0xFFF57C00))))),
-                                  onPressed: () {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return CollectionDetailsWidget(
-                                          belongsToCollection:
-                                              belongsToCollection!);
-                                    }));
-                                  },
-                                  child: const Text(
-                                    'View the collection',
-                                    style: TextStyle(color: Colors.white),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Belongs to the ${belongsToCollection!.name!}',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                          backgroundColor: Color(0xFFF57C00)),
+                                    ),
                                   ),
                                 ),
-                              ),
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: TextButton(
+                                      style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  const Color(0x26F57C00)),
+                                          maximumSize:
+                                              MaterialStateProperty.all(
+                                                  const Size(200, 40)),
+                                          shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.0),
+                                                  side: const BorderSide(
+                                                      color: Color(0xFFF57C00))))),
+                                      onPressed: () {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return CollectionDetailsWidget(
+                                              belongsToCollection:
+                                                  belongsToCollection!);
+                                        }));
+                                      },
+                                      child: const Text(
+                                        'View the collection',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
                             )
                           ],
-                        )
+                        ),
                       ],
                     )),
               );
@@ -1398,7 +1407,7 @@ class SocialIconWidget extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: () {
-                launch(url!);
+                launchUrl(Uri.parse(url!));
               },
               child: Container(
                 height: 50,
@@ -1630,8 +1639,8 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
                               padding: const EdgeInsets.all(8.0),
                               child: GestureDetector(
                                 onTap: () {
-                                  launch(YOUTUBE_BASE_URL +
-                                      movieVideos!.result![index].videoLink!);
+                                  launchUrl(Uri.parse(YOUTUBE_BASE_URL +
+                                      movieVideos!.result![index].videoLink!));
                                 },
                                 child: SizedBox(
                                   height: 205,
@@ -1675,30 +1684,10 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
                                                         ),
                                                       ),
                                                     ),
-                                                    placeholder: (context, url) =>
-                                                        Shimmer.fromColors(
-                                                            baseColor: isDark
-                                                                ? Colors.grey
-                                                                    .shade800
-                                                                : Colors.grey
-                                                                    .shade300,
-                                                            highlightColor: isDark
-                                                                ? Colors.grey
-                                                                    .shade700
-                                                                : Colors.grey
-                                                                    .shade100,
-                                                            direction:
-                                                                ShimmerDirection
-                                                                    .ltr,
-                                                            child: Container(
-                                                              decoration: BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              8.0),
-                                                                  color: Colors
-                                                                      .white),
-                                                            )),
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        detailVideoImageShimmer(
+                                                            isDark),
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
@@ -2150,7 +2139,7 @@ class _CastTabState extends State<CastTab>
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
-        ? castAndCrewTabShimmer(isDark)
+        ? movieCastAndCrewTabShimmer(isDark)
         : credits!.cast!.isEmpty
             ? Container(
                 child: const Center(
@@ -2315,8 +2304,7 @@ class _CastTabState extends State<CastTab>
                   width: 60, height: 60),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
-                child: const Text(
-                    'Please connect to the Internet and try again',
+                child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
@@ -2391,7 +2379,7 @@ class _CrewTabState extends State<CrewTab>
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: castAndCrewTabShimmer(isDark))
+            child: movieCastAndCrewTabShimmer(isDark))
         : credits!.crew!.isEmpty
             ? Container(
                 child: const Center(
@@ -2557,8 +2545,7 @@ class _CrewTabState extends State<CrewTab>
                   width: 60, height: 60),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
-                child: const Text(
-                    'Please connect to the Internet and try again',
+                child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
@@ -3256,8 +3243,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
                   width: 60, height: 60),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
-                child: const Text(
-                    'Please connect to the Internet and try again',
+                child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
@@ -3410,7 +3396,7 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.only(top: 3.0),
+                            padding: const EdgeInsets.only(top: 8.0),
                             child: Column(
                               children: [
                                 Expanded(
@@ -4183,8 +4169,7 @@ class _GenreListGridState extends State<GenreListGrid>
             children: [
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
-                child: const Text(
-                    'Please connect to the Internet and try again',
+                child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(

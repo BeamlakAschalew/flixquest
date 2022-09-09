@@ -75,7 +75,7 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                             height: double.infinity,
                             fadeOutDuration: const Duration(milliseconds: 300),
                             fadeOutCurve: Curves.easeOut,
-                            fadeInDuration: Duration(milliseconds: 700),
+                            fadeInDuration: const Duration(milliseconds: 700),
                             fadeInCurve: Curves.easeIn,
                             imageUrl: TMDB_BASE_IMAGE_URL +
                                 'original/' +
@@ -165,8 +165,9 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color:
-                                isDark ? Color(0xFF202124) : Color(0xFFFFFFFF),
+                            color: isDark
+                                ? const Color(0xFF202124)
+                                : const Color(0xFFFFFFFF),
                             child: Column(
                               children: <Widget>[
                                 Padding(
@@ -264,7 +265,8 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                     fadeOutDuration:
                                         const Duration(milliseconds: 300),
                                     fadeOutCurve: Curves.easeOut,
-                                    fadeInDuration: Duration(milliseconds: 700),
+                                    fadeInDuration:
+                                        const Duration(milliseconds: 700),
                                     fadeInCurve: Curves.easeIn,
                                     imageUrl: TMDB_BASE_IMAGE_URL +
                                         imageQuality +

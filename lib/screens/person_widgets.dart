@@ -19,7 +19,6 @@ import '/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:readmore/readmore.dart';
 
 class PersonImagesDisplay extends StatefulWidget {
@@ -105,8 +104,8 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
-                                              fadeInDuration:
-                                                  Duration(milliseconds: 700),
+                                              fadeInDuration: const Duration(
+                                                  milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
                                               imageUrl: TMDB_BASE_IMAGE_URL +
                                                   imageQuality +
@@ -313,7 +312,7 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                       Curves
                                                                           .easeOut,
                                                                   fadeInDuration:
-                                                                      Duration(
+                                                                      const Duration(
                                                                           milliseconds:
                                                                               700),
                                                                   fadeInCurve:
@@ -587,7 +586,7 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                       Curves
                                                                           .easeOut,
                                                                   fadeInDuration:
-                                                                      Duration(
+                                                                      const Duration(
                                                                           milliseconds:
                                                                               700),
                                                                   fadeInCurve:
@@ -894,8 +893,9 @@ class _PersonSocialLinksState extends State<PersonSocialLinks> {
                       : Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color:
-                                isDark ? Colors.transparent : Color(0xFFDFDEDE),
+                            color: isDark
+                                ? Colors.transparent
+                                : const Color(0xFFDFDEDE),
                           ),
                           child: ListView(
                             scrollDirection: Axis.horizontal,
