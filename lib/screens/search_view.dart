@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/screens/common_widgets.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import '../provider/imagequality_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/person.dart';
@@ -27,8 +29,9 @@ class Search extends SearchDelegate<String> {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return ThemeData(
       appBarTheme: AppBarTheme(
-          backgroundColor:
-              isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF)),
+        backgroundColor:
+            isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
+      ),
       inputDecorationTheme: InputDecorationTheme(
         border: InputBorder.none,
         hintStyle: TextStyle(
@@ -90,7 +93,7 @@ class Search extends SearchDelegate<String> {
       initialIndex: 0,
       child: Scaffold(
         body: Container(
-          color: isDark ? Colors.black : Colors.white,
+          color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
           child: Column(
             children: [
               TabBar(
@@ -99,20 +102,29 @@ class Search extends SearchDelegate<String> {
                   Tab(
                     child: Text('Movies',
                         style: TextStyle(
-                            fontFamily: 'Poppins',
-                            color: isDark ? Colors.white : Colors.black)),
+                          fontFamily: 'Poppins',
+                          color: !isDark
+                              ? const Color(0xFF202124)
+                              : const Color(0xFFDFDEDE),
+                        )),
                   ),
                   Tab(
                     child: Text('TV Shows',
                         style: TextStyle(
-                            fontFamily: 'Poppins',
-                            color: isDark ? Colors.white : Colors.black)),
+                          fontFamily: 'Poppins',
+                          color: !isDark
+                              ? const Color(0xFF202124)
+                              : const Color(0xFFDFDEDE),
+                        )),
                   ),
                   Tab(
                     child: Text('Person',
                         style: TextStyle(
-                            fontFamily: 'Poppins',
-                            color: isDark ? Colors.white : Colors.black)),
+                          fontFamily: 'Poppins',
+                          color: !isDark
+                              ? const Color(0xFF202124)
+                              : const Color(0xFFDFDEDE),
+                        )),
                   )
                 ],
               ),
@@ -126,7 +138,7 @@ class Search extends SearchDelegate<String> {
 
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return searchLoadingWidget(isDark);
+                        return searchSuggestionVerticalScrollShimmer(isDark);
                       default:
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
                           return errorMessageWidget(isDark);
@@ -144,7 +156,7 @@ class Search extends SearchDelegate<String> {
 
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return searchLoadingWidget(isDark);
+                        return searchSuggestionVerticalScrollShimmer(isDark);
                       default:
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
                           return errorMessageWidget(isDark);
@@ -162,7 +174,7 @@ class Search extends SearchDelegate<String> {
                     if (query.isEmpty) return searchATermWidget(isDark);
                     switch (snapshot.connectionState) {
                       case ConnectionState.waiting:
-                        return searchLoadingWidget(isDark);
+                        return searchedPersonShimmer(isDark);
                       default:
                         if (snapshot.hasError || snapshot.data!.isEmpty) {
                           return errorMessageWidget(isDark);
@@ -181,9 +193,168 @@ class Search extends SearchDelegate<String> {
     );
   }
 
+  Widget searchSuggestionVerticalScrollShimmer(isDark) => Container(
+      color: isDark ? Colors.black : Colors.white,
+      child: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: ListView.builder(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: 10,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                      color: isDark ? Colors.black : Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 0.0,
+                          bottom: 3.0,
+                          left: 10,
+                        ),
+                        child: Column(
+                          children: [
+                            Shimmer.fromColors(
+                              baseColor: isDark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade300,
+                              highlightColor: isDark
+                                  ? Colors.grey.shade700
+                                  : Colors.grey.shade100,
+                              direction: ShimmerDirection.ltr,
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 10.0),
+                                    child: SizedBox(
+                                      width: 85,
+                                      height: 130,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              bottom: 8.0),
+                                          child: Container(
+                                              height: 20,
+                                              width: 150,
+                                              color: Colors.white),
+                                        ),
+                                        Row(
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 1.0),
+                                              child: Container(
+                                                height: 20,
+                                                width: 20,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            Container(
+                                                height: 20,
+                                                width: 30,
+                                                color: Colors.white),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Divider(
+                              color: !isDark ? Colors.black54 : Colors.white54,
+                              thickness: 1,
+                              endIndent: 20,
+                              indent: 10,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+            ),
+          ),
+        ],
+      ));
+
+  Widget searchedPersonShimmer(isDark) => Container(
+      color: isDark ? Colors.black : Colors.white,
+      child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          itemCount: 10,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              color: isDark ? Colors.black : Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 3.0,
+                  bottom: 3.0,
+                  left: 15,
+                ),
+                child: Column(
+                  children: [
+                    Shimmer.fromColors(
+                      baseColor:
+                          isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                      highlightColor:
+                          isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+                      direction: ShimmerDirection.ltr,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child: SizedBox(
+                              width: 80,
+                              height: 80,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100.0),
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  height: 20,
+                                  width: 140,
+                                  color: Colors.white,
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Divider(
+                      color: !isDark ? Colors.black54 : Colors.white54,
+                      thickness: 1,
+                      endIndent: 20,
+                      indent: 10,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }));
+
   Widget errorMessageWidget(bool isDark) {
     return Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
+      color: isDark ? Colors.black : Colors.white,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -201,18 +372,9 @@ class Search extends SearchDelegate<String> {
     );
   }
 
-  Widget searchLoadingWidget(bool isDark) {
-    return Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
-      child: const Center(
-        child: CircularProgressIndicator(color: Color(0xFFF57C00)),
-      ),
-    );
-  }
-
   Widget searchATermWidget(bool isDark) {
     return Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
+      color: isDark ? Colors.black : Colors.white,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -234,7 +396,7 @@ class Search extends SearchDelegate<String> {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
-        color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
+        color: isDark ? Colors.black : Colors.white,
         child: Column(
           children: [
             Expanded(
@@ -260,9 +422,7 @@ class Search extends SearchDelegate<String> {
                           }));
                         },
                         child: Container(
-                          color: isDark
-                              ? const Color(0xFF202124)
-                              : const Color(0xFFDFDEDE),
+                          color: isDark ? Colors.black : Colors.white,
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -316,12 +476,10 @@ class Search extends SearchDelegate<String> {
                                                         ),
                                                       ),
                                                     ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        scrollingImageShimmer(
+                                                            isDark),
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
@@ -392,7 +550,7 @@ class Search extends SearchDelegate<String> {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
-        color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
+        color: isDark ? Colors.black : Colors.white,
         child: Column(
           children: [
             Expanded(
@@ -417,9 +575,7 @@ class Search extends SearchDelegate<String> {
                           }));
                         },
                         child: Container(
-                          color: isDark
-                              ? const Color(0xFF202124)
-                              : const Color(0xFFDFDEDE),
+                          color: isDark ? Colors.black : Colors.white,
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -472,12 +628,10 @@ class Search extends SearchDelegate<String> {
                                                         ),
                                                       ),
                                                     ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        scrollingImageShimmer(
+                                                            isDark),
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
@@ -549,7 +703,7 @@ class Search extends SearchDelegate<String> {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     return Container(
-        color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
+        color: isDark ? Colors.black : Colors.white,
         child: ListView.builder(
             physics: const BouncingScrollPhysics(),
             itemCount: personList!.length,
@@ -568,9 +722,7 @@ class Search extends SearchDelegate<String> {
                   }));
                 },
                 child: Container(
-                  color: isDark
-                      ? const Color(0xFF202124)
-                      : const Color(0xFFDFDEDE),
+                  color: isDark ? Colors.black : Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.only(
                       top: 3.0,
@@ -616,10 +768,7 @@ class Search extends SearchDelegate<String> {
                                               ),
                                             ),
                                             placeholder: (context, url) =>
-                                                Image.asset(
-                                              'assets/images/loading.gif',
-                                              fit: BoxFit.cover,
-                                            ),
+                                                detailCastImageShimmer(isDark),
                                             errorWidget:
                                                 (context, url, error) =>
                                                     Image.asset(

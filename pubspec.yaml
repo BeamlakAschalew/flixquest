@@ -38,6 +38,7 @@ dependencies:
   internet_connection_checker: ^0.0.1+4
   bloc: ^8.1.0
   flutter_bloc: ^8.1.1
+  torrent_streamer: ^0.0.2
 
 
 dev_dependencies:

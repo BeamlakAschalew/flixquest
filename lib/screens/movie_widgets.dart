@@ -1110,8 +1110,24 @@ class _CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Container(
       child: collectionDetails == null
-          ? const Center(
-              child: CircularProgressIndicator(),
+          ? Shimmer.fromColors(
+              baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              highlightColor:
+                  isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+              direction: ShimmerDirection.ltr,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Container(
+                        color: Colors.white,
+                        width: double.infinity,
+                        height: 20),
+                  ),
+                  Container(
+                      color: Colors.white, width: double.infinity, height: 20)
+                ],
+              ),
             )
           : requestFailed == true
               ? retryWidget(isDark)
@@ -1217,8 +1233,61 @@ class _PartsListState extends State<PartsList> {
           width: double.infinity,
           height: 250,
           child: collectionMovieList == null
-              ? const Center(
-                  child: CircularProgressIndicator(),
+              ? Row(
+                  children: [
+                    Expanded(
+                      child: Shimmer.fromColors(
+                        baseColor: isDark
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade300,
+                        highlightColor: isDark
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade100,
+                        direction: ShimmerDirection.ltr,
+                        child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: 3,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SizedBox(
+                                width: 105,
+                                child: Column(
+                                  children: <Widget>[
+                                    Expanded(
+                                      flex: 6,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 5, 0, 30),
+                                        child: Container(
+                                          width: 110.0,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5.0),
+                                              color: Colors.white),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 )
               : requestFailed == true
                   ? retryWidget(isDark)
@@ -1407,7 +1476,8 @@ class SocialIconWidget extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: GestureDetector(
               onTap: () {
-                launchUrl(Uri.parse(url!));
+                launchUrl(Uri.parse(url!),
+                    mode: LaunchMode.externalApplication);
               },
               child: Container(
                 height: 50,
@@ -1639,8 +1709,11 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
                               padding: const EdgeInsets.all(8.0),
                               child: GestureDetector(
                                 onTap: () {
-                                  launchUrl(Uri.parse(YOUTUBE_BASE_URL +
-                                      movieVideos!.result![index].videoLink!));
+                                  launchUrl(
+                                      Uri.parse(YOUTUBE_BASE_URL +
+                                          movieVideos!
+                                              .result![index].videoLink!),
+                                      mode: LaunchMode.externalApplication);
                                 },
                                 child: SizedBox(
                                   height: 205,

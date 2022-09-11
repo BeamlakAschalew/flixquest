@@ -1,7 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/screens/common_widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
@@ -53,6 +55,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
@@ -73,9 +76,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
             width: double.infinity,
             height: 150,
             child: personImages == null
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
+                ? personImageShimmer(isDark)
                 : personImages!.profile!.isEmpty
                     ? const Center(
                         child: Text('No images available for this person'),
@@ -122,10 +123,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                                 ),
                                               ),
                                               placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
+                                                  scrollingImageShimmer(isDark),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
@@ -205,9 +203,7 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return personMoviesList == null
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
+        ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
             ? const Padding(
                 padding: EdgeInsets.all(8.0),
@@ -340,12 +336,8 @@ class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                   ),
                                                                   placeholder: (context,
                                                                           url) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/loading.gif',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
+                                                                      scrollingImageShimmer(
+                                                                          isDark),
                                                                   errorWidget: (context,
                                                                           url,
                                                                           error) =>
@@ -479,9 +471,7 @@ class _PersonTVListWidgetState extends State<PersonTVListWidget>
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return personTVList == null
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
+        ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
             ? const Padding(
                 padding: EdgeInsets.all(8.0),
@@ -731,79 +721,79 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return personDetails == null
-        ? const CircularProgressIndicator()
+        ? personAboutSimmer(isDark)
         : Column(
             children: [
-              Row(
-                children: <Widget>[
-                  Text(
-                    'Age',
-                    style: TextStyle(
-                        color: isDark ? Colors.white54 : Colors.black54),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: Text(personDetails?.birthday != null
-                        ? '${DateTime.parse(DateTime.now().toString()).year.toInt() - DateTime.parse(personDetails!.birthday!.toString()).year - 1}'
-                        : '-'),
-                  ),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Text(
-                    'Born on',
-                    style: TextStyle(
-                        color: isDark ? Colors.white54 : Colors.black54),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 10.0,
-                    ),
-                    child: Text(personDetails?.birthday != null
-                        ? '${DateTime.parse(personDetails!.birthday!).day} ${DateFormat.MMMM().format(DateTime.parse(personDetails!.birthday!))}, ${DateTime.parse(personDetails!.birthday!.toString()).year}'
-                        : '-'),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'From',
-                    style: TextStyle(
-                        color: isDark ? Colors.white54 : Colors.black54),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        left: 5.0,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            personDetails?.birthPlace != null
-                                ? personDetails!.birthPlace!
-                                : '-',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: <Widget>[
+              //     Text(
+              //       'Age',
+              //       style: TextStyle(
+              //           color: isDark ? Colors.white54 : Colors.black54),
+              //     ),
+              //     Padding(
+              //       padding: const EdgeInsets.only(left: 10.0),
+              //       child: Text(personDetails?.birthday != null
+              //           ? '${DateTime.parse(DateTime.now().toString()).year.toInt() - DateTime.parse(personDetails!.birthday!.toString()).year - 1}'
+              //           : '-'),
+              //     ),
+              //   ],
+              // ),
+              // Row(
+              //   children: <Widget>[
+              //     Text(
+              //       'Born on',
+              //       style: TextStyle(
+              //           color: isDark ? Colors.white54 : Colors.black54),
+              //     ),
+              //     Padding(
+              //       padding: const EdgeInsets.only(
+              //         left: 10.0,
+              //       ),
+              //       child: Text(personDetails?.birthday != null
+              //           ? '${DateTime.parse(personDetails!.birthday!).day} ${DateFormat.MMMM().format(DateTime.parse(personDetails!.birthday!))}, ${DateTime.parse(personDetails!.birthday!.toString()).year}'
+              //           : '-'),
+              //     ),
+              //   ],
+              // ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.start,
+              //   crossAxisAlignment: CrossAxisAlignment.start,
+              //   children: <Widget>[
+              //     Text(
+              //       'From',
+              //       style: TextStyle(
+              //           color: isDark ? Colors.white54 : Colors.black54),
+              //     ),
+              //     Expanded(
+              //       child: Padding(
+              //         padding: const EdgeInsets.only(
+              //           left: 5.0,
+              //         ),
+              //         child: Column(
+              //           children: [
+              //             Text(
+              //               personDetails?.birthPlace != null
+              //                   ? personDetails!.birthPlace!
+              //                   : '-',
+              //               overflow: TextOverflow.ellipsis,
+              //               maxLines: 2,
+              //             ),
+              //           ],
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(top: 8.0),
+                    padding: EdgeInsets.only(top: 8.0, bottom: 8),
                     child: Text(
                       'Biography',
-                      style: TextStyle(color: Colors.white54),
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
                   ReadMoreText(
@@ -877,9 +867,7 @@ class _PersonSocialLinksState extends State<PersonSocialLinks> {
               height: 55,
               width: double.infinity,
               child: externalLinks == null
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
+                  ? socialMediaShimmer(isDark)
                   : externalLinks?.facebookUsername == null &&
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&

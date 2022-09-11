@@ -221,7 +221,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                 children: const <Widget>[
                   MainMoviesDisplay(),
                   MainTVDisplay(),
-                  MyThreeOptions(),
+                  CastFilter(),
                   DiscoverPage()
                 ],
                 index: _selectedIndex,

@@ -62,7 +62,11 @@ class AboutPage extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-                    launchUrl(Uri.parse('https://themoviedb.org'));
+                    launchUrl(
+                        Uri.parse(
+                          'https://themoviedb.org',
+                        ),
+                        mode: LaunchMode.externalApplication);
                   },
                 ),
                 Padding(
@@ -76,7 +80,8 @@ class AboutPage extends StatelessWidget {
                           decorationStyle: TextDecorationStyle.solid),
                     ),
                     onTap: () {
-                      launchUrl(Uri.parse('https://t.me/beamlakaschalew'));
+                      launchUrl(Uri.parse('https://t.me/beamlakaschalew'),
+                          mode: LaunchMode.externalApplication);
                     },
                   ),
                 ),

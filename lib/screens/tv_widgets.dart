@@ -1993,8 +1993,10 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                               padding: const EdgeInsets.all(8.0),
                               child: GestureDetector(
                                 onTap: () {
-                                  launchUrl(Uri.parse(YOUTUBE_BASE_URL +
-                                      tvVideos!.result![index].videoLink!));
+                                  launchUrl(
+                                      Uri.parse(YOUTUBE_BASE_URL +
+                                          tvVideos!.result![index].videoLink!),
+                                      mode: LaunchMode.externalApplication);
                                 },
                                 child: SizedBox(
                                   height: 150,
@@ -4730,11 +4732,25 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                                           ),
                                                         ),
                                                       ),
-                                                      placeholder:
-                                                          (context, url) =>
-                                                              Image.asset(
-                                                        'assets/images/loading.gif',
-                                                        fit: BoxFit.cover,
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          Shimmer.fromColors(
+                                                        child: Container(
+                                                            color:
+                                                                Colors.white),
+                                                        baseColor: isDark
+                                                            ? Colors
+                                                                .grey.shade800
+                                                            : Colors
+                                                                .grey.shade300,
+                                                        highlightColor: isDark
+                                                            ? Colors
+                                                                .grey.shade700
+                                                            : Colors
+                                                                .grey.shade100,
+                                                        direction:
+                                                            ShimmerDirection
+                                                                .ltr,
                                                       ),
                                                       errorWidget: (context,
                                                               url, error) =>
