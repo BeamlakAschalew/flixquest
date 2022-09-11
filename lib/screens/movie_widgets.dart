@@ -1936,49 +1936,54 @@ class _GenreDisplayState extends State<GenreDisplay>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     super.build(context);
     return Container(
-        child: SizedBox(
-      height: 80,
-      child: genreList == null
-          ? detailGenreShimmer(isDark)
-          : ListView.builder(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              itemCount: genreList!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => GenreMovies(
-                                    genres: genreList![index],
-                                  )));
-                    },
-                    child: Chip(
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(
-                            width: 2,
-                            style: BorderStyle.solid,
-                            color: Color(0xFFF57C00)),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      label: Text(
-                        genreList![index].genreName!,
-                        style: const TextStyle(fontFamily: 'Poppins'),
-                        // style: widget.themeData.textTheme.bodyText1,
-                      ),
-                      backgroundColor: isDark
-                          ? const Color(0xFF2b2c30)
-                          : const Color(0xFFDFDEDE),
+        child: genreList == null
+            ? SizedBox(
+                child: detailGenreShimmer(isDark),
+                height: 80,
+              )
+            : genreList!.isEmpty
+                ? Container()
+                : SizedBox(
+                    height: 80,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: genreList!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => GenreMovies(
+                                            genres: genreList![index],
+                                          )));
+                            },
+                            child: Chip(
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                    width: 2,
+                                    style: BorderStyle.solid,
+                                    color: Color(0xFFF57C00)),
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              label: Text(
+                                genreList![index].genreName!,
+                                style: const TextStyle(fontFamily: 'Poppins'),
+                                // style: widget.themeData.textTheme.bodyText1,
+                              ),
+                              backgroundColor: isDark
+                                  ? const Color(0xFF2b2c30)
+                                  : const Color(0xFFDFDEDE),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                );
-              },
-            ),
-    ));
+                  ));
   }
 
   @override

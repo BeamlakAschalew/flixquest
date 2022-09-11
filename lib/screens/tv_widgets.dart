@@ -3604,49 +3604,54 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Container(
-        child: SizedBox(
-      height: 80,
-      child: genres == null
-          ? detailGenreShimmer(isDark)
-          : ListView.builder(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              itemCount: genres!.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TVGenre(
-                                    genres: genres![index],
-                                  )));
-                    },
-                    child: Chip(
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(
-                            width: 2,
-                            style: BorderStyle.solid,
-                            color: Color(0xFFF57C00)),
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      label: Text(
-                        genres![index].genreName!,
-                        style: const TextStyle(fontFamily: 'Poppins'),
-                        // style: widget.themeData.textTheme.bodyText1,
-                      ),
-                      backgroundColor: isDark
-                          ? const Color(0xFF2b2c30)
-                          : const Color(0xFFDFDEDE),
+        child: genres == null
+            ? SizedBox(
+                child: detailGenreShimmer(isDark),
+                height: 80,
+              )
+            : genres!.isEmpty
+                ? Container()
+                : SizedBox(
+                    height: 80,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: genres!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => TVGenre(
+                                            genres: genres![index],
+                                          )));
+                            },
+                            child: Chip(
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(
+                                    width: 2,
+                                    style: BorderStyle.solid,
+                                    color: Color(0xFFF57C00)),
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              label: Text(
+                                genres![index].genreName!,
+                                style: const TextStyle(fontFamily: 'Poppins'),
+                                // style: widget.themeData.textTheme.bodyText1,
+                              ),
+                              backgroundColor: isDark
+                                  ? const Color(0xFF2b2c30)
+                                  : const Color(0xFFDFDEDE),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                );
-              },
-            ),
-    ));
+                  ));
   }
 
   @override
@@ -3761,7 +3766,8 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
                 color:
                     isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
-                  child: Text('Oops! movies for this genre doesn\'t exist :('),
+                  child:
+                      Text('Oops! TV series for this genre doesn\'t exist :('),
                 ),
               )
             : requestFailed == true

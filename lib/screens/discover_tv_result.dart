@@ -1,52 +1,48 @@
-import 'dart:convert';
-
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/constants/app_constants.dart';
+import 'package:cinemax/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
 import 'package:http/http.dart' as http;
 import '../constants/api_constants.dart';
-import '../constants/app_constants.dart';
 import '../models/function.dart';
 import '../models/movie.dart';
+import '../models/tv.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '../provider/mixpanel_provider.dart';
 import 'common_widgets.dart';
 import 'movie_detail.dart';
 
-class DiscoverMovieResult extends StatefulWidget {
-  const DiscoverMovieResult(
-      {required this.api,
-      required this.includeAdult,
-      required this.page,
-      Key? key})
+class DiscoverTVResult extends StatefulWidget {
+  const DiscoverTVResult({required this.api, required this.page, Key? key})
       : super(key: key);
   final String api;
-  final bool? includeAdult;
   final int page;
 
   @override
-  State<DiscoverMovieResult> createState() => _DiscoverMovieResultState();
+  State<DiscoverTVResult> createState() => _DiscoverTVResultState();
 }
 
-class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
-  List<Movie>? moviesList;
+class _DiscoverTVResultState extends State<DiscoverTVResult> {
+  List<TV>? tvList;
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
   var startAppSdkMovieProviders = StartAppSdk();
-  StartAppBannerAd? bannerAdMovieDiscover;
+  StartAppBannerAd? bannerAdTVDiscover;
   bool requestFailed = false;
 
-  void getBannerADForMovieDiscover() {
+  void getBannerADForTVDiscover() {
     startAppSdkMovieProviders
         .loadBannerAd(
       StartAppBannerType.BANNER,
     )
         .then((bannerAd) {
       setState(() {
-        bannerAdMovieDiscover = bannerAd;
+        bannerAdTVDiscover = bannerAd;
       });
     }).onError<StartAppException>((ex, stackTrace) {
       debugPrint("Error loading Banner ad: ${ex.message}");
@@ -68,10 +64,10 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
         setState(() {
           pageNum++;
           isLoading = false;
-          var newlistMovies = (json.decode(response.body)['results'] as List)
-              .map((i) => Movie.fromJson(i))
+          var newlistTV = (json.decode(response.body)['results'] as List)
+              .map((i) => TV.fromJson(i))
               .toList();
-          moviesList!.addAll(newlistMovies);
+          tvList!.addAll(newlistTV);
         });
       }
     });
@@ -79,29 +75,29 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
     return "success";
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getBannerADForMovieDiscover();
-    getData();
-    print(widget.api);
-    getMoreData();
-  }
-
   void getData() {
-    fetchMovies(widget.api + '&page=${widget.page}}').then((value) {
+    fetchTV(widget.api + '&page=${widget.page}}').then((value) {
       setState(() {
-        moviesList = value;
+        tvList = value;
       });
     });
     Future.delayed(const Duration(seconds: 11), () {
-      if (moviesList == null) {
+      if (tvList == null) {
         setState(() {
           requestFailed = true;
-          moviesList = [Movie()];
+          tvList = [TV()];
         });
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getBannerADForTVDiscover();
+    getData();
+    print(widget.api);
+    getMoreData();
   }
 
   @override
@@ -113,7 +109,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
     return Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Discover movies',
+            'Discover TV series',
           ),
           leading: IconButton(
             icon: const Icon(
@@ -125,28 +121,25 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
           ),
         ),
         body: Container(
-            child: moviesList == null
+            child: tvList == null
                 ? Container(
                     color: isDark
                         ? const Color(0xFF202124)
                         : const Color(0xFFFFFFFF),
                     child: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: mainPageVerticalScrollShimmer(
-                          bannerAdMovieDiscover,
-                          isDark,
-                          isLoading,
-                          _scrollController),
+                      child: mainPageVerticalScrollShimmer(bannerAdTVDiscover,
+                          isDark, isLoading, _scrollController),
                     ))
-                : moviesList!.isEmpty
+                : tvList!.isEmpty
                     ? Container(
+                        padding: EdgeInsets.all(8),
                         color: isDark
                             ? const Color(0xFF202124)
                             : const Color(0xFFFFFFFF),
-                        padding: const EdgeInsets.all(8),
                         child: const Center(
                           child: Text(
-                            'Oops! movies for the parameters you specified doesn\'t exist :(',
+                            'Oops! TV series for the parameters you specified doesn\'t exist :(',
                             style: kTextHeaderStyle,
                             textAlign: TextAlign.center,
                           ),
@@ -170,30 +163,30 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                               controller: _scrollController,
                                               physics:
                                                   const BouncingScrollPhysics(),
-                                              itemCount: moviesList!.length,
+                                              itemCount: tvList!.length,
                                               itemBuilder:
                                                   (BuildContext context,
                                                       int index) {
                                                 return GestureDetector(
                                                   onTap: () {
                                                     mixpanel.track(
-                                                        'Most viewed movie pages',
+                                                        'Most viewed TV pages',
                                                         properties: {
-                                                          'Movie name':
-                                                              '${moviesList![index].originalTitle}',
-                                                          'Movie id':
-                                                              '${moviesList![index].id}',
-                                                          'Is Movie adult?':
-                                                              '${moviesList![index].adult}'
+                                                          'TV series name':
+                                                              '${tvList![index].originalName}',
+                                                          'TV series id':
+                                                              '${tvList![index].id}',
+                                                          'Is TV series adult?':
+                                                              '${tvList![index].adult}'
                                                         });
                                                     Navigator.push(context,
                                                         MaterialPageRoute(
                                                             builder: (context) {
-                                                      return MovieDetailPage(
-                                                        movie:
-                                                            moviesList![index],
+                                                      return TVDetailPage(
+                                                        tvSeries:
+                                                            tvList![index],
                                                         heroId:
-                                                            '${moviesList![index].id}',
+                                                            '${tvList![index].id}',
                                                       );
                                                     }));
                                                   },
@@ -225,13 +218,13 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                                                   height: 130,
                                                                   child: Hero(
                                                                     tag:
-                                                                        '${moviesList![index].id}',
+                                                                        '${tvList![index].id}',
                                                                     child:
                                                                         ClipRRect(
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               10.0),
-                                                                      child: moviesList![index].posterPath ==
+                                                                      child: tvList![index].posterPath ==
                                                                               null
                                                                           ? Image
                                                                               .asset(
@@ -243,7 +236,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                                                               fadeOutCurve: Curves.easeOut,
                                                                               fadeInDuration: const Duration(milliseconds: 700),
                                                                               fadeInCurve: Curves.easeIn,
-                                                                              imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + moviesList![index].posterPath!,
+                                                                              imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + tvList![index].posterPath!,
                                                                               imageBuilder: (context, imageProvider) => Container(
                                                                                 decoration: BoxDecoration(
                                                                                   image: DecorationImage(
@@ -269,9 +262,8 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                                                           .start,
                                                                   children: [
                                                                     Text(
-                                                                      moviesList![
-                                                                              index]
-                                                                          .title!,
+                                                                      tvList![index]
+                                                                          .name!,
                                                                       style: const TextStyle(
                                                                           fontFamily:
                                                                               'PoppinsSB',
@@ -289,7 +281,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                                                             color:
                                                                                 Color(0xFFF57C00)),
                                                                         Text(
-                                                                          moviesList![index]
+                                                                          tvList![index]
                                                                               .voteAverage!
                                                                               .toStringAsFixed(1),
                                                                           style:
@@ -329,7 +321,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                       child: Center(
                                           child: CircularProgressIndicator()),
                                     )),
-                                bannerAdMovieDiscover != null
+                                bannerAdTVDiscover != null
                                     ? Padding(
                                         padding:
                                             const EdgeInsets.only(bottom: 5.0),
@@ -337,14 +329,12 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                           height: 60,
                                           width: double.infinity,
                                           child: StartAppBanner(
-                                            bannerAdMovieDiscover!,
-                                          ),
+                                              bannerAdTVDiscover!),
                                         ),
                                       )
                                     : Container(),
                               ],
-                            ),
-                          )));
+                            ))));
   }
 
   Widget retryWidget(isDark) {
@@ -373,7 +363,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
               onPressed: () {
                 setState(() {
                   requestFailed = false;
-                  moviesList = null;
+                  tvList = null;
                 });
                 getData();
               },

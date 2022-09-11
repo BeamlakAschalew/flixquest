@@ -6,28 +6,32 @@ import '../models/choice_chip.dart';
 import '../models/dropdown_select.dart';
 import '../models/filter_chip.dart';
 import 'discover_movie_result.dart';
+import 'discover_tv_result.dart';
 
-class DiscoverMoviesTab extends StatefulWidget {
-  const DiscoverMoviesTab({Key? key}) : super(key: key);
+class DiscoverTVTab extends StatefulWidget {
+  const DiscoverTVTab({Key? key}) : super(key: key);
 
   @override
-  State<DiscoverMoviesTab> createState() => _DiscoverMoviesTabState();
+  State<DiscoverTVTab> createState() => _DiscoverTVTabState();
 }
 
-class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
+class _DiscoverTVTabState extends State<DiscoverTVTab> {
   SortChoiceChipData sortChoiceChipData = SortChoiceChipData();
-  AdultChoiceChipData adultChoiceChipData = AdultChoiceChipData();
   YearDropdownData yearDropdownData = YearDropdownData();
+  TVSeriesStatusData tvSeriesStatusData = TVSeriesStatusData();
+  TVGenreFilterChipData tvGenreFilterChipData = TVGenreFilterChipData();
   MovieGenreFilterChipData movieGenreFilterChipData =
       MovieGenreFilterChipData();
   WatchProvidersFilterChipData watchProvidersFilterChipData =
       WatchProvidersFilterChipData();
   int sortValue = 0;
+  int tvStatusValue = 0;
   int adultValue = 1;
-  String moviesSort = 'popularity.desc';
+  String tvSort = 'popularity.desc';
+  String tvSeriesStatusValue = '';
   bool includeAdult = false;
   String defaultMovieReleaseYear = '';
-  double movieTotalRatingSlider = 1;
+  double tvTotalRatingSlider = 1;
   bool enableOptionForSliderMovie = false;
   String joinedIds = '';
   String joinedProviderIds = '';
@@ -38,7 +42,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
 
   void setSliderValue(newValue) {
     setState(() {
-      movieTotalRatingSlider = newValue;
+      tvTotalRatingSlider = newValue;
     });
   }
 
@@ -77,37 +81,35 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                           setState(() {
                             sortValue =
                                 (selected ? choiceChipWidget.index : null)!;
-                            moviesSort = choiceChipWidget.value;
+                            tvSort = choiceChipWidget.value;
                           });
                         },
                       ))
                   .toList(),
             ),
             const Text(
-              'Include explicit results',
+              'TV Series status',
               style: kTextHeaderStyle,
             ),
             Wrap(
               spacing: 3,
-              children: adultChoiceChipData.adultChoiceChip
-                  .map((AdultChoiceChipWidget adultChoiceChipWidget) =>
-                      ChoiceChip(
+              children: tvSeriesStatusData.tvSeriesStatusList
+                  .map((TVSeriesStatus tvSeriesStatus) => ChoiceChip(
                         selectedColor: Color(0xFFF57C00),
-                        label: Text(adultChoiceChipWidget.name),
-                        selected: adultValue == adultChoiceChipWidget.index,
+                        label: Text(tvSeriesStatus.statusName),
+                        selected: tvStatusValue == tvSeriesStatus.index,
                         onSelected: (bool selected) {
                           setState(() {
-                            adultValue = (selected
-                                ? adultChoiceChipWidget.index
-                                : null)!;
-                            includeAdult = adultChoiceChipWidget.value;
+                            tvStatusValue =
+                                (selected ? tvSeriesStatus.index : null)!;
+                            tvSeriesStatusValue = tvSeriesStatus.statusId;
                           });
                         },
                       ))
                   .toList(),
             ),
             const Text(
-              'Release year',
+              'First air year',
               style: kTextHeaderStyle,
             ),
             DropdownButton<String>(
@@ -136,14 +138,14 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       onChanged: (newValue) {
                         setState(() {
                           enableOptionForSliderMovie = newValue!;
-                          movieTotalRatingSlider = 0;
+                          tvTotalRatingSlider = 0;
                         });
                       },
                     ),
                   ],
                 ),
                 Slider(
-                  value: movieTotalRatingSlider,
+                  value: tvTotalRatingSlider,
                   onChanged: enableOptionForSliderMovie
                       ? (newValue) {
                           setSliderValue(newValue);
@@ -151,12 +153,12 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       : null,
                   min: 0,
                   max: 30000,
-                  label: '${movieTotalRatingSlider.toInt()}',
+                  label: '${tvTotalRatingSlider.toInt()}',
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30, 15),
                   child: Text(
-                    '${movieTotalRatingSlider.toInt().toString()}: ratings',
+                    '${tvTotalRatingSlider.toInt().toString()}: ratings',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20),
                   ),
@@ -169,36 +171,33 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
             ),
             Wrap(
               spacing: 3,
-              children: movieGenreFilterChipData.movieGenreFilterdata
-                  .map(
-                      (MovieGenreFilterChipWidget movieGenreFilterChipWidget) =>
-                          FilterChip(
-                            selectedColor: Color(0xFFF57C00),
-                            label: Text(movieGenreFilterChipWidget.genreName),
-                            selected: genreNames
-                                .contains(movieGenreFilterChipWidget.genreName),
-                            onSelected: (bool value) {
-                              setState(() {
-                                if (value) {
-                                  genreNames.add(
-                                      movieGenreFilterChipWidget.genreName);
-                                  genreIds.add(
-                                      movieGenreFilterChipWidget.genreValue);
-                                  genreIds.join(',');
-                                } else {
-                                  genreNames.removeWhere((String name) {
-                                    return name ==
-                                        movieGenreFilterChipWidget.genreName;
-                                  });
-                                  genreIds.removeWhere((String value) {
-                                    return value ==
-                                        movieGenreFilterChipWidget.genreValue;
-                                  });
-                                }
+              children: tvGenreFilterChipData.tvGenreList
+                  .map((TVGenreFilterChipWidget tvGenreFilterChipWidget) =>
+                      FilterChip(
+                        selectedColor: Color(0xFFF57C00),
+                        label: Text(tvGenreFilterChipWidget.genreName),
+                        selected: genreNames
+                            .contains(tvGenreFilterChipWidget.genreName),
+                        onSelected: (bool value) {
+                          setState(() {
+                            if (value) {
+                              genreNames.add(tvGenreFilterChipWidget.genreName);
+                              genreIds.add(tvGenreFilterChipWidget.genreValue);
+                              genreIds.join(',');
+                            } else {
+                              genreNames.removeWhere((String name) {
+                                return name ==
+                                    tvGenreFilterChipWidget.genreName;
                               });
-                              print(genreNames);
-                            },
-                          ))
+                              genreIds.removeWhere((String value) {
+                                return value ==
+                                    tvGenreFilterChipWidget.genreValue;
+                              });
+                            }
+                          });
+                          print(genreNames);
+                        },
+                      ))
                   .toList(),
             ),
             const Text(
@@ -250,11 +249,11 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                     joinProviderStrings();
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                      return DiscoverMovieResult(
-                          api:
-                              '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY&sort_by=$moviesSort&watch_region=US&include_adult=${includeAdult.toString()}&year=$defaultMovieReleaseYear&vote_count.gte=${movieTotalRatingSlider.toInt()}&with_genres=$joinedIds&with_watch_providers=$joinedProviderIds',
-                          page: 1,
-                          includeAdult: includeAdult);
+                      return DiscoverTVResult(
+                        api:
+                            '$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY&sort_by=$tvSort&watch_region=US&with_status=${tvSeriesStatusValue == 0.toString() ? '' : tvSeriesStatusValue}&first_air_date_year=$defaultMovieReleaseYear&vote_count.gte=${tvTotalRatingSlider.toInt()}&with_genres=$joinedIds&with_watch_providers=$joinedProviderIds',
+                        page: 1,
+                      );
                     }));
                   },
                   child: Row(

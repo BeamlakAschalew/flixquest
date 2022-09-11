@@ -10,7 +10,15 @@ class AdultChoiceChipWidget {
   AdultChoiceChipWidget(
       {required this.index, required this.name, required this.value});
   final String name;
-  final String value;
+  final bool value;
+  final int index;
+}
+
+class TVSeriesStatus {
+  TVSeriesStatus(
+      {required this.statusId, required this.statusName, required this.index});
+  String statusName;
+  String statusId;
   final int index;
 }
 
@@ -31,7 +39,19 @@ class SortChoiceChipData {
 
 class AdultChoiceChipData {
   final List<AdultChoiceChipWidget> adultChoiceChip = <AdultChoiceChipWidget>[
-    AdultChoiceChipWidget(name: 'Yes', value: 'true', index: 0),
-    AdultChoiceChipWidget(name: 'No', value: 'false', index: 1),
+    AdultChoiceChipWidget(name: 'Yes', value: true, index: 0),
+    AdultChoiceChipWidget(name: 'No', value: false, index: 1),
+  ];
+}
+
+class TVSeriesStatusData {
+  final List<TVSeriesStatus> tvSeriesStatusList = <TVSeriesStatus>[
+    TVSeriesStatus(statusId: '', statusName: 'Any', index: 0),
+    TVSeriesStatus(statusId: '0', statusName: 'Returning Series', index: 1),
+    TVSeriesStatus(statusId: '1', statusName: 'Planned', index: 2),
+    TVSeriesStatus(statusId: '2', statusName: 'In Production', index: 3),
+    TVSeriesStatus(statusId: '3', statusName: 'Ended', index: 4),
+    TVSeriesStatus(statusId: '4', statusName: 'Cancelled', index: 5),
+    TVSeriesStatus(statusId: '5', statusName: 'Pilot', index: 6),
   ];
 }
