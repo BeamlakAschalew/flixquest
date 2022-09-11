@@ -2,6 +2,11 @@
     package="cf.beamlakaschalew.cinemax">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <queries>
   <!-- If your app opens https URLs -->
   <intent>
@@ -22,6 +27,7 @@
    <application
         android:label="Cinemax"
         android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">    
         <activity
             android:name=".MainActivity"
@@ -60,6 +66,15 @@
         android:name="com.startapp.sdk.SPLASH_ADS_ENABLED"
         android:value="false" />
 </provider>
+<provider
+    android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
+    android:authorities="${applicationId}.flutter_downloader.provider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/provider_paths"/>
+</provider>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -71,6 +86,7 @@
             <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-5980157262992751~3210299612"/>
+            
     </application>
 </manifest>
 

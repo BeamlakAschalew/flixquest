@@ -70,7 +70,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
               spacing: 3,
               children: sortChoiceChipData.sortChoiceChip
                   .map((SortChoiceChipWidget choiceChipWidget) => ChoiceChip(
-                        selectedColor: Color(0xFFF57C00),
+                        selectedColor: const Color(0xFFF57C00),
                         label: Text(choiceChipWidget.name),
                         selected: sortValue == choiceChipWidget.index,
                         onSelected: (bool selected) {
@@ -92,7 +92,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
               children: adultChoiceChipData.adultChoiceChip
                   .map((AdultChoiceChipWidget adultChoiceChipWidget) =>
                       ChoiceChip(
-                        selectedColor: Color(0xFFF57C00),
+                        selectedColor: const Color(0xFFF57C00),
                         label: Text(adultChoiceChipWidget.name),
                         selected: adultValue == adultChoiceChipWidget.index,
                         onSelected: (bool selected) {
@@ -116,7 +116,6 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 setState(() {
                   defaultMovieReleaseYear = value!;
                 });
-                print(defaultMovieReleaseYear);
               },
               value: defaultMovieReleaseYear,
             ),
@@ -131,7 +130,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       style: kTextHeaderStyle,
                     ),
                     Checkbox(
-                      activeColor: Color(0xFFF57C00),
+                      activeColor: const Color(0xFFF57C00),
                       value: enableOptionForSliderMovie,
                       onChanged: (newValue) {
                         setState(() {
@@ -158,7 +157,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                   child: Text(
                     '${movieTotalRatingSlider.toInt().toString()}: ratings',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                   ),
                 ),
               ],
@@ -173,7 +172,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                   .map(
                       (MovieGenreFilterChipWidget movieGenreFilterChipWidget) =>
                           FilterChip(
-                            selectedColor: Color(0xFFF57C00),
+                            selectedColor: const Color(0xFFF57C00),
                             label: Text(movieGenreFilterChipWidget.genreName),
                             selected: genreNames
                                 .contains(movieGenreFilterChipWidget.genreName),
@@ -196,7 +195,6 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                                   });
                                 }
                               });
-                              print(genreNames);
                             },
                           ))
                   .toList(),
@@ -211,7 +209,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                   .map((WatchProvidersFilterChipWidget
                           watchProvidersFilterChipWidget) =>
                       FilterChip(
-                        selectedColor: Color(0xFFF57C00),
+                        selectedColor: const Color(0xFFF57C00),
                         label: Text(watchProvidersFilterChipWidget.networkName),
                         selected: providersName.contains(
                             watchProvidersFilterChipWidget.networkName),
@@ -241,8 +239,8 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                   style: ButtonStyle(
-                      minimumSize:
-                          MaterialStateProperty.all(Size(double.infinity, 50)),
+                      minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 50)),
                       backgroundColor:
                           MaterialStateProperty.all(const Color(0xFFF57C00))),
                   onPressed: () {

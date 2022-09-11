@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/screens/hero_photoview.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../provider/adultmode_provider.dart';
@@ -1596,11 +1597,34 @@ class _MovieImagesState extends State<MovieImagesDisplay> {
                                                 .backdrop![index].filePath!,
                                         imageBuilder:
                                             (context, imageProvider) =>
-                                                Container(
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: imageProvider,
-                                              fit: BoxFit.cover,
+                                                GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: ((context) =>
+                                                        HeroPhotoView(
+                                                            imageProvider:
+                                                                imageProvider,
+                                                            heroId: TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                movieImages!
+                                                                    .backdrop![
+                                                                        index]
+                                                                    .filePath!))));
+                                          },
+                                          child: Hero(
+                                            tag: TMDB_BASE_IMAGE_URL +
+                                                imageQuality +
+                                                movieImages!
+                                                    .backdrop![index].filePath!,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: imageProvider,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),

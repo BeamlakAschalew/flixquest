@@ -64,7 +64,6 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
         });
 
         var response = await http.get(Uri.parse(widget.api + '&page=$pageNum'));
-        print(widget.api + '&page=$pageNum');
         setState(() {
           pageNum++;
           isLoading = false;
@@ -84,7 +83,6 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
     super.initState();
     getBannerADForMovieDiscover();
     getData();
-    print(widget.api);
     getMoreData();
   }
 

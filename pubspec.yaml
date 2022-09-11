@@ -39,6 +39,10 @@ dependencies:
   bloc: ^8.1.0
   flutter_bloc: ^8.1.1
   torrent_streamer: ^0.0.2
+  extended_image: ^6.2.1
+  image_downloader: ^0.31.0
+  permission_handler: ^10.0.0
+  flutter_downloader: ^1.8.3+2
 
 
 dev_dependencies:

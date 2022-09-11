@@ -5,7 +5,6 @@ import '../constants/app_constants.dart';
 import '../models/choice_chip.dart';
 import '../models/dropdown_select.dart';
 import '../models/filter_chip.dart';
-import 'discover_movie_result.dart';
 import 'discover_tv_result.dart';
 
 class DiscoverTVTab extends StatefulWidget {
@@ -74,7 +73,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
               spacing: 3,
               children: sortChoiceChipData.sortChoiceChip
                   .map((SortChoiceChipWidget choiceChipWidget) => ChoiceChip(
-                        selectedColor: Color(0xFFF57C00),
+                        selectedColor: const Color(0xFFF57C00),
                         label: Text(choiceChipWidget.name),
                         selected: sortValue == choiceChipWidget.index,
                         onSelected: (bool selected) {
@@ -95,7 +94,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
               spacing: 3,
               children: tvSeriesStatusData.tvSeriesStatusList
                   .map((TVSeriesStatus tvSeriesStatus) => ChoiceChip(
-                        selectedColor: Color(0xFFF57C00),
+                        selectedColor: const Color(0xFFF57C00),
                         label: Text(tvSeriesStatus.statusName),
                         selected: tvStatusValue == tvSeriesStatus.index,
                         onSelected: (bool selected) {
@@ -118,7 +117,6 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 setState(() {
                   defaultMovieReleaseYear = value!;
                 });
-                print(defaultMovieReleaseYear);
               },
               value: defaultMovieReleaseYear,
             ),
@@ -133,7 +131,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                       style: kTextHeaderStyle,
                     ),
                     Checkbox(
-                      activeColor: Color(0xFFF57C00),
+                      activeColor: const Color(0xFFF57C00),
                       value: enableOptionForSliderMovie,
                       onChanged: (newValue) {
                         setState(() {
@@ -160,7 +158,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                   child: Text(
                     '${tvTotalRatingSlider.toInt().toString()}: ratings',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                   ),
                 ),
               ],
@@ -174,7 +172,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
               children: tvGenreFilterChipData.tvGenreList
                   .map((TVGenreFilterChipWidget tvGenreFilterChipWidget) =>
                       FilterChip(
-                        selectedColor: Color(0xFFF57C00),
+                        selectedColor: const Color(0xFFF57C00),
                         label: Text(tvGenreFilterChipWidget.genreName),
                         selected: genreNames
                             .contains(tvGenreFilterChipWidget.genreName),
@@ -195,7 +193,6 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                               });
                             }
                           });
-                          print(genreNames);
                         },
                       ))
                   .toList(),
@@ -210,7 +207,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                   .map((WatchProvidersFilterChipWidget
                           watchProvidersFilterChipWidget) =>
                       FilterChip(
-                        selectedColor: Color(0xFFF57C00),
+                        selectedColor: const Color(0xFFF57C00),
                         label: Text(watchProvidersFilterChipWidget.networkName),
                         selected: providersName.contains(
                             watchProvidersFilterChipWidget.networkName),
@@ -240,8 +237,8 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                   style: ButtonStyle(
-                      minimumSize:
-                          MaterialStateProperty.all(Size(double.infinity, 50)),
+                      minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 50)),
                       backgroundColor:
                           MaterialStateProperty.all(const Color(0xFFF57C00))),
                   onPressed: () {

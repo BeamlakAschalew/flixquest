@@ -8,13 +8,11 @@ import 'package:startapp_sdk/startapp.dart';
 import 'package:http/http.dart' as http;
 import '../constants/api_constants.dart';
 import '../models/function.dart';
-import '../models/movie.dart';
 import '../models/tv.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '../provider/mixpanel_provider.dart';
 import 'common_widgets.dart';
-import 'movie_detail.dart';
 
 class DiscoverTVResult extends StatefulWidget {
   const DiscoverTVResult({required this.api, required this.page, Key? key})
@@ -60,7 +58,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
         });
 
         var response = await http.get(Uri.parse(widget.api + '&page=$pageNum'));
-        print(widget.api + '&page=$pageNum');
+
         setState(() {
           pageNum++;
           isLoading = false;
@@ -96,7 +94,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
     super.initState();
     getBannerADForTVDiscover();
     getData();
-    print(widget.api);
+
     getMoreData();
   }
 
@@ -133,7 +131,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                     ))
                 : tvList!.isEmpty
                     ? Container(
-                        padding: EdgeInsets.all(8),
+                        padding: const EdgeInsets.all(8),
                         color: isDark
                             ? const Color(0xFF202124)
                             : const Color(0xFFFFFFFF),
