@@ -35,12 +35,6 @@ dependencies:
   firebase_messaging: ^11.4.4
   provider: ^6.0.3
   startapp_sdk: ^0.4.0
-  internet_connection_checker: ^0.0.1+4
-  bloc: ^8.1.0
-  flutter_bloc: ^8.1.1
-  torrent_streamer: ^0.0.2
-  extended_image: ^6.2.1
-  image_downloader: ^0.31.0
   permission_handler: ^10.0.0
   flutter_downloader: ^1.8.3+2
 

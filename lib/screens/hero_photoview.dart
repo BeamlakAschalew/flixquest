@@ -1,11 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:image_downloader/image_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
+import 'dart:isolate';
+import 'dart:ui';
 
 class HeroPhotoView extends StatefulWidget {
   const HeroPhotoView(
@@ -22,10 +21,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   Future<String> createFolder(String passedFolderName, pa2) async {
     final folderName = passedFolderName;
     final folderName2 = pa2;
-    final path = Directory("storage/emulated/0/$folderName/$pa2");
+    final path = Directory("storage/emulated/0/$folderName/$folderName2");
     var status = await Permission.storage.status;
     var status2 = await Permission.manageExternalStorage.status;
-    print(status2);
     if (!status.isGranted) {
       await Permission.storage.request();
     }
@@ -37,6 +35,56 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     } else {
       path.create();
       return path.path;
+    }
+  }
+
+  final ReceivePort _port = ReceivePort();
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port')!;
+    send.send([id, status, progress]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    IsolateNameServer.registerPortWithName(
+        _port.sendPort, 'downloader_send_port');
+    _port.listen((dynamic data) {
+      String id = data[0];
+      DownloadTaskStatus status = data[1];
+      int progress = data[2];
+      setState(() {});
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
+  }
+
+  @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    super.dispose();
+  }
+
+  void _download(String url) async {
+    final status = await Permission.storage.request();
+
+    if (status.isGranted) {
+      await createFolder('Cinemax', 'movie backdrops');
+      await FlutterDownloader.enqueue(
+        url: widget.heroId,
+        headers: {}, // optional: header send with url (auth token etc)
+        savedDir: '/storage/emulated/0/Cinemax/movie backdrops/',
+        showNotification:
+            true, // show download progress in status bar (for Android)
+        openFileFromNotification:
+            true, // click on notification to open downloaded file (for Android)
+      );
+    } else {
+      print('Permission Denied');
     }
   }
 
@@ -57,16 +105,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
             child: ElevatedButton(
               child: const Text('DOWNLOAD'),
               onPressed: () async {
-                await createFolder('Cinemax', 'movie backdrops');
-                final taskId = await FlutterDownloader.enqueue(
-                  url: widget.heroId,
-                  headers: {}, // optional: header send with url (auth token etc)
-                  savedDir: '/storage/emulated/0/Cinemax/movie backdrops/',
-                  showNotification:
-                      true, // show download progress in status bar (for Android)
-                  openFileFromNotification:
-                      true, // click on notification to open downloaded file (for Android)
-                );
+                _download(widget.heroId);
               },
               style: ButtonStyle(
                   minimumSize: MaterialStateProperty.all(

@@ -3,8 +3,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/screens/common_widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
-
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '../provider/mixpanel_provider.dart';
@@ -20,7 +18,6 @@ import '/screens/movie_widgets.dart';
 import '/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 
 class PersonImagesDisplay extends StatefulWidget {
