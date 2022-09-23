@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:web_scraper/web_scraper.dart';
+
 import '/models/images.dart';
 import '/models/person.dart';
 import '/models/tv.dart';
