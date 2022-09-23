@@ -57,7 +57,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
           isLoading = true;
         });
 
-        var response = await http.get(Uri.parse(widget.api + '&page=$pageNum'));
+        var response = await http.get(Uri.parse('${widget.api}&page=$pageNum'));
 
         setState(() {
           pageNum++;
@@ -74,7 +74,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
   }
 
   void getData() {
-    fetchTV(widget.api + '&page=${widget.page}}').then((value) {
+    fetchTV('${widget.api}&page=${widget.page}}').then((value) {
       setState(() {
         tvList = value;
       });

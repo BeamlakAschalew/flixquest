@@ -19,11 +19,10 @@ class CollectionDetailsWidget extends StatefulWidget {
     this.belongsToCollection,
   }) : super(key: key);
   @override
-  _CollectionDetailsWidgetState createState() =>
-      _CollectionDetailsWidgetState();
+  CollectionDetailsWidgetState createState() => CollectionDetailsWidgetState();
 }
 
-class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
+class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CollectionDetailsWidget> {
@@ -77,9 +76,8 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                             fadeOutCurve: Curves.easeOut,
                             fadeInDuration: const Duration(milliseconds: 700),
                             fadeInCurve: Curves.easeIn,
-                            imageUrl: TMDB_BASE_IMAGE_URL +
-                                'original/' +
-                                widget.belongsToCollection!.backdropPath!,
+                            imageUrl:
+                                '${TMDB_BASE_IMAGE_URL}original/${widget.belongsToCollection!.backdropPath!}',
                             imageBuilder: (context, imageProvider) => Container(
                               decoration: BoxDecoration(
                                 image: DecorationImage(

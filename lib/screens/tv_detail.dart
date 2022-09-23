@@ -26,10 +26,10 @@ class TVDetailPage extends StatefulWidget {
     required this.heroId,
   }) : super(key: key);
   @override
-  _TVDetailPageState createState() => _TVDetailPageState();
+  TVDetailPageState createState() => TVDetailPageState();
 }
 
-class _TVDetailPageState extends State<TVDetailPage>
+class TVDetailPageState extends State<TVDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<TVDetailPage> {
@@ -96,9 +96,8 @@ class _TVDetailPageState extends State<TVDetailPage>
                             fadeOutCurve: Curves.easeOut,
                             fadeInDuration: const Duration(milliseconds: 700),
                             fadeInCurve: Curves.easeIn,
-                            imageUrl: TMDB_BASE_IMAGE_URL +
-                                'original/' +
-                                widget.tvSeries.backdropPath!,
+                            imageUrl:
+                                '${TMDB_BASE_IMAGE_URL}original/${widget.tvSeries.backdropPath!}',
                             imageBuilder: (context, imageProvider) => Container(
                               decoration: BoxDecoration(
                                 image: DecorationImage(
@@ -363,6 +362,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                                         1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
+                                      controller: tabController,
                                       children: [
                                         SingleChildScrollView(
                                           //  physics: const BouncingScrollPhysics(),
@@ -551,7 +551,6 @@ class _TVDetailPageState extends State<TVDetailPage>
                                             api: Endpoints.getSimilarTV(
                                                 widget.tvSeries.id!, 1)),
                                       ],
-                                      controller: tabController,
                                     ),
                                   ),
                                 ),

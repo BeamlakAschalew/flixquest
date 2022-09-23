@@ -34,10 +34,10 @@ class SeasonsDetail extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SeasonsDetailState createState() => _SeasonsDetailState();
+  SeasonsDetailState createState() => SeasonsDetailState();
 }
 
-class _SeasonsDetailState extends State<SeasonsDetail>
+class SeasonsDetailState extends State<SeasonsDetail>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<SeasonsDetail> {
@@ -92,9 +92,8 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                             fadeOutCurve: Curves.easeOut,
                             fadeInDuration: const Duration(milliseconds: 700),
                             fadeInCurve: Curves.easeIn,
-                            imageUrl: TMDB_BASE_IMAGE_URL +
-                                'original/' +
-                                widget.tvDetails.backdropPath!,
+                            imageUrl:
+                                '${TMDB_BASE_IMAGE_URL}original/${widget.tvDetails.backdropPath!}',
                             imageBuilder: (context, imageProvider) => Container(
                               decoration: BoxDecoration(
                                 image: DecorationImage(
@@ -283,6 +282,7 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                         1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
+                                      controller: tabController,
                                       children: [
                                         SingleChildScrollView(
                                           child: Container(
@@ -422,7 +422,6 @@ class _SeasonsDetailState extends State<SeasonsDetail>
                                                   widget.seasons.seasonNumber!),
                                         ),
                                       ],
-                                      controller: tabController,
                                     ),
                                   ),
                                 ),

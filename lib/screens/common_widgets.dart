@@ -185,12 +185,12 @@ Widget discoverMoviesAndTVShimmer(isDark) => Column(
           ),
         ),
         Shimmer.fromColors(
+          baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+          highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
           child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.0), color: Colors.white),
           ),
-          baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-          highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
         )
       ],
     );
@@ -207,16 +207,18 @@ Widget scrollingImageShimmer(isDark) => Shimmer.fromColors(
 
 Widget discoverImageShimmer(isDark) => Shimmer.fromColors(
       direction: ShimmerDirection.ltr,
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8.0), color: Colors.white),
       ),
-      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
     );
 
 Widget genreListGridShimmer(isDark) => Shimmer.fromColors(
       direction: ShimmerDirection.ltr,
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
       child: ListView.builder(
           itemCount: 10,
           scrollDirection: Axis.horizontal,
@@ -232,8 +234,6 @@ Widget genreListGridShimmer(isDark) => Shimmer.fromColors(
               ),
             );
           }),
-      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
     );
 
 Widget horizontalLoadMoreShimmer(isDark) => Padding(
@@ -620,12 +620,12 @@ Widget movieCastAndCrewTabShimmer(isDark) => Container(
         }));
 
 Widget detailsRecommendationsAndSimilarShimmer(
-        isDark, _scrollController, bannerAdMovieRecommendation, isLoading) =>
+        isDark, scrollController, bannerAdMovieRecommendation, isLoading) =>
     Column(
       children: [
         Expanded(
           child: ListView.builder(
-              controller: _scrollController,
+              controller: scrollController,
               physics: const BouncingScrollPhysics(),
               itemCount: 10,
               itemBuilder: (BuildContext context, int index) {
@@ -880,7 +880,7 @@ Widget watchProvidersImageShimmer(isDark) => Shimmer.fromColors(
     );
 
 Widget mainPageVerticalScrollShimmer(
-        bannerAdMovieGenre, isDark, isLoading, _scrollController) =>
+        bannerAdMovieGenre, isDark, isLoading, scrollController) =>
     Container(
       color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
       child: Column(
@@ -892,7 +892,7 @@ Widget mainPageVerticalScrollShimmer(
                 children: [
                   Expanded(
                     child: ListView.builder(
-                        controller: _scrollController,
+                        controller: scrollController,
                         physics: const BouncingScrollPhysics(),
                         itemCount: 10,
                         itemBuilder: (BuildContext context, int index) {

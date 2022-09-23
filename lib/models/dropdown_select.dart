@@ -47,8 +47,8 @@ class YearDropdownData {
     for (int i = 0; i < yearsList.length; i++) {
       String years = yearsList[i];
       var newItem = DropdownMenuItem(
-        child: Text(years.isEmpty ? 'Any' : years),
         value: years,
+        child: Text(years.isEmpty ? 'Any' : years),
       );
       dropdownItems.add(newItem);
     }

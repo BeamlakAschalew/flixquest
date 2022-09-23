@@ -6,7 +6,8 @@ class MixpanelProvider with ChangeNotifier {
   late Mixpanel mixpanel;
 
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey, optOutTrackingDefault: false);
+    mixpanel = await Mixpanel.init(mixpanelKey,
+        optOutTrackingDefault: false, trackAutomaticEvents: true);
     notifyListeners();
   }
 }

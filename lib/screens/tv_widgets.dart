@@ -178,10 +178,10 @@ class DiscoverTV extends StatefulWidget {
   final bool includeAdult;
   const DiscoverTV({required this.includeAdult, Key? key}) : super(key: key);
   @override
-  _DiscoverTVState createState() => _DiscoverTVState();
+  DiscoverTVState createState() => DiscoverTVState();
 }
 
-class _DiscoverTVState extends State<DiscoverTV>
+class DiscoverTVState extends State<DiscoverTV>
     with AutomaticKeepAliveClientMixin {
   late double deviceHeight;
   late double deviceWidth;
@@ -236,7 +236,7 @@ class _DiscoverTVState extends State<DiscoverTV>
         ),
         SizedBox(
           width: double.infinity,
-          height: deviceHeight * 0.417,
+          height: 350,
           child: tvList == null
               ? discoverMoviesAndTVShimmer(isDark)
               : requestFailed == true
@@ -363,10 +363,10 @@ class ScrollingTV extends StatefulWidget {
     required this.includeAdult,
   }) : super(key: key);
   @override
-  _ScrollingTVState createState() => _ScrollingTVState();
+  ScrollingTVState createState() => ScrollingTVState();
 }
 
-class _ScrollingTVState extends State<ScrollingTV>
+class ScrollingTVState extends State<ScrollingTV>
     with AutomaticKeepAliveClientMixin {
   late int index;
   List<TV>? tvList;
@@ -385,8 +385,7 @@ class _ScrollingTVState extends State<ScrollingTV>
         if (widget.isTrending == false) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/tv/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=" +
-                    pageNum.toString()),
+                "$TMDB_API_BASE_URL/tv/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
           );
           setState(() {
             pageNum++;
@@ -399,8 +398,7 @@ class _ScrollingTVState extends State<ScrollingTV>
         } else if (widget.isTrending == true) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/trending/tv/week?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}language=en-US&include_adult=false&page=" +
-                    pageNum.toString()),
+                "$TMDB_API_BASE_URL/trending/tv/week?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}language=en-US&include_adult=false&page=$pageNum"),
           );
           setState(() {
             pageNum++;
@@ -418,7 +416,7 @@ class _ScrollingTVState extends State<ScrollingTV>
   }
 
   void getData() {
-    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
@@ -586,11 +584,11 @@ class _ScrollingTVState extends State<ScrollingTV>
                           ),
                         ),
                         Visibility(
+                          visible: isLoading,
                           child: SizedBox(
                             width: 110,
                             child: horizontalLoadMoreShimmer(isDark),
                           ),
-                          visible: isLoading,
                         ),
                       ],
                     ),
@@ -653,10 +651,10 @@ class ScrollingTVArtists extends StatefulWidget {
     this.tapButtonText,
   }) : super(key: key);
   @override
-  _ScrollingTVArtistsState createState() => _ScrollingTVArtistsState();
+  ScrollingTVArtistsState createState() => ScrollingTVArtistsState();
 }
 
-class _ScrollingTVArtistsState extends State<ScrollingTVArtists>
+class ScrollingTVArtistsState extends State<ScrollingTVArtists>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
   @override
@@ -827,11 +825,10 @@ class ScrollingTVEpisodeCasts extends StatefulWidget {
     this.api,
   }) : super(key: key);
   @override
-  _ScrollingTVEpisodeCastsState createState() =>
-      _ScrollingTVEpisodeCastsState();
+  ScrollingTVEpisodeCastsState createState() => ScrollingTVEpisodeCastsState();
 }
 
-class _ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
+class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
   @override
@@ -1002,11 +999,11 @@ class ScrollingTVEpisodeGuestStars extends StatefulWidget {
     this.api,
   }) : super(key: key);
   @override
-  _ScrollingTVEpisodeGuestStarsState createState() =>
-      _ScrollingTVEpisodeGuestStarsState();
+  ScrollingTVEpisodeGuestStarsState createState() =>
+      ScrollingTVEpisodeGuestStarsState();
 }
 
-class _ScrollingTVEpisodeGuestStarsState
+class ScrollingTVEpisodeGuestStarsState
     extends State<ScrollingTVEpisodeGuestStars>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
@@ -1187,10 +1184,10 @@ class ScrollingTVEpisodeCrew extends StatefulWidget {
     this.api,
   }) : super(key: key);
   @override
-  _ScrollingTVEpisodeCrewState createState() => _ScrollingTVEpisodeCrewState();
+  ScrollingTVEpisodeCrewState createState() => ScrollingTVEpisodeCrewState();
 }
 
-class _ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
+class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
     with AutomaticKeepAliveClientMixin {
   Credits? credits;
   @override
@@ -1366,10 +1363,10 @@ class ScrollingTVCreators extends StatefulWidget {
     this.tapButtonText,
   }) : super(key: key);
   @override
-  _ScrollingTVCreatorsState createState() => _ScrollingTVCreatorsState();
+  ScrollingTVCreatorsState createState() => ScrollingTVCreatorsState();
 }
 
-class _ScrollingTVCreatorsState extends State<ScrollingTVCreators>
+class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
     with AutomaticKeepAliveClientMixin {
   TVDetails? tvDetails;
 
@@ -1540,10 +1537,10 @@ class TVImagesDisplay extends StatefulWidget {
   const TVImagesDisplay({Key? key, this.api, this.title}) : super(key: key);
 
   @override
-  _TVImagesDisplayState createState() => _TVImagesDisplayState();
+  TVImagesDisplayState createState() => TVImagesDisplayState();
 }
 
-class _TVImagesDisplayState extends State<TVImagesDisplay> {
+class TVImagesDisplayState extends State<TVImagesDisplay> {
   Images? tvImages;
   @override
   void initState() {
@@ -1663,10 +1660,10 @@ class TVSeasonImagesDisplay extends StatefulWidget {
       : super(key: key);
 
   @override
-  _TVSeasonImagesDisplayState createState() => _TVSeasonImagesDisplayState();
+  TVSeasonImagesDisplayState createState() => TVSeasonImagesDisplayState();
 }
 
-class _TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
+class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
   Images? tvImages;
   @override
   void initState() {
@@ -1788,10 +1785,10 @@ class TVEpisodeImagesDisplay extends StatefulWidget {
       : super(key: key);
 
   @override
-  _TVEpisodeImagesDisplayState createState() => _TVEpisodeImagesDisplayState();
+  TVEpisodeImagesDisplayState createState() => TVEpisodeImagesDisplayState();
 }
 
-class _TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
+class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
   Images? tvImages;
   @override
   void initState() {
@@ -1914,10 +1911,10 @@ class TVVideosDisplay extends StatefulWidget {
       : super(key: key);
 
   @override
-  _TVVideosDisplayState createState() => _TVVideosDisplayState();
+  TVVideosDisplayState createState() => TVVideosDisplayState();
 }
 
-class _TVVideosDisplayState extends State<TVVideosDisplay> {
+class TVVideosDisplayState extends State<TVVideosDisplay> {
   Videos? tvVideos;
 
   @override
@@ -2025,11 +2022,7 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                                                             milliseconds: 700),
                                                     fadeInCurve: Curves.easeIn,
                                                     imageUrl:
-                                                        YOUTUBE_THUMBNAIL_URL +
-                                                            tvVideos!
-                                                                .result![index]
-                                                                .videoLink! +
-                                                            '/hqdefault.jpg',
+                                                        '$YOUTUBE_THUMBNAIL_URL${tvVideos!.result![index].videoLink!}/hqdefault.jpg',
                                                     imageBuilder: (context,
                                                             imageProvider) =>
                                                         Container(
@@ -2055,12 +2048,12 @@ class _TVVideosDisplayState extends State<TVVideosDisplay> {
                                                     visible:
                                                         playButtonVisibility,
                                                     child: const SizedBox(
+                                                      height: 90,
+                                                      width: 90,
                                                       child: Icon(
                                                         Icons.play_arrow,
                                                         size: 90,
                                                       ),
-                                                      height: 90,
-                                                      width: 90,
                                                     ),
                                                   )
                                                 ],
@@ -2098,10 +2091,10 @@ class TVCastTab extends StatefulWidget {
   const TVCastTab({Key? key, this.api}) : super(key: key);
 
   @override
-  _TVCastTabState createState() => _TVCastTabState();
+  TVCastTabState createState() => TVCastTabState();
 }
 
-class _TVCastTabState extends State<TVCastTab>
+class TVCastTabState extends State<TVCastTab>
     with AutomaticKeepAliveClientMixin<TVCastTab> {
   Credits? credits;
   bool requestFailed = false;
@@ -2141,12 +2134,12 @@ class _TVCastTabState extends State<TVCastTab>
             child: tvCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
             ? Container(
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child:
                       Text('There is no data available for this TV show cast'),
                 ),
-                color:
-                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               )
             : requestFailed == true
                 ? retryWidget(isDark)
@@ -2275,18 +2268,8 @@ class _TVCastTabState extends State<TVCastTab>
                                                 credits!.cast![index].roles![0]
                                                             .episodeCount! ==
                                                         1
-                                                    ? credits!
-                                                            .cast![index]
-                                                            .roles![0]
-                                                            .episodeCount!
-                                                            .toString() +
-                                                        ' episode'
-                                                    : credits!
-                                                            .cast![index]
-                                                            .roles![0]
-                                                            .episodeCount!
-                                                            .toString() +
-                                                        ' episodes',
+                                                    ? '${credits!.cast![index].roles![0].episodeCount!} episode'
+                                                    : '${credits!.cast![index].roles![0].episodeCount!} episodes',
                                               ),
                                             ],
                                           ),
@@ -2362,10 +2345,10 @@ class TVSeasonsTab extends StatefulWidget {
       : super(key: key);
 
   @override
-  _TVSeasonsTabState createState() => _TVSeasonsTabState();
+  TVSeasonsTabState createState() => TVSeasonsTabState();
 }
 
-class _TVSeasonsTabState extends State<TVSeasonsTab>
+class TVSeasonsTabState extends State<TVSeasonsTab>
     with AutomaticKeepAliveClientMixin<TVSeasonsTab> {
   TVDetails? tvDetails;
   var startAppSdkTVSeason = StartAppSdk();
@@ -2651,10 +2634,10 @@ class TVCrewTab extends StatefulWidget {
   const TVCrewTab({Key? key, this.api}) : super(key: key);
 
   @override
-  _TVCrewTabState createState() => _TVCrewTabState();
+  TVCrewTabState createState() => TVCrewTabState();
 }
 
-class _TVCrewTabState extends State<TVCrewTab>
+class TVCrewTabState extends State<TVCrewTab>
     with AutomaticKeepAliveClientMixin<TVCrewTab> {
   Credits? credits;
   bool requestFailed = false;
@@ -2694,12 +2677,12 @@ class _TVCrewTabState extends State<TVCrewTab>
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.crew!.isEmpty
             ? Container(
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child:
                       Text('There is no data available for this TV show cast'),
                 ),
-                color:
-                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               )
             : requestFailed == true
                 ? retryWidget(isDark)
@@ -2900,10 +2883,10 @@ class TVRecommendationsTab extends StatefulWidget {
       : super(key: key);
 
   @override
-  _TVRecommendationsTabState createState() => _TVRecommendationsTabState();
+  TVRecommendationsTabState createState() => TVRecommendationsTabState();
 }
 
-class _TVRecommendationsTabState extends State<TVRecommendationsTab>
+class TVRecommendationsTabState extends State<TVRecommendationsTab>
     with AutomaticKeepAliveClientMixin {
   List<TV>? tvList;
   var startAppSdkTVRecommendation = StartAppSdk();
@@ -2918,7 +2901,7 @@ class _TVRecommendationsTabState extends State<TVRecommendationsTab>
   }
 
   void getData() {
-    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
@@ -3246,10 +3229,10 @@ class SimilarTVTab extends StatefulWidget {
       : super(key: key);
 
   @override
-  _SimilarTVTabState createState() => _SimilarTVTabState();
+  SimilarTVTabState createState() => SimilarTVTabState();
 }
 
-class _SimilarTVTabState extends State<SimilarTVTab>
+class SimilarTVTabState extends State<SimilarTVTab>
     with AutomaticKeepAliveClientMixin {
   List<TV>? tvList;
   var startAppSdkTVSimilars = StartAppSdk();
@@ -3265,7 +3248,7 @@ class _SimilarTVTabState extends State<SimilarTVTab>
   }
 
   void getData() {
-    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
@@ -3583,10 +3566,10 @@ class TVGenreDisplay extends StatefulWidget {
   const TVGenreDisplay({Key? key, this.api}) : super(key: key);
 
   @override
-  _TVGenreDisplayState createState() => _TVGenreDisplayState();
+  TVGenreDisplayState createState() => TVGenreDisplayState();
 }
 
-class _TVGenreDisplayState extends State<TVGenreDisplay>
+class TVGenreDisplayState extends State<TVGenreDisplay>
     with AutomaticKeepAliveClientMixin<TVGenreDisplay> {
   List<Genres>? genres;
   @override
@@ -3606,8 +3589,8 @@ class _TVGenreDisplayState extends State<TVGenreDisplay>
     return Container(
         child: genres == null
             ? SizedBox(
-                child: detailGenreShimmer(isDark),
                 height: 80,
+                child: detailGenreShimmer(isDark),
               )
             : genres!.isEmpty
                 ? Container()
@@ -3669,10 +3652,10 @@ class ParticularGenreTV extends StatefulWidget {
       required this.includeAdult})
       : super(key: key);
   @override
-  _ParticularGenreTVState createState() => _ParticularGenreTVState();
+  ParticularGenreTVState createState() => ParticularGenreTVState();
 }
 
-class _ParticularGenreTVState extends State<ParticularGenreTV> {
+class ParticularGenreTVState extends State<ParticularGenreTV> {
   List<TV>? tvList;
   final _scrollController = ScrollController();
   int pageNum = 2;
@@ -3735,7 +3718,7 @@ class _ParticularGenreTVState extends State<ParticularGenreTV> {
   }
 
   void getData() {
-    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
@@ -4022,10 +4005,10 @@ class TVInfoTable extends StatefulWidget {
   const TVInfoTable({Key? key, this.api}) : super(key: key);
 
   @override
-  _TVInfoTableState createState() => _TVInfoTableState();
+  TVInfoTableState createState() => TVInfoTableState();
 }
 
-class _TVInfoTableState extends State<TVInfoTable> {
+class TVInfoTableState extends State<TVInfoTable> {
   TVDetails? tvDetails;
 
   @override
@@ -4194,10 +4177,10 @@ class TVSocialLinks extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TVSocialLinksState createState() => _TVSocialLinksState();
+  TVSocialLinksState createState() => TVSocialLinksState();
 }
 
-class _TVSocialLinksState extends State<TVSocialLinks> {
+class TVSocialLinksState extends State<TVSocialLinks> {
   ExternalLinks? externalLinks;
   bool? isAllNull;
   @override
@@ -4323,10 +4306,10 @@ class SeasonsList extends StatefulWidget {
       : super(key: key);
 
   @override
-  _SeasonsListState createState() => _SeasonsListState();
+  SeasonsListState createState() => SeasonsListState();
 }
 
-class _SeasonsListState extends State<SeasonsList> {
+class SeasonsListState extends State<SeasonsList> {
   TVDetails? tvDetails;
   @override
   void initState() {
@@ -4509,10 +4492,10 @@ class EpisodeListWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _EpisodeListWidgetState createState() => _EpisodeListWidgetState();
+  EpisodeListWidgetState createState() => EpisodeListWidgetState();
 }
 
-class _EpisodeListWidgetState extends State<EpisodeListWidget>
+class EpisodeListWidgetState extends State<EpisodeListWidget>
     with AutomaticKeepAliveClientMixin {
   TVDetails? tvDetails;
   bool requestFailed = false;
@@ -4691,6 +4674,8 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                           padding: const EdgeInsets.only(
                                               right: 10.0, left: 5.0),
                                           child: SizedBox(
+                                            height: 56.4,
+                                            width: 100,
                                             child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(6.0),
@@ -4741,9 +4726,6 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                                       placeholder: (context,
                                                               url) =>
                                                           Shimmer.fromColors(
-                                                        child: Container(
-                                                            color:
-                                                                Colors.white),
                                                         baseColor: isDark
                                                             ? Colors
                                                                 .grey.shade800
@@ -4757,6 +4739,9 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                                         direction:
                                                             ShimmerDirection
                                                                 .ltr,
+                                                        child: Container(
+                                                            color:
+                                                                Colors.white),
                                                       ),
                                                       errorWidget: (context,
                                                               url, error) =>
@@ -4766,8 +4751,6 @@ class _EpisodeListWidgetState extends State<EpisodeListWidget>
                                                       ),
                                                     ),
                                             ),
-                                            height: 56.4,
-                                            width: 100,
                                           ),
                                         ),
                                         Expanded(
@@ -5113,10 +5096,10 @@ class TVGenreListGrid extends StatefulWidget {
   const TVGenreListGrid({Key? key, required this.api}) : super(key: key);
 
   @override
-  _TVGenreListGridState createState() => _TVGenreListGridState();
+  TVGenreListGridState createState() => TVGenreListGridState();
 }
 
-class _TVGenreListGridState extends State<TVGenreListGrid>
+class TVGenreListGridState extends State<TVGenreListGrid>
     with AutomaticKeepAliveClientMixin<TVGenreListGrid> {
   List<Genres>? genreList;
   bool requestFailed = false;
@@ -5194,15 +5177,15 @@ class _TVGenreListGridState extends State<TVGenreListGrid>
                                         child: Container(
                                           width: 125,
                                           alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                              color: const Color(0xFFF57C00),
+                                              borderRadius:
+                                                  BorderRadius.circular(15)),
                                           child: Text(
                                               genreList![index].genreName!,
                                               textAlign: TextAlign.center,
                                               style: const TextStyle(
                                                   color: Colors.white)),
-                                          decoration: BoxDecoration(
-                                              color: const Color(0xFFF57C00),
-                                              borderRadius:
-                                                  BorderRadius.circular(15)),
                                         ),
                                       ),
                                     );
@@ -5262,11 +5245,11 @@ class TVShowsFromWatchProviders extends StatefulWidget {
   const TVShowsFromWatchProviders({Key? key}) : super(key: key);
 
   @override
-  _TVShowsFromWatchProvidersState createState() =>
-      _TVShowsFromWatchProvidersState();
+  TVShowsFromWatchProvidersState createState() =>
+      TVShowsFromWatchProvidersState();
 }
 
-class _TVShowsFromWatchProvidersState extends State<TVShowsFromWatchProviders> {
+class TVShowsFromWatchProvidersState extends State<TVShowsFromWatchProviders> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -5415,11 +5398,11 @@ class ParticularStreamingServiceTVShows extends StatefulWidget {
     required this.includeAdult,
   }) : super(key: key);
   @override
-  _ParticularStreamingServiceTVShowsState createState() =>
-      _ParticularStreamingServiceTVShowsState();
+  ParticularStreamingServiceTVShowsState createState() =>
+      ParticularStreamingServiceTVShowsState();
 }
 
-class _ParticularStreamingServiceTVShowsState
+class ParticularStreamingServiceTVShowsState
     extends State<ParticularStreamingServiceTVShows> {
   List<TV>? tvList;
   final _scrollController = ScrollController();
@@ -5483,7 +5466,7 @@ class _ParticularStreamingServiceTVShowsState
   }
 
   void getData() {
-    fetchTV(widget.api + '&include_adult=${widget.includeAdult}').then((value) {
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
       setState(() {
         tvList = value;
       });
@@ -5772,10 +5755,10 @@ class TVEpisodeCastTab extends StatefulWidget {
   const TVEpisodeCastTab({Key? key, this.api}) : super(key: key);
 
   @override
-  _TVEpisodeCastTabState createState() => _TVEpisodeCastTabState();
+  TVEpisodeCastTabState createState() => TVEpisodeCastTabState();
 }
 
-class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
+class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     with AutomaticKeepAliveClientMixin<TVEpisodeCastTab> {
   Credits? credits;
   bool requestFailed = false;
@@ -5814,11 +5797,11 @@ class _TVEpisodeCastTabState extends State<TVEpisodeCastTab>
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
             ? Container(
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text('No cast available :('),
                 ),
-                color:
-                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               )
             : requestFailed == true
                 ? retryWidget(isDark)
@@ -6025,10 +6008,10 @@ class TVEpisodeGuestStarsTab extends StatefulWidget {
   const TVEpisodeGuestStarsTab({Key? key, this.api}) : super(key: key);
 
   @override
-  _TVEpisodeGuestStarsTabState createState() => _TVEpisodeGuestStarsTabState();
+  TVEpisodeGuestStarsTabState createState() => TVEpisodeGuestStarsTabState();
 }
 
-class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
+class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     with AutomaticKeepAliveClientMixin<TVEpisodeGuestStarsTab> {
   Credits? credits;
   bool requestFailed = false;
@@ -6067,12 +6050,12 @@ class _TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.episodeGuestStars!.isEmpty
             ? Container(
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text(
                       'There is no data available for this TV episode guest stars'),
                 ),
-                color:
-                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               )
             : requestFailed == true
                 ? retryWidget(isDark)

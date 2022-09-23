@@ -22,10 +22,10 @@ class GuestStarDetailPage extends StatefulWidget {
     required this.heroId,
   }) : super(key: key);
   @override
-  _GuestStarDetailPageState createState() => _GuestStarDetailPageState();
+  GuestStarDetailPageState createState() => GuestStarDetailPageState();
 }
 
-class _GuestStarDetailPageState extends State<GuestStarDetailPage>
+class GuestStarDetailPageState extends State<GuestStarDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<GuestStarDetailPage> {
@@ -196,6 +196,7 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
                                         1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
+                                      controller: tabController,
                                       children: [
                                         // PersonAboutWidget(
                                         //   api: Endpoints.getPersonDetails(
@@ -273,7 +274,6 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
                                                       widget.cast!.id!)),
                                         ),
                                       ],
-                                      controller: tabController,
                                     ),
                                   ),
                                 ),
@@ -305,9 +305,8 @@ class _GuestStarDetailPageState extends State<GuestStarDetailPage>
                                           fadeInDuration:
                                               const Duration(milliseconds: 700),
                                           fadeInCurve: Curves.easeIn,
-                                          imageUrl: TMDB_BASE_IMAGE_URL +
-                                              imageQuality +
-                                              '${widget.cast!.profilePath}',
+                                          imageUrl:
+                                              '$TMDB_BASE_IMAGE_URL$imageQuality${widget.cast!.profilePath}',
                                           imageBuilder:
                                               (context, imageProvider) =>
                                                   Container(

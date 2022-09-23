@@ -24,11 +24,11 @@ class SearchedPersonDetailPage extends StatefulWidget {
     required this.heroId,
   }) : super(key: key);
   @override
-  _SearchedPersonDetailPageState createState() =>
-      _SearchedPersonDetailPageState();
+  SearchedPersonDetailPageState createState() =>
+      SearchedPersonDetailPageState();
 }
 
-class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
+class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<SearchedPersonDetailPage> {
@@ -226,6 +226,7 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
+                                      controller: tabController,
                                       children: [
                                         // PersonAboutWidget(
                                         //   api: Endpoints.getPersonDetails(
@@ -319,7 +320,6 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                                       widget.person!.id!)),
                                         ),
                                       ],
-                                      controller: tabController,
                                     ),
                                   ),
                                 ),
@@ -351,9 +351,8 @@ class _SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                           fadeInDuration:
                                               const Duration(milliseconds: 700),
                                           fadeInCurve: Curves.easeIn,
-                                          imageUrl: TMDB_BASE_IMAGE_URL +
-                                              imageQuality +
-                                              '${widget.person!.profilePath}',
+                                          imageUrl:
+                                              '$TMDB_BASE_IMAGE_URL$imageQuality${widget.person!.profilePath}',
                                           imageBuilder:
                                               (context, imageProvider) =>
                                                   Container(

@@ -49,9 +49,9 @@ class AboutPage extends StatelessWidget {
                       TextStyle(fontSize: 20.0, overflow: TextOverflow.visible),
                 ),
                 SizedBox(
-                  child: Image.asset('assets/images/tmdb_logo.png'),
                   height: 100,
                   width: 100,
+                  child: Image.asset('assets/images/tmdb_logo.png'),
                 ),
                 GestureDetector(
                   child: const Text(

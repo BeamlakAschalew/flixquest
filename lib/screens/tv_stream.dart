@@ -13,10 +13,10 @@ class TVStream extends StatefulWidget {
       : super(key: key);
 
   @override
-  _TVStreamState createState() => _TVStreamState();
+  TVStreamState createState() => TVStreamState();
 }
 
-class _TVStreamState extends State<TVStream> {
+class TVStreamState extends State<TVStream> {
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;

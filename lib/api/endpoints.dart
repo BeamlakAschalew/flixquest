@@ -20,7 +20,7 @@ class Endpoints {
   }
 
   static String getCreditsUrl(int id) {
-    return TMDB_API_BASE_URL + '/movie/$id/credits?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/movie/$id/credits?api_key=$TMDB_API_KEY';
   }
 
   static String topRatedUrl(int page) {
@@ -115,11 +115,11 @@ class Endpoints {
   }
 
   static String getImages(int id) {
-    return TMDB_API_BASE_URL + '/movie/$id/images?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/movie/$id/images?api_key=$TMDB_API_KEY';
   }
 
   static String getVideos(int id) {
-    return TMDB_API_BASE_URL + '/movie/$id/videos?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/movie/$id/videos?api_key=$TMDB_API_KEY';
   }
 
   static String getMovieRecommendations(int id, int page) {
@@ -231,11 +231,11 @@ class Endpoints {
   }
 
   static String getTVImages(int id) {
-    return TMDB_API_BASE_URL + '/tv/$id/images?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/tv/$id/images?api_key=$TMDB_API_KEY';
   }
 
   static String getTVVideos(int id) {
-    return TMDB_API_BASE_URL + '/tv/$id/videos?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/tv/$id/videos?api_key=$TMDB_API_KEY';
   }
 
   static String getTVRecommendations(int id, int page) {

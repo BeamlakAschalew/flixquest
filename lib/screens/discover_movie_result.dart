@@ -63,7 +63,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
           isLoading = true;
         });
 
-        var response = await http.get(Uri.parse(widget.api + '&page=$pageNum'));
+        var response = await http.get(Uri.parse('${widget.api}&page=$pageNum'));
         setState(() {
           pageNum++;
           isLoading = false;
@@ -87,7 +87,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   }
 
   void getData() {
-    fetchMovies(widget.api + '&page=${widget.page}}').then((value) {
+    fetchMovies('${widget.api}&page=${widget.page}}').then((value) {
       setState(() {
         moviesList = value;
       });

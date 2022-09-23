@@ -22,10 +22,10 @@ class CastDetailPage extends StatefulWidget {
     required this.heroId,
   }) : super(key: key);
   @override
-  _CastDetailPageState createState() => _CastDetailPageState();
+  CastDetailPageState createState() => CastDetailPageState();
 }
 
-class _CastDetailPageState extends State<CastDetailPage>
+class CastDetailPageState extends State<CastDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CastDetailPage> {
@@ -223,6 +223,7 @@ class _CastDetailPageState extends State<CastDetailPage>
                                         1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
+                                      controller: tabController,
                                       children: [
                                         // PersonAboutWidget(
                                         //   api: Endpoints.getPersonDetails(
@@ -314,7 +315,6 @@ class _CastDetailPageState extends State<CastDetailPage>
                                                       widget.cast!.id!)),
                                         ),
                                       ],
-                                      controller: tabController,
                                     ),
                                   ),
                                 ),

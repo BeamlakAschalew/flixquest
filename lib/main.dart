@@ -216,12 +216,12 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
             body: Container(
               color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
               child: IndexedStack(
+                index: _selectedIndex,
                 children: const <Widget>[
                   MainMoviesDisplay(),
                   MainTVDisplay(),
                   DiscoverPage(),
                 ],
-                index: _selectedIndex,
               ),
             ));
   }

@@ -1,9 +1,10 @@
-// ignore_for_file: avoid_unnecessary_containers
+// ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/hero_photoview.dart';
+import 'package:cinemax/screens/player.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../provider/adultmode_provider.dart';
@@ -179,10 +180,10 @@ class DiscoverMovies extends StatefulWidget {
       : super(key: key);
   final bool includeAdult;
   @override
-  _DiscoverMoviesState createState() => _DiscoverMoviesState();
+  DiscoverMoviesState createState() => DiscoverMoviesState();
 }
 
-class _DiscoverMoviesState extends State<DiscoverMovies>
+class DiscoverMoviesState extends State<DiscoverMovies>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? moviesList;
   late double deviceHeight;
@@ -194,8 +195,8 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
   }
 
   void getData() {
-    fetchMovies(Endpoints.discoverMoviesUrl(1) +
-            '&inculde_adult=${widget.includeAdult}')
+    fetchMovies(
+            '${Endpoints.discoverMoviesUrl(1)}&inculde_adult=${widget.includeAdult}')
         .then((value) {
       setState(() {
         moviesList = value;
@@ -235,8 +236,8 @@ class _DiscoverMoviesState extends State<DiscoverMovies>
         ),
         SizedBox(
           width: double.infinity,
-          //height: 350,
-          height: deviceHeight * 0.417,
+          height: 350,
+          // height: deviceHeight * 0.417,
           child: moviesList == null
               ? discoverMoviesAndTVShimmer(isDark)
               : requestFailed == true
@@ -364,10 +365,10 @@ class ScrollingMovies extends StatefulWidget {
     required this.includeAdult,
   }) : super(key: key);
   @override
-  _ScrollingMoviesState createState() => _ScrollingMoviesState();
+  ScrollingMoviesState createState() => ScrollingMoviesState();
 }
 
-class _ScrollingMoviesState extends State<ScrollingMovies>
+class ScrollingMoviesState extends State<ScrollingMovies>
     with AutomaticKeepAliveClientMixin {
   late int index;
   List<Movie>? moviesList;
@@ -387,8 +388,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
         if (widget.isTrending == false) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/movie/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=" +
-                    pageNum.toString()),
+                "$TMDB_API_BASE_URL/movie/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
           );
           setState(() {
             pageNum++;
@@ -401,8 +401,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
         } else if (widget.isTrending == true) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=${widget.includeAdult}&page=" +
-                    pageNum.toString()),
+                "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=${widget.includeAdult}&page=$pageNum"),
           );
           setState(() {
             pageNum++;
@@ -427,7 +426,7 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
   }
 
   void getData() {
-    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
       setState(() {
         moviesList = value;
@@ -592,11 +591,11 @@ class _ScrollingMoviesState extends State<ScrollingMovies>
                           ),
                         ),
                         Visibility(
+                          visible: isLoading,
                           child: SizedBox(
                             width: 110,
                             child: horizontalLoadMoreShimmer(isDark),
                           ),
-                          visible: isLoading,
                         ),
                       ],
                     ),
@@ -659,10 +658,10 @@ class ScrollingArtists extends StatefulWidget {
     this.tapButtonText,
   }) : super(key: key);
   @override
-  _ScrollingArtistsState createState() => _ScrollingArtistsState();
+  ScrollingArtistsState createState() => ScrollingArtistsState();
 }
 
-class _ScrollingArtistsState extends State<ScrollingArtists> {
+class ScrollingArtistsState extends State<ScrollingArtists> {
   Credits? credits;
   @override
   void initState() {
@@ -829,10 +828,10 @@ class MovieSocialLinks extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _MovieSocialLinksState createState() => _MovieSocialLinksState();
+  MovieSocialLinksState createState() => MovieSocialLinksState();
 }
 
-class _MovieSocialLinksState extends State<MovieSocialLinks> {
+class MovieSocialLinksState extends State<MovieSocialLinks> {
   ExternalLinks? externalLinks;
   bool? isAllNull;
   @override
@@ -949,11 +948,11 @@ class BelongsToCollectionWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _BelongsToCollectionWidgetState createState() =>
-      _BelongsToCollectionWidgetState();
+  BelongsToCollectionWidgetState createState() =>
+      BelongsToCollectionWidgetState();
 }
 
-class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
+class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
   BelongsToCollection? belongsToCollection;
   @override
   void initState() {
@@ -1008,9 +1007,8 @@ class _BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                       fit: BoxFit.fill,
                                       placeholder: const AssetImage(
                                           'assets/images/loading.gif'),
-                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                          'w500/' +
-                                          belongsToCollection!.backdropPath!)),
+                                      image: NetworkImage(
+                                          '${TMDB_BASE_IMAGE_URL}w500/${belongsToCollection!.backdropPath!}')),
                             ),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -1077,11 +1075,11 @@ class CollectionOverviewWidget extends StatefulWidget {
   const CollectionOverviewWidget({Key? key, this.api}) : super(key: key);
 
   @override
-  _CollectionOverviewWidgetState createState() =>
-      _CollectionOverviewWidgetState();
+  CollectionOverviewWidgetState createState() =>
+      CollectionOverviewWidgetState();
 }
 
-class _CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
+class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
   CollectionDetails? collectionDetails;
   bool requestFailed = false;
   @override
@@ -1182,10 +1180,10 @@ class PartsList extends StatefulWidget {
   const PartsList({Key? key, this.api, this.title}) : super(key: key);
 
   @override
-  _PartsListState createState() => _PartsListState();
+  PartsListState createState() => PartsListState();
 }
 
-class _PartsListState extends State<PartsList> {
+class PartsListState extends State<PartsList> {
   List<Movie>? collectionMovieList;
   bool requestFailed = false;
   @override
@@ -1499,10 +1497,10 @@ class MovieImagesDisplay extends StatefulWidget {
   const MovieImagesDisplay({Key? key, this.api, this.title}) : super(key: key);
 
   @override
-  _MovieImagesState createState() => _MovieImagesState();
+  MovieImagesState createState() => MovieImagesState();
 }
 
-class _MovieImagesState extends State<MovieImagesDisplay> {
+class MovieImagesState extends State<MovieImagesDisplay> {
   Images? movieImages;
   @override
   void initState() {
@@ -1654,10 +1652,10 @@ class MovieVideosDisplay extends StatefulWidget {
   const MovieVideosDisplay({Key? key, this.api, this.title}) : super(key: key);
 
   @override
-  _MovieVideosState createState() => _MovieVideosState();
+  MovieVideosState createState() => MovieVideosState();
 }
 
-class _MovieVideosState extends State<MovieVideosDisplay> {
+class MovieVideosState extends State<MovieVideosDisplay> {
   Videos? movieVideos;
 
   @override
@@ -1766,11 +1764,7 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
                                                             milliseconds: 700),
                                                     fadeInCurve: Curves.easeIn,
                                                     imageUrl:
-                                                        YOUTUBE_THUMBNAIL_URL +
-                                                            movieVideos!
-                                                                .result![index]
-                                                                .videoLink! +
-                                                            '/hqdefault.jpg',
+                                                        '$YOUTUBE_THUMBNAIL_URL${movieVideos!.result![index].videoLink!}/hqdefault.jpg',
                                                     imageBuilder: (context,
                                                             imageProvider) =>
                                                         Container(
@@ -1796,12 +1790,12 @@ class _MovieVideosState extends State<MovieVideosDisplay> {
                                                     visible:
                                                         playButtonVisibility,
                                                     child: const SizedBox(
+                                                      height: 90,
+                                                      width: 90,
                                                       child: Icon(
                                                         Icons.play_arrow,
                                                         size: 90,
                                                       ),
-                                                      height: 90,
-                                                      width: 90,
                                                     ),
                                                   )
                                                 ],
@@ -1850,10 +1844,10 @@ class WatchNowButton extends StatefulWidget {
   final String? api;
 
   @override
-  _WatchNowButtonState createState() => _WatchNowButtonState();
+  WatchNowButtonState createState() => WatchNowButtonState();
 }
 
-class _WatchNowButtonState extends State<WatchNowButton> {
+class WatchNowButtonState extends State<WatchNowButton> {
   MovieDetails? movieDetails;
   bool? isVisible = false;
   double? buttonWidth = 150;
@@ -1873,30 +1867,26 @@ class _WatchNowButtonState extends State<WatchNowButton> {
             backgroundColor:
                 MaterialStateProperty.all(const Color(0xFFF57C00))),
         onPressed: () async {
-          mixpanel.track('Most viewed movies', properties: {
-            'Movie name': '${widget.movieName}',
-            'Movie id': '${widget.movieId}',
-            'Is Movie adult?': '${widget.adult}'
-          });
-          setState(() {
-            isVisible = true;
-            buttonWidth = 170;
-          });
-          await fetchMovieDetails(widget.api!).then((value) {
-            setState(() {
-              movieDetails = value;
-            });
-          });
-          setState(() {
-            isVisible = false;
-            buttonWidth = 150;
-          });
+          // mixpanel.track('Most viewed movies', properties: {
+          //   'Movie name': '${widget.movieName}',
+          //   'Movie id': '${widget.movieId}',
+          //   'Is Movie adult?': '${widget.adult}'
+          // });
+          // setState(() {
+          //   isVisible = true;
+          //   buttonWidth = 170;
+          // });
+          // await fetchMovieDetails(widget.api!).then((value) {
+          //   setState(() {
+          //     movieDetails = value;
+          //   });
+          // });
+          // setState(() {
+          //   isVisible = false;
+          //   buttonWidth = 150;
+          // });
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return MovieStreamSelect(
-              movieId: widget.movieId!,
-              movieName: widget.movieName!,
-              movieImdbId: movieDetails!.imdbId,
-            );
+            return const App();
           }));
         },
         child: Row(
@@ -1939,10 +1929,10 @@ class GenreDisplay extends StatefulWidget {
   const GenreDisplay({Key? key, this.api}) : super(key: key);
 
   @override
-  _GenreDisplayState createState() => _GenreDisplayState();
+  GenreDisplayState createState() => GenreDisplayState();
 }
 
-class _GenreDisplayState extends State<GenreDisplay>
+class GenreDisplayState extends State<GenreDisplay>
     with AutomaticKeepAliveClientMixin<GenreDisplay> {
   List<Genres>? genreList;
   @override
@@ -1962,8 +1952,8 @@ class _GenreDisplayState extends State<GenreDisplay>
     return Container(
         child: genreList == null
             ? SizedBox(
-                child: detailGenreShimmer(isDark),
                 height: 80,
+                child: detailGenreShimmer(isDark),
               )
             : genreList!.isEmpty
                 ? Container()
@@ -2019,10 +2009,10 @@ class MovieInfoTable extends StatefulWidget {
   const MovieInfoTable({Key? key, this.api}) : super(key: key);
 
   @override
-  _MovieInfoTableState createState() => _MovieInfoTableState();
+  MovieInfoTableState createState() => MovieInfoTableState();
 }
 
-class _MovieInfoTableState extends State<MovieInfoTable> {
+class MovieInfoTableState extends State<MovieInfoTable> {
   MovieDetails? movieDetails;
   final formatCurrency = NumberFormat.simpleCurrency();
 
@@ -2202,10 +2192,10 @@ class CastTab extends StatefulWidget {
   const CastTab({Key? key, this.api}) : super(key: key);
 
   @override
-  _CastTabState createState() => _CastTabState();
+  CastTabState createState() => CastTabState();
 }
 
-class _CastTabState extends State<CastTab>
+class CastTabState extends State<CastTab>
     with AutomaticKeepAliveClientMixin<CastTab> {
   Credits? credits;
   bool requestFailed = false;
@@ -2244,11 +2234,11 @@ class _CastTabState extends State<CastTab>
         ? movieCastAndCrewTabShimmer(isDark)
         : credits!.cast!.isEmpty
             ? Container(
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text('There is no cast available for this movie'),
                 ),
-                color:
-                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               )
             : requestFailed == true
                 ? retryWidget(isDark)
@@ -2442,10 +2432,10 @@ class CrewTab extends StatefulWidget {
   const CrewTab({Key? key, this.api}) : super(key: key);
 
   @override
-  _CrewTabState createState() => _CrewTabState();
+  CrewTabState createState() => CrewTabState();
 }
 
-class _CrewTabState extends State<CrewTab>
+class CrewTabState extends State<CrewTab>
     with AutomaticKeepAliveClientMixin<CrewTab> {
   Credits? credits;
   bool requestFailed = false;
@@ -2484,11 +2474,11 @@ class _CrewTabState extends State<CrewTab>
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.crew!.isEmpty
             ? Container(
+                color: const Color(0xFF202124),
                 child: const Center(
                   child:
                       Text('There is no data available for this TV show cast'),
                 ),
-                color: const Color(0xFF202124),
               )
             : requestFailed == true
                 ? retryWidget(isDark)
@@ -2690,11 +2680,10 @@ class MovieRecommendationsTab extends StatefulWidget {
       : super(key: key);
 
   @override
-  _MovieRecommendationsTabState createState() =>
-      _MovieRecommendationsTabState();
+  MovieRecommendationsTabState createState() => MovieRecommendationsTabState();
 }
 
-class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
+class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? movieList;
   final _scrollController = ScrollController();
@@ -2713,7 +2702,7 @@ class _MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   }
 
   void getData() {
-    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
       setState(() {
         movieList = value;
@@ -3041,10 +3030,10 @@ class SimilarMoviesTab extends StatefulWidget {
       : super(key: key);
 
   @override
-  _SimilarMoviesTabState createState() => _SimilarMoviesTabState();
+  SimilarMoviesTabState createState() => SimilarMoviesTabState();
 }
 
-class _SimilarMoviesTabState extends State<SimilarMoviesTab>
+class SimilarMoviesTabState extends State<SimilarMoviesTab>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? movieList;
   final _scrollController = ScrollController();
@@ -3063,7 +3052,7 @@ class _SimilarMoviesTabState extends State<SimilarMoviesTab>
   }
 
   void getData() {
-    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
       setState(() {
         movieList = value;
@@ -3387,10 +3376,10 @@ class ParticularGenreMovies extends StatefulWidget {
       required this.includeAdult})
       : super(key: key);
   @override
-  _ParticularGenreMoviesState createState() => _ParticularGenreMoviesState();
+  ParticularGenreMoviesState createState() => ParticularGenreMoviesState();
 }
 
-class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
+class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   List<Movie>? moviesList;
   final _scrollController = ScrollController();
   int pageNum = 2;
@@ -3455,7 +3444,7 @@ class _ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   }
 
   void getData() {
-    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
       setState(() {
         moviesList = value;
@@ -3748,11 +3737,11 @@ class ParticularStreamingServiceMovies extends StatefulWidget {
     required this.includeAdult,
   }) : super(key: key);
   @override
-  _ParticularStreamingServiceMoviesState createState() =>
-      _ParticularStreamingServiceMoviesState();
+  ParticularStreamingServiceMoviesState createState() =>
+      ParticularStreamingServiceMoviesState();
 }
 
-class _ParticularStreamingServiceMoviesState
+class ParticularStreamingServiceMoviesState
     extends State<ParticularStreamingServiceMovies> {
   List<Movie>? moviesList;
   final _scrollController = ScrollController();
@@ -3816,7 +3805,7 @@ class _ParticularStreamingServiceMoviesState
   }
 
   void getData() {
-    fetchMovies(widget.api + '&include_adult=${widget.includeAdult}')
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
       setState(() {
         moviesList = value;
@@ -4160,10 +4149,10 @@ class GenreListGrid extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GenreListGridState createState() => _GenreListGridState();
+  GenreListGridState createState() => GenreListGridState();
 }
 
-class _GenreListGridState extends State<GenreListGrid>
+class GenreListGridState extends State<GenreListGrid>
     with AutomaticKeepAliveClientMixin<GenreListGrid> {
   List<Genres>? genreList;
   bool requestFailed = false;
@@ -4236,16 +4225,16 @@ class _GenreListGridState extends State<GenreListGrid>
                                       child: Container(
                                         width: 125,
                                         alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            color: const Color(0xFFF57C00),
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
                                         child: Text(
                                           genreList![index].genreName!,
                                           style: const TextStyle(
                                               color: Colors.white),
                                           textAlign: TextAlign.center,
                                         ),
-                                        decoration: BoxDecoration(
-                                            color: const Color(0xFFF57C00),
-                                            borderRadius:
-                                                BorderRadius.circular(15)),
                                       ),
                                     ),
                                   );
@@ -4312,10 +4301,10 @@ class TopButton extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TopButtonState createState() => _TopButtonState();
+  TopButtonState createState() => TopButtonState();
 }
 
-class _TopButtonState extends State<TopButton> {
+class TopButtonState extends State<TopButton> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -4614,11 +4603,11 @@ class MoviesFromWatchProviders extends StatefulWidget {
   const MoviesFromWatchProviders({Key? key}) : super(key: key);
 
   @override
-  _MoviesFromWatchProvidersState createState() =>
-      _MoviesFromWatchProvidersState();
+  MoviesFromWatchProvidersState createState() =>
+      MoviesFromWatchProvidersState();
 }
 
-class _MoviesFromWatchProvidersState extends State<MoviesFromWatchProviders> {
+class MoviesFromWatchProvidersState extends State<MoviesFromWatchProviders> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -4712,10 +4701,10 @@ class CollectionMovies extends StatefulWidget {
     this.api,
   }) : super(key: key);
   @override
-  _CollectionMoviesState createState() => _CollectionMoviesState();
+  CollectionMoviesState createState() => CollectionMoviesState();
 }
 
-class _CollectionMoviesState extends State<CollectionMovies> {
+class CollectionMoviesState extends State<CollectionMovies> {
   List<Movie>? moviesList;
   @override
   void initState() {

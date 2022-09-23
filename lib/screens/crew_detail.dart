@@ -22,10 +22,10 @@ class CrewDetailPage extends StatefulWidget {
     required this.heroId,
   }) : super(key: key);
   @override
-  _CrewDetailPageState createState() => _CrewDetailPageState();
+  CrewDetailPageState createState() => CrewDetailPageState();
 }
 
-class _CrewDetailPageState extends State<CrewDetailPage>
+class CrewDetailPageState extends State<CrewDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CrewDetailPage> {
@@ -223,6 +223,7 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                         1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
+                                      controller: tabController,
                                       children: [
                                         SingleChildScrollView(
                                           child: Container(
@@ -309,7 +310,6 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                                       widget.crew!.id!)),
                                         ),
                                       ],
-                                      controller: tabController,
                                     ),
                                   ),
                                 ),
@@ -341,9 +341,8 @@ class _CrewDetailPageState extends State<CrewDetailPage>
                                           fadeInDuration:
                                               const Duration(milliseconds: 700),
                                           fadeInCurve: Curves.easeIn,
-                                          imageUrl: TMDB_BASE_IMAGE_URL +
-                                              imageQuality +
-                                              '${widget.crew!.profilePath}',
+                                          imageUrl:
+                                              '$TMDB_BASE_IMAGE_URL$imageQuality${widget.crew!.profilePath}',
                                           imageBuilder:
                                               (context, imageProvider) =>
                                                   Container(

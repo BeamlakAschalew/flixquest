@@ -64,14 +64,14 @@ class _SettingsState extends State<Settings> {
               trailing: DropdownButton(
                   value: imagequalityChange.imageQuality,
                   items: const [
-                    DropdownMenuItem(child: Text('High'), value: 'original/'),
+                    DropdownMenuItem(value: 'original/', child: Text('High')),
                     DropdownMenuItem(
-                      child: Text('Medium'),
                       value: 'w600_and_h900_bestv2/',
+                      child: Text('Medium'),
                     ),
                     DropdownMenuItem(
-                      child: Text('Low'),
                       value: 'w500/',
+                      child: Text('Low'),
                     )
                   ],
                   onChanged: (String? value) {

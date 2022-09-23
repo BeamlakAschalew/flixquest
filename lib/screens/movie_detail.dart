@@ -25,10 +25,10 @@ class MovieDetailPage extends StatefulWidget {
     required this.heroId,
   }) : super(key: key);
   @override
-  _MovieDetailPageState createState() => _MovieDetailPageState();
+  MovieDetailPageState createState() => MovieDetailPageState();
 }
 
-class _MovieDetailPageState extends State<MovieDetailPage>
+class MovieDetailPageState extends State<MovieDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<MovieDetailPage> {
@@ -95,9 +95,8 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                             fadeOutCurve: Curves.easeOut,
                             fadeInDuration: const Duration(milliseconds: 700),
                             fadeInCurve: Curves.easeIn,
-                            imageUrl: TMDB_BASE_IMAGE_URL +
-                                'original/' +
-                                widget.movie.backdropPath!,
+                            imageUrl:
+                                '${TMDB_BASE_IMAGE_URL}original/${widget.movie.backdropPath!}',
                             imageBuilder: (context, imageProvider) => Container(
                               decoration: BoxDecoration(
                                 image: DecorationImage(
@@ -346,6 +345,7 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                         1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
+                                      controller: tabController,
                                       children: [
                                         SingleChildScrollView(
                                           // physics: const BouncingScrollPhysics(),
@@ -522,7 +522,6 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                             api: Endpoints.getSimilarMovies(
                                                 widget.movie.id!, 1)),
                                       ],
-                                      controller: tabController,
                                     ),
                                   ),
                                 ),

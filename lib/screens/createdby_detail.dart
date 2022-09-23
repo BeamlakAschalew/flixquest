@@ -22,11 +22,11 @@ class CreatedByPersonDetailPage extends StatefulWidget {
     required this.heroId,
   }) : super(key: key);
   @override
-  _CreatedByPersonDetailPageState createState() =>
-      _CreatedByPersonDetailPageState();
+  CreatedByPersonDetailPageState createState() =>
+      CreatedByPersonDetailPageState();
 }
 
-class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
+class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CreatedByPersonDetailPage> {
@@ -214,6 +214,7 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                         1.6, 0, 1.6, 3),
                                     child: TabBarView(
                                       physics: const PageScrollPhysics(),
+                                      controller: tabController,
                                       children: [
                                         SingleChildScrollView(
                                           child: Container(
@@ -300,7 +301,6 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                                       widget.createdBy!.id!)),
                                         ),
                                       ],
-                                      controller: tabController,
                                     ),
                                   ),
                                 ),
@@ -332,9 +332,8 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                           fadeInDuration:
                                               const Duration(milliseconds: 700),
                                           fadeInCurve: Curves.easeIn,
-                                          imageUrl: TMDB_BASE_IMAGE_URL +
-                                              imageQuality +
-                                              '${widget.createdBy!.profilePath}',
+                                          imageUrl:
+                                              '$TMDB_BASE_IMAGE_URL$imageQuality${widget.createdBy!.profilePath}',
                                           imageBuilder:
                                               (context, imageProvider) =>
                                                   Container(

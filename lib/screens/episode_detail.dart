@@ -2,6 +2,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/screens/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../provider/mixpanel_provider.dart';
@@ -33,10 +34,10 @@ class EpisodeDetailPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _EpisodeDetailPageState createState() => _EpisodeDetailPageState();
+  EpisodeDetailPageState createState() => EpisodeDetailPageState();
 }
 
-class _EpisodeDetailPageState extends State<EpisodeDetailPage>
+class EpisodeDetailPageState extends State<EpisodeDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<EpisodeDetailPage> {
@@ -90,9 +91,8 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                             fadeOutCurve: Curves.easeOut,
                             fadeInDuration: const Duration(milliseconds: 700),
                             fadeInCurve: Curves.easeIn,
-                            imageUrl: TMDB_BASE_IMAGE_URL +
-                                'original/' +
-                                widget.episodeList.stillPath!,
+                            imageUrl:
+                                '${TMDB_BASE_IMAGE_URL}original/${widget.episodeList.stillPath!}',
                             imageBuilder: (context, imageProvider) => Container(
                               decoration: BoxDecoration(
                                 image: DecorationImage(
@@ -491,21 +491,22 @@ class _EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                           MaterialPageRoute(
                                                               builder:
                                                                   (context) {
-                                                        return TVStreamSelect(
-                                                          episodeName: widget
-                                                              .episodeList
-                                                              .name!,
-                                                          tvSeriesName: widget
-                                                              .seriesName!,
-                                                          tvSeriesId:
-                                                              widget.tvId!,
-                                                          episodeNumber: widget
-                                                              .episodeList
-                                                              .episodeNumber!,
-                                                          seasonNumber: widget
-                                                              .episodeList
-                                                              .seasonNumber!,
-                                                        );
+                                                        return MyApp();
+                                                        // return TVStreamSelect(
+                                                        //   episodeName: widget
+                                                        //       .episodeList
+                                                        //       .name!,
+                                                        //   tvSeriesName: widget
+                                                        //       .seriesName!,
+                                                        //   tvSeriesId:
+                                                        //       widget.tvId!,
+                                                        //   episodeNumber: widget
+                                                        //       .episodeList
+                                                        //       .episodeNumber!,
+                                                        //   seasonNumber: widget
+                                                        //       .episodeList
+                                                        //       .seasonNumber!,
+                                                        // );
                                                       }));
                                                     },
                                                     child: Row(

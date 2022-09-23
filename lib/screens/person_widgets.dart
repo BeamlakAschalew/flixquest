@@ -161,10 +161,10 @@ class PersonMovieListWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _PersonMovieListWidgetState createState() => _PersonMovieListWidgetState();
+  PersonMovieListWidgetState createState() => PersonMovieListWidgetState();
 }
 
-class _PersonMovieListWidgetState extends State<PersonMovieListWidget>
+class PersonMovieListWidgetState extends State<PersonMovieListWidget>
     with AutomaticKeepAliveClientMixin<PersonMovieListWidget> {
   List<Movie>? personMoviesList;
   bool requestFailed = false;
@@ -429,10 +429,10 @@ class PersonTVListWidget extends StatefulWidget {
       : super(key: key);
 
   @override
-  _PersonTVListWidgetState createState() => _PersonTVListWidgetState();
+  PersonTVListWidgetState createState() => PersonTVListWidgetState();
 }
 
-class _PersonTVListWidgetState extends State<PersonTVListWidget>
+class PersonTVListWidgetState extends State<PersonTVListWidget>
     with AutomaticKeepAliveClientMixin<PersonTVListWidget> {
   List<TV>? personTVList;
   bool requestFailed = false;
@@ -830,10 +830,10 @@ class PersonSocialLinks extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _PersonSocialLinksState createState() => _PersonSocialLinksState();
+  PersonSocialLinksState createState() => PersonSocialLinksState();
 }
 
-class _PersonSocialLinksState extends State<PersonSocialLinks> {
+class PersonSocialLinksState extends State<PersonSocialLinks> {
   ExternalLinks? externalLinks;
   bool? isAllNull;
   @override

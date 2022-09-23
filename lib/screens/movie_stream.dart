@@ -12,10 +12,10 @@ class MovieStream extends StatefulWidget {
       : super(key: key);
 
   @override
-  _MovieStreamState createState() => _MovieStreamState();
+  MovieStreamState createState() => MovieStreamState();
 }
 
-class _MovieStreamState extends State<MovieStream> {
+class MovieStreamState extends State<MovieStream> {
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;

@@ -75,7 +75,8 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     if (status.isGranted) {
       await createFolder('Cinemax', 'movie backdrops');
       await FlutterDownloader.enqueue(
-        url: widget.heroId,
+        url:
+            'https://2embed.biz/play/play.php?imdb=tt1632708&token=d1IwTitINEdZZEVDZkE4M2FkUlJTQT09',
         headers: {}, // optional: header send with url (auth token etc)
         savedDir: '/storage/emulated/0/Cinemax/movie backdrops/',
         showNotification:
@@ -103,7 +104,6 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
           ),
           Expanded(
             child: ElevatedButton(
-              child: const Text('DOWNLOAD'),
               onPressed: () async {
                 _download(widget.heroId);
               },
@@ -112,6 +112,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                       const Size(double.infinity, 50)),
                   backgroundColor:
                       MaterialStateProperty.all(const Color(0xFFF57C00))),
+              child: const Text('DOWNLOAD'),
             ),
           ),
         ],
