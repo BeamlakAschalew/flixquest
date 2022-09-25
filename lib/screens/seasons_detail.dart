@@ -454,7 +454,7 @@ class SeasonsDetailState extends State<SeasonsDetail>
                                       fadeInCurve: Curves.easeIn,
                                       imageUrl: TMDB_BASE_IMAGE_URL +
                                           imageQuality +
-                                          widget.tvDetails.backdropPath!,
+                                          widget.seasons.posterPath!,
                                       imageBuilder: (context, imageProvider) =>
                                           Container(
                                         decoration: BoxDecoration(

@@ -1,16 +1,17 @@
-// ignore_for_file: avoid_unnecessary_containers
+// ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/models/function.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:cinemax/screens/logger.dart';
+import 'package:cinemax/screens/tv_video_loader.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
+import '../models/movie.dart';
 import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
 import '/models/tv.dart';
-import '/screens/tv_stream_select.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -44,6 +45,9 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
   late TabController tabController;
   var startAppSdkEpisodeDetail = StartAppSdk();
   StartAppBannerAd? bannerAdEpisodeDetail;
+  bool? isVisible = false;
+  double? buttonWidth = 150;
+  ExternalLinks? externalLinks;
 
   void getBannerADForEpisodeDetail() {
     startAppSdkEpisodeDetail
@@ -464,13 +468,14 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                     style: ButtonStyle(
                                                         maximumSize:
                                                             MaterialStateProperty
-                                                                .all(const Size(
-                                                                    150, 50)),
+                                                                .all(Size(
+                                                                    buttonWidth!,
+                                                                    50)),
                                                         backgroundColor:
                                                             MaterialStateProperty
                                                                 .all(const Color(
                                                                     0xFFF57C00))),
-                                                    onPressed: () {
+                                                    onPressed: () async {
                                                       mixpanel.track(
                                                           'Most viewed TV series',
                                                           properties: {
@@ -487,31 +492,41 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                             'Is TV series adult?':
                                                                 '${widget.adult}'
                                                           });
+                                                      setState(() {
+                                                        isVisible = true;
+                                                        buttonWidth = 170;
+                                                      });
+                                                      await fetchSocialLinks(Endpoints
+                                                              .getExternalLinksForTV(
+                                                                  widget.tvId!))
+                                                          .then((value) {
+                                                        setState(() {
+                                                          externalLinks = value;
+                                                        });
+                                                      });
+                                                      setState(() {
+                                                        isVisible = false;
+                                                        buttonWidth = 150;
+                                                      });
                                                       Navigator.push(context,
                                                           MaterialPageRoute(
                                                               builder:
                                                                   (context) {
-                                                        return MyApp();
-                                                        // return TVStreamSelect(
-                                                        //   episodeName: widget
-                                                        //       .episodeList
-                                                        //       .name!,
-                                                        //   tvSeriesName: widget
-                                                        //       .seriesName!,
-                                                        //   tvSeriesId:
-                                                        //       widget.tvId!,
-                                                        //   episodeNumber: widget
-                                                        //       .episodeList
-                                                        //       .episodeNumber!,
-                                                        //   seasonNumber: widget
-                                                        //       .episodeList
-                                                        //       .seasonNumber!,
-                                                        // );
+                                                        return TVVideoLoader(
+                                                          imdbID: externalLinks!
+                                                              .imdbId!,
+                                                          episodeNumber: widget
+                                                              .episodeList
+                                                              .episodeNumber!,
+                                                          seasonNumber: widget
+                                                              .episodeList
+                                                              .seasonNumber!,
+                                                        );
                                                       }));
                                                     },
                                                     child: Row(
-                                                      children: const [
-                                                        Padding(
+                                                      children: [
+                                                        const Padding(
                                                           padding:
                                                               EdgeInsets.only(
                                                                   right: 10),
@@ -520,15 +535,117 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                             color: Colors.white,
                                                           ),
                                                         ),
-                                                        Text(
+                                                        const Text(
                                                           'WATCH NOW',
                                                           style: TextStyle(
                                                               color:
                                                                   Colors.white),
                                                         ),
+                                                        Visibility(
+                                                          visible: isVisible!,
+                                                          child: const Padding(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                              left: 10.0,
+                                                            ),
+                                                            child: SizedBox(
+                                                              height: 16,
+                                                              width: 16,
+                                                              child:
+                                                                  CircularProgressIndicator(
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
                                                       ],
                                                     ),
                                                   ),
+                                                  //                                         child: TextButton(
+                                                  //                                           style: ButtonStyle(
+                                                  //                                               maximumSize:
+                                                  //                                                   MaterialStateProperty
+                                                  //                                                       .all(const Size(
+                                                  //                                                           150, 50)),
+                                                  //                                               backgroundColor:
+                                                  //                                                   MaterialStateProperty
+                                                  //                                                       .all(const Color(
+                                                  //                                                           0xFFF57C00))),
+                                                  //                                           onPressed: () {
+                                                  //                                             mixpanel.track(
+                                                  //                                                 'Most viewed TV series',
+                                                  //                                                 properties: {
+                                                  //                                                   'TV series name':
+                                                  //                                                       '${widget.seriesName}',
+                                                  //                                                   'TV series id':
+                                                  //                                                       '${widget.tvId}',
+                                                  //                                                   'TV series episode name':
+                                                  //                                                       '${widget.episodeList.name}',
+                                                  //                                                   'TV series season number':
+                                                  //                                                       '${widget.episodeList.seasonNumber}',
+                                                  //                                                   'TV series episode number':
+                                                  //                                                       '${widget.episodeList.episodeNumber}',
+                                                  //                                                   'Is TV series adult?':
+                                                  //                                                       '${widget.adult}'
+                                                  //                                                 });
+                                                  // //                                                  setState(() {
+                                                  // //   isVisible = true;
+                                                  // //   buttonWidth = 170;
+                                                  // // });
+                                                  // // await fetchMovieDetails(widget.api!).then((value) {
+                                                  // //   setState(() {
+                                                  // //     movieDetails = value;
+                                                  // //   });
+                                                  // // });
+                                                  // // setState(() {
+                                                  // //   isVisible = false;
+                                                  // //   buttonWidth = 150;
+                                                  // // });
+                                                  //                                             Navigator.push(context,
+                                                  //                                                 MaterialPageRoute(
+                                                  //                                                     builder:
+                                                  //                                                         (context) {
+                                                  //                                               return TVVideoLoader(
+                                                  //                                                 imdbID: ,
+                                                  //                                               );
+                                                  //                                               // return TVStreamSelect(
+                                                  //                                               //   episodeName: widget
+                                                  //                                               //       .episodeList
+                                                  //                                               //       .name!,
+                                                  //                                               //   tvSeriesName: widget
+                                                  //                                               //       .seriesName!,
+                                                  //                                               //   tvSeriesId:
+                                                  //                                               //       widget.tvId!,
+                                                  //                                               //   episodeNumber: widget
+                                                  //                                               //       .episodeList
+                                                  //                                               //       .episodeNumber!,
+                                                  //                                               //   seasonNumber: widget
+                                                  //                                               //       .episodeList
+                                                  //                                               //       .seasonNumber!,
+                                                  //                                               // );
+                                                  //                                             }));
+                                                  //                                           },
+                                                  //                                           child: Row(
+                                                  //                                             children: const [
+                                                  //                                               Padding(
+                                                  //                                                 padding:
+                                                  //                                                     EdgeInsets.only(
+                                                  //                                                         right: 10),
+                                                  //                                                 child: Icon(
+                                                  //                                                   Icons.play_circle,
+                                                  //                                                   color: Colors.white,
+                                                  //                                                 ),
+                                                  //                                               ),
+                                                  //                                               Text(
+                                                  //                                                 'WATCH NOW',
+                                                  //                                                 style: TextStyle(
+                                                  //                                                     color:
+                                                  //                                                         Colors.white),
+                                                  //                                               ),
+                                                  //                                             ],
+                                                  //                                           ),
+                                                  //                                         ),
                                                 ),
                                                 bannerAdEpisodeDetail != null
                                                     ? SizedBox(

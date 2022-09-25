@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/hero_photoview.dart';
 import 'package:cinemax/screens/player.dart';
+import 'package:cinemax/screens/movie_video_loader.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../provider/adultmode_provider.dart';
@@ -1867,26 +1868,26 @@ class WatchNowButtonState extends State<WatchNowButton> {
             backgroundColor:
                 MaterialStateProperty.all(const Color(0xFFF57C00))),
         onPressed: () async {
-          // mixpanel.track('Most viewed movies', properties: {
-          //   'Movie name': '${widget.movieName}',
-          //   'Movie id': '${widget.movieId}',
-          //   'Is Movie adult?': '${widget.adult}'
-          // });
-          // setState(() {
-          //   isVisible = true;
-          //   buttonWidth = 170;
-          // });
-          // await fetchMovieDetails(widget.api!).then((value) {
-          //   setState(() {
-          //     movieDetails = value;
-          //   });
-          // });
-          // setState(() {
-          //   isVisible = false;
-          //   buttonWidth = 150;
-          // });
+          mixpanel.track('Most viewed movies', properties: {
+            'Movie name': '${widget.movieName}',
+            'Movie id': '${widget.movieId}',
+            'Is Movie adult?': '${widget.adult}'
+          });
+          setState(() {
+            isVisible = true;
+            buttonWidth = 170;
+          });
+          await fetchMovieDetails(widget.api!).then((value) {
+            setState(() {
+              movieDetails = value;
+            });
+          });
+          setState(() {
+            isVisible = false;
+            buttonWidth = 150;
+          });
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const App();
+            return MovieVideoLoader(imdbID: movieDetails!.imdbId!);
           }));
         },
         child: Row(

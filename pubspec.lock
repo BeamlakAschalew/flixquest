@@ -29,13 +29,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.9.0"
-  better_player:
-    dependency: "direct main"
-    description:
-      name: better_player
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.83"
   boolean_selector:
     dependency: transitive
     description:
@@ -78,13 +71,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.1"
-  chewie:
-    dependency: "direct main"
+  charcode:
+    dependency: transitive
     description:
-      name: chewie
+      name: charcode
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.5"
+    version: "1.3.1"
   clock:
     dependency: transitive
     description:
@@ -237,6 +230,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.4"
+  flutter_hls_parser:
+    dependency: "direct main"
+    description:
+      name: flutter_hls_parser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   flutter_inappwebview:
     dependency: "direct main"
     description:
@@ -258,6 +258,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.9"
+  flutter_spinkit:
+    dependency: "direct main"
+    description:
+      name: flutter_spinkit
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.1.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -268,13 +275,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_widget_from_html_core:
-    dependency: transitive
-    description:
-      name: flutter_widget_from_html_core
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.8.5+3"
   font_awesome_flutter:
     dependency: "direct main"
     description:
@@ -282,13 +282,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "10.2.1"
-  fwfh_text_style:
+  freezed_annotation:
     dependency: transitive
     description:
-      name: fwfh_text_style
+      name: freezed_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.22.08+1"
+    version: "2.1.0"
+  get:
+    dependency: transitive
+    description:
+      name: get
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.6.5"
   google_nav_bar:
     dependency: "direct main"
     description:
@@ -338,6 +345,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.4"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.7.0"
   lint:
     dependency: transitive
     description:
@@ -352,13 +366,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  logger:
-    dependency: "direct main"
+  lottie:
+    dependency: transitive
     description:
-      name: logger
+      name: lottie
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.4.3"
   matcher:
     dependency: transitive
     description:
@@ -401,13 +415,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  network_logger:
-    dependency: "direct main"
-    description:
-      name: network_logger
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   octo_image:
     dependency: transitive
     description:
@@ -520,6 +527,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.3"
+  pod_player:
+    dependency: "direct main"
+    description:
+      name: pod_player
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   process:
     dependency: transitive
     description:
@@ -534,6 +548,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.0.3"
+  quiver:
+    dependency: transitive
+    description:
+      name: quiver
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
   readmore:
     dependency: "direct main"
     description:
@@ -735,6 +756,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.1"
+  universal_html:
+    dependency: transitive
+    description:
+      name: universal_html
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.8"
   universal_io:
     dependency: transitive
     description:
@@ -847,13 +875,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.12"
-  visibility_detector:
-    dependency: transitive
-    description:
-      name: visibility_detector
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.3"
   wakelock:
     dependency: transitive
     description:
@@ -952,6 +973,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
+  youtube_explode_dart:
+    dependency: transitive
+    description:
+      name: youtube_explode_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.12.1"
 sdks:
   dart: ">=2.18.0 <3.0.0"
   flutter: ">=3.3.0"
