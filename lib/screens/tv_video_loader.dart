@@ -17,11 +17,15 @@ class TVVideoLoader extends StatefulWidget {
       {required this.imdbID,
       required this.episodeNumber,
       required this.seasonNumber,
+      required this.videoTitle,
+      required this.isDark,
       Key? key})
       : super(key: key);
   final String imdbID;
   final int seasonNumber;
   final int episodeNumber;
+  final String videoTitle;
+  final bool isDark;
 
   @override
   State<TVVideoLoader> createState() => _TVVideoLoaderState();
@@ -60,14 +64,27 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               '${videoSrc![0]['attributes']['src']}'),
         )
         .then((value) => value.redirects[0].location);
+    if (completem3u8.host.isEmpty) {
+      //   SnackBar(content: Text('The video couldn\'t be found on the server :('));
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+        'Couldn\'t find the video on the server :(',
+        style: TextStyle(
+            color: widget.isDark ? Colors.white : Colors.black,
+            fontFamily: 'PoppinsSB'),
+      )));
+    }
     final data = await http.get(completem3u8).then((res) => res.body);
+    print(data.isNotEmpty);
     final bodyLength =
         await http.get(completem3u8).then((value) => value.bodyBytes.length);
     if (bodyLength <= 110) {
       videoUrls!.add(VideoQalityUrls(quality: 0, url: completem3u8.toString()));
       Navigator.pushReplacement(context, MaterialPageRoute(builder: ((context) {
-        return PlayVideoFromNetworkQualityUrls(
+        return Player(
           videoUrl: videoUrls!,
+          videoTitle: widget.videoTitle,
         );
       })));
     }
@@ -79,12 +96,14 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         ..sort((a, b) => b.format.bitrate! - a.format.bitrate!)
         ..forEach((v) {
           setState(() {
+            print(v.url);
             videoUrls!.add(VideoQalityUrls(
                 quality: v.format.height!, url: v.url.toString()));
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: ((context) {
-              return PlayVideoFromNetworkQualityUrls(
+              return Player(
                 videoUrl: videoUrls!,
+                videoTitle: widget.videoTitle,
               );
             })));
           });
@@ -100,6 +119,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        color:
+            widget.isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

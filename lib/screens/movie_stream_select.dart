@@ -67,9 +67,9 @@ class _MovieStreamSelectState extends State<MovieStreamSelect> {
         color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
         child: Column(
           children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,7 +79,7 @@ class _MovieStreamSelectState extends State<MovieStreamSelect> {
                         StreamListWidget(
                           streamName: 'Stream one (multiple player options)',
                           streamLink:
-                              'https://www.2embed.to/embed/tmdb/movie?id=${widget.movieId}',
+                              'https://2embed.biz/embed/movie?tmdb=${widget.movieId}',
                           movieName: widget.movieName,
                         ),
                         Visibility(
@@ -94,48 +94,62 @@ class _MovieStreamSelectState extends State<MovieStreamSelect> {
                         StreamListWidget(
                           streamName: 'Stream three (multiple player options)',
                           streamLink:
-                              'https://moviehungershaven.xyz/tplayer/plr7.php?id=${widget.movieId}',
+                              'https://www.2embed.to/embed/tmdb/movie?id=${widget.movieId}',
                           movieName: widget.movieName,
                         ),
                         StreamListWidget(
-                          streamName: 'Stream four (360p)',
+                          streamName: 'Stream four (multiple player options)',
                           streamLink:
-                              'https://databasegdriveplayer.co/player.php?tmdb=${widget.movieId}',
+                              'https://onionflix.org/embed/movie?tmdb=${widget.movieId}',
                           movieName: widget.movieName,
                         ),
                         StreamListWidget(
                           streamName: 'Stream five (multiple player options)',
                           streamLink:
-                              'https://openvids.io/tmdb/movie/${widget.movieId}',
+                              'https://hub.smashystream.com/embed/movie?tmdb=${widget.movieId}',
                           movieName: widget.movieName,
                         ),
                         StreamListWidget(
                           streamName: 'Stream six (multiple player options)',
                           streamLink:
-                              'https://fsapi.xyz/tmdb-movie/${widget.movieId}',
+                              'https://embedworld.xyz/public/embed/movie?tmdb=${widget.movieId}',
                           movieName: widget.movieName,
                         ),
                         StreamListWidget(
                           streamName: 'Stream seven (multiple player options)',
                           streamLink:
-                              'https://api.movieshunters.com/api/movie?id=${widget.movieId}',
+                              'https://cinedb.top/embed/movie?tmdb=${widget.movieId}',
                           movieName: widget.movieName,
                         ),
                         StreamListWidget(
                           streamName: 'Stream eight (multiple player options)',
                           streamLink:
-                              'https://imdbembed.xyz/movie/tmdb/${widget.movieId}',
+                              'https://fembed.ro/embed/movie?tmdb=${widget.movieId}',
                           movieName: widget.movieName,
                         ),
-                        Visibility(
-                          visible: widget.movieImdbId == null ? false : true,
-                          child: StreamListWidget(
-                            streamName:
-                                'Stream nine (360p/480p/720p/1080p - might have ads)',
-                            streamLink:
-                                'https://api.123movie.cc/imdb.php?imdb=${widget.movieImdbId}&server=hydrax',
-                            movieName: widget.movieName,
-                          ),
+                        StreamListWidget(
+                          streamName: 'Stream nine (multiple player options)',
+                          streamLink:
+                              'https://moviehab.com/embed/movie?tmdb=${widget.movieId}',
+                          movieName: widget.movieName,
+                        ),
+                        StreamListWidget(
+                          streamName: 'Stream ten (multiple player options)',
+                          streamLink:
+                              'https://vidsrc.me/embed/${widget.movieId}/',
+                          movieName: widget.movieName,
+                        ),
+                        StreamListWidget(
+                          streamName: 'Stream eleven (360p)',
+                          streamLink:
+                              'https://databasegdriveplayer.co/player.php?tmdb=${widget.movieId}',
+                          movieName: widget.movieName,
+                        ),
+                        StreamListWidget(
+                          streamName: 'Stream twelve (multiple player options)',
+                          streamLink:
+                              'https://openvids.io/tmdb/movie/${widget.movieId}',
+                          movieName: widget.movieName,
                         ),
                         bannerAd4 != null
                             ? StartAppBanner(

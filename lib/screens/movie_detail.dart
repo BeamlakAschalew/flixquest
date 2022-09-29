@@ -444,7 +444,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
                                                   ],
                                                 ),
                                                 WatchNowButton(
-                                                  movieId: widget.movie.id,
+                                                  movieId: widget.movie.id!,
                                                   movieName: widget
                                                       .movie.originalTitle,
                                                   adult: widget.movie.adult,

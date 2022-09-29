@@ -1,5 +1,6 @@
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/provider/default_home_provider.dart';
 import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,12 +14,14 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   String initialDropdownValue = 'w500';
+  int initialHomeScreenValue = 0;
   @override
   Widget build(BuildContext context) {
     final adultChange = Provider.of<AdultmodeProvider>(context);
     final themeChange = Provider.of<DarkthemeProvider>(context);
     final imagequalityChange = Provider.of<ImagequalityProvider>(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final defaultHomeValue = Provider.of<DeafultHomeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -77,6 +80,31 @@ class _SettingsState extends State<Settings> {
                   onChanged: (String? value) {
                     setState(() {
                       imagequalityChange.imageQuality = value!;
+                    });
+                  }),
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.phone_android_sharp,
+                color: Color(0xFFF57C00),
+              ),
+              title: const Text('Default home screen'),
+              trailing: DropdownButton(
+                  value: defaultHomeValue.defaultValue,
+                  items: const [
+                    DropdownMenuItem(value: 0, child: Text('Movies')),
+                    DropdownMenuItem(
+                      value: 1,
+                      child: Text('TV shows'),
+                    ),
+                    DropdownMenuItem(
+                      value: 2,
+                      child: Text('Discover'),
+                    )
+                  ],
+                  onChanged: (int? value) {
+                    setState(() {
+                      defaultHomeValue.defaultValue = value!;
                     });
                   }),
             ),

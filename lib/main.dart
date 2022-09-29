@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cinemax/constants/theme_data.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/provider/default_home_provider.dart';
 import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:cinemax/provider/mixpanel_provider.dart';
 import 'package:cinemax/screens/discover.dart';
@@ -38,6 +39,7 @@ class _CinemaxState extends State<Cinemax>
   DarkthemeProvider themeChangeProvider = DarkthemeProvider();
   ImagequalityProvider imagequalityProvider = ImagequalityProvider();
   MixpanelProvider mixpanelProvider = MixpanelProvider();
+  DeafultHomeProvider deafultHomeProvider = DeafultHomeProvider();
   late Mixpanel mixpanel;
 
   void firstTimeCheck() async {
@@ -59,6 +61,7 @@ class _CinemaxState extends State<Cinemax>
     getCurrentImageQuality();
     getCurrentAdultMode();
     getCurrentThemeMode();
+    getCurrentDefaultScreen();
   }
 
   void getCurrentAdultMode() async {
@@ -76,6 +79,11 @@ class _CinemaxState extends State<Cinemax>
         await imagequalityProvider.imagePreferences.getImageQuality();
   }
 
+  void getCurrentDefaultScreen() async {
+    deafultHomeProvider.defaultValue =
+        await deafultHomeProvider.defaultHomePreferences.getDefaultHome();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -91,12 +99,20 @@ class _CinemaxState extends State<Cinemax>
           }),
           ChangeNotifierProvider(create: (_) {
             return mixpanelProvider;
+          }),
+          ChangeNotifierProvider(create: (_) {
+            return deafultHomeProvider;
           })
         ],
-        child: Consumer4<AdultmodeProvider, DarkthemeProvider,
-                ImagequalityProvider, MixpanelProvider>(
-            builder: (context, adultmodeProvider, themeChangeProvider,
-                imagequalityProvider, mixpanelProvider, snapshot) {
+        child: Consumer5<AdultmodeProvider, DarkthemeProvider,
+                ImagequalityProvider, MixpanelProvider, DeafultHomeProvider>(
+            builder: (context,
+                adultmodeProvider,
+                themeChangeProvider,
+                imagequalityProvider,
+                mixpanelProvider,
+                defaultHomeProvider,
+                snapshot) {
           return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Cinemax',
@@ -130,10 +146,12 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final defaultHome = Provider.of<DeafultHomeProvider>(context).defaultValue;
     return Provider.of<AdultmodeProvider?>(context) == null ||
             Provider.of<ImagequalityProvider?>(context) == null ||
             Provider.of<DarkthemeProvider?>(context) == null ||
-            Provider.of<MixpanelProvider?>(context)?.mixpanel == null
+            Provider.of<MixpanelProvider?>(context)?.mixpanel == null ||
+            Provider.of<DeafultHomeProvider?>(context)?.defaultValue == null
         ? const Center(
             child: CircularProgressIndicator(),
           )
@@ -203,7 +221,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                         text: 'Discover',
                       ),
                     ],
-                    selectedIndex: _selectedIndex,
+                    selectedIndex: defaultHome,
                     onTabChange: (index) {
                       setState(() {
                         _selectedIndex = index;

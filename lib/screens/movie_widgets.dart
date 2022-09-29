@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/hero_photoview.dart';
-import 'package:cinemax/screens/player.dart';
 import 'package:cinemax/screens/movie_video_loader.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:startapp_sdk/startapp.dart';
@@ -1832,14 +1831,14 @@ class MovieVideosState extends State<MovieVideosDisplay> {
 class WatchNowButton extends StatefulWidget {
   const WatchNowButton({
     Key? key,
-    this.movieId,
+    required this.movieId,
     this.movieName,
     this.movieImdbId,
     this.api,
     required this.adult,
   }) : super(key: key);
   final String? movieName;
-  final int? movieId;
+  final int movieId;
   final int? movieImdbId;
   final bool? adult;
   final String? api;
@@ -1856,6 +1855,97 @@ class WatchNowButtonState extends State<WatchNowButton> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void streamSelectBottomSheet(
+      {required String mediaType,
+      required String imdbId,
+      required String videoTitle}) {
+    final isDark =
+        Provider.of<DarkthemeProvider>(context, listen: false).darktheme;
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return Container(
+              color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Watch with:',
+                        style: kTextSmallHeaderStyle,
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(builder: ((context) {
+                                  return MovieVideoLoader(
+                                    imdbID: imdbId,
+                                    videoTitle: videoTitle,
+                                    isDark: isDark,
+                                  );
+                                })));
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: const Color(0xFFF57C00),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(20.0),
+                                  child: Text(
+                                    'Cinemax player. AD free, highly recommended, but without subtitles',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(30.0),
+                          child: Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(context,
+                                    MaterialPageRoute(builder: ((context) {
+                                  return MovieStreamSelect(
+                                    movieName: videoTitle,
+                                    movieId: widget.movieId,
+                                    movieImdbId: imdbId,
+                                  );
+                                })));
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: const Color(0xFFF57C00),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(20.0),
+                                  child: Text(
+                                    '3rd party websites. With ADs, not recommended, with subtitles',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ));
+        });
   }
 
   @override
@@ -1886,9 +1976,17 @@ class WatchNowButtonState extends State<WatchNowButton> {
             isVisible = false;
             buttonWidth = 150;
           });
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return MovieVideoLoader(imdbID: movieDetails!.imdbId!);
-          }));
+          streamSelectBottomSheet(
+              imdbId: movieDetails!.imdbId,
+              mediaType: 'movie',
+              videoTitle: movieDetails!.originalTitle!);
+          // Navigator.push(context, MaterialPageRoute(builder: (context) {
+          //   return StreamOptionSelect(mediaType: 'movie');
+          //   // return MovieVideoLoader(
+          //   //   imdbID: movieDetails!.imdbId!,
+          //   //   videoTitle: movieDetails!.originalTitle!,
+          //   // );
+          // }));
         },
         child: Row(
           children: [

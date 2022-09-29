@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/screens/tv_stream_select.dart';
 import 'package:cinemax/screens/tv_video_loader.dart';
 import 'package:provider/provider.dart';
 import 'package:startapp_sdk/startapp.dart';
@@ -70,6 +71,104 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
     super.initState();
     tabController = TabController(length: 4, vsync: this);
     getBannerADForEpisodeDetail();
+  }
+
+  void streamSelectBottomSheet(
+      {required String mediaType,
+      required String imdbId,
+      required String videoTitle,
+      required int seasonNumber,
+      required int episodeNumber,
+      required int tvId,
+      required String episodeName,
+      required String tvSeriesName}) {
+    final isDark =
+        Provider.of<DarkthemeProvider>(context, listen: false).darktheme;
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return Container(
+              color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Watch with:',
+                        style: kTextSmallHeaderStyle,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            print('darktheme? $isDark');
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: ((context) {
+                              return TVVideoLoader(
+                                imdbID: imdbId,
+                                videoTitle: videoTitle,
+                                episodeNumber: episodeNumber,
+                                seasonNumber: seasonNumber,
+                                isDark: isDark,
+                              );
+                            })));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFF57C00),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Text(
+                                'Cinemax player. AD free, highly recommended, but without subtitles',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(30.0),
+                      child: Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: ((context) {
+                              return TVStreamSelect(
+                                episodeName: episodeName,
+                                seasonNumber: seasonNumber,
+                                tvSeriesId: tvId,
+                                tvSeriesName: tvSeriesName,
+                                tvSeriesImdbId: imdbId,
+                                episodeNumber: episodeNumber,
+                              );
+                            })));
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color(0xFFF57C00),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Text(
+                                '3rd party websites. With ADs, not recommended, with subtitles',
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ));
+        });
   }
 
   @override
@@ -508,21 +607,48 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                         isVisible = false;
                                                         buttonWidth = 150;
                                                       });
-                                                      Navigator.push(context,
-                                                          MaterialPageRoute(
-                                                              builder:
-                                                                  (context) {
-                                                        return TVVideoLoader(
-                                                          imdbID: externalLinks!
+                                                      streamSelectBottomSheet(
+                                                          mediaType: 'tv',
+                                                          imdbId: externalLinks!
                                                               .imdbId!,
+                                                          videoTitle:
+                                                              '${widget.seriesName} ${widget.episodeList.seasonNumber! <= 9 ? 'S0${widget.episodeList.seasonNumber}' : 'S${widget.episodeList.seasonNumber}'} | '
+                                                              '${widget.episodeList.episodeNumber! <= 9 ? 'E0${widget.episodeList.episodeNumber}' : 'E${widget.episodeList.episodeNumber}'}, ${widget.episodeList.name}'
+                                                              '',
                                                           episodeNumber: widget
                                                               .episodeList
                                                               .episodeNumber!,
                                                           seasonNumber: widget
                                                               .episodeList
                                                               .seasonNumber!,
-                                                        );
-                                                      }));
+                                                          tvId: widget.tvId!,
+                                                          episodeName: widget
+                                                              .episodeList
+                                                              .name!,
+                                                          tvSeriesName: widget
+                                                              .seriesName!);
+                                                      // Navigator.push(context,
+                                                      //     MaterialPageRoute(
+                                                      //         builder:
+                                                      //             (context) {
+                                                      //   return StreamOptionSelect(
+                                                      //       mediaType: 'tv');
+
+                                                      // return TVVideoLoader(
+                                                      //   imdbID: externalLinks!
+                                                      //       .imdbId!,
+                                                      //   episodeNumber: widget
+                                                      //       .episodeList
+                                                      //       .episodeNumber!,
+                                                      //   seasonNumber: widget
+                                                      //       .episodeList
+                                                      //       .seasonNumber!,
+                                                      //   videoTitle:
+                                                      //       '${widget.episodeList.seasonNumber! <= 9 ? 'S0${widget.episodeList.seasonNumber}' : 'S${widget.episodeList.seasonNumber}'} | '
+                                                      //       '${widget.episodeList.episodeNumber! <= 9 ? 'E0${widget.episodeList.episodeNumber}' : 'E${widget.episodeList.episodeNumber}'}'
+                                                      //       '',
+                                                      // );
+                                                      // }));
                                                     },
                                                     child: Row(
                                                       children: [
@@ -562,90 +688,6 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                       ],
                                                     ),
                                                   ),
-                                                  //                                         child: TextButton(
-                                                  //                                           style: ButtonStyle(
-                                                  //                                               maximumSize:
-                                                  //                                                   MaterialStateProperty
-                                                  //                                                       .all(const Size(
-                                                  //                                                           150, 50)),
-                                                  //                                               backgroundColor:
-                                                  //                                                   MaterialStateProperty
-                                                  //                                                       .all(const Color(
-                                                  //                                                           0xFFF57C00))),
-                                                  //                                           onPressed: () {
-                                                  //                                             mixpanel.track(
-                                                  //                                                 'Most viewed TV series',
-                                                  //                                                 properties: {
-                                                  //                                                   'TV series name':
-                                                  //                                                       '${widget.seriesName}',
-                                                  //                                                   'TV series id':
-                                                  //                                                       '${widget.tvId}',
-                                                  //                                                   'TV series episode name':
-                                                  //                                                       '${widget.episodeList.name}',
-                                                  //                                                   'TV series season number':
-                                                  //                                                       '${widget.episodeList.seasonNumber}',
-                                                  //                                                   'TV series episode number':
-                                                  //                                                       '${widget.episodeList.episodeNumber}',
-                                                  //                                                   'Is TV series adult?':
-                                                  //                                                       '${widget.adult}'
-                                                  //                                                 });
-                                                  // //                                                  setState(() {
-                                                  // //   isVisible = true;
-                                                  // //   buttonWidth = 170;
-                                                  // // });
-                                                  // // await fetchMovieDetails(widget.api!).then((value) {
-                                                  // //   setState(() {
-                                                  // //     movieDetails = value;
-                                                  // //   });
-                                                  // // });
-                                                  // // setState(() {
-                                                  // //   isVisible = false;
-                                                  // //   buttonWidth = 150;
-                                                  // // });
-                                                  //                                             Navigator.push(context,
-                                                  //                                                 MaterialPageRoute(
-                                                  //                                                     builder:
-                                                  //                                                         (context) {
-                                                  //                                               return TVVideoLoader(
-                                                  //                                                 imdbID: ,
-                                                  //                                               );
-                                                  //                                               // return TVStreamSelect(
-                                                  //                                               //   episodeName: widget
-                                                  //                                               //       .episodeList
-                                                  //                                               //       .name!,
-                                                  //                                               //   tvSeriesName: widget
-                                                  //                                               //       .seriesName!,
-                                                  //                                               //   tvSeriesId:
-                                                  //                                               //       widget.tvId!,
-                                                  //                                               //   episodeNumber: widget
-                                                  //                                               //       .episodeList
-                                                  //                                               //       .episodeNumber!,
-                                                  //                                               //   seasonNumber: widget
-                                                  //                                               //       .episodeList
-                                                  //                                               //       .seasonNumber!,
-                                                  //                                               // );
-                                                  //                                             }));
-                                                  //                                           },
-                                                  //                                           child: Row(
-                                                  //                                             children: const [
-                                                  //                                               Padding(
-                                                  //                                                 padding:
-                                                  //                                                     EdgeInsets.only(
-                                                  //                                                         right: 10),
-                                                  //                                                 child: Icon(
-                                                  //                                                   Icons.play_circle,
-                                                  //                                                   color: Colors.white,
-                                                  //                                                 ),
-                                                  //                                               ),
-                                                  //                                               Text(
-                                                  //                                                 'WATCH NOW',
-                                                  //                                                 style: TextStyle(
-                                                  //                                                     color:
-                                                  //                                                         Colors.white),
-                                                  //                                               ),
-                                                  //                                             ],
-                                                  //                                           ),
-                                                  //                                         ),
                                                 ),
                                                 bannerAdEpisodeDetail != null
                                                     ? SizedBox(
