@@ -265,6 +265,14 @@ class PersonMoviesList {
         movies!.add(Movie.fromJson(v));
       });
     }
+    if (json['crew'] != null) {
+      if (json['cast'] == null) {
+        movies = [];
+      }
+      json['crew'].forEach((v) {
+        movies!.add(Movie.fromJson(v));
+      });
+    }
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -273,6 +281,9 @@ class PersonMoviesList {
     // }
     if (movies != null) {
       data['cast'] = movies!.map((v) => v.toJson()).toList();
+    }
+    if (movies != null) {
+      data['crew'] = movies!.map((v) => v.toJson()).toList();
     }
 
     return data;

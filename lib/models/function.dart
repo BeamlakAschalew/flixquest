@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'package:web_scraper/web_scraper.dart';
-
 import '/models/images.dart';
 import '/models/person.dart';
 import '/models/tv.dart';
@@ -214,5 +212,5 @@ Future<List<TV>> fetchPersonTV(String api) async {
   }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
   personTVList = PersonTVList.fromJson(decodeRes);
-  return personTVList.movies ?? [];
+  return personTVList.tv ?? [];
 }

@@ -493,6 +493,8 @@ class TVDetailPageState extends State<TVDetailPage>
                                                   title: 'Images',
                                                   api: Endpoints.getTVImages(
                                                       widget.tvSeries.id!),
+                                                  name: widget
+                                                      .tvSeries.originalName,
                                                 ),
                                                 bannerAdTVDetail1 != null
                                                     ? StartAppBanner(

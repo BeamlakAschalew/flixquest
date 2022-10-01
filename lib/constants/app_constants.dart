@@ -10,3 +10,6 @@ const kTextSmallHeaderStyle = TextStyle(
   fontSize: 17,
   overflow: TextOverflow.ellipsis,
 );
+
+const kTableLeftStyle =
+    TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);

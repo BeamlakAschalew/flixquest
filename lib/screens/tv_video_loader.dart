@@ -36,7 +36,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   late Uri completem3u8;
   final webScraper = WebScraper(TWOEMBED_BASE_URL);
   List<Map<String, dynamic>>? videoSrc;
-  SpinKitChasingDots spinKitChasingDots = SpinKitChasingDots(
+  SpinKitChasingDots spinKitChasingDots = const SpinKitChasingDots(
     color: Colors.white,
     size: 60,
   );
@@ -127,8 +127,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               spinKitChasingDots,
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
                 child: Text(
                   'Initializing player',
                   style: kTextSmallHeaderStyle,

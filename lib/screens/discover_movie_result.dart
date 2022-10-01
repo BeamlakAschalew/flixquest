@@ -128,14 +128,8 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                     color: isDark
                         ? const Color(0xFF202124)
                         : const Color(0xFFFFFFFF),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: mainPageVerticalScrollShimmer(
-                          bannerAdMovieDiscover,
-                          isDark,
-                          isLoading,
-                          _scrollController),
-                    ))
+                    child: mainPageVerticalScrollShimmer(bannerAdMovieDiscover,
+                        isDark, isLoading, _scrollController))
                 : moviesList!.isEmpty
                     ? Container(
                         color: isDark

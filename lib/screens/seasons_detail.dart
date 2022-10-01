@@ -383,6 +383,8 @@ class SeasonsDetailState extends State<SeasonsDetail>
                                                     : Container(),
                                                 TVSeasonImagesDisplay(
                                                   title: 'Images',
+                                                  name:
+                                                      '${widget.seriesName}_season_${widget.seasons.seasonNumber}',
                                                   api: Endpoints
                                                       .getTVSeasonImagesUrl(
                                                           widget.tvDetails.id!,

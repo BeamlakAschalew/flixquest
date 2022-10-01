@@ -2,7 +2,10 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/screens/common_widgets.dart';
+import 'package:cinemax/screens/hero_photoview.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../constants/app_constants.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '../provider/mixpanel_provider.dart';
@@ -25,10 +28,12 @@ class PersonImagesDisplay extends StatefulWidget {
     Key? key,
     required this.api,
     required this.title,
+    required this.personName,
   }) : super(key: key);
 
   final String api;
   final String title;
+  final String personName;
 
   @override
   State<PersonImagesDisplay> createState() => _PersonImagesDisplayState();
@@ -111,11 +116,33 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                                       .filePath!,
                                               imageBuilder:
                                                   (context, imageProvider) =>
-                                                      Container(
-                                                decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.cover,
+                                                      GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(context,
+                                                      MaterialPageRoute(
+                                                          builder: ((context) {
+                                                    return HeroPhotoView(
+                                                      imageProvider:
+                                                          imageProvider,
+                                                      currentIndex:
+                                                          index.toString(),
+                                                      heroId:
+                                                          TMDB_BASE_IMAGE_URL +
+                                                              imageQuality +
+                                                              personImages!
+                                                                  .profile![
+                                                                      index]
+                                                                  .filePath!,
+                                                      name: widget.personName,
+                                                    );
+                                                  })));
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
@@ -936,6 +963,81 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                         ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class PersonDataTable extends StatefulWidget {
+  const PersonDataTable({required this.api, Key? key}) : super(key: key);
+  final String api;
+
+  @override
+  State<PersonDataTable> createState() => _PersonDataTableState();
+}
+
+class _PersonDataTableState extends State<PersonDataTable> {
+  PersonDetails? personDetails;
+  @override
+  void initState() {
+    fetchPersonDetails(widget.api).then((value) {
+      setState(() {
+        personDetails = value;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    return Container(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: personDetails == null
+              ? personDetailInfoTableShimmer(isDark)
+              : DataTable(dataRowHeight: 40, columns: [
+                  const DataColumn(
+                      label: Text(
+                    'Age',
+                    style: kTableLeftStyle,
+                  )),
+                  DataColumn(
+                    label: Text(personDetails?.birthday != null
+                        ? '${DateTime.parse(DateTime.now().toString()).year.toInt() - DateTime.parse(personDetails!.birthday!.toString()).year - 1}'
+                        : '-'),
+                  ),
+                ], rows: [
+                  DataRow(cells: [
+                    const DataCell(Text(
+                      'Born on',
+                      style: kTableLeftStyle,
+                    )),
+                    DataCell(
+                      Text(personDetails?.birthday != null
+                          ? '${DateTime.parse(personDetails!.birthday!).day} ${DateFormat.MMMM().format(DateTime.parse(personDetails!.birthday!))}, ${DateTime.parse(personDetails!.birthday!.toString()).year}'
+                          : '-'),
+                    ),
+                  ]),
+                  DataRow(cells: [
+                    const DataCell(Text(
+                      'From',
+                      style: kTableLeftStyle,
+                    )),
+                    DataCell(
+                      Text(
+                        personDetails?.birthPlace != null
+                            ? personDetails!.birthPlace!
+                            : '-',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ]),
+                ]),
         ),
       ),
     );

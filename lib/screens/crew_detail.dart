@@ -156,7 +156,7 @@ class CrewDetailPageState extends State<CrewDetailPage>
                               children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                    top: 80,
+                                    top: 55,
                                   ),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -266,12 +266,19 @@ class CrewDetailPageState extends State<CrewDetailPage>
                                                                     .crew!.id!),
                                                       ),
                                                       PersonImagesDisplay(
+                                                        personName:
+                                                            widget.crew!.name!,
                                                         api: Endpoints
                                                             .getPersonImages(
                                                           widget.crew!.id!,
                                                         ),
                                                         title: 'Images',
                                                       ),
+                                                      PersonDataTable(
+                                                          api: Endpoints
+                                                              .getPersonDetails(
+                                                                  widget.crew!
+                                                                      .id!)),
                                                     ],
                                                   ),
                                                 ),
@@ -325,8 +332,8 @@ class CrewDetailPageState extends State<CrewDetailPage>
                             Hero(
                               tag: widget.heroId,
                               child: SizedBox(
-                                width: 150,
-                                height: 150,
+                                width: 125,
+                                height: 125,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100.0),
                                   child: widget.crew!.profilePath == null

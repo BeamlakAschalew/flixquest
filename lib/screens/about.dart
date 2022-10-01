@@ -1,4 +1,6 @@
+import 'package:cinemax/constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
@@ -48,19 +50,7 @@ class AboutPage extends StatelessWidget {
                   style:
                       TextStyle(fontSize: 20.0, overflow: TextOverflow.visible),
                 ),
-                SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: Image.asset('assets/images/tmdb_logo.png'),
-                ),
                 GestureDetector(
-                  child: const Text(
-                    'https://themoviedb.org',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      decorationStyle: TextDecorationStyle.solid,
-                    ),
-                  ),
                   onTap: () {
                     launchUrl(
                         Uri.parse(
@@ -68,6 +58,11 @@ class AboutPage extends StatelessWidget {
                         ),
                         mode: LaunchMode.externalApplication);
                   },
+                  child: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: Image.asset('assets/images/tmdb_logo.png'),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -84,6 +79,40 @@ class AboutPage extends StatelessWidget {
                           mode: LaunchMode.externalApplication);
                     },
                   ),
+                ),
+                Column(
+                  children: [
+                    const Text(
+                      'Follow Cinemax on various platforms',
+                      style: kTextSmallHeaderStyle,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.black26,
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: const [
+                          SocialIconContainer(
+                              platformIcon: FontAwesomeIcons.twitter),
+                          SocialIconContainer(
+                              platformIcon: FontAwesomeIcons.instagram),
+                          SocialIconContainer(
+                              platformIcon: FontAwesomeIcons.telegram),
+                          SocialIconContainer(
+                              platformIcon: FontAwesomeIcons.tiktok),
+                          SocialIconContainer(
+                              platformIcon: FontAwesomeIcons.facebook),
+                          SocialIconContainer(
+                              platformIcon: FontAwesomeIcons.github),
+                          SocialIconContainer(platformIcon: Icons.mail),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
                 const Padding(
                   padding: EdgeInsets.only(
@@ -110,5 +139,42 @@ class AboutPage extends StatelessWidget {
   }
 }
 
+class SocialIconContainer extends StatelessWidget {
+  const SocialIconContainer({
+    required this.platformIcon,
+    Key? key,
+  }) : super(key: key);
 
-// 
+  final IconData platformIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+      ),
+      child: PlatformIcon(platformIcon: platformIcon),
+    );
+  }
+}
+
+class PlatformIcon extends StatelessWidget {
+  const PlatformIcon({
+    required this.platformIcon,
+    Key? key,
+  }) : super(key: key);
+
+  final IconData platformIcon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+      platformIcon,
+      color: Color(0xFFF57C00),
+    );
+  }
+}
+
+//

@@ -94,40 +94,39 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Watch with:',
-                        style: kTextSmallHeaderStyle,
+                    Center(
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Watch with:',
+                          style: kTextSmallHeaderStyle,
+                        ),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(30.0),
-                      child: Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            print('darktheme? $isDark');
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: ((context) {
-                              return TVVideoLoader(
-                                imdbID: imdbId,
-                                videoTitle: videoTitle,
-                                episodeNumber: episodeNumber,
-                                seasonNumber: seasonNumber,
-                                isDark: isDark,
-                              );
-                            })));
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: const Color(0xFFF57C00),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: const Padding(
-                              padding: EdgeInsets.all(20.0),
-                              child: Text(
-                                'Cinemax player. AD free, highly recommended, but without subtitles',
-                                textAlign: TextAlign.center,
-                              ),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: ((context) {
+                            return TVVideoLoader(
+                              imdbID: imdbId,
+                              videoTitle: videoTitle,
+                              episodeNumber: episodeNumber,
+                              seasonNumber: seasonNumber,
+                              isDark: isDark,
+                            );
+                          })));
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFF57C00),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Text(
+                              'Cinemax player. AD free, highly recommended, but without subtitles',
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),
@@ -135,36 +134,34 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                     ),
                     Padding(
                       padding: const EdgeInsets.all(30.0),
-                      child: Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: ((context) {
-                              return TVStreamSelect(
-                                episodeName: episodeName,
-                                seasonNumber: seasonNumber,
-                                tvSeriesId: tvId,
-                                tvSeriesName: tvSeriesName,
-                                tvSeriesImdbId: imdbId,
-                                episodeNumber: episodeNumber,
-                              );
-                            })));
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: const Color(0xFFF57C00),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: const Padding(
-                              padding: EdgeInsets.all(20.0),
-                              child: Text(
-                                '3rd party websites. With ADs, not recommended, with subtitles',
-                                textAlign: TextAlign.center,
-                              ),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: ((context) {
+                            return TVStreamSelect(
+                              episodeName: episodeName,
+                              seasonNumber: seasonNumber,
+                              tvSeriesId: tvId,
+                              tvSeriesName: tvSeriesName,
+                              tvSeriesImdbId: imdbId,
+                              episodeNumber: episodeNumber,
+                            );
+                          })));
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFF57C00),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Text(
+                              '3rd party websites. With ADs, not recommended, with subtitles',
+                              textAlign: TextAlign.center,
                             ),
                           ),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ));
@@ -709,6 +706,8 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                 ),
                                                 TVEpisodeImagesDisplay(
                                                   title: 'Images',
+                                                  name:
+                                                      '${widget.seriesName}_${widget.episodeList.name}',
                                                   api: Endpoints
                                                       .getTVEpisodeImagesUrl(
                                                           widget.tvId!,

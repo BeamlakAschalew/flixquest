@@ -465,6 +465,8 @@ class MovieDetailPageState extends State<MovieDetailPage>
                                                   title: 'Images',
                                                   api: Endpoints.getImages(
                                                       widget.movie.id!),
+                                                  name: widget
+                                                      .movie.originalTitle,
                                                 ),
                                                 bannerAdMovieDetail1 != null
                                                     ? StartAppBanner(

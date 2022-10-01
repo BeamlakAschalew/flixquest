@@ -246,11 +246,12 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                   onPressed: () {
                     joinGenreStrings();
                     joinProviderStrings();
+
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                       return DiscoverMovieResult(
                           api:
-                              '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY&sort_by=$moviesSort&watch_region=US&include_adult=${includeAdult.toString()}&year=$defaultMovieReleaseYear&vote_count.gte=${movieTotalRatingSlider.toInt()}&with_genres=$joinedIds&with_watch_providers=$joinedProviderIds',
+                              '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY&sort_by=$moviesSort&watch_region=US&include_adult=${includeAdult.toString()}&primary_release_year=$defaultMovieReleaseYear&vote_count.gte=${movieTotalRatingSlider.toInt()}&with_genres=$joinedIds&with_watch_providers=$joinedProviderIds',
                           page: 1,
                           includeAdult: includeAdult);
                     }));

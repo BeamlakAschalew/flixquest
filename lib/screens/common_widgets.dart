@@ -363,21 +363,73 @@ Widget detailImageShimmer(isDark) => Shimmer.fromColors(
       baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
       highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
       direction: ShimmerDirection.ltr,
-      child: CarouselSlider.builder(
+      child: CarouselSlider(
         options: CarouselOptions(
-          disableCenter: true,
-          viewportFraction: 0.8,
-          enlargeCenterPage: false,
-          autoPlay: true,
+          enableInfiniteScroll: false,
+          viewportFraction: 1,
         ),
-        itemBuilder: (context, index, pageViewIndex) => Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0), color: Colors.white),
+        items: [
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Stack(
+                        alignment: AlignmentDirectional.bottomStart,
+                        children: [
+                          SizedBox(
+                            height: 180,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  color: Colors.white),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              color: Colors.black38,
+                              height: 40,
+                            ),
+                          )
+                        ]),
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Container(
+                  child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Stack(
+                          alignment: AlignmentDirectional.bottomStart,
+                          children: [
+                            SizedBox(
+                              height: 180,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    color: Colors.white),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                color: Colors.black38,
+                                height: 40,
+                              ),
+                            )
+                          ]),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-        itemCount: 5,
+        ],
       ),
     );
 
@@ -545,6 +597,21 @@ Widget detailInfoTableShimmer(isDark) => DataTable(dataRowHeight: 40, columns: [
             //     : Text(
             //         movieDetails!.productionCountries![0].name!),
             ),
+      ]),
+    ]);
+
+Widget personDetailInfoTableShimmer(isDark) =>
+    DataTable(dataRowHeight: 40, columns: [
+      DataColumn(label: detailInfoTableItemShimmer(isDark)),
+      DataColumn(label: detailInfoTableItemShimmer(isDark)),
+    ], rows: [
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(isDark)),
+      ]),
+      DataRow(cells: [
+        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(isDark)),
       ]),
     ]);
 
@@ -887,7 +954,7 @@ Widget mainPageVerticalScrollShimmer(
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(top: 3.0),
+              padding: const EdgeInsets.only(top: 8.0),
               child: Column(
                 children: [
                   Expanded(
