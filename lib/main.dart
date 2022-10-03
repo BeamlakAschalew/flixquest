@@ -23,7 +23,6 @@ import 'provider/adultmode_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FirebaseMessaging.instance;
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
   runApp(const Cinemax());
 }

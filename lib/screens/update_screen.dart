@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
-import 'package:android_intent_plus/android_intent.dart';
 import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/constants/app_constants.dart';
 import 'package:cinemax/models/function.dart';
