@@ -122,7 +122,7 @@ class AboutPage extends StatelessWidget {
                           ),
                           SocialIconContainer(
                               platformIcon: Icons.mail,
-                              uri: 'https://cinemaxappinfo@gmail.com'),
+                              uri: 'mailto:cinemaxappinfo@gmail.com'),
                         ],
                       ),
                     )
