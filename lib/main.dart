@@ -6,6 +6,8 @@ import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:cinemax/provider/mixpanel_provider.dart';
 import 'package:cinemax/screens/discover.dart';
 import 'package:cinemax/screens/landing_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,6 +23,7 @@ import 'provider/adultmode_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FirebaseMessaging.instance;
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
   runApp(const Cinemax());
 }
