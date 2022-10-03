@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
-
 import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../provider/darktheme_provider.dart';
@@ -26,28 +24,9 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CollectionDetailsWidget> {
-  var startAppSdk6 = StartAppSdk();
-  StartAppBannerAd? bannerAd6;
   @override
   void initState() {
-    getBannerADForMainMovieCollection();
     super.initState();
-  }
-
-  void getBannerADForMainMovieCollection() {
-    startAppSdk6
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAd6 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
   }
 
   @override
@@ -233,13 +212,6 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                     ),
                                   ),
                                 ),
-                                bannerAd6 != null
-                                    ? Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 8.0),
-                                        child: StartAppBanner(bannerAd6!),
-                                      )
-                                    : Container(),
                               ],
                             ),
                           ),

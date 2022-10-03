@@ -118,6 +118,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
 
   final ReceivePort _port = ReceivePort();
 
+  //TODO: uncomment this on release @pragma('vm:entry-point')
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
     final SendPort send =
@@ -241,8 +242,8 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
           padding: const EdgeInsets.all(20.0),
           child: Text(
             "Image ${currentIndex + 1}",
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black,
               fontSize: 17.0,
               decoration: null,
             ),

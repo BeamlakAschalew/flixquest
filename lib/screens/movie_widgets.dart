@@ -6,7 +6,6 @@ import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/photoview.dart';
 import 'package:cinemax/screens/movie_video_loader.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../provider/adultmode_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '../provider/mixpanel_provider.dart';
@@ -48,62 +47,9 @@ class MainMoviesDisplay extends StatefulWidget {
 }
 
 class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
-  var startAppSdk = StartAppSdk();
-  var startAppSdk1 = StartAppSdk();
-  var startAppSdk2 = StartAppSdk();
-
-  StartAppBannerAd? bannerAd0;
-  StartAppBannerAd? bannerAd1;
-  StartAppBannerAd? bannerAd2;
-
   @override
   void initState() {
     super.initState();
-    getBannerADForMainMovieDisplay();
-  }
-
-  void getBannerADForMainMovieDisplay() {
-    startAppSdk
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAd0 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-
-    startAppSdk1
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAd1 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-
-    startAppSdk2
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAd2 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
   }
 
   @override
@@ -115,12 +61,6 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
           DiscoverMovies(
             includeAdult: includeAdult,
           ),
-          bannerAd0 != null
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: StartAppBanner(bannerAd0!),
-                )
-              : Container(),
           ScrollingMovies(
             title: 'Popular',
             api: Endpoints.popularMoviesUrl(1),
@@ -142,12 +82,6 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
             isTrending: false,
             includeAdult: includeAdult,
           ),
-          bannerAd1 != null
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: StartAppBanner(bannerAd1!),
-                )
-              : Container(),
           ScrollingMovies(
             title: 'Now playing',
             api: Endpoints.nowPlayingMoviesUrl(1),
@@ -164,12 +98,6 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
           ),
           GenreListGrid(api: Endpoints.movieGenresUrl()),
           const MoviesFromWatchProviders(),
-          bannerAd2 != null
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: StartAppBanner(bannerAd2!),
-                )
-              : Container(),
         ],
       ),
     );
@@ -1021,7 +949,7 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
                     width: double.infinity,
-                    height: 200,
+                    height: 300,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -3015,8 +2943,6 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     with AutomaticKeepAliveClientMixin {
   List<Movie>? movieList;
   final _scrollController = ScrollController();
-  var startAppSdkMovieRecommendation = StartAppSdk();
-  StartAppBannerAd? bannerAdMovieRecommendation;
   int pageNum = 2;
   bool isLoading = false;
   bool requestFailed = false;
@@ -3024,7 +2950,6 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   @override
   void initState() {
     super.initState();
-    getBannerADForMovieRecommendation();
     getData();
     getMoreData();
   }
@@ -3072,22 +2997,6 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     return "success";
   }
 
-  void getBannerADForMovieRecommendation() {
-    startAppSdkMovieRecommendation
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdMovieRecommendation = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -3098,8 +3007,8 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     return movieList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: detailsRecommendationsAndSimilarShimmer(isDark,
-                _scrollController, bannerAdMovieRecommendation, isLoading))
+            child: detailsRecommendationsAndSimilarShimmer(
+                isDark, _scrollController, isLoading))
         : movieList!.isEmpty
             ? Container(
                 color:
@@ -3287,18 +3196,6 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                               padding: EdgeInsets.all(8.0),
                               child: Center(child: CircularProgressIndicator()),
                             )),
-                        bannerAdMovieRecommendation != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: SizedBox(
-                                  height: 60,
-                                  width: double.infinity,
-                                  child: StartAppBanner(
-                                    bannerAdMovieRecommendation!,
-                                  ),
-                                ),
-                              )
-                            : Container(),
                       ],
                     ));
   }
@@ -3367,14 +3264,11 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  var startAppSdkMovieSimilars = StartAppSdk();
-  StartAppBannerAd? bannerAdMovieSimilars;
   bool requestFailed = false;
 
   @override
   void initState() {
     super.initState();
-    getBannerADForMovieSimilars();
     getData();
     getMoreData();
   }
@@ -3393,22 +3287,6 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
           movieList = [Movie()];
         });
       }
-    });
-  }
-
-  void getBannerADForMovieSimilars() {
-    startAppSdkMovieSimilars
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdMovieSimilars = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
     });
   }
 
@@ -3449,7 +3327,7 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
             child: detailsRecommendationsAndSimilarShimmer(
-                isDark, _scrollController, bannerAdMovieSimilars, isLoading))
+                isDark, _scrollController, isLoading))
         : movieList!.isEmpty
             ? Container(
                 color:
@@ -3637,18 +3515,6 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
                               padding: EdgeInsets.all(8.0),
                               child: Center(child: CircularProgressIndicator()),
                             )),
-                        bannerAdMovieSimilars != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: SizedBox(
-                                  height: 60,
-                                  width: double.infinity,
-                                  child: StartAppBanner(
-                                    bannerAdMovieSimilars!,
-                                  ),
-                                ),
-                              )
-                            : Container(),
                       ],
                     ));
   }
@@ -3715,25 +3581,7 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  var startAppSdkMovieGenre = StartAppSdk();
-  StartAppBannerAd? bannerAdMovieGenre;
   bool requestFailed = false;
-
-  void getBannerADForGenreMovie() {
-    startAppSdkMovieGenre
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdMovieGenre = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -3769,7 +3617,6 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   @override
   void initState() {
     super.initState();
-    getBannerADForGenreMovie();
     getData();
     getMoreData();
   }
@@ -3798,8 +3645,7 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return moviesList == null
-        ? mainPageVerticalScrollShimmer(
-            bannerAdMovieGenre, isDark, isLoading, _scrollController)
+        ? mainPageVerticalScrollShimmer(isDark, isLoading, _scrollController)
         : moviesList!.isEmpty
             ? Container(
                 color:
@@ -4004,18 +3850,6 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                               padding: EdgeInsets.all(8.0),
                               child: Center(child: CircularProgressIndicator()),
                             )),
-                        bannerAdMovieGenre != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: SizedBox(
-                                  height: 60,
-                                  width: double.infinity,
-                                  child: StartAppBanner(
-                                    bannerAdMovieGenre!,
-                                  ),
-                                ),
-                              )
-                            : Container(),
                       ],
                     ));
   }
@@ -4078,25 +3912,7 @@ class ParticularStreamingServiceMoviesState
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  var startAppSdkMovieProviders = StartAppSdk();
-  StartAppBannerAd? bannerAdMovieProviders;
   bool requestFailed = false;
-
-  void getBannerADForMovieProviders() {
-    startAppSdkMovieProviders
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdMovieProviders = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -4130,7 +3946,6 @@ class ParticularStreamingServiceMoviesState
   @override
   void initState() {
     super.initState();
-    getBannerADForMovieProviders();
     getData();
     getMoreData();
   }
@@ -4162,7 +3977,7 @@ class ParticularStreamingServiceMoviesState
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
             child: mainPageVerticalScrollShimmer(
-                bannerAdMovieProviders, isDark, isLoading, _scrollController))
+                isDark, isLoading, _scrollController))
         : moviesList!.isEmpty
             ? Container(
                 color:
@@ -4368,18 +4183,6 @@ class ParticularStreamingServiceMoviesState
                               padding: EdgeInsets.all(8.0),
                               child: Center(child: CircularProgressIndicator()),
                             )),
-                        bannerAdMovieProviders != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: SizedBox(
-                                  height: 60,
-                                  width: double.infinity,
-                                  child: StartAppBanner(
-                                    bannerAdMovieProviders!,
-                                  ),
-                                ),
-                              )
-                            : Container(),
                       ],
                     ));
   }

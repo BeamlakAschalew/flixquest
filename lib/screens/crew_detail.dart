@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../provider/adultmode_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '/api/endpoints.dart';
@@ -30,30 +29,11 @@ class CrewDetailPageState extends State<CrewDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CrewDetailPage> {
   late TabController tabController;
-  var startAppSdkCrewdetail = StartAppSdk();
-  StartAppBannerAd? bannerAdCrewdetail;
-
-  void getBannerADForCrewDetail() {
-    startAppSdkCrewdetail
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdCrewdetail = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
-    getBannerADForCrewDetail();
   }
 
   @override
@@ -245,20 +225,6 @@ class CrewDetailPageState extends State<CrewDetailPage>
                                                               .getPersonDetails(
                                                                   widget.crew!
                                                                       .id!)),
-                                                      bannerAdCrewdetail != null
-                                                          ? Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      bottom:
-                                                                          5.0,
-                                                                      top: 5.0),
-                                                              child:
-                                                                  StartAppBanner(
-                                                                bannerAdCrewdetail!,
-                                                              ),
-                                                            )
-                                                          : Container(),
                                                       PersonSocialLinks(
                                                         api: Endpoints
                                                             .getExternalLinksForPerson(

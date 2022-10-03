@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 import 'package:http/http.dart' as http;
 import '../constants/api_constants.dart';
 import '../constants/app_constants.dart';
@@ -35,25 +33,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  var startAppSdkMovieProviders = StartAppSdk();
-  StartAppBannerAd? bannerAdMovieDiscover;
   bool requestFailed = false;
-
-  void getBannerADForMovieDiscover() {
-    startAppSdkMovieProviders
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdMovieDiscover = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -81,7 +61,6 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   @override
   void initState() {
     super.initState();
-    getBannerADForMovieDiscover();
     getData();
     getMoreData();
   }
@@ -128,7 +107,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                     color: isDark
                         ? const Color(0xFF202124)
                         : const Color(0xFFFFFFFF),
-                    child: mainPageVerticalScrollShimmer(bannerAdMovieDiscover,
+                    child: mainPageVerticalScrollShimmer(
                         isDark, isLoading, _scrollController))
                 : moviesList!.isEmpty
                     ? Container(
@@ -321,19 +300,6 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                       child: Center(
                                           child: CircularProgressIndicator()),
                                     )),
-                                bannerAdMovieDiscover != null
-                                    ? Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 5.0),
-                                        child: SizedBox(
-                                          height: 60,
-                                          width: double.infinity,
-                                          child: StartAppBanner(
-                                            bannerAdMovieDiscover!,
-                                          ),
-                                        ),
-                                      )
-                                    : Container(),
                               ],
                             ),
                           )));

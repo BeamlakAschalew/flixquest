@@ -5,7 +5,6 @@ import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '../provider/mixpanel_provider.dart';
@@ -50,62 +49,9 @@ class MainTVDisplay extends StatefulWidget {
 }
 
 class _MainTVDisplayState extends State<MainTVDisplay> {
-  var startAppSdk3 = StartAppSdk();
-  var startAppSdk4 = StartAppSdk();
-  var startAppSdk5 = StartAppSdk();
-
-  StartAppBannerAd? bannerAd3;
-  StartAppBannerAd? bannerAd4;
-  StartAppBannerAd? bannerAd5;
-
   @override
   void initState() {
     super.initState();
-    getBannerADForTVDisplay();
-  }
-
-  void getBannerADForTVDisplay() {
-    startAppSdk4
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAd4 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-
-    startAppSdk5
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAd5 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-
-    startAppSdk5
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAd5 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
   }
 
   @override
@@ -115,12 +61,6 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
         children: [
           DiscoverTV(
               includeAdult: Provider.of<AdultmodeProvider>(context).isAdult),
-          bannerAd3 != null
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: StartAppBanner(bannerAd3!),
-                )
-              : Container(),
           ScrollingTV(
             includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
             title: 'Popular',
@@ -142,12 +82,6 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
             discoverType: 'top_rated',
             isTrending: false,
           ),
-          bannerAd5 != null
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: StartAppBanner(bannerAd5!),
-                )
-              : Container(),
           ScrollingTV(
             includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
             title: 'Airing today',
@@ -164,12 +98,6 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
           ),
           TVGenreListGrid(api: Endpoints.tvGenresUrl()),
           const TVShowsFromWatchProviders(),
-          bannerAd4 != null
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: StartAppBanner(bannerAd4!),
-                )
-              : Container(),
         ],
       ),
     );
@@ -2625,28 +2553,11 @@ class TVSeasonsTab extends StatefulWidget {
 class TVSeasonsTabState extends State<TVSeasonsTab>
     with AutomaticKeepAliveClientMixin<TVSeasonsTab> {
   TVDetails? tvDetails;
-  var startAppSdkTVSeason = StartAppSdk();
-  StartAppBannerAd? bannerAdTVSeason;
   bool requestFailed = false;
-
-  void getBannerADForMovieDetail() {
-    startAppSdkTVSeason
-        .loadBannerAd(StartAppBannerType.BANNER)
-        .then((bannerAd) {
-      setState(() {
-        bannerAdTVSeason = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    getBannerADForMovieDetail();
     getData();
   }
 
@@ -2676,7 +2587,7 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
     return tvDetails == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: tvDetailsSeasonsTabShimmer(bannerAdTVSeason, isDark))
+            child: tvDetailsSeasonsTabShimmer(isDark))
         : tvDetails!.seasons!.isEmpty
             ? Container(
                 color:
@@ -2847,16 +2758,6 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
                                 );
                               }),
                         ),
-                        bannerAdTVSeason != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: SizedBox(
-                                  height: 60,
-                                  width: double.infinity,
-                                  child: StartAppBanner(bannerAdTVSeason!),
-                                ),
-                              )
-                            : Container(),
                       ],
                     ));
   }
@@ -3165,13 +3066,10 @@ class TVRecommendationsTab extends StatefulWidget {
 class TVRecommendationsTabState extends State<TVRecommendationsTab>
     with AutomaticKeepAliveClientMixin {
   List<TV>? tvList;
-  var startAppSdkTVRecommendation = StartAppSdk();
-  StartAppBannerAd? bannerAdTVRecommendation;
   bool requestFailed = false;
   @override
   void initState() {
     super.initState();
-    getBannerADForMovieRecommendation();
     getData();
     getMoreData();
   }
@@ -3189,22 +3087,6 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
           tvList = [TV()];
         });
       }
-    });
-  }
-
-  void getBannerADForMovieRecommendation() {
-    startAppSdkTVRecommendation
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdTVRecommendation = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
     });
   }
 
@@ -3250,7 +3132,7 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
             child: detailsRecommendationsAndSimilarShimmer(
-                isDark, _scrollController, bannerAdTVRecommendation, isLoading))
+                isDark, _scrollController, isLoading))
         : tvList!.isEmpty
             ? Container(
                 color:
@@ -3436,18 +3318,6 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
                               padding: EdgeInsets.all(8.0),
                               child: Center(child: CircularProgressIndicator()),
                             )),
-                        bannerAdTVRecommendation != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: SizedBox(
-                                  height: 60,
-                                  width: double.infinity,
-                                  child: StartAppBanner(
-                                    bannerAdTVRecommendation!,
-                                  ),
-                                ),
-                              )
-                            : Container(),
                       ],
                     ));
   }
@@ -3513,14 +3383,11 @@ class SimilarTVTab extends StatefulWidget {
 class SimilarTVTabState extends State<SimilarTVTab>
     with AutomaticKeepAliveClientMixin {
   List<TV>? tvList;
-  var startAppSdkTVSimilars = StartAppSdk();
-  StartAppBannerAd? bannerAdTVSimilars;
   bool requestFailed = false;
 
   @override
   void initState() {
     super.initState();
-    getBannerADForTVSimilars();
     getData();
     getMoreData();
   }
@@ -3538,22 +3405,6 @@ class SimilarTVTabState extends State<SimilarTVTab>
           tvList = [TV()];
         });
       }
-    });
-  }
-
-  void getBannerADForTVSimilars() {
-    startAppSdkTVSimilars
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdTVSimilars = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
     });
   }
 
@@ -3599,7 +3450,7 @@ class SimilarTVTabState extends State<SimilarTVTab>
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
             child: detailsRecommendationsAndSimilarShimmer(
-                isDark, _scrollController, bannerAdTVSimilars, isLoading))
+                isDark, _scrollController, isLoading))
         : tvList!.isEmpty
             ? Container(
                 color:
@@ -3782,18 +3633,6 @@ class SimilarTVTabState extends State<SimilarTVTab>
                               padding: EdgeInsets.all(8.0),
                               child: Center(child: CircularProgressIndicator()),
                             )),
-                        bannerAdTVSimilars != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: SizedBox(
-                                  height: 60,
-                                  width: double.infinity,
-                                  child: StartAppBanner(
-                                    bannerAdTVSimilars!,
-                                  ),
-                                ),
-                              )
-                            : Container(),
                       ],
                     ));
   }
@@ -3940,25 +3779,7 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  var startAppSdkTVGenres = StartAppSdk();
-  StartAppBannerAd? bannerAdTVGenres;
   bool requestFailed = false;
-
-  void getBannerADForTVGenres() {
-    startAppSdkTVGenres
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdTVGenres = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -3992,7 +3813,6 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
   @override
   void initState() {
     super.initState();
-    getBannerADForTVGenres();
     getData();
     getMoreData();
   }
@@ -4023,7 +3843,7 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
             child: mainPageVerticalScrollShimmer(
-                bannerAdTVGenres, isDark, isLoading, _scrollController))
+                isDark, isLoading, _scrollController))
         : tvList!.isEmpty
             ? Container(
                 color:
@@ -4226,16 +4046,6 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
                               padding: EdgeInsets.all(8.0),
                               child: Center(child: CircularProgressIndicator()),
                             )),
-                        bannerAdTVGenres != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: SizedBox(
-                                  height: 60,
-                                  width: double.infinity,
-                                  child: StartAppBanner(bannerAdTVGenres!),
-                                ),
-                              )
-                            : Container(),
                       ],
                     ));
   }
@@ -5710,27 +5520,9 @@ class ParticularStreamingServiceTVShowsState
     extends State<ParticularStreamingServiceTVShows> {
   List<TV>? tvList;
   final _scrollController = ScrollController();
-  var startAppSdkTVProviders = StartAppSdk();
-  StartAppBannerAd? bannerAdTVProviders;
   int pageNum = 2;
   bool isLoading = false;
   bool requestFailed = false;
-
-  void getBannerADForTVProviders() {
-    startAppSdkTVProviders
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdTVProviders = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -5764,7 +5556,6 @@ class ParticularStreamingServiceTVShowsState
   @override
   void initState() {
     super.initState();
-    getBannerADForTVProviders();
     getData();
     getMoreData();
   }
@@ -5795,7 +5586,7 @@ class ParticularStreamingServiceTVShowsState
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
             child: mainPageVerticalScrollShimmer(
-                bannerAdTVProviders, isDark, isLoading, _scrollController))
+                isDark, isLoading, _scrollController))
         : tvList!.isEmpty
             ? Container(
                 color:
@@ -5998,18 +5789,6 @@ class ParticularStreamingServiceTVShowsState
                               padding: EdgeInsets.all(8.0),
                               child: Center(child: CircularProgressIndicator()),
                             )),
-                        bannerAdTVProviders != null
-                            ? Padding(
-                                padding: const EdgeInsets.only(bottom: 5.0),
-                                child: SizedBox(
-                                  height: 60,
-                                  width: double.infinity,
-                                  child: StartAppBanner(
-                                    bannerAdTVProviders!,
-                                  ),
-                                ),
-                              )
-                            : Container(),
                       ],
                     ));
   }

@@ -3,7 +3,6 @@
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 import 'movie_stream.dart';
 
 class MovieStreamSelect extends StatefulWidget {
@@ -22,29 +21,9 @@ class MovieStreamSelect extends StatefulWidget {
 }
 
 class _MovieStreamSelectState extends State<MovieStreamSelect> {
-  var startAppSdk4 = StartAppSdk();
-  StartAppBannerAd? bannerAd4;
-
   @override
   void initState() {
-    getBannerADForMovieStreamSelect();
     super.initState();
-  }
-
-  void getBannerADForMovieStreamSelect() {
-    startAppSdk4
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAd4 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
   }
 
   @override
@@ -157,11 +136,6 @@ class _MovieStreamSelectState extends State<MovieStreamSelect> {
                                 'https://openvids.io/tmdb/movie/${widget.movieId}',
                             movieName: widget.movieName,
                           ),
-                          bannerAd4 != null
-                              ? StartAppBanner(
-                                  bannerAd4!,
-                                )
-                              : Container(),
                         ],
                       ),
                     ],

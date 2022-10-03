@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 import 'package:http/http.dart' as http;
 import '../constants/api_constants.dart';
 import '../models/function.dart';
@@ -29,25 +28,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  var startAppSdkMovieProviders = StartAppSdk();
-  StartAppBannerAd? bannerAdTVDiscover;
   bool requestFailed = false;
-
-  void getBannerADForTVDiscover() {
-    startAppSdkMovieProviders
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdTVDiscover = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -92,7 +73,6 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
   @override
   void initState() {
     super.initState();
-    getBannerADForTVDiscover();
     getData();
 
     getMoreData();
@@ -124,7 +104,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                     color: isDark
                         ? const Color(0xFF202124)
                         : const Color(0xFFFFFFFF),
-                    child: mainPageVerticalScrollShimmer(bannerAdTVDiscover,
+                    child: mainPageVerticalScrollShimmer(
                         isDark, isLoading, _scrollController))
                 : tvList!.isEmpty
                     ? Container(
@@ -316,18 +296,6 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                                       child: Center(
                                           child: CircularProgressIndicator()),
                                     )),
-                                bannerAdTVDiscover != null
-                                    ? Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 5.0),
-                                        child: SizedBox(
-                                          height: 60,
-                                          width: double.infinity,
-                                          child: StartAppBanner(
-                                              bannerAdTVDiscover!),
-                                        ),
-                                      )
-                                    : Container(),
                               ],
                             ))));
   }

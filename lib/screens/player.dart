@@ -459,7 +459,6 @@ import 'package:flutter/material.dart';
 import 'package:pod_player/pod_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 
 class Player extends StatefulWidget {
   const Player({required this.videoUrl, required this.videoTitle, Key? key})
@@ -474,13 +473,9 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player> {
   late final PodPlayerController controller;
-  var startAppSdk = StartAppSdk();
-
-  StartAppRewardedVideoAd? rewardedVideoAd;
 
   @override
   void initState() {
-    loadRewardedVideoAd();
     controller = PodPlayerController(
       podPlayerConfig:
           const PodPlayerConfig(videoQualityPriority: [0, 360, 480, 720, 1080]),
@@ -493,45 +488,6 @@ class _PlayerState extends State<Player> {
     super.initState();
   }
 
-  void loadRewardedVideoAd() {
-    startAppSdk.loadRewardedVideoAd(
-      onAdNotDisplayed: () {
-        debugPrint('onAdNotDisplayed: rewarded video');
-
-        setState(() {
-          // NOTE rewarded video ad can be shown only once
-          this.rewardedVideoAd?.dispose();
-          this.rewardedVideoAd = null;
-        });
-      },
-      onAdHidden: () {
-        debugPrint('onAdHidden: rewarded video');
-
-        setState(() {
-          // NOTE rewarded video ad can be shown only once
-          this.rewardedVideoAd?.dispose();
-          this.rewardedVideoAd = null;
-        });
-      },
-      onVideoCompleted: () {
-        debugPrint(
-            'onVideoCompleted: rewarded video completed, user gain a reward');
-
-        setState(() {
-          // TODO give reward to user
-        });
-      },
-    ).then((rewardedVideoAd) {
-      setState(() {
-        this.rewardedVideoAd = rewardedVideoAd;
-      });
-    }).onError((ex, stackTrace) {
-      debugPrint("Error loading Rewarded Video ad: ${ex}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Rewarded Video ad: $error");
-    });
-  }
-
   @override
   void dispose() {
     controller.dispose();
@@ -541,52 +497,40 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    return WillPopScope(
-      onWillPop: (() async {
-        print('popppp');
-        if (rewardedVideoAd != null) {
-          rewardedVideoAd!.show().onError((error, stackTrace) {
-            debugPrint("Error showing Rewarded Video ad: $error");
-            return false;
-          });
-        }
-        return true;
-      }),
-      child: Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: Container(
-              color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-              width: double.infinity,
-              height: double.infinity,
-              child: PodVideoPlayer(
-                controller: controller,
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Container(
+            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            width: double.infinity,
+            height: double.infinity,
+            child: PodVideoPlayer(
+              controller: controller,
 
-                // overlayBuilder: (options) {
-                //   return Center(
-                //     child: Row(
-                //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                //       children: [Text('data'), Text('data'), Text('data')],
-                //     ),
-                //   );
-                // },
-                alwaysShowProgressBar: false,
+              // overlayBuilder: (options) {
+              //   return Center(
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+              //       children: [Text('data'), Text('data'), Text('data')],
+              //     ),
+              //   );
+              // },
+              alwaysShowProgressBar: false,
 
-                videoTitle: Text(widget.videoTitle),
-                podProgressBarConfig: const PodProgressBarConfig(
-                  padding: kIsWeb
-                      ? EdgeInsets.zero
-                      : EdgeInsets.only(
-                          bottom: 20,
-                          left: 20,
-                          right: 20,
-                        ),
-                  playingBarColor: Colors.orange,
-                  circleHandlerColor: Colors.orange,
-                  backgroundColor: Colors.blueGrey,
-                  bufferedBarColor: Colors.orangeAccent,
-                  alwaysVisibleCircleHandler: false,
-                ),
+              videoTitle: Text(widget.videoTitle),
+              podProgressBarConfig: const PodProgressBarConfig(
+                padding: kIsWeb
+                    ? EdgeInsets.zero
+                    : EdgeInsets.only(
+                        bottom: 20,
+                        left: 20,
+                        right: 20,
+                      ),
+                playingBarColor: Colors.orange,
+                circleHandlerColor: Colors.orange,
+                backgroundColor: Colors.blueGrey,
+                bufferedBarColor: Colors.orangeAccent,
+                alwaysVisibleCircleHandler: false,
               ),
             ),
           ),

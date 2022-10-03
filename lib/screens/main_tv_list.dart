@@ -5,7 +5,6 @@ import 'package:cinemax/models/tv.dart';
 import 'package:cinemax/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 import 'package:http/http.dart' as http;
 import '../constants/api_constants.dart';
 import '../models/function.dart';
@@ -37,25 +36,7 @@ class MainTVListState extends State<MainTVList> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  var startAppSdkMovieProviders = StartAppSdk();
-  StartAppBannerAd? bannerAdMovieProviders;
   bool requestFailed = false;
-
-  void getBannerADForMovieProviders() {
-    startAppSdkMovieProviders
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdMovieProviders = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -100,7 +81,6 @@ class MainTVListState extends State<MainTVList> {
   @override
   void initState() {
     super.initState();
-    getBannerADForMovieProviders();
     getData();
     getMoreData();
   }
@@ -135,7 +115,7 @@ class MainTVListState extends State<MainTVList> {
           ? Container(
               color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               child: mainPageVerticalScrollShimmer(
-                  bannerAdMovieProviders, isDark, isLoading, _scrollController))
+                  isDark, isLoading, _scrollController))
           : tvList!.isEmpty
               ? Container(
                   color: isDark
@@ -334,18 +314,6 @@ class MainTVListState extends State<MainTVList> {
                                 child:
                                     Center(child: CircularProgressIndicator()),
                               )),
-                          bannerAdMovieProviders != null
-                              ? Padding(
-                                  padding: const EdgeInsets.only(bottom: 5.0),
-                                  child: SizedBox(
-                                    height: 60,
-                                    width: double.infinity,
-                                    child: StartAppBanner(
-                                      bannerAdMovieProviders!,
-                                    ),
-                                  ),
-                                )
-                              : Container(),
                         ],
                       )),
     );

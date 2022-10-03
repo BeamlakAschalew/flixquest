@@ -97,18 +97,32 @@ class AboutPage extends StatelessWidget {
                         runSpacing: 10,
                         children: const [
                           SocialIconContainer(
-                              platformIcon: FontAwesomeIcons.twitter),
+                            platformIcon: FontAwesomeIcons.twitter,
+                            uri: 'https://twitter.com/cinemaxapp',
+                          ),
                           SocialIconContainer(
-                              platformIcon: FontAwesomeIcons.instagram),
+                            platformIcon: FontAwesomeIcons.instagram,
+                            uri: 'https://instagram.com/cinemax_app',
+                          ),
                           SocialIconContainer(
-                              platformIcon: FontAwesomeIcons.telegram),
+                            platformIcon: FontAwesomeIcons.telegram,
+                            uri: 'https://t.me/cinemaxapp',
+                          ),
                           SocialIconContainer(
-                              platformIcon: FontAwesomeIcons.tiktok),
+                              platformIcon: FontAwesomeIcons.tiktok,
+                              uri: 'https://www.tiktok.com/@cinemaxapp'),
                           SocialIconContainer(
-                              platformIcon: FontAwesomeIcons.facebook),
+                            platformIcon: FontAwesomeIcons.facebook,
+                            uri:
+                                'https://m.facebook.com/profile.php?id=100086435380480',
+                          ),
                           SocialIconContainer(
-                              platformIcon: FontAwesomeIcons.github),
-                          SocialIconContainer(platformIcon: Icons.mail),
+                            platformIcon: FontAwesomeIcons.github,
+                            uri: 'https://github.com/beamlakaschalew/cinemax',
+                          ),
+                          SocialIconContainer(
+                              platformIcon: Icons.mail,
+                              uri: 'https://cinemaxappinfo@gmail.com'),
                         ],
                       ),
                     )
@@ -142,10 +156,12 @@ class AboutPage extends StatelessWidget {
 class SocialIconContainer extends StatelessWidget {
   const SocialIconContainer({
     required this.platformIcon,
+    required this.uri,
     Key? key,
   }) : super(key: key);
 
   final IconData platformIcon;
+  final String uri;
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +171,7 @@ class SocialIconContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         color: Colors.white,
       ),
-      child: PlatformIcon(platformIcon: platformIcon),
+      child: PlatformIcon(platformIcon: platformIcon, uri: uri),
     );
   }
 }
@@ -163,16 +179,23 @@ class SocialIconContainer extends StatelessWidget {
 class PlatformIcon extends StatelessWidget {
   const PlatformIcon({
     required this.platformIcon,
+    required this.uri,
     Key? key,
   }) : super(key: key);
 
   final IconData platformIcon;
+  final String uri;
 
   @override
   Widget build(BuildContext context) {
-    return Icon(
-      platformIcon,
-      color: Color(0xFFF57C00),
+    return GestureDetector(
+      onTap: () {
+        launchUrl(Uri.parse(uri), mode: LaunchMode.externalApplication);
+      },
+      child: Icon(
+        platformIcon,
+        color: Color(0xFFF57C00),
+      ),
     );
   }
 }

@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../constants/app_constants.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
@@ -34,42 +33,11 @@ class TVDetailPageState extends State<TVDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<TVDetailPage> {
   late TabController tabController;
-  var startAppSdkTVDetail = StartAppSdk();
-  var startAppSdkTVDetail1 = StartAppSdk();
-  StartAppBannerAd? bannerAdTVDetail;
-  StartAppBannerAd? bannerAdTVDetail1;
-
-  void getBannerADForTVDetail() {
-    startAppSdkTVDetail
-        .loadBannerAd(StartAppBannerType.BANNER)
-        .then((bannerAd) {
-      setState(() {
-        bannerAdTVDetail = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-
-    startAppSdkTVDetail1
-        .loadBannerAd(StartAppBannerType.BANNER)
-        .then((bannerAd) {
-      setState(() {
-        bannerAdTVDetail1 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 6, vsync: this);
-    getBannerADForTVDetail();
   }
 
   @override
@@ -465,10 +433,6 @@ class TVDetailPageState extends State<TVDetailPage>
                                                     ),
                                                   ],
                                                 ),
-                                                bannerAdTVDetail != null
-                                                    ? StartAppBanner(
-                                                        bannerAdTVDetail!)
-                                                    : Container(),
                                                 ScrollingTVArtists(
                                                   api:
                                                       Endpoints.getTVCreditsUrl(
@@ -496,10 +460,6 @@ class TVDetailPageState extends State<TVDetailPage>
                                                   name: widget
                                                       .tvSeries.originalName,
                                                 ),
-                                                bannerAdTVDetail1 != null
-                                                    ? StartAppBanner(
-                                                        bannerAdTVDetail1!)
-                                                    : Container(),
                                                 TVVideosDisplay(
                                                   api: Endpoints.getTVVideos(
                                                       widget.tvSeries.id!),

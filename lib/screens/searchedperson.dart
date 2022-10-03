@@ -3,8 +3,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
-
 import '../provider/adultmode_provider.dart';
 import '../provider/imagequality_provider.dart';
 import '/models/person.dart';
@@ -33,30 +31,11 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<SearchedPersonDetailPage> {
   late TabController tabController;
-  var startAppSdkSearchedperson = StartAppSdk();
-  StartAppBannerAd? bannerAdSearchedperson;
-
-  void getBannerADForSearchedPerson() {
-    startAppSdkSearchedperson
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdSearchedperson = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
-    getBannerADForSearchedPerson();
   }
 
   @override
@@ -253,21 +232,6 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                                               .getPersonDetails(
                                                                   widget.person!
                                                                       .id!)),
-                                                      bannerAdSearchedperson !=
-                                                              null
-                                                          ? Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      bottom:
-                                                                          5.0,
-                                                                      top: 5.0),
-                                                              child:
-                                                                  StartAppBanner(
-                                                                bannerAdSearchedperson!,
-                                                              ),
-                                                            )
-                                                          : Container(),
                                                       PersonSocialLinks(
                                                         api: Endpoints
                                                             .getExternalLinksForPerson(

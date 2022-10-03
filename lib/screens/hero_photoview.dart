@@ -76,6 +76,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     }
   }
 
+//TODO: uncomment this on release @pragma('vm:entry-point')
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
     final SendPort send =

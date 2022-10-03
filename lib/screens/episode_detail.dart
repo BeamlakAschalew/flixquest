@@ -6,7 +6,6 @@ import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/tv_stream_select.dart';
 import 'package:cinemax/screens/tv_video_loader.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../models/movie.dart';
 import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
@@ -44,33 +43,14 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<EpisodeDetailPage> {
   late TabController tabController;
-  var startAppSdkEpisodeDetail = StartAppSdk();
-  StartAppBannerAd? bannerAdEpisodeDetail;
   bool? isVisible = false;
   double? buttonWidth = 150;
   ExternalLinks? externalLinks;
-
-  void getBannerADForEpisodeDetail() {
-    startAppSdkEpisodeDetail
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdEpisodeDetail = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 4, vsync: this);
-    getBannerADForEpisodeDetail();
   }
 
   void streamSelectBottomSheet(
@@ -686,15 +666,6 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                     ),
                                                   ),
                                                 ),
-                                                bannerAdEpisodeDetail != null
-                                                    ? SizedBox(
-                                                        height: 60,
-                                                        width: double.infinity,
-                                                        child: StartAppBanner(
-                                                          bannerAdEpisodeDetail!,
-                                                        ),
-                                                      )
-                                                    : Container(),
                                                 ScrollingTVEpisodeCasts(
                                                   api: Endpoints
                                                       .getEpisodeCredits(

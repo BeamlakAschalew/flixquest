@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../provider/darktheme_provider.dart';
 import 'tv_stream.dart';
 
@@ -28,29 +27,9 @@ class TVStreamSelect extends StatefulWidget {
 }
 
 class _TVStreamSelectState extends State<TVStreamSelect> {
-  var startAppSdkTVStreamSelect = StartAppSdk();
-  StartAppBannerAd? bannerAdTVStreamSelect;
-
-  void getBannerADForTVStreamSelect() {
-    startAppSdkTVStreamSelect
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAdTVStreamSelect = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    getBannerADForTVStreamSelect();
   }
 
   @override
@@ -158,18 +137,6 @@ class _TVStreamSelectState extends State<TVStreamSelect> {
                             'https://openvids.io/tmdb/episode/${widget.tvSeriesId}-${widget.seasonNumber}-${widget.episodeNumber}',
                         tvSeriesName: widget.tvSeriesName,
                       ),
-                      bannerAdTVStreamSelect != null
-                          ? Padding(
-                              padding: const EdgeInsets.only(bottom: 5.0),
-                              child: SizedBox(
-                                height: 60,
-                                width: double.infinity,
-                                child: StartAppBanner(
-                                  bannerAdTVStreamSelect!,
-                                ),
-                              ),
-                            )
-                          : Container(),
                     ],
                   ),
                 ),

@@ -34,7 +34,7 @@ class Cinemax extends StatefulWidget {
 
 class _CinemaxState extends State<Cinemax>
     with ChangeNotifier, WidgetsBindingObserver {
-  late bool isFirstLaunch = true;
+  bool? isFirstLaunch;
   AdultmodeProvider adultmodeProvider = AdultmodeProvider();
   DarkthemeProvider themeChangeProvider = DarkthemeProvider();
   ImagequalityProvider imagequalityProvider = ImagequalityProvider();
@@ -113,13 +113,29 @@ class _CinemaxState extends State<Cinemax>
                 mixpanelProvider,
                 defaultHomeProvider,
                 snapshot) {
+          final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
           return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Cinemax',
               theme: Styles.themeData(themeChangeProvider.darktheme, context),
-              home: isFirstLaunch
-                  ? const LandingScreen()
-                  : const CinemaxHomePage());
+              home: isFirstLaunch == null
+                  ? Scaffold(
+                      body: Container(
+                        color: isDark
+                            ? const Color(0xFF202124)
+                            : const Color(0xFFF7F7F7),
+                        child: const Center(
+                          child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: CircularProgressIndicator(
+                                  color: Color(0xFFF57C00))),
+                        ),
+                      ),
+                    )
+                  : isFirstLaunch == true
+                      ? const LandingScreen()
+                      : const CinemaxHomePage());
         }));
   }
 }
@@ -152,8 +168,10 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
             Provider.of<DarkthemeProvider?>(context) == null ||
             Provider.of<MixpanelProvider?>(context)?.mixpanel == null ||
             Provider.of<DeafultHomeProvider?>(context)?.defaultValue == null
-        ? const Center(
-            child: CircularProgressIndicator(),
+        ? const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
           )
         : Scaffold(
             drawer: const DrawerWidget(),

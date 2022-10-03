@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:cinemax/models/update.dart';
+
 import '/models/images.dart';
 import '/models/person.dart';
 import '/models/tv.dart';
@@ -213,4 +215,16 @@ Future<List<TV>> fetchPersonTV(String api) async {
   var decodeRes = jsonDecode(res.body);
   personTVList = PersonTVList.fromJson(decodeRes);
   return personTVList.tv ?? [];
+}
+
+Future checkForUpdate(String api) async {
+  print(api);
+  UpdateChecker updateChecker;
+  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
+      onTimeout: () {
+    return http.Response('Error', 408);
+  }).onError((error, stackTrace) => http.Response('Error', 408));
+  var decodeRes = jsonDecode(res.body);
+  updateChecker = UpdateChecker.fromJson(decodeRes);
+  return updateChecker;
 }

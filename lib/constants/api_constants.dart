@@ -14,3 +14,5 @@ const String INSTAGRAM_BASE_URL = "https://instagram.com/";
 const String TWITTER_BASE_URL = "https://twitter.com/";
 const String IMDB_BASE_URL = "https://imdb.com/title/";
 const String TWOEMBED_BASE_URL = "https://2embed.biz";
+const String CINEMAX_UPDATE_URL =
+    "https://beamlakaschalew.github.io/cinemax/res/update.json";

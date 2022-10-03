@@ -58,14 +58,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-                   <provider
-    android:authorities="com.startapp.flutter.sdk.${applicationId}"
-    android:name="com.startapp.flutter.sdk.StartAppFlutterHelper"
-    android:exported="false">
-    <meta-data
-        android:name="com.startapp.sdk.SPLASH_ADS_ENABLED"
-        android:value="false" />
-</provider>
 <provider
     android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
     android:authorities="${applicationId}.flutter_downloader.provider"
@@ -80,9 +72,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <meta-data
-            android:name="com.startapp.sdk.APPLICATION_ID"
-            android:value="207531974" />
             <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-5980157262992751~3210299612"/>

@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/settings.dart';
+import 'package:cinemax/screens/update_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:startapp_sdk/startapp.dart';
 import 'package:flutter/material.dart';
 import '../constants/api_constants.dart';
 import 'about.dart';
@@ -20,24 +20,9 @@ class DrawerWidget extends StatefulWidget {
 }
 
 class _DrawerWidgetState extends State<DrawerWidget> {
-  var startAppSdk = StartAppSdk();
-  StartAppBannerAd? bannerAd;
   @override
   void initState() {
     super.initState();
-    startAppSdk
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
-        .then((bannerAd) {
-      setState(() {
-        bannerAd = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
   }
 
   @override
@@ -89,6 +74,19 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   },
                 ),
                 ListTile(
+                  leading: Icon(
+                    Icons.update,
+                    color: Color(0xFFF57C00),
+                  ),
+                  title: Text('Check for an update'),
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return UpdateScreen();
+                    })));
+                  },
+                ),
+                ListTile(
                   leading: const Icon(
                     Icons.share_sharp,
                     color: Color(0xFFF57C00),
@@ -101,7 +99,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 ),
               ],
             ),
-            bannerAd != null ? StartAppBanner(bannerAd!) : Container(),
           ],
         ),
       ),
@@ -687,7 +684,7 @@ Widget movieCastAndCrewTabShimmer(isDark) => Container(
         }));
 
 Widget detailsRecommendationsAndSimilarShimmer(
-        isDark, scrollController, bannerAdMovieRecommendation, isLoading) =>
+        isDark, scrollController, isLoading) =>
     Column(
       children: [
         Expanded(
@@ -946,8 +943,7 @@ Widget watchProvidersImageShimmer(isDark) => Shimmer.fromColors(
       ),
     );
 
-Widget mainPageVerticalScrollShimmer(
-        bannerAdMovieGenre, isDark, isLoading, scrollController) =>
+Widget mainPageVerticalScrollShimmer(isDark, isLoading, scrollController) =>
     Container(
       color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
       child: Column(
@@ -1137,7 +1133,7 @@ Widget detailVideoImageShimmer(isDark) => Shimmer.fromColors(
           borderRadius: BorderRadius.circular(8.0), color: Colors.white),
     ));
 
-Widget tvDetailsSeasonsTabShimmer(bannerAdTVSeason, isDark) => Column(
+Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
       children: [
         Expanded(
           child: ListView.builder(
@@ -1199,16 +1195,6 @@ Widget tvDetailsSeasonsTabShimmer(bannerAdTVSeason, isDark) => Column(
                 );
               }),
         ),
-        bannerAdTVSeason != null
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: SizedBox(
-                  height: 60,
-                  width: double.infinity,
-                  child: StartAppBanner(bannerAdTVSeason!),
-                ),
-              )
-            : Container(),
       ],
     );
 

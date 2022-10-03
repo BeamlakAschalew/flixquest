@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../provider/adultmode_provider.dart';
@@ -33,42 +32,11 @@ class MovieDetailPageState extends State<MovieDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<MovieDetailPage> {
   late TabController tabController;
-  var startAppSdkMovieDetail = StartAppSdk();
-  var startAppSdkMovieDetail1 = StartAppSdk();
-  StartAppBannerAd? bannerAdMovieDetail;
-  StartAppBannerAd? bannerAdMovieDetail1;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 5, vsync: this);
-    getBannerADForMovieDetail();
-  }
-
-  void getBannerADForMovieDetail() {
-    startAppSdkMovieDetail
-        .loadBannerAd(StartAppBannerType.BANNER)
-        .then((bannerAd) {
-      setState(() {
-        bannerAdMovieDetail = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
-
-    startAppSdkMovieDetail1
-        .loadBannerAd(StartAppBannerType.BANNER)
-        .then((bannerAd) {
-      setState(() {
-        bannerAdMovieDetail1 = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
   }
 
   @override
@@ -452,10 +420,6 @@ class MovieDetailPageState extends State<MovieDetailPage>
                                                       Endpoints.movieDetailsUrl(
                                                           widget.movie.id!),
                                                 ),
-                                                bannerAdMovieDetail != null
-                                                    ? StartAppBanner(
-                                                        bannerAdMovieDetail!)
-                                                    : Container(),
                                                 ScrollingArtists(
                                                   api: Endpoints.getCreditsUrl(
                                                       widget.movie.id!),
@@ -468,10 +432,6 @@ class MovieDetailPageState extends State<MovieDetailPage>
                                                   name: widget
                                                       .movie.originalTitle,
                                                 ),
-                                                bannerAdMovieDetail1 != null
-                                                    ? StartAppBanner(
-                                                        bannerAdMovieDetail1!)
-                                                    : Container(),
                                                 MovieVideosDisplay(
                                                   api: Endpoints.getVideos(
                                                       widget.movie.id!),
