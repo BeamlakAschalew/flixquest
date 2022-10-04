@@ -21,8 +21,14 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'provider/adultmode_provider.dart';
 
+Future<void> _messageHandler(RemoteMessage message) async {
+  print('background message ${message.notification!.body}');
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
   runApp(const Cinemax());
 }
@@ -43,6 +49,7 @@ class _CinemaxState extends State<Cinemax>
   MixpanelProvider mixpanelProvider = MixpanelProvider();
   DeafultHomeProvider deafultHomeProvider = DeafultHomeProvider();
   late Mixpanel mixpanel;
+  late FirebaseMessaging messaging;
 
   void firstTimeCheck() async {
     final prefs = await SharedPreferences.getInstance();
@@ -58,6 +65,13 @@ class _CinemaxState extends State<Cinemax>
   @override
   void initState() {
     super.initState();
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("message recieved");
+      print(event.notification!.body);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('Message clicked!');
+    });
     firstTimeCheck();
     mixpanelProvider.initMixpanel();
     getCurrentImageQuality();

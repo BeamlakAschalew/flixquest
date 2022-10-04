@@ -2,6 +2,7 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/provider/mixpanel_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import '../constants/app_constants.dart';
@@ -37,6 +38,17 @@ class MovieDetailPageState extends State<MovieDetailPage>
   void initState() {
     super.initState();
     tabController = TabController(length: 5, vsync: this);
+    mixpanelUpload(context);
+  }
+
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed movie pages', properties: {
+      'Movie name': '${widget.movie.originalTitle}',
+      'Movie id': '${widget.movie.id}',
+      'Is Movie adult?': '${widget.movie.adult}'
+    });
   }
 
   @override

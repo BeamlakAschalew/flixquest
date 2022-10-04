@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
+import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/credits.dart';
@@ -13,12 +14,10 @@ import 'person_widgets.dart';
 class GuestStarDetailPage extends StatefulWidget {
   final TVEpisodeGuestStars? cast;
   final String heroId;
-  final Crew? crew;
 
   const GuestStarDetailPage({
     Key? key,
     this.cast,
-    this.crew,
     required this.heroId,
   }) : super(key: key);
   @override
@@ -35,6 +34,16 @@ class GuestStarDetailPageState extends State<GuestStarDetailPage>
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
+    mixpanelUpload(context);
+  }
+
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed person pages', properties: {
+      'Person name': '${widget.cast!.name}',
+      'Person id': '${widget.cast!.id}'
+    });
   }
 
   @override

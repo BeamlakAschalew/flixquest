@@ -7,9 +7,11 @@ import 'package:flutter_hls_parser/flutter_hls_parser.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:pod_player/pod_player.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
 
 import '../constants/api_constants.dart';
+import '../provider/darktheme_provider.dart';
 import 'player.dart';
 
 class MovieVideoLoader extends StatefulWidget {
@@ -32,10 +34,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   late Uri completem3u8;
   final webScraper = WebScraper(TWOEMBED_BASE_URL);
   List<Map<String, dynamic>>? videoSrc;
-  SpinKitChasingDots spinKitChasingDots = const SpinKitChasingDots(
-    color: Colors.white,
-    size: 60,
-  );
 
   @override
   void initState() {
@@ -111,6 +109,11 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    SpinKitChasingDots spinKitChasingDots = SpinKitChasingDots(
+      color: isDark ? Colors.white : Colors.black,
+      size: 60,
+    );
     return Scaffold(
       body: Container(
         color:

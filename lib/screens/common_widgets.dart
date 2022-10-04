@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/provider/mixpanel_provider.dart';
 import 'package:cinemax/screens/settings.dart';
 import 'package:cinemax/screens/update_screen.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +29,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Drawer(
       child: Container(
         color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
@@ -93,6 +95,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   ),
                   title: const Text('Share the app'),
                   onTap: () async {
+                    mixpanel.track('Share button data', properties: {
+                      'Sahre button click': 'Share',
+                    });
                     await Share.share(
                         'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
                   },

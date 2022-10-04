@@ -145,7 +145,9 @@ class MovieDetails {
   String? originalTitle;
   String? status;
   int? budget;
+  bool? isAdult;
   int? revenue;
+  int? id;
   dynamic imdbId;
 
   List<ProductionCompanies>? productionCompanies;
@@ -158,7 +160,9 @@ class MovieDetails {
     this.tagline,
     this.status,
     this.budget,
+    this.id,
     this.revenue,
+    this.isAdult,
     this.originalTitle,
     this.productionCompanies,
     this.productionCountries,
@@ -173,6 +177,8 @@ class MovieDetails {
     budget = json['budget'];
     revenue = json['revenue'];
     imdbId = json['imdb_id'];
+    isAdult = json['adult'];
+    id = json['id'];
     // belongsToCollection = json['belongs_to_collection'];
     originalTitle = json['original_title'];
     if (json['production_companies'] != null) {

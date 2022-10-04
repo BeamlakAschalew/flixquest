@@ -2,6 +2,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/models/dropdown_select.dart';
+import 'package:cinemax/models/filter_chip.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/screens/photoview.dart';
 import 'package:cinemax/screens/movie_video_loader.dart';
@@ -117,6 +119,9 @@ class DiscoverMoviesState extends State<DiscoverMovies>
   List<Movie>? moviesList;
   late double deviceHeight;
   bool requestFailed = false;
+  YearDropdownData yearDropdownData = YearDropdownData();
+  MovieGenreFilterChipData movieGenreFilterChipData =
+      MovieGenreFilterChipData();
   @override
   void initState() {
     super.initState();
@@ -124,8 +129,13 @@ class DiscoverMoviesState extends State<DiscoverMovies>
   }
 
   void getData() {
+    List<String> years = yearDropdownData.yearsList.getRange(1, 24).toList();
+    List<MovieGenreFilterChipWidget> genres =
+        movieGenreFilterChipData.movieGenreFilterdata;
+    years.shuffle();
+    genres.shuffle();
     fetchMovies(
-            '${Endpoints.discoverMoviesUrl(1)}&inculde_adult=${widget.includeAdult}')
+            '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&include_adult=${widget.includeAdult}&primary_release_year=${years.first}&with_genres=${genres.first.genreValue}')
         .then((value) {
       setState(() {
         moviesList = value;
@@ -157,7 +167,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                'Discover',
+                'Featured movies',
                 style: kTextHeaderStyle,
               ),
             ),
@@ -183,12 +193,6 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                         return Container(
                           child: GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed movie pages',
-                                  properties: {
-                                    'Movie name':
-                                        '${moviesList![index].originalTitle}',
-                                    'Movie id': '${moviesList![index].id}'
-                                  });
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -208,7 +212,9 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                   fadeInDuration:
                                       const Duration(milliseconds: 700),
                                   fadeInCurve: Curves.easeIn,
-                                  imageUrl: TMDB_BASE_IMAGE_URL +
+                                  imageUrl:  moviesList![index].posterPath == null
+                                      ? ''
+                                      : TMDB_BASE_IMAGE_URL +
                                       imageQuality +
                                       moviesList![index].posterPath!,
                                   imageBuilder: (context, imageProvider) =>
@@ -448,15 +454,6 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    mixpanel.track('Most viewed movie pages',
-                                        properties: {
-                                          'Movie name':
-                                              '${moviesList![index].originalTitle}',
-                                          'Movie id':
-                                              '${moviesList![index].id}',
-                                          'Is Movie adult?':
-                                              '${moviesList![index].adult}'
-                                        });
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -497,7 +494,9 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                                   700),
                                                       fadeInCurve:
                                                           Curves.easeIn,
-                                                      imageUrl:
+                                                      imageUrl:  moviesList![index].posterPath == null
+                                      ? ''
+                                      :
                                                           TMDB_BASE_IMAGE_URL +
                                                               imageQuality +
                                                               moviesList![index]
@@ -1261,15 +1260,6 @@ class PartsListState extends State<PartsList> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    mixpanel.track('Most viewed movie pages',
-                                        properties: {
-                                          'Movie name':
-                                              '${collectionMovieList![index].originalTitle}',
-                                          'Movie id':
-                                              '${collectionMovieList![index].id}',
-                                          'Is Movie adult?':
-                                              '${collectionMovieList![index].adult}'
-                                        });
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -1999,12 +1989,16 @@ class WatchNowButtonState extends State<WatchNowButton> {
   void streamSelectBottomSheet(
       {required String mediaType,
       required String imdbId,
-      required String videoTitle}) {
+      required String videoTitle,
+      required String movieName,
+      required String id,
+      required String adult}) {
     final isDark =
         Provider.of<DarkthemeProvider>(context, listen: false).darktheme;
     showModalBottomSheet(
         context: context,
         builder: (builder) {
+          final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
           return Container(
               color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               child: SingleChildScrollView(
@@ -2025,6 +2019,15 @@ class WatchNowButtonState extends State<WatchNowButton> {
                       padding: const EdgeInsets.all(30.0),
                       child: GestureDetector(
                         onTap: () {
+                          void mixpanelUpload(BuildContext context) {
+                            mixpanel
+                                .track('Most viewed movie pages', properties: {
+                              'Movie name': movieName,
+                              'Movie id': id,
+                              'Is Movie adult?': adult,
+                            });
+                          }
+
                           Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: ((context) {
                             return MovieVideoLoader(
@@ -2052,6 +2055,12 @@ class WatchNowButtonState extends State<WatchNowButton> {
                       padding: const EdgeInsets.all(30.0),
                       child: GestureDetector(
                         onTap: () {
+                          mixpanel
+                              .track('Most viewed movie pages', properties: {
+                            'Movie name': movieName,
+                            'Movie id': id,
+                            'Is Movie adult?': adult,
+                          });
                           Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: ((context) {
                             return MovieStreamSelect(
@@ -2091,11 +2100,6 @@ class WatchNowButtonState extends State<WatchNowButton> {
             backgroundColor:
                 MaterialStateProperty.all(const Color(0xFFF57C00))),
         onPressed: () async {
-          mixpanel.track('Most viewed movies', properties: {
-            'Movie name': '${widget.movieName}',
-            'Movie id': '${widget.movieId}',
-            'Is Movie adult?': '${widget.adult}'
-          });
           setState(() {
             isVisible = true;
             buttonWidth = 170;
@@ -2112,7 +2116,10 @@ class WatchNowButtonState extends State<WatchNowButton> {
           streamSelectBottomSheet(
               imdbId: movieDetails!.imdbId,
               mediaType: 'movie',
-              videoTitle: movieDetails!.originalTitle!);
+              videoTitle: movieDetails!.originalTitle!,
+              movieName: movieDetails!.originalTitle!,
+              adult: movieDetails!.isAdult!.toString(),
+              id: movieDetails!.id!.toString());
           // Navigator.push(context, MaterialPageRoute(builder: (context) {
           //   return StreamOptionSelect(mediaType: 'movie');
           //   // return MovieVideoLoader(
@@ -2507,12 +2514,6 @@ class CastTabState extends State<CastTab>
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed person pages',
-                                  properties: {
-                                    'Person name':
-                                        '${credits!.cast![index].name}',
-                                    'Person id': '${credits!.cast![index].id}'
-                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return CastDetailPage(
@@ -2747,12 +2748,6 @@ class CrewTabState extends State<CrewTab>
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed person pages',
-                                  properties: {
-                                    'Person name':
-                                        '${credits!.crew![index].name}',
-                                    'Person id': '${credits!.crew![index].id}'
-                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return CrewDetailPage(
@@ -3036,15 +3031,6 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    mixpanel.track('Most viewed movie pages',
-                                        properties: {
-                                          'Movie name':
-                                              '${movieList![index].originalTitle}',
-                                          'Movie id': '${movieList![index].id}',
-                                          'Is Movie adult?':
-                                              '${movieList![index].adult}'
-                                        });
-
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                       return MovieDetailPage(
@@ -3355,15 +3341,6 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    mixpanel.track('Most viewed movie pages',
-                                        properties: {
-                                          'Movie name':
-                                              '${movieList![index].originalTitle}',
-                                          'Movie id': '${movieList![index].id}',
-                                          'Is Movie adult?':
-                                              '${movieList![index].adult}'
-                                        });
-
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                       return MovieDetailPage(
@@ -3676,16 +3653,6 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                           (BuildContext context, int index) {
                                         return GestureDetector(
                                           onTap: () {
-                                            mixpanel.track(
-                                                'Most viewed movie pages',
-                                                properties: {
-                                                  'Movie name':
-                                                      '${moviesList![index].originalTitle}',
-                                                  'Movie id':
-                                                      '${moviesList![index].id}',
-                                                  'Is Movie adult?':
-                                                      '${moviesList![index].adult}'
-                                                });
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
@@ -4009,16 +3976,6 @@ class ParticularStreamingServiceMoviesState
                                           (BuildContext context, int index) {
                                         return GestureDetector(
                                           onTap: () {
-                                            mixpanel.track(
-                                                'Most viewed movie pages',
-                                                properties: {
-                                                  'Movie name':
-                                                      '${moviesList![index].originalTitle}',
-                                                  'Movie id':
-                                                      '${moviesList![index].id}',
-                                                  'Is Movie adult?':
-                                                      '${moviesList![index].adult}'
-                                                });
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
@@ -4877,14 +4834,6 @@ class CollectionMoviesState extends State<CollectionMovies> {
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed movie pages',
-                                  properties: {
-                                    'Movie name':
-                                        '${moviesList![index].originalTitle}',
-                                    'Movie id': '${moviesList![index].id}',
-                                    'Is Movie adult?':
-                                        '${moviesList![index].adult}'
-                                  });
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

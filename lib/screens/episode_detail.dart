@@ -51,6 +51,16 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
   void initState() {
     super.initState();
     tabController = TabController(length: 4, vsync: this);
+    mixpanelUpload(context);
+  }
+
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed episode details', properties: {
+      'TV series name': '${widget.seriesName}',
+      'TV series episode name': '${widget.episodeList.name}',
+    });
   }
 
   void streamSelectBottomSheet(
@@ -67,6 +77,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
     showModalBottomSheet(
         context: context,
         builder: (builder) {
+          final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
           return Container(
               color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               child: SingleChildScrollView(
@@ -87,6 +98,17 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                       padding: const EdgeInsets.all(30.0),
                       child: GestureDetector(
                         onTap: () {
+                          mixpanel.track('Most viewed TV series', properties: {
+                            'TV series name': '${widget.seriesName}',
+                            'TV series id': '${widget.tvId}',
+                            'TV series episode name':
+                                '${widget.episodeList.name}',
+                            'TV series season number':
+                                '${widget.episodeList.seasonNumber}',
+                            'TV series episode number':
+                                '${widget.episodeList.episodeNumber}',
+                            'Is TV series adult?': '${widget.adult}'
+                          });
                           Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: ((context) {
                             return TVVideoLoader(
@@ -116,6 +138,17 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                       padding: const EdgeInsets.all(30.0),
                       child: GestureDetector(
                         onTap: () {
+                          mixpanel.track('Most viewed TV series', properties: {
+                            'TV series name': '${widget.seriesName}',
+                            'TV series id': '${widget.tvId}',
+                            'TV series episode name':
+                                '${widget.episodeList.name}',
+                            'TV series season number':
+                                '${widget.episodeList.seasonNumber}',
+                            'TV series episode number':
+                                '${widget.episodeList.episodeNumber}',
+                            'Is TV series adult?': '${widget.adult}'
+                          });
                           Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: ((context) {
                             return TVStreamSelect(
@@ -552,22 +585,6 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                                 .all(const Color(
                                                                     0xFFF57C00))),
                                                     onPressed: () async {
-                                                      mixpanel.track(
-                                                          'Most viewed TV series',
-                                                          properties: {
-                                                            'TV series name':
-                                                                '${widget.seriesName}',
-                                                            'TV series id':
-                                                                '${widget.tvId}',
-                                                            'TV series episode name':
-                                                                '${widget.episodeList.name}',
-                                                            'TV series season number':
-                                                                '${widget.episodeList.seasonNumber}',
-                                                            'TV series episode number':
-                                                                '${widget.episodeList.episodeNumber}',
-                                                            'Is TV series adult?':
-                                                                '${widget.adult}'
-                                                          });
                                                       setState(() {
                                                         isVisible = true;
                                                         buttonWidth = 170;

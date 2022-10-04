@@ -5,6 +5,7 @@ import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
 import '../provider/adultmode_provider.dart';
 import '../provider/imagequality_provider.dart';
+import '../provider/mixpanel_provider.dart';
 import '/models/person.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
@@ -36,6 +37,17 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
+    mixpanelUpload(context);
+  }
+
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed person pages', properties: {
+      'Person name': '${widget.person!.name}',
+      'Person id': '${widget.person!.id}',
+      'Is Person adult?': '${widget.person!.adult}'
+    });
   }
 
   @override

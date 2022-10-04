@@ -148,16 +148,6 @@ class MainMoviesListState extends State<MainMoviesList> {
                                             (BuildContext context, int index) {
                                           return GestureDetector(
                                             onTap: () {
-                                              mixpanel.track(
-                                                  'Most viewed movie pages',
-                                                  properties: {
-                                                    'Movie name':
-                                                        '${moviesList![index].originalTitle}',
-                                                    'Movie id':
-                                                        '${moviesList![index].id}',
-                                                    'Is Movie adult?':
-                                                        '${moviesList![index].adult}'
-                                                  });
                                               Navigator.push(context,
                                                   MaterialPageRoute(
                                                       builder: (context) {

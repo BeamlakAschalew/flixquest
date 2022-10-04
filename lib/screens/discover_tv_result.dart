@@ -144,16 +144,6 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                                                       int index) {
                                                 return GestureDetector(
                                                   onTap: () {
-                                                    mixpanel.track(
-                                                        'Most viewed TV pages',
-                                                        properties: {
-                                                          'TV series name':
-                                                              '${tvList![index].originalName}',
-                                                          'TV series id':
-                                                              '${tvList![index].id}',
-                                                          'Is TV series adult?':
-                                                              '${tvList![index].adult}'
-                                                        });
                                                     Navigator.push(context,
                                                         MaterialPageRoute(
                                                             builder: (context) {

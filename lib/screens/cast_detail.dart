@@ -6,6 +6,7 @@ import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/credits.dart';
@@ -33,7 +34,18 @@ class CastDetailPageState extends State<CastDetailPage>
   @override
   void initState() {
     super.initState();
+
     tabController = TabController(length: 3, vsync: this);
+    mixpanelUpload(context);
+  }
+
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed person pages', properties: {
+      'Person name': '${widget.cast!.name}',
+      'Person id': '${widget.cast!.id}'
+    });
   }
 
   @override

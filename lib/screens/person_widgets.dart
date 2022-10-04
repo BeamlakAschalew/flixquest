@@ -279,16 +279,6 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                               int index) {
                                             return GestureDetector(
                                               onTap: () {
-                                                mixpanel.track(
-                                                    'Most viewed movie pages',
-                                                    properties: {
-                                                      'Movie name':
-                                                          '${personMoviesList![index].originalTitle}',
-                                                      'Movie id':
-                                                          '${personMoviesList![index].id}',
-                                                      'Is Movie adult?':
-                                                          '${personMoviesList![index].adult}'
-                                                    });
                                                 Navigator.push(context,
                                                     MaterialPageRoute(
                                                         builder: (context) {
@@ -547,16 +537,6 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                               int index) {
                                             return GestureDetector(
                                               onTap: () {
-                                                mixpanel.track(
-                                                    'Most viewed TV pages',
-                                                    properties: {
-                                                      'TV series name':
-                                                          '${personTVList![index].name}',
-                                                      'TV series id':
-                                                          '${personTVList![index].id}',
-                                                      'Is TV series adult?':
-                                                          '${personTVList![index].adult}'
-                                                    });
                                                 Navigator.push(context,
                                                     MaterialPageRoute(
                                                         builder: (context) {
@@ -748,67 +728,6 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
         ? personAboutSimmer(isDark)
         : Column(
             children: [
-              // Row(
-              //   children: <Widget>[
-              //     Text(
-              //       'Age',
-              //       style: TextStyle(
-              //           color: isDark ? Colors.white54 : Colors.black54),
-              //     ),
-              //     Padding(
-              //       padding: const EdgeInsets.only(left: 10.0),
-              //       child: Text(personDetails?.birthday != null
-              //           ? '${DateTime.parse(DateTime.now().toString()).year.toInt() - DateTime.parse(personDetails!.birthday!.toString()).year - 1}'
-              //           : '-'),
-              //     ),
-              //   ],
-              // ),
-              // Row(
-              //   children: <Widget>[
-              //     Text(
-              //       'Born on',
-              //       style: TextStyle(
-              //           color: isDark ? Colors.white54 : Colors.black54),
-              //     ),
-              //     Padding(
-              //       padding: const EdgeInsets.only(
-              //         left: 10.0,
-              //       ),
-              //       child: Text(personDetails?.birthday != null
-              //           ? '${DateTime.parse(personDetails!.birthday!).day} ${DateFormat.MMMM().format(DateTime.parse(personDetails!.birthday!))}, ${DateTime.parse(personDetails!.birthday!.toString()).year}'
-              //           : '-'),
-              //     ),
-              //   ],
-              // ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.start,
-              //   crossAxisAlignment: CrossAxisAlignment.start,
-              //   children: <Widget>[
-              //     Text(
-              //       'From',
-              //       style: TextStyle(
-              //           color: isDark ? Colors.white54 : Colors.black54),
-              //     ),
-              //     Expanded(
-              //       child: Padding(
-              //         padding: const EdgeInsets.only(
-              //           left: 5.0,
-              //         ),
-              //         child: Column(
-              //           children: [
-              //             Text(
-              //               personDetails?.birthPlace != null
-              //                   ? personDetails!.birthPlace!
-              //                   : '-',
-              //               overflow: TextOverflow.ellipsis,
-              //               maxLines: 2,
-              //             ),
-              //           ],
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -825,7 +744,7 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                         ? personDetails!.biography!
                         : 'We don\'t have a biography for this person',
                     trimLines: 4,
-                    style: const TextStyle(fontFamily: 'Poppins'),
+                    style: kTextSmallBodyStyle,
                     colorClickableText: const Color(0xFFF57C00),
                     trimMode: TrimMode.Line,
                     trimCollapsedText: 'read more',
@@ -900,6 +819,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                           child: Text(
                             'This person doesn\'t have social media links provided :(',
                             textAlign: TextAlign.center,
+                            style: kTextSmallBodyStyle,
                           ),
                         )
                       : Container(

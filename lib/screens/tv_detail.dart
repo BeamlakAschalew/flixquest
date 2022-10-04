@@ -7,6 +7,7 @@ import 'package:readmore/readmore.dart';
 import '../constants/app_constants.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
+import '../provider/mixpanel_provider.dart';
 import '/models/tv.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,17 @@ class TVDetailPageState extends State<TVDetailPage>
   void initState() {
     super.initState();
     tabController = TabController(length: 6, vsync: this);
+    mixpanelUpload(context);
+  }
+
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed TV pages', properties: {
+      'TV series name': '${widget.tvSeries.name}',
+      'TV series id': '${widget.tvSeries.id}',
+      'Is TV series adult?': '${widget.tvSeries.adult}'
+    });
   }
 
   @override

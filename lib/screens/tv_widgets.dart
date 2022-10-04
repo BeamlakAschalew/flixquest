@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cinemax/models/dropdown_select.dart';
+import 'package:cinemax/models/filter_chip.dart';
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:cinemax/screens/guest_star_detail.dart';
 import 'package:provider/provider.dart';
@@ -118,6 +120,9 @@ class DiscoverTVState extends State<DiscoverTV>
   late double deviceAspectRatio;
   List<TV>? tvList;
   bool requestFailed = false;
+  YearDropdownData yearDropdownData = YearDropdownData();
+  TVGenreFilterChipData tvGenreFilterChipData = TVGenreFilterChipData();
+
   @override
   void initState() {
     super.initState();
@@ -125,8 +130,11 @@ class DiscoverTVState extends State<DiscoverTV>
   }
 
   void getData() {
-    fetchTV(Endpoints.discoverTVUrl(1) +
-            '&include_adult=${widget.includeAdult}')
+    List<String> years = yearDropdownData.yearsList.getRange(1, 24).toList();
+    List<TVGenreFilterChipWidget> genres = tvGenreFilterChipData.tvGenreList;
+    years.shuffle();
+    genres.shuffle();
+    fetchTV('$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&first_air_date_year=${years.first}&with_genres=${genres.first.genreValue}')
         .then((value) {
       setState(() {
         tvList = value;
@@ -158,7 +166,7 @@ class DiscoverTVState extends State<DiscoverTV>
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                'Discover',
+                'Featured TV shows',
                 style: kTextHeaderStyle,
               ),
             ),
@@ -183,13 +191,6 @@ class DiscoverTVState extends State<DiscoverTV>
                         return Container(
                           child: GestureDetector(
                             onTap: () {
-                              mixpanel
-                                  .track('Most viewed TV pages', properties: {
-                                'TV series name':
-                                    '${tvList![index].originalName}',
-                                'TV series id': '${tvList![index].id}',
-                                'Is TV series adult?': '${tvList![index].adult}'
-                              });
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -208,9 +209,11 @@ class DiscoverTVState extends State<DiscoverTV>
                                   fadeInDuration:
                                       const Duration(milliseconds: 700),
                                   fadeInCurve: Curves.easeIn,
-                                  imageUrl: TMDB_BASE_IMAGE_URL +
-                                      imageQuality +
-                                      tvList![index].posterPath!,
+                                  imageUrl: tvList![index].posterPath == null
+                                      ? ''
+                                      : TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          tvList![index].posterPath!,
                                   imageBuilder: (context, imageProvider) =>
                                       Container(
                                     decoration: BoxDecoration(
@@ -444,12 +447,6 @@ class ScrollingTVState extends State<ScrollingTV>
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    mixpanel.track('Most viewed TV pages',
-                                        properties: {
-                                          'TV series name':
-                                              '${tvList![index].originalName}',
-                                          'TV series id': '${tvList![index].id}'
-                                        });
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -490,8 +487,11 @@ class ScrollingTVState extends State<ScrollingTV>
                                                                   700),
                                                       fadeInCurve:
                                                           Curves.easeIn,
-                                                      imageUrl:
-                                                          TMDB_BASE_IMAGE_URL +
+                                                      imageUrl: tvList![index]
+                                                                  .posterPath ==
+                                                              null
+                                                          ? ''
+                                                          : TMDB_BASE_IMAGE_URL +
                                                               imageQuality +
                                                               tvList![index]
                                                                   .posterPath!,
@@ -672,12 +672,6 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed person pages',
-                                  properties: {
-                                    'Person name':
-                                        '${credits!.cast![index].name}',
-                                    'Person id': '${credits!.cast![index].id}'
-                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return CastDetailPage(
@@ -1376,13 +1370,6 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed person pages',
-                                  properties: {
-                                    'Person name':
-                                        '${tvDetails!.createdBy![index].name}',
-                                    'Person id':
-                                        '${tvDetails!.createdBy![index].id}'
-                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return CreatedByPersonDetailPage(
@@ -2354,12 +2341,6 @@ class TVCastTabState extends State<TVCastTab>
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed person pages',
-                                  properties: {
-                                    'Person name':
-                                        '${credits!.cast![index].name}',
-                                    'Person id': '${credits!.cast![index].id}'
-                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return CastDetailPage(
@@ -2611,15 +2592,6 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    mixpanel.track('Most viewed season details',
-                                        properties: {
-                                          'TV series name':
-                                              '${widget.seriesName}',
-                                          'TV series season number':
-                                              '${tvDetails!.seasons![index].seasonNumber}',
-                                          'Is TV series adult?':
-                                              '${widget.adult}'
-                                        });
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -2872,12 +2844,6 @@ class TVCrewTabState extends State<TVCrewTab>
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed person pages',
-                                  properties: {
-                                    'Person name':
-                                        '${credits!.crew![index].name}',
-                                    'Person id': '${credits!.crew![index].id}'
-                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return CrewDetailPage(
@@ -3163,12 +3129,6 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    mixpanel.track('Most viewed TV pages',
-                                        properties: {
-                                          'TV series name':
-                                              '${tvList![index].originalName}',
-                                          'TV series id': '${tvList![index].id}'
-                                        });
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                       return TVDetailPage(
@@ -3478,12 +3438,6 @@ class SimilarTVTabState extends State<SimilarTVTab>
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    mixpanel.track('Most viewed TV pages',
-                                        properties: {
-                                          'TV series name':
-                                              '${tvList![index].originalName}',
-                                          'TV series id': '${tvList![index].id}'
-                                        });
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                       return TVDetailPage(
@@ -3875,16 +3829,6 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
                                           (BuildContext context, int index) {
                                         return GestureDetector(
                                           onTap: () {
-                                            mixpanel.track(
-                                                'Most viewed TV pages',
-                                                properties: {
-                                                  'TV series name':
-                                                      '${tvList![index].originalName}',
-                                                  'TV series id':
-                                                      '${tvList![index].id}',
-                                                  'Is TV series adult?':
-                                                      '${tvList![index].adult}'
-                                                });
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
@@ -4479,15 +4423,6 @@ class SeasonsListState extends State<SeasonsList> {
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
                                   onTap: () {
-                                    mixpanel.track('Most viewed season details',
-                                        properties: {
-                                          'TV series name':
-                                              '${widget.seriesName}',
-                                          'TV series season number':
-                                              '${tvDetails!.seasons![index].seasonNumber}',
-                                          'Is TV series adult?':
-                                              '${widget.adult}'
-                                        });
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -4749,12 +4684,6 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed episode details',
-                                  properties: {
-                                    'TV series name': '${widget.seriesName}',
-                                    'TV series episode name':
-                                        '${tvDetails!.episodes![index].name}',
-                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return EpisodeDetailPage(
@@ -5618,16 +5547,6 @@ class ParticularStreamingServiceTVShowsState
                                           (BuildContext context, int index) {
                                         return GestureDetector(
                                           onTap: () {
-                                            mixpanel.track(
-                                                'Most viewed TV pages',
-                                                properties: {
-                                                  'TV series name':
-                                                      '${tvList![index].originalName}',
-                                                  'TV series id':
-                                                      '${tvList![index].id}',
-                                                  'Is Movie adult?':
-                                                      '${tvList![index].adult}'
-                                                });
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
@@ -5898,12 +5817,6 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed person pages',
-                                  properties: {
-                                    'Person name':
-                                        '${credits!.cast![index].name}',
-                                    'Person id': '${credits!.cast![index].id}'
-                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return CastDetailPage(
@@ -6153,13 +6066,6 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
                             onTap: () {
-                              mixpanel.track('Most viewed person pages',
-                                  properties: {
-                                    'Person name':
-                                        '${credits!.episodeGuestStars![index].name}',
-                                    'Person id':
-                                        '${credits!.episodeGuestStars![index].id}'
-                                  });
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return GuestStarDetailPage(
