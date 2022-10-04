@@ -27,7 +27,7 @@ apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 31
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -72,7 +72,7 @@ dependencies {
     implementation 'com.android.support:multidex:2.0.1'
 }
 
-// android {
-//   compileSdkVersion 31
-// }
+android {
+  compileSdkVersion 31
+}
 

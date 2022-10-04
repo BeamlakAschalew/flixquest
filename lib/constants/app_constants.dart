@@ -17,6 +17,12 @@ const kTextSmallBodyStyle = TextStyle(
   overflow: TextOverflow.ellipsis,
 );
 
+const kTextSmallAboutBodyStyle = TextStyle(
+  fontFamily: 'Poppins',
+  fontSize: 14,
+  overflow: TextOverflow.ellipsis,
+);
+
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
