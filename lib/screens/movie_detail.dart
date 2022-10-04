@@ -1,65 +1,61 @@
 // ignore_for_file: avoid_unnecessary_containers
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cinemax/modals/function.dart';
-import 'package:intl/intl.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import '/constants/style_constants.dart';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/provider/mixpanel_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:readmore/readmore.dart';
+import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import '../provider/adultmode_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '/modals/movie.dart';
+import '/models/movie.dart';
 import '/screens/movie_widgets.dart';
-import 'cast_detail.dart';
-import 'genremovies.dart';
-import 'movie_stream_select.dart';
+import 'package:intl/intl.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
   final String heroId;
-  final MovieDetails? md;
 
   const MovieDetailPage({
     Key? key,
     required this.movie,
     required this.heroId,
-    this.md,
   }) : super(key: key);
   @override
-  _MovieDetailPageState createState() => _MovieDetailPageState();
+  MovieDetailPageState createState() => MovieDetailPageState();
 }
 
-class _MovieDetailPageState extends State<MovieDetailPage>
+class MovieDetailPageState extends State<MovieDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<MovieDetailPage> {
   late TabController tabController;
-  FullMovieDetails? fullMovieDetails;
-  late Mixpanel mixpanel;
-  bool? isVisible = false;
-  double? buttonWidth = 150;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 5, vsync: this);
-
-    initMixpanel();
-
-    fetchFullMovieDetails(Endpoints.advancedMovieDetailsUrl(widget.movie.id!))
-        .then((value) {
-      setState(() {
-        fullMovieDetails = value;
-      });
-    });
+    mixpanelUpload(context);
   }
 
-  Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init("c46981e69e00f916418c0dfd0d27f1be",
-        optOutTrackingDefault: false);
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed movie pages', properties: {
+      'Movie name': '${widget.movie.originalTitle}',
+      'Movie id': '${widget.movie.id}',
+      'Is Movie adult?': '${widget.movie.adult}'
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     super.build(context);
     return Scaffold(
       body: Stack(
@@ -74,15 +70,29 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                             'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
-                        : FadeInImage(
-                            width: double.infinity,
-                            height: double.infinity,
-                            image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                'original/' +
-                                widget.movie.backdropPath!),
-                            fit: BoxFit.cover,
-                            placeholder:
-                                const AssetImage('assets/images/loading_5.gif'),
+                        : CachedNetworkImage(
+                            fadeOutDuration: const Duration(milliseconds: 300),
+                            fadeOutCurve: Curves.easeOut,
+                            fadeInDuration: const Duration(milliseconds: 700),
+                            fadeInCurve: Curves.easeIn,
+                            imageUrl:
+                                '${TMDB_BASE_IMAGE_URL}original/${widget.movie.backdropPath!}',
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) => Image.asset(
+                              'assets/images/loading_5.gif',
+                              fit: BoxFit.cover,
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              'assets/images/na_logo.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -123,12 +133,10 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50.0),
-                        color: Colors.black38),
+                        color: isDark ? Colors.black38 : Colors.white38),
                     child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Color(0xFFF57C00),
-                      ),
+                      icon: const Icon(Icons.arrow_back,
+                          color: Color(0xFFF57C00)),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -161,7 +169,9 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF2b2c30),
+                            color: isDark
+                                ? const Color(0xFF2b2c30)
+                                : const Color(0xFFDFDEDE),
                             child: Column(
                               children: <Widget>[
                                 Padding(
@@ -264,533 +274,229 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                   isScrollable: true,
                                   indicatorColor: const Color(0xFFF57C00),
                                   indicatorWeight: 3,
-                                  unselectedLabelColor: Colors.white54,
-                                  labelColor: Colors.white,
-                                  tabs: const [
+                                  tabs: [
                                     Tab(
                                       child: Text('About',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Cast',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Crew',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Recommendations',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Similar',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                   ],
                                   controller: tabController,
                                   indicatorSize: TabBarIndicatorSize.tab,
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    physics: const PageScrollPhysics(),
-                                    children: [
-                                      SingleChildScrollView(
-                                        // physics: const BouncingScrollPhysics(),
-                                        child: Container(
-                                          color: const Color(0xFF202124),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Container(
-                                                  child: fullMovieDetails ==
-                                                          null
-                                                      ? CircularProgressIndicator()
-                                                      : SizedBox(
-                                                          height:
-                                                              fullMovieDetails ==
-                                                                      null
-                                                                  ? 0
-                                                                  : 80,
-                                                          child:
-                                                              fullMovieDetails ==
-                                                                      null
-                                                                  ? Container()
-                                                                  : ListView
-                                                                      .builder(
-                                                                      shrinkWrap:
-                                                                          true,
-                                                                      physics:
-                                                                          const BouncingScrollPhysics(),
-                                                                      scrollDirection:
-                                                                          Axis.horizontal,
-                                                                      itemCount: fullMovieDetails!
-                                                                          .genres!
-                                                                          .length,
-                                                                      itemBuilder:
-                                                                          (BuildContext context,
-                                                                              int index) {
-                                                                        return Padding(
-                                                                          padding:
-                                                                              const EdgeInsets.symmetric(horizontal: 4.0),
-                                                                          child:
-                                                                              GestureDetector(
-                                                                            onTap:
-                                                                                () {
-                                                                              Navigator.push(
-                                                                                  context,
-                                                                                  MaterialPageRoute(
-                                                                                      builder: (context) => GenreMovies(
-                                                                                            genres: fullMovieDetails!.genres![index],
-                                                                                          )));
-                                                                            },
-                                                                            child:
-                                                                                Chip(
-                                                                              shape: RoundedRectangleBorder(
-                                                                                side: const BorderSide(width: 2, style: BorderStyle.solid, color: Color(0xFFad5700)),
-                                                                                borderRadius: BorderRadius.circular(20.0),
-                                                                              ),
-                                                                              label: Text(
-                                                                                fullMovieDetails!.genres![index].genreName!,
-                                                                                style: const TextStyle(fontFamily: 'Poppins'),
-                                                                                // style: widget.themeData.textTheme.bodyText1,
-                                                                              ),
-                                                                              backgroundColor: Colors.transparent,
-                                                                            ),
-                                                                          ),
-                                                                        );
-                                                                      },
-                                                                    ),
-                                                        )),
-                                              // GenreDisplay(
-                                              //   api: Endpoints.movieDetailsUrl(
-                                              //       widget.movie.id!),
-                                              // ),
-                                              Row(
-                                                children: const <Widget>[
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 8.0),
-                                                    child: Text(
-                                                      'Overview',
-                                                      style: kTextHeaderStyle,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: widget
-                                                        .movie.overview!.isEmpty
-                                                    ? const Text(
-                                                        'There is no overview for this movie')
-                                                    : Text(
-                                                        widget.movie.overview!,
-                                                        // style: widget
-                                                        //     .themeData.textTheme.caption,
-                                                      ),
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0,
-                                                            bottom: 4.0),
-                                                    child: Text(
-                                                      widget.movie.releaseDate ==
-                                                              null
-                                                          ? 'Release date: N/A'
-                                                          : 'Release date : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
-                                                      style: const TextStyle(
-                                                          fontFamily:
-                                                              'PoppinsSB'),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Container(
-                                                child: fullMovieDetails == null
-                                                    ? CircularProgressIndicator()
-                                                    : TextButton(
-                                                        style: ButtonStyle(
-                                                            maximumSize:
-                                                                MaterialStateProperty
-                                                                    .all(Size(
-                                                                        buttonWidth!,
-                                                                        50)),
-                                                            backgroundColor:
-                                                                MaterialStateProperty.all(
-                                                                    const Color(
-                                                                        0xFFF57C00))),
-                                                        onPressed: () async {
-                                                          mixpanel.track(
-                                                              'Most viewed movies',
-                                                              properties: {
-                                                                'Movie name':
-                                                                    '${widget.movie.originalTitle}',
-                                                                'Movie id':
-                                                                    '${widget.movie.originalTitle}'
-                                                              });
-                                                          Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) {
-                                                            return MovieStreamSelect(
-                                                              movieId: widget
-                                                                  .movie.id!,
-                                                              movieName: widget
-                                                                  .movie
-                                                                  .originalTitle!,
-                                                              movieImdbId:
-                                                                  fullMovieDetails!
-                                                                      .imdbId!,
-                                                            );
-                                                          }));
-                                                        },
-                                                        child: Row(
-                                                          children: const [
-                                                            Padding(
-                                                              padding: EdgeInsets
-                                                                  .only(
-                                                                      right:
-                                                                          10),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .play_circle,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              'WATCH NOW',
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .white),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                              ),
-                                              Column(
-                                                children: <Widget>[
-                                                  fullMovieDetails == null
-                                                      ? Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Row(
-                                                            children: const <
-                                                                Widget>[
-                                                              Text(
-                                                                'Cast',
-                                                                style:
-                                                                    kTextHeaderStyle,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        )
-                                                      : fullMovieDetails!
-                                                              .cast!.isEmpty
-                                                          ? const Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Center(
-                                                                  child: Text(
-                                                                      'There are no casts available for this movie',
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center)),
-                                                            )
-                                                          : Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceBetween,
-                                                              children: const <
-                                                                  Widget>[
-                                                                Padding(
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(
-                                                                              8.0),
-                                                                  child: Text(
-                                                                    'Cast',
-                                                                    style:
-                                                                        kTextHeaderStyle,
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                  SizedBox(
-                                                    width: double.infinity,
-                                                    height: 160,
-                                                    child:
-                                                        fullMovieDetails == null
-                                                            ? const Center(
-                                                                child:
-                                                                    CircularProgressIndicator(),
-                                                              )
-                                                            : ListView.builder(
-                                                                physics:
-                                                                    const BouncingScrollPhysics(),
-                                                                itemCount:
-                                                                    fullMovieDetails!
-                                                                        .cast!
-                                                                        .length,
-                                                                scrollDirection:
-                                                                    Axis.horizontal,
-                                                                itemBuilder:
-                                                                    (BuildContext
-                                                                            context,
-                                                                        int index) {
-                                                                  return Padding(
-                                                                    padding:
-                                                                        const EdgeInsets.all(
-                                                                            8.0),
-                                                                    child:
-                                                                        GestureDetector(
-                                                                      onTap:
-                                                                          () {
-                                                                        mixpanel.track(
-                                                                            'Most viewed person pages',
-                                                                            properties: {
-                                                                              'Person name': '${fullMovieDetails!.cast![index].name}',
-                                                                              'Person id': '${fullMovieDetails!.cast![index].id}'
-                                                                            });
-                                                                        Navigator.push(
-                                                                            context,
-                                                                            MaterialPageRoute(builder:
-                                                                                (context) {
-                                                                          return CastDetailPage(
-                                                                            cast:
-                                                                                fullMovieDetails!.cast![index],
-                                                                            heroId:
-                                                                                '${fullMovieDetails!.cast![index].id}',
-                                                                          );
-                                                                        }));
-                                                                      },
-                                                                      child:
-                                                                          SizedBox(
-                                                                        width:
-                                                                            100,
-                                                                        child:
-                                                                            Column(
-                                                                          children: <
-                                                                              Widget>[
-                                                                            Expanded(
-                                                                              flex: 6,
-                                                                              child: Hero(
-                                                                                tag: '${fullMovieDetails!.cast![index].id}',
-                                                                                child: SizedBox(
-                                                                                  width: 75,
-                                                                                  child: ClipRRect(
-                                                                                    borderRadius: BorderRadius.circular(100.0),
-                                                                                    child: fullMovieDetails!.cast![index].profilePath == null
-                                                                                        ? Image.asset(
-                                                                                            'assets/images/na_square.png',
-                                                                                            fit: BoxFit.cover,
-                                                                                          )
-                                                                                        : FadeInImage(
-                                                                                            image: NetworkImage(TMDB_BASE_IMAGE_URL + 'w500/' + fullMovieDetails!.cast![index].profilePath!),
-                                                                                            fit: BoxFit.cover,
-                                                                                            placeholder: const AssetImage('assets/images/loading.gif'),
-                                                                                          ),
-                                                                                  ),
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                            Expanded(
-                                                                              flex: 6,
-                                                                              child: Padding(
-                                                                                padding: const EdgeInsets.all(8.0),
-                                                                                child: Text(
-                                                                                  fullMovieDetails!.cast![index].name!,
-                                                                                  maxLines: 2,
-                                                                                  textAlign: TextAlign.center,
-                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                ),
-                                                                              ),
-                                                                            )
-                                                                          ],
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  );
-                                                                },
-                                                              ),
-                                                  ),
-                                                ],
-                                              ),
-                                              // ScrollingArtists(
-                                              //   api: Endpoints.getCreditsUrl(
-                                              //       widget.movie.id!),
-                                              //   title: 'Cast',
-                                              // ),
-                                              Column(
-                                                children: [
-                                                  fullMovieDetails == null
-                                                      ? Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Row(
-                                                            children: const <
-                                                                Widget>[
-                                                              Text(
-                                                                'Images',
-                                                                style:
-                                                                    kTextHeaderStyle, /* style: widget.themeData!.textTheme.bodyText1*/
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        )
-                                                      : Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: const <
-                                                              Widget>[
-                                                            Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Text(
-                                                                'Images',
-                                                                style:
-                                                                    kTextHeaderStyle, /*style: widget.themeData!.textTheme.bodyText1*/
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                  Container(
-                                                    child: SizedBox(
-                                                      width: double.infinity,
-                                                      height: 180,
-                                                      child: fullMovieDetails ==
-                                                              null
-                                                          ? const Center(
-                                                              child:
-                                                                  CircularProgressIndicator(),
-                                                            )
-                                                          : fullMovieDetails!
-                                                                  .backdrops!
-                                                                  .isEmpty
-                                                              ? const SizedBox(
-                                                                  width: double
-                                                                      .infinity,
-                                                                  height: 80,
-                                                                  child: Center(
-                                                                    child: Text(
-                                                                      'This movie doesn\'t have an image provided',
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              : CarouselSlider
-                                                                  .builder(
-                                                                  options:
-                                                                      CarouselOptions(
-                                                                    disableCenter:
-                                                                        true,
-                                                                    viewportFraction:
-                                                                        0.8,
-                                                                    enlargeCenterPage:
-                                                                        false,
-                                                                    autoPlay:
-                                                                        true,
-                                                                  ),
-                                                                  itemBuilder: (BuildContext
-                                                                          context,
-                                                                      int index,
-                                                                      pageViewIndex) {
-                                                                    return Container(
-                                                                      child:
-                                                                          Padding(
-                                                                        padding:
-                                                                            const EdgeInsets.all(8.0),
-                                                                        child:
-                                                                            ClipRRect(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(8.0),
-                                                                          child:
-                                                                              FadeInImage(
-                                                                            image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                                                                'w500/' +
-                                                                                fullMovieDetails!.backdrops![index].filePath!),
-                                                                            fit:
-                                                                                BoxFit.cover,
-                                                                            placeholder:
-                                                                                const AssetImage('assets/images/loading.gif'),
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    );
-                                                                  },
-                                                                  itemCount:
-                                                                      fullMovieDetails!
-                                                                          .backdrops!
-                                                                          .length,
-                                                                ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              // MovieImagesDisplay(
-                                              //   title: 'Images',
-                                              //   api: Endpoints.getImages(
-                                              //       widget.movie.id!),
-                                              // ),
-                                              MovieVideosDisplay(
-                                                api: Endpoints.getVideos(
-                                                    widget.movie.id!),
-                                                title: 'Videos',
-                                              ),
-                                              MovieSocialLinks(
-                                                api: Endpoints
-                                                    .getExternalLinksForMovie(
-                                                  widget.movie.id!,
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        1.6, 0, 1.6, 3),
+                                    child: TabBarView(
+                                      physics: const PageScrollPhysics(),
+                                      controller: tabController,
+                                      children: [
+                                        SingleChildScrollView(
+                                          // physics: const BouncingScrollPhysics(),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? const Color(0xFF202124)
+                                                    : const Color(0xFFFFFFFF),
+                                                borderRadius: const BorderRadius
+                                                        .only(
+                                                    bottomLeft:
+                                                        Radius.circular(8.0),
+                                                    bottomRight:
+                                                        Radius.circular(8.0))),
+                                            child: Column(
+                                              children: <Widget>[
+                                                GenreDisplay(
+                                                  api:
+                                                      Endpoints.movieDetailsUrl(
+                                                          widget.movie.id!),
                                                 ),
-                                              ),
-                                              BelongsToCollectionWidget(
-                                                api: Endpoints.movieDetailsUrl(
-                                                    widget.movie.id!),
-                                              ),
-                                              MovieInfoTable(
-                                                api: Endpoints.movieDetailsUrl(
-                                                    widget.movie.id!),
-                                              ),
-                                            ],
+                                                Row(
+                                                  children: const <Widget>[
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 8.0),
+                                                      child: Text(
+                                                        'Overview',
+                                                        style: kTextHeaderStyle,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: widget.movie.overview!
+                                                          .isEmpty
+                                                      ? const Text(
+                                                          'There is no overview for this movie')
+                                                      : ReadMoreText(
+                                                          widget
+                                                              .movie.overview!,
+                                                          trimLines: 4,
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                          colorClickableText:
+                                                              const Color(
+                                                                  0xFFF57C00),
+                                                          trimMode:
+                                                              TrimMode.Line,
+                                                          trimCollapsedText:
+                                                              'read more',
+                                                          trimExpandedText:
+                                                              'read less',
+                                                          lessStyle:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xFFF57C00),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                          moreStyle:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xFFF57C00),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                        ),
+                                                ),
+                                                Row(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0,
+                                                              bottom: 4.0),
+                                                      child: Text(
+                                                        widget.movie.releaseDate ==
+                                                                    null ||
+                                                                widget
+                                                                    .movie
+                                                                    .releaseDate!
+                                                                    .isEmpty
+                                                            ? 'Release date: N/A'
+                                                            : 'Release date : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
+                                                        style: const TextStyle(
+                                                            fontFamily:
+                                                                'PoppinsSB'),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                WatchNowButton(
+                                                  movieId: widget.movie.id!,
+                                                  movieName: widget
+                                                      .movie.originalTitle,
+                                                  adult: widget.movie.adult,
+                                                  api:
+                                                      Endpoints.movieDetailsUrl(
+                                                          widget.movie.id!),
+                                                ),
+                                                ScrollingArtists(
+                                                  api: Endpoints.getCreditsUrl(
+                                                      widget.movie.id!),
+                                                  title: 'Cast',
+                                                ),
+                                                MovieImagesDisplay(
+                                                  title: 'Images',
+                                                  api: Endpoints.getImages(
+                                                      widget.movie.id!),
+                                                  name: widget
+                                                      .movie.originalTitle,
+                                                ),
+                                                MovieVideosDisplay(
+                                                  api: Endpoints.getVideos(
+                                                      widget.movie.id!),
+                                                  title: 'Videos',
+                                                ),
+                                                MovieSocialLinks(
+                                                  api: Endpoints
+                                                      .getExternalLinksForMovie(
+                                                    widget.movie.id!,
+                                                  ),
+                                                ),
+                                                BelongsToCollectionWidget(
+                                                  api:
+                                                      Endpoints.movieDetailsUrl(
+                                                          widget.movie.id!),
+                                                ),
+                                                MovieInfoTable(
+                                                  api:
+                                                      Endpoints.movieDetailsUrl(
+                                                          widget.movie.id!),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      CastTab(
-                                        api: Endpoints.getCreditsUrl(
-                                            widget.movie.id!),
-                                      ),
-                                      CrewTab(
-                                        api: Endpoints.getCreditsUrl(
-                                            widget.movie.id!),
-                                      ),
-                                      MovieRecommendationsTab(
-                                        api: Endpoints.getMovieRecommendations(
-                                            widget.movie.id!, 1),
-                                        movieId: widget.movie.id!,
-                                      ),
-                                      SimilarMoviesTab(
+                                        CastTab(
+                                          api: Endpoints.getCreditsUrl(
+                                              widget.movie.id!),
+                                        ),
+                                        CrewTab(
+                                          api: Endpoints.getCreditsUrl(
+                                              widget.movie.id!),
+                                        ),
+                                        MovieRecommendationsTab(
+                                          includeAdult:
+                                              Provider.of<AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
+                                          api:
+                                              Endpoints.getMovieRecommendations(
+                                                  widget.movie.id!, 1),
                                           movieId: widget.movie.id!,
-                                          api: Endpoints.getSimilarMovies(
-                                              widget.movie.id!, 1)),
-                                    ],
-                                    controller: tabController,
+                                        ),
+                                        SimilarMoviesTab(
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
+                                            movieId: widget.movie.id!,
+                                            api: Endpoints.getSimilarMovies(
+                                                widget.movie.id!, 1)),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -813,13 +519,35 @@ class _MovieDetailPageState extends State<MovieDetailPage>
                                       'assets/images/na_logo.png',
                                       fit: BoxFit.cover,
                                     )
-                                  : FadeInImage(
-                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                          'w500/' +
-                                          widget.movie.posterPath!),
-                                      fit: BoxFit.cover,
-                                      placeholder: const AssetImage(
-                                          'assets/images/loading.gif'),
+                                  : CachedNetworkImage(
+                                      fadeOutDuration:
+                                          const Duration(milliseconds: 300),
+                                      fadeOutCurve: Curves.easeOut,
+                                      fadeInDuration:
+                                          const Duration(milliseconds: 700),
+                                      fadeInCurve: Curves.easeIn,
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          widget.movie.posterPath!,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                             ),
                           ),

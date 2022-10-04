@@ -1,5 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cinemax/provider/adultmode_provider.dart';
+import 'package:provider/provider.dart';
+
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
@@ -16,7 +19,7 @@ class StreamingServicesTVShows extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          providerName,
+          'TV shows from $providerName',
         ),
         leading: IconButton(
           icon: const Icon(
@@ -29,6 +32,7 @@ class StreamingServicesTVShows extends StatelessWidget {
       ),
       body: Container(
         child: ParticularStreamingServiceTVShows(
+          includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
           providerID: providerId,
           api: Endpoints.watchProvidersTVShows(providerId, 1),
         ),

@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../provider/darktheme_provider.dart';
 import 'tv_stream.dart';
 
-class TVStreamSelect extends StatelessWidget {
+class TVStreamSelect extends StatefulWidget {
   final String tvSeriesName;
   final int tvSeriesId;
   final String? tvSeriesImdbId;
@@ -21,13 +23,24 @@ class TVStreamSelect extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<TVStreamSelect> createState() => _TVStreamSelectState();
+}
+
+class _TVStreamSelectState extends State<TVStreamSelect> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Watch $tvSeriesName ${seasonNumber <= 9 ? 'S0$seasonNumber' : 'S$seasonNumber'} | '
-          '${episodeNumber <= 9 ? 'E0$episodeNumber' : 'E$episodeNumber'}'
-          ', $episodeName',
+          'Watch: ${widget.tvSeriesName} ${widget.seasonNumber <= 9 ? 'S0${widget.seasonNumber}' : 'S${widget.seasonNumber}'} | '
+          '${widget.episodeNumber <= 9 ? 'E0${widget.episodeNumber}' : 'E${widget.episodeNumber}'}'
+          ', ${widget.episodeName}',
         ),
         leading: IconButton(
           icon: const Icon(
@@ -39,40 +52,93 @@ class TVStreamSelect extends StatelessWidget {
         ),
       ),
       body: Container(
+        color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
         child: Column(
           children: [
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    StreamListWidget(
-                      streamName: 'Stream one (multiple player options)',
-                      streamLink:
-                          'https://2embed.org/embed/series?tmdb=$tvSeriesId&sea=$seasonNumber&epi=$episodeNumber',
-                    ),
-                    StreamListWidget(
-                      streamName: 'Stream two (multiple player options)',
-                      streamLink:
-                          'https://api.123movie.cc/tmdb_api.php?se=$seasonNumber&ep=$episodeNumber&tmdb=$tvSeriesId&server_name=vcu',
-                    ),
-                    StreamListWidget(
-                      streamName: 'Stream three (360p)',
-                      streamLink:
-                          'https://database.gdriveplayer.us/player.php?type=series&tmdb=$tvSeriesId&season=$seasonNumber&episode=$episodeNumber',
-                    ),
-                    StreamListWidget(
-                      streamName: 'Stream four (multiple player options)',
-                      streamLink:
-                          'https://openvids.io/tmdb/episode/$tvSeriesId-$seasonNumber-$episodeNumber',
-                    ),
-                    StreamListWidget(
-                      streamName: 'Stream five (multiple player options)',
-                      streamLink:
-                          'https://fsapi.xyz/tv-tmdb/$tvSeriesId-$seasonNumber-$episodeNumber',
-                    ),
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      StreamListWidget(
+                        streamName: 'Stream one (multiple player options)',
+                        streamLink:
+                            'https://2embed.biz/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      Visibility(
+                        visible: widget.tvSeriesImdbId == null ? false : true,
+                        child: StreamListWidget(
+                          streamName: 'Stream two (multiple player options)',
+                          streamLink:
+                              'https://api.123movie.cc/tmdb_api.php?se=${widget.seasonNumber}&ep=${widget.episodeNumber}&tmdb=${widget.tvSeriesId}&server_name=vcu',
+                          tvSeriesName: widget.tvSeriesName,
+                        ),
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream three (multiple player options)',
+                        streamLink:
+                            'https://www.2embed.to/embed/tmdb/tv?id=${widget.tvSeriesId}&s=${widget.seasonNumber}&e=${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream four (multiple player options)',
+                        streamLink:
+                            'https://onionflix.org/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream five (multiple player options)',
+                        streamLink:
+                            'https://hub.smashystream.com/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream six (multiple player options)',
+                        streamLink:
+                            'https://embedworld.xyz/public/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream seven (multiple player options)',
+                        streamLink:
+                            'https://cinedb.top/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream eight (multiple player options)',
+                        streamLink:
+                            'https://fembed.ro/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream nine (multiple player options)',
+                        streamLink:
+                            'https://moviehab.com/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream ten (multiple player options)',
+                        streamLink:
+                            'https://vidsrc.me/embed/${widget.tvSeriesId}/${widget.seasonNumber}-${widget.episodeNumber}/',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream eleven (360p)',
+                        streamLink:
+                            'https://databasegdriveplayer.us/player.php?type=series&tmdb=${widget.tvSeriesId}&season=${widget.seasonNumber}&episode=${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                      StreamListWidget(
+                        streamName: 'Stream twelve (multiple player options)',
+                        streamLink:
+                            'https://openvids.io/tmdb/episode/${widget.tvSeriesId}-${widget.seasonNumber}-${widget.episodeNumber}',
+                        tvSeriesName: widget.tvSeriesName,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             )
@@ -86,19 +152,23 @@ class TVStreamSelect extends StatelessWidget {
 class StreamListWidget extends StatelessWidget {
   final String streamName;
   final String streamLink;
+  final String tvSeriesName;
   const StreamListWidget({
     Key? key,
     required this.streamName,
     required this.streamLink,
+    required this.tvSeriesName,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return TVStream(
             streamUrl: streamLink,
+            tvSeriesName: tvSeriesName,
           );
         }));
       },
@@ -124,8 +194,8 @@ class StreamListWidget extends StatelessWidget {
               ),
             ],
           ),
-          const Divider(
-            color: Colors.white54,
+          Divider(
+            color: isDark ? Colors.white54 : Colors.black54,
           )
         ],
       ),

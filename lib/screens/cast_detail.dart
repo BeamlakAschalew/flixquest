@@ -1,28 +1,31 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/provider/adultmode_provider.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '/modals/credits.dart' as old_credits;
+import '/models/credits.dart';
 import 'person_widgets.dart';
-import '/modals/movie.dart';
 
 class CastDetailPage extends StatefulWidget {
   final Cast? cast;
   final String heroId;
-  final Crew? crew;
 
   const CastDetailPage({
     Key? key,
     this.cast,
-    this.crew,
     required this.heroId,
   }) : super(key: key);
   @override
-  _CastDetailPageState createState() => _CastDetailPageState();
+  CastDetailPageState createState() => CastDetailPageState();
 }
 
-class _CastDetailPageState extends State<CastDetailPage>
+class CastDetailPageState extends State<CastDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CastDetailPage> {
@@ -31,12 +34,26 @@ class _CastDetailPageState extends State<CastDetailPage>
   @override
   void initState() {
     super.initState();
+
     tabController = TabController(length: 3, vsync: this);
+    mixpanelUpload(context);
+  }
+
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed person pages', properties: {
+      'Person name': '${widget.cast!.name}',
+      'Person id': '${widget.cast!.id}'
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -123,13 +140,15 @@ class _CastDetailPageState extends State<CastDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF2b2c30),
+                            color: isDark
+                                ? const Color(0xFF2b2c30)
+                                : const Color(0xFFDFDEDE),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                    top: 80,
+                                    top: 55,
                                   ),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -139,16 +158,16 @@ class _CastDetailPageState extends State<CastDetailPage>
                                       Text(
                                         '${widget.cast!.name}',
                                         style: const TextStyle(fontSize: 25),
-                                        // style: widget
-                                        //     .themeData.textTheme.headline5,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       Text(
                                         '${widget.cast!.department}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                             fontSize: 15,
-                                            color: Colors.white54),
+                                            color: isDark
+                                                ? Colors.white54
+                                                : Colors.black54),
                                       ),
                                     ],
                                   ),
@@ -159,90 +178,123 @@ class _CastDetailPageState extends State<CastDetailPage>
                                   indicatorWeight: 3,
                                   unselectedLabelColor: Colors.white54,
                                   labelColor: Colors.white,
-                                  tabs: const [
+                                  tabs: [
                                     Tab(
                                       child: Text('About',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Movies',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('TV Shows',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                   ],
                                   controller: tabController,
                                   indicatorSize: TabBarIndicatorSize.tab,
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    physics: const PageScrollPhysics(),
-                                    children: [
-                                      // PersonAboutWidget(
-                                      //   api: Endpoints.getPersonDetails(
-                                      //     widget.cast.id!,
-                                      //   ),
-                                      // ),
-                                      SingleChildScrollView(
-                                        child: Container(
-                                          color: const Color(0xFF202124),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 10.0,
-                                                    right: 10,
-                                                    top: 10.0),
-                                                child: Column(
-                                                  children: [
-                                                    PersonAboutWidget(
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        1.6, 0, 1.6, 3),
+                                    child: TabBarView(
+                                      physics: const PageScrollPhysics(),
+                                      controller: tabController,
+                                      children: [
+                                        SingleChildScrollView(
+                                          child: Container(
+                                            color: isDark
+                                                ? const Color(0xFF202124)
+                                                : const Color(0xFFFFFFFF),
+                                            child: Column(
+                                              children: <Widget>[
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10.0,
+                                                          right: 10,
+                                                          top: 10.0),
+                                                  child: Column(
+                                                    children: [
+                                                      PersonAboutWidget(
+                                                          api: Endpoints
+                                                              .getPersonDetails(
+                                                                  widget.cast!
+                                                                      .id!)),
+                                                      PersonSocialLinks(
+                                                        api: Endpoints
+                                                            .getExternalLinksForPerson(
+                                                                widget
+                                                                    .cast!.id!),
+                                                      ),
+                                                      PersonImagesDisplay(
+                                                        personName:
+                                                            widget.cast!.name!,
+                                                        api: Endpoints
+                                                            .getPersonImages(
+                                                          widget.cast!.id!,
+                                                        ),
+                                                        title: 'Images',
+                                                      ),
+                                                      PersonDataTable(
                                                         api: Endpoints
                                                             .getPersonDetails(
-                                                                widget.cast!
-                                                                    .id!)),
-                                                    PersonSocialLinks(
-                                                      api: Endpoints
-                                                          .getExternalLinksForPerson(
-                                                              widget.cast!.id!),
-                                                    ),
-                                                    PersonImagesDisplay(
-                                                      api: Endpoints
-                                                          .getPersonImages(
-                                                        widget.cast!.id!,
+                                                                widget
+                                                                    .cast!.id!),
                                                       ),
-                                                      title: 'Images',
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonMovieListWidget(
-                                          isAdult: widget.cast!.adult!,
-                                          api: Endpoints
-                                              .getMovieCreditsForPerson(
-                                                  widget.cast!.id!),
+                                        Container(
+                                          color: isDark
+                                              ? const Color(0xFF202124)
+                                              : const Color(0xFFFFFFFF),
+                                          child: PersonMovieListWidget(
+                                            isPersonAdult: widget.cast!.adult!,
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
+                                            api: Endpoints
+                                                .getMovieCreditsForPerson(
+                                                    widget.cast!.id!),
+                                          ),
                                         ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonTVListWidget(
-                                            isAdult: widget.cast!.adult!,
-                                            api:
-                                                Endpoints.getTVCreditsForPerson(
-                                                    widget.cast!.id!)),
-                                      ),
-                                    ],
-                                    controller: tabController,
+                                        Container(
+                                          color: isDark
+                                              ? const Color(0xFF202124)
+                                              : const Color(0xFFFFFFFF),
+                                          child: PersonTVListWidget(
+                                              isPersonAdult:
+                                                  widget.cast!.adult!,
+                                              includeAdult: Provider.of<
+                                                          AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
+                                              api: Endpoints
+                                                  .getTVCreditsForPerson(
+                                                      widget.cast!.id!)),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -257,8 +309,8 @@ class _CastDetailPageState extends State<CastDetailPage>
                             Hero(
                               tag: widget.heroId,
                               child: SizedBox(
-                                width: 150,
-                                height: 150,
+                                width: 125,
+                                height: 125,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100.0),
                                   child: widget.cast!.profilePath == null
@@ -266,14 +318,36 @@ class _CastDetailPageState extends State<CastDetailPage>
                                           'assets/images/na_square.png',
                                           fit: BoxFit.cover,
                                         )
-                                      : FadeInImage(
-                                          image: NetworkImage(
-                                              TMDB_BASE_IMAGE_URL +
-                                                  'w500/' +
-                                                  '${widget.cast!.profilePath}'),
-                                          fit: BoxFit.cover,
-                                          placeholder: const AssetImage(
-                                              'assets/images/loading.gif'),
+                                      : CachedNetworkImage(
+                                          fadeOutDuration:
+                                              const Duration(milliseconds: 300),
+                                          fadeOutCurve: Curves.easeOut,
+                                          fadeInDuration:
+                                              const Duration(milliseconds: 700),
+                                          fadeInCurve: Curves.easeIn,
+                                          imageUrl: TMDB_BASE_IMAGE_URL +
+                                              imageQuality +
+                                              widget.cast!.profilePath!,
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                          placeholder: (context, url) =>
+                                              Image.asset(
+                                            'assets/images/loading.gif',
+                                            fit: BoxFit.cover,
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Image.asset(
+                                            'assets/images/na_square.png',
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                 ),
                               ),

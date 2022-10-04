@@ -1,14 +1,14 @@
 class TVList {
   int? page;
-  int? totalMovies;
+  int? totalTV;
   int? totalPages;
   List<TV>? tvSeries;
 
-  TVList({this.page, this.totalMovies, this.totalPages, this.tvSeries});
+  TVList({this.page, this.totalTV, this.totalPages, this.tvSeries});
 
   TVList.fromJson(Map<String, dynamic> json) {
     page = json['page'];
-    totalMovies = json['total_results'];
+    totalTV = json['total_results'];
     totalPages = json['total_pages'];
     if (json['results'] != null) {
       tvSeries = [];
@@ -21,7 +21,7 @@ class TVList {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['page'] = page;
-    data['total_results'] = totalMovies;
+    data['total_results'] = totalTV;
     data['total_pages'] = totalPages;
     if (tvSeries != null) {
       data['results'] = tvSeries!.map((v) => v.toJson()).toList();
@@ -43,7 +43,7 @@ class TV {
   String? backdropPath;
   String? overview;
   String? firstAirDate;
-  // String? originCountry;
+  bool? adult;
 
   TV({
     this.voteCount,
@@ -58,12 +58,13 @@ class TV {
     this.backdropPath,
     this.overview,
     this.firstAirDate,
-    // this.originCountry,
+    this.adult,
   });
 
   TV.fromJson(Map<String, dynamic> json) {
     voteCount = json['vote_count'];
     id = json['id'];
+    adult = json['adult'];
     voteAverage = json['vote_average'];
     name = json['name'];
     popularity = json['popularity'];
@@ -81,6 +82,7 @@ class TV {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['vote_count'] = voteCount;
     data['id'] = id;
+    data['adult'] = adult;
     data['vote_average'] = voteAverage;
     data['name'] = name;
     data['popularity'] = popularity;
@@ -114,21 +116,25 @@ class TVDetails {
   List<CreatedBy>? createdBy;
   List<Networks>? networks;
 
-  TVDetails(
-      {this.runtime,
-      this.tagline,
-      this.status,
-      this.originalTitle,
-      this.inProduction,
-      this.numberOfEpisodes,
-      this.numberOfSeasons,
-      this.productionCompanies,
-      this.productionCountries,
-      this.spokenLanguages,
-      this.id,
-      this.backdropPath,
-      this.createdBy,
-      this.networks});
+  TVDetails({
+    this.runtime,
+    this.tagline,
+    this.status,
+    this.episodes,
+    this.originalTitle,
+    this.inProduction,
+    this.numberOfEpisodes,
+    this.numberOfSeasons,
+    this.productionCompanies,
+    this.productionCountries,
+    this.spokenLanguages,
+    this.id,
+    this.backdropPath,
+    this.createdBy,
+    this.seasons,
+    this.networks,
+  });
+
   TVDetails.fromJson(Map<String, dynamic> json) {
     runtime = json['episode_run_time'];
     tagline = json['tagline'];
@@ -463,30 +469,32 @@ class CreatedBy {
 }
 
 class PersonTVList {
-  List<TV>? movies;
-  PersonTVList({this.movies});
+  List<TV>? tv;
+  PersonTVList({this.tv});
   PersonTVList.fromJson(Map<String, dynamic> json) {
     if (json['cast'] != null) {
-      movies = [];
+      tv = [];
       json['cast'].forEach((v) {
-        movies!.add(TV.fromJson(v));
+        tv!.add(TV.fromJson(v));
       });
     }
-    // if (json['crew'] != null) {
-    //   movies = [];
-    //   json['crew'].forEach((v) {
-    //     movies!.add(TV.fromJson(v));
-    //   });
-    // }
+    if (json['crew'] != null) {
+      if (json['cast'] == null) {
+        tv = [];
+      }
+      json['crew'].forEach((v) {
+        tv!.add(TV.fromJson(v));
+      });
+    }
   }
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    if (movies != null) {
-      data['cast'] = movies!.map((v) => v.toJson()).toList();
+    if (tv != null) {
+      data['cast'] = tv!.map((v) => v.toJson()).toList();
     }
-    // if (movies != null) {
-    //   data['crew'] = movies!.map((v) => v.toJson()).toList();
-    // }
+    if (tv != null) {
+      data['crew'] = tv!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }

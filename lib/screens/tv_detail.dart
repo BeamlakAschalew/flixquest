@@ -1,7 +1,14 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import '/constants/style_constants.dart';
-import '/modals/tv.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/provider/adultmode_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:readmore/readmore.dart';
+import '../constants/app_constants.dart';
+import '../provider/darktheme_provider.dart';
+import '../provider/imagequality_provider.dart';
+import '../provider/mixpanel_provider.dart';
+import '/models/tv.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
@@ -19,10 +26,10 @@ class TVDetailPage extends StatefulWidget {
     required this.heroId,
   }) : super(key: key);
   @override
-  _TVDetailPageState createState() => _TVDetailPageState();
+  TVDetailPageState createState() => TVDetailPageState();
 }
 
-class _TVDetailPageState extends State<TVDetailPage>
+class TVDetailPageState extends State<TVDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<TVDetailPage> {
@@ -32,11 +39,25 @@ class _TVDetailPageState extends State<TVDetailPage>
   void initState() {
     super.initState();
     tabController = TabController(length: 6, vsync: this);
+    mixpanelUpload(context);
+  }
+
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed TV pages', properties: {
+      'TV series name': '${widget.tvSeries.name}',
+      'TV series id': '${widget.tvSeries.id}',
+      'Is TV series adult?': '${widget.tvSeries.adult}'
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -50,15 +71,29 @@ class _TVDetailPageState extends State<TVDetailPage>
                             'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
-                        : FadeInImage(
-                            width: double.infinity,
-                            height: double.infinity,
-                            image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                'original/' +
-                                widget.tvSeries.backdropPath!),
-                            fit: BoxFit.cover,
-                            placeholder:
-                                const AssetImage('assets/images/loading_5.gif'),
+                        : CachedNetworkImage(
+                            fadeOutDuration: const Duration(milliseconds: 300),
+                            fadeOutCurve: Curves.easeOut,
+                            fadeInDuration: const Duration(milliseconds: 700),
+                            fadeInCurve: Curves.easeIn,
+                            imageUrl:
+                                '${TMDB_BASE_IMAGE_URL}original/${widget.tvSeries.backdropPath!}',
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) => Image.asset(
+                              'assets/images/loading_5.gif',
+                              fit: BoxFit.cover,
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              'assets/images/na_logo.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -99,7 +134,7 @@ class _TVDetailPageState extends State<TVDetailPage>
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50.0),
-                        color: Colors.black38),
+                        color: isDark ? Colors.black38 : Colors.white38),
                     child: IconButton(
                       icon: const Icon(
                         Icons.arrow_back,
@@ -138,7 +173,9 @@ class _TVDetailPageState extends State<TVDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF2b2c30),
+                            color: isDark
+                                ? const Color(0xFF2b2c30)
+                                : const Color(0xFFDFDEDE),
                             child: Column(
                               children: <Widget>[
                                 Padding(
@@ -195,8 +232,6 @@ class _TVDetailPageState extends State<TVDetailPage>
                                                                 .voteAverage!
                                                                 .toStringAsFixed(
                                                                     1),
-                                                            // style: widget.themeData
-                                                            //     .textTheme.bodyText1,
                                                           ),
                                                         ],
                                                       ),
@@ -246,171 +281,249 @@ class _TVDetailPageState extends State<TVDetailPage>
                                   indicatorWeight: 3,
                                   unselectedLabelColor: Colors.white54,
                                   labelColor: Colors.white,
-                                  tabs: const [
+                                  tabs: [
                                     Tab(
                                       child: Text('About',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Seasons',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Cast',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Crew',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Recommendations',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Similar',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                   ],
                                   controller: tabController,
                                   indicatorSize: TabBarIndicatorSize.tab,
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    physics: const PageScrollPhysics(),
-                                    children: [
-                                      SingleChildScrollView(
-                                        //  physics: const BouncingScrollPhysics(),
-                                        child: Container(
-                                          color: const Color(0xFF202124),
-                                          child: Column(
-                                            children: <Widget>[
-                                              TVGenreDisplay(
-                                                api: Endpoints.tvDetailsUrl(
-                                                    widget.tvSeries.id!),
-                                              ),
-                                              Row(
-                                                children: const <Widget>[
-                                                  Padding(
-                                                    padding: EdgeInsets.only(
-                                                        left: 8.0),
-                                                    child: Text(
-                                                      'Overview',
-                                                      style: kTextHeaderStyle,
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        1.6, 0, 1.6, 3),
+                                    child: TabBarView(
+                                      physics: const PageScrollPhysics(),
+                                      controller: tabController,
+                                      children: [
+                                        SingleChildScrollView(
+                                          //  physics: const BouncingScrollPhysics(),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: isDark
+                                                    ? const Color(0xFF202124)
+                                                    : const Color(0xFFFFFFFF),
+                                                borderRadius: const BorderRadius
+                                                        .only(
+                                                    bottomLeft:
+                                                        Radius.circular(8.0),
+                                                    bottomRight:
+                                                        Radius.circular(8.0))),
+                                            child: Column(
+                                              children: <Widget>[
+                                                TVGenreDisplay(
+                                                  api: Endpoints.tvDetailsUrl(
+                                                      widget.tvSeries.id!),
+                                                ),
+                                                Row(
+                                                  children: const <Widget>[
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          left: 8.0),
+                                                      child: Text(
+                                                        'Overview',
+                                                        style: kTextHeaderStyle,
+                                                      ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text(
-                                                  widget.tvSeries.overview!
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: widget
+                                                              .tvSeries
+                                                              .overview!
                                                               .isEmpty ||
                                                           widget.tvSeries
                                                                   .overview ==
                                                               null
-                                                      ? 'There is no overview for this TV series :('
-                                                      : widget
-                                                          .tvSeries.overview!,
-                                                  // style: widget
-                                                  //     .themeData.textTheme.caption,
+                                                      ? const Text(
+                                                          'There is no overview for this TV series :(')
+                                                      : ReadMoreText(
+                                                          widget.tvSeries
+                                                              .overview!,
+                                                          trimLines: 4,
+                                                          style: const TextStyle(
+                                                              fontFamily:
+                                                                  'Poppins'),
+                                                          colorClickableText:
+                                                              const Color(
+                                                                  0xFFF57C00),
+                                                          trimMode:
+                                                              TrimMode.Line,
+                                                          trimCollapsedText:
+                                                              'read more',
+                                                          trimExpandedText:
+                                                              'read less',
+                                                          lessStyle:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xFFF57C00),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                          moreStyle:
+                                                              const TextStyle(
+                                                                  fontSize: 14,
+                                                                  color: Color(
+                                                                      0xFFF57C00),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                        ),
                                                 ),
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 8.0,
-                                                            bottom: 4.0),
-                                                    child: Text(
-                                                      widget.tvSeries
-                                                                  .firstAirDate ==
-                                                              null
-                                                          ? 'First episode air date: N/A'
-                                                          : 'First episode air date : ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
-                                                      style: const TextStyle(
-                                                        fontFamily: 'PoppinsSB',
+                                                Row(
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 8.0,
+                                                              bottom: 4.0),
+                                                      child: Text(
+                                                        widget.tvSeries.firstAirDate ==
+                                                                    null ||
+                                                                widget
+                                                                    .tvSeries
+                                                                    .firstAirDate!
+                                                                    .isEmpty
+                                                            ? 'First episode air date: N/A'
+                                                            : 'First episode air date : ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
+                                                        style: const TextStyle(
+                                                          fontFamily:
+                                                              'PoppinsSB',
+                                                        ),
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
-                                              ),
-                                              ScrollingTVArtists(
-                                                api: Endpoints.getTVCreditsUrl(
-                                                    widget.tvSeries.id!),
-                                                title: 'Cast',
-                                              ),
-                                              ScrollingTVCreators(
-                                                api: Endpoints.tvDetailsUrl(
-                                                    widget.tvSeries.id!),
-                                                title: 'Created by',
-                                              ),
-                                              SeasonsList(
-                                                tvId: widget.tvSeries.id!,
-                                                seriesName: widget
-                                                    .tvSeries.originalName!,
-                                                title: 'Seasons',
-                                                api: Endpoints.getTVSeasons(
-                                                    widget.tvSeries.id!),
-                                              ),
-                                              TVImagesDisplay(
-                                                title: 'Images',
-                                                api: Endpoints.getTVImages(
-                                                    widget.tvSeries.id!),
-                                              ),
-                                              TVVideosDisplay(
-                                                api: Endpoints.getTVVideos(
-                                                    widget.tvSeries.id!),
-                                                api2: Endpoints.tvDetailsUrl(
-                                                    widget.tvSeries.id!),
-                                                title: 'Videos',
-                                              ),
-                                              TVSocialLinks(
-                                                api: Endpoints
-                                                    .getExternalLinksForTV(
-                                                        widget.tvSeries.id!),
-                                              ),
-                                              TVInfoTable(
-                                                api: Endpoints.tvDetailsUrl(
-                                                    widget.tvSeries.id!),
-                                              ),
-                                            ],
+                                                  ],
+                                                ),
+                                                ScrollingTVArtists(
+                                                  api:
+                                                      Endpoints.getTVCreditsUrl(
+                                                          widget.tvSeries.id!),
+                                                  title: 'Cast',
+                                                ),
+                                                ScrollingTVCreators(
+                                                  api: Endpoints.tvDetailsUrl(
+                                                      widget.tvSeries.id!),
+                                                  title: 'Created by',
+                                                ),
+                                                SeasonsList(
+                                                  tvId: widget.tvSeries.id!,
+                                                  seriesName: widget
+                                                      .tvSeries.originalName!,
+                                                  title: 'Seasons',
+                                                  adult: widget.tvSeries.adult,
+                                                  api: Endpoints.getTVSeasons(
+                                                      widget.tvSeries.id!),
+                                                ),
+                                                TVImagesDisplay(
+                                                  title: 'Images',
+                                                  api: Endpoints.getTVImages(
+                                                      widget.tvSeries.id!),
+                                                  name: widget
+                                                      .tvSeries.originalName,
+                                                ),
+                                                TVVideosDisplay(
+                                                  api: Endpoints.getTVVideos(
+                                                      widget.tvSeries.id!),
+                                                  api2: Endpoints.tvDetailsUrl(
+                                                      widget.tvSeries.id!),
+                                                  title: 'Videos',
+                                                ),
+                                                TVSocialLinks(
+                                                  api: Endpoints
+                                                      .getExternalLinksForTV(
+                                                          widget.tvSeries.id!),
+                                                ),
+                                                TVInfoTable(
+                                                  api: Endpoints.tvDetailsUrl(
+                                                      widget.tvSeries.id!),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      TVSeasonsTab(
-                                        tvId: widget.tvSeries.id!,
-                                        seriesName:
-                                            widget.tvSeries.originalName!,
-                                        api: Endpoints.getTVSeasons(
-                                            widget.tvSeries.id!),
-                                      ),
-                                      TVCastTab(
-                                        api: Endpoints.getFullTVCreditsUrl(
-                                            widget.tvSeries.id!),
-                                      ),
-                                      TVCrewTab(
-                                        api: Endpoints.getFullTVCreditsUrl(
-                                            widget.tvSeries.id!),
-                                      ),
-                                      TVRecommendationsTab(
+                                        TVSeasonsTab(
                                           tvId: widget.tvSeries.id!,
-                                          api: Endpoints.getTVRecommendations(
-                                              widget.tvSeries.id!, 1)),
-                                      SimilarTVTab(
-                                          tvId: widget.tvSeries.id!,
-                                          api: Endpoints.getSimilarTV(
-                                              widget.tvSeries.id!, 1)),
-                                    ],
-                                    controller: tabController,
+                                          adult: widget.tvSeries.adult,
+                                          seriesName:
+                                              widget.tvSeries.originalName!,
+                                          api: Endpoints.getTVSeasons(
+                                              widget.tvSeries.id!),
+                                        ),
+                                        TVCastTab(
+                                          api: Endpoints.getFullTVCreditsUrl(
+                                              widget.tvSeries.id!),
+                                        ),
+                                        TVCrewTab(
+                                          api: Endpoints.getFullTVCreditsUrl(
+                                              widget.tvSeries.id!),
+                                        ),
+                                        TVRecommendationsTab(
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
+                                            tvId: widget.tvSeries.id!,
+                                            api: Endpoints.getTVRecommendations(
+                                                widget.tvSeries.id!, 1)),
+                                        SimilarTVTab(
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
+                                            tvId: widget.tvSeries.id!,
+                                            api: Endpoints.getSimilarTV(
+                                                widget.tvSeries.id!, 1)),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -433,13 +546,35 @@ class _TVDetailPageState extends State<TVDetailPage>
                                       'assets/images/na_logo.png',
                                       fit: BoxFit.cover,
                                     )
-                                  : FadeInImage(
-                                      image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                          'w500/' +
-                                          widget.tvSeries.posterPath!),
-                                      fit: BoxFit.cover,
-                                      placeholder: const AssetImage(
-                                          'assets/images/loading.gif'),
+                                  : CachedNetworkImage(
+                                      fadeOutDuration:
+                                          const Duration(milliseconds: 300),
+                                      fadeOutCurve: Curves.easeOut,
+                                      fadeInDuration:
+                                          const Duration(milliseconds: 700),
+                                      fadeInCurve: Curves.easeIn,
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          widget.tvSeries.posterPath!,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                             ),
                           ),

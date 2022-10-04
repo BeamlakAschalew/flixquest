@@ -1,5 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers
-import '/modals/tv.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
+import 'package:provider/provider.dart';
+import '../provider/adultmode_provider.dart';
+import '../provider/imagequality_provider.dart';
+import '../provider/mixpanel_provider.dart';
+import '/models/tv.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
@@ -15,11 +21,11 @@ class CreatedByPersonDetailPage extends StatefulWidget {
     required this.heroId,
   }) : super(key: key);
   @override
-  _CreatedByPersonDetailPageState createState() =>
-      _CreatedByPersonDetailPageState();
+  CreatedByPersonDetailPageState createState() =>
+      CreatedByPersonDetailPageState();
 }
 
-class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
+class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CreatedByPersonDetailPage> {
@@ -28,12 +34,26 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
   @override
   void initState() {
     super.initState();
+
     tabController = TabController(length: 3, vsync: this);
+    mixpanelUpload(context);
+  }
+
+  void mixpanelUpload(BuildContext context) {
+    final mixpanel =
+        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+    mixpanel.track('Most viewed person pages', properties: {
+      'Person name': '${widget.createdBy!.name}',
+      'Person id': '${widget.createdBy!.id}'
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -120,13 +140,15 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF2b2c30),
+                            color: isDark
+                                ? const Color(0xFF2b2c30)
+                                : const Color(0xFFDFDEDE),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                    top: 80,
+                                    top: 55,
                                   ),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -136,8 +158,6 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                       Text(
                                         '${widget.createdBy!.name}',
                                         style: const TextStyle(fontSize: 25),
-                                        // style: widget
-                                        //     .themeData.textTheme.headline5,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -150,85 +170,122 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                   indicatorWeight: 3,
                                   unselectedLabelColor: Colors.white54,
                                   labelColor: Colors.white,
-                                  tabs: const [
+                                  tabs: [
                                     Tab(
                                       child: Text('About',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('Movies',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                     Tab(
                                       child: Text('TV Shows',
-                                          style:
-                                              TextStyle(fontFamily: 'Poppins')),
+                                          style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : Colors.black)),
                                     ),
                                   ],
                                   controller: tabController,
                                   indicatorSize: TabBarIndicatorSize.tab,
                                 ),
                                 Expanded(
-                                  child: TabBarView(
-                                    physics: const PageScrollPhysics(),
-                                    children: [
-                                      SingleChildScrollView(
-                                        child: Container(
-                                          color: const Color(0xFF202124),
-                                          child: Column(
-                                            children: <Widget>[
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    left: 10.0,
-                                                    right: 10,
-                                                    top: 10.0),
-                                                child: Column(
-                                                  children: [
-                                                    PersonAboutWidget(
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        1.6, 0, 1.6, 3),
+                                    child: TabBarView(
+                                      physics: const PageScrollPhysics(),
+                                      controller: tabController,
+                                      children: [
+                                        SingleChildScrollView(
+                                          child: Container(
+                                            color: isDark
+                                                ? const Color(0xFF202124)
+                                                : const Color(0xFFFFFFFF),
+                                            child: Column(
+                                              children: <Widget>[
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 10.0,
+                                                          right: 10,
+                                                          top: 10.0),
+                                                  child: Column(
+                                                    children: [
+                                                      PersonAboutWidget(
+                                                          api: Endpoints
+                                                              .getPersonDetails(
+                                                                  widget
+                                                                      .createdBy!
+                                                                      .id!)),
+                                                      PersonSocialLinks(
                                                         api: Endpoints
-                                                            .getPersonDetails(
+                                                            .getExternalLinksForPerson(
                                                                 widget
                                                                     .createdBy!
-                                                                    .id!)),
-                                                    PersonSocialLinks(
-                                                      api: Endpoints
-                                                          .getExternalLinksForPerson(
-                                                              widget.createdBy!
-                                                                  .id!),
-                                                    ),
-                                                    PersonImagesDisplay(
-                                                      api: Endpoints
-                                                          .getPersonImages(
-                                                        widget.createdBy!.id!,
+                                                                    .id!),
                                                       ),
-                                                      title: 'Images',
-                                                    ),
-                                                  ],
+                                                      PersonImagesDisplay(
+                                                        personName: widget
+                                                            .createdBy!.name!,
+                                                        api: Endpoints
+                                                            .getPersonImages(
+                                                          widget.createdBy!.id!,
+                                                        ),
+                                                        title: 'Images',
+                                                      ),
+                                                      PersonDataTable(
+                                                          api: Endpoints
+                                                              .getPersonDetails(
+                                                                  widget
+                                                                      .createdBy!
+                                                                      .id!)),
+                                                    ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonMovieListWidget(
-                                          api: Endpoints
-                                              .getMovieCreditsForPerson(
-                                                  widget.createdBy!.id!),
+                                        Container(
+                                          color: isDark
+                                              ? const Color(0xFF202124)
+                                              : const Color(0xFFFFFFFF),
+                                          child: PersonMovieListWidget(
+                                            includeAdult:
+                                                Provider.of<AdultmodeProvider>(
+                                                        context)
+                                                    .isAdult,
+                                            api: Endpoints
+                                                .getMovieCreditsForPerson(
+                                                    widget.createdBy!.id!),
+                                          ),
                                         ),
-                                      ),
-                                      Container(
-                                        color: const Color(0xFF202124),
-                                        child: PersonTVListWidget(
-                                            api:
-                                                Endpoints.getTVCreditsForPerson(
-                                                    widget.createdBy!.id!)),
-                                      ),
-                                    ],
-                                    controller: tabController,
+                                        Container(
+                                          color: isDark
+                                              ? const Color(0xFF202124)
+                                              : const Color(0xFFFFFFFF),
+                                          child: PersonTVListWidget(
+                                              includeAdult: Provider.of<
+                                                          AdultmodeProvider>(
+                                                      context)
+                                                  .isAdult,
+                                              api: Endpoints
+                                                  .getTVCreditsForPerson(
+                                                      widget.createdBy!.id!)),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -243,8 +300,8 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                             Hero(
                               tag: widget.heroId,
                               child: SizedBox(
-                                width: 150,
-                                height: 150,
+                                width: 125,
+                                height: 125,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100.0),
                                   child: widget.createdBy!.profilePath == null
@@ -252,13 +309,35 @@ class _CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                           'assets/images/na_square.png',
                                           fit: BoxFit.cover,
                                         )
-                                      : FadeInImage(
-                                          image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                              'w500/' +
-                                              '${widget.createdBy!.profilePath}'),
-                                          fit: BoxFit.cover,
-                                          placeholder: const AssetImage(
-                                              'assets/images/loading.gif'),
+                                      : CachedNetworkImage(
+                                          fadeOutDuration:
+                                              const Duration(milliseconds: 300),
+                                          fadeOutCurve: Curves.easeOut,
+                                          fadeInDuration:
+                                              const Duration(milliseconds: 700),
+                                          fadeInCurve: Curves.easeIn,
+                                          imageUrl:
+                                              '$TMDB_BASE_IMAGE_URL$imageQuality${widget.createdBy!.profilePath}',
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                          placeholder: (context, url) =>
+                                              Image.asset(
+                                            'assets/images/loading.gif',
+                                            fit: BoxFit.cover,
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Image.asset(
+                                            'assets/images/na_square.png',
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                 ),
                               ),

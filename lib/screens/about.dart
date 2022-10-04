@@ -1,14 +1,11 @@
+import 'package:cinemax/constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AboutPage extends StatefulWidget {
+class AboutPage extends StatelessWidget {
   const AboutPage({Key? key}) : super(key: key);
 
-  @override
-  _AboutPageState createState() => _AboutPageState();
-}
-
-class _AboutPageState extends State<AboutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,27 +45,24 @@ class _AboutPageState extends State<AboutPage> {
                   ),
                 ),
                 const Text(
-                  'This app uses TMDB as a data provider',
+                  'This product uses the TMDB API but is not endorsed or certified by TMDB.',
                   textAlign: TextAlign.center,
                   style:
                       TextStyle(fontSize: 20.0, overflow: TextOverflow.visible),
                 ),
-                SizedBox(
-                  child: Image.asset('assets/images/tmdb_logo.png'),
-                  height: 100,
-                  width: 100,
-                ),
                 GestureDetector(
-                  child: const Text(
-                    'https://themoviedb.org',
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      decorationStyle: TextDecorationStyle.solid,
-                    ),
-                  ),
                   onTap: () {
-                    launch('https://themoviedb.org');
+                    launchUrl(
+                        Uri.parse(
+                          'https://themoviedb.org',
+                        ),
+                        mode: LaunchMode.externalApplication);
                   },
+                  child: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: Image.asset('assets/images/tmdb_logo.png'),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -81,9 +75,58 @@ class _AboutPageState extends State<AboutPage> {
                           decorationStyle: TextDecorationStyle.solid),
                     ),
                     onTap: () {
-                      launch('https://t.me/beamlakaschalew');
+                      launchUrl(Uri.parse('https://t.me/beamlakaschalew'),
+                          mode: LaunchMode.externalApplication);
                     },
                   ),
+                ),
+                Column(
+                  children: [
+                    const Text(
+                      'Follow Cinemax on various platforms',
+                      style: kTextSmallHeaderStyle,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.black26,
+                      ),
+                      padding: const EdgeInsets.all(10),
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: const [
+                          SocialIconContainer(
+                            platformIcon: FontAwesomeIcons.twitter,
+                            uri: 'https://twitter.com/cinemaxapp',
+                          ),
+                          SocialIconContainer(
+                            platformIcon: FontAwesomeIcons.instagram,
+                            uri: 'https://instagram.com/cinemax_app',
+                          ),
+                          SocialIconContainer(
+                            platformIcon: FontAwesomeIcons.telegram,
+                            uri: 'https://t.me/cinemaxapp',
+                          ),
+                          SocialIconContainer(
+                              platformIcon: FontAwesomeIcons.tiktok,
+                              uri: 'https://www.tiktok.com/@cinemaxapp'),
+                          SocialIconContainer(
+                            platformIcon: FontAwesomeIcons.facebook,
+                            uri:
+                                'https://m.facebook.com/profile.php?id=100086435380480',
+                          ),
+                          SocialIconContainer(
+                            platformIcon: FontAwesomeIcons.github,
+                            uri: 'https://github.com/beamlakaschalew/cinemax',
+                          ),
+                          SocialIconContainer(
+                              platformIcon: Icons.mail,
+                              uri: 'mailto:cinemaxappinfo@gmail.com'),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
                 const Padding(
                   padding: EdgeInsets.only(
@@ -110,5 +153,49 @@ class _AboutPageState extends State<AboutPage> {
   }
 }
 
+class SocialIconContainer extends StatelessWidget {
+  const SocialIconContainer({
+    required this.platformIcon,
+    required this.uri,
+    Key? key,
+  }) : super(key: key);
 
-// 
+  final IconData platformIcon;
+  final String uri;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5),
+        color: Colors.white,
+      ),
+      child: PlatformIcon(platformIcon: platformIcon, uri: uri),
+    );
+  }
+}
+
+class PlatformIcon extends StatelessWidget {
+  const PlatformIcon({
+    required this.platformIcon,
+    required this.uri,
+    Key? key,
+  }) : super(key: key);
+
+  final IconData platformIcon;
+  final String uri;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        launchUrl(Uri.parse(uri), mode: LaunchMode.externalApplication);
+      },
+      child: Icon(
+        platformIcon,
+        color: const Color(0xFFF57C00),
+      ),
+    );
+  }
+}

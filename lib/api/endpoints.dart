@@ -8,7 +8,7 @@ class Endpoints {
         '/discover/movie?api_key='
         '$TMDB_API_KEY'
         '&language=en-US&sort_by=popularity'
-        '.desc&include_adult=false&include_video=false&page'
+        '.desc&include_video=false&page'
         '=$page';
   }
 
@@ -16,18 +16,18 @@ class Endpoints {
     return '$TMDB_API_BASE_URL'
         '/movie/now_playing?api_key='
         '$TMDB_API_KEY'
-        '&include_adult=false&page=$page';
+        '&page=$page';
   }
 
   static String getCreditsUrl(int id) {
-    return TMDB_API_BASE_URL + '/movie/$id/credits?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/movie/$id/credits?api_key=$TMDB_API_KEY';
   }
 
   static String topRatedUrl(int page) {
     return '$TMDB_API_BASE_URL'
         '/movie/top_rated?api_key='
         '$TMDB_API_KEY'
-        '&include_adult=false&page=$page'
+        '&page=$page'
         '&region=US';
   }
 
@@ -35,29 +35,25 @@ class Endpoints {
     return '$TMDB_API_BASE_URL'
         '/movie/popular?api_key='
         '$TMDB_API_KEY'
-        '&include_adult=false&page=$page';
+        '&page=$page';
   }
 
-  static String trendingMoviesUrl(int page) {
+  static String trendingMoviesUrl(int page, bool includeAdult) {
     return '$TMDB_API_BASE_URL'
         '/trending/movie/week?api_key='
         '$TMDB_API_KEY'
-        '&include_adult=false&page=$page';
+        '&page=$page';
   }
 
   static String upcomingMoviesUrl(int page) {
     return '$TMDB_API_BASE_URL'
         '/movie/upcoming?api_key='
         '$TMDB_API_KEY'
-        '&include_adult=false&page=$page';
+        '&page=$page';
   }
 
   static String movieDetailsUrl(int movieId) {
     return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY';
-  }
-
-  static String advancedMovieDetailsUrl(int movieId) {
-    return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY$FULL_MOVIEDETAILS_API_REQUEST';
   }
 
   static String movieGenresUrl() {
@@ -72,7 +68,6 @@ class Endpoints {
     return '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY'
         '&language=en-US'
         '&sort_by=popularity.desc'
-        '&include_adult=false'
         '&include_video=false'
         '&page=$page'
         '&with_genres=$genreId';
@@ -83,16 +78,16 @@ class Endpoints {
         '&language=en-US&page=$page';
   }
 
-  static String movieSearchUrl(String query) {
-    return "$TMDB_API_BASE_URL/search/movie?query=$query&api_key=$TMDB_API_KEY";
+  static String movieSearchUrl(String query, bool includeAdult) {
+    return "$TMDB_API_BASE_URL/search/movie?query=$query&include_adult=$includeAdult&api_key=$TMDB_API_KEY";
   }
 
-  static String personSearchUrl(String query) {
-    return "$TMDB_API_BASE_URL/search/person?query=$query&api_key=$TMDB_API_KEY";
+  static String personSearchUrl(String query, bool includeAdult) {
+    return "$TMDB_API_BASE_URL/search/person?query=$query&include_adult=$includeAdult&api_key=$TMDB_API_KEY";
   }
 
-  static String tvSearchUrl(String query) {
-    return "$TMDB_API_BASE_URL/search/tv?query=$query&api_key=$TMDB_API_KEY";
+  static String tvSearchUrl(String query, bool includeAdult) {
+    return "$TMDB_API_BASE_URL/search/tv?query=$query&include_adult=$includeAdult&api_key=$TMDB_API_KEY";
   }
 
   static getPerson(int personId) {
@@ -104,7 +99,7 @@ class Endpoints {
         '/discover/movie?api_key='
         '$TMDB_API_KEY'
         '&language=en-US&sort_by=popularity'
-        '.desc&include_adult=false&include_video=false&page=$page'
+        '.desc&include_video=false&page=$page'
         '&with_watch_providers=$providerId'
         '&watch_region=US';
   }
@@ -120,11 +115,11 @@ class Endpoints {
   }
 
   static String getImages(int id) {
-    return TMDB_API_BASE_URL + '/movie/$id/images?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/movie/$id/images?api_key=$TMDB_API_KEY';
   }
 
   static String getVideos(int id) {
-    return TMDB_API_BASE_URL + '/movie/$id/videos?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/movie/$id/videos?api_key=$TMDB_API_KEY';
   }
 
   static String getMovieRecommendations(int id, int page) {
@@ -236,11 +231,11 @@ class Endpoints {
   }
 
   static String getTVImages(int id) {
-    return TMDB_API_BASE_URL + '/tv/$id/images?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/tv/$id/images?api_key=$TMDB_API_KEY';
   }
 
   static String getTVVideos(int id) {
-    return TMDB_API_BASE_URL + '/tv/$id/videos?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL/tv/$id/videos?api_key=$TMDB_API_KEY';
   }
 
   static String getTVRecommendations(int id, int page) {

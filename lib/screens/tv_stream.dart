@@ -7,13 +7,16 @@ import 'package:url_launcher/url_launcher.dart';
 
 class TVStream extends StatefulWidget {
   final String streamUrl;
-  const TVStream({Key? key, required this.streamUrl}) : super(key: key);
+  final String tvSeriesName;
+  const TVStream(
+      {Key? key, required this.streamUrl, required this.tvSeriesName})
+      : super(key: key);
 
   @override
-  _TVStreamState createState() => _TVStreamState();
+  TVStreamState createState() => TVStreamState();
 }
 
-class _TVStreamState extends State<TVStream> {
+class TVStreamState extends State<TVStream> {
   final GlobalKey webViewKey = GlobalKey();
 
   InAppWebViewController? webViewController;
@@ -74,20 +77,18 @@ class _TVStreamState extends State<TVStream> {
                     url: Uri.dataFromString(
                   '''
             <html>
-            <head>
-            <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
-            <style>
-            #frame{display:block;text-align:center;padding:10px;font-size:14px;font-weight:600;background:#212121;color:#fff;border-bottom:2px solid #E91E63}
-            </style>
-            </head>
-            <body>
-<span id='frame'>${widget.movie.title!}</span>
-<div class='show-video'>
-   <iframe 
-      allowfullscreen="true" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width='100%' height='360' 
-      src="${widget.streamUrl}">
-   </iframe>
-</div>
+            <header>
+            <meta name="viewport" 
+            content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+            </header>
+            <body style="margin:0;background-color:#FFF;">
+            <iframe 
+            frameborder="0"
+            width="100%" 
+            height="100%" 
+            src="${widget.streamUrl}" 
+            allowfullscreen>
+            </iframe>
             </body>
             </html>
       ''',
@@ -122,7 +123,7 @@ class _TVStreamState extends State<TVStream> {
                     "javascript",
                     "about"
                   ].contains(uri.scheme)) {
-                    if (await canLaunch(url)) {
+                    if (await canLaunchUrl(Uri.parse(url))) {
                       // Launch the App
 
                       // and cancel the request

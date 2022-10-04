@@ -16,8 +16,6 @@ class _LandingScreenState extends State<LandingScreen> {
     void updateFirstRunData() async {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isFirstRun', false);
-      final bool? firstTimeRun = prefs.getBool('isFirstRun');
-      print(firstTimeRun);
     }
 
     double deviceHeight = MediaQuery.of(context).size.height;
@@ -71,12 +69,12 @@ class _LandingScreenState extends State<LandingScreen> {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                         ),
+                        height: 100,
+                        width: 100,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Image.asset('assets/images/logo_shadow.png'),
                         ),
-                        height: 100,
-                        width: 100,
                       ),
                     ),
                     const Text('Thousands of:',
@@ -140,7 +138,10 @@ class _LandingScreenState extends State<LandingScreen> {
                               return const CinemaxHomePage();
                             }));
                           },
-                          child: const Text('GET STARTED')),
+                          child: const Text(
+                            'GET STARTED',
+                            style: TextStyle(color: Colors.black),
+                          )),
                     ),
                   ],
                 ),

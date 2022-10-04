@@ -1,14 +1,15 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import '../modals/movie.dart';
-import '../modals/tv_genres.dart';
-import '/modals/genres.dart' as gen;
+import 'package:cinemax/provider/adultmode_provider.dart';
+import 'package:provider/provider.dart';
+
+import '/models/genres.dart';
 import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 
 class TVGenre extends StatelessWidget {
-  final MovieGenres genres;
+  final Genres genres;
   const TVGenre({Key? key, required this.genres}) : super(key: key);
 
   @override
@@ -16,7 +17,7 @@ class TVGenre extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          genres.genreName!,
+          '${genres.genreName!} TV shows',
         ),
         leading: IconButton(
           icon: const Icon(
@@ -29,6 +30,7 @@ class TVGenre extends StatelessWidget {
       ),
       body: Container(
         child: ParticularGenreTV(
+          includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
           genreId: genres.genreID!,
           api: Endpoints.getTVShowsForGenre(genres.genreID!, 1),
         ),

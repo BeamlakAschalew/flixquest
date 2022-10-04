@@ -1,8 +1,12 @@
-import '/constants/style_constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+import '../constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import '../provider/darktheme_provider.dart';
+import '../provider/imagequality_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '/modals/movie.dart';
+import '/models/movie.dart';
 import '/screens/movie_widgets.dart';
 
 class CollectionDetailsWidget extends StatefulWidget {
@@ -13,11 +17,10 @@ class CollectionDetailsWidget extends StatefulWidget {
     this.belongsToCollection,
   }) : super(key: key);
   @override
-  _CollectionDetailsWidgetState createState() =>
-      _CollectionDetailsWidgetState();
+  CollectionDetailsWidgetState createState() => CollectionDetailsWidgetState();
 }
 
-class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
+class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
     with
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<CollectionDetailsWidget> {
@@ -29,6 +32,9 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality =
+        Provider.of<ImagequalityProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -42,15 +48,31 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                             'assets/images/na_logo.png',
                             fit: BoxFit.cover,
                           )
-                        : FadeInImage(
+                        : CachedNetworkImage(
                             width: double.infinity,
                             height: double.infinity,
-                            image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                'original/' +
-                                widget.belongsToCollection!.backdropPath!),
-                            fit: BoxFit.cover,
-                            placeholder:
-                                const AssetImage('assets/images/loading_8.gif'),
+                            fadeOutDuration: const Duration(milliseconds: 300),
+                            fadeOutCurve: Curves.easeOut,
+                            fadeInDuration: const Duration(milliseconds: 700),
+                            fadeInCurve: Curves.easeIn,
+                            imageUrl:
+                                '${TMDB_BASE_IMAGE_URL}original/${widget.belongsToCollection!.backdropPath!}',
+                            imageBuilder: (context, imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: imageProvider,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            placeholder: (context, url) => Image.asset(
+                              'assets/images/loading_5.gif',
+                              fit: BoxFit.cover,
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                              'assets/images/na_logo.png',
+                              fit: BoxFit.cover,
+                            ),
                           ),
                     Container(
                       decoration: BoxDecoration(
@@ -91,7 +113,7 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                   child: Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50.0),
-                        color: Colors.black38),
+                        color: isDark ? Colors.black38 : Colors.white38),
                     child: IconButton(
                       icon: const Icon(
                         Icons.arrow_back,
@@ -120,7 +142,9 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
-                            color: const Color(0xFF202124),
+                            color: isDark
+                                ? const Color(0xFF202124)
+                                : const Color(0xFFFFFFFF),
                             child: Column(
                               children: <Widget>[
                                 Padding(
@@ -207,14 +231,34 @@ class _CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                     'assets/images/na_logo.png',
                                     fit: BoxFit.cover,
                                   )
-                                : FadeInImage(
-                                    image: NetworkImage(TMDB_BASE_IMAGE_URL +
-                                        'w500/' +
-                                        widget
-                                            .belongsToCollection!.posterPath!),
-                                    fit: BoxFit.cover,
-                                    placeholder: const AssetImage(
-                                        'assets/images/loading.gif'),
+                                : CachedNetworkImage(
+                                    fadeOutDuration:
+                                        const Duration(milliseconds: 300),
+                                    fadeOutCurve: Curves.easeOut,
+                                    fadeInDuration:
+                                        const Duration(milliseconds: 700),
+                                    fadeInCurve: Curves.easeIn,
+                                    imageUrl: TMDB_BASE_IMAGE_URL +
+                                        imageQuality +
+                                        widget.belongsToCollection!.posterPath!,
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    placeholder: (context, url) => Image.asset(
+                                      'assets/images/loading.gif',
+                                      fit: BoxFit.cover,
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                           ),
                         ),
