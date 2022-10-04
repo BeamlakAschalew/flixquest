@@ -31,7 +31,7 @@ dependencies:
   shared_preferences: ^2.0.15
   cached_network_image: ^3.2.1
   google_nav_bar: ^5.0.6
-  firebase_messaging: ^11.4.2
+  firebase_messaging: ^10.0.2
   provider: ^6.0.3
   permission_handler: ^8.2.6
   flutter_downloader: ^1.8.3+2
