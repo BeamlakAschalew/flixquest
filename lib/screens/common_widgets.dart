@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_unnecessary_containers
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/provider/mixpanel_provider.dart';
@@ -76,15 +78,15 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(
+                  leading: const Icon(
                     Icons.update,
                     color: Color(0xFFF57C00),
                   ),
-                  title: Text('Check for an update'),
+                  title: const Text('Check for an update'),
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
-                      return UpdateScreen();
+                      return const UpdateScreen();
                     })));
                   },
                 ),

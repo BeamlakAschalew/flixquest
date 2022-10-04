@@ -158,8 +158,6 @@ class CastDetailPageState extends State<CastDetailPage>
                                       Text(
                                         '${widget.cast!.name}',
                                         style: const TextStyle(fontSize: 25),
-                                        // style: widget
-                                        //     .themeData.textTheme.headline5,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -217,11 +215,6 @@ class CastDetailPageState extends State<CastDetailPage>
                                       physics: const PageScrollPhysics(),
                                       controller: tabController,
                                       children: [
-                                        // PersonAboutWidget(
-                                        //   api: Endpoints.getPersonDetails(
-                                        //     widget.cast.id!,
-                                        //   ),
-                                        // ),
                                         SingleChildScrollView(
                                           child: Container(
                                             color: isDark

@@ -232,8 +232,6 @@ class TVDetailPageState extends State<TVDetailPage>
                                                                 .voteAverage!
                                                                 .toStringAsFixed(
                                                                     1),
-                                                            // style: widget.themeData
-                                                            //     .textTheme.bodyText1,
                                                           ),
                                                         ],
                                                       ),

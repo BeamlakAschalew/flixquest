@@ -156,7 +156,6 @@ class DiscoverTVState extends State<DiscoverTV>
     deviceHeight = MediaQuery.of(context).size.height;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
@@ -382,7 +381,6 @@ class ScrollingTVState extends State<ScrollingTV>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
@@ -631,7 +629,6 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
@@ -1333,7 +1330,6 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
@@ -1504,8 +1500,7 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   widget.title!,
-                  style:
-                      kTextHeaderStyle, /*style: widget.themeData!.textTheme.bodyText1*/
+                  style: kTextHeaderStyle,
                 ),
               ),
             ],
@@ -2315,7 +2310,6 @@ class TVCastTabState extends State<TVCastTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -2564,7 +2558,6 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvDetails == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -2818,7 +2811,6 @@ class TVCrewTabState extends State<TVCrewTab>
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -3093,7 +3085,6 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -3405,7 +3396,6 @@ class SimilarTVTabState extends State<SimilarTVTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -3792,7 +3782,6 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -4382,7 +4371,6 @@ class SeasonsListState extends State<SeasonsList> {
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
@@ -4576,7 +4564,6 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Container(
         color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
         child: tvDetails == null
@@ -5510,7 +5497,6 @@ class ParticularStreamingServiceTVShowsState
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return tvList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -5792,7 +5778,6 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -6040,7 +6025,6 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -6252,81 +6236,3 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
   @override
   bool get wantKeepAlive => true;
 }
-
-// Widget tvWatchProvidersTabData({required bool isDark,
-//         required String imageQuality,
-//         required String noOptionMessage,
-//         required List? watchOptions}) => Padding(
-//       padding: const EdgeInsets.all(8.0),
-//       child: watchOptions == null
-//           ? Center(
-//               child: Text(noOptionMessage))
-//           : GridView.builder(
-//               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-//                 maxCrossAxisExtent: 100,
-//                 childAspectRatio: 0.65,
-//                 crossAxisSpacing: 5,
-//                 mainAxisSpacing: 5,
-//               ),
-//               itemCount: watchProviders!.buy!.length,
-//               itemBuilder: (BuildContext context, int index) {
-//                 return Padding(
-//                   padding: const EdgeInsets.all(4.0),
-//                   child: Column(
-//                     children: [
-//                       Expanded(
-//                         flex: 6,
-//                         child: ClipRRect(
-//                           borderRadius: BorderRadius.circular(8.0),
-//                           child: watchProviders!.buy![index].logoPath == null
-//                               ? Image.asset(
-//                                   'assets/images/na_logo.png',
-//                                   fit: BoxFit.cover,
-//                                 )
-//                               : CachedNetworkImage(
-//                                   fadeOutDuration:
-//                                       const Duration(milliseconds: 300),
-//                                   fadeOutCurve: Curves.easeOut,
-//                                   fadeInDuration:
-//                                       const Duration(milliseconds: 700),
-//                                   fadeInCurve: Curves.easeIn,
-//                                   imageUrl: TMDB_BASE_IMAGE_URL +
-//                                       imageQuality +
-//                                       watchProviders!.buy![index].logoPath!,
-//                                   imageBuilder: (context, imageProvider) =>
-//                                       Container(
-//                                     decoration: BoxDecoration(
-//                                       image: DecorationImage(
-//                                         image: imageProvider,
-//                                         fit: BoxFit.cover,
-//                                       ),
-//                                     ),
-//                                   ),
-//                                   placeholder: (context, url) => Image.asset(
-//                                     'assets/images/loading.gif',
-//                                     fit: BoxFit.cover,
-//                                   ),
-//                                   errorWidget: (context, url, error) =>
-//                                       Image.asset(
-//                                     'assets/images/na_logo.png',
-//                                     fit: BoxFit.cover,
-//                                   ),
-//                                 ),
-//                         ),
-//                       ),
-//                       const SizedBox(
-//                         height: 5,
-//                       ),
-//                       Expanded(
-//                           flex: 6,
-//                           child: Text(
-//                             watchProviders!.buy![index].providerName!,
-//                             textAlign: TextAlign.center,
-//                             maxLines: 2,
-//                             overflow: TextOverflow.ellipsis,
-//                           )),
-//                     ],
-//                   ),
-//                 );
-//               }),
-//     );

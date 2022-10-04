@@ -1,15 +1,13 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:io';
-import 'dart:isolate';
-import 'dart:ui';
 import 'package:cinemax/constants/api_constants.dart';
 import 'package:cinemax/constants/app_constants.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:cinemax/models/update.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file_plus/open_file_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../provider/darktheme_provider.dart';
 import 'package:flutter_download_manager/flutter_download_manager.dart';
 import 'package:path_provider/path_provider.dart';
@@ -51,14 +49,14 @@ class _UpdateScreenState extends State<UpdateScreen> {
       body: Container(
           color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
           child: updateChecker == null
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : updateChecker!.versionNumber != currentAppVersion
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Update is available!',
                             style: kTextHeaderStyle,
                           ),
@@ -72,7 +70,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                     context: context,
                                     builder: (_) {
                                       return SimpleDialog(
-                                          title: Text('Changelogs'),
+                                          title: const Text('Changelogs'),
                                           children: [
                                             Padding(
                                               padding:
@@ -83,7 +81,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                           ]);
                                     });
                               },
-                              child: Text('See changelogs')),
+                              child: const Text('See changelogs')),
                           ListItem(
                               appVersion: updateChecker!.versionNumber!,
                               onDownloadPlayPausedPressed: (url) async {
@@ -100,15 +98,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                         downloadManager.resumeDownload(url);
                                         break;
                                       case DownloadStatus.queued:
-                                        // TODO: Handle this case.
                                         break;
                                       case DownloadStatus.completed:
                                         break;
                                       case DownloadStatus.failed:
-                                        // TODO: Handle this case.
                                         break;
                                       case DownloadStatus.canceled:
-                                        // TODO: Handle this case.
                                         break;
                                     }
                                   } else {
@@ -137,7 +132,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                         ],
                       ),
                     )
-                  : Center(
+                  : const Center(
                       child: Text(
                         'No need to download anything, Your app version is up-to-date!',
                         textAlign: TextAlign.center,
@@ -148,7 +143,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
   }
 }
 
-class ListItem extends StatelessWidget {
+class ListItem extends StatefulWidget {
   final Function(String) onDownloadPlayPausedPressed;
   final Function(String) onOpen;
   final Function(String) onDelete;
@@ -167,15 +162,20 @@ class ListItem extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<ListItem> createState() => _ListItemState();
+}
+
+class _ListItemState extends State<ListItem> {
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
             border: Border.all(
-              color: Color(0xFFF57C00),
+              color: const Color(0xFFF57C00),
             ),
-            borderRadius: BorderRadius.all(Radius.circular(20))),
+            borderRadius: const BorderRadius.all(Radius.circular(20))),
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
@@ -188,13 +188,13 @@ class ListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Cinemax v$appVersion',
+                      'Cinemax v${widget.appVersion}',
                       overflow: TextOverflow.ellipsis,
                       style: kTextSmallBodyStyle,
                     ),
-                    if (downloadTask != null)
+                    if (widget.downloadTask != null)
                       ValueListenableBuilder(
-                          valueListenable: downloadTask!.status,
+                          valueListenable: widget.downloadTask!.status,
                           builder: (context, value, child) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -212,46 +212,47 @@ class ListItem extends StatelessWidget {
                                                               .canceled
                                                       ? 'download cancelled'
                                                       : value.toString(),
-                                  style: TextStyle(fontSize: 16)),
+                                  style: const TextStyle(fontSize: 16)),
                             );
                           }),
                   ],
                 )),
               ],
             ), // if (widget.item.isDownloadingOrPaused)
-            if (downloadTask != null && !downloadTask!.status.value.isCompleted)
+            if (widget.downloadTask != null &&
+                !widget.downloadTask!.status.value.isCompleted)
               ValueListenableBuilder(
-                  valueListenable: downloadTask!.progress,
+                  valueListenable: widget.downloadTask!.progress,
                   builder: (context, value, child) {
                     return Container(
                       margin: const EdgeInsets.symmetric(vertical: 4),
                       child: LinearProgressIndicator(
-                        value: downloadTask!.progress.value,
-                        color:
-                            downloadTask!.status.value == DownloadStatus.paused
-                                ? Colors.grey
-                                : Color(0xFFF57C00),
+                        value: widget.downloadTask!.progress.value,
+                        color: widget.downloadTask!.status.value ==
+                                DownloadStatus.paused
+                            ? Colors.grey
+                            : const Color(0xFFF57C00),
                       ),
                     );
                   }),
-            downloadTask != null
+            widget.downloadTask != null
                 ? ValueListenableBuilder(
-                    valueListenable: downloadTask!.status,
+                    valueListenable: widget.downloadTask!.status,
                     builder: (context, value, child) {
-                      switch (downloadTask!.status.value) {
+                      switch (widget.downloadTask!.status.value) {
                         case DownloadStatus.downloading:
                           return ElevatedButton(
                               onPressed: () {
-                                onDownloadPlayPausedPressed(url);
+                                widget.onDownloadPlayPausedPressed(widget.url);
                               },
-                              child: Text('PAUSE'));
+                              child: const Text('PAUSE'));
 
                         case DownloadStatus.paused:
                           return ElevatedButton(
                               onPressed: () {
-                                onDownloadPlayPausedPressed(url);
+                                widget.onDownloadPlayPausedPressed(widget.url);
                               },
-                              child: Text('RESUME'));
+                              child: const Text('RESUME'));
 
                         case DownloadStatus.completed:
                           return Row(
@@ -262,36 +263,35 @@ class ListItem extends StatelessWidget {
                                 padding: const EdgeInsets.only(right: 8.0),
                                 child: ElevatedButton(
                                     onPressed: () {
-                                      onOpen(url);
+                                      widget.onOpen(widget.url);
                                     },
-                                    child: Text('INSTALL')),
+                                    child: const Text('INSTALL')),
                               ),
                               ElevatedButton(
                                   onPressed: () {
-                                    onDelete(url);
+                                    widget.onDelete(widget.url);
                                   },
-                                  child: Text('DELETE')),
+                                  child: const Text('DELETE')),
                             ],
                           );
                         case DownloadStatus.failed:
                         case DownloadStatus.canceled:
                           return ElevatedButton(
                               onPressed: () {
-                                onDownloadPlayPausedPressed(url);
+                                widget.onDownloadPlayPausedPressed(widget.url);
                               },
-                              child: Text('DOWNLOAD'));
-
+                              child: const Text('DOWNLOAD'));
                         case DownloadStatus.queued:
-                          // TODO: Handle this case.
                           break;
                       }
-                      return Text("$value", style: TextStyle(fontSize: 16));
+                      return Text("$value",
+                          style: const TextStyle(fontSize: 16));
                     })
                 : ElevatedButton(
                     onPressed: () {
-                      onDownloadPlayPausedPressed(url);
+                      widget.onDownloadPlayPausedPressed(widget.url);
                     },
-                    child: Text('DOWNLOAD'))
+                    child: const Text('DOWNLOAD'))
           ],
         ),
       ),

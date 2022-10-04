@@ -50,8 +50,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         '/play/series.php?imdb=${widget.imdbID}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}')) {
       setState(() {
         videoSrc = webScraper.getElement('#player > source', ['src', 'type']);
-        print('https://2embed.biz/play/'
-            '${videoSrc![0]['attributes']['src']}');
       });
     }
     HlsPlaylist playlist;
@@ -74,7 +72,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       )));
     }
     final data = await http.get(completem3u8).then((res) => res.body);
-    print(data.isNotEmpty);
     final bodyLength =
         await http.get(completem3u8).then((value) => value.bodyBytes.length);
     if (bodyLength <= 110) {
@@ -94,7 +91,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         ..sort((a, b) => b.format.bitrate! - a.format.bitrate!)
         ..forEach((v) {
           setState(() {
-            print(v.url);
             videoUrls!.add(VideoQalityUrls(
                 quality: v.format.height!, url: v.url.toString()));
             Navigator.pushReplacement(context,

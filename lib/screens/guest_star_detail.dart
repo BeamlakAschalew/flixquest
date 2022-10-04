@@ -207,11 +207,6 @@ class GuestStarDetailPageState extends State<GuestStarDetailPage>
                                       physics: const PageScrollPhysics(),
                                       controller: tabController,
                                       children: [
-                                        // PersonAboutWidget(
-                                        //   api: Endpoints.getPersonDetails(
-                                        //     widget.cast.id!,
-                                        //   ),
-                                        // ),
                                         SingleChildScrollView(
                                           child: Container(
                                             color: isDark

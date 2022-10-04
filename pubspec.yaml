@@ -48,13 +48,14 @@ dependencies:
   flutter_svg: ^1.1.5
   flutter_download_manager: ^0.5.4
   open_file_plus: ^3.3.0
+  path_provider: ^2.0.11
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.1
-  flutter_native_splash: ^2.2.9
+  flutter_native_splash: ^2.2.10+1
 
 
 flutter:
@@ -83,3 +84,6 @@ flutter:
 flutter_native_splash:
   color: "#252625"
   image: assets/images/logo_shadow.png
+  android_12:
+    image: assets/images/logo_shadow.png
+    color: "#252625"

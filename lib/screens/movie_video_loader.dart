@@ -45,8 +45,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     if (await webScraper.loadWebPage('/play/movie.php?imdb=${widget.imdbID}')) {
       setState(() {
         videoSrc = webScraper.getElement('#player > source', ['src', 'type']);
-        print('https://2embed.biz/play/'
-            '${videoSrc![0]['attributes']['src']}');
       });
     }
     HlsPlaylist playlist;
@@ -88,7 +86,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         ..sort((a, b) => b.format.bitrate! - a.format.bitrate!)
         ..forEach((v) {
           setState(() {
-            print(v.url);
             videoUrls!.add(VideoQalityUrls(
                 quality: v.format.height!, url: v.url.toString()));
             Navigator.pushReplacement(context,

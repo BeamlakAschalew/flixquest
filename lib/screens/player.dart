@@ -506,17 +506,7 @@ class _PlayerState extends State<Player> {
             height: double.infinity,
             child: PodVideoPlayer(
               controller: controller,
-
-              // overlayBuilder: (options) {
-              //   return Center(
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.spaceAround,
-              //       children: [Text('data'), Text('data'), Text('data')],
-              //     ),
-              //   );
-              // },
               alwaysShowProgressBar: false,
-
               videoTitle: Text(widget.videoTitle),
               podProgressBarConfig: const PodProgressBarConfig(
                 padding: kIsWeb

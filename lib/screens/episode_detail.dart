@@ -85,8 +85,8 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Center(
-                      child: const Padding(
+                    const Center(
+                      child: Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
                           'Watch with:',
@@ -185,7 +185,6 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -621,28 +620,6 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                               .name!,
                                                           tvSeriesName: widget
                                                               .seriesName!);
-                                                      // Navigator.push(context,
-                                                      //     MaterialPageRoute(
-                                                      //         builder:
-                                                      //             (context) {
-                                                      //   return StreamOptionSelect(
-                                                      //       mediaType: 'tv');
-
-                                                      // return TVVideoLoader(
-                                                      //   imdbID: externalLinks!
-                                                      //       .imdbId!,
-                                                      //   episodeNumber: widget
-                                                      //       .episodeList
-                                                      //       .episodeNumber!,
-                                                      //   seasonNumber: widget
-                                                      //       .episodeList
-                                                      //       .seasonNumber!,
-                                                      //   videoTitle:
-                                                      //       '${widget.episodeList.seasonNumber! <= 9 ? 'S0${widget.episodeList.seasonNumber}' : 'S${widget.episodeList.seasonNumber}'} | '
-                                                      //       '${widget.episodeList.episodeNumber! <= 9 ? 'E0${widget.episodeList.episodeNumber}' : 'E${widget.episodeList.episodeNumber}'}'
-                                                      //       '',
-                                                      // );
-                                                      // }));
                                                     },
                                                     child: Row(
                                                       children: [

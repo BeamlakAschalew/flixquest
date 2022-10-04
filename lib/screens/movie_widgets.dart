@@ -157,7 +157,6 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     deviceHeight = MediaQuery.of(context).size.height;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
@@ -212,11 +211,12 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                   fadeInDuration:
                                       const Duration(milliseconds: 700),
                                   fadeInCurve: Curves.easeIn,
-                                  imageUrl:  moviesList![index].posterPath == null
-                                      ? ''
-                                      : TMDB_BASE_IMAGE_URL +
-                                      imageQuality +
-                                      moviesList![index].posterPath!,
+                                  imageUrl:
+                                      moviesList![index].posterPath == null
+                                          ? ''
+                                          : TMDB_BASE_IMAGE_URL +
+                                              imageQuality +
+                                              moviesList![index].posterPath!,
                                   imageBuilder: (context, imageProvider) =>
                                       Container(
                                     decoration: BoxDecoration(
@@ -388,7 +388,6 @@ class ScrollingMoviesState extends State<ScrollingMovies>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
@@ -417,10 +416,6 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                       );
                     }));
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: Text('View all'),
-                  ),
                   style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all(const Color(0x26F57C00)),
@@ -431,6 +426,10 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                               borderRadius: BorderRadius.circular(20.0),
                               side:
                                   const BorderSide(color: Color(0xFFF57C00))))),
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Text('View all'),
+                  ),
                 )),
           ],
         ),
@@ -494,10 +493,12 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                                   700),
                                                       fadeInCurve:
                                                           Curves.easeIn,
-                                                      imageUrl:  moviesList![index].posterPath == null
-                                      ? ''
-                                      :
-                                                          TMDB_BASE_IMAGE_URL +
+                                                      imageUrl: moviesList![
+                                                                      index]
+                                                                  .posterPath ==
+                                                              null
+                                                          ? ''
+                                                          : TMDB_BASE_IMAGE_URL +
                                                               imageQuality +
                                                               moviesList![index]
                                                                   .posterPath!,
@@ -1170,7 +1171,6 @@ class PartsListState extends State<PartsList> {
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Column(
       children: <Widget>[
@@ -2006,8 +2006,8 @@ class WatchNowButtonState extends State<WatchNowButton> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Center(
-                      child: const Padding(
+                    const Center(
+                      child: Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
                           'Watch with:',
@@ -2019,14 +2019,12 @@ class WatchNowButtonState extends State<WatchNowButton> {
                       padding: const EdgeInsets.all(30.0),
                       child: GestureDetector(
                         onTap: () {
-                          void mixpanelUpload(BuildContext context) {
-                            mixpanel
-                                .track('Most viewed movie pages', properties: {
-                              'Movie name': movieName,
-                              'Movie id': id,
-                              'Is Movie adult?': adult,
-                            });
-                          }
+                          mixpanel
+                              .track('Most viewed movie pages', properties: {
+                            'Movie name': movieName,
+                            'Movie id': id,
+                            'Is Movie adult?': adult,
+                          });
 
                           Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: ((context) {
@@ -2092,7 +2090,6 @@ class WatchNowButtonState extends State<WatchNowButton> {
 
   @override
   Widget build(BuildContext context) {
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Container(
       child: TextButton(
         style: ButtonStyle(
@@ -2492,7 +2489,6 @@ class CastTabState extends State<CastTab>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? movieCastAndCrewTabShimmer(isDark)
         : credits!.cast!.isEmpty
@@ -2724,7 +2720,6 @@ class CrewTabState extends State<CrewTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -2995,7 +2990,6 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
@@ -3308,7 +3302,6 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return movieList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -3620,7 +3613,6 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return moviesList == null
         ? mainPageVerticalScrollShimmer(isDark, isLoading, _scrollController)
         : moviesList!.isEmpty
@@ -3939,7 +3931,6 @@ class ParticularStreamingServiceMoviesState
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return moviesList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -4811,7 +4802,6 @@ class CollectionMoviesState extends State<CollectionMovies> {
   Widget build(BuildContext context) {
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Container(
       color: const Color(0xFF202124),
       child: moviesList == null

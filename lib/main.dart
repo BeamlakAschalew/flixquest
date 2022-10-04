@@ -22,7 +22,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'provider/adultmode_provider.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
-  print('background message ${message.notification!.body}');
+  // print('background message ${message.notification!.body}');
 }
 
 void main() async {
@@ -66,11 +66,11 @@ class _CinemaxState extends State<Cinemax>
   void initState() {
     super.initState();
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-      print("message recieved");
-      print(event.notification!.body);
+      // print("message recieved");
+      // print(event.notification!.body);
     });
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print('Message clicked!');
+      //  print('Message clicked!');
     });
     firstTimeCheck();
     mixpanelProvider.initMixpanel();

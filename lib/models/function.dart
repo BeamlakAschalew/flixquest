@@ -218,7 +218,6 @@ Future<List<TV>> fetchPersonTV(String api) async {
 }
 
 Future checkForUpdate(String api) async {
-  print(api);
   UpdateChecker updateChecker;
   var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
       onTimeout: () {

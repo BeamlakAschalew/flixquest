@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, unused_local_variable, avoid_unnecessary_containers
+
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
@@ -103,7 +105,6 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
             true, // click on notification to open downloaded file (for Android)
       );
     } else {
-      print('Permission Denied');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
@@ -118,7 +119,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
 
   final ReceivePort _port = ReceivePort();
 
-  //TODO: uncomment this on release @pragma('vm:entry-point')
+  @pragma('vm:entry-point')
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
     final SendPort send =
@@ -168,10 +169,10 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                             : TMDB_BASE_IMAGE_URL +
                                 imageQuality +
                                 widget.stills![currentIndex].stillPath!,
-                    currentIndex.toString(),
+                    '${currentIndex + 1}',
                     isDark);
               },
-              icon: Icon(Icons.download),
+              icon: const Icon(Icons.download),
             )
           ]),
       body: Container(
@@ -200,16 +201,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                             imageQuality +
                             widget.stills![currentIndex].stillPath!,
               ),
-
-              // imageProvider: NetworkImage(
-              //
-              // ),
               initialScale: PhotoViewComputedScale.contained * 0.95,
-              // heroAttributes: PhotoViewHeroAttributes(
-              //   // tag: widget.imageType == 'backdrop'
-              //   //     ? widget.backdrops![index].filePath!
-              //   //     : widget.posters![index].posterPath!,
-              // ),
             );
           },
           itemCount: widget.imageType == 'backdrop'
@@ -218,11 +210,6 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                   ? widget.posters!.length
                   : widget.stills!.length,
           onPageChanged: onPageChanged,
-          // loadingBuilder: (context, chuck) {
-          //   return Center(
-          //     child: CircularProgressIndicator(),
-          //   );
-          // },
           loadingBuilder: (context, event) => Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
             child: Center(

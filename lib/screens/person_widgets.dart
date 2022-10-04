@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
-import '../provider/mixpanel_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/function.dart';
 import '/models/images.dart';
@@ -124,8 +123,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                                     return HeroPhotoView(
                                                       imageProvider:
                                                           imageProvider,
-                                                      currentIndex:
-                                                          index.toString(),
+                                                      currentIndex: index,
                                                       heroId:
                                                           TMDB_BASE_IMAGE_URL +
                                                               imageQuality +
@@ -224,7 +222,6 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return personMoviesList == null
         ? personMoviesAndTVShowShimmer(isDark)
@@ -482,7 +479,6 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
     super.build(context);
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return personTVList == null
         ? personMoviesAndTVShowShimmer(isDark)

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, use_build_context_synchronously
+
 import 'dart:io';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,7 @@ class HeroPhotoView extends StatefulWidget {
       : super(key: key);
   final ImageProvider imageProvider;
   final String heroId;
-  final String currentIndex;
+  final int currentIndex;
   final String name;
 
   @override
@@ -76,7 +78,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     }
   }
 
-//TODO: uncomment this on release @pragma('vm:entry-point')
+  @pragma('vm:entry-point')
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
     final SendPort send =
@@ -124,7 +126,6 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
             true, // click on notification to open downloaded file (for Android)
       );
     } else {
-      print('Permission Denied');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
@@ -164,7 +165,10 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
               ),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () async {},
+                  onPressed: () async {
+                    _download(
+                        widget.heroId, '${widget.currentIndex + 1}', isDark);
+                  },
                   style: ButtonStyle(
                       minimumSize: MaterialStateProperty.all(
                           const Size(double.infinity, 50)),

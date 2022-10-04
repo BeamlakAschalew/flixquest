@@ -166,7 +166,7 @@ class SocialIconContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(5),
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
         color: Colors.white,
@@ -194,10 +194,8 @@ class PlatformIcon extends StatelessWidget {
       },
       child: Icon(
         platformIcon,
-        color: Color(0xFFF57C00),
+        color: const Color(0xFFF57C00),
       ),
     );
   }
 }
-
-//

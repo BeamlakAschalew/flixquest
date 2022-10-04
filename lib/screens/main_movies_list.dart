@@ -9,7 +9,6 @@ import '../models/function.dart';
 import '../models/movie.dart';
 import '../provider/darktheme_provider.dart';
 import '../provider/imagequality_provider.dart';
-import '../provider/mixpanel_provider.dart';
 import 'common_widgets.dart';
 import 'movie_detail.dart';
 
@@ -107,7 +106,6 @@ class MainMoviesListState extends State<MainMoviesList> {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.title} movies'),
