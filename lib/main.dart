@@ -8,6 +8,7 @@ import 'package:cinemax/screens/discover.dart';
 import 'package:cinemax/screens/landing_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+//import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,7 +50,7 @@ class _CinemaxState extends State<Cinemax>
   MixpanelProvider mixpanelProvider = MixpanelProvider();
   DeafultHomeProvider deafultHomeProvider = DeafultHomeProvider();
   late Mixpanel mixpanel;
-  late FirebaseMessaging messaging;
+  // late FirebaseMessaging messaging;
 
   void firstTimeCheck() async {
     final prefs = await SharedPreferences.getInstance();
@@ -167,18 +168,27 @@ class CinemaxHomePage extends StatefulWidget {
 
 class _CinemaxHomePageState extends State<CinemaxHomePage>
     with SingleTickerProviderStateMixin {
-  late int _selectedIndex = 0;
+  late int _selectedIndex;
 
   @override
   void initState() {
+    defHome();
     super.initState();
+  }
+
+  void defHome() {
+    final defaultHome =
+        Provider.of<DeafultHomeProvider>(context, listen: false).defaultValue;
+    setState(() {
+      _selectedIndex = defaultHome;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
-    final defaultHome = Provider.of<DeafultHomeProvider>(context).defaultValue;
+
     return Provider.of<AdultmodeProvider?>(context) == null ||
             Provider.of<ImagequalityProvider?>(context) == null ||
             Provider.of<DarkthemeProvider?>(context) == null ||
@@ -255,7 +265,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                         text: 'Discover',
                       ),
                     ],
-                    selectedIndex: defaultHome,
+                    selectedIndex: _selectedIndex,
                     onTabChange: (index) {
                       setState(() {
                         _selectedIndex = index;

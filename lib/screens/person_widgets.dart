@@ -740,7 +740,7 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                         ? personDetails!.biography!
                         : 'We don\'t have a biography for this person',
                     trimLines: 4,
-                    style: kTextSmallBodyStyle,
+                    style: kTextSmallAboutBodyStyle,
                     colorClickableText: const Color(0xFFF57C00),
                     trimMode: TrimMode.Line,
                     trimCollapsedText: 'read more',
