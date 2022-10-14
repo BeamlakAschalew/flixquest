@@ -26,4 +26,4 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '1.3.0';
+const String currentAppVersion = '1.3.0-build-v2';

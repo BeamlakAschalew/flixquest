@@ -97,8 +97,8 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
         savedDir: widget.imageType == 'backdrop'
             ? '/storage/emulated/0/Cinemax/Backdrops/'
             : widget.imageType == 'poster'
-                ? '/storage/emulated/0/Cinemax/Stills/'
-                : '/storage/emulated/0/Cinemax/Posters/',
+                ? '/storage/emulated/0/Cinemax/Posters/'
+                : '/storage/emulated/0/Cinemax/Stills/',
         showNotification:
             true, // show download progress in status bar (for Android)
         openFileFromNotification:
