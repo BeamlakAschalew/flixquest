@@ -9,19 +9,19 @@ Some UI and API functionality from: [Here](https://github.com/bimsina/Matinee-Fl
 ### 📱 Screenshots
 <table style={border:"none"}>
   <tr>
-    <td><img src="https://user-images.githubusercontent.com/72562470/179374549-7d7a312f-609d-4517-989d-51568f001b9f.png" alt="Screenshot 2"/></td>
-    <td><img src="https://user-images.githubusercontent.com/72562470/179374561-999f42bf-04d8-40bc-a2aa-c7c403ee5713.png" alt="Screenshot 1"/></td>
-    <td><img src="https://user-images.githubusercontent.com/72562470/179374571-b6bf899b-33a0-4aa9-ab47-5e05ab495fdc.png" alt="Screenshot 3"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1665745039.png" alt="Screenshot 2"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1665745049.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1665745123.png" alt="Screenshot 3"/></td>
   </tr>
   <tr>
-    <td><img src="https://user-images.githubusercontent.com/72562470/179374587-1d4aeaeb-67f2-4268-9c03-9ca607aaa56d.png" alt="Screenshot 1"/></td>
-    <td><img src="https://user-images.githubusercontent.com/72562470/179374593-5b32fa6b-3449-4696-9da1-8e8b97481715.png" alt="Screenshot 2"/></td>
-    <td><img src="https://user-images.githubusercontent.com/72562470/179374598-ece7118a-9f91-4b57-a0a1-098550d8d428.png" alt="Screenshot 3"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1665745067.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1665745337.png" alt="Screenshot 2"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389674.png" alt="Screenshot 3"/></td>
   </tr>
   <tr>
-    <td><img src="https://user-images.githubusercontent.com/72562470/179374773-de4319ed-b018-40da-a4ef-1263970b4f01.png" alt="Screenshot 1"/></td>
-    <td><img src="https://user-images.githubusercontent.com/72562470/179374774-4a8523a9-63a1-43b0-8adf-fcfced651644.png" alt="Screenshot 1"/></td>
-    <td><img src="https://user-images.githubusercontent.com/72562470/179374787-25819a72-c096-42be-8fd3-deadac3d3761.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389716.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389747.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389858.png" alt="Screenshot 1"/></td>
   </tr>
 </table>
 
