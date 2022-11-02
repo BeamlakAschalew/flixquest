@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 
 class ImagequalityProvider with ChangeNotifier {
   ImagePreferences imagePreferences = ImagePreferences();
+
+  Future<void> getCurrentImageQuality() async {
+    imageQuality = await imagePreferences.getImageQuality();
+  }
+
   String _imageQuality = "w500/";
   String get imageQuality => _imageQuality;
 

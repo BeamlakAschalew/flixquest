@@ -3,6 +3,11 @@ import 'package:flutter/cupertino.dart';
 
 class AdultmodeProvider with ChangeNotifier {
   AdultModePreferences adultModePreferences = AdultModePreferences();
+
+  Future<void> getCurrentAdultMode() async {
+    isAdult = await adultModePreferences.getAdultMode();
+  }
+
   bool _isAdult = false;
   bool get isAdult => _isAdult;
 
