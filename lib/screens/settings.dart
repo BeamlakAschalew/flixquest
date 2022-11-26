@@ -97,8 +97,9 @@ class _SettingsState extends State<Settings> {
                       value: 1,
                       child: Text('TV shows'),
                     ),
+                    DropdownMenuItem(value: 2, child: Text('News')),
                     DropdownMenuItem(
-                      value: 2,
+                      value: 3,
                       child: Text('Discover'),
                     )
                   ],

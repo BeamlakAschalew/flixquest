@@ -4,6 +4,7 @@ import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/provider/default_home_provider.dart';
 import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:cinemax/provider/mixpanel_provider.dart';
+import 'package:cinemax/provider/news_provider.dart';
 import 'package:cinemax/screens/discover.dart';
 import 'package:cinemax/screens/landing_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,6 +21,7 @@ import 'screens/search_view.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'provider/adultmode_provider.dart';
+import 'screens/news_screen.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
   // print('background message ${message.notification!.body}');
@@ -40,6 +42,7 @@ void main() async {
   await adultmodeProvider.getCurrentAdultMode();
   await deafultHomeProvider.getCurrentDefaultScreen();
   await imagequalityProvider.getCurrentImageQuality();
+
   runApp(Cinemax(
     theme: themeChangeProvider,
     mixpanel: mixpanelProvider,
@@ -116,7 +119,7 @@ class _CinemaxState extends State<Cinemax>
           }),
           ChangeNotifierProvider(create: (_) {
             return widget.home;
-          })
+          }),
         ],
         child: Consumer5<AdultmodeProvider, DarkthemeProvider,
                 ImagequalityProvider, MixpanelProvider, DeafultHomeProvider>(
@@ -246,6 +249,10 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                     text: ' TV Shows',
                   ),
                   GButton(
+                    icon: Icons.newspaper,
+                    text: 'News',
+                  ),
+                  GButton(
                     icon: FontAwesomeIcons.compass,
                     text: 'Discover',
                   ),
@@ -267,6 +274,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
             children: const <Widget>[
               MainMoviesDisplay(),
               MainTVDisplay(),
+              NewsPage(),
               DiscoverPage(),
             ],
           ),
