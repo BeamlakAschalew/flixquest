@@ -506,6 +506,8 @@ class _PlayerState extends State<Player> {
             height: double.infinity,
             child: PodVideoPlayer(
               controller: controller,
+              matchFrameAspectRatioToVideo: true,
+              matchVideoAspectRatioToFrame: true,
               alwaysShowProgressBar: false,
               videoTitle: Text(widget.videoTitle),
               podProgressBarConfig: const PodProgressBarConfig(
