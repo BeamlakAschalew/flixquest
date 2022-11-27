@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 import 'movie_widgets.dart';
+import 'tv_stream.dart';
 
 class EpisodeDetailPage extends StatefulWidget {
   final EpisodeList episodeList;
@@ -63,128 +64,11 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
     });
   }
 
-  void streamSelectBottomSheet(
-      {required String mediaType,
-      required String imdbId,
-      required String videoTitle,
-      required int seasonNumber,
-      required int episodeNumber,
-      required int tvId,
-      required String episodeName,
-      required String tvSeriesName}) {
-    final isDark =
-        Provider.of<DarkthemeProvider>(context, listen: false).darktheme;
-    showModalBottomSheet(
-        context: context,
-        builder: (builder) {
-          final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
-          return Container(
-              color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Watch with:',
-                          style: kTextSmallHeaderStyle,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          mixpanel.track('Most viewed TV series', properties: {
-                            'TV series name': '${widget.seriesName}',
-                            'TV series id': '${widget.tvId}',
-                            'TV series episode name':
-                                '${widget.episodeList.name}',
-                            'TV series season number':
-                                '${widget.episodeList.seasonNumber}',
-                            'TV series episode number':
-                                '${widget.episodeList.episodeNumber}',
-                            'Is TV series adult?': '${widget.adult}'
-                          });
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: ((context) {
-                            return TVVideoLoader(
-                              imdbID: imdbId,
-                              videoTitle: videoTitle,
-                              episodeNumber: episodeNumber,
-                              seasonNumber: seasonNumber,
-                              isDark: isDark,
-                            );
-                          })));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: const Color(0xFFF57C00),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: const Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text(
-                              'Cinemax player. AD free, highly recommended, but without subtitles',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          mixpanel.track('Most viewed TV series', properties: {
-                            'TV series name': '${widget.seriesName}',
-                            'TV series id': '${widget.tvId}',
-                            'TV series episode name':
-                                '${widget.episodeList.name}',
-                            'TV series season number':
-                                '${widget.episodeList.seasonNumber}',
-                            'TV series episode number':
-                                '${widget.episodeList.episodeNumber}',
-                            'Is TV series adult?': '${widget.adult}'
-                          });
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: ((context) {
-                            return TVStreamSelect(
-                              episodeName: episodeName,
-                              seasonNumber: seasonNumber,
-                              tvSeriesId: tvId,
-                              tvSeriesName: tvSeriesName,
-                              tvSeriesImdbId: imdbId,
-                              episodeNumber: episodeNumber,
-                            );
-                          })));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: const Color(0xFFF57C00),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: const Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text(
-                              '3rd party websites. With ADs, not recommended, with subtitles',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ));
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -584,42 +468,31 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                                                 .all(const Color(
                                                                     0xFFF57C00))),
                                                     onPressed: () async {
-                                                      setState(() {
-                                                        isVisible = true;
-                                                        buttonWidth = 170;
-                                                      });
-                                                      await fetchSocialLinks(Endpoints
-                                                              .getExternalLinksForTV(
-                                                                  widget.tvId!))
-                                                          .then((value) {
-                                                        setState(() {
-                                                          externalLinks = value;
-                                                        });
-                                                      });
-                                                      setState(() {
-                                                        isVisible = false;
-                                                        buttonWidth = 150;
-                                                      });
-                                                      streamSelectBottomSheet(
-                                                          mediaType: 'tv',
-                                                          imdbId: externalLinks!
-                                                              .imdbId!,
-                                                          videoTitle:
-                                                              '${widget.seriesName} ${widget.episodeList.seasonNumber! <= 9 ? 'S0${widget.episodeList.seasonNumber}' : 'S${widget.episodeList.seasonNumber}'} | '
-                                                              '${widget.episodeList.episodeNumber! <= 9 ? 'E0${widget.episodeList.episodeNumber}' : 'E${widget.episodeList.episodeNumber}'}, ${widget.episodeList.name}'
-                                                              '',
-                                                          episodeNumber: widget
-                                                              .episodeList
-                                                              .episodeNumber!,
-                                                          seasonNumber: widget
-                                                              .episodeList
-                                                              .seasonNumber!,
-                                                          tvId: widget.tvId!,
-                                                          episodeName: widget
-                                                              .episodeList
-                                                              .name!,
-                                                          tvSeriesName: widget
-                                                              .seriesName!);
+                                                      mixpanel.track(
+                                                          'Most viewed TV series',
+                                                          properties: {
+                                                            'TV series name':
+                                                                '${widget.seriesName}',
+                                                            'TV series id':
+                                                                '${widget.tvId}',
+                                                            'TV series episode name':
+                                                                '${widget.episodeList.name}',
+                                                            'TV series season number':
+                                                                '${widget.episodeList.seasonNumber}',
+                                                            'TV series episode number':
+                                                                '${widget.episodeList.episodeNumber}'
+                                                          });
+                                                      Navigator.push(context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) {
+                                                        return TVStream(
+                                                          streamUrl:
+                                                              'https://www.2embed.to/embed/tmdb/tv?id=${widget.tvId}&s=${widget.episodeList.seasonNumber}&e=${widget.episodeList.episodeNumber}',
+                                                          tvSeriesName:
+                                                              '${widget.seriesName}',
+                                                        );
+                                                      }));
                                                     },
                                                     child: Row(
                                                       children: [

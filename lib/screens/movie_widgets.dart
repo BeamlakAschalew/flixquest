@@ -35,6 +35,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'genremovies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'main_movies_list.dart';
+import 'movie_stream.dart';
 import 'movie_stream_select.dart';
 import 'package:provider/provider.dart';
 import 'common_widgets.dart';
@@ -1986,110 +1987,9 @@ class WatchNowButtonState extends State<WatchNowButton> {
     super.initState();
   }
 
-  void streamSelectBottomSheet(
-      {required String mediaType,
-      required String imdbId,
-      required String videoTitle,
-      required String movieName,
-      required String id,
-      required String adult}) {
-    final isDark =
-        Provider.of<DarkthemeProvider>(context, listen: false).darktheme;
-    showModalBottomSheet(
-        context: context,
-        builder: (builder) {
-          final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
-          return Container(
-              color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          'Watch with:',
-                          style: kTextSmallHeaderStyle,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          mixpanel
-                              .track('Most viewed movie pages', properties: {
-                            'Movie name': movieName,
-                            'Movie id': id,
-                            'Is Movie adult?': adult,
-                          });
-
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: ((context) {
-                            return MovieVideoLoader(
-                              imdbID: imdbId,
-                              videoTitle: videoTitle,
-                              isDark: isDark,
-                            );
-                          })));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: const Color(0xFFF57C00),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: const Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text(
-                              'Cinemax player. AD free, highly recommended, but without subtitles',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(30.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          mixpanel
-                              .track('Most viewed movie pages', properties: {
-                            'Movie name': movieName,
-                            'Movie id': id,
-                            'Is Movie adult?': adult,
-                          });
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: ((context) {
-                            return MovieStreamSelect(
-                              movieName: videoTitle,
-                              movieId: widget.movieId,
-                              movieImdbId: imdbId,
-                            );
-                          })));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: const Color(0xFFF57C00),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: const Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text(
-                              '3rd party websites. With ADs, not recommended, with subtitles',
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ));
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Container(
       child: TextButton(
         style: ButtonStyle(
@@ -2097,33 +1997,18 @@ class WatchNowButtonState extends State<WatchNowButton> {
             backgroundColor:
                 MaterialStateProperty.all(const Color(0xFFF57C00))),
         onPressed: () async {
-          setState(() {
-            isVisible = true;
-            buttonWidth = 170;
+          mixpanel.track('Most viewed movie pages', properties: {
+            'Movie name': widget.movieName,
+            'Movie id': widget.movieId,
+            'Is Movie adult?': widget.adult,
           });
-          await fetchMovieDetails(widget.api!).then((value) {
-            setState(() {
-              movieDetails = value;
-            });
-          });
-          setState(() {
-            isVisible = false;
-            buttonWidth = 150;
-          });
-          streamSelectBottomSheet(
-              imdbId: movieDetails!.imdbId,
-              mediaType: 'movie',
-              videoTitle: movieDetails!.originalTitle!,
-              movieName: movieDetails!.originalTitle!,
-              adult: movieDetails!.isAdult!.toString(),
-              id: movieDetails!.id!.toString());
-          // Navigator.push(context, MaterialPageRoute(builder: (context) {
-          //   return StreamOptionSelect(mediaType: 'movie');
-          //   // return MovieVideoLoader(
-          //   //   imdbID: movieDetails!.imdbId!,
-          //   //   videoTitle: movieDetails!.originalTitle!,
-          //   // );
-          // }));
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return MovieStream(
+              streamUrl:
+                  'https://www.2embed.to/embed/tmdb/movie?id=${widget.movieId}',
+              movieName: widget.movieName!,
+            );
+          }));
         },
         child: Row(
           children: [
