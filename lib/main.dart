@@ -4,7 +4,6 @@ import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/provider/default_home_provider.dart';
 import 'package:cinemax/provider/imagequality_provider.dart';
 import 'package:cinemax/provider/mixpanel_provider.dart';
-import 'package:cinemax/provider/news_provider.dart';
 import 'package:cinemax/screens/discover.dart';
 import 'package:cinemax/screens/landing_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -168,7 +167,7 @@ class CinemaxHomePage extends StatefulWidget {
 
 class _CinemaxHomePageState extends State<CinemaxHomePage>
     with SingleTickerProviderStateMixin {
-  late int _selectedIndex;
+  late int selectedIndex;
 
   @override
   void initState() {
@@ -180,7 +179,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
     final defaultHome =
         Provider.of<DeafultHomeProvider>(context, listen: false).defaultValue;
     setState(() {
-      _selectedIndex = defaultHome;
+      selectedIndex = defaultHome;
     });
   }
 
@@ -249,7 +248,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                     text: ' TV Shows',
                   ),
                   GButton(
-                    icon: Icons.newspaper,
+                    icon: FontAwesomeIcons.newspaper,
                     text: 'News',
                   ),
                   GButton(
@@ -257,10 +256,10 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                     text: 'Discover',
                   ),
                 ],
-                selectedIndex: _selectedIndex,
+                selectedIndex: selectedIndex,
                 onTabChange: (index) {
                   setState(() {
-                    _selectedIndex = index;
+                    selectedIndex = index;
                   });
                 },
               ),
@@ -270,7 +269,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
         body: Container(
           color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
           child: IndexedStack(
-            index: _selectedIndex,
+            index: selectedIndex,
             children: const <Widget>[
               MainMoviesDisplay(),
               MainTVDisplay(),

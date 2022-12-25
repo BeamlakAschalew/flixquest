@@ -1461,3 +1461,119 @@ Widget personAboutSimmer(isDark) => Column(
         ),
       ],
     );
+
+Widget newsShimmer(isDark, scrollController, isLoading) {
+  return Container(
+    color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+    child: Column(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                      controller: scrollController,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: 10,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          color: isDark
+                              ? const Color(0xFF202124)
+                              : const Color(0xFFFFFFFF),
+                          child: Shimmer.fromColors(
+                            baseColor: isDark
+                                ? Colors.grey.shade800
+                                : Colors.grey.shade300,
+                            highlightColor: isDark
+                                ? Colors.grey.shade700
+                                : Colors.grey.shade100,
+                            direction: ShimmerDirection.ltr,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: 0.0,
+                                bottom: 3.0,
+                                // left: 10,
+                              ),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 10.0),
+                                          child: SizedBox(
+                                            width: 100,
+                                            height: 150,
+                                            child: Container(
+                                              decoration: const BoxDecoration(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 8.0),
+                                                child: Container(
+                                                  width: 260,
+                                                  height: 20,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 250,
+                                                height: 20,
+                                                color: Colors.white,
+                                              ),
+                                              const SizedBox(
+                                                height: 30,
+                                              ),
+                                              Container(
+                                                width: 80,
+                                                height: 20,
+                                                color: Colors.white,
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Divider(
+                                    color: !isDark
+                                        ? Colors.black54
+                                        : Colors.white54,
+                                    thickness: 1,
+                                    endIndent: 20,
+                                    indent: 10,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Visibility(
+            visible: isLoading,
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Center(child: CircularProgressIndicator()),
+            )),
+      ],
+    ),
+  );
+}
