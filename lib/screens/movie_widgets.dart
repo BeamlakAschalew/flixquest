@@ -2375,7 +2375,7 @@ class CastTabState extends State<CastTab>
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
     return credits == null
-        ? movieCastAndCrewTabShimmer(isDark)
+        ? /*movieCastAndCrewTabShimmer(isDark)*/ CircularProgressIndicator()
         : credits!.cast!.isEmpty
             ? Container(
                 color:
@@ -2385,141 +2385,106 @@ class CastTabState extends State<CastTab>
                 ),
               )
             : requestFailed == true
-                ? retryWidget(isDark)
+                ? /*retryWidget(isDark)*/ CircularProgressIndicator()
                 : Container(
                     color: isDark
                         ? const Color(0xFF202124)
                         : const Color(0xFFFFFFFF),
-                    child: ListView.builder(
-                        itemCount: credits!.cast!.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return CastDetailPage(
-                                    cast: credits!.cast![index],
-                                    heroId: '${credits!.cast![index].name}');
-                              }));
-                            },
-                            child: Container(
-                              color: isDark
-                                  ? const Color(0xFF202124)
-                                  : const Color(0xFFFFFFFF),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 18),
+                          child: Text(
+                            'Persons',
+                            style: TextStyle(
+                              color: Colors.blue.withOpacity(0.7),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        ListView.builder(
+                          itemCount: credits!.cast!.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          // separatorBuilder: (context, index) =>
+                          //     const SizedBox(height: 8),
+                          itemBuilder: (context, index) {
+                            // Cast cast = _detailsController.credits.value.cast![index];
+
+                            return InkWell(
+                              onTap: () {
+                                // _peopleController.setPersonId(cast.id!);
+                                // Get.toNamed('/people_details');
+                                Navigator.pop(context);
+                              },
                               child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 0.0,
-                                  bottom: 5.0,
-                                  left: 10,
-                                ),
-                                child: Column(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 16),
+                                child: Row(
                                   children: [
-                                    Row(
-                                      // crossAxisAlignment:
-                                      //     CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 20.0, left: 10),
-                                          child: SizedBox(
-                                            width: 80,
-                                            height: 80,
-                                            child: Hero(
-                                              tag:
-                                                  '${credits!.cast![index].name}',
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        100.0),
-                                                child: credits!.cast![index]
-                                                            .profilePath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_square.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                credits!
-                                                                    .cast![
-                                                                        index]
-                                                                    .profilePath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            castAndCrewTabImageShimmer(
-                                                                isDark),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_square.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                              ),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: CachedNetworkImage(
+                                        height: 68,
+                                        width: 68,
+                                        imageUrl: '',
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            Container(color: Colors.black26),
+                                        errorWidget: (context, url, error) =>
+                                            Container(
+                                          color: Colors.black38,
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.error_outline,
+                                              color: Colors.white,
+                                              size: 34,
                                             ),
                                           ),
                                         ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                credits!.cast![index].name!,
-                                                style: const TextStyle(
-                                                    fontFamily: 'PoppinsSB'),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              Text(
-                                                'As : '
-                                                '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ],
+                                      ),
                                     ),
-                                    Divider(
-                                      color: !isDark
-                                          ? Colors.black54
-                                          : Colors.white54,
-                                      thickness: 1,
-                                      endIndent: 20,
-                                      indent: 10,
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "name",
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color:
+                                                  Colors.blue.withOpacity(0.7),
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          Text(
+                                            "character",
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color:
+                                                  Colors.blue.withOpacity(0.6),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
-                          );
-                        }));
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  );
   }
 
   Widget retryWidget(isDark) {

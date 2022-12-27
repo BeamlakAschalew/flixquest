@@ -53,6 +53,8 @@ dependencies:
   dynamic_color: ^1.5.4
   #adaptive_theme: ^3.1.1
   webview_flutter: ^3.0.4
+  smooth_page_indicator: ^1.0.0+2
+  percent_indicator: ^4.2.2
 
 
 dev_dependencies:
