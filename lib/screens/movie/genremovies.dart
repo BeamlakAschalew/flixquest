@@ -1,25 +1,22 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cinemax/provider/adultmode_provider.dart';
-import 'package:provider/provider.dart';
-
-import '/screens/tv_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '/api/endpoints.dart';
+import '/widgets/movie_widgets.dart';
+import '/models/genres.dart';
 
-class StreamingServicesTVShows extends StatelessWidget {
-  final int providerId;
-  final String providerName;
-  const StreamingServicesTVShows(
-      {Key? key, required this.providerId, required this.providerName})
-      : super(key: key);
+class GenreMovies extends StatelessWidget {
+  final Genres genres;
+  const GenreMovies({Key? key, required this.genres}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'TV shows from $providerName',
+          '${genres.genreName!} movies',
         ),
         leading: IconButton(
           icon: const Icon(
@@ -31,10 +28,10 @@ class StreamingServicesTVShows extends StatelessWidget {
         ),
       ),
       body: Container(
-        child: ParticularStreamingServiceTVShows(
+        child: ParticularGenreMovies(
           includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
-          providerID: providerId,
-          api: Endpoints.watchProvidersTVShows(providerId, 1),
+          genreId: genres.genreID!,
+          api: Endpoints.getMoviesForGenre(genres.genreID!, 1),
         ),
       ),
     );

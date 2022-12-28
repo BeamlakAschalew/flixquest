@@ -24,22 +24,22 @@ import '/models/videos.dart';
 import '/models/watch_providers.dart';
 import '/screens/cast_detail.dart';
 import '/screens/createdby_detail.dart';
-import '/screens/episode_detail.dart';
-import '/screens/seasons_detail.dart';
-import '/screens/streaming_services_tvshows.dart';
-import '/screens/tv_detail.dart';
-import '/screens/genre_tv.dart';
+import '/screens/tv/episode_detail.dart';
+import '/screens/tv/seasons_detail.dart';
+import '/screens/tv/streaming_services_tvshows.dart';
+import '/screens/tv/tv_detail.dart';
+import '/screens/tv/genre_tv.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'crew_detail.dart';
-import 'photoview.dart';
-import 'main_tv_list.dart';
+import '/screens/person/crew_detail.dart';
+import '/screens/photoview.dart';
+import '/screens/tv/main_tv_list.dart';
 import 'movie_widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'common_widgets.dart';
+import '/widgets/common_widgets.dart';
 
 class MainTVDisplay extends StatefulWidget {
   const MainTVDisplay({

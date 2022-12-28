@@ -1,16 +1,16 @@
 import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/screens/tv_detail.dart';
+import 'package:cinemax/screens/tv/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import '../constants/api_constants.dart';
-import '../models/function.dart';
-import '../models/tv.dart';
-import '../provider/darktheme_provider.dart';
-import '../provider/imagequality_provider.dart';
-import 'common_widgets.dart';
+import '../../constants/api_constants.dart';
+import '../../models/function.dart';
+import '../../models/tv.dart';
+import '../../provider/darktheme_provider.dart';
+import '../../provider/imagequality_provider.dart';
+import '../../widgets/common_widgets.dart';
 
 class DiscoverTVResult extends StatefulWidget {
   const DiscoverTVResult({required this.api, required this.page, Key? key})

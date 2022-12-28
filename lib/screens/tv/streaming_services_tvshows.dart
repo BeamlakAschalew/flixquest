@@ -2,22 +2,23 @@
 
 import 'package:cinemax/provider/adultmode_provider.dart';
 import 'package:provider/provider.dart';
-
-import '/models/genres.dart';
-import '/screens/tv_widgets.dart';
+import '/widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 
-class TVGenre extends StatelessWidget {
-  final Genres genres;
-  const TVGenre({Key? key, required this.genres}) : super(key: key);
+class StreamingServicesTVShows extends StatelessWidget {
+  final int providerId;
+  final String providerName;
+  const StreamingServicesTVShows(
+      {Key? key, required this.providerId, required this.providerName})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${genres.genreName!} TV shows',
+          'TV shows from $providerName',
         ),
         leading: IconButton(
           icon: const Icon(
@@ -29,10 +30,10 @@ class TVGenre extends StatelessWidget {
         ),
       ),
       body: Container(
-        child: ParticularGenreTV(
+        child: ParticularStreamingServiceTVShows(
           includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
-          genreId: genres.genreID!,
-          api: Endpoints.getTVShowsForGenre(genres.genreID!, 1),
+          providerID: providerId,
+          api: Endpoints.watchProvidersTVShows(providerId, 1),
         ),
       ),
     );

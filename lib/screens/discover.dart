@@ -1,6 +1,6 @@
-import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:cinemax/screens/discover_movies_tab.dart';
-import 'package:cinemax/screens/discover_tv_tab.dart';
+import '/provider/darktheme_provider.dart';
+import '/screens/movie/discover_movies_tab.dart';
+import '/screens/tv/discover_tv_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

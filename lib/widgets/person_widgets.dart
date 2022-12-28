@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/screens/common_widgets.dart';
+import 'package:cinemax/widgets/common_widgets.dart';
 import 'package:cinemax/screens/hero_photoview.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -15,9 +15,9 @@ import '/models/movie.dart';
 import '/models/person.dart';
 import '/models/social_icons_icons.dart';
 import '/models/tv.dart';
-import '/screens/movie_detail.dart';
-import '/screens/movie_widgets.dart';
-import '/screens/tv_detail.dart';
+import '/screens/movie/movie_detail.dart';
+import '/widgets/movie_widgets.dart';
+import '/screens/tv/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:readmore/readmore.dart';

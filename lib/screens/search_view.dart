@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:cinemax/screens/common_widgets.dart';
+import 'package:cinemax/widgets/common_widgets.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -12,9 +12,9 @@ import '/models/person.dart';
 import 'package:flutter/material.dart';
 import '/models/movie.dart';
 import '/models/tv.dart';
-import 'movie_detail.dart';
+import '/screens/movie/movie_detail.dart';
 import 'searchedperson.dart';
-import 'tv_detail.dart';
+import '/screens/tv/tv_detail.dart';
 
 class Search extends SearchDelegate<String> {
   final Mixpanel mixpanel;

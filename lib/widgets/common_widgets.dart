@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import '../constants/api_constants.dart';
-import 'about.dart';
+import '../screens/about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -621,167 +621,173 @@ Widget personDetailInfoTableShimmer(isDark) =>
 
 Widget movieCastAndCrewTabShimmer(isDark) => Container(
     color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-    child: ListView.builder(
-        itemCount: 10,
-        scrollDirection: Axis.vertical,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-            child: Shimmer.fromColors(
-              baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-              highlightColor:
-                  isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-              direction: ShimmerDirection.ltr,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 0.0,
-                  bottom: 5.0,
-                  left: 10,
-                ),
-                child: Column(
-                  children: [
-                    Row(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListView.builder(
+            itemCount: 20,
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+                child: Shimmer.fromColors(
+                  baseColor:
+                      isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                  highlightColor:
+                      isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+                  direction: ShimmerDirection.ltr,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 0.0,
+                      bottom: 5.0,
+                      left: 10,
+                    ),
+                    child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20.0, left: 10),
-                          child: SizedBox(
-                            height: 80,
-                            width: 80,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100.0),
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
+                        Row(
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 20.0, left: 10),
+                              child: SizedBox(
+                                height: 80,
+                                width: 80,
                                 child: Container(
-                                  width: 150,
-                                  height: 20,
-                                  color: Colors.white,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100.0),
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                              Container(
-                                width: 100,
-                                height: 20,
-                                color: Colors.white,
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8.0),
+                                    child: Container(
+                                      width: 150,
+                                      height: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 100,
+                                    height: 20,
+                                    color: Colors.white,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        )
+                            )
+                          ],
+                        ),
+                        Divider(
+                          color: !isDark ? Colors.black54 : Colors.white54,
+                          thickness: 1,
+                          endIndent: 20,
+                          indent: 10,
+                        ),
                       ],
                     ),
-                    Divider(
-                      color: !isDark ? Colors.black54 : Colors.white54,
-                      thickness: 1,
-                      endIndent: 20,
-                      indent: 10,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          );
-        }));
+              );
+            }),
+      ],
+    ));
 
 Widget detailsRecommendationsAndSimilarShimmer(
         isDark, scrollController, isLoading) =>
     Column(
       children: [
-        Expanded(
-          child: ListView.builder(
-              controller: scrollController,
-              physics: const BouncingScrollPhysics(),
-              itemCount: 10,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  color: isDark
-                      ? const Color(0xFF202124)
-                      : const Color(0xFFFFFFFF),
-                  child: Shimmer.fromColors(
-                    baseColor:
-                        isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-                    highlightColor:
-                        isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-                    direction: ShimmerDirection.ltr,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: 0.0,
-                        bottom: 3.0,
-                        left: 10,
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            // crossAxisAlignment:
-                            //     CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 10.0),
-                                child: SizedBox(
-                                  width: 85,
-                                  height: 130,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        color: Colors.white),
-                                  ),
+        ListView.builder(
+            controller: scrollController,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 10,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                color:
+                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+                child: Shimmer.fromColors(
+                  baseColor:
+                      isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                  highlightColor:
+                      isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+                  direction: ShimmerDirection.ltr,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: 0.0,
+                      bottom: 3.0,
+                      left: 10,
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          // crossAxisAlignment:
+                          //     CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 10.0),
+                              child: SizedBox(
+                                width: 85,
+                                height: 130,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      color: Colors.white),
                                 ),
                               ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 8.0),
-                                      child: Container(
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8.0),
+                                    child: Container(
+                                        height: 20,
+                                        width: 150,
+                                        color: Colors.white),
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 1.0),
+                                        child: Container(
                                           height: 20,
-                                          width: 150,
-                                          color: Colors.white),
-                                    ),
-                                    Row(
-                                      children: <Widget>[
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 1.0),
-                                          child: Container(
-                                            height: 20,
-                                            width: 20,
-                                            color: Colors.white,
-                                          ),
+                                          width: 20,
+                                          color: Colors.white,
                                         ),
-                                        Container(
-                                            height: 20,
-                                            width: 30,
-                                            color: Colors.white),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                          Divider(
-                            color: !isDark ? Colors.black54 : Colors.white54,
-                            thickness: 1,
-                            endIndent: 20,
-                            indent: 10,
-                          ),
-                        ],
-                      ),
+                                      ),
+                                      Container(
+                                          height: 20,
+                                          width: 30,
+                                          color: Colors.white),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        Divider(
+                          color: !isDark ? Colors.black54 : Colors.white54,
+                          thickness: 1,
+                          endIndent: 20,
+                          indent: 10,
+                        ),
+                      ],
                     ),
                   ),
-                );
-              }),
-        ),
+                ),
+              );
+            }),
         Visibility(
             visible: isLoading,
             child: const Padding(
@@ -790,6 +796,152 @@ Widget detailsRecommendationsAndSimilarShimmer(
             )),
       ],
     );
+
+///
+///
+//
+
+// Container(
+//     color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+//     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+//       ListView.builder(
+//         itemCount: credits!.cast!.length,
+//         shrinkWrap: true,
+//         physics: const NeverScrollableScrollPhysics(),
+//         // separatorBuilder: (context, index) =>
+//         //     const SizedBox(height: 8),
+//         itemBuilder: (context, index) {
+//           // Cast cast = _detailsController.credits.value.cast![index];
+
+//           return GestureDetector(
+//             onTap: () {
+//               Navigator.push(context,
+//                   MaterialPageRoute(builder: (context) {
+//                 return CastDetailPage(
+//                     cast: credits!.cast![index],
+//                     heroId: '${credits!.cast![index].name}');
+//               }));
+//             },
+//             child: Container(
+//               color: isDark
+//                   ? const Color(0xFF202124)
+//                   : const Color(0xFFFFFFFF),
+//               child: Padding(
+//                 padding: const EdgeInsets.only(
+//                   top: 0.0,
+//                   bottom: 5.0,
+//                   left: 10,
+//                 ),
+//                 child: Column(
+//                   children: [
+//                     Row(
+//                       // crossAxisAlignment:
+//                       //     CrossAxisAlignment.start,
+//                       children: [
+//                         Padding(
+//                           padding: const EdgeInsets.only(
+//                               right: 20.0, left: 10),
+//                           child: SizedBox(
+//                             width: 80,
+//                             height: 80,
+//                             child: Hero(
+//                               tag:
+//                                   '${credits!.cast![index].name}',
+//                               child: ClipRRect(
+//                                 borderRadius:
+//                                     BorderRadius.circular(
+//                                         100.0),
+//                                 child: credits!.cast![index]
+//                                             .profilePath ==
+//                                         null
+//                                     ? Image.asset(
+//                                         'assets/images/na_square.png',
+//                                         fit: BoxFit.cover,
+//                                       )
+//                                     : CachedNetworkImage(
+//                                         fadeOutDuration:
+//                                             const Duration(
+//                                                 milliseconds:
+//                                                     300),
+//                                         fadeOutCurve:
+//                                             Curves.easeOut,
+//                                         fadeInDuration:
+//                                             const Duration(
+//                                                 milliseconds:
+//                                                     700),
+//                                         fadeInCurve:
+//                                             Curves.easeIn,
+//                                         imageUrl:
+//                                             TMDB_BASE_IMAGE_URL +
+//                                                 imageQuality +
+//                                                 credits!
+//                                                     .cast![
+//                                                         index]
+//                                                     .profilePath!,
+//                                         imageBuilder: (context,
+//                                                 imageProvider) =>
+//                                             Container(
+//                                           decoration:
+//                                               BoxDecoration(
+//                                             image:
+//                                                 DecorationImage(
+//                                               image:
+//                                                   imageProvider,
+//                                               fit: BoxFit.cover,
+//                                             ),
+//                                           ),
+//                                         ),
+//                                         placeholder: (context,
+//                                                 url) =>
+//                                             castAndCrewTabImageShimmer(
+//                                                 isDark),
+//                                         errorWidget: (context,
+//                                                 url, error) =>
+//                                             Image.asset(
+//                                           'assets/images/na_square.png',
+//                                           fit: BoxFit.cover,
+//                                         ),
+//                                       ),
+//                               ),
+//                             ),
+//                           ),
+//                         ),
+//                         Expanded(
+//                           child: Column(
+//                             crossAxisAlignment:
+//                                 CrossAxisAlignment.start,
+//                             children: [
+//                               Text(
+//                                 credits!.cast![index].name!,
+//                                 style: const TextStyle(
+//                                     fontFamily: 'PoppinsSB'),
+//                                 overflow: TextOverflow.ellipsis,
+//                               ),
+//                               Text(
+//                                 'As : '
+//                                 '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
+//                               ),
+//                             ],
+//                           ),
+//                         )
+//                       ],
+//                     ),
+//                     Divider(
+//                       color: !isDark
+//                           ? Colors.black54
+//                           : Colors.white54,
+//                       thickness: 1,
+//                       endIndent: 20,
+//                       indent: 10,
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           );
+//         },
+//       )
+//     ]));
 
 Widget watchProvidersTabData(
         {required bool isDark,

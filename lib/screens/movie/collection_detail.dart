@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
-import '../constants/app_constants.dart';
+import '../../constants/app_constants.dart';
 import 'package:flutter/material.dart';
-import '../provider/darktheme_provider.dart';
-import '../provider/imagequality_provider.dart';
+import '../../provider/darktheme_provider.dart';
+import '../../provider/imagequality_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/movie.dart';
-import '/screens/movie_widgets.dart';
+import '/widgets/movie_widgets.dart';
 
 class CollectionDetailsWidget extends StatefulWidget {
   final BelongsToCollection? belongsToCollection;

@@ -1,25 +1,24 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/models/tv.dart';
-import 'package:cinemax/screens/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import '../constants/api_constants.dart';
-import '../models/function.dart';
-import '../provider/darktheme_provider.dart';
-import '../provider/imagequality_provider.dart';
-import '../provider/mixpanel_provider.dart';
-import 'common_widgets.dart';
+import '../../constants/api_constants.dart';
+import '../../models/function.dart';
+import '../../models/movie.dart';
+import '../../provider/darktheme_provider.dart';
+import '../../provider/imagequality_provider.dart';
+import '../../widgets/common_widgets.dart';
+import 'movie_detail.dart';
 
-class MainTVList extends StatefulWidget {
+class MainMoviesList extends StatefulWidget {
   final String api;
   final bool? includeAdult;
   final String discoverType;
   final bool isTrending;
   final String title;
-  const MainTVList({
+  const MainMoviesList({
     Key? key,
     required this.api,
     required this.discoverType,
@@ -28,11 +27,11 @@ class MainTVList extends StatefulWidget {
     required this.title,
   }) : super(key: key);
   @override
-  MainTVListState createState() => MainTVListState();
+  MainMoviesListState createState() => MainMoviesListState();
 }
 
-class MainTVListState extends State<MainTVList> {
-  List<TV>? tvList;
+class MainMoviesListState extends State<MainMoviesList> {
+  List<Movie>? moviesList;
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
@@ -48,28 +47,28 @@ class MainTVListState extends State<MainTVList> {
         if (widget.isTrending == false) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/tv/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
+                "$TMDB_API_BASE_URL/movie/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
           );
           setState(() {
             pageNum++;
             isLoading = false;
-            var newlistTv = (json.decode(response.body)['results'] as List)
-                .map((i) => TV.fromJson(i))
+            var newlistMovies = (json.decode(response.body)['results'] as List)
+                .map((i) => Movie.fromJson(i))
                 .toList();
-            tvList!.addAll(newlistTv);
+            moviesList!.addAll(newlistMovies);
           });
         } else if (widget.isTrending == true) {
           var response = await http.get(
             Uri.parse(
-                "$TMDB_API_BASE_URL/trending/tv/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=${widget.includeAdult}&page=$pageNum"),
+                "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=${widget.includeAdult}&page=$pageNum"),
           );
           setState(() {
             pageNum++;
             isLoading = false;
-            var newlistTv = (json.decode(response.body)['results'] as List)
-                .map((i) => TV.fromJson(i))
+            var newlistMovies = (json.decode(response.body)['results'] as List)
+                .map((i) => Movie.fromJson(i))
                 .toList();
-            tvList!.addAll(newlistTv);
+            moviesList!.addAll(newlistMovies);
           });
         }
       }
@@ -86,16 +85,17 @@ class MainTVListState extends State<MainTVList> {
   }
 
   void getData() {
-    fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
+        .then((value) {
       setState(() {
-        tvList = value;
+        moviesList = value;
       });
     });
     Future.delayed(const Duration(seconds: 11), () {
-      if (tvList == null) {
+      if (moviesList == null) {
         setState(() {
           requestFailed = true;
-          tvList = [TV()];
+          moviesList = [Movie()];
         });
       }
     });
@@ -106,23 +106,22 @@ class MainTVListState extends State<MainTVList> {
     final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     final imageQuality =
         Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.title} TV shows'),
+        title: Text('${widget.title} movies'),
       ),
-      body: tvList == null
+      body: moviesList == null
           ? Container(
               color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
               child: mainPageVerticalScrollShimmer(
                   isDark, isLoading, _scrollController))
-          : tvList!.isEmpty
+          : moviesList!.isEmpty
               ? Container(
                   color: isDark
                       ? const Color(0xFF202124)
                       : const Color(0xFFFFFFFF),
                   child: const Center(
-                    child: Text('Oops! the TV shows don\'t exist :('),
+                    child: Text('Oops! the movies don\'t exist :('),
                   ),
                 )
               : requestFailed == true
@@ -142,28 +141,18 @@ class MainTVListState extends State<MainTVList> {
                                     child: ListView.builder(
                                         controller: _scrollController,
                                         physics: const BouncingScrollPhysics(),
-                                        itemCount: tvList!.length,
+                                        itemCount: moviesList!.length,
                                         itemBuilder:
                                             (BuildContext context, int index) {
                                           return GestureDetector(
                                             onTap: () {
-                                              mixpanel.track(
-                                                  'Most viewed TV pages',
-                                                  properties: {
-                                                    'TV series name':
-                                                        '${tvList![index].originalName}',
-                                                    'TV series id':
-                                                        '${tvList![index].id}',
-                                                    'Is TV series adult?':
-                                                        '${tvList![index].adult}'
-                                                  });
                                               Navigator.push(context,
                                                   MaterialPageRoute(
                                                       builder: (context) {
-                                                return TVDetailPage(
-                                                  tvSeries: tvList![index],
+                                                return MovieDetailPage(
+                                                  movie: moviesList![index],
                                                   heroId:
-                                                      '${tvList![index].id}',
+                                                      '${moviesList![index].id}',
                                                 );
                                               }));
                                             },
@@ -191,13 +180,13 @@ class MainTVListState extends State<MainTVList> {
                                                             height: 130,
                                                             child: Hero(
                                                               tag:
-                                                                  '${tvList![index].id}',
+                                                                  '${moviesList![index].id}',
                                                               child: ClipRRect(
                                                                 borderRadius:
                                                                     BorderRadius
                                                                         .circular(
                                                                             10.0),
-                                                                child: tvList![index]
+                                                                child: moviesList![index]
                                                                             .posterPath ==
                                                                         null
                                                                     ? Image
@@ -217,7 +206,7 @@ class MainTVListState extends State<MainTVList> {
                                                                             Curves.easeIn,
                                                                         imageUrl: TMDB_BASE_IMAGE_URL +
                                                                             imageQuality +
-                                                                            tvList![index].posterPath!,
+                                                                            moviesList![index].posterPath!,
                                                                         imageBuilder:
                                                                             (context, imageProvider) =>
                                                                                 Container(
@@ -253,8 +242,9 @@ class MainTVListState extends State<MainTVList> {
                                                                     .start,
                                                             children: [
                                                               Text(
-                                                                tvList![index]
-                                                                    .originalName!,
+                                                                moviesList![
+                                                                        index]
+                                                                    .title!,
                                                                 style: const TextStyle(
                                                                     fontFamily:
                                                                         'PoppinsSB',
@@ -273,7 +263,8 @@ class MainTVListState extends State<MainTVList> {
                                                                       color: Color(
                                                                           0xFFF57C00)),
                                                                   Text(
-                                                                    tvList![index]
+                                                                    moviesList![
+                                                                            index]
                                                                         .voteAverage!
                                                                         .toStringAsFixed(
                                                                             1),
@@ -345,7 +336,7 @@ class MainTVListState extends State<MainTVList> {
               onPressed: () {
                 setState(() {
                   requestFailed = false;
-                  tvList = null;
+                  moviesList = null;
                 });
                 getData();
               },

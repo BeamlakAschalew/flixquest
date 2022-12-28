@@ -3,13 +3,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import '../constants/api_constants.dart';
-import '../constants/app_constants.dart';
-import '../models/function.dart';
-import '../models/movie.dart';
-import '../provider/darktheme_provider.dart';
-import '../provider/imagequality_provider.dart';
-import 'common_widgets.dart';
+import '../../constants/api_constants.dart';
+import '../../constants/app_constants.dart';
+import '../../models/function.dart';
+import '../../models/movie.dart';
+import '../../provider/darktheme_provider.dart';
+import '../../provider/imagequality_provider.dart';
+import '../../widgets/common_widgets.dart';
 import 'movie_detail.dart';
 
 class DiscoverMovieResult extends StatefulWidget {

@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
 import '../provider/darktheme_provider.dart';
-import 'common_widgets.dart';
+import '../widgets/common_widgets.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cinemax/constants/app_constants.dart';
+import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hls_parser/flutter_hls_parser.dart';
@@ -9,27 +10,29 @@ import 'package:pod_player/pod_player.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
+import '../../constants/api_constants.dart';
+import '../player.dart';
 
-import '../constants/api_constants.dart';
-import '../provider/darktheme_provider.dart';
-import 'player.dart';
-
-class MovieVideoLoader extends StatefulWidget {
-  const MovieVideoLoader(
+class TVVideoLoader extends StatefulWidget {
+  const TVVideoLoader(
       {required this.imdbID,
+      required this.episodeNumber,
+      required this.seasonNumber,
       required this.videoTitle,
       required this.isDark,
       Key? key})
       : super(key: key);
   final String imdbID;
+  final int seasonNumber;
+  final int episodeNumber;
   final String videoTitle;
   final bool isDark;
 
   @override
-  State<MovieVideoLoader> createState() => _MovieVideoLoaderState();
+  State<TVVideoLoader> createState() => _TVVideoLoaderState();
 }
 
-class _MovieVideoLoaderState extends State<MovieVideoLoader> {
+class _TVVideoLoaderState extends State<TVVideoLoader> {
   List<VideoQalityUrls>? videoUrls = [];
   late Uri completem3u8;
   final webScraper = WebScraper(TWOEMBED_BASE_URL);
@@ -42,7 +45,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   }
 
   Future<void> parseHls([HlsMasterPlaylist? masterPlaylist]) async {
-    if (await webScraper.loadWebPage('/play/movie.php?imdb=${widget.imdbID}')) {
+    if (await webScraper.loadWebPage(
+        '/play/series.php?imdb=${widget.imdbID}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}')) {
       setState(() {
         videoSrc = webScraper.getElement('#player > source', ['src', 'type']);
       });
@@ -56,7 +60,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         )
         .then((value) => value.redirects[0].location);
     if (completem3u8.host.isEmpty) {
-      //  SnackBar(content: Text('The video couldn\'t be found on the server :('));
+      //   SnackBar(content: Text('The video couldn\'t be found on the server :('));
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(

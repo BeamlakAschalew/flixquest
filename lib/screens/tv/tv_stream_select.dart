@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../provider/darktheme_provider.dart';
+import '../../provider/darktheme_provider.dart';
 import 'tv_stream.dart';
 
 class TVStreamSelect extends StatefulWidget {

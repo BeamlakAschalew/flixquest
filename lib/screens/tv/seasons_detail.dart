@@ -1,18 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
-import '../provider/imagequality_provider.dart';
-import '../provider/mixpanel_provider.dart';
+import '../../provider/imagequality_provider.dart';
+import '../../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-import '../constants/app_constants.dart';
+import '../../constants/app_constants.dart';
 import '/models/tv.dart';
-import '/screens/tv_widgets.dart';
+import '/widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
-
-import 'movie_widgets.dart';
+import '/widgets/movie_widgets.dart';
 
 class SeasonsDetail extends StatefulWidget {
   final Seasons seasons;
