@@ -1,7 +1,4 @@
-import 'package:cinemax/provider/adultmode_provider.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:cinemax/provider/default_home_provider.dart';
-import 'package:cinemax/provider/imagequality_provider.dart';
+import 'package:cinemax/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,11 +14,11 @@ class _SettingsState extends State<Settings> {
   int initialHomeScreenValue = 0;
   @override
   Widget build(BuildContext context) {
-    final adultChange = Provider.of<AdultmodeProvider>(context);
-    final themeChange = Provider.of<DarkthemeProvider>(context);
-    final imagequalityChange = Provider.of<ImagequalityProvider>(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final defaultHomeValue = Provider.of<DeafultHomeProvider>(context);
+    final adultChange = Provider.of<SettingsProvider>(context);
+    final themeChange = Provider.of<SettingsProvider>(context);
+    final imagequalityChange = Provider.of<SettingsProvider>(context);
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final defaultHomeValue = Provider.of<SettingsProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),

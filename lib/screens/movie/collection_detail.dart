@@ -2,8 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
 import 'package:flutter/material.dart';
-import '../../provider/darktheme_provider.dart';
-import '../../provider/imagequality_provider.dart';
+import '../../provider/settings_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/movie.dart';
@@ -32,9 +31,8 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[

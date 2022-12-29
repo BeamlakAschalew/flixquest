@@ -1,7 +1,6 @@
 // ignore_for_file: unused_local_variable, use_build_context_synchronously
 
 import 'dart:io';
-import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -10,6 +9,8 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:provider/provider.dart';
+
+import '../provider/settings_provider.dart';
 
 class HeroPhotoView extends StatefulWidget {
   const HeroPhotoView(
@@ -140,7 +141,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(

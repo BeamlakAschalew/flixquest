@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hls_parser/flutter_hls_parser.dart';
@@ -11,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
 import '../../constants/api_constants.dart';
+import '../../provider/settings_provider.dart';
 import '../player.dart';
 
 class TVVideoLoader extends StatefulWidget {
@@ -110,7 +110,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     SpinKitChasingDots spinKitChasingDots = SpinKitChasingDots(
       color: isDark ? Colors.white : Colors.black,
       size: 60,

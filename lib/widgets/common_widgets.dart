@@ -1,14 +1,13 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:cinemax/provider/mixpanel_provider.dart';
 import 'package:cinemax/screens/settings.dart';
 import 'package:cinemax/screens/update_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import '../constants/api_constants.dart';
+import '../provider/settings_provider.dart';
 import '../screens/about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -30,8 +29,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Drawer(
       child: Container(
         color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),

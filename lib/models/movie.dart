@@ -79,7 +79,6 @@ class Movie {
   bool? adult;
   String? overview;
   String? releaseDate;
-  String? runtime;
 
   Movie({
     this.voteCount,
@@ -96,7 +95,6 @@ class Movie {
     this.adult,
     this.overview,
     this.releaseDate,
-    this.runtime,
   });
 
   Movie.fromJson(Map<String, dynamic> json) {
@@ -114,7 +112,6 @@ class Movie {
     adult = json['adult'];
     overview = json['overview'];
     releaseDate = json['release_date'];
-    runtime = json['runtime'];
   }
 
   Map<String, dynamic> toJson() {
@@ -133,7 +130,6 @@ class Movie {
     data['adult'] = adult;
     data['overview'] = overview;
     data['release_date'] = releaseDate;
-    data['runtime'] = runtime;
 
     return data;
   }

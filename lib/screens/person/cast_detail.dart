@@ -1,16 +1,13 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/adultmode_provider.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:cinemax/provider/imagequality_provider.dart';
+import 'package:cinemax/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/credits.dart';
-import 'person_widgets.dart';
+import '/widgets/person_widgets.dart';
 
 class CastDetailPage extends StatefulWidget {
   final Cast? cast;
@@ -41,7 +38,7 @@ class CastDetailPageState extends State<CastDetailPage>
 
   void mixpanelUpload(BuildContext context) {
     final mixpanel =
-        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
     mixpanel.track('Most viewed person pages', properties: {
       'Person name': '${widget.cast!.name}',
       'Person id': '${widget.cast!.id}'
@@ -51,9 +48,8 @@ class CastDetailPageState extends State<CastDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -270,7 +266,7 @@ class CastDetailPageState extends State<CastDetailPage>
                                           child: PersonMovieListWidget(
                                             isPersonAdult: widget.cast!.adult!,
                                             includeAdult:
-                                                Provider.of<AdultmodeProvider>(
+                                                Provider.of<SettingsProvider>(
                                                         context)
                                                     .isAdult,
                                             api: Endpoints
@@ -285,10 +281,10 @@ class CastDetailPageState extends State<CastDetailPage>
                                           child: PersonTVListWidget(
                                               isPersonAdult:
                                                   widget.cast!.adult!,
-                                              includeAdult: Provider.of<
-                                                          AdultmodeProvider>(
-                                                      context)
-                                                  .isAdult,
+                                              includeAdult:
+                                                  Provider.of<SettingsProvider>(
+                                                          context)
+                                                      .isAdult,
                                               api: Endpoints
                                                   .getTVCreditsForPerson(
                                                       widget.cast!.id!)),

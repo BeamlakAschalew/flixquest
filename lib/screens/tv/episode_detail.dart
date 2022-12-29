@@ -1,13 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/models/function.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
-import '/screens/tv/tv_stream_select.dart';
-import '/screens/tv/tv_video_loader.dart';
 import 'package:provider/provider.dart';
 import '../../models/movie.dart';
-import '../../provider/mixpanel_provider.dart';
+import '../../provider/settings_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../../constants/app_constants.dart';
@@ -57,7 +53,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
 
   void mixpanelUpload(BuildContext context) {
     final mixpanel =
-        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
     mixpanel.track('Most viewed episode details', properties: {
       'TV series name': '${widget.seriesName}',
       'TV series episode name': '${widget.episodeList.name}',
@@ -67,8 +63,8 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Scaffold(
       body: Stack(
         children: <Widget>[

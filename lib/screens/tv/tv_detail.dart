@@ -1,13 +1,10 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/adultmode_provider.dart';
+import 'package:cinemax/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import '../../constants/app_constants.dart';
-import '../../provider/darktheme_provider.dart';
-import '../../provider/imagequality_provider.dart';
-import '../../provider/mixpanel_provider.dart';
 import '/models/tv.dart';
 import '/widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +41,7 @@ class TVDetailPageState extends State<TVDetailPage>
 
   void mixpanelUpload(BuildContext context) {
     final mixpanel =
-        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
     mixpanel.track('Most viewed TV pages', properties: {
       'TV series name': '${widget.tvSeries.name}',
       'TV series id': '${widget.tvSeries.id}',
@@ -55,9 +52,8 @@ class TVDetailPageState extends State<TVDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -508,7 +504,7 @@ class TVDetailPageState extends State<TVDetailPage>
                                         ),
                                         TVRecommendationsTab(
                                             includeAdult:
-                                                Provider.of<AdultmodeProvider>(
+                                                Provider.of<SettingsProvider>(
                                                         context)
                                                     .isAdult,
                                             tvId: widget.tvSeries.id!,
@@ -516,7 +512,7 @@ class TVDetailPageState extends State<TVDetailPage>
                                                 widget.tvSeries.id!, 1)),
                                         SimilarTVTab(
                                             includeAdult:
-                                                Provider.of<AdultmodeProvider>(
+                                                Provider.of<SettingsProvider>(
                                                         context)
                                                     .isAdult,
                                             tvId: widget.tvSeries.id!,

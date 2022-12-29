@@ -9,9 +9,8 @@ import 'package:pod_player/pod_player.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
-
 import '../../constants/api_constants.dart';
-import '../../provider/darktheme_provider.dart';
+import '../../provider/settings_provider.dart';
 import '../player.dart';
 
 class MovieVideoLoader extends StatefulWidget {
@@ -106,7 +105,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     SpinKitChasingDots spinKitChasingDots = SpinKitChasingDots(
       color: isDark ? Colors.white : Colors.black,
       size: 60,

@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../provider/settings_provider.dart';
 import 'movie_stream.dart';
 
 class MovieStreamSelect extends StatefulWidget {
@@ -28,7 +28,7 @@ class _MovieStreamSelectState extends State<MovieStreamSelect> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -163,7 +163,7 @@ class StreamListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {

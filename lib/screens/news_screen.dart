@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
-import '../provider/darktheme_provider.dart';
+import '../provider/settings_provider.dart';
 import '../widgets/common_widgets.dart';
 
 class NewsPage extends StatefulWidget {
@@ -30,7 +30,7 @@ class _NewsPageState extends State<NewsPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
         Container(
@@ -212,7 +212,7 @@ class _NewsViewState extends State<NewsView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return articleNames == null
         ? newsShimmer(isDark, scrollController, isLoading)
         : requestFailed == true

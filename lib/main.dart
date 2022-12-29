@@ -1,9 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cinemax/constants/theme_data.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:cinemax/provider/default_home_provider.dart';
-import 'package:cinemax/provider/imagequality_provider.dart';
-import 'package:cinemax/provider/mixpanel_provider.dart';
 import 'package:cinemax/screens/discover.dart';
 import 'package:cinemax/screens/landing_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,52 +15,35 @@ import 'widgets/movie_widgets.dart';
 import 'screens/search_view.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'provider/adultmode_provider.dart';
+import 'provider/settings_provider.dart';
 import 'screens/news_screen.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
   // print('background message ${message.notification!.body}');
 }
-DarkthemeProvider themeChangeProvider = DarkthemeProvider();
-MixpanelProvider mixpanelProvider = MixpanelProvider();
-ImagequalityProvider imagequalityProvider = ImagequalityProvider();
-DeafultHomeProvider deafultHomeProvider = DeafultHomeProvider();
-AdultmodeProvider adultmodeProvider = AdultmodeProvider();
+
+SettingsProvider settingsProvider = SettingsProvider();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
-  await themeChangeProvider.getCurrentThemeMode();
-  await mixpanelProvider.initMixpanel();
-  await adultmodeProvider.getCurrentAdultMode();
-  await deafultHomeProvider.getCurrentDefaultScreen();
-  await imagequalityProvider.getCurrentImageQuality();
+  await settingsProvider.getCurrentThemeMode();
+  await settingsProvider.initMixpanel();
+  await settingsProvider.getCurrentAdultMode();
+  await settingsProvider.getCurrentDefaultScreen();
+  await settingsProvider.getCurrentImageQuality();
 
   runApp(Cinemax(
-    theme: themeChangeProvider,
-    mixpanel: mixpanelProvider,
-    adult: adultmodeProvider,
-    home: deafultHomeProvider,
-    image: imagequalityProvider,
+    settingsProvider: settingsProvider,
   ));
 }
 
 class Cinemax extends StatefulWidget {
-  const Cinemax(
-      {required this.theme,
-      required this.mixpanel,
-      required this.adult,
-      required this.home,
-      required this.image,
-      Key? key})
-      : super(key: key);
-  final DarkthemeProvider theme;
-  final MixpanelProvider mixpanel;
-  final AdultmodeProvider adult;
-  final DeafultHomeProvider home;
-  final ImagequalityProvider image;
+  const Cinemax({required this.settingsProvider, Key? key}) : super(key: key);
+
+  final SettingsProvider settingsProvider;
 
   @override
   State<Cinemax> createState() => _CinemaxState();
@@ -105,35 +84,28 @@ class _CinemaxState extends State<Cinemax>
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) {
-            return widget.adult;
+            return widget.settingsProvider;
           }),
-          ChangeNotifierProvider(create: (_) {
-            return widget.theme;
-          }),
-          ChangeNotifierProvider(create: (_) {
-            return widget.image;
-          }),
-          ChangeNotifierProvider(create: (_) {
-            return widget.mixpanel;
-          }),
-          ChangeNotifierProvider(create: (_) {
-            return widget.home;
-          }),
+          // ChangeNotifierProvider(create: (_) {
+          //   return widget.theme;
+          // }),
+          // ChangeNotifierProvider(create: (_) {
+          //   return widget.image;
+          // }),
+          // ChangeNotifierProvider(create: (_) {
+          //   return widget.mixpanel;
+          // }),
+          // ChangeNotifierProvider(create: (_) {
+          //   return widget.home;
+          // }),
         ],
-        child: Consumer5<AdultmodeProvider, DarkthemeProvider,
-                ImagequalityProvider, MixpanelProvider, DeafultHomeProvider>(
-            builder: (context,
-                adultmodeProvider,
-                themeChangeProvider,
-                imagequalityProvider,
-                mixpanelProvider,
-                defaultHomeProvider,
-                snapshot) {
-          final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+        child: Consumer<SettingsProvider>(
+            builder: (context, settingsProvider, snapshot) {
+          final isDark = Provider.of<SettingsProvider>(context).darktheme;
           return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'Cinemax',
-              theme: Styles.themeData(themeChangeProvider.darktheme, context),
+              theme: Styles.themeData(settingsProvider.darktheme, context),
               home: isFirstLaunch == null
                   ? Scaffold(
                       body: Container(
@@ -177,7 +149,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
 
   void defHome() {
     final defaultHome =
-        Provider.of<DeafultHomeProvider>(context, listen: false).defaultValue;
+        Provider.of<SettingsProvider>(context, listen: false).defaultValue;
     setState(() {
       selectedIndex = defaultHome;
     });
@@ -185,8 +157,8 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
 
     return Scaffold(
         drawer: const DrawerWidget(),
@@ -204,7 +176,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                       context: context,
                       delegate: Search(
                           mixpanel: mixpanel,
-                          includeAdult: Provider.of<AdultmodeProvider>(context,
+                          includeAdult: Provider.of<SettingsProvider>(context,
                                   listen: false)
                               .isAdult));
                 },

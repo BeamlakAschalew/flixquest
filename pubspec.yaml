@@ -55,6 +55,7 @@ dependencies:
   webview_flutter: ^3.0.4
   smooth_page_indicator: ^1.0.0+2
   percent_indicator: ^4.2.2
+  sqflite: ^2.2.2
 
 
 dev_dependencies:
@@ -80,6 +81,12 @@ flutter:
     - family: PoppinsSB
       fonts:
         - asset: assets/fonts/poppins/Poppins-SemiBold.ttf
+    - family: PoppinsMedium
+      fonts:
+        - asset: assets/fonts/poppins/Poppins-Medium.ttf
+    - family: PoppinsBlack
+      fonts:
+        - asset: assets/fonts/poppins/Poppins-Black.ttf
     - family: SocialIcons
       fonts:
         - asset: assets/fonts/SocialIcons.ttf

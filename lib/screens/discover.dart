@@ -1,4 +1,4 @@
-import '/provider/darktheme_provider.dart';
+import '../provider/settings_provider.dart';
 import '/screens/movie/discover_movies_tab.dart';
 import '/screens/tv/discover_tv_tab.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class _DiscoverPageState extends State<DiscoverPage>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
         Container(

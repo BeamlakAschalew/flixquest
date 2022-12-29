@@ -7,8 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../constants/api_constants.dart';
 import '../../models/function.dart';
 import '../../models/movie.dart';
-import '../../provider/darktheme_provider.dart';
-import '../../provider/imagequality_provider.dart';
+import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';
 import 'movie_detail.dart';
 
@@ -103,9 +102,8 @@ class MainMoviesListState extends State<MainMoviesList> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.title} movies'),

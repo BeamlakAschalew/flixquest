@@ -1,19 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:cinemax/widgets/common_widgets.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import '../provider/imagequality_provider.dart';
+import '../provider/settings_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/person.dart';
 import 'package:flutter/material.dart';
 import '/models/movie.dart';
 import '/models/tv.dart';
 import '/screens/movie/movie_detail.dart';
-import 'searchedperson.dart';
+import '/screens/person/searchedperson.dart';
 import '/screens/tv/tv_detail.dart';
 
 class Search extends SearchDelegate<String> {
@@ -26,7 +25,7 @@ class Search extends SearchDelegate<String> {
 
   @override
   ThemeData appBarTheme(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return ThemeData(
       appBarTheme: AppBarTheme(
         backgroundColor:
@@ -87,7 +86,7 @@ class Search extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
@@ -393,8 +392,7 @@ class Search extends SearchDelegate<String> {
 
   Widget activeMovieSearch(
       List<Movie> moviesList, bool isDark, BuildContext context) {
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
         color: isDark ? Colors.black : Colors.white,
         child: Column(
@@ -547,8 +545,7 @@ class Search extends SearchDelegate<String> {
   }
 
   Widget activeTVSearch(List<TV> tvList, bool isDark, BuildContext context) {
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
         color: isDark ? Colors.black : Colors.white,
         child: Column(
@@ -695,8 +692,7 @@ class Search extends SearchDelegate<String> {
 
   Widget activePersonSearch(
       List<Person>? personList, bool isDark, BuildContext context) {
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
         color: isDark ? Colors.black : Colors.white,
         child: ListView.builder(

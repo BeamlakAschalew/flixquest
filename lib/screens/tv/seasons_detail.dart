@@ -1,8 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
-import '../../provider/imagequality_provider.dart';
-import '../../provider/mixpanel_provider.dart';
+import '../../provider/settings_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../../constants/app_constants.dart';
@@ -50,7 +48,7 @@ class SeasonsDetailState extends State<SeasonsDetail>
 
   void mixpanelUpload(BuildContext context) {
     final mixpanel =
-        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
     mixpanel.track('Most viewed season details', properties: {
       'TV series name': '${widget.seriesName}',
       'TV series season number': '${widget.seasons.seasonNumber}',
@@ -61,9 +59,8 @@ class SeasonsDetailState extends State<SeasonsDetail>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[

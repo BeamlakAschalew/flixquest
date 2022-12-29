@@ -6,8 +6,7 @@ import 'package:cinemax/screens/hero_photoview.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
-import '../provider/darktheme_provider.dart';
-import '../provider/imagequality_provider.dart';
+import '../provider/settings_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/function.dart';
 import '/models/images.dart';
@@ -54,9 +53,8 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
@@ -220,9 +218,8 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return personMoviesList == null
         ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
@@ -477,9 +474,8 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return personTVList == null
         ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
@@ -719,7 +715,7 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return personDetails == null
         ? personAboutSimmer(isDark)
         : Column(
@@ -790,7 +786,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: Container(
@@ -907,7 +903,7 @@ class _PersonDataTableState extends State<PersonDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Container(
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,

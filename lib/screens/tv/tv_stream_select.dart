@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../provider/darktheme_provider.dart';
+import '../../provider/settings_provider.dart';
 import 'tv_stream.dart';
 
 class TVStreamSelect extends StatefulWidget {
@@ -34,7 +34,7 @@ class _TVStreamSelectState extends State<TVStreamSelect> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -162,7 +162,7 @@ class StreamListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {

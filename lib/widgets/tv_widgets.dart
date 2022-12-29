@@ -3,13 +3,10 @@ import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cinemax/models/dropdown_select.dart';
 import 'package:cinemax/models/filter_chip.dart';
-import 'package:cinemax/provider/adultmode_provider.dart';
-import 'package:cinemax/screens/guest_star_detail.dart';
+import 'package:cinemax/provider/settings_provider.dart';
+import '/screens/person/guest_star_detail.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import '../provider/darktheme_provider.dart';
-import '../provider/imagequality_provider.dart';
-import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
@@ -22,8 +19,8 @@ import '/models/social_icons_icons.dart';
 import '/models/tv.dart';
 import '/models/videos.dart';
 import '/models/watch_providers.dart';
-import '/screens/cast_detail.dart';
-import '/screens/createdby_detail.dart';
+import '/screens/person/cast_detail.dart';
+import '/screens/person/createdby_detail.dart';
 import '/screens/tv/episode_detail.dart';
 import '/screens/tv/seasons_detail.dart';
 import '/screens/tv/streaming_services_tvshows.dart';
@@ -62,37 +59,37 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
       child: ListView(
         children: [
           DiscoverTV(
-              includeAdult: Provider.of<AdultmodeProvider>(context).isAdult),
+              includeAdult: Provider.of<SettingsProvider>(context).isAdult),
           ScrollingTV(
-            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
+            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: 'Popular',
             api: Endpoints.popularTVUrl(1),
             discoverType: 'popular',
             isTrending: false,
           ),
           ScrollingTV(
-            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
+            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: 'Trending this week',
             api: Endpoints.trendingTVUrl(1),
             discoverType: 'trending',
             isTrending: true,
           ),
           ScrollingTV(
-            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
+            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: 'Top Rated',
             api: Endpoints.topRatedTVUrl(1),
             discoverType: 'top_rated',
             isTrending: false,
           ),
           ScrollingTV(
-            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
+            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: 'Airing today',
             api: Endpoints.airingTodayUrl(1),
             discoverType: 'airing_today',
             isTrending: false,
           ),
           ScrollingTV(
-            includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
+            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: 'On the air',
             api: Endpoints.onTheAirUrl(1),
             discoverType: 'on_the_air',
@@ -154,9 +151,8 @@ class DiscoverTVState extends State<DiscoverTV>
   Widget build(BuildContext context) {
     super.build(context);
     deviceHeight = MediaQuery.of(context).size.height;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         Row(
@@ -379,9 +375,8 @@ class ScrollingTVState extends State<ScrollingTV>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         Row(
@@ -627,9 +622,8 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         Row(
@@ -789,10 +783,9 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         credits == null
@@ -966,9 +959,8 @@ class ScrollingTVEpisodeGuestStarsState
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         credits == null
@@ -1148,9 +1140,8 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Column(
       children: <Widget>[
         credits == null
@@ -1328,9 +1319,8 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         Padding(
@@ -1485,9 +1475,8 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
       height: 220,
       width: double.infinity,
@@ -1808,9 +1797,8 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
         tvImages == null
@@ -1960,9 +1948,8 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
         tvImages == null
@@ -2113,7 +2100,7 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
   @override
   Widget build(BuildContext context) {
     bool playButtonVisibility = true;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
         tvVideos == null
@@ -2307,9 +2294,8 @@ class TVCastTabState extends State<TVCastTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -2554,10 +2540,9 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return tvDetails == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -2808,9 +2793,8 @@ class TVCrewTabState extends State<TVCrewTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -3082,9 +3066,8 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return tvList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -3393,9 +3376,8 @@ class SimilarTVTabState extends State<SimilarTVTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return tvList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -3648,7 +3630,7 @@ class TVGenreDisplayState extends State<TVGenreDisplay>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Container(
         child: genres == null
             ? SizedBox(
@@ -3779,9 +3761,8 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return tvList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -4046,7 +4027,7 @@ class TVInfoTableState extends State<TVInfoTable> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
         const Text(
@@ -4241,7 +4222,7 @@ class TVSocialLinksState extends State<TVSocialLinks> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -4369,9 +4350,8 @@ class SeasonsListState extends State<SeasonsList> {
 
   @override
   Widget build(BuildContext context) {
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         Row(
@@ -4561,9 +4541,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
         color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
         child: tvDetails == null
@@ -4928,9 +4907,8 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return requestFailed == true
         ? retryWidget(isDark)
         : Container(
@@ -5161,7 +5139,7 @@ class TVGenreListGridState extends State<TVGenreListGrid>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
         Row(
@@ -5494,9 +5472,8 @@ class ParticularStreamingServiceTVShowsState
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return tvList == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -5775,9 +5752,8 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
@@ -6022,9 +5998,8 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),

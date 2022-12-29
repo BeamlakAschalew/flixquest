@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../provider/settings_provider.dart';
 import '/models/tv.dart';
 import '/screens/tv/tv_detail.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import '../../constants/api_constants.dart';
 import '../../models/function.dart';
-import '../../provider/darktheme_provider.dart';
-import '../../provider/imagequality_provider.dart';
-import '../../provider/mixpanel_provider.dart';
 import '../../widgets/common_widgets.dart';
 
 class MainTVList extends StatefulWidget {
@@ -103,10 +101,9 @@ class MainTVListState extends State<MainTVList> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final mixpanel = Provider.of<MixpanelProvider>(context).mixpanel;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.title} TV shows'),

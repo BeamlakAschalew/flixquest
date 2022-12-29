@@ -1,15 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/adultmode_provider.dart';
+import 'package:cinemax/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import '../provider/darktheme_provider.dart';
-import '../provider/imagequality_provider.dart';
-import '../provider/mixpanel_provider.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '/models/credits.dart';
-import 'person_widgets.dart';
+import '/widgets/person_widgets.dart';
 
 class GuestStarDetailPage extends StatefulWidget {
   final TVEpisodeGuestStars? cast;
@@ -39,7 +36,7 @@ class GuestStarDetailPageState extends State<GuestStarDetailPage>
 
   void mixpanelUpload(BuildContext context) {
     final mixpanel =
-        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
     mixpanel.track('Most viewed person pages', properties: {
       'Person name': '${widget.cast!.name}',
       'Person id': '${widget.cast!.id}'
@@ -49,9 +46,8 @@ class GuestStarDetailPageState extends State<GuestStarDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -260,7 +256,7 @@ class GuestStarDetailPageState extends State<GuestStarDetailPage>
                                               : const Color(0xFFFFFFFF),
                                           child: PersonMovieListWidget(
                                             includeAdult:
-                                                Provider.of<AdultmodeProvider>(
+                                                Provider.of<SettingsProvider>(
                                                         context)
                                                     .isAdult,
                                             isPersonAdult: widget.cast!.adult!,
@@ -276,10 +272,10 @@ class GuestStarDetailPageState extends State<GuestStarDetailPage>
                                           child: PersonTVListWidget(
                                               isPersonAdult:
                                                   widget.cast!.adult!,
-                                              includeAdult: Provider.of<
-                                                          AdultmodeProvider>(
-                                                      context)
-                                                  .isAdult,
+                                              includeAdult:
+                                                  Provider.of<SettingsProvider>(
+                                                          context)
+                                                      .isAdult,
                                               api: Endpoints
                                                   .getTVCreditsForPerson(
                                                       widget.cast!.id!)),

@@ -1,17 +1,13 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:provider/provider.dart';
-import '../provider/adultmode_provider.dart';
-import '../provider/imagequality_provider.dart';
-import '../provider/mixpanel_provider.dart';
+import '../../provider/settings_provider.dart';
 import '/models/person.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
-
-import 'person_widgets.dart';
+import '/widgets/person_widgets.dart';
 
 class SearchedPersonDetailPage extends StatefulWidget {
   final Person? person;
@@ -42,7 +38,7 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
 
   void mixpanelUpload(BuildContext context) {
     final mixpanel =
-        Provider.of<MixpanelProvider>(context, listen: false).mixpanel;
+        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
     mixpanel.track('Most viewed person pages', properties: {
       'Person name': '${widget.person!.name}',
       'Person id': '${widget.person!.id}',
@@ -53,9 +49,8 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -279,7 +274,7 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                             isPersonAdult:
                                                 widget.person!.adult!,
                                             includeAdult:
-                                                Provider.of<AdultmodeProvider>(
+                                                Provider.of<SettingsProvider>(
                                                         context)
                                                     .isAdult,
                                             api: Endpoints
@@ -294,10 +289,10 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                           child: PersonTVListWidget(
                                               isPersonAdult:
                                                   widget.person!.adult!,
-                                              includeAdult: Provider.of<
-                                                          AdultmodeProvider>(
-                                                      context)
-                                                  .isAdult,
+                                              includeAdult:
+                                                  Provider.of<SettingsProvider>(
+                                                          context)
+                                                      .isAdult,
                                               api: Endpoints
                                                   .getTVCreditsForPerson(
                                                       widget.person!.id!)),

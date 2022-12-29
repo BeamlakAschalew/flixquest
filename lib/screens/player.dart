@@ -454,11 +454,12 @@
 //   );
 // }
 
-import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:pod_player/pod_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+
+import '../provider/settings_provider.dart';
 
 class Player extends StatefulWidget {
   const Player({required this.videoUrl, required this.videoTitle, Key? key})
@@ -496,7 +497,7 @@ class _PlayerState extends State<Player> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
       body: SafeArea(
         child: Center(

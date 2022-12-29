@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/provider/adultmode_provider.dart';
+import 'package:cinemax/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/api/endpoints.dart';
@@ -29,7 +29,7 @@ class GenreMovies extends StatelessWidget {
       ),
       body: Container(
         child: ParticularGenreMovies(
-          includeAdult: Provider.of<AdultmodeProvider>(context).isAdult,
+          includeAdult: Provider.of<SettingsProvider>(context).isAdult,
           genreId: genres.genreID!,
           api: Endpoints.getMoviesForGenre(genres.genreID!, 1),
         ),
