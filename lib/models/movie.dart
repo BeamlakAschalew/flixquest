@@ -133,6 +133,43 @@ class Movie {
 
     return data;
   }
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{};
+    map['id'] = id;
+    map['title'] = title;
+    map['genre_ids'] = genreIds;
+    map['poster_path'] = posterPath;
+    map['vote_count'] = voteCount;
+    map['video'] = video;
+    map['vote_average'] = voteAverage;
+    map['popularity'] = popularity;
+    map['original_language'] = originalLanguage;
+    map['original_title'] = originalTitle;
+    map['backdrop_path'] = backdropPath;
+    map['adult'] = adult;
+    map['overview'] = overview;
+    map['release_date'] = releaseDate;
+
+    return map;
+  }
+
+  Movie.fromMapObject(Map<String, dynamic> map) {
+    id = map['id'];
+    title = map['title'];
+    genreIds = map['genre_ids'];
+    posterPath = map['poster_path'];
+    voteCount = map['vote_count'];
+    video = map['video'];
+    voteAverage = map['vote_average'];
+    popularity = map['popularity'];
+    originalLanguage = map['original_language'];
+    originalTitle = map['original_title'];
+    backdropPath = map['backdrop_path'];
+    adult = map['adult'];
+    overview = map['overview'];
+    releaseDate = map['release_date'];
+  }
 }
 
 class MovieDetails {
