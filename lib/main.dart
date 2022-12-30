@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cinemax/constants/theme_data.dart';
-import 'package:cinemax/screens/discover.dart';
 import 'package:cinemax/screens/landing_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -85,19 +84,7 @@ class _CinemaxState extends State<Cinemax>
         providers: [
           ChangeNotifierProvider(create: (_) {
             return widget.settingsProvider;
-          }),
-          // ChangeNotifierProvider(create: (_) {
-          //   return widget.theme;
-          // }),
-          // ChangeNotifierProvider(create: (_) {
-          //   return widget.image;
-          // }),
-          // ChangeNotifierProvider(create: (_) {
-          //   return widget.mixpanel;
-          // }),
-          // ChangeNotifierProvider(create: (_) {
-          //   return widget.home;
-          // }),
+          })
         ],
         child: Consumer<SettingsProvider>(
             builder: (context, settingsProvider, snapshot) {
@@ -224,8 +211,8 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                     text: 'News',
                   ),
                   GButton(
-                    icon: FontAwesomeIcons.compass,
-                    text: 'Discover',
+                    icon: FontAwesomeIcons.user,
+                    text: 'Profile',
                   ),
                 ],
                 selectedIndex: selectedIndex,
@@ -242,11 +229,11 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
           child: IndexedStack(
             index: selectedIndex,
-            children: const <Widget>[
-              MainMoviesDisplay(),
-              MainTVDisplay(),
-              NewsPage(),
-              DiscoverPage(),
+            children: <Widget>[
+              const MainMoviesDisplay(),
+              const MainTVDisplay(),
+              const NewsPage(),
+              Container()
             ],
           ),
         ));

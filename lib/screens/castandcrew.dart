@@ -32,13 +32,13 @@ class _CastAndCrewState extends State<CastAndCrew>
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
-            title: const Text(
+            title: Text(
               'Cast And Crew',
+              style: TextStyle(color: isDark ? Colors.white : Colors.black),
             ),
             leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back,
-              ),
+              icon: Icon(Icons.arrow_back,
+                  color: isDark ? Colors.white : Colors.black),
               onPressed: () {
                 Navigator.pop(context);
               },

@@ -898,7 +898,7 @@ Row movieDetailOptions({required Movie movie}) {
               animationDuration: 2500,
               progressColor: Colors.orange,
               center: Text(
-                '${movie.voteAverage!.toStringAsFixed(0)}/10',
+                '${movie.voteAverage!}/10',
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                 ),

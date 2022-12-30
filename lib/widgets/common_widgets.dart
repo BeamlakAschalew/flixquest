@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/screens/settings.dart';
 import 'package:cinemax/screens/update_screen.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ import '../provider/settings_provider.dart';
 import '../screens/about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../screens/discover.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({
@@ -49,6 +52,32 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     ),
                     child: Image.asset('assets/images/logo_shadow.png'),
                   ),
+                ),
+                ListTile(
+                  leading: const Icon(
+                    FontAwesomeIcons.bookmark,
+                    color: Color(0xFFF57C00),
+                  ),
+                  title: const Text('Bookmarks'),
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return Container();
+                    })));
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    FontAwesomeIcons.compass,
+                    color: Color(0xFFF57C00),
+                  ),
+                  title: const Text('Discover'),
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return const DiscoverPage();
+                    })));
+                  },
                 ),
                 ListTile(
                   leading: const Icon(
