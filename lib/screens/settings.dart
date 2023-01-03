@@ -1,4 +1,4 @@
-import 'package:cinemax/provider/settings_provider.dart';
+import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +24,7 @@ class _SettingsState extends State<Settings> {
         title: const Text('Settings'),
       ),
       body: Container(
-        color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+        color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
         child: Column(
           children: [
             SwitchListTile(

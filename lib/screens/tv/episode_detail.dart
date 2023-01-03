@@ -376,7 +376,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                                       children: [
                                         Container(
                                           color: isDark
-                                              ? const Color(0xFF202124)
+                                              ? const Color(0xFF000000)
                                               : const Color(0xFFFFFFFF),
                                           child: SingleChildScrollView(
                                             child: Column(

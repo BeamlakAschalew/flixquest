@@ -1,7 +1,7 @@
 // import 'dart:io';
 
 // import 'package:chewie/chewie.dart';
-// import 'package:cinemax/screens/movie_video_loader.dart';
+// import '/screens/movie_video_loader.dart';
 // import 'package:flutter/material.dart';
 // import 'package:subtitle/subtitle.dart' as sub;
 // import 'package:video_player/video_player.dart';
@@ -502,7 +502,7 @@ class _PlayerState extends State<Player> {
       body: SafeArea(
         child: Center(
           child: Container(
-            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             width: double.infinity,
             height: double.infinity,
             child: PodVideoPlayer(

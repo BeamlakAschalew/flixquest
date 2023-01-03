@@ -110,7 +110,7 @@ class MainMoviesListState extends State<MainMoviesList> {
       ),
       body: moviesList == null
           ? Container(
-              color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+              color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
               child: mainPageVerticalScrollShimmer(
                   isDark: isDark,
                   isLoading: isLoading,
@@ -118,7 +118,7 @@ class MainMoviesListState extends State<MainMoviesList> {
           : moviesList!.isEmpty
               ? Container(
                   color: isDark
-                      ? const Color(0xFF202124)
+                      ? const Color(0xFF000000)
                       : const Color(0xFFFFFFFF),
                   child: const Center(
                     child: Text('Oops! the movies don\'t exist :('),
@@ -128,7 +128,7 @@ class MainMoviesListState extends State<MainMoviesList> {
                   ? retryWidget(isDark)
                   : Container(
                       color: isDark
-                          ? const Color(0xFF202124)
+                          ? const Color(0xFF000000)
                           : const Color(0xFFFFFFFF),
                       child: Column(
                         children: [
@@ -158,7 +158,7 @@ class MainMoviesListState extends State<MainMoviesList> {
                                             },
                                             child: Container(
                                               color: isDark
-                                                  ? const Color(0xFF202124)
+                                                  ? const Color(0xFF000000)
                                                   : const Color(0xFFFFFFFF),
                                               child: Padding(
                                                 padding: const EdgeInsets.only(
@@ -312,7 +312,7 @@ class MainMoviesListState extends State<MainMoviesList> {
 
   Widget retryWidget(isDark) {
     return Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       child: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

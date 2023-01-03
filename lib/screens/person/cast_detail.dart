@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/settings_provider.dart';
+import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/api/endpoints.dart';
@@ -214,7 +214,7 @@ class CastDetailPageState extends State<CastDetailPage>
                                         SingleChildScrollView(
                                           child: Container(
                                             color: isDark
-                                                ? const Color(0xFF202124)
+                                                ? const Color(0xFF000000)
                                                 : const Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
@@ -261,7 +261,7 @@ class CastDetailPageState extends State<CastDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? const Color(0xFF202124)
+                                              ? const Color(0xFF000000)
                                               : const Color(0xFFFFFFFF),
                                           child: PersonMovieListWidget(
                                             isPersonAdult: widget.cast!.adult!,
@@ -276,7 +276,7 @@ class CastDetailPageState extends State<CastDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? const Color(0xFF202124)
+                                              ? const Color(0xFF000000)
                                               : const Color(0xFFFFFFFF),
                                           child: PersonTVListWidget(
                                               isPersonAdult:

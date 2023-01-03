@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/widgets/common_widgets.dart';
-import 'package:cinemax/screens/hero_photoview.dart';
+import '/widgets/common_widgets.dart';
+import '/screens/hero_photoview.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
@@ -392,7 +392,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -651,7 +651,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

@@ -27,7 +27,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
         AutomaticKeepAliveClientMixin<MovieDetailPage> {
   late TabController tabController;
   bool? isBookmarked;
-  DatabaseController databaseController = DatabaseController();
+  MovieDatabaseController movieDatabaseController = MovieDatabaseController();
 
   @override
   void initState() {
@@ -52,7 +52,6 @@ class MovieDetailPageState extends State<MovieDetailPage>
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
 
     super.build(context);
     return Scaffold(
@@ -72,7 +71,9 @@ class MovieDetailPageState extends State<MovieDetailPage>
             ),
             title: SABT(
                 child: Text(
-              widget.movie.title!,
+              widget.movie.releaseDate == ""
+                  ? widget.movie.title!
+                  : '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
               style: const TextStyle(
                 color: Color(0xFFF57C00),
               ),
@@ -82,10 +83,10 @@ class MovieDetailPageState extends State<MovieDetailPage>
               collapseMode: CollapseMode.pin,
               background: Column(
                 children: [
-                  movieDetailQuickInfo(
-                      imageQuality: imageQuality,
-                      heroId: widget.heroId,
-                      movie: widget.movie),
+                  MovieDetailQuickInfo(
+                    heroId: widget.heroId,
+                    movie: widget.movie,
+                  ),
 
                   const SizedBox(height: 18),
 
@@ -99,7 +100,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
           // body
           SliverList(
             delegate: SliverChildListDelegate.fixed(
-              [About(isDark: isDark, movie: widget.movie)],
+              [MovieAbout(movie: widget.movie)],
             ),
           ),
         ],

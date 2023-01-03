@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:cinemax/models/update.dart';
+import '/models/update.dart';
 
 import '/models/images.dart';
 import '/models/person.dart';

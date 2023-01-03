@@ -1,5 +1,5 @@
-import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/screens/tv/tv_detail.dart';
+import '/constants/app_constants.dart';
+import '/screens/tv/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -98,7 +98,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
             child: tvList == null
                 ? Container(
                     color: isDark
-                        ? const Color(0xFF202124)
+                        ? const Color(0xFF000000)
                         : const Color(0xFFFFFFFF),
                     child: mainPageVerticalScrollShimmer(
                         isDark: isDark,
@@ -108,7 +108,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                     ? Container(
                         padding: const EdgeInsets.all(8),
                         color: isDark
-                            ? const Color(0xFF202124)
+                            ? const Color(0xFF000000)
                             : const Color(0xFFFFFFFF),
                         child: const Center(
                           child: Text(
@@ -122,7 +122,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                         ? retryWidget(isDark)
                         : Container(
                             color: isDark
-                                ? const Color(0xFF202124)
+                                ? const Color(0xFF000000)
                                 : const Color(0xFFFFFFFF),
                             child: Column(
                               children: [
@@ -156,7 +156,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                                                   child: Container(
                                                     color: isDark
                                                         ? const Color(
-                                                            0xFF202124)
+                                                            0xFF000000)
                                                         : const Color(
                                                             0xFFFFFFFF),
                                                     child: Padding(
@@ -290,7 +290,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
 
   Widget retryWidget(isDark) {
     return Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       child: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

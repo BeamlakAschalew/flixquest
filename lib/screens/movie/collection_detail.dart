@@ -141,7 +141,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             color: isDark
-                                ? const Color(0xFF202124)
+                                ? const Color(0xFF000000)
                                 : const Color(0xFFFFFFFF),
                             child: Column(
                               children: <Widget>[

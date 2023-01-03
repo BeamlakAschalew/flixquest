@@ -1,10 +1,10 @@
 // ignore_for_file: must_be_immutable
 
 import 'dart:io';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/models/function.dart';
-import 'package:cinemax/models/update.dart';
+import '/constants/api_constants.dart';
+import '/constants/app_constants.dart';
+import '/models/function.dart';
+import '/models/update.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:provider/provider.dart';
@@ -48,7 +48,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         title: const Text('Check for update'),
       ),
       body: Container(
-          color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+          color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
           child: updateChecker == null
               ? const Center(child: CircularProgressIndicator())
               : updateChecker!.versionNumber != currentAppVersion

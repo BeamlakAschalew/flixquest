@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-import 'package:cinemax/provider/settings_provider.dart';
+import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '/api/endpoints.dart';

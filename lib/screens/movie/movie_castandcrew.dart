@@ -1,19 +1,19 @@
-import 'package:cinemax/widgets/movie_widgets.dart';
+import '/widgets/movie_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/credits.dart';
-import '../provider/settings_provider.dart';
+import '../../models/credits.dart';
+import '../../provider/settings_provider.dart';
 
-class CastAndCrew extends StatefulWidget {
-  const CastAndCrew({Key? key, required this.credits}) : super(key: key);
+class MovieCastAndCrew extends StatefulWidget {
+  const MovieCastAndCrew({Key? key, required this.credits}) : super(key: key);
   final Credits credits;
 
   @override
-  State<CastAndCrew> createState() => _CastAndCrewState();
+  State<MovieCastAndCrew> createState() => _MovieCastAndCrewState();
 }
 
-class _CastAndCrewState extends State<CastAndCrew>
+class _MovieCastAndCrewState extends State<MovieCastAndCrew>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
 
@@ -30,8 +30,8 @@ class _CastAndCrewState extends State<CastAndCrew>
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
+            backgroundColor: const Color(0xFFF57C00),
+            elevation: 3,
             title: Text(
               'Cast And Crew',
               style: TextStyle(color: isDark ? Colors.white : Colors.black),

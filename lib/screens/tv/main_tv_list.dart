@@ -110,7 +110,7 @@ class MainTVListState extends State<MainTVList> {
       ),
       body: tvList == null
           ? Container(
-              color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+              color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
               child: mainPageVerticalScrollShimmer(
                   isDark: isDark,
                   isLoading: isLoading,
@@ -118,7 +118,7 @@ class MainTVListState extends State<MainTVList> {
           : tvList!.isEmpty
               ? Container(
                   color: isDark
-                      ? const Color(0xFF202124)
+                      ? const Color(0xFF000000)
                       : const Color(0xFFFFFFFF),
                   child: const Center(
                     child: Text('Oops! the TV shows don\'t exist :('),
@@ -128,7 +128,7 @@ class MainTVListState extends State<MainTVList> {
                   ? retryWidget(isDark)
                   : Container(
                       color: isDark
-                          ? const Color(0xFF202124)
+                          ? const Color(0xFF000000)
                           : const Color(0xFFFFFFFF),
                       child: Column(
                         children: [
@@ -150,7 +150,7 @@ class MainTVListState extends State<MainTVList> {
                                                   'Most viewed TV pages',
                                                   properties: {
                                                     'TV series name':
-                                                        '${tvList![index].originalName}',
+                                                        '${tvList![index].name}',
                                                     'TV series id':
                                                         '${tvList![index].id}',
                                                     'Is TV series adult?':
@@ -168,7 +168,7 @@ class MainTVListState extends State<MainTVList> {
                                             },
                                             child: Container(
                                               color: isDark
-                                                  ? const Color(0xFF202124)
+                                                  ? const Color(0xFF000000)
                                                   : const Color(0xFFFFFFFF),
                                               child: Padding(
                                                 padding: const EdgeInsets.only(
@@ -253,7 +253,7 @@ class MainTVListState extends State<MainTVList> {
                                                             children: [
                                                               Text(
                                                                 tvList![index]
-                                                                    .originalName!,
+                                                                    .name!,
                                                                 style: const TextStyle(
                                                                     fontFamily:
                                                                         'PoppinsSB',
@@ -320,7 +320,7 @@ class MainTVListState extends State<MainTVList> {
 
   Widget retryWidget(isDark) {
     return Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       child: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

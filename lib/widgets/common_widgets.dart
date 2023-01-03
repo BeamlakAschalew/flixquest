@@ -1,9 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/screens/bookmark_screen.dart';
-import 'package:cinemax/screens/settings.dart';
-import 'package:cinemax/screens/update_screen.dart';
+import '/screens/bookmark_screen.dart';
+import '/screens/settings.dart';
+import '/screens/update_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -37,7 +37,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Drawer(
       child: Container(
-        color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+        color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -63,7 +63,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
-                      return BookmarkScreen();
+                      return const BookmarkScreen();
                     })));
                   },
                 ),
@@ -649,85 +649,77 @@ Widget personDetailInfoTableShimmer(isDark) =>
     ]);
 
 Widget movieCastAndCrewTabShimmer(isDark) => Container(
-    color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ListView.builder(
-            itemCount: 20,
-            shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                color:
-                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-                child: Shimmer.fromColors(
-                  baseColor:
-                      isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-                  highlightColor:
-                      isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-                  direction: ShimmerDirection.ltr,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 0.0,
-                      bottom: 5.0,
-                      left: 10,
-                    ),
-                    child: Column(
+    color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+    child: ListView.builder(
+        itemCount: 20,
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+            child: Shimmer.fromColors(
+              baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              highlightColor:
+                  isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+              direction: ShimmerDirection.ltr,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 0.0,
+                  bottom: 5.0,
+                  left: 10,
+                ),
+                child: Column(
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 20.0, left: 10),
-                              child: SizedBox(
-                                height: 80,
-                                width: 80,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    color: Colors.white,
-                                  ),
-                                ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20.0, left: 10),
+                          child: SizedBox(
+                            height: 80,
+                            width: 80,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100.0),
+                                color: Colors.white,
                               ),
                             ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Container(
-                                      width: 150,
-                                      height: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 100,
-                                    height: 20,
-                                    color: Colors.white,
-                                  ),
-                                ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Container(
+                                  width: 150,
+                                  height: 20,
+                                  color: Colors.white,
+                                ),
                               ),
-                            )
-                          ],
-                        ),
-                        Divider(
-                          color: !isDark ? Colors.black54 : Colors.white54,
-                          thickness: 1,
-                          endIndent: 20,
-                          indent: 10,
-                        ),
+                              Container(
+                                width: 100,
+                                height: 20,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
-                  ),
+                    Divider(
+                      color: !isDark ? Colors.black54 : Colors.white54,
+                      thickness: 1,
+                      endIndent: 20,
+                      indent: 10,
+                    ),
+                  ],
                 ),
-              );
-            }),
-      ],
-    ));
+              ),
+            ),
+          );
+        }));
 
 Widget detailsRecommendationsAndSimilarShimmer(
         isDark, scrollController, isLoading) =>
@@ -741,7 +733,7 @@ Widget detailsRecommendationsAndSimilarShimmer(
             itemBuilder: (BuildContext context, int index) {
               return Container(
                 color:
-                    isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
                 child: Shimmer.fromColors(
                   baseColor:
                       isDark ? Colors.grey.shade800 : Colors.grey.shade300,
@@ -831,7 +823,7 @@ Widget detailsRecommendationsAndSimilarShimmer(
 //
 
 // Container(
-//     color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+//     color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
 //     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 //       ListView.builder(
 //         itemCount: credits!.cast!.length,
@@ -853,7 +845,7 @@ Widget detailsRecommendationsAndSimilarShimmer(
 //             },
 //             child: Container(
 //               color: isDark
-//                   ? const Color(0xFF202124)
+//                   ? const Color(0xFF000000)
 //                   : const Color(0xFFFFFFFF),
 //               child: Padding(
 //                 padding: const EdgeInsets.only(
@@ -978,7 +970,7 @@ Widget watchProvidersTabData(
         required String noOptionMessage,
         required List? watchOptions}) =>
     Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       padding: const EdgeInsets.all(8.0),
       child: watchOptions == null
           ? Center(
@@ -1055,7 +1047,7 @@ Widget watchProvidersTabData(
     );
 
 Widget watchProvidersShimmer(isDark) => Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       padding: const EdgeInsets.all(8.0),
       child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -1133,7 +1125,7 @@ Widget watchProvidersImageShimmer(isDark) => Shimmer.fromColors(
 
 Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
     Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+      color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
       child: Column(
         children: [
           Expanded(
@@ -1149,7 +1141,7 @@ Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
                             color: isDark
-                                ? const Color(0xFF202124)
+                                ? const Color(0xFF000000)
                                 : const Color(0xFFFFFFFF),
                             child: Shimmer.fromColors(
                               baseColor: isDark
@@ -1329,7 +1321,7 @@ Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
               itemBuilder: (BuildContext context, int index) {
                 return Container(
                   color: isDark
-                      ? const Color(0xFF202124)
+                      ? const Color(0xFF000000)
                       : const Color(0xFFFFFFFF),
                   child: Shimmer.fromColors(
                     baseColor:
@@ -1387,13 +1379,13 @@ Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
     );
 
 Widget tvCastAndCrewTabShimmer(isDark) => Container(
-    color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+    color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
     child: ListView.builder(
         itemCount: 10,
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
           return Container(
-            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             child: Shimmer.fromColors(
               baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
               highlightColor:
@@ -1401,7 +1393,7 @@ Widget tvCastAndCrewTabShimmer(isDark) => Container(
               direction: ShimmerDirection.ltr,
               child: Padding(
                 padding: const EdgeInsets.only(
-                  top: 0.0,
+                  top: 8.0,
                   bottom: 5.0,
                   left: 10,
                 ),
@@ -1645,7 +1637,7 @@ Widget personAboutSimmer(isDark) => Column(
 
 Widget newsShimmer(isDark, scrollController, isLoading) {
   return Container(
-    color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+    color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
     child: Column(
       children: [
         Expanded(
@@ -1661,7 +1653,7 @@ Widget newsShimmer(isDark, scrollController, isLoading) {
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
                           color: isDark
-                              ? const Color(0xFF202124)
+                              ? const Color(0xFF000000)
                               : const Color(0xFFFFFFFF),
                           child: Shimmer.fromColors(
                             baseColor: isDark

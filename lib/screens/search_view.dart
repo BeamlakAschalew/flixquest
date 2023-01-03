@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/models/function.dart';
-import 'package:cinemax/widgets/common_widgets.dart';
+import '/api/endpoints.dart';
+import '/models/function.dart';
+import '/widgets/common_widgets.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
@@ -641,7 +641,7 @@ class Search extends SearchDelegate<String> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            tvList[index].originalName!,
+                                            tvList[index].name!,
                                             style: TextStyle(
                                                 fontFamily: 'PoppinsSB',
                                                 fontSize: 15,

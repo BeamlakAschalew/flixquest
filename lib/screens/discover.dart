@@ -29,13 +29,12 @@ class _DiscoverPageState extends State<DiscoverPage>
       child: Scaffold(
         appBar: AppBar(
           elevation: 3,
-          title: Text(
+          title: const Text(
             'Discover',
-            style: TextStyle(color: isDark ? Colors.white : Colors.black),
+            // style: TextStyle(color: isDark ? Colors.white : Colors.black),
           ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back,
-                color: isDark ? Colors.white : Colors.black),
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -90,9 +89,12 @@ class _DiscoverPageState extends State<DiscoverPage>
               ),
             ),
             Expanded(
-              child: TabBarView(
-                controller: tabController,
-                children: const [DiscoverMoviesTab(), DiscoverTVTab()],
+              child: Container(
+                color: isDark ? Color(0xFF000000) : Color(0xFFF7F7F7),
+                child: TabBarView(
+                  controller: tabController,
+                  children: const [DiscoverMoviesTab(), DiscoverTVTab()],
+                ),
               ),
             )
           ],

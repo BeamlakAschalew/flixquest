@@ -222,7 +222,7 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         SingleChildScrollView(
                                           child: Container(
                                             color: isDark
-                                                ? const Color(0xFF202124)
+                                                ? const Color(0xFF000000)
                                                 : const Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
@@ -268,7 +268,7 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? const Color(0xFF202124)
+                                              ? const Color(0xFF000000)
                                               : const Color(0xFFFFFFFF),
                                           child: PersonMovieListWidget(
                                             isPersonAdult:
@@ -284,7 +284,7 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? const Color(0xFF202124)
+                                              ? const Color(0xFF000000)
                                               : const Color(0xFFFFFFFF),
                                           child: PersonTVListWidget(
                                               isPersonAdult:

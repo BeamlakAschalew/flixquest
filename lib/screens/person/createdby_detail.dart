@@ -206,7 +206,7 @@ class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                         SingleChildScrollView(
                                           child: Container(
                                             color: isDark
-                                                ? const Color(0xFF202124)
+                                                ? const Color(0xFF000000)
                                                 : const Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
@@ -255,7 +255,7 @@ class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? const Color(0xFF202124)
+                                              ? const Color(0xFF000000)
                                               : const Color(0xFFFFFFFF),
                                           child: PersonMovieListWidget(
                                             includeAdult:
@@ -269,7 +269,7 @@ class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? const Color(0xFF202124)
+                                              ? const Color(0xFF000000)
                                               : const Color(0xFFFFFFFF),
                                           child: PersonTVListWidget(
                                               includeAdult:

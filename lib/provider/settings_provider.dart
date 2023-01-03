@@ -1,4 +1,4 @@
-import 'package:cinemax/models/adultmode_preferences.dart';
+import '/models/adultmode_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 

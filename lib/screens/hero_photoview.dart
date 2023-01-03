@@ -157,7 +157,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                   imageProvider: widget.imageProvider,
                   backgroundDecoration: BoxDecoration(
                     color: isDark
-                        ? const Color(0xFF202124)
+                        ? const Color(0xFF000000)
                         : const Color(0xFFFFFFFF),
                   ),
                   enableRotation: true,

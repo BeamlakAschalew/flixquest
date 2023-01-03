@@ -101,7 +101,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
             child: moviesList == null
                 ? Container(
                     color: isDark
-                        ? const Color(0xFF202124)
+                        ? const Color(0xFF000000)
                         : const Color(0xFFFFFFFF),
                     child: mainPageVerticalScrollShimmer(
                         isDark: isDark,
@@ -110,7 +110,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                 : moviesList!.isEmpty
                     ? Container(
                         color: isDark
-                            ? const Color(0xFF202124)
+                            ? const Color(0xFF000000)
                             : const Color(0xFFFFFFFF),
                         padding: const EdgeInsets.all(8),
                         child: const Center(
@@ -125,7 +125,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                         ? retryWidget(isDark)
                         : Container(
                             color: isDark
-                                ? const Color(0xFF202124)
+                                ? const Color(0xFF000000)
                                 : const Color(0xFFFFFFFF),
                             child: Column(
                               children: [
@@ -159,7 +159,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                                   child: Container(
                                                     color: isDark
                                                         ? const Color(
-                                                            0xFF202124)
+                                                            0xFF000000)
                                                         : const Color(
                                                             0xFFFFFFFF),
                                                     child: Padding(
@@ -295,7 +295,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
 
   Widget retryWidget(isDark) {
     return Container(
-      color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       child: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

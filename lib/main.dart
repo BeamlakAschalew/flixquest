@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
-import 'package:cinemax/constants/theme_data.dart';
-import 'package:cinemax/screens/landing_screen.dart';
+import '/constants/theme_data.dart';
+import '/screens/landing_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:firebase_messaging/firebase_messaging.dart';
@@ -97,7 +97,7 @@ class _CinemaxState extends State<Cinemax>
                   ? Scaffold(
                       body: Container(
                         color: isDark
-                            ? const Color(0xFF202124)
+                            ? const Color(0xFF000000)
                             : const Color(0xFFF7F7F7),
                         child: const Center(
                           child: SizedBox(
@@ -171,62 +171,65 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           ],
         ),
         bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            color: const Color(0xFFF57C00),
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 20,
-                color: Colors.black.withOpacity(.1),
-              )
-            ],
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
-              child: GNav(
-                rippleColor: Colors.grey[300]!,
-                hoverColor: Colors.grey[100]!,
-                gap: 8,
-                activeColor: Colors.black,
-                iconSize: 24,
+          color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+              color: const Color(0xFFF57C00),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 20,
+                  color: Colors.black.withOpacity(.1),
+                )
+              ],
+            ),
+            child: SafeArea(
+              child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                duration: const Duration(milliseconds: 400),
-                tabBackgroundColor: Colors.grey[100]!,
-                color: Colors.black,
-                tabs: const [
-                  GButton(
-                    icon: FontAwesomeIcons.clapperboard,
-                    text: 'Movies',
-                  ),
-                  GButton(
-                    icon: FontAwesomeIcons.tv,
-                    text: ' TV Shows',
-                  ),
-                  GButton(
-                    icon: FontAwesomeIcons.newspaper,
-                    text: 'News',
-                  ),
-                  GButton(
-                    icon: FontAwesomeIcons.user,
-                    text: 'Profile',
-                  ),
-                ],
-                selectedIndex: selectedIndex,
-                onTabChange: (index) {
-                  setState(() {
-                    selectedIndex = index;
-                  });
-                },
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                child: GNav(
+                  rippleColor: Colors.grey[300]!,
+                  hoverColor: Colors.grey[100]!,
+                  gap: 8,
+                  activeColor: Colors.black,
+                  iconSize: 24,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  duration: const Duration(milliseconds: 400),
+                  tabBackgroundColor: Colors.grey[100]!,
+                  color: Colors.black,
+                  tabs: const [
+                    GButton(
+                      icon: FontAwesomeIcons.clapperboard,
+                      text: 'Movies',
+                    ),
+                    GButton(
+                      icon: FontAwesomeIcons.tv,
+                      text: ' TV Shows',
+                    ),
+                    GButton(
+                      icon: FontAwesomeIcons.newspaper,
+                      text: 'News',
+                    ),
+                    GButton(
+                      icon: FontAwesomeIcons.user,
+                      text: 'Profile',
+                    ),
+                  ],
+                  selectedIndex: selectedIndex,
+                  onTabChange: (index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                ),
               ),
             ),
           ),
         ),
         body: Container(
-          color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+          color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
           child: IndexedStack(
             index: selectedIndex,
             children: <Widget>[

@@ -216,7 +216,7 @@ class CrewDetailPageState extends State<CrewDetailPage>
                                         SingleChildScrollView(
                                           child: Container(
                                             color: isDark
-                                                ? const Color(0xFF202124)
+                                                ? const Color(0xFF000000)
                                                 : const Color(0xFFFFFFFF),
                                             child: Column(
                                               children: <Widget>[
@@ -262,7 +262,7 @@ class CrewDetailPageState extends State<CrewDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? const Color(0xFF202124)
+                                              ? const Color(0xFF000000)
                                               : const Color(0xFFFFFFFF),
                                           child: PersonMovieListWidget(
                                             includeAdult:
@@ -277,7 +277,7 @@ class CrewDetailPageState extends State<CrewDetailPage>
                                         ),
                                         Container(
                                           color: isDark
-                                              ? const Color(0xFF202124)
+                                              ? const Color(0xFF000000)
                                               : const Color(0xFFFFFFFF),
                                           child: PersonTVListWidget(
                                               isPersonAdult:

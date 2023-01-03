@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:cinemax/constants/app_constants.dart';
+import '/constants/app_constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hls_parser/flutter_hls_parser.dart';
@@ -118,7 +118,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     return Scaffold(
       body: Container(
         color:
-            widget.isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+            widget.isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
