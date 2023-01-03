@@ -101,7 +101,9 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                         ? const Color(0xFF202124)
                         : const Color(0xFFFFFFFF),
                     child: mainPageVerticalScrollShimmer(
-                        isDark, isLoading, _scrollController))
+                        isDark: isDark,
+                        isLoading: isLoading,
+                        scrollController: _scrollController))
                 : tvList!.isEmpty
                     ? Container(
                         padding: const EdgeInsets.all(8),

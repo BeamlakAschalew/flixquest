@@ -104,7 +104,9 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                         ? const Color(0xFF202124)
                         : const Color(0xFFFFFFFF),
                     child: mainPageVerticalScrollShimmer(
-                        isDark, isLoading, _scrollController))
+                        isDark: isDark,
+                        isLoading: isLoading,
+                        scrollController: _scrollController))
                 : moviesList!.isEmpty
                     ? Container(
                         color: isDark

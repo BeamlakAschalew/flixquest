@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/screens/bookmark_screen.dart';
 import 'package:cinemax/screens/settings.dart';
 import 'package:cinemax/screens/update_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -62,7 +63,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
-                      return Container();
+                      return BookmarkScreen();
                     })));
                   },
                 ),
@@ -1130,7 +1131,7 @@ Widget watchProvidersImageShimmer(isDark) => Shimmer.fromColors(
       ),
     );
 
-Widget mainPageVerticalScrollShimmer(isDark, isLoading, scrollController) =>
+Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
     Container(
       color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
       child: Column(

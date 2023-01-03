@@ -9,6 +9,7 @@ import 'package:cinemax/screens/photoview.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import 'package:shimmer/shimmer.dart';
+import '../controllers/database_controller.dart';
 import '../provider/settings_provider.dart';
 import '/constants/app_constants.dart';
 import '/models/social_icons_icons.dart';
@@ -880,74 +881,132 @@ SizedBox movieDetailQuickInfo(
   );
 }
 
-Row movieDetailOptions({required Movie movie}) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      // user score circle percent indicator
-      Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 18, 0),
-        child: Row(
-          children: [
-            CircularPercentIndicator(
-              radius: 30,
-              percent: (movie.voteAverage! / 10),
-              curve: Curves.ease,
-              animation: true,
-              animationDuration: 2500,
-              progressColor: Colors.orange,
-              center: Text(
-                '${movie.voteAverage!}/10',
-                style: const TextStyle(
+class MovieDetailOptions extends StatefulWidget {
+  const MovieDetailOptions({Key? key, required this.movie}) : super(key: key);
+
+  final Movie movie;
+
+  @override
+  State<MovieDetailOptions> createState() => _MovieDetailOptionsState();
+}
+
+class _MovieDetailOptionsState extends State<MovieDetailOptions> {
+  DatabaseController databaseController = DatabaseController();
+  bool visible = false;
+  bool? isBookmarked;
+
+  @override
+  void initState() {
+    bookmarkChecker();
+    super.initState();
+  }
+
+  void bookmarkChecker() async {
+    var iB = await databaseController.contain(widget.movie.id!);
+    setState(() {
+      isBookmarked = iB;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // user score circle percent indicator
+        Padding(
+          padding: const EdgeInsets.fromLTRB(10, 0, 18, 0),
+          child: Row(
+            children: [
+              CircularPercentIndicator(
+                radius: 30,
+                percent: (widget.movie.voteAverage! / 10),
+                curve: Curves.ease,
+                animation: true,
+                animationDuration: 2500,
+                progressColor: Colors.orange,
+                center: Text(
+                  '${widget.movie.voteAverage!}/10',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Text(
+                'User\nScore',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
+            ],
+          ),
+        ),
+
+        Row(children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            // height: 46,
+            // width: 46,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF57C00).withOpacity(0.9),
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(width: 4),
-            const Text(
-              'User\nScore',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
+            child: Text(
+              widget.movie.voteCount!.toString(),
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
               ),
             ),
-          ],
-        ),
-      ),
-
-      Row(children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          // height: 46,
-          // width: 46,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: const Color(0xFFF57C00).withOpacity(0.9),
-            borderRadius: BorderRadius.circular(12),
           ),
-          child: Text(
-            movie.voteCount!.toString(),
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
+          const SizedBox(width: 4),
+          const Text(
+            'Vote\nCounts',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
             ),
           ),
-        ),
-        const SizedBox(width: 4),
-        const Text(
-          'Vote\nCounts',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
+        ]),
+
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: Container(
+            child: ElevatedButton(
+                onPressed: () {
+                  if (isBookmarked == false) {
+                    databaseController.insertMovie(widget.movie);
+                    setState(() {
+                      isBookmarked = true;
+                    });
+                  } else if (isBookmarked == true) {
+                    databaseController.deleteMovie(widget.movie.id!);
+                    setState(() {
+                      isBookmarked = false;
+                    });
+                  }
+                },
+                child: Row(
+                  children: [
+                    isBookmarked == false
+                        ? Icon(Icons.bookmark_add)
+                        : Icon(Icons.bookmark_remove),
+                    Visibility(
+                        visible: visible, child: CircularProgressIndicator())
+                  ],
+                )),
           ),
-        ),
-      ])
-    ],
-  );
+        )
+      ],
+    );
+  }
 }
 
 class About extends StatefulWidget {
@@ -3809,7 +3868,10 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return moviesList == null
-        ? mainPageVerticalScrollShimmer(isDark, isLoading, _scrollController)
+        ? mainPageVerticalScrollShimmer(
+            isDark: isDark,
+            isLoading: isLoading,
+            scrollController: _scrollController)
         : moviesList!.isEmpty
             ? Container(
                 color:
@@ -4129,7 +4191,9 @@ class ParticularStreamingServiceMoviesState
         ? Container(
             color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
             child: mainPageVerticalScrollShimmer(
-                isDark, isLoading, _scrollController))
+                isDark: isDark,
+                isLoading: isLoading,
+                scrollController: _scrollController))
         : moviesList!.isEmpty
             ? Container(
                 color:

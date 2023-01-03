@@ -6,6 +6,7 @@ import '../../provider/settings_provider.dart';
 import '/api/endpoints.dart';
 import '/models/movie.dart';
 import '/widgets/movie_widgets.dart';
+import '../../controllers/database_controller.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
@@ -25,6 +26,8 @@ class MovieDetailPageState extends State<MovieDetailPage>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<MovieDetailPage> {
   late TabController tabController;
+  bool? isBookmarked;
+  DatabaseController databaseController = DatabaseController();
 
   @override
   void initState() {
@@ -87,7 +90,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
                   const SizedBox(height: 18),
 
                   // ratings / lists / bookmark options
-                  movieDetailOptions(movie: widget.movie),
+                  MovieDetailOptions(movie: widget.movie),
                 ],
               ),
             ),

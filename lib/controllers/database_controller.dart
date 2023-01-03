@@ -6,7 +6,7 @@ import '../models/movie.dart';
 class DatabaseController {
   static DatabaseController? _databaseController;
   static Database? _database;
-  String movieTable = 'movie_table';
+  String movieTable = 'movie_bookmark_table';
   String colId = 'id';
   String colAdult = 'adult';
   String colBackdropPath = 'backdrop_path';
@@ -19,8 +19,9 @@ class DatabaseController {
   String colVideo = 'video';
   String colVoteAverage = 'vote_average';
   String colVoteCount = 'vote_count';
-  String colGenre = 'genre';
+  // String colGenre = 'genre';
   String colPosterPath = 'poster_path';
+  String colDateAdded = 'date_added';
   DatabaseController._createInstance();
 
   factory DatabaseController() {
@@ -42,13 +43,13 @@ class DatabaseController {
 
   void _createDb(Database db, int newVersion) async {
     await db.execute(
-        'CREATE TABLE $movieTable($colId INTEGER PRIMARY KEY, $colTitle TEXT, $colAdult INTEGER, $colOriginalTitle TEXT, $colOriginalLanguage TEXT, $colOverview TEXT, $colReleaseDate TEXT, $colPopularity TEXT, $colBackdropPath TEXT, $colVideo INTEGER, $colVoteAverage TEXT, $colVoteCount TEXT, $colGenre TEXT, $colPosterPath TEXT,)');
+        'CREATE TABLE $movieTable($colId INTEGER PRIMARY KEY, $colTitle TEXT, $colOriginalTitle TEXT, $colOriginalLanguage TEXT, $colOverview TEXT, $colReleaseDate TEXT, $colPopularity NUMERIC, $colBackdropPath TEXT, $colVoteAverage REAL, $colVoteCount INTEGER, $colPosterPath TEXT, $colDateAdded TEXT)');
   }
 
   //this function will return all the movies in the database.
   Future<List<Map<String, dynamic>>> getMovieMapList() async {
     Database db = await database;
-    var result = await db.query(movieTable, orderBy: '$colId ASC');
+    var result = await db.query(movieTable, orderBy: '$colDateAdded DESC');
     return result;
   }
 

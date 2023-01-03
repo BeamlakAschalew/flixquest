@@ -26,79 +26,76 @@ class _DiscoverPageState extends State<DiscoverPage>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return DefaultTabController(
       length: 2,
-      child: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            title: Text(
-              'Discover',
-              style: TextStyle(color: isDark ? Colors.white : Colors.black),
-            ),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back,
-                  color: isDark ? Colors.white : Colors.black),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 3,
+          title: Text(
+            'Discover',
+            style: TextStyle(color: isDark ? Colors.white : Colors.black),
           ),
-          body: Column(
-            children: [
-              Container(
-                color: const Color(0xFFF57C00),
-                width: double.infinity,
-                child: TabBar(
-                  tabs: [
-                    Tab(
-                        child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Padding(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back,
+                color: isDark ? Colors.white : Colors.black),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        body: Column(
+          children: [
+            Container(
+              color: const Color(0xFFF57C00),
+              width: double.infinity,
+              child: TabBar(
+                tabs: [
+                  Tab(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Icon(Icons.movie_creation_rounded),
+                      ),
+                      Text(
+                        'Movies',
+                      ),
+                    ],
+                  )),
+                  Tab(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
                           padding: EdgeInsets.only(right: 8.0),
-                          child: Icon(Icons.movie_creation_rounded),
-                        ),
-                        Text(
-                          'Movies',
-                        ),
-                      ],
-                    )),
-                    Tab(
-                        child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Padding(
-                            padding: EdgeInsets.only(right: 8.0),
-                            child: Icon(Icons.live_tv_rounded)),
-                        Text(
-                          'TV Series',
-                        ),
-                      ],
-                    ))
-                  ],
-                  indicatorColor: isDark ? Colors.white : Colors.black,
-                  indicatorWeight: 3,
-                  //isScrollable: true,
-                  labelStyle: const TextStyle(
-                    fontFamily: 'PoppinsSB',
-                    color: Colors.black,
-                    fontSize: 17,
-                  ),
-                  unselectedLabelStyle: const TextStyle(
-                      fontFamily: 'Poppins', color: Colors.black87),
-                  labelColor: Colors.black,
-                  controller: tabController,
-                  indicatorSize: TabBarIndicatorSize.tab,
+                          child: Icon(Icons.live_tv_rounded)),
+                      Text(
+                        'TV Series',
+                      ),
+                    ],
+                  ))
+                ],
+                indicatorColor: isDark ? Colors.white : Colors.black,
+                indicatorWeight: 3,
+                //isScrollable: true,
+                labelStyle: const TextStyle(
+                  fontFamily: 'PoppinsSB',
+                  color: Colors.black,
+                  fontSize: 17,
                 ),
+                unselectedLabelStyle: const TextStyle(
+                    fontFamily: 'Poppins', color: Colors.black87),
+                labelColor: Colors.black,
+                controller: tabController,
+                indicatorSize: TabBarIndicatorSize.tab,
               ),
-              Expanded(
-                child: TabBarView(
-                  controller: tabController,
-                  children: const [DiscoverMoviesTab(), DiscoverTVTab()],
-                ),
-              )
-            ],
-          ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: tabController,
+                children: const [DiscoverMoviesTab(), DiscoverTVTab()],
+              ),
+            )
+          ],
         ),
       ),
     );
