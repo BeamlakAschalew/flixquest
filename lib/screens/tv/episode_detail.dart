@@ -20,7 +20,6 @@ class EpisodeDetailPage extends StatefulWidget {
   final List<EpisodeList>? episodes;
   final int? tvId;
   final String? seriesName;
-  final bool? adult;
 
   const EpisodeDetailPage({
     Key? key,
@@ -28,7 +27,6 @@ class EpisodeDetailPage extends StatefulWidget {
     this.episodes,
     this.tvId,
     this.seriesName,
-    required this.adult,
   }) : super(key: key);
 
   @override

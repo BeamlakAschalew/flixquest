@@ -90,7 +90,8 @@ class _DiscoverPageState extends State<DiscoverPage>
             ),
             Expanded(
               child: Container(
-                color: isDark ? Color(0xFF000000) : Color(0xFFF7F7F7),
+                color:
+                    isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
                 child: TabBarView(
                   controller: tabController,
                   children: const [DiscoverMoviesTab(), DiscoverTVTab()],

@@ -17,7 +17,7 @@ class AboutPage extends StatelessWidget {
         title: const Text('About'),
       ),
       body: Container(
-        color: !isDark ? Color(0xFFF7F7F7) : Color(0xFF000000),
+        color: !isDark ? const Color(0xFFF7F7F7) : const Color(0xFF000000),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(30.0),

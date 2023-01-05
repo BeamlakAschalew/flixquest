@@ -16,13 +16,11 @@ class SeasonsDetail extends StatefulWidget {
   final String heroId;
   final int? tvId;
   final String? seriesName;
-  final bool? adult;
   final TVDetails tvDetails;
 
   const SeasonsDetail({
     Key? key,
     required this.seasons,
-    required this.adult,
     required this.heroId,
     required this.tvDetails,
     this.seriesName,
@@ -38,6 +36,7 @@ class SeasonsDetailState extends State<SeasonsDetail>
         SingleTickerProviderStateMixin,
         AutomaticKeepAliveClientMixin<SeasonsDetail> {
   late TabController tabController;
+  final scrollController = ScrollController();
 
   @override
   void initState() {
@@ -52,7 +51,6 @@ class SeasonsDetailState extends State<SeasonsDetail>
     mixpanel.track('Most viewed season details', properties: {
       'TV series name': '${widget.seriesName}',
       'TV series season number': '${widget.seasons.seasonNumber}',
-      'Is TV series adult?': '${widget.adult}'
     });
   }
 
@@ -60,403 +58,53 @@ class SeasonsDetailState extends State<SeasonsDetail>
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              Expanded(
-                child: Stack(
-                  children: <Widget>[
-                    widget.tvDetails.backdropPath == null
-                        ? Image.asset(
-                            'assets/images/na_logo.png',
-                            fit: BoxFit.cover,
-                          )
-                        : CachedNetworkImage(
-                            fadeOutDuration: const Duration(milliseconds: 300),
-                            fadeOutCurve: Curves.easeOut,
-                            fadeInDuration: const Duration(milliseconds: 700),
-                            fadeInCurve: Curves.easeIn,
-                            imageUrl:
-                                '${TMDB_BASE_IMAGE_URL}original/${widget.tvDetails.backdropPath!}',
-                            imageBuilder: (context, imageProvider) => Container(
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: imageProvider,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            placeholder: (context, url) => Image.asset(
-                              'assets/images/loading_5.gif',
-                              fit: BoxFit.cover,
-                            ),
-                            errorWidget: (context, url, error) => Image.asset(
-                              'assets/images/na_logo.png',
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          gradient: LinearGradient(
-                              begin: FractionalOffset.bottomCenter,
-                              end: FractionalOffset.topCenter,
-                              colors: [
-                                const Color(0xFFF57C00),
-                                const Color(0xFFF57C00).withOpacity(0.3),
-                                const Color(0xFFF57C00).withOpacity(0.2),
-                                const Color(0xFFF57C00).withOpacity(0.1),
-                              ],
-                              stops: const [
-                                0.0,
-                                0.25,
-                                0.5,
-                                0.75
-                              ])),
-                    )
-                  ],
-                ),
+      body: CustomScrollView(
+        controller: scrollController,
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            elevation: 1,
+            shadowColor: isDark ? Colors.white : Colors.black,
+            forceElevated: true,
+            backgroundColor: isDark ? Colors.black : Colors.white,
+            leading: SABTN(
+              onBack: () {
+                Navigator.pop(context);
+              },
+            ),
+            title: SABT(
+                child: Text(
+              widget.seasons.airDate == null || widget.seasons.airDate == ""
+                  ? widget.seasons.name!
+                  : '${widget.seasons.name!} (${DateTime.parse(widget.seasons.airDate!).year})',
+              style: const TextStyle(
+                color: Color(0xFFF57C00),
               ),
-              Expanded(
-                child: Container(
-                  color: const Color(0xFFF57C00),
-                ),
-              )
-            ],
-          ),
-          Column(
-            children: <Widget>[
-              AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                leading: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50.0),
-                        color: isDark ? Colors.black38 : Colors.white38),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Color(0xFFF57C00),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ),
-                actions: [
-                  GestureDetector(
-                    child: const TopButton(
-                      buttonText: 'Open show',
-                    ),
-                  ),
+            )),
+            expandedHeight: 300,
+            flexibleSpace: FlexibleSpaceBar(
+              collapseMode: CollapseMode.pin,
+              background: Column(
+                children: [
+                  TVSeasonDetailQuickInfo(
+                      tvSeries: widget.tvDetails,
+                      heroId: widget.heroId,
+                      season: widget.seasons),
                 ],
               ),
-              Expanded(
-                child: Container(
-                  color: Colors.transparent,
-                  child: Stack(
-                    children: <Widget>[
-                      SizedBox(
-                        width: double.infinity,
-                        height: double.infinity,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 75, 16, 16),
-                          child: Card(
-                            elevation: 5,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            color: isDark
-                                ? const Color(0xFF2b2c30)
-                                : const Color(0xFFDFDEDE),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 120.0),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          widget.seasons.airDate == null ||
-                                                  widget.seasons.airDate == ""
-                                              ? widget.seasons.name!
-                                              : '${widget.seasons.name!} (${DateTime.parse(widget.seasons.airDate!).year})',
-                                          style: kTextSmallHeaderStyle,
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              bottom: 15.0),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                widget.tvDetails.originalTitle!,
-                                                style: TextStyle(
-                                                    fontSize: 15,
-                                                    color: isDark
-                                                        ? Colors.white54
-                                                        : Colors.black54),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Center(
-                                  child: TabBar(
-                                    isScrollable: true,
-                                    indicatorColor: const Color(0xFFF57C00),
-                                    indicatorWeight: 3,
-                                    unselectedLabelColor: Colors.white54,
-                                    labelColor: Colors.white,
-                                    tabs: [
-                                      Tab(
-                                        child: Text('About',
-                                            style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                color: isDark
-                                                    ? Colors.white
-                                                    : Colors.black)),
-                                      ),
-                                      Tab(
-                                        child: Text('Episodes',
-                                            style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                color: isDark
-                                                    ? Colors.white
-                                                    : Colors.black)),
-                                      ),
-                                      Tab(
-                                        child: Text('Cast',
-                                            style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                color: isDark
-                                                    ? Colors.white
-                                                    : Colors.black)),
-                                      ),
-                                      Tab(
-                                        child: Text('Crew',
-                                            style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                color: isDark
-                                                    ? Colors.white
-                                                    : Colors.black)),
-                                      ),
-                                    ],
-                                    controller: tabController,
-                                    indicatorSize: TabBarIndicatorSize.tab,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        1.6, 0, 1.6, 3),
-                                    child: TabBarView(
-                                      physics: const PageScrollPhysics(),
-                                      controller: tabController,
-                                      children: [
-                                        SingleChildScrollView(
-                                          child: Container(
-                                            color: isDark
-                                                ? const Color(0xFF000000)
-                                                : const Color(0xFFFFFFFF),
-                                            child: Column(
-                                              children: <Widget>[
-                                                Row(
-                                                  children: const <Widget>[
-                                                    Padding(
-                                                      padding: EdgeInsets.only(
-                                                          left: 8.0),
-                                                      child: Text(
-                                                        'Overview',
-                                                        style: kTextHeaderStyle,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: ReadMoreText(
-                                                    widget.seasons.overview!
-                                                            .isEmpty
-                                                        ? 'This season doesn\'t have an overview'
-                                                        : widget
-                                                            .seasons.overview!,
-                                                    trimLines: 4,
-                                                    style: const TextStyle(
-                                                        fontFamily: 'Poppins'),
-                                                    colorClickableText:
-                                                        const Color(0xFFF57C00),
-                                                    trimMode: TrimMode.Line,
-                                                    trimCollapsedText:
-                                                        'read more',
-                                                    trimExpandedText:
-                                                        'read less',
-                                                    lessStyle: const TextStyle(
-                                                        fontSize: 14,
-                                                        color:
-                                                            Color(0xFFF57C00),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                    moreStyle: const TextStyle(
-                                                        fontSize: 14,
-                                                        color:
-                                                            Color(0xFFF57C00),
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                ),
-                                                Row(
-                                                  children: <Widget>[
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              left: 8.0,
-                                                              bottom: 4.0),
-                                                      child: Text(
-                                                        widget.seasons
-                                                                    .airDate ==
-                                                                null
-                                                            ? 'First episode air date: N/A'
-                                                            : 'First episode air date:  ${DateTime.parse(widget.seasons.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.seasons.airDate!))}, ${DateTime.parse(widget.seasons.airDate!).year}',
-                                                        style: const TextStyle(
-                                                          fontFamily:
-                                                              'PoppinsSB',
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                ScrollingTVArtists(
-                                                  api: Endpoints
-                                                      .getTVSeasonCreditsUrl(
-                                                          widget.tvDetails.id!,
-                                                          widget.seasons
-                                                              .seasonNumber!),
-                                                  title: 'Cast',
-                                                ),
-                                                TVSeasonImagesDisplay(
-                                                  title: 'Images',
-                                                  name:
-                                                      '${widget.seriesName}_season_${widget.seasons.seasonNumber}',
-                                                  api: Endpoints
-                                                      .getTVSeasonImagesUrl(
-                                                          widget.tvDetails.id!,
-                                                          widget.seasons
-                                                              .seasonNumber!),
-                                                ),
-                                                TVVideosDisplay(
-                                                  api: Endpoints
-                                                      .getTVSeasonVideosUrl(
-                                                          widget.tvDetails.id!,
-                                                          widget.seasons
-                                                              .seasonNumber!),
-                                                  title: 'Videos',
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        EpisodeListWidget(
-                                          adult: widget.adult,
-                                          seriesName: widget.seriesName,
-                                          tvId: widget.tvDetails.id,
-                                          api: Endpoints.getSeasonDetails(
-                                              widget.tvDetails.id!,
-                                              widget.seasons.seasonNumber!),
-                                        ),
-                                        TVCastTab(
-                                          api: Endpoints
-                                              .getFullTVSeasonCreditsUrl(
-                                                  widget.tvDetails.id!,
-                                                  widget.seasons.seasonNumber!),
-                                        ),
-                                        TVCrewTab(
-                                          api: Endpoints
-                                              .getFullTVSeasonCreditsUrl(
-                                                  widget.tvDetails.id!,
-                                                  widget.seasons.seasonNumber!),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 40,
-                        child: Hero(
-                          tag: widget.heroId,
-                          child: SizedBox(
-                            width: 100,
-                            height: 150,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: widget.seasons.posterPath == null
-                                  ? Image.asset(
-                                      'assets/images/na_logo.png',
-                                      fit: BoxFit.cover,
-                                    )
-                                  : CachedNetworkImage(
-                                      fadeOutDuration:
-                                          const Duration(milliseconds: 300),
-                                      fadeOutCurve: Curves.easeOut,
-                                      fadeInDuration:
-                                          const Duration(milliseconds: 700),
-                                      fadeInCurve: Curves.easeIn,
-                                      imageUrl: TMDB_BASE_IMAGE_URL +
-                                          imageQuality +
-                                          widget.seasons.posterPath!,
-                                      imageBuilder: (context, imageProvider) =>
-                                          Container(
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
-                                      errorWidget: (context, url, error) =>
-                                          Image.asset(
-                                        'assets/images/na_logo.png',
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate.fixed(
+              [
+                TVSeasonAbout(
+                  season: widget.seasons,
+                  tvDetails: widget.tvDetails,
+                  seriesName: widget.seriesName,
+                )
+              ],
+            ),
           ),
         ],
       ),
@@ -465,4 +113,326 @@ class SeasonsDetailState extends State<SeasonsDetail>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class TVSeasonDetailQuickInfo extends StatelessWidget {
+  const TVSeasonDetailQuickInfo({
+    Key? key,
+    required this.tvSeries,
+    required this.heroId,
+    required this.season,
+  }) : super(key: key);
+
+  final TVDetails tvSeries;
+  final Seasons season;
+  final String heroId;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    return SizedBox(
+      height: 310,
+      width: double.infinity,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Stack(
+              alignment: AlignmentDirectional.bottomCenter,
+              children: [
+                // Obx(
+                //   () =>
+
+                ShaderMask(
+                  shaderCallback: (rect) {
+                    return const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black,
+                        Colors.black,
+                        Colors.black,
+                        Colors.transparent
+                      ],
+                    ).createShader(
+                        Rect.fromLTRB(0, 0, rect.width, rect.height));
+                  },
+                  blendMode: BlendMode.dstIn,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border:
+                          Border(bottom: BorderSide(color: Colors.transparent)),
+                    ),
+                    child: SizedBox(
+                      height: 220,
+                      child: Stack(
+                        children: [
+                          PageView.builder(
+                            itemBuilder: (context, index) {
+                              return tvSeries.backdropPath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading_5.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      imageUrl:
+                                          '${TMDB_BASE_IMAGE_URL}original/${tvSeries.backdropPath!}',
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                    );
+                            },
+                          ),
+                          Positioned(
+                            top: -10,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            child: SafeArea(
+                              child: Container(
+                                alignment: Alignment.topRight,
+                                child: GestureDetector(
+                                  child: WatchProvidersButton(
+                                    api: Endpoints.getMovieWatchProviders(
+                                        tvSeries.id!),
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (builder) {
+                                          return WatchProvidersDetails(
+                                            api: Endpoints.getTVWatchProviders(
+                                                tvSeries.id!),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // poster and title movie details
+          Positioned(
+              bottom: 0.0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(children: [
+                  // poster
+                  Hero(
+                    tag: heroId,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: CachedNetworkImage(
+                              width: 94,
+                              height: 140,
+                              fit: BoxFit.fill,
+                              placeholder: (context, url) => Image.asset(
+                                'assets/images/loading.gif',
+                                fit: BoxFit.cover,
+                              ),
+                              errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/na_logo.png',
+                                fit: BoxFit.cover,
+                              ),
+                              imageUrl: TMDB_BASE_IMAGE_URL +
+                                  imageQuality +
+                                  season.posterPath!,
+                            ),
+                          ),
+                        )),
+                  ),
+                  const SizedBox(width: 16),
+                  //  titles
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // const SizedBox(height: 6),
+                        GestureDetector(
+                          onTap: () {
+                            // _utilityController.toggleTitleVisibility();
+                          },
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                season.airDate == null || season.airDate == ""
+                                    ? season.name!
+                                    : '${season.name!} (${DateTime.parse(season.airDate!).year})',
+                                style: kTextSmallHeaderStyle,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 15.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      tvSeries.originalTitle!,
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: isDark
+                                              ? Colors.white54
+                                              : Colors.black54),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ]),
+              ))
+        ],
+      ),
+    );
+  }
+}
+
+class TVSeasonAbout extends StatefulWidget {
+  const TVSeasonAbout({
+    Key? key,
+    required this.season,
+    required this.tvDetails,
+    required this.seriesName,
+  }) : super(key: key);
+
+  final Seasons season;
+  final TVDetails tvDetails;
+  final String? seriesName;
+
+  @override
+  State<TVSeasonAbout> createState() => _TVSeasonAboutState();
+}
+
+class _TVSeasonAboutState extends State<TVSeasonAbout> {
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+            borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0))),
+        child: Column(
+          children: [
+            Row(
+              children: const <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    'Overview',
+                    style: kTextHeaderStyle,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ReadMoreText(
+                widget.season.overview!.isEmpty
+                    ? 'This season doesn\'t have an overview'
+                    : widget.season.overview!,
+                trimLines: 4,
+                style: const TextStyle(fontFamily: 'Poppins'),
+                colorClickableText: const Color(0xFFF57C00),
+                trimMode: TrimMode.Line,
+                trimCollapsedText: 'read more',
+                trimExpandedText: 'read less',
+                lessStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFFF57C00),
+                    fontWeight: FontWeight.bold),
+                moreStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFFF57C00),
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
+                  child: Text(
+                    widget.season.airDate == null
+                        ? 'First episode air date: N/A'
+                        : 'First episode air date:  ${DateTime.parse(widget.season.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.season.airDate!))}, ${DateTime.parse(widget.season.airDate!).year}',
+                    style: const TextStyle(
+                      fontFamily: 'PoppinsSB',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            ScrollingTVArtists(
+              api: Endpoints.getTVSeasonCreditsUrl(
+                  widget.tvDetails.id!, widget.season.seasonNumber!),
+              title: 'Cast',
+            ),
+            EpisodeListWidget(
+              seriesName: widget.seriesName,
+              tvId: widget.tvDetails.id,
+              api: Endpoints.getSeasonDetails(
+                  widget.tvDetails.id!, widget.season.seasonNumber!),
+            ),
+            TVSeasonImagesDisplay(
+              title: 'Images',
+              name: '${widget.seriesName}_season_${widget.season.seasonNumber}',
+              api: Endpoints.getTVSeasonImagesUrl(
+                  widget.tvDetails.id!, widget.season.seasonNumber!),
+            ),
+            TVVideosDisplay(
+              api: Endpoints.getTVSeasonVideosUrl(
+                  widget.tvDetails.id!, widget.season.seasonNumber!),
+              title: 'Videos',
+            ),
+
+            // TVCastTab(
+            //   api: Endpoints.getFullTVSeasonCreditsUrl(
+            //       widget.tvDetails.id!, widget.season.seasonNumber!),
+            // ),
+            // TVCrewTab(
+            //   api: Endpoints.getFullTVSeasonCreditsUrl(
+            //       widget.tvDetails.id!, widget.season.seasonNumber!),
+            // ),
+          ],
+        ),
+      ),
+    );
+  }
 }

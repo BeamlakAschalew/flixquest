@@ -1,11 +1,7 @@
-import 'package:cinemax/models/function.dart';
-
 import '../../api/endpoints.dart';
 import '../../widgets/tv_widgets.dart';
-import '/widgets/movie_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../models/credits.dart';
 import '../../provider/settings_provider.dart';
 
