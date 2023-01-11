@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/screens/did_you_know.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '/models/dropdown_select.dart';
 import '/models/filter_chip.dart';
@@ -1165,6 +1166,9 @@ class _MovieAboutState extends State<MovieAbout> {
             MovieInfoTable(
               api: Endpoints.movieDetailsUrl(widget.movie.id!),
             ),
+            const SizedBox(
+              height: 10,
+            ),
             MovieRecommendationsTab(
               includeAdult: Provider.of<SettingsProvider>(context).isAdult,
               api: Endpoints.getMovieRecommendations(widget.movie.id!, 1),
@@ -1175,6 +1179,11 @@ class _MovieAboutState extends State<MovieAbout> {
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 movieId: widget.movie.id!,
                 api: Endpoints.getSimilarMovies(widget.movie.id!, 1)),
+            DidYouKnow(
+              api: Endpoints.getExternalLinksForMovie(
+                widget.movie.id!,
+              ),
+            ),
           ],
         ),
       ),
@@ -2730,184 +2739,188 @@ class MovieInfoTableState extends State<MovieInfoTable> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-    return Column(
-      children: [
-        const Text(
-          'Movie Info',
-          style: kTextHeaderStyle,
-        ),
-        Container(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Movie Info',
+            style: kTextHeaderStyle,
+          ),
+          Container(
             child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: movieDetails == null
-                  ? detailInfoTableShimmer(isDark)
-                  : DataTable(dataRowHeight: 40, columns: [
-                      const DataColumn(
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: movieDetails == null
+                    ? detailInfoTableShimmer(isDark)
+                    : DataTable(dataRowHeight: 40, columns: [
+                        const DataColumn(
+                            label: Text(
+                          'Original Title',
+                          style: kTableLeftStyle,
+                        )),
+                        DataColumn(
                           label: Text(
-                        'Original Title',
-                        style: kTableLeftStyle,
-                      )),
-                      DataColumn(
-                        label: Text(
-                          movieDetails!.originalTitle!,
-                          style:
-                              const TextStyle(overflow: TextOverflow.ellipsis),
-                        ),
-                      ),
-                    ], rows: [
-                      DataRow(cells: [
-                        const DataCell(Text(
-                          'Status',
-                          style: kTableLeftStyle,
-                        )),
-                        DataCell(Text(movieDetails!.status!.isEmpty
-                            ? 'unknown'
-                            : movieDetails!.status!)),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(Text(
-                          'Runtime',
-                          style: kTableLeftStyle,
-                        )),
-                        DataCell(Text(movieDetails!.runtime! == 0
-                            ? 'N/A'
-                            : '${movieDetails!.runtime!} mins')),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(Text(
-                          'Spoken language',
-                          style: kTableLeftStyle,
-                        )),
-                        DataCell(SizedBox(
-                          height: 20,
-                          width: 200,
-                          child: movieDetails!.spokenLanguages!.isEmpty
-                              ? const Text('-')
-                              : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount:
-                                      movieDetails!.spokenLanguages!.length,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 5.0),
-                                      child: Text(movieDetails!
-                                              .spokenLanguages!.isEmpty
-                                          ? 'N/A'
-                                          : '${movieDetails!.spokenLanguages![index].englishName},'),
-                                    );
-                                  },
-                                ),
-                        )),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(Text(
-                          'Budget',
-                          style: kTableLeftStyle,
-                        )),
-                        DataCell(movieDetails!.budget == 0
-                            ? const Text('-')
-                            : Text(formatCurrency
-                                .format(movieDetails!.budget!)
-                                .toString())),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(Text(
-                          'Revenue',
-                          style: kTableLeftStyle,
-                        )),
-                        DataCell(movieDetails!.budget == 0
-                            ? const Text('-')
-                            : Text(formatCurrency
-                                .format(movieDetails!.revenue!)
-                                .toString())),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(Text(
-                          'Tagline',
-                          style: kTableLeftStyle,
-                        )),
-                        DataCell(
-                          Text(
-                            movieDetails!.tagline!.isEmpty
-                                ? '-'
-                                : movieDetails!.tagline!,
+                            movieDetails!.originalTitle!,
                             style: const TextStyle(
                                 overflow: TextOverflow.ellipsis),
                           ),
                         ),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(Text(
-                          'Production companies',
-                          style: kTableLeftStyle,
-                        )),
-                        DataCell(SizedBox(
-                          height: 20,
-                          width: 200,
-                          child: movieDetails!.productionCompanies!.isEmpty
+                      ], rows: [
+                        DataRow(cells: [
+                          const DataCell(Text(
+                            'Status',
+                            style: kTableLeftStyle,
+                          )),
+                          DataCell(Text(movieDetails!.status!.isEmpty
+                              ? 'unknown'
+                              : movieDetails!.status!)),
+                        ]),
+                        DataRow(cells: [
+                          const DataCell(Text(
+                            'Runtime',
+                            style: kTableLeftStyle,
+                          )),
+                          DataCell(Text(movieDetails!.runtime! == 0
+                              ? 'N/A'
+                              : '${movieDetails!.runtime!} mins')),
+                        ]),
+                        DataRow(cells: [
+                          const DataCell(Text(
+                            'Spoken language',
+                            style: kTableLeftStyle,
+                          )),
+                          DataCell(SizedBox(
+                            height: 20,
+                            width: 200,
+                            child: movieDetails!.spokenLanguages!.isEmpty
+                                ? const Text('-')
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount:
+                                        movieDetails!.spokenLanguages!.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 5.0),
+                                        child: Text(movieDetails!
+                                                .spokenLanguages!.isEmpty
+                                            ? 'N/A'
+                                            : '${movieDetails!.spokenLanguages![index].englishName},'),
+                                      );
+                                    },
+                                  ),
+                          )),
+                        ]),
+                        DataRow(cells: [
+                          const DataCell(Text(
+                            'Budget',
+                            style: kTableLeftStyle,
+                          )),
+                          DataCell(movieDetails!.budget == 0
                               ? const Text('-')
-                              : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount:
-                                      movieDetails!.productionCompanies!.length,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 5.0),
-                                      child: Text(movieDetails!
-                                              .productionCompanies!.isEmpty
-                                          ? 'N/A'
-                                          : '${movieDetails!.productionCompanies![index].name},'),
-                                    );
-                                  },
-                                ),
-                        )
-                            // movieDetails!.productionCompanies!.isEmpty
-                            //     ? const Text('-')
-                            //     : Text(
-                            //         movieDetails!.productionCompanies![0].name!),
-                            ),
-                      ]),
-                      DataRow(cells: [
-                        const DataCell(Text(
-                          'Production countries',
-                          style: kTableLeftStyle,
-                        )),
-                        DataCell(SizedBox(
-                          height: 20,
-                          width: 200,
-                          child: movieDetails!.productionCountries!.isEmpty
+                              : Text(formatCurrency
+                                  .format(movieDetails!.budget!)
+                                  .toString())),
+                        ]),
+                        DataRow(cells: [
+                          const DataCell(Text(
+                            'Revenue',
+                            style: kTableLeftStyle,
+                          )),
+                          DataCell(movieDetails!.budget == 0
                               ? const Text('-')
-                              : ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount:
-                                      movieDetails!.productionCountries!.length,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 5.0),
-                                      child: Text(movieDetails!
-                                              .productionCountries!.isEmpty
-                                          ? 'N/A'
-                                          : '${movieDetails!.productionCountries![index].name},'),
-                                    );
-                                  },
-                                ),
-                        )
-                            // movieDetails!.productionCompanies!.isEmpty
-                            //     ? const Text('-')
-                            //     : Text(
-                            //         movieDetails!.productionCountries![0].name!),
+                              : Text(formatCurrency
+                                  .format(movieDetails!.revenue!)
+                                  .toString())),
+                        ]),
+                        DataRow(cells: [
+                          const DataCell(Text(
+                            'Tagline',
+                            style: kTableLeftStyle,
+                          )),
+                          DataCell(
+                            Text(
+                              movieDetails!.tagline!.isEmpty
+                                  ? '-'
+                                  : movieDetails!.tagline!,
+                              style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis),
                             ),
+                          ),
+                        ]),
+                        DataRow(cells: [
+                          const DataCell(Text(
+                            'Production companies',
+                            style: kTableLeftStyle,
+                          )),
+                          DataCell(SizedBox(
+                            height: 20,
+                            width: 200,
+                            child: movieDetails!.productionCompanies!.isEmpty
+                                ? const Text('-')
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: movieDetails!
+                                        .productionCompanies!.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 5.0),
+                                        child: Text(movieDetails!
+                                                .productionCompanies!.isEmpty
+                                            ? 'N/A'
+                                            : '${movieDetails!.productionCompanies![index].name},'),
+                                      );
+                                    },
+                                  ),
+                          )
+                              // movieDetails!.productionCompanies!.isEmpty
+                              //     ? const Text('-')
+                              //     : Text(
+                              //         movieDetails!.productionCompanies![0].name!),
+                              ),
+                        ]),
+                        DataRow(cells: [
+                          const DataCell(Text(
+                            'Production countries',
+                            style: kTableLeftStyle,
+                          )),
+                          DataCell(SizedBox(
+                            height: 20,
+                            width: 200,
+                            child: movieDetails!.productionCountries!.isEmpty
+                                ? const Text('-')
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: movieDetails!
+                                        .productionCountries!.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 5.0),
+                                        child: Text(movieDetails!
+                                                .productionCountries!.isEmpty
+                                            ? 'N/A'
+                                            : '${movieDetails!.productionCountries![index].name},'),
+                                      );
+                                    },
+                                  ),
+                          )
+                              // movieDetails!.productionCompanies!.isEmpty
+                              //     ? const Text('-')
+                              //     : Text(
+                              //         movieDetails!.productionCountries![0].name!),
+                              ),
+                        ]),
                       ]),
-                    ]),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -3356,9 +3369,11 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
             child: movieList == null || widget.includeAdult == null
                 ? scrollingMoviesAndTVShimmer(isDark)
                 : movieList!.isEmpty
-                    ? const Text(
-                        'There are no recommendations available for this movie',
-                        textAlign: TextAlign.center,
+                    ? const Center(
+                        child: Text(
+                          'There are no recommendations available for this movie',
+                          textAlign: TextAlign.center,
+                        ),
                       )
                     : Row(
                         children: [
@@ -3637,116 +3652,132 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
             height: 250,
             child: movieList == null || widget.includeAdult == null
                 ? scrollingMoviesAndTVShimmer(isDark)
-                : Row(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          controller: _scrollController,
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: movieList!.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => MovieDetailPage(
-                                              movie: movieList![index],
-                                              heroId:
-                                                  '${movieList![index].id}')));
-                                },
-                                child: SizedBox(
-                                  width: 100,
-                                  child: Column(
-                                    children: <Widget>[
-                                      Expanded(
-                                        flex: 6,
-                                        child: Hero(
-                                          tag: '${movieList![index].id}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            child: movieList![index]
-                                                        .posterPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration:
-                                                        const Duration(
-                                                            milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl: movieList![index]
-                                                                .posterPath ==
-                                                            null
-                                                        ? ''
-                                                        : TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            movieList![index]
-                                                                .posterPath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
+                : movieList!.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'There are no similars available for this movie',
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    : Row(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              controller: _scrollController,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: movieList!.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => MovieDetailPage(
+                                                  movie: movieList![index],
+                                                  heroId:
+                                                      '${movieList![index].id}')));
+                                    },
+                                    child: SizedBox(
+                                      width: 100,
+                                      child: Column(
+                                        children: <Widget>[
+                                          Expanded(
+                                            flex: 6,
+                                            child: Hero(
+                                              tag: '${movieList![index].id}',
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: movieList![index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl: movieList![
+                                                                        index]
+                                                                    .posterPath ==
+                                                                null
+                                                            ? ''
+                                                            : TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                movieList![
+                                                                        index]
+                                                                    .posterPath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            scrollingImageShimmer(
+                                                                isDark),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_logo.png',
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                    ),
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        scrollingImageShimmer(
-                                                            isDark),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                          Expanded(
+                                            flex: 3,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(
+                                                movieList![index].title!,
+                                                maxLines: 2,
+                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          )
+                                        ],
                                       ),
-                                      Expanded(
-                                        flex: 3,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            movieList![index].title!,
-                                            maxLines: 2,
-                                            textAlign: TextAlign.center,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      )
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                                );
+                              },
+                            ),
+                          ),
+                          Visibility(
+                            visible: isLoading,
+                            child: SizedBox(
+                              width: 110,
+                              child: horizontalLoadMoreShimmer(isDark),
+                            ),
+                          ),
+                        ],
                       ),
-                      Visibility(
-                        visible: isLoading,
-                        child: SizedBox(
-                          width: 110,
-                          child: horizontalLoadMoreShimmer(isDark),
-                        ),
-                      ),
-                    ],
-                  ),
           ),
         ],
       ),
@@ -5210,6 +5241,129 @@ class CollectionMoviesState extends State<CollectionMovies> {
                     ),
                   ],
                 ),
+    );
+  }
+}
+
+class DidYouKnow extends StatefulWidget {
+  const DidYouKnow({Key? key, required this.api}) : super(key: key);
+
+  final String? api;
+
+  @override
+  State<DidYouKnow> createState() => _DidYouKnowState();
+}
+
+class _DidYouKnowState extends State<DidYouKnow> {
+  ExternalLinks? externalLinks;
+
+  @override
+  void initState() {
+    fetchSocialLinks(widget.api!).then((value) {
+      setState(() {
+        externalLinks = value;
+      });
+    });
+    super.initState();
+  }
+
+  void navToDYK(String dataType, String dataName, String imdbId) {
+    Navigator.push(context, MaterialPageRoute(builder: ((context) {
+      return DidYouKnowScreen(
+        dataType: dataType,
+        dataName: dataName,
+        imdbId: imdbId,
+      );
+    })));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Did You Know',
+            style: kTextHeaderStyle,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Container(
+              child: externalLinks == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : externalLinks!.imdbId == null ||
+                          externalLinks!.imdbId!.isEmpty
+                      ? const Center(
+                          child: Text(
+                          'This movie doesn\'t have IMDB id therefore additional data can\'t be fetched.',
+                          textAlign: TextAlign.center,
+                        ))
+                      : Wrap(
+                          spacing: 5,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'trivia', 'Trivia', externalLinks!.imdbId!);
+                              },
+                              child: const Text('Trivia'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'quotes', 'Quotes', externalLinks!.imdbId!);
+                              },
+                              child: const Text('Quotes'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'goofs', 'Goofs', externalLinks!.imdbId!);
+                              },
+                              child: const Text('Goofs'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK('crazycredits', 'Crazy Credits',
+                                    externalLinks!.imdbId!);
+                              },
+                              child: const Text('Crazy Credits'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'alternateversions',
+                                    'Alternate Versions',
+                                    externalLinks!.imdbId!);
+                              },
+                              child: const Text('Alternate Versions'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'movieconnections',
+                                    'Movie Connections',
+                                    externalLinks!.imdbId!);
+                              },
+                              child: const Text('Movie Connections'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK('soundtrack', 'Soundtrack',
+                                    externalLinks!.imdbId!);
+                              },
+                              child: const Text('Soundtrack'),
+                            ),
+                          ],
+                        )),
+          const SizedBox(
+            height: 10,
+          )
+        ],
+      ),
     );
   }
 }
