@@ -5,16 +5,19 @@ import 'package:provider/provider.dart';
 import '../../models/credits.dart';
 import '../../provider/settings_provider.dart';
 
-class TVCastAndCrew extends StatefulWidget {
-  const TVCastAndCrew({Key? key, required this.id}) : super(key: key);
+class TVDetailCastAndCrew extends StatefulWidget {
+  const TVDetailCastAndCrew(
+      {Key? key, required this.id, required this.passedFrom})
+      : super(key: key);
 
   final int id;
+  final String passedFrom;
 
   @override
-  State<TVCastAndCrew> createState() => _TVCastAndCrewState();
+  State<TVDetailCastAndCrew> createState() => _TVDetailCastAndCrewState();
 }
 
-class _TVCastAndCrewState extends State<TVCastAndCrew>
+class _TVDetailCastAndCrewState extends State<TVDetailCastAndCrew>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
   Credits? credits;
@@ -34,13 +37,12 @@ class _TVCastAndCrewState extends State<TVCastAndCrew>
           appBar: AppBar(
             backgroundColor: const Color(0xFFF57C00),
             elevation: 3,
-            title: Text(
+            title: const Text(
               'Cast And Crew',
-              style: TextStyle(color: isDark ? Colors.white : Colors.black),
+              style: TextStyle(color: Colors.black),
             ),
             leading: IconButton(
-              icon: Icon(Icons.arrow_back,
-                  color: isDark ? Colors.white : Colors.black),
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
               onPressed: () {
                 Navigator.pop(context);
               },
@@ -97,7 +99,9 @@ class _TVCastAndCrewState extends State<TVCastAndCrew>
                 child: TabBarView(
                   controller: tabController,
                   children: [
-                    TVCastTab(api: Endpoints.getFullTVCreditsUrl(widget.id)),
+                    TVCastTab(
+                      api: Endpoints.getFullTVCreditsUrl(widget.id),
+                    ),
                     TVCrewTab(
                       api: Endpoints.getFullTVCreditsUrl(widget.id),
                     )

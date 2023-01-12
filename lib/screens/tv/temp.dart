@@ -6,7 +6,7 @@
 //               Expanded(
 //                 child: Stack(
 //                   children: <Widget>[
-//                     widget.tvDetails.backdropPath == null
+//                     widget.episodeList.stillPath == null
 //                         ? Image.asset(
 //                             'assets/images/na_logo.png',
 //                             fit: BoxFit.cover,
@@ -17,7 +17,7 @@
 //                             fadeInDuration: const Duration(milliseconds: 700),
 //                             fadeInCurve: Curves.easeIn,
 //                             imageUrl:
-//                                 '${TMDB_BASE_IMAGE_URL}original/${widget.tvDetails.backdropPath!}',
+//                                 '${TMDB_BASE_IMAGE_URL}original/${widget.episodeList.stillPath!}',
 //                             imageBuilder: (context, imageProvider) => Container(
 //                               decoration: BoxDecoration(
 //                                 image: DecorationImage(
@@ -86,11 +86,9 @@
 //                     ),
 //                   ),
 //                 ),
-//                 actions: [
-//                   GestureDetector(
-//                     child: const TopButton(
-//                       buttonText: 'Open show',
-//                     ),
+//                 actions: const [
+//                   TopButton(
+//                     buttonText: 'Open season',
 //                   ),
 //                 ],
 //               ),
@@ -117,38 +115,140 @@
 //                               crossAxisAlignment: CrossAxisAlignment.start,
 //                               children: <Widget>[
 //                                 Padding(
-//                                   padding: const EdgeInsets.only(left: 120.0),
+//                                   padding: const EdgeInsets.only(left: 10.0),
 //                                   child: Padding(
-//                                     padding: const EdgeInsets.all(8.0),
-//                                     child: Column(
+//                                     padding: const EdgeInsets.fromLTRB(
+//                                         8.0, 8.0, 8.0, 0.0),
+//                                     child: Row(
 //                                       mainAxisAlignment:
-//                                           MainAxisAlignment.start,
+//                                           MainAxisAlignment.spaceBetween,
 //                                       crossAxisAlignment:
 //                                           CrossAxisAlignment.start,
-//                                       children: <Widget>[
-//                                         Text(
-//                                           widget.seasons.airDate == null ||
-//                                                   widget.seasons.airDate == ""
-//                                               ? widget.seasons.name!
-//                                               : '${widget.seasons.name!} (${DateTime.parse(widget.seasons.airDate!).year})',
-//                                           style: kTextSmallHeaderStyle,
-//                                           maxLines: 2,
-//                                           overflow: TextOverflow.ellipsis,
-//                                         ),
-//                                         Padding(
-//                                           padding: const EdgeInsets.only(
-//                                               bottom: 15.0),
+//                                       children: [
+//                                         Expanded(
 //                                           child: Column(
-//                                             children: [
+//                                             mainAxisAlignment:
+//                                                 MainAxisAlignment.start,
+//                                             crossAxisAlignment:
+//                                                 CrossAxisAlignment.start,
+//                                             children: <Widget>[
 //                                               Text(
-//                                                 widget.tvDetails.originalTitle!,
-//                                                 style: TextStyle(
-//                                                     fontSize: 15,
-//                                                     color: isDark
-//                                                         ? Colors.white54
-//                                                         : Colors.black54),
+//                                                 '${widget.episodeList.seasonNumber! <= 9 ? 'S0${widget.episodeList.seasonNumber}' : 'S${widget.episodeList.seasonNumber}'} | '
+//                                                 '${widget.episodeList.episodeNumber! <= 9 ? 'E0${widget.episodeList.episodeNumber}' : 'E${widget.episodeList.episodeNumber}'}'
+//                                                 '',
+//                                                 style: kTextSmallHeaderStyle,
+//                                                 maxLines: 2,
+//                                                 overflow: TextOverflow.ellipsis,
+//                                               ),
+//                                               Padding(
+//                                                 padding: const EdgeInsets.only(
+//                                                     bottom: 10.0),
+//                                                 child: Column(
+//                                                   crossAxisAlignment:
+//                                                       CrossAxisAlignment.start,
+//                                                   children: [
+//                                                     Text(
+//                                                       widget.episodeList.name
+//                                                           .toString(),
+//                                                       maxLines: 2,
+//                                                       style:
+//                                                           kTextSmallHeaderStyle,
+//                                                     ),
+//                                                     Padding(
+//                                                       padding:
+//                                                           const EdgeInsets.only(
+//                                                               top: 5.0),
+//                                                       child: Text(
+//                                                         widget.seriesName!,
+//                                                         style: TextStyle(
+//                                                             color: isDark
+//                                                                 ? Colors.white54
+//                                                                 : Colors
+//                                                                     .black54),
+//                                                       ),
+//                                                     ),
+//                                                   ],
+//                                                 ),
 //                                               ),
 //                                             ],
+//                                           ),
+//                                         ),
+//                                         Expanded(
+//                                           child: Padding(
+//                                             padding: const EdgeInsets.all(8.0),
+//                                             child: Row(
+//                                               children: [
+//                                                 Row(
+//                                                   children: <Widget>[
+//                                                     SizedBox(
+//                                                       height: 30,
+//                                                       width: 30,
+//                                                       child: Image.asset(
+//                                                           'assets/images/tmdb_logo.png'),
+//                                                     ),
+//                                                     Column(
+//                                                       children: [
+//                                                         Row(
+//                                                           children: [
+//                                                             const Padding(
+//                                                               padding: EdgeInsets
+//                                                                   .only(
+//                                                                       left: 8.0,
+//                                                                       right:
+//                                                                           3.0),
+//                                                               child: Icon(
+//                                                                 Icons.star,
+//                                                                 size: 15,
+//                                                                 color: Color(
+//                                                                     0xFFF57C00),
+//                                                               ),
+//                                                             ),
+//                                                             Text(
+//                                                               widget.episodeList
+//                                                                   .voteAverage!
+//                                                                   .toStringAsFixed(
+//                                                                       1),
+//                                                               // style: widget.themeData
+//                                                               //     .textTheme.bodyText1,
+//                                                             ),
+//                                                           ],
+//                                                         ),
+//                                                         Padding(
+//                                                           padding:
+//                                                               const EdgeInsets
+//                                                                       .only(
+//                                                                   left: 8.0),
+//                                                           child: Row(
+//                                                             children: [
+//                                                               const Padding(
+//                                                                 padding: EdgeInsets
+//                                                                     .only(
+//                                                                         right:
+//                                                                             8.0),
+//                                                                 child: Icon(
+//                                                                     Icons
+//                                                                         .people_alt,
+//                                                                     size: 15),
+//                                                               ),
+//                                                               Text(
+//                                                                 widget
+//                                                                     .episodeList
+//                                                                     .voteCount!
+//                                                                     .toString(),
+//                                                                 style:
+//                                                                     const TextStyle(
+//                                                                         fontSize:
+//                                                                             10),
+//                                                               ),
+//                                                             ],
+//                                                           ),
+//                                                         ),
+//                                                       ],
+//                                                     ),
+//                                                   ],
+//                                                 ),
+//                                               ],
+//                                             ),
 //                                           ),
 //                                         ),
 //                                       ],
@@ -172,14 +272,6 @@
 //                                                     : Colors.black)),
 //                                       ),
 //                                       Tab(
-//                                         child: Text('Episodes',
-//                                             style: TextStyle(
-//                                                 fontFamily: 'Poppins',
-//                                                 color: isDark
-//                                                     ? Colors.white
-//                                                     : Colors.black)),
-//                                       ),
-//                                       Tab(
 //                                         child: Text('Cast',
 //                                             style: TextStyle(
 //                                                 fontFamily: 'Poppins',
@@ -189,6 +281,14 @@
 //                                       ),
 //                                       Tab(
 //                                         child: Text('Crew',
+//                                             style: TextStyle(
+//                                                 fontFamily: 'Poppins',
+//                                                 color: isDark
+//                                                     ? Colors.white
+//                                                     : Colors.black)),
+//                                       ),
+//                                       Tab(
+//                                         child: Text('Guest Stars',
 //                                             style: TextStyle(
 //                                                 fontFamily: 'Poppins',
 //                                                 color: isDark
@@ -205,14 +305,13 @@
 //                                     padding: const EdgeInsets.fromLTRB(
 //                                         1.6, 0, 1.6, 3),
 //                                     child: TabBarView(
-//                                       physics: const PageScrollPhysics(),
 //                                       controller: tabController,
 //                                       children: [
-//                                         SingleChildScrollView(
-//                                           child: Container(
-//                                             color: isDark
-//                                                 ? const Color(0xFF000000)
-//                                                 : const Color(0xFFFFFFFF),
+//                                         Container(
+//                                           color: isDark
+//                                               ? const Color(0xFF000000)
+//                                               : const Color(0xFFFFFFFF),
+//                                           child: SingleChildScrollView(
 //                                             child: Column(
 //                                               children: <Widget>[
 //                                                 Row(
@@ -231,11 +330,11 @@
 //                                                   padding:
 //                                                       const EdgeInsets.all(8.0),
 //                                                   child: ReadMoreText(
-//                                                     widget.seasons.overview!
+//                                                     widget.episodeList.overview!
 //                                                             .isEmpty
 //                                                         ? 'This season doesn\'t have an overview'
-//                                                         : widget
-//                                                             .seasons.overview!,
+//                                                         : widget.episodeList
+//                                                             .overview!,
 //                                                     trimLines: 4,
 //                                                     style: const TextStyle(
 //                                                         fontFamily: 'Poppins'),
@@ -268,11 +367,15 @@
 //                                                               left: 8.0,
 //                                                               bottom: 4.0),
 //                                                       child: Text(
-//                                                         widget.seasons
-//                                                                     .airDate ==
-//                                                                 null
-//                                                             ? 'First episode air date: N/A'
-//                                                             : 'First episode air date:  ${DateTime.parse(widget.seasons.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.seasons.airDate!))}, ${DateTime.parse(widget.seasons.airDate!).year}',
+//                                                         widget.episodeList
+//                                                                         .airDate ==
+//                                                                     null ||
+//                                                                 widget
+//                                                                     .episodeList
+//                                                                     .airDate!
+//                                                                     .isEmpty
+//                                                             ? 'Episode air date: N/A'
+//                                                             : 'Episode air date:  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
 //                                                         style: const TextStyle(
 //                                                           fontFamily:
 //                                                               'PoppinsSB',
@@ -281,56 +384,140 @@
 //                                                     ),
 //                                                   ],
 //                                                 ),
-//                                                 ScrollingTVArtists(
-//                                                   api: Endpoints
-//                                                       .getTVSeasonCreditsUrl(
-//                                                           widget.tvDetails.id!,
-//                                                           widget.seasons
-//                                                               .seasonNumber!),
-//                                                   title: 'Cast',
+//                                                 Container(
+//                                                   child: TextButton(
+//                                                     style: ButtonStyle(
+//                                                         maximumSize:
+//                                                             MaterialStateProperty
+//                                                                 .all(Size(
+//                                                                     buttonWidth!,
+//                                                                     50)),
+//                                                         backgroundColor:
+//                                                             MaterialStateProperty
+//                                                                 .all(const Color(
+//                                                                     0xFFF57C00))),
+//                                                     onPressed: () async {
+//                                                       mixpanel.track(
+//                                                           'Most viewed TV series',
+//                                                           properties: {
+//                                                             'TV series name':
+//                                                                 '${widget.seriesName}',
+//                                                             'TV series id':
+//                                                                 '${widget.tvId}',
+//                                                             'TV series episode name':
+//                                                                 '${widget.episodeList.name}',
+//                                                             'TV series season number':
+//                                                                 '${widget.episodeList.seasonNumber}',
+//                                                             'TV series episode number':
+//                                                                 '${widget.episodeList.episodeNumber}'
+//                                                           });
+//                                                       Navigator.push(context,
+//                                                           MaterialPageRoute(
+//                                                               builder:
+//                                                                   (context) {
+//                                                         return TVStream(
+//                                                           streamUrl:
+//                                                               'https://www.2embed.to/embed/tmdb/tv?id=${widget.tvId}&s=${widget.episodeList.seasonNumber}&e=${widget.episodeList.episodeNumber}',
+//                                                           tvSeriesName:
+//                                                               '${widget.seriesName}',
+//                                                         );
+//                                                       }));
+//                                                     },
+//                                                     child: Row(
+//                                                       children: [
+//                                                         const Padding(
+//                                                           padding:
+//                                                               EdgeInsets.only(
+//                                                                   right: 10),
+//                                                           child: Icon(
+//                                                             Icons.play_circle,
+//                                                             color: Colors.white,
+//                                                           ),
+//                                                         ),
+//                                                         const Text(
+//                                                           'WATCH NOW',
+//                                                           style: TextStyle(
+//                                                               color:
+//                                                                   Colors.white),
+//                                                         ),
+//                                                         Visibility(
+//                                                           visible: isVisible!,
+//                                                           child: const Padding(
+//                                                             padding:
+//                                                                 EdgeInsets.only(
+//                                                               left: 10.0,
+//                                                             ),
+//                                                             child: SizedBox(
+//                                                               height: 16,
+//                                                               width: 16,
+//                                                               child:
+//                                                                   CircularProgressIndicator(
+//                                                                 color: Colors
+//                                                                     .white,
+//                                                               ),
+//                                                             ),
+//                                                           ),
+//                                                         ),
+//                                                       ],
+//                                                     ),
+//                                                   ),
 //                                                 ),
-//                                                 TVSeasonImagesDisplay(
+//                                                 ScrollingTVEpisodeCasts(
+//                                                   api: Endpoints
+//                                                       .getEpisodeCredits(
+//                                                           widget.tvId!,
+//                                                           widget.episodeList
+//                                                               .seasonNumber!,
+//                                                           widget.episodeList
+//                                                               .episodeNumber!),
+//                                                 ),
+//                                                 TVEpisodeImagesDisplay(
 //                                                   title: 'Images',
 //                                                   name:
-//                                                       '${widget.seriesName}_season_${widget.seasons.seasonNumber}',
+//                                                       '${widget.seriesName}_${widget.episodeList.name}',
 //                                                   api: Endpoints
-//                                                       .getTVSeasonImagesUrl(
-//                                                           widget.tvDetails.id!,
-//                                                           widget.seasons
-//                                                               .seasonNumber!),
+//                                                       .getTVEpisodeImagesUrl(
+//                                                           widget.tvId!,
+//                                                           widget.episodeList
+//                                                               .seasonNumber!,
+//                                                           widget.episodeList
+//                                                               .episodeNumber!),
 //                                                 ),
 //                                                 TVVideosDisplay(
 //                                                   api: Endpoints
-//                                                       .getTVSeasonVideosUrl(
-//                                                           widget.tvDetails.id!,
-//                                                           widget.seasons
-//                                                               .seasonNumber!),
+//                                                       .getTVEpisodeVideosUrl(
+//                                                           widget.tvId!,
+//                                                           widget.episodeList
+//                                                               .seasonNumber!,
+//                                                           widget.episodeList
+//                                                               .episodeNumber!),
 //                                                   title: 'Videos',
 //                                                 ),
 //                                               ],
 //                                             ),
 //                                           ),
 //                                         ),
-//                                         EpisodeListWidget(
-//                                           adult: widget.adult,
-//                                           seriesName: widget.seriesName,
-//                                           tvId: widget.tvDetails.id,
-//                                           api: Endpoints.getSeasonDetails(
-//                                               widget.tvDetails.id!,
-//                                               widget.seasons.seasonNumber!),
-//                                         ),
-//                                         TVCastTab(
-//                                           api: Endpoints
-//                                               .getFullTVSeasonCreditsUrl(
-//                                                   widget.tvDetails.id!,
-//                                                   widget.seasons.seasonNumber!),
-//                                         ),
+//                                         TVEpisodeCastTab(
+//                                             api: Endpoints.getEpisodeCredits(
+//                                                 widget.tvId!,
+//                                                 widget
+//                                                     .episodeList.seasonNumber!,
+//                                                 widget.episodeList
+//                                                     .episodeNumber!)),
 //                                         TVCrewTab(
-//                                           api: Endpoints
-//                                               .getFullTVSeasonCreditsUrl(
-//                                                   widget.tvDetails.id!,
-//                                                   widget.seasons.seasonNumber!),
-//                                         ),
+//                                             api: Endpoints.getEpisodeCredits(
+//                                                 widget.tvId!,
+//                                                 widget
+//                                                     .episodeList.seasonNumber!,
+//                                                 widget.episodeList
+//                                                     .episodeNumber!)),
+//                                         TVEpisodeGuestStarsTab(
+//                                             api: Endpoints.getEpisodeCredits(
+//                                                 widget.tvId!,
+//                                                 widget
+//                                                     .episodeList.seasonNumber!,
+//                                                 widget.episodeList
+//                                                     .episodeNumber!)),
 //                                       ],
 //                                     ),
 //                                   ),
@@ -340,55 +527,6 @@
 //                           ),
 //                         ),
 //                       ),
-//                       Positioned(
-//                         top: 0,
-//                         left: 40,
-//                         child: Hero(
-//                           tag: widget.heroId,
-//                           child: SizedBox(
-//                             width: 100,
-//                             height: 150,
-//                             child: ClipRRect(
-//                               borderRadius: BorderRadius.circular(8.0),
-//                               child: widget.seasons.posterPath == null
-//                                   ? Image.asset(
-//                                       'assets/images/na_logo.png',
-//                                       fit: BoxFit.cover,
-//                                     )
-//                                   : CachedNetworkImage(
-//                                       fadeOutDuration:
-//                                           const Duration(milliseconds: 300),
-//                                       fadeOutCurve: Curves.easeOut,
-//                                       fadeInDuration:
-//                                           const Duration(milliseconds: 700),
-//                                       fadeInCurve: Curves.easeIn,
-//                                       imageUrl: TMDB_BASE_IMAGE_URL +
-//                                           imageQuality +
-//                                           widget.seasons.posterPath!,
-//                                       imageBuilder: (context, imageProvider) =>
-//                                           Container(
-//                                         decoration: BoxDecoration(
-//                                           image: DecorationImage(
-//                                             image: imageProvider,
-//                                             fit: BoxFit.cover,
-//                                           ),
-//                                         ),
-//                                       ),
-//                                       placeholder: (context, url) =>
-//                                           Image.asset(
-//                                         'assets/images/loading.gif',
-//                                         fit: BoxFit.cover,
-//                                       ),
-//                                       errorWidget: (context, url, error) =>
-//                                           Image.asset(
-//                                         'assets/images/na_logo.png',
-//                                         fit: BoxFit.cover,
-//                                       ),
-//                                     ),
-//                             ),
-//                           ),
-//                         ),
-//                       )
 //                     ],
 //                   ),
 //                 ),

@@ -694,7 +694,7 @@ Widget movieCastAndCrewTabShimmer(isDark) => Container(
                                 padding: const EdgeInsets.only(bottom: 8.0),
                                 child: Container(
                                   width: 150,
-                                  height: 20,
+                                  height: 25,
                                   color: Colors.white,
                                 ),
                               ),
@@ -1422,7 +1422,7 @@ Widget tvCastAndCrewTabShimmer(isDark) => Container(
                                 padding: const EdgeInsets.only(bottom: 4.0),
                                 child: Container(
                                   width: 150,
-                                  height: 20,
+                                  height: 25,
                                   color: Colors.white,
                                 ),
                               ),

@@ -3050,7 +3050,8 @@ class CastTabState extends State<CastTab>
                                         widget.credits.cast![index].name!,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                            fontFamily: 'PoppinsSB'),
+                                            fontFamily: 'PoppinsSB',
+                                            fontSize: 20),
                                       ),
                                       Text(
                                         'As : '
@@ -3216,7 +3217,8 @@ class CrewTabState extends State<CrewTab>
                                         widget.credits.crew![index].name!,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                            fontFamily: 'PoppinsSB'),
+                                            fontFamily: 'PoppinsSB',
+                                            fontSize: 20),
                                       ),
                                       Text(
                                         'Job : '

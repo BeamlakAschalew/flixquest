@@ -4,7 +4,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/database_controller.dart';
-import '../screens/tv/tv_castandcrew.dart';
+import '../screens/tv/tvdetail_castandcrew.dart';
+import '../screens/tv/tvepisode_castandcrew.dart';
+import '../screens/tv/tvseason_castandcrew.dart';
 import '/models/dropdown_select.dart';
 import '/models/filter_chip.dart';
 import '/provider/settings_provider.dart';
@@ -600,9 +602,19 @@ class ScrollingTVState extends State<ScrollingTV>
 
 class ScrollingTVArtists extends StatefulWidget {
   final String? api, title, tapButtonText;
-  final int? id;
+  final int id;
+  final int? episodeNumber;
+  final int? seasonNumber;
+  final String passedFrom;
   const ScrollingTVArtists(
-      {Key? key, this.api, this.title, this.tapButtonText, this.id})
+      {Key? key,
+      this.api,
+      this.title,
+      this.tapButtonText,
+      required this.id,
+      this.episodeNumber,
+      this.seasonNumber,
+      required this.passedFrom})
       : super(key: key);
   @override
   ScrollingTVArtistsState createState() => ScrollingTVArtistsState();
@@ -641,10 +653,24 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
             TextButton(
                 onPressed: () {
                   if (credits != null) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return TVCastAndCrew(id: widget.id!);
-                    }));
+                    if (widget.passedFrom == 'seasons_detail') {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return TVSeasonCastAndCrew(
+                          passedFrom: widget.passedFrom,
+                          id: widget.id,
+                          seasonNumber: widget.seasonNumber!,
+                        );
+                      }));
+                    } else {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return TVDetailCastAndCrew(
+                          passedFrom: widget.passedFrom,
+                          id: widget.id,
+                        );
+                      }));
+                    }
                   }
                 },
                 child: const Text('See all cast and crew'))
@@ -771,9 +797,17 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
 
 class ScrollingTVEpisodeCasts extends StatefulWidget {
   final String? api;
+  final int? id;
+  final int episodeNumber;
+  final int seasonNumber;
+  final String passedFrom;
   const ScrollingTVEpisodeCasts({
     Key? key,
     this.api,
+    required this.id,
+    required this.episodeNumber,
+    required this.seasonNumber,
+    required this.passedFrom,
   }) : super(key: key);
   @override
   ScrollingTVEpisodeCastsState createState() => ScrollingTVEpisodeCastsState();
@@ -822,7 +856,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
@@ -830,6 +864,20 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                           style: kTextHeaderStyle,
                         ),
                       ),
+                      TextButton(
+                          onPressed: () {
+                            if (credits != null) {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return TVEpisodeCastAndCrew(
+                                  episodeNumber: widget.episodeNumber,
+                                  seasonNumber: widget.seasonNumber,
+                                  id: widget.id!,
+                                );
+                              }));
+                            }
+                          },
+                          child: const Text('See all cast and crew'))
                     ],
                   ),
         SizedBox(
@@ -846,11 +894,6 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          mixpanel
-                              .track('Most viewed person pages', properties: {
-                            'Person name': '${credits!.cast![index].name}',
-                            'Person id': '${credits!.cast![index].id}'
-                          });
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return CastDetailPage(
@@ -2270,7 +2313,10 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
 
 class TVCastTab extends StatefulWidget {
   final String? api;
-  const TVCastTab({Key? key, this.api}) : super(key: key);
+  const TVCastTab({
+    Key? key,
+    this.api,
+  }) : super(key: key);
 
   @override
   TVCastTabState createState() => TVCastTabState();
@@ -2432,7 +2478,8 @@ class TVCastTabState extends State<TVCastTab>
                                               Text(
                                                 credits!.cast![index].name!,
                                                 style: const TextStyle(
-                                                    fontFamily: 'PoppinsSB'),
+                                                    fontFamily: 'PoppinsSB',
+                                                    fontSize: 20),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                               Text(
@@ -2932,7 +2979,8 @@ class TVCrewTabState extends State<TVCrewTab>
                                                 credits!.crew![index].name!,
                                                 overflow: TextOverflow.ellipsis,
                                                 style: const TextStyle(
-                                                    fontFamily: 'PoppinsSB'),
+                                                    fontFamily: 'PoppinsSB',
+                                                    fontSize: 20),
                                               ),
                                               Text(
                                                 'Job : '
@@ -5747,6 +5795,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return credits == null
         ? Container(
+            padding: EdgeInsets.only(top: 8),
             color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
@@ -5782,7 +5831,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                   : const Color(0xFFFFFFFF),
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                  top: 0.0,
+                                  top: 8.0,
                                   bottom: 5.0,
                                   left: 10,
                                 ),
@@ -5868,7 +5917,8 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                               Text(
                                                 credits!.cast![index].name!,
                                                 style: const TextStyle(
-                                                    fontFamily: 'PoppinsSB'),
+                                                    fontFamily: 'PoppinsSB',
+                                                    fontSize: 20),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
                                               Text(
@@ -5994,14 +6044,14 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     return credits == null
         ? Container(
             color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-            child: movieCastAndCrewTabShimmer(isDark))
-        : credits!.episodeGuestStars!.isEmpty
+            child: tvCastAndCrewTabShimmer(isDark))
+        : credits!.cast!.isEmpty
             ? Container(
                 color:
                     isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
                 child: const Center(
                   child: Text(
-                      'There is no data available for this TV episode guest stars',
+                      'There is no data available for this TV episode Guest stars',
                       style: kTextSmallHeaderStyle),
                 ),
               )
@@ -6015,148 +6065,132 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                         itemCount: credits!.episodeGuestStars!.length,
                         itemBuilder: (BuildContext context, int index) {
                           return GestureDetector(
-                            onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return GuestStarDetailPage(
-                                    cast: credits!.episodeGuestStars![index],
-                                    heroId:
-                                        '${credits!.episodeGuestStars![index].creditId}');
-                              }));
-                            },
-                            child: Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF),
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 0.0,
-                                  bottom: 5.0,
-                                  left: 10,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      // crossAxisAlignment:
-                                      //     CrossAxisAlignment.start,
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return GuestStarDetailPage(
+                                      cast: credits!.episodeGuestStars![index],
+                                      heroId:
+                                          '${credits!.episodeGuestStars![index].creditId}');
+                                }));
+                              },
+                              child: Container(
+                                  color: isDark
+                                      ? const Color(0xFF000000)
+                                      : const Color(0xFFFFFFFF),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 8.0,
+                                      bottom: 5.0,
+                                      left: 10,
+                                    ),
+                                    child: Column(
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 20.0, left: 10),
-                                          child: SizedBox(
-                                            width: 80,
-                                            height: 80,
-                                            child: Hero(
-                                              tag:
-                                                  '${credits!.episodeGuestStars![index].creditId}',
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        100.0),
-                                                child: credits!
-                                                            .episodeGuestStars![
-                                                                index]
-                                                            .profilePath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_square.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl: TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            credits!
+                                        Row(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 20.0, left: 10),
+                                              child: SizedBox(
+                                                width: 80,
+                                                height: 80,
+                                                child: Hero(
+                                                  tag:
+                                                      '${credits!.episodeGuestStars![index].name}',
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            100.0),
+                                                    child: credits!
                                                                 .episodeGuestStars![
                                                                     index]
-                                                                .profilePath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
+                                                                .profilePath ==
+                                                            null
+                                                        ? Image.asset(
+                                                            'assets/images/na_square.png',
+                                                            fit: BoxFit.cover,
+                                                          )
+                                                        : CachedNetworkImage(
+                                                            fadeOutDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                            fadeOutCurve:
+                                                                Curves.easeOut,
+                                                            fadeInDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        700),
+                                                            fadeInCurve:
+                                                                Curves.easeIn,
+                                                            imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                credits!
+                                                                    .episodeGuestStars![
+                                                                        index]
+                                                                    .profilePath!,
+                                                            imageBuilder: (context,
+                                                                    imageProvider) =>
+                                                                Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image:
+                                                                      imageProvider,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            placeholder: (context,
+                                                                    url) =>
+                                                                castAndCrewTabImageShimmer(
+                                                                    isDark),
+                                                            errorWidget:
+                                                                (context, url,
+                                                                        error) =>
+                                                                    Image.asset(
+                                                              'assets/images/na_sqaure.png',
                                                               fit: BoxFit.cover,
                                                             ),
                                                           ),
-                                                        ),
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            castAndCrewTabImageShimmer(
-                                                                isDark),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_square.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    credits!
+                                                        .episodeGuestStars![
+                                                            index]
+                                                        .name!,
+                                                    style: const TextStyle(
+                                                        fontFamily: 'PoppinsSB',
+                                                        fontSize: 20),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                credits!
-                                                    .episodeGuestStars![index]
-                                                    .name!,
-                                                style: const TextStyle(
-                                                    fontFamily: 'PoppinsSB'),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              Text(
-                                                'As : '
-                                                '${credits!.episodeGuestStars![index].character!.isEmpty ? 'N/A' : credits!.episodeGuestStars![index].character!}',
-                                              ),
-                                              // Text(
-                                              //   credits!.cast![index].roles![0]
-                                              //               .episodeCount! ==
-                                              //           1
-                                              //       ? credits!.cast![index]
-                                              //               .roles![0].episodeCount!
-                                              //               .toString() +
-                                              //           ' episode'
-                                              //       : credits!.cast![index]
-                                              //               .roles![0].episodeCount!
-                                              //               .toString() +
-                                              //           ' episodes',
-                                              // ),
-                                            ],
-                                          ),
-                                        )
+                                        Divider(
+                                          color: !isDark
+                                              ? Colors.black54
+                                              : Colors.white54,
+                                          thickness: 1,
+                                          endIndent: 20,
+                                          indent: 10,
+                                        ),
                                       ],
                                     ),
-                                    Divider(
-                                      color: !isDark
-                                          ? Colors.black54
-                                          : Colors.white54,
-                                      thickness: 1,
-                                      endIndent: 20,
-                                      indent: 10,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
+                                  )));
                         }));
   }
 
@@ -6596,6 +6630,7 @@ class _TVAboutState extends State<TVAbout> {
               ],
             ),
             ScrollingTVArtists(
+              passedFrom: 'tv_detail',
               api: Endpoints.getTVCreditsUrl(widget.tvSeries.id!),
               title: 'Cast',
               id: widget.tvSeries.id!,

@@ -204,22 +204,8 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                             child: SafeArea(
                               child: Container(
                                 alignment: Alignment.topRight,
-                                child: GestureDetector(
-                                  child: WatchProvidersButton(
-                                    api: Endpoints.getMovieWatchProviders(
-                                        tvSeries.id!),
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        builder: (builder) {
-                                          return WatchProvidersDetails(
-                                            api: Endpoints.getTVWatchProviders(
-                                                tvSeries.id!),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  ),
+                                child: const TopButton(
+                                  buttonText: 'Open show',
                                 ),
                               ),
                             ),
@@ -400,6 +386,9 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
               ],
             ),
             ScrollingTVArtists(
+              id: widget.tvDetails.id!,
+              seasonNumber: widget.season.seasonNumber,
+              passedFrom: 'seasons_detail',
               api: Endpoints.getTVSeasonCreditsUrl(
                   widget.tvDetails.id!, widget.season.seasonNumber!),
               title: 'Cast',
