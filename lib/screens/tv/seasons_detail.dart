@@ -236,21 +236,30 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: CachedNetworkImage(
+                            child: SizedBox(
                               width: 94,
                               height: 140,
-                              fit: BoxFit.fill,
-                              placeholder: (context, url) => Image.asset(
-                                'assets/images/loading.gif',
-                                fit: BoxFit.cover,
-                              ),
-                              errorWidget: (context, url, error) => Image.asset(
-                                'assets/images/na_logo.png',
-                                fit: BoxFit.cover,
-                              ),
-                              imageUrl: TMDB_BASE_IMAGE_URL +
-                                  imageQuality +
-                                  season.posterPath!,
+                              child: season.posterPath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      fit: BoxFit.fill,
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          season.posterPath!,
+                                    ),
                             ),
                           ),
                         )),
