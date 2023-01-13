@@ -706,7 +706,9 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                   MaterialPageRoute(builder: (context) {
                                 return CastDetailPage(
                                   cast: credits!.cast![index],
-                                  heroId: '${credits!.cast![index].id}',
+                                  heroId: '${credits!.cast![index].id}'
+                                      '${credits!.cast![index].creditId}'
+                                      '${credits!.cast![index].castId}',
                                 );
                               }));
                             },
@@ -1416,7 +1418,8 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                                   MaterialPageRoute(builder: (context) {
                                 return CreatedByPersonDetailPage(
                                   createdBy: tvDetails!.createdBy![index],
-                                  heroId: '${tvDetails!.createdBy![index].id}',
+                                  heroId: '${tvDetails!.createdBy![index].id}'
+                                      '${tvDetails!.createdBy![index].name}',
                                 );
                               }));
                             },

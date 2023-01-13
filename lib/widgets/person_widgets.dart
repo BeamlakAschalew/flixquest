@@ -1,6 +1,13 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import '../api/endpoints.dart';
+import '../models/credits.dart';
+import '../screens/person/cast_detail.dart';
+import '../screens/person/createdby_detail.dart';
+import '../screens/person/crew_detail.dart';
+import '../screens/person/guest_star_detail.dart';
+import '../screens/person/searchedperson.dart';
 import '/widgets/common_widgets.dart';
 import '/screens/hero_photoview.dart';
 import 'package:intl/intl.dart';
@@ -20,6 +27,7 @@ import '/screens/tv/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:readmore/readmore.dart';
+import '/models/credits.dart' as cre;
 
 class PersonImagesDisplay extends StatefulWidget {
   const PersonImagesDisplay({
@@ -248,142 +256,136 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                           ),
                         ],
                       ),
-                      Expanded(
-                        child: personMoviesList!.isEmpty
-                            ? Container()
-                            : Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 10.0,
-                                    right: 10.0,
-                                    bottom: 8.0,
-                                    top: 0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: GridView.builder(
-                                          gridDelegate:
-                                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                                            maxCrossAxisExtent: 150,
-                                            childAspectRatio: 0.48,
-                                            crossAxisSpacing: 5,
-                                            mainAxisSpacing: 5,
-                                          ),
-                                          itemCount: personMoviesList!.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  return MovieDetailPage(
-                                                      movie: personMoviesList![
-                                                          index],
-                                                      heroId:
-                                                          '${personMoviesList![index].id}');
-                                                }));
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4.0),
-                                                child: Column(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 6,
-                                                      child: Hero(
-                                                        tag:
-                                                            '${personMoviesList![index].id}',
-                                                        child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      8.0),
-                                                          child: personMoviesList![
-                                                                          index]
-                                                                      .posterPath ==
-                                                                  null
-                                                              ? Image.asset(
+                      personMoviesList!.isEmpty
+                          ? Container()
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 5.0, right: 5.0, bottom: 8.0, top: 0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: GridView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        gridDelegate:
+                                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 150,
+                                          childAspectRatio: 0.48,
+                                          crossAxisSpacing: 5,
+                                          mainAxisSpacing: 5,
+                                        ),
+                                        itemCount: personMoviesList!.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return MovieDetailPage(
+                                                    movie: personMoviesList![
+                                                        index],
+                                                    heroId:
+                                                        '${personMoviesList![index].id}');
+                                              }));
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
+                                              child: Column(
+                                                children: [
+                                                  Expanded(
+                                                    flex: 6,
+                                                    child: Hero(
+                                                      tag:
+                                                          '${personMoviesList![index].id}',
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                        child: personMoviesList![
+                                                                        index]
+                                                                    .posterPath ==
+                                                                null
+                                                            ? Image.asset(
+                                                                'assets/images/na_logo.png',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              )
+                                                            : CachedNetworkImage(
+                                                                fadeOutDuration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            300),
+                                                                fadeOutCurve:
+                                                                    Curves
+                                                                        .easeOut,
+                                                                fadeInDuration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            700),
+                                                                fadeInCurve:
+                                                                    Curves
+                                                                        .easeIn,
+                                                                imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                    imageQuality +
+                                                                    personMoviesList![
+                                                                            index]
+                                                                        .posterPath!,
+                                                                imageBuilder:
+                                                                    (context,
+                                                                            imageProvider) =>
+                                                                        Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    image:
+                                                                        DecorationImage(
+                                                                      image:
+                                                                          imageProvider,
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                placeholder: (context,
+                                                                        url) =>
+                                                                    scrollingImageShimmer(
+                                                                        isDark),
+                                                                errorWidget: (context,
+                                                                        url,
+                                                                        error) =>
+                                                                    Image.asset(
                                                                   'assets/images/na_logo.png',
                                                                   fit: BoxFit
                                                                       .cover,
-                                                                )
-                                                              : CachedNetworkImage(
-                                                                  fadeOutDuration:
-                                                                      const Duration(
-                                                                          milliseconds:
-                                                                              300),
-                                                                  fadeOutCurve:
-                                                                      Curves
-                                                                          .easeOut,
-                                                                  fadeInDuration:
-                                                                      const Duration(
-                                                                          milliseconds:
-                                                                              700),
-                                                                  fadeInCurve:
-                                                                      Curves
-                                                                          .easeIn,
-                                                                  imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                      imageQuality +
-                                                                      personMoviesList![
-                                                                              index]
-                                                                          .posterPath!,
-                                                                  imageBuilder:
-                                                                      (context,
-                                                                              imageProvider) =>
-                                                                          Container(
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      image:
-                                                                          DecorationImage(
-                                                                        image:
-                                                                            imageProvider,
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  placeholder: (context,
-                                                                          url) =>
-                                                                      scrollingImageShimmer(
-                                                                          isDark),
-                                                                  errorWidget: (context,
-                                                                          url,
-                                                                          error) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/na_logo.png',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
                                                                 ),
-                                                        ),
+                                                              ),
                                                       ),
                                                     ),
-                                                    const SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    Expanded(
-                                                        flex: 2,
-                                                        child: Text(
-                                                          personMoviesList![
-                                                                  index]
-                                                              .originalTitle!,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        )),
-                                                  ],
-                                                ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Expanded(
+                                                      flex: 2,
+                                                      child: Text(
+                                                        personMoviesList![index]
+                                                            .originalTitle!,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      )),
+                                                ],
                                               ),
-                                            );
-                                          }),
-                                    ),
-                                  ],
-                                ),
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                ],
                               ),
-                      ),
+                            ),
                     ],
                   );
   }
@@ -504,145 +506,142 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                           ),
                         ],
                       ),
-                      Expanded(
-                        child: personTVList!.isEmpty
-                            ? Container()
-                            : Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 10.0,
-                                    right: 10.0,
-                                    bottom: 10.0,
-                                    top: 0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: GridView.builder(
-                                          gridDelegate:
-                                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                                            maxCrossAxisExtent: 150,
-                                            childAspectRatio: 0.48,
-                                            crossAxisSpacing: 5,
-                                            mainAxisSpacing: 5,
-                                          ),
-                                          itemCount: personTVList!.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  return TVDetailPage(
-                                                      tvSeries:
-                                                          personTVList![index],
-                                                      heroId:
-                                                          '${personTVList![index].id}');
-                                                }));
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4.0),
-                                                child: Column(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 6,
-                                                      child: Hero(
-                                                        tag:
-                                                            '${personTVList![index].id}',
-                                                        child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      8.0),
-                                                          child: personTVList![
-                                                                          index]
-                                                                      .posterPath ==
-                                                                  null
-                                                              ? Image.asset(
+                      personTVList!.isEmpty
+                          ? Container()
+                          : Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10.0,
+                                  right: 10.0,
+                                  bottom: 10.0,
+                                  top: 0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: GridView.builder(
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        gridDelegate:
+                                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 150,
+                                          childAspectRatio: 0.48,
+                                          crossAxisSpacing: 5,
+                                          mainAxisSpacing: 5,
+                                        ),
+                                        itemCount: personTVList!.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return TVDetailPage(
+                                                    tvSeries:
+                                                        personTVList![index],
+                                                    heroId:
+                                                        '${personTVList![index].id}');
+                                              }));
+                                            },
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(4.0),
+                                              child: Column(
+                                                children: [
+                                                  Expanded(
+                                                    flex: 6,
+                                                    child: Hero(
+                                                      tag:
+                                                          '${personTVList![index].id}',
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8.0),
+                                                        child: personTVList![
+                                                                        index]
+                                                                    .posterPath ==
+                                                                null
+                                                            ? Image.asset(
+                                                                'assets/images/na_logo.png',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              )
+                                                            : CachedNetworkImage(
+                                                                fadeOutDuration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            300),
+                                                                fadeOutCurve:
+                                                                    Curves
+                                                                        .easeOut,
+                                                                fadeInDuration:
+                                                                    const Duration(
+                                                                        milliseconds:
+                                                                            700),
+                                                                fadeInCurve:
+                                                                    Curves
+                                                                        .easeIn,
+                                                                imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                    imageQuality +
+                                                                    personTVList![
+                                                                            index]
+                                                                        .posterPath!,
+                                                                imageBuilder:
+                                                                    (context,
+                                                                            imageProvider) =>
+                                                                        Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    image:
+                                                                        DecorationImage(
+                                                                      image:
+                                                                          imageProvider,
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                placeholder: (context,
+                                                                        url) =>
+                                                                    Image.asset(
+                                                                  'assets/images/loading.gif',
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                                errorWidget: (context,
+                                                                        url,
+                                                                        error) =>
+                                                                    Image.asset(
                                                                   'assets/images/na_logo.png',
                                                                   fit: BoxFit
                                                                       .cover,
-                                                                )
-                                                              : CachedNetworkImage(
-                                                                  fadeOutDuration:
-                                                                      const Duration(
-                                                                          milliseconds:
-                                                                              300),
-                                                                  fadeOutCurve:
-                                                                      Curves
-                                                                          .easeOut,
-                                                                  fadeInDuration:
-                                                                      const Duration(
-                                                                          milliseconds:
-                                                                              700),
-                                                                  fadeInCurve:
-                                                                      Curves
-                                                                          .easeIn,
-                                                                  imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                      imageQuality +
-                                                                      personTVList![
-                                                                              index]
-                                                                          .posterPath!,
-                                                                  imageBuilder:
-                                                                      (context,
-                                                                              imageProvider) =>
-                                                                          Container(
-                                                                    decoration:
-                                                                        BoxDecoration(
-                                                                      image:
-                                                                          DecorationImage(
-                                                                        image:
-                                                                            imageProvider,
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                  placeholder: (context,
-                                                                          url) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/loading.gif',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
-                                                                  errorWidget: (context,
-                                                                          url,
-                                                                          error) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/na_logo.png',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
                                                                 ),
-                                                        ),
+                                                              ),
                                                       ),
                                                     ),
-                                                    const SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    Expanded(
-                                                        flex: 2,
-                                                        child: Text(
-                                                          personTVList![index]
-                                                              .originalName!,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        )),
-                                                  ],
-                                                ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 5,
+                                                  ),
+                                                  Expanded(
+                                                      flex: 2,
+                                                      child: Text(
+                                                        personTVList![index]
+                                                            .originalName!,
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        maxLines: 2,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      )),
+                                                ],
                                               ),
-                                            );
-                                          }),
-                                    ),
-                                  ],
-                                ),
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                ],
                               ),
-                      ),
+                            ),
                     ],
                   );
   }
@@ -950,6 +949,1233 @@ class _PersonDataTableState extends State<PersonDataTable> {
                     ),
                   ]),
                 ]),
+        ),
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class CastDetailAbout extends StatefulWidget {
+  CastDetailAbout(
+      {Key? key,
+      required this.cast,
+      required this.selectedIndex,
+      required this.tabController})
+      : super(key: key);
+  int selectedIndex;
+  final cre.Cast? cast;
+  final TabController tabController;
+
+  @override
+  State<CastDetailAbout> createState() => _CastDetailAboutState();
+}
+
+class _CastDetailAboutState extends State<CastDetailAbout> {
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+            borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0))),
+        child: Column(
+          children: [
+            Column(
+              children: [
+                TabBar(
+                  onTap: ((value) {
+                    setState(() {
+                      widget.selectedIndex = value;
+                    });
+                  }),
+                  isScrollable: true,
+                  indicatorColor: const Color(0xFFF57C00),
+                  indicatorWeight: 3,
+                  unselectedLabelColor: Colors.white54,
+                  labelColor: Colors.white,
+                  tabs: [
+                    Tab(
+                      child: Text('About',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('Movies',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('TV Shows',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                  ],
+                  controller: widget.tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                ),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
+                      child: IndexedStack(
+                        index: widget.selectedIndex,
+                        children: [
+                          SingleChildScrollView(
+                            child: Container(
+                              color: isDark
+                                  ? const Color(0xFF000000)
+                                  : const Color(0xFFFFFFFF),
+                              child: Column(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 10, top: 10.0),
+                                    child: Column(
+                                      children: [
+                                        PersonAboutWidget(
+                                            api: Endpoints.getPersonDetails(
+                                                widget.cast!.id!)),
+                                        PersonSocialLinks(
+                                          api: Endpoints
+                                              .getExternalLinksForPerson(
+                                                  widget.cast!.id!),
+                                        ),
+                                        PersonImagesDisplay(
+                                          personName: widget.cast!.name!,
+                                          api: Endpoints.getPersonImages(
+                                            widget.cast!.id!,
+                                          ),
+                                          title: 'Images',
+                                        ),
+                                        PersonDataTable(
+                                          api: Endpoints.getPersonDetails(
+                                              widget.cast!.id!),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonMovieListWidget(
+                              isPersonAdult: widget.cast!.adult!,
+                              includeAdult:
+                                  Provider.of<SettingsProvider>(context)
+                                      .isAdult,
+                              api: Endpoints.getMovieCreditsForPerson(
+                                  widget.cast!.id!),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonTVListWidget(
+                                isPersonAdult: widget.cast!.adult!,
+                                includeAdult:
+                                    Provider.of<SettingsProvider>(context)
+                                        .isAdult,
+                                api: Endpoints.getTVCreditsForPerson(
+                                    widget.cast!.id!)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CastDetailQuickInfo extends StatelessWidget {
+  const CastDetailQuickInfo({
+    Key? key,
+    required this.widget,
+    required this.imageQuality,
+  }) : super(key: key);
+
+  final CastDetailPage widget;
+
+  final String imageQuality;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      width: double.infinity,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          Positioned(
+            bottom: 0.0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  // poster
+                  Hero(
+                    tag: widget.heroId,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(150),
+                            child: SizedBox(
+                              width: 120,
+                              height: 120,
+                              child: widget.cast!.profilePath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          widget.cast!.profilePath!,
+                                    ),
+                            ),
+                          ),
+                        )),
+                  ),
+                  const SizedBox(width: 16),
+                  //  titles
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.cast!.name!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                        ),
+                        Text(
+                          widget.cast!.department!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 15, fontFamily: 'Poppins'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class CreatedByQuickInfo extends StatelessWidget {
+  const CreatedByQuickInfo({
+    Key? key,
+    required this.widget,
+    required this.imageQuality,
+  }) : super(key: key);
+
+  final CreatedByPersonDetailPage widget;
+  final String imageQuality;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      width: double.infinity,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          Positioned(
+            bottom: 0.0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  // poster
+                  Hero(
+                    tag: widget.heroId,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(150),
+                            child: SizedBox(
+                              width: 120,
+                              height: 120,
+                              child: widget.createdBy!.profilePath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          widget.createdBy!.profilePath!,
+                                    ),
+                            ),
+                          ),
+                        )),
+                  ),
+                  const SizedBox(width: 16),
+                  //  titles
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.createdBy!.name!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class CreatedByAbout extends StatefulWidget {
+  CreatedByAbout(
+      {Key? key,
+      required this.createdBy,
+      required this.selectedIndex,
+      required this.tabController})
+      : super(key: key);
+  int selectedIndex;
+  final CreatedBy? createdBy;
+  final TabController tabController;
+
+  @override
+  State<CreatedByAbout> createState() => _CreatedByAboutState();
+}
+
+class _CreatedByAboutState extends State<CreatedByAbout> {
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+            borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0))),
+        child: Column(
+          children: [
+            Column(
+              children: [
+                TabBar(
+                  onTap: ((value) {
+                    setState(() {
+                      widget.selectedIndex = value;
+                    });
+                  }),
+                  isScrollable: true,
+                  indicatorColor: const Color(0xFFF57C00),
+                  indicatorWeight: 3,
+                  unselectedLabelColor: Colors.white54,
+                  labelColor: Colors.white,
+                  tabs: [
+                    Tab(
+                      child: Text('About',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('Movies',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('TV Shows',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                  ],
+                  controller: widget.tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                ),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
+                      child: IndexedStack(
+                        index: widget.selectedIndex,
+                        children: [
+                          SingleChildScrollView(
+                            child: Container(
+                              color: isDark
+                                  ? const Color(0xFF000000)
+                                  : const Color(0xFFFFFFFF),
+                              child: Column(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 10, top: 10.0),
+                                    child: Column(
+                                      children: [
+                                        PersonAboutWidget(
+                                            api: Endpoints.getPersonDetails(
+                                                widget.createdBy!.id!)),
+                                        PersonSocialLinks(
+                                          api: Endpoints
+                                              .getExternalLinksForPerson(
+                                                  widget.createdBy!.id!),
+                                        ),
+                                        PersonImagesDisplay(
+                                          personName: widget.createdBy!.name!,
+                                          api: Endpoints.getPersonImages(
+                                            widget.createdBy!.id!,
+                                          ),
+                                          title: 'Images',
+                                        ),
+                                        PersonDataTable(
+                                          api: Endpoints.getPersonDetails(
+                                              widget.createdBy!.id!),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonMovieListWidget(
+                              includeAdult:
+                                  Provider.of<SettingsProvider>(context)
+                                      .isAdult,
+                              api: Endpoints.getMovieCreditsForPerson(
+                                  widget.createdBy!.id!),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonTVListWidget(
+                                includeAdult:
+                                    Provider.of<SettingsProvider>(context)
+                                        .isAdult,
+                                api: Endpoints.getTVCreditsForPerson(
+                                    widget.createdBy!.id!)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CrewDetailQuickInfo extends StatelessWidget {
+  const CrewDetailQuickInfo({
+    Key? key,
+    required this.widget,
+    required this.imageQuality,
+  }) : super(key: key);
+
+  final CrewDetailPage widget;
+  final String imageQuality;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      width: double.infinity,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          Positioned(
+            bottom: 0.0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  // poster
+                  Hero(
+                    tag: widget.heroId,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(150),
+                            child: SizedBox(
+                              width: 120,
+                              height: 120,
+                              child: widget.crew!.profilePath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          widget.crew!.profilePath!,
+                                    ),
+                            ),
+                          ),
+                        )),
+                  ),
+                  const SizedBox(width: 16),
+                  //  titles
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.crew!.name!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                        ),
+                        Text(
+                          widget.crew!.department!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 15, fontFamily: 'Poppins'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class CrewDetailAbout extends StatefulWidget {
+  CrewDetailAbout(
+      {Key? key,
+      required this.crew,
+      required this.selectedIndex,
+      required this.tabController})
+      : super(key: key);
+
+  int selectedIndex;
+  final TabController tabController;
+  final cre.Crew? crew;
+
+  @override
+  State<CrewDetailAbout> createState() => _CrewDetailAboutState();
+}
+
+class _CrewDetailAboutState extends State<CrewDetailAbout> {
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+            borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0))),
+        child: Column(
+          children: [
+            Column(
+              children: [
+                TabBar(
+                  onTap: ((value) {
+                    setState(() {
+                      widget.selectedIndex = value;
+                    });
+                  }),
+                  isScrollable: true,
+                  indicatorColor: const Color(0xFFF57C00),
+                  indicatorWeight: 3,
+                  unselectedLabelColor: Colors.white54,
+                  labelColor: Colors.white,
+                  tabs: [
+                    Tab(
+                      child: Text('About',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('Movies',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('TV Shows',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                  ],
+                  controller: widget.tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                ),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
+                      child: IndexedStack(
+                        index: widget.selectedIndex,
+                        children: [
+                          SingleChildScrollView(
+                            child: Container(
+                              color: isDark
+                                  ? const Color(0xFF000000)
+                                  : const Color(0xFFFFFFFF),
+                              child: Column(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 10, top: 10.0),
+                                    child: Column(
+                                      children: [
+                                        PersonAboutWidget(
+                                            api: Endpoints.getPersonDetails(
+                                                widget.crew!.id!)),
+                                        PersonSocialLinks(
+                                          api: Endpoints
+                                              .getExternalLinksForPerson(
+                                                  widget.crew!.id!),
+                                        ),
+                                        PersonImagesDisplay(
+                                          personName: widget.crew!.name!,
+                                          api: Endpoints.getPersonImages(
+                                            widget.crew!.id!,
+                                          ),
+                                          title: 'Images',
+                                        ),
+                                        PersonDataTable(
+                                          api: Endpoints.getPersonDetails(
+                                              widget.crew!.id!),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonMovieListWidget(
+                              isPersonAdult: widget.crew!.adult!,
+                              includeAdult:
+                                  Provider.of<SettingsProvider>(context)
+                                      .isAdult,
+                              api: Endpoints.getMovieCreditsForPerson(
+                                  widget.crew!.id!),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonTVListWidget(
+                                isPersonAdult: widget.crew!.adult!,
+                                includeAdult:
+                                    Provider.of<SettingsProvider>(context)
+                                        .isAdult,
+                                api: Endpoints.getTVCreditsForPerson(
+                                    widget.crew!.id!)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class GuestStarDetailQuickInfo extends StatelessWidget {
+  const GuestStarDetailQuickInfo({
+    Key? key,
+    required this.widget,
+    required this.imageQuality,
+  }) : super(key: key);
+
+  final GuestStarDetailPage widget;
+  final String imageQuality;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      width: double.infinity,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          Positioned(
+            bottom: 0.0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  // poster
+                  Hero(
+                    tag: widget.heroId,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(150),
+                            child: SizedBox(
+                              width: 120,
+                              height: 120,
+                              child: widget.cast!.profilePath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          widget.cast!.profilePath!,
+                                    ),
+                            ),
+                          ),
+                        )),
+                  ),
+                  const SizedBox(width: 16),
+                  //  titles
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.cast!.name!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                        ),
+                        Text(
+                          widget.cast!.department!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 15, fontFamily: 'Poppins'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class GuestStarDetailAbout extends StatefulWidget {
+  GuestStarDetailAbout(
+      {Key? key,
+      required this.cast,
+      required this.selectedIndex,
+      required this.tabController})
+      : super(key: key);
+  int selectedIndex;
+  final TabController tabController;
+  final TVEpisodeGuestStars? cast;
+
+  @override
+  State<GuestStarDetailAbout> createState() => _GuestStarDetailAboutState();
+}
+
+class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+            borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0))),
+        child: Column(
+          children: [
+            Column(
+              children: [
+                TabBar(
+                  onTap: ((value) {
+                    setState(() {
+                      widget.selectedIndex = value;
+                    });
+                  }),
+                  isScrollable: true,
+                  indicatorColor: const Color(0xFFF57C00),
+                  indicatorWeight: 3,
+                  unselectedLabelColor: Colors.white54,
+                  labelColor: Colors.white,
+                  tabs: [
+                    Tab(
+                      child: Text('About',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('Movies',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('TV Shows',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                  ],
+                  controller: widget.tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                ),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
+                      child: IndexedStack(
+                        index: widget.selectedIndex,
+                        children: [
+                          SingleChildScrollView(
+                            child: Container(
+                              color: isDark
+                                  ? const Color(0xFF000000)
+                                  : const Color(0xFFFFFFFF),
+                              child: Column(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 10, top: 10.0),
+                                    child: Column(
+                                      children: [
+                                        PersonAboutWidget(
+                                            api: Endpoints.getPersonDetails(
+                                                widget.cast!.id!)),
+                                        PersonSocialLinks(
+                                          api: Endpoints
+                                              .getExternalLinksForPerson(
+                                                  widget.cast!.id!),
+                                        ),
+                                        PersonImagesDisplay(
+                                          personName: widget.cast!.name!,
+                                          api: Endpoints.getPersonImages(
+                                            widget.cast!.id!,
+                                          ),
+                                          title: 'Images',
+                                        ),
+                                        PersonDataTable(
+                                          api: Endpoints.getPersonDetails(
+                                              widget.cast!.id!),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonMovieListWidget(
+                              isPersonAdult: widget.cast!.adult!,
+                              includeAdult:
+                                  Provider.of<SettingsProvider>(context)
+                                      .isAdult,
+                              api: Endpoints.getMovieCreditsForPerson(
+                                  widget.cast!.id!),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonTVListWidget(
+                                isPersonAdult: widget.cast!.adult!,
+                                includeAdult:
+                                    Provider.of<SettingsProvider>(context)
+                                        .isAdult,
+                                api: Endpoints.getTVCreditsForPerson(
+                                    widget.cast!.id!)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SearchedPersonQuickInfo extends StatelessWidget {
+  const SearchedPersonQuickInfo({
+    Key? key,
+    required this.widget,
+    required this.imageQuality,
+  }) : super(key: key);
+
+  final SearchedPersonDetailPage widget;
+  final String imageQuality;
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      width: double.infinity,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          Positioned(
+            bottom: 0.0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                children: [
+                  // poster
+                  Hero(
+                    tag: widget.heroId,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(150),
+                            child: SizedBox(
+                              width: 120,
+                              height: 120,
+                              child: widget.person!.profilePath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          widget.person!.profilePath!,
+                                    ),
+                            ),
+                          ),
+                        )),
+                  ),
+                  const SizedBox(width: 16),
+                  //  titles
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.person!.name!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                        ),
+                        Text(
+                          widget.person!.department!,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              fontSize: 15, fontFamily: 'Poppins'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class SearchedPersonAbout extends StatefulWidget {
+  SearchedPersonAbout(
+      {Key? key,
+      required this.person,
+      required this.selectedIndex,
+      required this.tabController})
+      : super(key: key);
+  int selectedIndex;
+  final TabController tabController;
+  final Person? person;
+
+  @override
+  State<SearchedPersonAbout> createState() => _SearchedPersonAboutState();
+}
+
+class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    return SingleChildScrollView(
+      child: Container(
+        decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+            borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0))),
+        child: Column(
+          children: [
+            Column(
+              children: [
+                TabBar(
+                  onTap: ((value) {
+                    setState(() {
+                      widget.selectedIndex = value;
+                    });
+                  }),
+                  isScrollable: true,
+                  indicatorColor: const Color(0xFFF57C00),
+                  indicatorWeight: 3,
+                  unselectedLabelColor: Colors.white54,
+                  labelColor: Colors.white,
+                  tabs: [
+                    Tab(
+                      child: Text('About',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('Movies',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                    Tab(
+                      child: Text('TV Shows',
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: isDark ? Colors.white : Colors.black)),
+                    ),
+                  ],
+                  controller: widget.tabController,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                ),
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(1.6, 0, 1.6, 3),
+                      child: IndexedStack(
+                        index: widget.selectedIndex,
+                        children: [
+                          SingleChildScrollView(
+                            child: Container(
+                              color: isDark
+                                  ? const Color(0xFF000000)
+                                  : const Color(0xFFFFFFFF),
+                              child: Column(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 10, top: 10.0),
+                                    child: Column(
+                                      children: [
+                                        PersonAboutWidget(
+                                            api: Endpoints.getPersonDetails(
+                                                widget.person!.id!)),
+                                        PersonSocialLinks(
+                                          api: Endpoints
+                                              .getExternalLinksForPerson(
+                                                  widget.person!.id!),
+                                        ),
+                                        PersonImagesDisplay(
+                                          personName: widget.person!.name!,
+                                          api: Endpoints.getPersonImages(
+                                            widget.person!.id!,
+                                          ),
+                                          title: 'Images',
+                                        ),
+                                        PersonDataTable(
+                                          api: Endpoints.getPersonDetails(
+                                              widget.person!.id!),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonMovieListWidget(
+                              isPersonAdult: widget.person!.adult!,
+                              includeAdult:
+                                  Provider.of<SettingsProvider>(context)
+                                      .isAdult,
+                              api: Endpoints.getMovieCreditsForPerson(
+                                  widget.person!.id!),
+                            ),
+                          ),
+                          Container(
+                            color: isDark
+                                ? const Color(0xFF000000)
+                                : const Color(0xFFFFFFFF),
+                            child: PersonTVListWidget(
+                                isPersonAdult: widget.person!.adult!,
+                                includeAdult:
+                                    Provider.of<SettingsProvider>(context)
+                                        .isAdult,
+                                api: Endpoints.getTVCreditsForPerson(
+                                    widget.person!.id!)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

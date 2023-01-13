@@ -97,7 +97,7 @@ class _SettingsState extends State<Settings> {
                     DropdownMenuItem(value: 2, child: Text('News')),
                     DropdownMenuItem(
                       value: 3,
-                      child: Text('Discover'),
+                      child: Text('Profile'),
                     )
                   ],
                   onChanged: (int? value) {

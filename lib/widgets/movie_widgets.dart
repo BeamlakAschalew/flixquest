@@ -774,9 +774,6 @@ class MovieDetailQuickInfo extends StatelessWidget {
             child: Stack(
               alignment: AlignmentDirectional.bottomCenter,
               children: [
-                // Obx(
-                //   () =>
-
                 ShaderMask(
                   shaderCallback: (rect) {
                     return const LinearGradient(
@@ -1306,7 +1303,8 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                               MaterialPageRoute(builder: (context) {
                             return CastDetailPage(
                               cast: credits!.cast![index],
-                              heroId: '${credits!.cast![index].id}',
+                              heroId: '${credits!.cast![index].id}'
+                                  '${credits!.cast![index].creditId}',
                             );
                           }));
                         },
