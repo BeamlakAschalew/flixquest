@@ -47,7 +47,6 @@ class MovieDetailPageState extends State<MovieDetailPage>
   }
 
   final scrollController = ScrollController();
-  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
