@@ -1,12 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/models/tv.dart';
 import '../../widgets/movie_widgets.dart';
 import '/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import '/api/endpoints.dart';
-import '/constants/api_constants.dart';
 import '/models/credits.dart';
 import '/widgets/person_widgets.dart';
 

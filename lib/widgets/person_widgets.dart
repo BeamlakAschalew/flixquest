@@ -266,7 +266,8 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                   Expanded(
                                     child: GridView.builder(
                                         shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         gridDelegate:
                                             const SliverGridDelegateWithMaxCrossAxisExtent(
                                           maxCrossAxisExtent: 150,
@@ -519,7 +520,8 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                   Expanded(
                                     child: GridView.builder(
                                         shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         gridDelegate:
                                             const SliverGridDelegateWithMaxCrossAxisExtent(
                                           maxCrossAxisExtent: 150,

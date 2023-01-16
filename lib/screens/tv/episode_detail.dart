@@ -1,20 +1,12 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import '../../models/movie.dart';
 import '../../provider/settings_provider.dart';
-import '/api/endpoints.dart';
-import '/constants/api_constants.dart';
-import '../../constants/app_constants.dart';
 import '/models/tv.dart';
 import '/widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:readmore/readmore.dart';
 import '/widgets/movie_widgets.dart';
-import 'tv_stream.dart';
 
 class EpisodeDetailPage extends StatefulWidget {
   final EpisodeList episodeList;

@@ -833,7 +833,6 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
   Widget build(BuildContext context) {
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
@@ -860,7 +859,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
                           'Cast',
@@ -3334,11 +3333,13 @@ class SimilarTVTab extends StatefulWidget {
   final String api;
   final int tvId;
   final bool? includeAdult;
+  final String tvName;
   const SimilarTVTab(
       {Key? key,
       required this.api,
       required this.tvId,
-      required this.includeAdult})
+      required this.includeAdult,
+      required this.tvName})
       : super(key: key);
 
   @override
@@ -3415,11 +3416,11 @@ class SimilarTVTabState extends State<SimilarTVTab>
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const <Widget>[
+            children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'TV Shows similar with \$\tvname',
+                  'TV Shows similar with ${widget.tvName}',
                   style: kTextHeaderStyle,
                 ),
               ),
@@ -5799,7 +5800,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return credits == null
         ? Container(
-            padding: EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.only(top: 8),
             color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
@@ -6672,7 +6673,13 @@ class _TVAboutState extends State<TVAbout> {
             SimilarTVTab(
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 tvId: widget.tvSeries.id!,
+                tvName: widget.tvSeries.name!,
                 api: Endpoints.getSimilarTV(widget.tvSeries.id!, 1)),
+            DidYouKnow(
+              api: Endpoints.getExternalLinksForTV(
+                widget.tvSeries.id!,
+              ),
+            ),
           ],
         ),
       ),
@@ -6938,7 +6945,8 @@ class TVEpisodeQuickInfo extends StatelessWidget {
                             child: SafeArea(
                               child: Container(
                                 alignment: Alignment.topRight,
-                                child: TopButton(buttonText: 'Open Season'),
+                                child:
+                                    const TopButton(buttonText: 'Open Season'),
                               ),
                             ),
                           ),

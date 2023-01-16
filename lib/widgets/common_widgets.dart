@@ -1,6 +1,10 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import '../constants/app_constants.dart';
+import '../models/function.dart';
+import '../models/movie.dart';
+import '../screens/did_you_know.dart';
 import '/screens/bookmark_screen.dart';
 import '/screens/settings.dart';
 import '/screens/update_screen.dart';
@@ -1491,7 +1495,7 @@ Widget personMoviesAndTVShowShimmer(isDark) => Column(
                   direction: ShimmerDirection.ltr,
                   child: GridView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       gridDelegate:
                           const SliverGridDelegateWithMaxCrossAxisExtent(
                         maxCrossAxisExtent: 150,
@@ -1747,4 +1751,127 @@ Widget newsShimmer(isDark, scrollController, isLoading) {
       ],
     ),
   );
+}
+
+class DidYouKnow extends StatefulWidget {
+  const DidYouKnow({Key? key, required this.api}) : super(key: key);
+
+  final String? api;
+
+  @override
+  State<DidYouKnow> createState() => _DidYouKnowState();
+}
+
+class _DidYouKnowState extends State<DidYouKnow> {
+  ExternalLinks? externalLinks;
+
+  @override
+  void initState() {
+    fetchSocialLinks(widget.api!).then((value) {
+      setState(() {
+        externalLinks = value;
+      });
+    });
+    super.initState();
+  }
+
+  void navToDYK(String dataType, String dataName, String imdbId) {
+    Navigator.push(context, MaterialPageRoute(builder: ((context) {
+      return DidYouKnowScreen(
+        dataType: dataType,
+        dataName: dataName,
+        imdbId: imdbId,
+      );
+    })));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Did You Know',
+            style: kTextHeaderStyle,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Container(
+              child: externalLinks == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : externalLinks!.imdbId == null ||
+                          externalLinks!.imdbId!.isEmpty
+                      ? const Center(
+                          child: Text(
+                          'This movie doesn\'t have IMDB id therefore additional data can\'t be fetched.',
+                          textAlign: TextAlign.center,
+                        ))
+                      : Wrap(
+                          spacing: 5,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'trivia', 'Trivia', externalLinks!.imdbId!);
+                              },
+                              child: const Text('Trivia'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'quotes', 'Quotes', externalLinks!.imdbId!);
+                              },
+                              child: const Text('Quotes'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'goofs', 'Goofs', externalLinks!.imdbId!);
+                              },
+                              child: const Text('Goofs'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK('crazycredits', 'Crazy Credits',
+                                    externalLinks!.imdbId!);
+                              },
+                              child: const Text('Crazy Credits'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'alternateversions',
+                                    'Alternate Versions',
+                                    externalLinks!.imdbId!);
+                              },
+                              child: const Text('Alternate Versions'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK(
+                                    'movieconnections',
+                                    'Movie Connections',
+                                    externalLinks!.imdbId!);
+                              },
+                              child: const Text('Movie Connections'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK('soundtrack', 'Soundtrack',
+                                    externalLinks!.imdbId!);
+                              },
+                              child: const Text('Soundtrack'),
+                            ),
+                          ],
+                        )),
+          const SizedBox(
+            height: 10,
+          )
+        ],
+      ),
+    );
+  }
 }
