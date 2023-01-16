@@ -179,67 +179,74 @@ class DiscoverMoviesState extends State<DiscoverMovies>
               ? discoverMoviesAndTVShimmer(isDark)
               : requestFailed == true
                   ? retryWidget()
-                  : CarouselSlider.builder(
-                      options: CarouselOptions(
-                        disableCenter: true,
-                        viewportFraction: 0.6,
-                        enlargeCenterPage: true,
-                        autoPlay: true,
-                      ),
-                      itemBuilder:
-                          (BuildContext context, int index, pageViewIndex) {
-                        return Container(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MovieDetailPage(
-                                          movie: moviesList![index],
-                                          heroId:
-                                              '${moviesList![index].id}discover')));
-                            },
-                            child: Hero(
-                              tag: '${moviesList![index].id}discover',
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: CachedNetworkImage(
-                                  fadeOutDuration:
-                                      const Duration(milliseconds: 300),
-                                  fadeOutCurve: Curves.easeOut,
-                                  fadeInDuration:
-                                      const Duration(milliseconds: 700),
-                                  fadeInCurve: Curves.easeIn,
-                                  imageUrl:
-                                      moviesList![index].posterPath == null
+                  : moviesList!.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Wow, that\'s odd :/',
+                            style: kTextSmallBodyStyle,
+                          ),
+                        )
+                      : CarouselSlider.builder(
+                          options: CarouselOptions(
+                            disableCenter: true,
+                            viewportFraction: 0.6,
+                            enlargeCenterPage: true,
+                            autoPlay: true,
+                          ),
+                          itemBuilder:
+                              (BuildContext context, int index, pageViewIndex) {
+                            return Container(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => MovieDetailPage(
+                                              movie: moviesList![index],
+                                              heroId:
+                                                  '${moviesList![index].id}discover')));
+                                },
+                                child: Hero(
+                                  tag: '${moviesList![index].id}discover',
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: CachedNetworkImage(
+                                      fadeOutDuration:
+                                          const Duration(milliseconds: 300),
+                                      fadeOutCurve: Curves.easeOut,
+                                      fadeInDuration:
+                                          const Duration(milliseconds: 700),
+                                      fadeInCurve: Curves.easeIn,
+                                      imageUrl: moviesList![index].posterPath ==
+                                              null
                                           ? ''
                                           : TMDB_BASE_IMAGE_URL +
                                               imageQuality +
                                               moviesList![index].posterPath!,
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: imageProvider,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          discoverImageShimmer(isDark),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
-                                  placeholder: (context, url) =>
-                                      discoverImageShimmer(isDark),
-                                  errorWidget: (context, url, error) =>
-                                      Image.asset(
-                                    'assets/images/na_logo.png',
-                                    fit: BoxFit.cover,
-                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                      itemCount: moviesList!.length,
-                    ),
+                            );
+                          },
+                          itemCount: moviesList!.length,
+                        ),
         ),
       ],
     );
@@ -759,6 +766,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -833,6 +841,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                                   child: WatchProvidersButton(
                                     api: Endpoints.getMovieWatchProviders(
                                         movie.id!),
+                                    country: watchCountry,
                                     onTap: () {
                                       showModalBottomSheet(
                                         context: context,
@@ -841,6 +850,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                                             api: Endpoints
                                                 .getMovieWatchProviders(
                                                     movie.id!),
+                                            country: watchCountry,
                                           );
                                         },
                                       );
@@ -2074,7 +2084,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
-      height: 220,
+      height: 260,
       width: double.infinity,
       child: Column(
         children: [
@@ -4730,10 +4740,12 @@ class TopButtonState extends State<TopButton> {
 class WatchProvidersButton extends StatefulWidget {
   final Function()? onTap;
   final String api;
+  final String country;
   const WatchProvidersButton({
     Key? key,
     this.onTap,
     required this.api,
+    required this.country,
   }) : super(key: key);
 
   @override
@@ -4745,7 +4757,8 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
   @override
   void initState() {
     super.initState();
-    fetchWatchProviders(widget.api).then((value) {
+
+    fetchWatchProviders(widget.api, widget.country).then((value) {
       setState(() {
         watchProviders = value;
       });
@@ -4778,10 +4791,10 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
 
 class WatchProvidersDetails extends StatefulWidget {
   final String api;
-  const WatchProvidersDetails({
-    Key? key,
-    required this.api,
-  }) : super(key: key);
+  final String country;
+  const WatchProvidersDetails(
+      {Key? key, required this.api, required this.country})
+      : super(key: key);
 
   @override
   State<WatchProvidersDetails> createState() => _WatchProvidersDetailsState();
@@ -4801,7 +4814,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
   }
 
   void getData() {
-    fetchWatchProviders(widget.api).then((value) {
+    fetchWatchProviders(widget.api, widget.country).then((value) {
       setState(() {
         watchProviders = value;
       });

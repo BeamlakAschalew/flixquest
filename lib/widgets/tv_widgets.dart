@@ -181,65 +181,73 @@ class DiscoverTVState extends State<DiscoverTV>
               ? discoverMoviesAndTVShimmer(isDark)
               : requestFailed == true
                   ? retryWidget()
-                  : CarouselSlider.builder(
-                      options: CarouselOptions(
-                        disableCenter: true,
-                        viewportFraction: 0.6,
-                        enlargeCenterPage: true,
-                        autoPlay: true,
-                      ),
-                      itemBuilder:
-                          (BuildContext context, int index, pageViewIndex) {
-                        return Container(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => TVDetailPage(
-                                          tvSeries: tvList![index],
-                                          heroId: '${tvList![index].id}')));
-                            },
-                            child: Hero(
-                              tag: '${tvList![index].id}',
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: CachedNetworkImage(
-                                  fadeOutDuration:
-                                      const Duration(milliseconds: 300),
-                                  fadeOutCurve: Curves.easeOut,
-                                  fadeInDuration:
-                                      const Duration(milliseconds: 700),
-                                  fadeInCurve: Curves.easeIn,
-                                  imageUrl: tvList![index].posterPath == null
-                                      ? ''
-                                      : TMDB_BASE_IMAGE_URL +
-                                          imageQuality +
-                                          tvList![index].posterPath!,
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: imageProvider,
+                  : tvList!.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Wow, that\'s odd :/',
+                            style: kTextSmallBodyStyle,
+                          ),
+                        )
+                      : CarouselSlider.builder(
+                          options: CarouselOptions(
+                            disableCenter: true,
+                            viewportFraction: 0.6,
+                            enlargeCenterPage: true,
+                            autoPlay: true,
+                          ),
+                          itemBuilder:
+                              (BuildContext context, int index, pageViewIndex) {
+                            return Container(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => TVDetailPage(
+                                              tvSeries: tvList![index],
+                                              heroId: '${tvList![index].id}')));
+                                },
+                                child: Hero(
+                                  tag: '${tvList![index].id}',
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: CachedNetworkImage(
+                                      fadeOutDuration:
+                                          const Duration(milliseconds: 300),
+                                      fadeOutCurve: Curves.easeOut,
+                                      fadeInDuration:
+                                          const Duration(milliseconds: 700),
+                                      fadeInCurve: Curves.easeIn,
+                                      imageUrl:
+                                          tvList![index].posterPath == null
+                                              ? ''
+                                              : TMDB_BASE_IMAGE_URL +
+                                                  imageQuality +
+                                                  tvList![index].posterPath!,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          discoverImageShimmer(isDark),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
-                                  placeholder: (context, url) =>
-                                      discoverImageShimmer(isDark),
-                                  errorWidget: (context, url, error) =>
-                                      Image.asset(
-                                    'assets/images/na_logo.png',
-                                    fit: BoxFit.cover,
-                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                      itemCount: tvList!.length,
-                    ),
+                            );
+                          },
+                          itemCount: tvList!.length,
+                        ),
         ),
       ],
     );
@@ -1536,7 +1544,7 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
-      height: 220,
+      height: 260,
       width: double.infinity,
       child: Column(
         children: [
@@ -1555,7 +1563,7 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
           Expanded(
             child: SizedBox(
               width: double.infinity,
-              height: 220,
+              height: 260,
               child: tvImages == null
                   ? detailImageShimmer(isDark)
                   : CarouselSlider(
@@ -3417,11 +3425,15 @@ class SimilarTVTabState extends State<SimilarTVTab>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'TV Shows similar with ${widget.tvName}',
-                  style: kTextHeaderStyle,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'TV Shows similar with ${widget.tvName}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ),
             ],
@@ -4908,10 +4920,10 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
 
 class TVWatchProvidersDetails extends StatefulWidget {
   final String api;
-  const TVWatchProvidersDetails({
-    Key? key,
-    required this.api,
-  }) : super(key: key);
+  final String country;
+  const TVWatchProvidersDetails(
+      {Key? key, required this.api, required this.country})
+      : super(key: key);
 
   @override
   State<TVWatchProvidersDetails> createState() =>
@@ -4931,7 +4943,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
   }
 
   void getData() {
-    fetchWatchProviders(widget.api).then((value) {
+    fetchWatchProviders(widget.api, widget.country).then((value) {
       setState(() {
         watchProviders = value;
       });
@@ -6255,6 +6267,7 @@ class TVDetailQuickInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -6330,6 +6343,7 @@ class TVDetailQuickInfo extends StatelessWidget {
                                 alignment: Alignment.topRight,
                                 child: GestureDetector(
                                   child: WatchProvidersButton(
+                                    country: watchCountry,
                                     api: Endpoints.getMovieWatchProviders(
                                         tvSeries.id!),
                                     onTap: () {
@@ -6337,6 +6351,7 @@ class TVDetailQuickInfo extends StatelessWidget {
                                         context: context,
                                         builder: (builder) {
                                           return WatchProvidersDetails(
+                                            country: watchCountry,
                                             api: Endpoints.getTVWatchProviders(
                                                 tvSeries.id!),
                                           );
@@ -6375,21 +6390,30 @@ class TVDetailQuickInfo extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: CachedNetworkImage(
+                            child: SizedBox(
                               width: 94,
                               height: 140,
-                              fit: BoxFit.fill,
-                              placeholder: (context, url) => Image.asset(
-                                'assets/images/loading.gif',
-                                fit: BoxFit.cover,
-                              ),
-                              errorWidget: (context, url, error) => Image.asset(
-                                'assets/images/na_logo.png',
-                                fit: BoxFit.cover,
-                              ),
-                              imageUrl: TMDB_BASE_IMAGE_URL +
-                                  imageQuality +
-                                  tvSeries.posterPath!,
+                              child: tvSeries.posterPath == null
+                                  ? Image.asset(
+                                      'assets/images/na_logo.png',
+                                      fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      fit: BoxFit.fill,
+                                      placeholder: (context, url) =>
+                                          Image.asset(
+                                        'assets/images/loading.gif',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          tvSeries.posterPath!,
+                                    ),
                             ),
                           ),
                         )),

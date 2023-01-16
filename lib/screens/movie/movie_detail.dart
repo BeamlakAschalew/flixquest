@@ -110,12 +110,13 @@ class MovieDetailPageState extends State<MovieDetailPage>
   @override
   bool get wantKeepAlive => true;
 
-  void modalBottomSheetMenu() {
+  void modalBottomSheetMenu(String country) {
     showModalBottomSheet(
       context: context,
       builder: (builder) {
         return WatchProvidersDetails(
           api: Endpoints.getMovieWatchProviders(widget.movie.id!),
+          country: country,
         );
       },
     );

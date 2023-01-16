@@ -1,3 +1,5 @@
+import 'package:cinemax/models/country_preferences.dart';
+
 import '/models/adultmode_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
@@ -12,6 +14,7 @@ class SettingsProvider with ChangeNotifier {
   AdultModePreferences adultModePreferences = AdultModePreferences();
   DefaultHomePreferences defaultHomePreferences = DefaultHomePreferences();
   ImagePreferences imagePreferences = ImagePreferences();
+  CountryPreferences countryPreferences = CountryPreferences();
 
   bool _isAdult = false;
   bool get isAdult => _isAdult;
@@ -24,6 +27,9 @@ class SettingsProvider with ChangeNotifier {
 
   String _imageQuality = "w500/";
   String get imageQuality => _imageQuality;
+
+  String _defaultCountry = 'US';
+  String get defaultCountry => _defaultCountry;
 
   late Mixpanel mixpanel;
 
@@ -68,6 +74,17 @@ class SettingsProvider with ChangeNotifier {
   set imageQuality(String value) {
     _imageQuality = value;
     imagePreferences.setImageQuality(value);
+    notifyListeners();
+  }
+
+  // watch country
+  Future<void> getCurrentWatchCountry() async {
+    defaultCountry = await countryPreferences.getCountryName();
+  }
+
+  set defaultCountry(String value) {
+    _defaultCountry = value;
+    countryPreferences.setCountryName(value);
     notifyListeners();
   }
 

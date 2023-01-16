@@ -1,3 +1,7 @@
+import 'package:cinemax/models/watchprovider_countries.dart';
+import 'package:cinemax/screens/country_choose.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +16,10 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   String initialDropdownValue = 'w500';
   int initialHomeScreenValue = 0;
+  CountryData countryData = CountryData();
+  String? countryFlag;
+  String? countryName;
+
   @override
   Widget build(BuildContext context) {
     final adultChange = Provider.of<SettingsProvider>(context);
@@ -19,6 +27,17 @@ class _SettingsState extends State<Settings> {
     final imagequalityChange = Provider.of<SettingsProvider>(context);
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final defaultHomeValue = Provider.of<SettingsProvider>(context);
+    final country = Provider.of<SettingsProvider>(context).defaultCountry;
+
+    for (int i = 0; i < countryData.countries.length; i++) {
+      if (countryData.countries[i].isoCode.contains(country)) {
+        setState(() {
+          countryFlag = countryData.countries[i].flagPath;
+          countryName = countryData.countries[i].countryName;
+        });
+        break;
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -106,6 +125,29 @@ class _SettingsState extends State<Settings> {
                     });
                   }),
             ),
+            ListTile(
+              onTap: (() {
+                Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                  return const CountryChoose();
+                })));
+              }),
+              leading: const Icon(
+                FontAwesomeIcons.earthAmericas,
+                color: Color(0xFFF57C00),
+              ),
+              title: const Text('Watch Region'),
+              trailing: Wrap(
+                  spacing: 10,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Image.asset(
+                      countryFlag!,
+                      height: 25,
+                      width: 25,
+                    ),
+                    Text(countryName!)
+                  ]),
+            )
           ],
         ),
       ),

@@ -5,54 +5,54 @@ class WatchProviders {
   List<ADS>? ads;
   WatchProviders({this.buy, this.flatRate, this.rent, this.ads});
 
-  WatchProviders.fromJson(Map<String, dynamic> json) {
-    if (json['results']['US'] == null) {
+  WatchProviders.fromJson(Map<String, dynamic> json, String country) {
+    if (json['results'][country] == null) {
       buy = null;
       rent = null;
       flatRate = null;
       ads = null;
     } else {
-      if (json['results']['US']['buy'] != null) {
+      if (json['results'][country]['buy'] != null) {
         buy = [];
-        json['results']['US']['buy'].forEach((v) {
+        json['results'][country]['buy'].forEach((v) {
           buy?.add(Buy.fromJson(v));
         });
       }
-      if (json['results']['US']['flatrate'] != null) {
+      if (json['results'][country]['flatrate'] != null) {
         flatRate = [];
-        json['results']['US']['flatrate'].forEach((v) {
+        json['results'][country]['flatrate'].forEach((v) {
           flatRate?.add(FlatRate.fromJson(v));
         });
       }
-      if (json['results']['US']['rent'] != null) {
+      if (json['results'][country]['rent'] != null) {
         rent = [];
-        json['results']['US']['rent'].forEach((v) {
+        json['results'][country]['rent'].forEach((v) {
           rent?.add(Rent.fromJson(v));
         });
       }
-      if (json['results']['US']['ads'] != null) {
+      if (json['results'][country]['ads'] != null) {
         ads = [];
-        json['results']['US']['ads'].forEach((v) {
+        json['results'][country]['ads'].forEach((v) {
           ads?.add(ADS.fromJson(v));
         });
       }
     }
   }
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson(String country) {
     final Map<String, dynamic> data = <String, dynamic>{};
     if (buy != null) {
-      data['results']['US']['buy'] = buy?.map((v) => v.toJson()).toList();
+      data['results'][country]['buy'] = buy?.map((v) => v.toJson()).toList();
     }
     if (flatRate != null) {
-      data['results']['US']['flatrate'] =
+      data['results'][country]['flatrate'] =
           flatRate?.map((v) => v.toJson()).toList();
     }
     if (rent != null) {
-      data['results']['US']['rent'] = rent?.map((v) => v.toJson()).toList();
+      data['results'][country]['rent'] = rent?.map((v) => v.toJson()).toList();
     }
     if (rent != null) {
-      data['results']['US']['ads'] = ads?.map((v) => v.toJson()).toList();
+      data['results'][country]['ads'] = ads?.map((v) => v.toJson()).toList();
     }
     return data;
   }
