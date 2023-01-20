@@ -56,6 +56,8 @@ dependencies:
   smooth_page_indicator: ^1.0.0+2
   percent_indicator: ^4.2.2
   sqflite: ^2.2.2
+  firebase_auth: ^3.11.2
+  cloud_firestore: ^3.5.1
 
 
 dev_dependencies:
@@ -70,6 +72,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/country_flags/
+    - assets/images/profiles/
 
   fonts:
     - family: Poppins
@@ -95,8 +98,10 @@ flutter:
         - asset: assets/fonts/imdb.ttf
   
 flutter_native_splash:
-  color: "#252625"
-  image: assets/images/logo_shadow.png
+  color: "#FFFFFF"
+  color_dark: "#161716"
+  image: assets/images/logo.png
   android_12:
-    image: assets/images/logo_shadow.png
-    color: "#252625"
+    image: assets/images/logo.png
+    color: "#FFFFFF"
+    color_dark: "#161716"

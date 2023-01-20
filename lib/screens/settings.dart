@@ -135,7 +135,7 @@ class _SettingsState extends State<Settings> {
                 FontAwesomeIcons.earthAmericas,
                 color: Color(0xFFF57C00),
               ),
-              title: const Text('Watch Region'),
+              title: const Text('Watch Country'),
               trailing: Wrap(
                   spacing: 10,
                   crossAxisAlignment: WrapCrossAlignment.center,

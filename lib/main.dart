@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'package:cinemax/screens/user/user_state.dart';
+import 'package:cinemax/screens/user/user_info.dart';
 import '/constants/theme_data.dart';
-import '/screens/landing_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:firebase_messaging/firebase_messaging.dart';
@@ -79,40 +80,67 @@ class _CinemaxState extends State<Cinemax>
     firstTimeCheck();
   }
 
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) {
-            return widget.settingsProvider;
-          })
-        ],
-        child: Consumer<SettingsProvider>(
-            builder: (context, settingsProvider, snapshot) {
-          final isDark = Provider.of<SettingsProvider>(context).darktheme;
-          return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Cinemax',
-              theme: Styles.themeData(settingsProvider.darktheme, context),
-              home: isFirstLaunch == null
-                  ? Scaffold(
-                      body: Container(
-                        color: isDark
-                            ? const Color(0xFF000000)
-                            : const Color(0xFFF7F7F7),
-                        child: const Center(
-                          child: SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: CircularProgressIndicator(
-                                  color: Color(0xFFF57C00))),
-                        ),
-                      ),
-                    )
-                  : isFirstLaunch == true
-                      ? const LandingScreen()
-                      : const CinemaxHomePage());
-        }));
+    return FutureBuilder(
+        future: _initialization,
+        builder: (
+          context,
+          snapshot,
+        ) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const MaterialApp(
+              home: Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            );
+          } else if (snapshot.hasError) {
+            const MaterialApp(
+              home: Scaffold(
+                body: Center(
+                  child: Text('Error occured'),
+                ),
+              ),
+            );
+          }
+          return MultiProvider(
+              providers: [
+                ChangeNotifierProvider(create: (_) {
+                  return widget.settingsProvider;
+                })
+              ],
+              child: Consumer<SettingsProvider>(
+                  builder: (context, settingsProvider, snapshot) {
+                //  final isDark = Provider.of<SettingsProvider>(context).darktheme;
+                return MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  title: 'Cinemax',
+                  theme: Styles.themeData(settingsProvider.darktheme, context),
+                  home: const UserState(),
+                  // home: isFirstLaunch == null
+                  //     ? Scaffold(
+                  //         body: Container(
+                  //           color: isDark
+                  //               ? const Color(0xFF000000)
+                  //               : const Color(0xFFF7F7F7),
+                  //           child: const Center(
+                  //             child: SizedBox(
+                  //                 height: 50,
+                  //                 width: 50,
+                  //                 child: CircularProgressIndicator(
+                  //                     color: Color(0xFFF57C00))),
+                  //           ),
+                  //         ),
+                  //       )
+                  //     : isFirstLaunch == true
+                  //         ? const LandingScreen()
+                  //         : const CinemaxHomePage(),
+                );
+              }));
+        });
   }
 }
 
@@ -233,11 +261,11 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
           child: IndexedStack(
             index: selectedIndex,
-            children: <Widget>[
-              const MainMoviesDisplay(),
-              const MainTVDisplay(),
-              const NewsPage(),
-              Container()
+            children: const <Widget>[
+              MainMoviesDisplay(),
+              MainTVDisplay(),
+              NewsPage(),
+              UserInfo()
             ],
           ),
         ));
