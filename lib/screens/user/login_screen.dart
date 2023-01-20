@@ -1,7 +1,9 @@
 import 'package:cinemax/main.dart';
+import 'package:cinemax/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../../services/globle_method.dart';
 
@@ -13,56 +15,60 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  @override
-  Widget build(BuildContext context) {
-    final FocusNode passwordFocusNode = FocusNode();
-    bool obscureText = true;
-    String emailAddress = '';
-    String password = '';
-    final formKey = GlobalKey<FormState>();
-    final FirebaseAuth auth = FirebaseAuth.instance;
-    GlobalMethods globalMethods = GlobalMethods();
-    bool isLoading = false;
+  final FocusNode passwordFocusNode = FocusNode();
+  bool obscureText = true;
+  String emailAddress = '';
+  String password = '';
+  final formKey = GlobalKey<FormState>();
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  GlobalMethods globalMethods = GlobalMethods();
+  bool isLoading = false;
 
-    // @override
-    // void dispose() {
-    //   passwordFocusNode.dispose();
-    //   super.dispose();
-    // }
+  // @override
+  // void dispose() {
+  //   passwordFocusNode.dispose();
+  //   super.dispose();
+  // }
 
-    void submitForm() async {
-      final isValid = formKey.currentState!.validate();
-      FocusScope.of(context).unfocus();
-      if (isValid) {
+  void submitForm() async {
+    final isValid = formKey.currentState!.validate();
+    FocusScope.of(context).unfocus();
+    if (isValid) {
+      setState(() {
+        isLoading = true;
+      });
+      formKey.currentState!.save();
+      try {
+        await auth
+            .signInWithEmailAndPassword(
+                email: emailAddress.toLowerCase().trim(),
+                password: password.trim())
+            .then((value) => Navigator.canPop(context)
+                ? Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: ((context) {
+                    return const CinemaxHomePage();
+                  })))
+                : null);
+      } catch (error) {
+        globalMethods.authErrorHandle(error.toString(), context);
+        // print('error occured $error}');
+      } finally {
         setState(() {
-          isLoading = true;
+          isLoading = false;
         });
-        formKey.currentState!.save();
-        try {
-          await auth
-              .signInWithEmailAndPassword(
-                  email: emailAddress.toLowerCase().trim(),
-                  password: password.trim())
-              .then((value) => Navigator.canPop(context)
-                  ? Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: ((context) {
-                      return const CinemaxHomePage();
-                    })))
-                  : null);
-        } catch (error) {
-          globalMethods.authErrorHandle(error.toString(), context);
-          // print('error occured $error}');
-        } finally {
-          setState(() {
-            isLoading = false;
-          });
-        }
       }
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
 
     return Scaffold(
+      backgroundColor: isDark ? Colors.black : Colors.white,
       appBar: AppBar(title: const Text('Login')),
       body: Container(
+          color: isDark ? Colors.black : Colors.white,
           padding: const EdgeInsets.all(8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
