@@ -62,74 +62,76 @@ class NewsWebViewState extends State<NewsWebView> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            body: SafeArea(
-      child: Column(children: [
-        Expanded(
-          child: Stack(
-            children: [
-              InAppWebView(
-                key: webViewKey,
-                initialUrlRequest:
-                    URLRequest(url: Uri.parse(widget.atricleUrl)),
-                initialOptions: options,
-                pullToRefreshController: pullToRefreshController,
-                onWebViewCreated: (controller) {
-                  webViewController = controller;
-                },
-                onLoadStart: (controller, url) {
-                  setState(() {
-                    this.url = url.toString();
-                    urlController.text = this.url;
-                  });
-                },
-                androidOnPermissionRequest:
-                    (controller, origin, resources) async {
-                  return PermissionRequestResponse(
-                      resources: resources,
-                      action: PermissionRequestResponseAction.GRANT);
-                },
-                onLoadStop: (controller, url) async {
-                  pullToRefreshController.endRefreshing();
-                  setState(() {
-                    this.url = url.toString();
-                    urlController.text = this.url;
-                  });
-                },
-                onLoadError: (controller, url, code, message) {
-                  pullToRefreshController.endRefreshing();
-                },
-                onProgressChanged: (controller, progress) {
-                  if (progress == 100) {
-                    pullToRefreshController.endRefreshing();
-                  }
-                  setState(() {
-                    this.progress = progress / 100;
-                    urlController.text = url;
-                  });
-                },
-                onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                  setState(() {
-                    this.url = url.toString();
-                    urlController.text = this.url;
-                  });
-                },
-                onConsoleMessage: (controller, consoleMessage) {
-                  print(consoleMessage);
-                },
-              ),
-              progress < 1.0
-                  ? LinearProgressIndicator(
-                      value: progress,
-                      color: const Color(0xFFF57C00),
-                      backgroundColor: Colors.black,
-                    )
-                  : Container(),
-            ],
-          ),
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Cinemax news'),
         ),
-      ]),
-    )));
+        body: SafeArea(
+          child: Column(children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  InAppWebView(
+                    key: webViewKey,
+                    initialUrlRequest:
+                        URLRequest(url: Uri.parse(widget.atricleUrl)),
+                    initialOptions: options,
+                    pullToRefreshController: pullToRefreshController,
+                    onWebViewCreated: (controller) {
+                      webViewController = controller;
+                    },
+                    onLoadStart: (controller, url) {
+                      setState(() {
+                        this.url = url.toString();
+                        urlController.text = this.url;
+                      });
+                    },
+                    androidOnPermissionRequest:
+                        (controller, origin, resources) async {
+                      return PermissionRequestResponse(
+                          resources: resources,
+                          action: PermissionRequestResponseAction.GRANT);
+                    },
+                    onLoadStop: (controller, url) async {
+                      pullToRefreshController.endRefreshing();
+                      setState(() {
+                        this.url = url.toString();
+                        urlController.text = this.url;
+                      });
+                    },
+                    onLoadError: (controller, url, code, message) {
+                      pullToRefreshController.endRefreshing();
+                    },
+                    onProgressChanged: (controller, progress) {
+                      if (progress == 100) {
+                        pullToRefreshController.endRefreshing();
+                      }
+                      setState(() {
+                        this.progress = progress / 100;
+                        urlController.text = url;
+                      });
+                    },
+                    onUpdateVisitedHistory: (controller, url, androidIsReload) {
+                      setState(() {
+                        this.url = url.toString();
+                        urlController.text = this.url;
+                      });
+                    },
+                    onConsoleMessage: (controller, consoleMessage) {
+                      print(consoleMessage);
+                    },
+                  ),
+                  progress < 1.0
+                      ? LinearProgressIndicator(
+                          value: progress,
+                          color: const Color(0xFFF57C00),
+                          backgroundColor: Colors.black,
+                        )
+                      : Container(),
+                ],
+              ),
+            ),
+          ]),
+        ));
   }
 }

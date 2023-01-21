@@ -5,6 +5,11 @@ const kTextHeaderStyle = TextStyle(
   fontSize: 22,
 );
 
+const kBoldItemTitleStyle = TextStyle(
+  fontFamily: 'PoppinsSB',
+  fontSize: 19,
+);
+
 const kTextSmallHeaderStyle = TextStyle(
   fontFamily: 'PoppinsSB',
   fontSize: 17,

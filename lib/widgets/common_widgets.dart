@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/screens/title_reviews.dart';
 import '../constants/app_constants.dart';
 import '../models/function.dart';
 import '../models/movie.dart';
@@ -1864,6 +1865,26 @@ class _DidYouKnowState extends State<DidYouKnow> {
                                     externalLinks!.imdbId!);
                               },
                               child: const Text('Soundtrack'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: ((context) {
+                                  return TitleReviews(
+                                      imdbId: externalLinks!.imdbId!);
+                                })));
+                              },
+                              child: const Text('Reviews'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: ((context) {
+                                  return TitleReviews(
+                                      imdbId: externalLinks!.imdbId!);
+                                })));
+                              },
+                              child: const Text('Reviews'),
                             ),
                           ],
                         )),

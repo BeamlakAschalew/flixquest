@@ -23,6 +23,7 @@ Future<void> _messageHandler(RemoteMessage message) async {
 }
 
 SettingsProvider settingsProvider = SettingsProvider();
+final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +36,7 @@ void main() async {
   await settingsProvider.getCurrentDefaultScreen();
   await settingsProvider.getCurrentImageQuality();
   await settingsProvider.getCurrentWatchCountry();
+  await _initialization;
 
   runApp(Cinemax(
     settingsProvider: settingsProvider,
@@ -80,7 +82,6 @@ class _CinemaxState extends State<Cinemax>
     firstTimeCheck();
   }
 
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
