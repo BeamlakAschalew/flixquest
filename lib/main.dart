@@ -85,9 +85,11 @@ class _CinemaxState extends State<Cinemax>
     firstTimeCheck();
   }
 
+  // ignore: unused_field
   static final _defaultLightColorScheme =
       ColorScheme.fromSwatch(primarySwatch: Colors.blue);
 
+  // ignore: unused_field
   static final _defaultDarkColorScheme = ColorScheme.fromSwatch(
       primarySwatch: Colors.blue, brightness: Brightness.dark);
 
