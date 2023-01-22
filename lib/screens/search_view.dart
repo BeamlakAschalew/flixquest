@@ -439,52 +439,97 @@ class Search extends SearchDelegate<String> {
                                         height: 130,
                                         child: Hero(
                                           tag: '${moviesList[index].id}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            child: moviesList[index]
-                                                        .posterPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration:
-                                                        const Duration(
-                                                            milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            moviesList[index]
-                                                                .posterPath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                child: moviesList[index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_square.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                moviesList[
+                                                                        index]
+                                                                    .posterPath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            scrollingImageShimmer(
+                                                                isDark),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_sqaure.png',
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                    ),
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        scrollingImageShimmer(
-                                                            isDark),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                left: 0,
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.all(3),
+                                                  alignment: Alignment.topLeft,
+                                                  width: 50,
+                                                  height: 25,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      color: isDark
+                                                          ? Colors.black45
+                                                          : Colors.white60),
+                                                  child: Row(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.star,
+                                                        color:
+                                                            Color(0xFFF57C00),
+                                                      ),
+                                                      Text(
+                                                        '${moviesList[index].voteAverage!.toStringAsFixed(1)}',
+                                                        style: TextStyle(
+                                                            fontFamily:
+                                                                'Poppins'),
+                                                      )
+                                                    ],
                                                   ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -586,51 +631,96 @@ class Search extends SearchDelegate<String> {
                                         height: 130,
                                         child: Hero(
                                           tag: '${tvList[index].id}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            child: tvList[index].posterPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration:
-                                                        const Duration(
-                                                            milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            tvList[index]
-                                                                .posterPath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                                child: tvList[index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_square.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                tvList[index]
+                                                                    .posterPath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            scrollingImageShimmer(
+                                                                isDark),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_square.png',
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                    ),
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        scrollingImageShimmer(
-                                                            isDark),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                left: 0,
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.all(3),
+                                                  alignment: Alignment.topLeft,
+                                                  width: 50,
+                                                  height: 25,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      color: isDark
+                                                          ? Colors.black45
+                                                          : Colors.white60),
+                                                  child: Row(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.star,
+                                                        color:
+                                                            Color(0xFFF57C00),
+                                                      ),
+                                                      Text(
+                                                        '${tvList[index].voteAverage!.toStringAsFixed(1)}',
+                                                        style: TextStyle(
+                                                            fontFamily:
+                                                                'Poppins'),
+                                                      )
+                                                    ],
                                                   ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),

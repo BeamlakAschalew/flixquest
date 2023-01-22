@@ -28,6 +28,7 @@ class _SettingsState extends State<Settings> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final defaultHomeValue = Provider.of<SettingsProvider>(context);
     final country = Provider.of<SettingsProvider>(context).defaultCountry;
+    final viewType = Provider.of<SettingsProvider>(context);
 
     for (int i = 0; i < countryData.countries.length; i++) {
       if (countryData.countries[i].isoCode.contains(country)) {
@@ -96,6 +97,35 @@ class _SettingsState extends State<Settings> {
                   onChanged: (String? value) {
                     setState(() {
                       imagequalityChange.imageQuality = value!;
+                    });
+                  }),
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.list,
+                color: Color(0xFFF57C00),
+              ),
+              title: const Text('List view type'),
+              trailing: DropdownButton(
+                  value: viewType.defaultView,
+                  items: [
+                    DropdownMenuItem(
+                        value: 'list',
+                        child: Wrap(
+                          spacing: 3,
+                          children: [Icon(Icons.list), Text('List')],
+                        )),
+                    DropdownMenuItem(
+                      value: 'grid',
+                      child: Wrap(
+                        spacing: 3,
+                        children: [Icon(Icons.grid_view), Text('Grid')],
+                      ),
+                    ),
+                  ],
+                  onChanged: (String? value) {
+                    setState(() {
+                      viewType.defaultView = value!;
                     });
                   }),
             ),

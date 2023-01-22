@@ -13,9 +13,7 @@ class UserState extends StatelessWidget {
         // ignore: missing_return
         builder: (context, userSnapshot) {
           if (userSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const CinemaxHomePage();
           } else if (userSnapshot.connectionState == ConnectionState.active) {
             if (userSnapshot.hasData) {
               //  print('The user is already logged in');

@@ -1,4 +1,5 @@
 import 'package:cinemax/models/country_preferences.dart';
+import 'package:cinemax/models/view_perferences.dart';
 
 import '/models/adultmode_preferences.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +15,7 @@ class SettingsProvider with ChangeNotifier {
   AdultModePreferences adultModePreferences = AdultModePreferences();
   DefaultHomePreferences defaultHomePreferences = DefaultHomePreferences();
   ImagePreferences imagePreferences = ImagePreferences();
+  ViewPreferences viewPreferences = ViewPreferences();
   CountryPreferences countryPreferences = CountryPreferences();
 
   bool _isAdult = false;
@@ -30,6 +32,9 @@ class SettingsProvider with ChangeNotifier {
 
   String _defaultCountry = 'US';
   String get defaultCountry => _defaultCountry;
+
+  String _defaultView = 'list';
+  String get defaultView => _defaultView;
 
   late Mixpanel mixpanel;
 
@@ -92,6 +97,17 @@ class SettingsProvider with ChangeNotifier {
   Future<void> initMixpanel() async {
     mixpanel = await Mixpanel.init(mixpanelKey,
         optOutTrackingDefault: false, trackAutomaticEvents: true);
+    notifyListeners();
+  }
+
+  // view preference
+  Future<void> getCurrentViewType() async {
+    defaultView = await viewPreferences.getViewType();
+  }
+
+  set defaultView(String value) {
+    _defaultView = value;
+    viewPreferences.setViewType(value);
     notifyListeners();
   }
 }

@@ -61,29 +61,12 @@ class _TVSeasonCastAndCrewState extends State<TVSeasonCastAndCrew>
                 child: TabBar(
                   tabs: [
                     Tab(
-                        child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.only(right: 8.0),
-                          child: Icon(Icons.movie_creation_rounded),
-                        ),
-                        Text(
-                          'Cast',
-                        ),
-                      ],
+                        child: Text(
+                      'Cast',
                     )),
                     Tab(
-                        child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Padding(
-                            padding: EdgeInsets.only(right: 8.0),
-                            child: Icon(Icons.live_tv_rounded)),
-                        Text(
-                          'Crew',
-                        ),
-                      ],
+                        child: Text(
+                      'Crew',
                     ))
                   ],
                   indicatorColor: isDark ? Colors.white : Colors.black,

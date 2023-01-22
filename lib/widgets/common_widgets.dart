@@ -238,7 +238,7 @@ Widget scrollingImageShimmer(isDark) => Shimmer.fromColors(
     highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
     direction: ShimmerDirection.ltr,
     child: Container(
-      width: 100.0,
+      width: 120.0,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0), color: Colors.white),
     ));
@@ -1543,6 +1543,64 @@ Widget personMoviesAndTVShowShimmer(isDark) => Column(
           ),
         ),
       ],
+    );
+
+Widget moviesAndTVShowGridShimmer(isDark) => Container(
+      color: isDark ? Colors.black : Colors.white,
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Shimmer.fromColors(
+              baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+              highlightColor:
+                  isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+              direction: ShimmerDirection.ltr,
+              child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 150,
+                    childAspectRatio: 0.48,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 5,
+                  ),
+                  itemCount: 10,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            flex: 6,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  color: Colors.white),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Expanded(
+                              flex: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Container(
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                      color: Colors.white),
+                                ),
+                              )),
+                        ],
+                      ),
+                    );
+                  }),
+            ),
+          ),
+        ],
+      ),
     );
 
 Widget personImageShimmer(isDark) => Row(

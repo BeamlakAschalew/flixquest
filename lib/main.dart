@@ -36,6 +36,7 @@ void main() async {
   await settingsProvider.getCurrentDefaultScreen();
   await settingsProvider.getCurrentImageQuality();
   await settingsProvider.getCurrentWatchCountry();
+  await settingsProvider.getCurrentViewType();
   await _initialization;
 
   runApp(Cinemax(
