@@ -63,6 +63,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
             shadowColor: isDark ? Colors.white : Colors.black,
             forceElevated: true,
             backgroundColor: isDark ? Colors.black : Colors.white,
+            // backgroundColor: Color(0xfffce6cf),
             leading: SABTN(
               onBack: () {
                 Navigator.pop(context);

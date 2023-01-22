@@ -29,6 +29,7 @@ class _SettingsState extends State<Settings> {
     final defaultHomeValue = Provider.of<SettingsProvider>(context);
     final country = Provider.of<SettingsProvider>(context).defaultCountry;
     final viewType = Provider.of<SettingsProvider>(context);
+    final m3 = Provider.of<SettingsProvider>(context);
 
     for (int i = 0; i < countryData.countries.length; i++) {
       if (countryData.countries[i].isoCode.contains(country)) {
@@ -72,6 +73,21 @@ class _SettingsState extends State<Settings> {
               onChanged: (bool value) {
                 setState(() {
                   themeChange.darktheme = value;
+                });
+              },
+            ),
+            SwitchListTile(
+              subtitle: Text('beta'),
+              activeColor: const Color(0xFFF57C00),
+              value: m3.isMaterial3Enabled,
+              secondary: const Icon(
+                Icons.color_lens,
+                color: Color(0xFFF57C00),
+              ),
+              title: const Text('Material 3 color theming'),
+              onChanged: (bool value) {
+                setState(() {
+                  m3.isMaterial3Enabled = value;
                 });
               },
             ),

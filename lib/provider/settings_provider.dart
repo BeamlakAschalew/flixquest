@@ -1,5 +1,7 @@
 import 'package:cinemax/models/country_preferences.dart';
+import 'package:cinemax/models/material3_preferences.dart';
 import 'package:cinemax/models/view_perferences.dart';
+import 'package:flutter/material.dart';
 
 import '/models/adultmode_preferences.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,9 +19,13 @@ class SettingsProvider with ChangeNotifier {
   ImagePreferences imagePreferences = ImagePreferences();
   ViewPreferences viewPreferences = ViewPreferences();
   CountryPreferences countryPreferences = CountryPreferences();
+  Material3Preferences material3preferences = Material3Preferences();
 
   bool _isAdult = false;
   bool get isAdult => _isAdult;
+
+  bool _isMaterial3Enabled = false;
+  bool get isMaterial3Enabled => _isMaterial3Enabled;
 
   bool _darktheme = false;
   bool get darktheme => _darktheme;
@@ -46,6 +52,17 @@ class SettingsProvider with ChangeNotifier {
   set darktheme(bool value) {
     _darktheme = value;
     themeModePreferences.setThemeMode(value);
+    notifyListeners();
+  }
+
+  // material theme change
+  Future<void> getCurrentMaterial3Mode() async {
+    isMaterial3Enabled = await material3preferences.getMaterial3Mode();
+  }
+
+  set isMaterial3Enabled(bool value) {
+    _isMaterial3Enabled = value;
+    material3preferences.setMaterial3Mode(value);
     notifyListeners();
   }
 

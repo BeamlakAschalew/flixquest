@@ -2,7 +2,12 @@
 import 'package:flutter/material.dart';
 
 class Styles {
-  static ThemeData themeData(bool isDarkTheme, BuildContext context) {
+  static ThemeData themeData(
+      {required bool isDarkTheme,
+      required bool isM3Enabled,
+      required ColorScheme? lightDynamicColor,
+      required ColorScheme? darkDynamicColor,
+      required BuildContext context}) {
     return ThemeData(
       useMaterial3: false,
       textTheme: isDarkTheme
@@ -12,21 +17,59 @@ class Styles {
           : ThemeData.light().textTheme.apply(
                 fontFamily: 'Poppins',
               ),
-      appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFF57C00),
-          iconTheme: const IconThemeData(
-            color: Color(0xFF000000),
+      appBarTheme: AppBarTheme(
+          backgroundColor: isM3Enabled
+              ? isDarkTheme
+                  ? darkDynamicColor?.surface ?? Color(0xFFF57C00)
+                  : lightDynamicColor?.surface ?? Color(0xFFF57C00)
+              : Color(0xFFF57C00),
+          iconTheme: IconThemeData(
+            color: isM3Enabled
+                ? isDarkTheme
+                    ? darkDynamicColor?.onSurface ?? Colors.black
+                    : lightDynamicColor?.onSurface ?? Colors.black
+                : Colors.black,
           ),
           titleTextStyle: TextStyle(
-              color: Colors.black, fontFamily: 'PoppinsSB', fontSize: 21)),
-      primaryColor: const Color(0xFFF57C00),
-      iconTheme: const IconThemeData(color: Color(0xFFF57C00)),
-      backgroundColor:
-          isDarkTheme ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
+              color: isM3Enabled
+                  ? isDarkTheme
+                      ? darkDynamicColor?.onSurface ?? Colors.black
+                      : lightDynamicColor?.onSurface ?? Colors.black
+                  : Colors.black,
+              fontFamily: 'PoppinsSB',
+              fontSize: 21)),
+      primaryColor: isM3Enabled
+          ? isDarkTheme
+              ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+              : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+          : const Color(0xFFF57C00),
+      iconTheme: IconThemeData(
+          color: isM3Enabled
+              ? isDarkTheme
+                  ? darkDynamicColor?.surface ?? Color(0xFFF57C00)
+                  : lightDynamicColor?.surface ?? Color(0xFFF57C00)
+              : Color(0xFFF57C00)),
+      backgroundColor: isM3Enabled
+          ? isDarkTheme
+              ? darkDynamicColor?.background ?? Colors.black
+              : lightDynamicColor?.background ?? Colors.white
+          : isDarkTheme
+              ? Colors.black
+              : Colors.white,
       colorScheme: ColorScheme(
-        primary: const Color(0xFFF57C00),
-        primaryContainer:
-            !isDarkTheme ? const Color(0xFF8f4700) : const Color(0xFF202124),
+        primary: isM3Enabled
+            ? isDarkTheme
+                ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+                : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+            : const Color(0xFFF57C00),
+        primaryContainer: isM3Enabled
+            ? isDarkTheme
+                ? darkDynamicColor?.primaryContainer ?? Colors.black
+                : lightDynamicColor?.primaryContainer ?? Colors.white
+            : isDarkTheme
+                ? Colors.black
+                : Colors.white,
+        // !isDarkTheme ? const Color(0xFF8f4700) : const Color(0xFF202124),
         secondary:
             isDarkTheme ? const Color(0xFF202124) : const Color(0xFF8f4700),
         secondaryContainer: const Color(0xFF141517),

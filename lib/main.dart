@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cinemax/screens/user/user_state.dart';
 import 'package:cinemax/screens/user/user_info.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import '/constants/theme_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -31,6 +32,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
   await settingsProvider.getCurrentThemeMode();
+  await settingsProvider.getCurrentMaterial3Mode();
   await settingsProvider.initMixpanel();
   await settingsProvider.getCurrentAdultMode();
   await settingsProvider.getCurrentDefaultScreen();
@@ -83,6 +85,12 @@ class _CinemaxState extends State<Cinemax>
     firstTimeCheck();
   }
 
+  static final _defaultLightColorScheme =
+      ColorScheme.fromSwatch(primarySwatch: Colors.blue);
+
+  static final _defaultDarkColorScheme = ColorScheme.fromSwatch(
+      primarySwatch: Colors.blue, brightness: Brightness.dark);
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -117,29 +125,24 @@ class _CinemaxState extends State<Cinemax>
               child: Consumer<SettingsProvider>(
                   builder: (context, settingsProvider, snapshot) {
                 //  final isDark = Provider.of<SettingsProvider>(context).darktheme;
-                return MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  title: 'Cinemax',
-                  theme: Styles.themeData(settingsProvider.darktheme, context),
-                  home: const UserState(),
-                  // home: isFirstLaunch == null
-                  //     ? Scaffold(
-                  //         body: Container(
-                  //           color: isDark
-                  //               ? const Color(0xFF000000)
-                  //               : const Color(0xFFF7F7F7),
-                  //           child: const Center(
-                  //             child: SizedBox(
-                  //                 height: 50,
-                  //                 width: 50,
-                  //                 child: CircularProgressIndicator(
-                  //                     color: Color(0xFFF57C00))),
-                  //           ),
-                  //         ),
-                  //       )
-                  //     : isFirstLaunch == true
-                  //         ? const LandingScreen()
-                  //         : const CinemaxHomePage(),
+                return DynamicColorBuilder(
+                  builder: (lightDynamic, darkDynamic) {
+                    return MaterialApp(
+                      debugShowCheckedModeBanner: false,
+                      title: 'Cinemax',
+                      // theme: ThemeData(
+                      //   colorScheme: darkDynamic ?? _defaultLightColorScheme,
+                      //   useMaterial3: true,
+                      // ),
+                      theme: Styles.themeData(
+                          isDarkTheme: settingsProvider.darktheme,
+                          isM3Enabled: settingsProvider.isMaterial3Enabled,
+                          lightDynamicColor: lightDynamic,
+                          darkDynamicColor: darkDynamic,
+                          context: context),
+                      home: const UserState(),
+                    );
+                  },
                 );
               }));
         });
@@ -208,7 +211,8 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-              color: const Color(0xFFF57C00),
+              color: Theme.of(context).colorScheme.primary,
+              // color: const Color(0xFFF57C00),
               boxShadow: [
                 BoxShadow(
                   blurRadius: 20,
