@@ -16,7 +16,7 @@ import 'screens/search_view.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'provider/settings_provider.dart';
-import 'screens/news_screen.dart';
+import 'screens/discover.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
   // print('background message ${message.notification!.body}');
@@ -181,6 +181,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
     return Scaffold(
         drawer: const DrawerWidget(),
         appBar: AppBar(
+          elevation: 1,
           title: const Text(
             'Cinemax',
             style: TextStyle(
@@ -240,8 +241,8 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                       text: ' TV Shows',
                     ),
                     GButton(
-                      icon: FontAwesomeIcons.newspaper,
-                      text: 'News',
+                      icon: FontAwesomeIcons.compass,
+                      text: 'Discover',
                     ),
                     GButton(
                       icon: FontAwesomeIcons.user,
@@ -266,7 +267,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
             children: const <Widget>[
               MainMoviesDisplay(),
               MainTVDisplay(),
-              NewsPage(),
+              DiscoverPage(),
               UserInfo()
             ],
           ),

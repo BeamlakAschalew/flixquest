@@ -106,8 +106,9 @@ class HorizontalScrollingTVList extends StatelessWidget {
                                     Icons.star,
                                     color: Color(0xFFF57C00),
                                   ),
-                                  Text(
-                                      '${tvList![index].voteAverage!.toStringAsFixed(1)}')
+                                  Text(tvList![index]
+                                      .voteAverage!
+                                      .toStringAsFixed(1))
                                 ],
                               ),
                             ),
@@ -369,8 +370,9 @@ class TVGridView extends StatelessWidget {
                                     Icons.star,
                                     color: Color(0xFFF57C00),
                                   ),
-                                  Text(
-                                      '${tvList![index].voteAverage!.toStringAsFixed(1)}')
+                                  Text(tvList![index]
+                                      .voteAverage!
+                                      .toStringAsFixed(1))
                                 ],
                               ),
                             ),

@@ -1,23 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import '/screens/news_webview.dart';
-import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
 import '../provider/settings_provider.dart';
 import '../widgets/common_widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'news_webview.dart';
 
 class NewsPage extends StatefulWidget {
-  const NewsPage({
-    Key? key,
-  }) : super(key: key);
+  const NewsPage({Key? key}) : super(key: key);
 
   @override
   State<NewsPage> createState() => _NewsPageState();
 }
 
 class _NewsPageState extends State<NewsPage>
-    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late TabController tabController;
   int selectedIndex = 0;
 
@@ -29,125 +27,136 @@ class _NewsPageState extends State<NewsPage>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-    return Column(
-      children: [
-        Container(
-          color: const Color(0xFFF57C00),
-          width: double.infinity,
-          child: TabBar(
-            isScrollable: true,
-            onTap: (value) {
-              setState(() {
-                selectedIndex = value;
-              });
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 3,
+          title: const Text(
+            'News',
+            // style: TextStyle(color: isDark ? Colors.white : Colors.black),
+          ),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () {
+              Navigator.pop(context);
             },
-            tabs: [
-              Tab(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: Icon(FontAwesomeIcons.fire),
-                  ),
-                  Text(
-                    'Top news',
-                  ),
-                ],
-              )),
-              Tab(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: Icon(Icons.movie_creation_rounded),
-                  ),
-                  Text(
-                    'Movie news',
-                  ),
-                ],
-              )),
-              Tab(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.live_tv_rounded)),
-                  Text(
-                    'TV news',
-                  ),
-                ],
-              )),
-              Tab(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Icon(FontAwesomeIcons.user)),
-                  Text(
-                    'Celebrity news',
-                  ),
-                ],
-              )),
-              Tab(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Icon(FontAwesomeIcons.starOfLife)),
-                  Text(
-                    'Indie news',
-                  ),
-                ],
-              )),
-            ],
-            indicatorColor: isDark ? Colors.white : Colors.black,
-            indicatorWeight: 3,
-            //isScrollable: true,
-            labelStyle: const TextStyle(
-              fontFamily: 'PoppinsSB',
-              color: Colors.black,
-              fontSize: 17,
-            ),
-            unselectedLabelStyle:
-                const TextStyle(fontFamily: 'Poppins', color: Colors.black87),
-            labelColor: Colors.black,
-            controller: tabController,
-            indicatorSize: TabBarIndicatorSize.tab,
           ),
         ),
-        Expanded(
-          child: IndexedStack(
-            index: selectedIndex,
-            // controller: tabController,
-            children: const [
-              NewsView(newsType: '/news/top'),
-              NewsView(
-                newsType: '/news/movie',
+        body: Column(
+          children: [
+            Container(
+              color: Colors.grey,
+              width: double.infinity,
+              child: TabBar(
+                isScrollable: true,
+                onTap: (value) {
+                  setState(() {
+                    selectedIndex = value;
+                  });
+                },
+                tabs: [
+                  Tab(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Icon(FontAwesomeIcons.fire),
+                      ),
+                      Text(
+                        'Top news',
+                      ),
+                    ],
+                  )),
+                  Tab(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: Icon(Icons.movie_creation_rounded),
+                      ),
+                      Text(
+                        'Movie news',
+                      ),
+                    ],
+                  )),
+                  Tab(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: Icon(Icons.live_tv_rounded)),
+                      Text(
+                        'TV news',
+                      ),
+                    ],
+                  )),
+                  Tab(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: Icon(FontAwesomeIcons.user)),
+                      Text(
+                        'Celebrity news',
+                      ),
+                    ],
+                  )),
+                  Tab(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: Icon(FontAwesomeIcons.starOfLife)),
+                      Text(
+                        'Indie news',
+                      ),
+                    ],
+                  )),
+                ],
+                indicatorColor: isDark ? Colors.white : Colors.black,
+                indicatorWeight: 3,
+                //isScrollable: true,
+                labelStyle: const TextStyle(
+                  fontFamily: 'PoppinsSB',
+                  color: Colors.black,
+                  fontSize: 17,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                    fontFamily: 'Poppins', color: Colors.black87),
+                labelColor: Colors.black,
+                controller: tabController,
+                indicatorSize: TabBarIndicatorSize.tab,
               ),
-              NewsView(newsType: '/news/tv'),
-              NewsView(
-                newsType: '/news/celebrity',
+            ),
+            Expanded(
+              child: IndexedStack(
+                index: selectedIndex,
+                // controller: tabController,
+                children: const [
+                  NewsView(newsType: '/news/top'),
+                  NewsView(
+                    newsType: '/news/movie',
+                  ),
+                  NewsView(newsType: '/news/tv'),
+                  NewsView(
+                    newsType: '/news/celebrity',
+                  ),
+                  NewsView(newsType: '/news/indie')
+                ],
               ),
-              NewsView(newsType: '/news/indie')
-            ],
-          ),
-        )
-      ],
+            )
+          ],
+        ),
+      ),
     );
-    // return Container(
-    //   child: Text('data'),
-    // );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
 
 class NewsView extends StatefulWidget {

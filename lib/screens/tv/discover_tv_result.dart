@@ -1,12 +1,9 @@
 import '../../ui_components/tv_ui_components.dart';
 import '/constants/app_constants.dart';
-import '/screens/tv/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import '../../constants/api_constants.dart';
 import '../../models/function.dart';
 import '../../models/tv.dart';
 import '../../provider/settings_provider.dart';

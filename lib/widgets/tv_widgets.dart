@@ -559,8 +559,9 @@ class ScrollingTVState extends State<ScrollingTV>
                                                           color:
                                                               Color(0xFFF57C00),
                                                         ),
-                                                        Text(
-                                                            '${tvList![index].voteAverage!.toStringAsFixed(1)}')
+                                                        Text(tvList![index]
+                                                            .voteAverage!
+                                                            .toStringAsFixed(1))
                                                       ],
                                                     ),
                                                   ),

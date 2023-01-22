@@ -47,9 +47,9 @@ class _MovieCastAndCrewState extends State<MovieCastAndCrew>
           body: Column(
             children: [
               Container(
-                color: const Color(0xFFF57C00),
+                color: Colors.grey,
                 child: TabBar(
-                  tabs: [
+                  tabs: const [
                     Tab(
                         child: Text(
                       'Cast',

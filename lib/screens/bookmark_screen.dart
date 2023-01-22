@@ -36,7 +36,7 @@ class _BookmarkScreenState extends State<BookmarkScreen>
       body: Column(
         children: [
           Container(
-            color: const Color(0xFFF57C00),
+            color: Colors.grey,
             child: TabBar(
               tabs: [
                 Tab(

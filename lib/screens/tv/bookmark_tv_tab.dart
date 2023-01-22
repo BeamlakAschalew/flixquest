@@ -1,10 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../ui_components/tv_ui_components.dart';
-import '/screens/tv/tv_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
 import '../../controllers/database_controller.dart';
 import '../../models/tv.dart';

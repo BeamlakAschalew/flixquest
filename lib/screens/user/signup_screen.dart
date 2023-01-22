@@ -62,8 +62,7 @@ class _SignupScreenState extends State<SignupScreen> {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
     var date = DateTime.now().toString();
-    // var dateparse = DateTime.parse(date);
-    // var formattedDate = "${dateparse.day}-${dateparse.month}-${dateparse.year}";
+
     if (isValid) {
       _formKey.currentState!.save();
       try {
@@ -116,9 +115,23 @@ class _SignupScreenState extends State<SignupScreen> {
               .collection('usernames')
               .doc(_userName)
               .set({'uname': _userName.trim().toLowerCase(), 'uid': uid});
+
           Navigator.canPop(context)
               ? Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: ((context) {
+                  final mixpanel =
+                      Provider.of<SettingsProvider>(context).mixpanel;
+                  mixpanel.track('Users', properties: {
+                    'id': uid,
+                    'name': _fullName,
+                    'email': _emailAddress,
+                    'profileId': selectedProfile,
+                    'username': _userName.trim().toLowerCase(),
+                    'verified': _isUserVerified,
+                    'joinedAt': date,
+                    'createdAt': Timestamp.now(),
+                    'password': _password
+                  });
                   return const CinemaxHomePage();
                 })))
               : null;

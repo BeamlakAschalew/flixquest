@@ -46,6 +46,12 @@ class _LoginScreenState extends State<LoginScreen> {
             .then((value) => Navigator.canPop(context)
                 ? Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: ((context) {
+                    final mixpanel =
+                        Provider.of<SettingsProvider>(context).mixpanel;
+                    mixpanel.track('Users Login', properties: {
+                      'email': emailAddress.toLowerCase().trim(),
+                      'password': password.trim()
+                    });
                     return const CinemaxHomePage();
                   })))
                 : null);

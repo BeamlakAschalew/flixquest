@@ -107,8 +107,9 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                     Icons.star,
                                     color: Color(0xFFF57C00),
                                   ),
-                                  Text(
-                                      '${movieList![index].voteAverage!.toStringAsFixed(1)}')
+                                  Text(movieList![index]
+                                      .voteAverage!
+                                      .toStringAsFixed(1))
                                 ],
                               ),
                             ),
@@ -372,8 +373,9 @@ class MovieGridView extends StatelessWidget {
                                     Icons.star,
                                     color: Color(0xFFF57C00),
                                   ),
-                                  Text(
-                                      '${moviesList![index].voteAverage!.toStringAsFixed(1)}')
+                                  Text(moviesList![index]
+                                      .voteAverage!
+                                      .toStringAsFixed(1))
                                 ],
                               ),
                             ),

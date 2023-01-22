@@ -1,17 +1,13 @@
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/widgets/movie_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
 import '../../models/function.dart';
 import '../../models/movie.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/movie_ui_components.dart';
 import '../../widgets/common_widgets.dart';
-import 'movie_detail.dart';
 
 class DiscoverMovieResult extends StatefulWidget {
   const DiscoverMovieResult(

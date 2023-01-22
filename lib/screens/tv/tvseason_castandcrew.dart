@@ -57,9 +57,9 @@ class _TVSeasonCastAndCrewState extends State<TVSeasonCastAndCrew>
           body: Column(
             children: [
               Container(
-                color: const Color(0xFFF57C00),
+                color: Colors.grey,
                 child: TabBar(
-                  tabs: [
+                  tabs: const [
                     Tab(
                         child: Text(
                       'Cast',

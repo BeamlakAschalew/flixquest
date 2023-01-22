@@ -19,7 +19,7 @@ import '../screens/about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../screens/discover.dart';
+import '../screens/news_screen.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({
@@ -74,14 +74,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 ),
                 ListTile(
                   leading: const Icon(
-                    FontAwesomeIcons.compass,
+                    FontAwesomeIcons.newspaper,
                     color: Color(0xFFF57C00),
                   ),
-                  title: const Text('Discover'),
+                  title: const Text('News'),
                   onTap: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
-                      return const DiscoverPage();
+                      return const NewsPage();
                     })));
                   },
                 ),

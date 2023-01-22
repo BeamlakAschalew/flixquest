@@ -117,7 +117,7 @@ class Search extends SearchDelegate<String> {
                         )),
                   ),
                   Tab(
-                    child: Text('Person',
+                    child: Text('Celebrity',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           color: !isDark
@@ -520,8 +520,10 @@ class Search extends SearchDelegate<String> {
                                                             Color(0xFFF57C00),
                                                       ),
                                                       Text(
-                                                        '${moviesList[index].voteAverage!.toStringAsFixed(1)}',
-                                                        style: TextStyle(
+                                                        moviesList[index]
+                                                            .voteAverage!
+                                                            .toStringAsFixed(1),
+                                                        style: const TextStyle(
                                                             fontFamily:
                                                                 'Poppins'),
                                                       )
@@ -711,8 +713,10 @@ class Search extends SearchDelegate<String> {
                                                             Color(0xFFF57C00),
                                                       ),
                                                       Text(
-                                                        '${tvList[index].voteAverage!.toStringAsFixed(1)}',
-                                                        style: TextStyle(
+                                                        tvList[index]
+                                                            .voteAverage!
+                                                            .toStringAsFixed(1),
+                                                        style: const TextStyle(
                                                             fontFamily:
                                                                 'Poppins'),
                                                       )

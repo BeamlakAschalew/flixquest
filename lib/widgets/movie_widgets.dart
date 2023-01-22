@@ -545,13 +545,14 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                   child: Container(
                                                     margin:
                                                         const EdgeInsets.all(3),
-                                                    alignment: Alignment.topLeft,
+                                                    alignment:
+                                                        Alignment.topLeft,
                                                     width: 50,
                                                     height: 25,
                                                     decoration: BoxDecoration(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                8),
+                                                            BorderRadius
+                                                                .circular(8),
                                                         color: isDark
                                                             ? Colors.black45
                                                             : Colors.white60),
@@ -562,8 +563,9 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                           color:
                                                               Color(0xFFF57C00),
                                                         ),
-                                                        Text(
-                                                            '${moviesList![index].voteAverage!.toStringAsFixed(1)}')
+                                                        Text(moviesList![index]
+                                                            .voteAverage!
+                                                            .toStringAsFixed(1))
                                                       ],
                                                     ),
                                                   ),
@@ -2001,13 +2003,14 @@ class PartsListState extends State<PartsList> {
                                                   child: Container(
                                                     margin:
                                                         const EdgeInsets.all(3),
-                                                    alignment: Alignment.topLeft,
+                                                    alignment:
+                                                        Alignment.topLeft,
                                                     width: 50,
                                                     height: 25,
                                                     decoration: BoxDecoration(
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                8),
+                                                            BorderRadius
+                                                                .circular(8),
                                                         color: isDark
                                                             ? Colors.black45
                                                             : Colors.white60),
@@ -2018,8 +2021,10 @@ class PartsListState extends State<PartsList> {
                                                           color:
                                                               Color(0xFFF57C00),
                                                         ),
-                                                        Text(
-                                                            '${collectionMovieList![index].voteAverage!.toStringAsFixed(1)}')
+                                                        Text(collectionMovieList![
+                                                                index]
+                                                            .voteAverage!
+                                                            .toStringAsFixed(1))
                                                       ],
                                                     ),
                                                   ),

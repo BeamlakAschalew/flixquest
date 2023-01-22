@@ -113,13 +113,13 @@ class _SettingsState extends State<Settings> {
                         value: 'list',
                         child: Wrap(
                           spacing: 3,
-                          children: [Icon(Icons.list), Text('List')],
+                          children: const [Icon(Icons.list), Text('List')],
                         )),
                     DropdownMenuItem(
                       value: 'grid',
                       child: Wrap(
                         spacing: 3,
-                        children: [Icon(Icons.grid_view), Text('Grid')],
+                        children: const [Icon(Icons.grid_view), Text('Grid')],
                       ),
                     ),
                   ],

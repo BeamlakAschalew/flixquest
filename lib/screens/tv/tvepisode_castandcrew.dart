@@ -57,12 +57,12 @@ class _TVEpisodeCastAndCrewState extends State<TVEpisodeCastAndCrew>
           body: Column(
             children: [
               Container(
-                color: const Color(0xFFF57C00),
+                color: Colors.grey,
                 child: SizedBox(
                   width: double.infinity,
                   child: TabBar(
-                    isScrollable: true,
-                    tabs: [
+                    physics: const NeverScrollableScrollPhysics(),
+                    tabs: const [
                       Tab(
                           child: Text(
                         'Cast',

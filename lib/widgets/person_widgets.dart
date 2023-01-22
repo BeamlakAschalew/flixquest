@@ -396,8 +396,11 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                     color: Color(
                                                                         0xFFF57C00),
                                                                   ),
-                                                                  Text(
-                                                                      '${personMoviesList![index].voteAverage!.toStringAsFixed(1)}')
+                                                                  Text(personMoviesList![
+                                                                          index]
+                                                                      .voteAverage!
+                                                                      .toStringAsFixed(
+                                                                          1))
                                                                 ],
                                                               ),
                                                             ),
@@ -692,8 +695,11 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                     color: Color(
                                                                         0xFFF57C00),
                                                                   ),
-                                                                  Text(
-                                                                      '${personTVList![index].voteAverage!.toStringAsFixed(1)}')
+                                                                  Text(personTVList![
+                                                                          index]
+                                                                      .voteAverage!
+                                                                      .toStringAsFixed(
+                                                                          1))
                                                                 ],
                                                               ),
                                                             ),
