@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/database_controller.dart';
@@ -260,22 +261,18 @@ class DiscoverTVState extends State<DiscoverTV>
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 60, height: 60),
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 60,
+            height: 60,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
             child: Text('Please connect to the Internet and try again',
                 textAlign: TextAlign.center),
           ),
           TextButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0x0DF57C00)),
-                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          side: const BorderSide(color: Color(0xFFF57C00))))),
               onPressed: () {
                 setState(() {
                   requestFailed = false;
@@ -420,15 +417,12 @@ class ScrollingTVState extends State<ScrollingTV>
                     }));
                   },
                   style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x26F57C00)),
                       maximumSize:
                           MaterialStateProperty.all(const Size(200, 60)),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ))),
                   child: const Padding(
                     padding: EdgeInsets.only(left: 8.0, right: 8.0),
                     child: Text('View all'),
@@ -556,8 +550,6 @@ class ScrollingTVState extends State<ScrollingTV>
                                                       children: [
                                                         const Icon(
                                                           Icons.star,
-                                                          color:
-                                                              Color(0xFFF57C00),
                                                         ),
                                                         Text(tvList![index]
                                                             .voteAverage!
@@ -616,22 +608,18 @@ class ScrollingTVState extends State<ScrollingTV>
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 60, height: 60),
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 60,
+            height: 60,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
             child: Text('Please connect to the Internet and try again',
                 textAlign: TextAlign.center),
           ),
           TextButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0x0DF57C00)),
-                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          side: const BorderSide(color: Color(0xFFF57C00))))),
               onPressed: () {
                 setState(() {
                   requestFailed = false;
@@ -722,6 +710,16 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                     }
                   }
                 },
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all(Colors.transparent),
+                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                ),
                 child: const Text('See all cast and crew'))
           ],
         ),
@@ -927,6 +925,18 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                               }));
                             }
                           },
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                            maximumSize:
+                                MaterialStateProperty.all(const Size(200, 60)),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                          ),
                           child: const Text('See all cast and crew'))
                     ],
                   ),
@@ -1066,6 +1076,7 @@ class ScrollingTVEpisodeGuestStarsState
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         credits == null
@@ -1176,10 +1187,7 @@ class ScrollingTVEpisodeGuestStarsState
                                                 ),
                                               ),
                                               placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
+                                                  scrollingImageShimmer(isDark),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
@@ -1247,6 +1255,7 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         credits == null
@@ -1352,10 +1361,7 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                                                 ),
                                               ),
                                               placeholder: (context, url) =>
-                                                  Image.asset(
-                                                'assets/images/loading.gif',
-                                                fit: BoxFit.cover,
-                                              ),
+                                                  scrollingImageShimmer(isDark),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
@@ -1998,10 +2004,7 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                                         ),
                                       ),
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          scrollingImageShimmer(isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -2433,6 +2436,7 @@ class TVCastTabState extends State<TVCastTab>
                               }));
                             },
                             child: Container(
+                              color: Colors.transparent,
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 8.0,
@@ -2559,29 +2563,23 @@ class TVCastTabState extends State<TVCastTab>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -2801,29 +2799,23 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -2911,6 +2903,7 @@ class TVCrewTabState extends State<TVCrewTab>
                               }));
                             },
                             child: Container(
+                              color: Colors.transparent,
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 8.0,
@@ -3030,29 +3023,23 @@ class TVCrewTabState extends State<TVCrewTab>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -3205,29 +3192,23 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -3381,29 +3362,23 @@ class SimilarTVTabState extends State<SimilarTVTab>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -3475,10 +3450,11 @@ class TVGenreDisplayState extends State<TVGenreDisplay>
                             },
                             child: Chip(
                               shape: RoundedRectangleBorder(
-                                side: const BorderSide(
-                                    width: 2,
-                                    style: BorderStyle.solid,
-                                    color: Color(0xFFF57C00)),
+                                side: BorderSide(
+                                  width: 2,
+                                  style: BorderStyle.solid,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                                 borderRadius: BorderRadius.circular(20.0),
                               ),
                               label: Text(
@@ -3637,29 +3613,23 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -3937,7 +3907,6 @@ class TVSocialLinksState extends State<TVSocialLinks> {
                                         externalLinks!.facebookUsername!,
                                 icon: const Icon(
                                   SocialIcons.facebook_f,
-                                  color: Color(0xFFF57C00),
                                 ),
                               ),
                               SocialIconWidget(
@@ -3949,7 +3918,6 @@ class TVSocialLinksState extends State<TVSocialLinks> {
                                         externalLinks!.instagramUsername!,
                                 icon: const Icon(
                                   SocialIcons.instagram,
-                                  color: Color(0xFFF57C00),
                                 ),
                               ),
                               SocialIconWidget(
@@ -3960,7 +3928,6 @@ class TVSocialLinksState extends State<TVSocialLinks> {
                                         externalLinks!.twitterUsername!,
                                 icon: const Icon(
                                   SocialIcons.twitter,
-                                  color: Color(0xFFF57C00),
                                 ),
                               ),
                               SocialIconWidget(
@@ -4308,8 +4275,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                     ],
                                   ),
                                 ),
-                                const Divider(
-                                  color: Color(0xFFF57C00),
+                                Divider(
+                                  color: Theme.of(context).colorScheme.primary,
                                   thickness: 1.5,
                                   endIndent: 30,
                                   indent: 5,
@@ -4356,6 +4323,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                     }));
                                   },
                                   child: Container(
+                                    color: Colors.transparent,
                                     child: Padding(
                                       padding: const EdgeInsets.only(
                                         top: 0.0,
@@ -4512,8 +4480,10 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                               )
                                             ],
                                           ),
-                                          const Divider(
-                                            color: Color(0xFFF57C00),
+                                          Divider(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
                                             thickness: 1.5,
                                             endIndent: 30,
                                             indent: 5,
@@ -4530,29 +4500,23 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -4631,7 +4595,6 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                     child: TabBar(
                       controller: tabController,
                       isScrollable: true,
-                      indicatorColor: const Color(0xFFF57C00),
                       indicatorWeight: 3,
                       unselectedLabelColor: Colors.white54,
                       labelColor: Colors.white,
@@ -4734,7 +4697,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                                     'assets/images/logo_shadow.png'),
                                                 fit: BoxFit.cover,
                                                 placeholder: AssetImage(
-                                                    'assets/images/loading.gif'),
+                                                    'assets/images/loading_5.gif'),
                                               ),
                                             ),
                                           ),
@@ -4764,29 +4727,23 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -4888,14 +4845,20 @@ class TVGenreListGridState extends State<TVGenreListGrid>
                                           width: 125,
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
-                                              color: const Color(0xFFF57C00),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
                                               borderRadius:
                                                   BorderRadius.circular(15)),
                                           child: Text(
-                                              genreList![index].genreName!,
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                  color: Colors.white)),
+                                            genreList![index].genreName!,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     );
@@ -4913,8 +4876,12 @@ class TVGenreListGridState extends State<TVGenreListGrid>
       child: Center(
           child: Row(
         children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 50, height: 50),
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 50,
+            height: 50,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -4924,16 +4891,6 @@ class TVGenreListGridState extends State<TVGenreListGrid>
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -5073,7 +5030,7 @@ class TVStreamingServicesWidget extends StatelessWidget {
           height: 60,
           width: 200,
           decoration: BoxDecoration(
-              color: const Color(0xFFF57C00),
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(15)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -5086,7 +5043,12 @@ class TVStreamingServicesWidget extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child: Text(title, style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
               ),
             ],
           ),
@@ -5234,29 +5196,23 @@ class ParticularStreamingServiceTVShowsState
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -5339,6 +5295,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                               }));
                             },
                             child: Container(
+                              color: Colors.transparent,
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 8.0,
@@ -5471,29 +5428,23 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -5579,143 +5530,142 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                 }));
                               },
                               child: Container(
+                                  color: Colors.transparent,
                                   child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 8.0,
-                                  bottom: 5.0,
-                                  left: 10,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
+                                    padding: const EdgeInsets.only(
+                                      top: 8.0,
+                                      bottom: 5.0,
+                                      left: 10,
+                                    ),
+                                    child: Column(
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 20.0, left: 10),
-                                          child: SizedBox(
-                                            width: 80,
-                                            height: 80,
-                                            child: Hero(
-                                              tag:
-                                                  '${credits!.episodeGuestStars![index].name}',
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        100.0),
-                                                child: credits!
-                                                            .episodeGuestStars![
-                                                                index]
-                                                            .profilePath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_square.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl: TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            credits!
+                                        Row(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 20.0, left: 10),
+                                              child: SizedBox(
+                                                width: 80,
+                                                height: 80,
+                                                child: Hero(
+                                                  tag:
+                                                      '${credits!.episodeGuestStars![index].name}',
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            100.0),
+                                                    child: credits!
                                                                 .episodeGuestStars![
                                                                     index]
-                                                                .profilePath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
+                                                                .profilePath ==
+                                                            null
+                                                        ? Image.asset(
+                                                            'assets/images/na_square.png',
+                                                            fit: BoxFit.cover,
+                                                          )
+                                                        : CachedNetworkImage(
+                                                            fadeOutDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                            fadeOutCurve:
+                                                                Curves.easeOut,
+                                                            fadeInDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        700),
+                                                            fadeInCurve:
+                                                                Curves.easeIn,
+                                                            imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                credits!
+                                                                    .episodeGuestStars![
+                                                                        index]
+                                                                    .profilePath!,
+                                                            imageBuilder: (context,
+                                                                    imageProvider) =>
+                                                                Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image:
+                                                                      imageProvider,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            placeholder: (context,
+                                                                    url) =>
+                                                                castAndCrewTabImageShimmer(
+                                                                    isDark),
+                                                            errorWidget:
+                                                                (context, url,
+                                                                        error) =>
+                                                                    Image.asset(
+                                                              'assets/images/na_sqaure.png',
                                                               fit: BoxFit.cover,
                                                             ),
                                                           ),
-                                                        ),
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            castAndCrewTabImageShimmer(
-                                                                isDark),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_sqaure.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                credits!
-                                                    .episodeGuestStars![index]
-                                                    .name!,
-                                                style: const TextStyle(
-                                                    fontFamily: 'PoppinsSB',
-                                                    fontSize: 20),
-                                                overflow: TextOverflow.ellipsis,
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    credits!
+                                                        .episodeGuestStars![
+                                                            index]
+                                                        .name!,
+                                                    style: const TextStyle(
+                                                        fontFamily: 'PoppinsSB',
+                                                        fontSize: 20),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
+                                        ),
+                                        Divider(
+                                          color: !isDark
+                                              ? Colors.black54
+                                              : Colors.white54,
+                                          thickness: 1,
+                                          endIndent: 20,
+                                          indent: 10,
                                         ),
                                       ],
                                     ),
-                                    Divider(
-                                      color: !isDark
-                                          ? Colors.black54
-                                          : Colors.white54,
-                                      thickness: 1,
-                                      endIndent: 20,
-                                      indent: 10,
-                                    ),
-                                  ],
-                                ),
-                              )));
+                                  )));
                         }));
   }
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -5747,6 +5697,7 @@ class TVDetailQuickInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -5877,10 +5828,7 @@ class TVDetailQuickInfo extends StatelessWidget {
                                   : CachedNetworkImage(
                                       fit: BoxFit.fill,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          scrollingImageShimmer(isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -5973,7 +5921,7 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                 curve: Curves.ease,
                 animation: true,
                 animationDuration: 2500,
-                progressColor: Colors.orange,
+                progressColor: Theme.of(context).colorScheme.primary,
                 center: Text(
                   '${widget.tvSeries.voteAverage!.toStringAsFixed(1)}/10',
                   style: const TextStyle(
@@ -6001,7 +5949,7 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
             // width: 46,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0xFFF57C00).withOpacity(0.9),
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -6070,12 +6018,11 @@ class TVAbout extends StatefulWidget {
 class _TVAboutState extends State<TVAbout> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SingleChildScrollView(
       //  physics: const BouncingScrollPhysics(),
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
         child: Column(
@@ -6103,17 +6050,17 @@ class _TVAboutState extends State<TVAbout> {
                       widget.tvSeries.overview!,
                       trimLines: 4,
                       style: const TextStyle(fontFamily: 'Poppins'),
-                      colorClickableText: const Color(0xFFF57C00),
+                      colorClickableText: Theme.of(context).colorScheme.primary,
                       trimMode: TrimMode.Line,
                       trimCollapsedText: 'read more',
                       trimExpandedText: 'read less',
-                      lessStyle: const TextStyle(
+                      lessStyle: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFFF57C00),
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold),
-                      moreStyle: const TextStyle(
+                      moreStyle: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFFF57C00),
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold),
                     ),
             ),
@@ -6209,7 +6156,6 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Container(
       child: SingleChildScrollView(
@@ -6234,17 +6180,17 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                     : widget.episodeList.overview!,
                 trimLines: 4,
                 style: const TextStyle(fontFamily: 'Poppins'),
-                colorClickableText: const Color(0xFFF57C00),
+                colorClickableText: Theme.of(context).colorScheme.primary,
                 trimMode: TrimMode.Line,
                 trimCollapsedText: 'read more',
                 trimExpandedText: 'read less',
-                lessStyle: const TextStyle(
+                lessStyle: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold),
-                moreStyle: const TextStyle(
+                moreStyle: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold),
               ),
             ),
@@ -6269,8 +6215,9 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                 style: ButtonStyle(
                     maximumSize:
                         MaterialStateProperty.all(Size(buttonWidth!, 50)),
-                    backgroundColor:
-                        MaterialStateProperty.all(const Color(0xFFF57C00))),
+                    backgroundColor: MaterialStateProperty.all(
+                      Theme.of(context).colorScheme.primary,
+                    )),
                 onPressed: () async {
                   mixpanel.track('Most viewed TV series', properties: {
                     'TV series name': '${widget.seriesName}',
@@ -6541,7 +6488,7 @@ class TVEpisodeOptions extends StatelessWidget {
                 curve: Curves.ease,
                 animation: true,
                 animationDuration: 2500,
-                progressColor: Colors.orange,
+                progressColor: Theme.of(context).colorScheme.primary,
                 center: Text(
                   '${episodeList.voteAverage!.toStringAsFixed(1)}/10',
                   style: const TextStyle(
@@ -6569,7 +6516,7 @@ class TVEpisodeOptions extends StatelessWidget {
             // width: 46,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0xFFF57C00).withOpacity(0.9),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(

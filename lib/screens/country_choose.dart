@@ -29,7 +29,6 @@ class _CountryChooseState extends State<CountryChoose> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final countryChange = Provider.of<SettingsProvider>(context);
     List<WatchProviderCountries> count = countryData.countries;
     count.sort(
@@ -38,8 +37,7 @@ class _CountryChooseState extends State<CountryChoose> {
 
     return Scaffold(
         appBar: AppBar(title: const Text('Choose country')),
-        body: Container(
-            child: SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Center(
               child: Column(
                   children: count
@@ -57,8 +55,6 @@ class _CountryChooseState extends State<CountryChoose> {
                                     countryChange.defaultCountry = value!;
                                   });
                                 },
-                                fillColor: const MaterialStatePropertyAll(
-                                    Color(0xFFF57C00)),
                               ),
                               Image.asset(
                                 countries.flagPath,
@@ -70,7 +66,7 @@ class _CountryChooseState extends State<CountryChoose> {
                         ),
                       )
                       .toList())),
-        )));
+        ));
     // ListTile(
     //   title: const Text('Lafayette'),
     //   leading: Radio(

@@ -3,6 +3,7 @@ import 'package:cinemax/screens/landing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class UserInfo extends StatefulWidget {
@@ -116,10 +117,17 @@ class _UserInfoState extends State<UserInfo> {
                                     ),
                                     Visibility(
                                         visible: isVerified!,
-                                        child: Image.asset(
-                                          'assets/images/check.png',
-                                          width: 20,
-                                          height: 20,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          child: SvgPicture.asset(
+                                            'assets/images/checkmark.svg',
+                                            width: 20,
+                                            height: 20,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
                                         ))
                                   ]),
                               Text('@$username')
@@ -178,7 +186,10 @@ class _UserInfoState extends State<UserInfo> {
                                   });
                             },
                             title: const Text('Logout'),
-                            leading: const Icon(Icons.exit_to_app_rounded),
+                            leading: Icon(
+                              Icons.exit_to_app_rounded,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
                         ),
                       ),
@@ -204,7 +215,10 @@ class _UserInfoState extends State<UserInfo> {
           onTap: () {},
           title: Text(title),
           subtitle: Text(subTitle),
-          leading: Icon(_userTileIcons[index]),
+          leading: Icon(
+            _userTileIcons[index],
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
       ),
     );

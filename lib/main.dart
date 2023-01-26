@@ -180,9 +180,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
-
     return Scaffold(
         drawer: const DrawerWidget(),
         appBar: AppBar(
@@ -213,7 +211,6 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20), topRight: Radius.circular(20)),
               color: Theme.of(context).colorScheme.primary,
-              // color: const Color(0xFFF57C00),
               boxShadow: [
                 BoxShadow(
                   blurRadius: 20,
@@ -236,22 +233,26 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                   duration: const Duration(milliseconds: 400),
                   tabBackgroundColor: Colors.grey[100]!,
                   color: Colors.black,
-                  tabs: const [
+                  tabs: [
                     GButton(
                       icon: FontAwesomeIcons.clapperboard,
                       text: 'Movies',
+                      iconColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                     GButton(
                       icon: FontAwesomeIcons.tv,
                       text: ' TV Shows',
+                      iconColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                     GButton(
                       icon: FontAwesomeIcons.compass,
                       text: 'Discover',
+                      iconColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                     GButton(
                       icon: FontAwesomeIcons.user,
                       text: 'Profile',
+                      iconColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                   ],
                   selectedIndex: selectedIndex,

@@ -69,8 +69,8 @@ class TVDetailPageState extends State<TVDetailPage>
               widget.tvSeries.firstAirDate == ""
                   ? widget.tvSeries.name!
                   : '${widget.tvSeries.name!} (${DateTime.parse(widget.tvSeries.firstAirDate!).year})',
-              style: const TextStyle(
-                color: Color(0xFFF57C00),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             )),
             expandedHeight: 380,

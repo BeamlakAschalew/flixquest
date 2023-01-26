@@ -35,14 +35,14 @@ class _TVDetailCastAndCrewState extends State<TVDetailCastAndCrew>
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: const Color(0xFFF57C00),
             elevation: 3,
             title: const Text(
               'Cast And Crew',
-              style: TextStyle(color: Colors.black),
             ),
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              icon: const Icon(
+                Icons.arrow_back,
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },

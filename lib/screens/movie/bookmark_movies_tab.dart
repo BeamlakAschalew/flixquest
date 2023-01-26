@@ -53,17 +53,14 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                     isLoading: false,
                     scrollController: _scrollController))
             : movieList!.isEmpty
-                ? Container(
-                    child: const Center(
-                      child: Text(
-                        'You don\'t have any movies bookmarked :)',
-                        textAlign: TextAlign.center,
-                        style: kTextSmallHeaderStyle,
-                      ),
+                ? const Center(
+                    child: Text(
+                      'You don\'t have any movies bookmarked :)',
+                      textAlign: TextAlign.center,
+                      style: kTextSmallHeaderStyle,
                     ),
                   )
-                : Container(
-                    child: Column(
+                : Column(
                     children: [
                       Expanded(
                         child: Padding(
@@ -88,6 +85,6 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                         ),
                       ),
                     ],
-                  ));
+                  );
   }
 }

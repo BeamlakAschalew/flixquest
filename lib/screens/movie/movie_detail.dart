@@ -63,7 +63,6 @@ class MovieDetailPageState extends State<MovieDetailPage>
             shadowColor: isDark ? Colors.white : Colors.black,
             forceElevated: true,
             backgroundColor: isDark ? Colors.black : Colors.white,
-            // backgroundColor: Color(0xfffce6cf),
             leading: SABTN(
               onBack: () {
                 Navigator.pop(context);
@@ -71,11 +70,13 @@ class MovieDetailPageState extends State<MovieDetailPage>
             ),
             title: SABT(
                 child: Text(
-              widget.movie.releaseDate == ""
+              widget.movie.releaseDate == null
                   ? widget.movie.title!
-                  : '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
-              style: const TextStyle(
-                color: Color(0xFFF57C00),
+                  : widget.movie.releaseDate == ""
+                      ? widget.movie.title!
+                      : '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             )),
             expandedHeight: 380,

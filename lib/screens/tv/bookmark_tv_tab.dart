@@ -51,17 +51,14 @@ class _TVBookmarkState extends State<TVBookmark> {
                 child: mainPageVerticalScrollShimmer(
                     isDark: isDark, scrollController: _scrollController))
             : tvList!.isEmpty
-                ? Container(
-                    child: const Center(
-                      child: Text(
-                        'You don\'t have any TV shows bookmarked :)',
-                        textAlign: TextAlign.center,
-                        style: kTextSmallHeaderStyle,
-                      ),
+                ? const Center(
+                    child: Text(
+                      'You don\'t have any TV shows bookmarked :)',
+                      textAlign: TextAlign.center,
+                      style: kTextSmallHeaderStyle,
                     ),
                   )
-                : Container(
-                    child: Column(
+                : Column(
                     children: [
                       Expanded(
                         child: Padding(
@@ -87,6 +84,6 @@ class _TVBookmarkState extends State<TVBookmark> {
                         ),
                       ),
                     ],
-                  ));
+                  );
   }
 }

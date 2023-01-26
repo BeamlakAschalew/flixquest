@@ -34,7 +34,6 @@ class _TVStreamSelectState extends State<TVStreamSelect> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(

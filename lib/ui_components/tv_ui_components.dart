@@ -104,7 +104,6 @@ class HorizontalScrollingTVList extends StatelessWidget {
                                 children: [
                                   const Icon(
                                     Icons.star,
-                                    color: Color(0xFFF57C00),
                                   ),
                                   Text(tvList![index]
                                       .voteAverage!
@@ -171,6 +170,7 @@ class TVListView extends StatelessWidget {
               }));
             },
             child: Container(
+              color: Colors.transparent,
               child: Padding(
                 padding: const EdgeInsets.only(
                   top: 0.0,
@@ -241,8 +241,9 @@ class TVListView extends StatelessWidget {
                               ),
                               Row(
                                 children: <Widget>[
-                                  const Icon(Icons.star,
-                                      color: Color(0xFFF57C00)),
+                                  const Icon(
+                                    Icons.star,
+                                  ),
                                   Text(
                                     tvList![index]
                                         .voteAverage!
@@ -367,7 +368,6 @@ class TVGridView extends StatelessWidget {
                                 children: [
                                   const Icon(
                                     Icons.star,
-                                    color: Color(0xFFF57C00),
                                   ),
                                   Text(tvList![index]
                                       .voteAverage!

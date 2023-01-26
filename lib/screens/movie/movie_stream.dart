@@ -40,10 +40,18 @@ class MovieStreamState extends State<MovieStream> {
   @override
   void initState() {
     super.initState();
+  }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     pullToRefreshController = PullToRefreshController(
       options: PullToRefreshOptions(
-        color: const Color(0xFFF57C00),
+        color: Theme.of(context).colorScheme.primary,
       ),
       onRefresh: () async {
         if (Platform.isAndroid) {
@@ -54,27 +62,18 @@ class MovieStreamState extends State<MovieStream> {
         }
       },
     );
-  }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-          body: SafeArea(
-              child: Column(children: <Widget>[
-        Expanded(
-          child: Stack(
-            children: [
-              InAppWebView(
-                key: webViewKey,
-                initialUrlRequest: URLRequest(
-                    url: Uri.dataFromString(
-                  '''
+    return Scaffold(
+        body: SafeArea(
+            child: Column(children: <Widget>[
+      Expanded(
+        child: Stack(
+          children: [
+            InAppWebView(
+              key: webViewKey,
+              initialUrlRequest: URLRequest(
+                  url: Uri.dataFromString(
+                '''
             <html>
             <header>
             <meta name="viewport" 
@@ -91,89 +90,86 @@ class MovieStreamState extends State<MovieStream> {
             </body>
             </html>
       ''',
-                  mimeType: 'text/html',
-                )),
-                initialOptions: options,
-                pullToRefreshController: pullToRefreshController,
-                onWebViewCreated: (controller) {
-                  webViewController = controller;
-                },
-                onLoadStart: (controller, url) {
-                  setState(() {
-                    this.url = url.toString();
-                    urlController.text = this.url;
-                  });
-                },
-                androidOnPermissionRequest:
-                    (controller, origin, resources) async {
-                  return PermissionRequestResponse(
-                      resources: resources,
-                      action: PermissionRequestResponseAction.GRANT);
-                },
-                shouldOverrideUrlLoading: (controller, navigationAction) async {
-                  var uri = navigationAction.request.url!;
+                mimeType: 'text/html',
+              )),
+              initialOptions: options,
+              pullToRefreshController: pullToRefreshController,
+              onWebViewCreated: (controller) {
+                webViewController = controller;
+              },
+              onLoadStart: (controller, url) {
+                setState(() {
+                  this.url = url.toString();
+                  urlController.text = this.url;
+                });
+              },
+              androidOnPermissionRequest:
+                  (controller, origin, resources) async {
+                return PermissionRequestResponse(
+                    resources: resources,
+                    action: PermissionRequestResponseAction.GRANT);
+              },
+              shouldOverrideUrlLoading: (controller, navigationAction) async {
+                var uri = navigationAction.request.url!;
 
-                  if (![
-                    "http",
-                    "https",
-                    "file",
-                    "chrome",
-                    "data",
-                    "javascript",
-                    "about"
-                  ].contains(uri.scheme)) {
-                    if (await canLaunchUrl(Uri.parse(url))) {
-                      // Launch the App
+                if (![
+                  "http",
+                  "https",
+                  "file",
+                  "chrome",
+                  "data",
+                  "javascript",
+                  "about"
+                ].contains(uri.scheme)) {
+                  if (await canLaunchUrl(Uri.parse(url))) {
+                    // Launch the App
 
-                      // and cancel the request
-                      return NavigationActionPolicy.CANCEL;
-                    } else {
-                      return NavigationActionPolicy.CANCEL;
-                    }
+                    // and cancel the request
+                    return NavigationActionPolicy.CANCEL;
+                  } else {
+                    return NavigationActionPolicy.CANCEL;
                   }
+                }
 
-                  return NavigationActionPolicy.CANCEL;
-                },
-                onLoadStop: (controller, url) async {
+                return NavigationActionPolicy.CANCEL;
+              },
+              onLoadStop: (controller, url) async {
+                pullToRefreshController.endRefreshing();
+                setState(() {
+                  this.url = url.toString();
+                  urlController.text = this.url;
+                });
+              },
+              onLoadError: (controller, url, code, message) {
+                pullToRefreshController.endRefreshing();
+              },
+              onProgressChanged: (controller, progress) {
+                if (progress == 100) {
                   pullToRefreshController.endRefreshing();
-                  setState(() {
-                    this.url = url.toString();
-                    urlController.text = this.url;
-                  });
-                },
-                onLoadError: (controller, url, code, message) {
-                  pullToRefreshController.endRefreshing();
-                },
-                onProgressChanged: (controller, progress) {
-                  if (progress == 100) {
-                    pullToRefreshController.endRefreshing();
-                  }
-                  setState(() {
-                    this.progress = progress / 100;
-                    urlController.text = url;
-                  });
-                },
-                onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                  setState(() {
-                    this.url = url.toString();
-                    urlController.text = this.url;
-                  });
-                },
-                onConsoleMessage: (controller, consoleMessage) {
-                  print(consoleMessage);
-                },
-              ),
-              progress < 1.0
-                  ? LinearProgressIndicator(
-                      value: progress,
-                      color: const Color(0xFFF57C00),
-                      backgroundColor: Colors.black,
-                    )
-                  : Container(),
-            ],
-          ),
+                }
+                setState(() {
+                  this.progress = progress / 100;
+                  urlController.text = url;
+                });
+              },
+              onUpdateVisitedHistory: (controller, url, androidIsReload) {
+                setState(() {
+                  this.url = url.toString();
+                  urlController.text = this.url;
+                });
+              },
+              onConsoleMessage: (controller, consoleMessage) {
+                print(consoleMessage);
+              },
+            ),
+            progress < 1.0
+                ? LinearProgressIndicator(
+                    value: progress,
+                  )
+                : Container(),
+          ],
         ),
-      ]))),
-    );
+      ),
+    ])));
   }
 }

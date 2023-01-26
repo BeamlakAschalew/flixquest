@@ -1,3 +1,5 @@
+import 'package:flutter_svg/flutter_svg.dart';
+
 import '../../ui_components/tv_ui_components.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -115,8 +117,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                           )
                         : requestFailed == true
                             ? retryWidget(isDark)
-                            : Container(
-                                child: Column(
+                            : Column(
                                 children: [
                                   Expanded(
                                     child: Padding(
@@ -151,41 +152,35 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                                             child: CircularProgressIndicator()),
                                       )),
                                 ],
-                              ))));
+                              )));
   }
 
   Widget retryWidget(isDark) {
-    return Container(
-      child: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 60, height: 60),
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: Text('Please connect to the Internet and try again',
-                textAlign: TextAlign.center),
-          ),
-          TextButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0x0DF57C00)),
-                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          side: const BorderSide(color: Color(0xFFF57C00))))),
-              onPressed: () {
-                setState(() {
-                  requestFailed = false;
-                  tvList = null;
-                });
-                getData();
-              },
-              child: const Text('Retry')),
-        ],
-      )),
-    );
+    return Center(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SvgPicture.asset(
+          'assets/images/network-signal.svg',
+          width: 60,
+          height: 60,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 8.0),
+          child: Text('Please connect to the Internet and try again',
+              textAlign: TextAlign.center),
+        ),
+        TextButton(
+            onPressed: () {
+              setState(() {
+                requestFailed = false;
+                tvList = null;
+              });
+              getData();
+            },
+            child: const Text('Retry')),
+      ],
+    ));
   }
 }

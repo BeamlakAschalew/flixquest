@@ -20,21 +20,21 @@ class Styles {
       appBarTheme: AppBarTheme(
         backgroundColor: isM3Enabled
             ? isDarkTheme
-                ? darkDynamicColor?.surface ?? Color(0xFFF57C00)
-                : lightDynamicColor?.surface ?? Color(0xFFF57C00)
+                ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+                : lightDynamicColor?.primary ?? Color(0xFFF57C00)
             : Color(0xFFF57C00),
         iconTheme: IconThemeData(
           color: isM3Enabled
               ? isDarkTheme
-                  ? darkDynamicColor?.onSurface ?? Colors.black
-                  : lightDynamicColor?.onSurface ?? Colors.black
+                  ? darkDynamicColor?.onPrimary ?? Colors.black
+                  : lightDynamicColor?.onPrimary ?? Colors.black
               : Colors.black,
         ),
         titleTextStyle: TextStyle(
             color: isM3Enabled
                 ? isDarkTheme
-                    ? darkDynamicColor?.onSurface ?? Colors.black
-                    : lightDynamicColor?.onSurface ?? Colors.black
+                    ? darkDynamicColor?.onPrimary ?? Colors.black
+                    : lightDynamicColor?.onPrimary ?? Colors.black
                 : Colors.black,
             fontFamily: 'PoppinsSB',
             fontSize: 21),
@@ -47,8 +47,8 @@ class Styles {
       iconTheme: IconThemeData(
         color: isM3Enabled
             ? isDarkTheme
-                ? darkDynamicColor?.surface ?? Color(0xFFF57C00)
-                : lightDynamicColor?.surface ?? Color(0xFFF57C00)
+                ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+                : lightDynamicColor?.primary ?? Color(0xFFF57C00)
             : Color(0xFFF57C00),
       ),
       backgroundColor: isM3Enabled
@@ -58,6 +58,110 @@ class Styles {
           : isDarkTheme
               ? Colors.black
               : Colors.white,
+      bannerTheme: MaterialBannerThemeData(),
+      chipTheme: ChipThemeData(),
+      snackBarTheme: SnackBarThemeData(),
+      scaffoldBackgroundColor: isDarkTheme ? Colors.black : Colors.white,
+      radioTheme: RadioThemeData(
+          fillColor: MaterialStatePropertyAll(isM3Enabled
+              ? isDarkTheme
+                  ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+                  : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+              : Color(0xFFF57C00))),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: MaterialStatePropertyAll(
+            isM3Enabled
+                ? isDarkTheme
+                    ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+                    : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+                : Color(0xFFF57C00),
+          ),
+          foregroundColor: MaterialStatePropertyAll(
+            isM3Enabled
+                ? isDarkTheme
+                    ? darkDynamicColor?.onPrimary ?? Color(0xFFF57C00)
+                    : lightDynamicColor?.onPrimary ?? Color(0xFFF57C00)
+                : Colors.white,
+          ),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(
+              isM3Enabled
+                  ? isDarkTheme
+                      ? darkDynamicColor?.primary.withOpacity(0.05) ??
+                          Color(0xFFF57C00).withOpacity(0.05)
+                      : lightDynamicColor?.primary.withOpacity(0.05) ??
+                          Color(0xFFF57C00).withOpacity(0.05)
+                  : Color(0xFFF57C00).withOpacity(0.05),
+            ),
+            maximumSize: MaterialStateProperty.all(const Size(200, 60)),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0),
+                    side: BorderSide(
+                      color: isM3Enabled
+                          ? isDarkTheme
+                              ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+                              : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+                          : Color(0xFFF57C00),
+                    )))),
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        refreshBackgroundColor: isM3Enabled
+            ? isDarkTheme
+                ? darkDynamicColor?.onPrimary ?? Colors.black
+                : lightDynamicColor?.onPrimary ?? Colors.black
+            : Colors.black,
+        color: isM3Enabled
+            ? isDarkTheme
+                ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+                : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+            : Color(0xFFF57C00),
+      ),
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: isM3Enabled
+            ? isDarkTheme
+                ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+                : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+            : Color(0xFFF57C00),
+        selectionHandleColor:
+            isDarkTheme ? const Color(0xFFFFFFFF) : const Color(0xFF000000),
+        selectionColor: isDarkTheme ? Colors.white12 : Colors.black12,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: InputBorder.none,
+        hintStyle: TextStyle(
+            color: isDarkTheme ? Colors.white24 : Colors.black26,
+            fontFamily: 'Poppins'),
+        focusedBorder: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+      ),
+      indicatorColor: isM3Enabled
+          ? isDarkTheme
+              ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+              : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+          : Color(0xFFF57C00),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStatePropertyAll(
+          isM3Enabled
+              ? isDarkTheme
+                  ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+                  : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+              : Color(0xFFF57C00),
+        ),
+        trackColor: MaterialStatePropertyAll(
+          isM3Enabled
+              ? isDarkTheme
+                  ? darkDynamicColor?.primaryContainer ?? Color(0xFF994d02)
+                  : lightDynamicColor?.primaryContainer ?? Color(0xFF994d02)
+              : Color(0xFF994d02),
+        ),
+      ),
       colorScheme: ColorScheme(
         primary: isM3Enabled
             ? isDarkTheme
@@ -220,10 +324,6 @@ class Styles {
                 : Color(0xFFf4ded3),
         brightness: isDarkTheme ? Brightness.dark : Brightness.light,
       ),
-      bannerTheme: MaterialBannerThemeData(),
-      chipTheme: ChipThemeData(),
-      snackBarTheme: SnackBarThemeData(),
-      scaffoldBackgroundColor: isDarkTheme ? Colors.black : Colors.white,
     );
   }
 }

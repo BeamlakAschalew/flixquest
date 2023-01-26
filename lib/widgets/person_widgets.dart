@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../api/endpoints.dart';
 import '../models/credits.dart';
 import '../screens/person/cast_detail.dart';
@@ -393,8 +394,6 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                 children: [
                                                                   const Icon(
                                                                     Icons.star,
-                                                                    color: Color(
-                                                                        0xFFF57C00),
                                                                   ),
                                                                   Text(personMoviesList![
                                                                           index]
@@ -438,29 +437,23 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -691,8 +684,6 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                 children: [
                                                                   const Icon(
                                                                     Icons.star,
-                                                                    color: Color(
-                                                                        0xFFF57C00),
                                                                   ),
                                                                   Text(personTVList![
                                                                           index]
@@ -736,29 +727,23 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -823,17 +808,17 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                         : 'We don\'t have a biography for this person',
                     trimLines: 4,
                     style: kTextSmallAboutBodyStyle,
-                    colorClickableText: const Color(0xFFF57C00),
+                    colorClickableText: Theme.of(context).colorScheme.primary,
                     trimMode: TrimMode.Line,
                     trimCollapsedText: 'read more',
                     trimExpandedText: 'read less',
-                    lessStyle: const TextStyle(
+                    lessStyle: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFFF57C00),
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold),
-                    moreStyle: const TextStyle(
+                    moreStyle: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFFF57C00),
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -918,7 +903,6 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                                         externalLinks!.facebookUsername!,
                                 icon: const Icon(
                                   SocialIcons.facebook_f,
-                                  color: Color(0xFFF57C00),
                                 ),
                               ),
                               SocialIconWidget(
@@ -930,7 +914,6 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                                         externalLinks!.instagramUsername!,
                                 icon: const Icon(
                                   SocialIcons.instagram,
-                                  color: Color(0xFFF57C00),
                                 ),
                               ),
                               SocialIconWidget(
@@ -941,7 +924,6 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                                         externalLinks!.twitterUsername!,
                                 icon: const Icon(
                                   SocialIcons.twitter,
-                                  color: Color(0xFFF57C00),
                                 ),
                               ),
                               SocialIconWidget(
@@ -1064,8 +1046,8 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SingleChildScrollView(
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
         child: Column(
@@ -1079,7 +1061,6 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                     });
                   }),
                   isScrollable: true,
-                  indicatorColor: const Color(0xFFF57C00),
                   indicatorWeight: 3,
                   unselectedLabelColor: Colors.white54,
                   labelColor: Colors.white,
@@ -1194,6 +1175,7 @@ class CastDetailQuickInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1223,19 +1205,16 @@ class CastDetailQuickInfo extends StatelessWidget {
                               height: 120,
                               child: widget.cast!.profilePath == null
                                   ? Image.asset(
-                                      'assets/images/na_logo.png',
+                                      'assets/images/na_square.png',
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          scrollingImageShimmer(isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
-                                        'assets/images/na_logo.png',
+                                        'assets/images/na_square.png',
                                         fit: BoxFit.cover,
                                       ),
                                       imageUrl: TMDB_BASE_IMAGE_URL +
@@ -1292,6 +1271,7 @@ class CreatedByQuickInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1327,10 +1307,7 @@ class CreatedByQuickInfo extends StatelessWidget {
                                   : CachedNetworkImage(
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          scrollingImageShimmer(isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -1393,8 +1370,8 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SingleChildScrollView(
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
         child: Column(
@@ -1408,7 +1385,6 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                     });
                   }),
                   isScrollable: true,
-                  indicatorColor: const Color(0xFFF57C00),
                   indicatorWeight: 3,
                   unselectedLabelColor: Colors.white54,
                   labelColor: Colors.white,
@@ -1520,6 +1496,7 @@ class CrewDetailQuickInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1555,10 +1532,7 @@ class CrewDetailQuickInfo extends StatelessWidget {
                                   : CachedNetworkImage(
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          scrollingImageShimmer(isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -1629,8 +1603,8 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SingleChildScrollView(
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
         child: Column(
@@ -1644,7 +1618,6 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                     });
                   }),
                   isScrollable: true,
-                  indicatorColor: const Color(0xFFF57C00),
                   indicatorWeight: 3,
                   unselectedLabelColor: Colors.white54,
                   labelColor: Colors.white,
@@ -1758,6 +1731,7 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1793,10 +1767,7 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
                                   : CachedNetworkImage(
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          scrollingImageShimmer(isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -1866,8 +1837,8 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SingleChildScrollView(
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
         child: Column(
@@ -1881,7 +1852,6 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                     });
                   }),
                   isScrollable: true,
-                  indicatorColor: const Color(0xFFF57C00),
                   indicatorWeight: 3,
                   unselectedLabelColor: Colors.white54,
                   labelColor: Colors.white,
@@ -1994,6 +1964,7 @@ class SearchedPersonQuickInfo extends StatelessWidget {
   final String imageQuality;
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -2029,10 +2000,8 @@ class SearchedPersonQuickInfo extends StatelessWidget {
                                   : CachedNetworkImage(
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                         scrollingImageShimmer(
+                                                                  isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -2102,8 +2071,8 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SingleChildScrollView(
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
         child: Column(
@@ -2117,7 +2086,6 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                     });
                   }),
                   isScrollable: true,
-                  indicatorColor: const Color(0xFFF57C00),
                   indicatorWeight: 3,
                   unselectedLabelColor: Colors.white54,
                   labelColor: Colors.white,

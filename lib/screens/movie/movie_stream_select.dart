@@ -28,7 +28,6 @@ class _MovieStreamSelectState extends State<MovieStreamSelect> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(

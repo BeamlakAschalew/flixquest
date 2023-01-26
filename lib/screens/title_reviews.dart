@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
 
@@ -165,22 +166,18 @@ class _TitleReviewsState extends State<TitleReviews> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 60, height: 60),
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 60,
+            height: 60,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
             child: Text('Please connect to the Internet and try again',
                 textAlign: TextAlign.center),
           ),
           TextButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0x0DF57C00)),
-                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          side: const BorderSide(color: Color(0xFFF57C00))))),
               onPressed: () async {
                 setState(() {
                   requestFailed = false;

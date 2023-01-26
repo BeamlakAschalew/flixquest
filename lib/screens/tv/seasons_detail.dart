@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
+import '../../widgets/common_widgets.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../../constants/app_constants.dart';
@@ -78,8 +79,8 @@ class SeasonsDetailState extends State<SeasonsDetail>
               widget.seasons.airDate == null || widget.seasons.airDate == ""
                   ? widget.seasons.name!
                   : '${widget.seasons.name!} (${DateTime.parse(widget.seasons.airDate!).year})',
-              style: const TextStyle(
-                color: Color(0xFFF57C00),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             )),
             expandedHeight: 300,
@@ -247,10 +248,7 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                                   : CachedNetworkImage(
                                       fit: BoxFit.fill,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          scrollingImageShimmer(isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -336,11 +334,10 @@ class TVSeasonAbout extends StatefulWidget {
 class _TVSeasonAboutState extends State<TVSeasonAbout> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SingleChildScrollView(
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
         child: Column(
@@ -364,17 +361,17 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
                     : widget.season.overview!,
                 trimLines: 4,
                 style: const TextStyle(fontFamily: 'Poppins'),
-                colorClickableText: const Color(0xFFF57C00),
+                colorClickableText: Theme.of(context).colorScheme.primary,
                 trimMode: TrimMode.Line,
                 trimCollapsedText: 'read more',
                 trimExpandedText: 'read less',
-                lessStyle: const TextStyle(
+                lessStyle: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold),
-                moreStyle: const TextStyle(
+                moreStyle: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold),
               ),
             ),

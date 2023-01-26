@@ -39,10 +39,18 @@ class NewsWebViewState extends State<NewsWebView> {
   @override
   void initState() {
     super.initState();
+  }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     pullToRefreshController = PullToRefreshController(
       options: PullToRefreshOptions(
-        color: const Color(0xFFF57C00),
+        color: Theme.of(context).colorScheme.primary,
       ),
       onRefresh: () async {
         if (Platform.isAndroid) {
@@ -53,15 +61,7 @@ class NewsWebViewState extends State<NewsWebView> {
         }
       },
     );
-  }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Cinemax news'),
@@ -124,8 +124,6 @@ class NewsWebViewState extends State<NewsWebView> {
                   progress < 1.0
                       ? LinearProgressIndicator(
                           value: progress,
-                          color: const Color(0xFFF57C00),
-                          backgroundColor: Colors.black,
                         )
                       : Container(),
                 ],

@@ -177,7 +177,6 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
           child: Stack(alignment: Alignment.bottomRight, children: [
         PhotoViewGallery.builder(
           allowImplicitScrolling: true,
-          backgroundDecoration: BoxDecoration(),
           gaplessPlayback: true,
           wantKeepAlive: true,
           enableRotation: true,

@@ -30,15 +30,14 @@ class _MovieCastAndCrewState extends State<MovieCastAndCrew>
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: const Color(0xFFF57C00),
             elevation: 3,
-            title: Text(
+            title: const Text(
               'Cast And Crew',
-              style: TextStyle(color: Colors.black),
             ),
             leading: IconButton(
-              icon: Icon(Icons.arrow_back,
-                  color: isDark ? Colors.white : Colors.black),
+              icon: const Icon(
+                Icons.arrow_back,
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },

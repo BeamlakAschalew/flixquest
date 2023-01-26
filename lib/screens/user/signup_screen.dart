@@ -150,6 +150,9 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
+      backgroundColor: isDark
+          ? Colors.black.withOpacity(0.90)
+          : Colors.white.withOpacity(0.90),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Signup'),
@@ -170,10 +173,14 @@ class _SignupScreenState extends State<SignupScreen> {
                           _isUserVerified = true;
                         });
                       },
-                      child: SizedBox(
-                          width: 90,
-                          height: 90,
-                          child: Image.asset('assets/images/logo_shadow.png')),
+                      child: Hero(
+                        tag: 'logo_shadow',
+                        child: SizedBox(
+                            width: 90,
+                            height: 90,
+                            child:
+                                Image.asset('assets/images/logo_shadow.png')),
+                      ),
                     ),
                     const SizedBox(
                       width: 10,
@@ -217,8 +224,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                           shape: const RoundedRectangleBorder(
                                               borderRadius: BorderRadius.all(
                                                   Radius.circular(150))),
-                                          selectedColor:
-                                              const Color(0xFFF57C00),
+                                          selectedColor: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
                                           label: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(200),

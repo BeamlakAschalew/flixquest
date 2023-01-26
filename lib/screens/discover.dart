@@ -76,11 +76,9 @@ class _DiscoverPageState extends State<DiscoverPage>
           ),
         ),
         Expanded(
-          child: Container(
-            child: TabBarView(
-              controller: tabController,
-              children: const [DiscoverMoviesTab(), DiscoverTVTab()],
-            ),
+          child: TabBarView(
+            controller: tabController,
+            children: const [DiscoverMoviesTab(), DiscoverTVTab()],
           ),
         )
       ],

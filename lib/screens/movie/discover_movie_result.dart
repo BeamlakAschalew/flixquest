@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import '../../constants/app_constants.dart';
@@ -118,80 +119,70 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                           )
                         : requestFailed == true
                             ? retryWidget(isDark)
-                            : Container(
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 8.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                                child: viewType == 'grid'
-                                                    ? MovieGridView(
-                                                        scrollController:
-                                                            _scrollController,
-                                                        moviesList: moviesList,
-                                                        imageQuality:
-                                                            imageQuality,
-                                                        isDark: isDark)
-                                                    : MovieListView(
-                                                        scrollController:
-                                                            _scrollController,
-                                                        moviesList: moviesList,
-                                                        isDark: isDark,
-                                                        imageQuality:
-                                                            imageQuality)),
-                                          ],
-                                        ),
+                            : Column(
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                              child: viewType == 'grid'
+                                                  ? MovieGridView(
+                                                      scrollController:
+                                                          _scrollController,
+                                                      moviesList: moviesList,
+                                                      imageQuality:
+                                                          imageQuality,
+                                                      isDark: isDark)
+                                                  : MovieListView(
+                                                      scrollController:
+                                                          _scrollController,
+                                                      moviesList: moviesList,
+                                                      isDark: isDark,
+                                                      imageQuality:
+                                                          imageQuality)),
+                                        ],
                                       ),
                                     ),
-                                    Visibility(
-                                        visible: isLoading,
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                        )),
-                                  ],
-                                ),
+                                  ),
+                                  Visibility(
+                                      visible: isLoading,
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: CircularProgressIndicator()),
+                                      )),
+                                ],
                               )));
   }
 
   Widget retryWidget(isDark) {
-    return Container(
-      child: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 60, height: 60),
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: Text('Please connect to the Internet and try again',
-                textAlign: TextAlign.center),
-          ),
-          TextButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0x0DF57C00)),
-                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          side: const BorderSide(color: Color(0xFFF57C00))))),
-              onPressed: () {
-                setState(() {
-                  requestFailed = false;
-                  moviesList = null;
-                });
-                getData();
-              },
-              child: const Text('Retry')),
-        ],
-      )),
-    );
+    return Center(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SvgPicture.asset(
+          'assets/images/network-signal.svg',
+          width: 60,
+          height: 60,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 8.0),
+          child: Text('Please connect to the Internet and try again',
+              textAlign: TextAlign.center),
+        ),
+        TextButton(
+            onPressed: () {
+              setState(() {
+                requestFailed = false;
+                moviesList = null;
+              });
+              getData();
+            },
+            child: const Text('Retry')),
+      ],
+    ));
   }
 }

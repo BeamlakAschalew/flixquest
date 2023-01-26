@@ -42,7 +42,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Check for update'),
@@ -174,7 +173,7 @@ class _ListItemState extends State<ListItem> {
       child: Container(
         decoration: BoxDecoration(
             border: Border.all(
-              color: const Color(0xFFF57C00),
+              color: Theme.of(context).colorScheme.primary,
             ),
             borderRadius: const BorderRadius.all(Radius.circular(20))),
         padding: const EdgeInsets.all(8.0),
@@ -232,7 +231,7 @@ class _ListItemState extends State<ListItem> {
                         color: widget.downloadTask!.status.value ==
                                 DownloadStatus.paused
                             ? Colors.grey
-                            : const Color(0xFFF57C00),
+                            : Theme.of(context).colorScheme.primary,
                       ),
                     );
                   }),

@@ -105,7 +105,6 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                 children: [
                                   const Icon(
                                     Icons.star,
-                                    color: Color(0xFFF57C00),
                                   ),
                                   Text(movieList![index]
                                       .voteAverage!
@@ -172,6 +171,7 @@ class MovieListView extends StatelessWidget {
               }));
             },
             child: Container(
+              color: Colors.transparent,
               child: Padding(
                 padding: const EdgeInsets.only(
                   top: 0.0,
@@ -242,8 +242,9 @@ class MovieListView extends StatelessWidget {
                               ),
                               Row(
                                 children: <Widget>[
-                                  const Icon(Icons.star,
-                                      color: Color(0xFFF57C00)),
+                                  const Icon(
+                                    Icons.star,
+                                  ),
                                   Text(
                                     moviesList![index]
                                         .voteAverage!
@@ -370,7 +371,6 @@ class MovieGridView extends StatelessWidget {
                                 children: [
                                   const Icon(
                                     Icons.star,
-                                    color: Color(0xFFF57C00),
                                   ),
                                   Text(moviesList![index]
                                       .voteAverage!

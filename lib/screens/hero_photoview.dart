@@ -155,7 +155,6 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                 flex: 10,
                 child: PhotoView(
                   imageProvider: widget.imageProvider,
-                  backgroundDecoration: BoxDecoration(),
                   enableRotation: true,
                   heroAttributes: PhotoViewHeroAttributes(tag: widget.heroId),
                 ),
@@ -167,10 +166,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                         widget.heroId, '${widget.currentIndex + 1}', isDark);
                   },
                   style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all(
-                          const Size(double.infinity, 50)),
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0xFFF57C00))),
+                    minimumSize: MaterialStateProperty.all(
+                        const Size(double.infinity, 50)),
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [

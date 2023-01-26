@@ -69,8 +69,8 @@ class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
             title: SABT(
                 child: Text(
               widget.createdBy!.name!,
-              style: const TextStyle(
-                color: Color(0xFFF57C00),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onBackground,
               ),
             )),
             expandedHeight: 210,

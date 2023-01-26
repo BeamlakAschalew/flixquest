@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '../ui_components/movie_ui_components.dart';
 import '/models/dropdown_select.dart';
@@ -259,22 +260,18 @@ class DiscoverMoviesState extends State<DiscoverMovies>
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 60, height: 60),
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 60,
+            height: 60,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
             child: Text('Please connect to the Internet and try again',
                 textAlign: TextAlign.center),
           ),
           TextButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0x0DF57C00)),
-                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          side: const BorderSide(color: Color(0xFFF57C00))))),
               onPressed: () {
                 setState(() {
                   requestFailed = false;
@@ -423,15 +420,12 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                     }));
                   },
                   style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x26F57C00)),
                       maximumSize:
                           MaterialStateProperty.all(const Size(200, 60)),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ))),
                   child: const Padding(
                     padding: EdgeInsets.only(left: 8.0, right: 8.0),
                     child: Text('View all'),
@@ -560,8 +554,6 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                       children: [
                                                         const Icon(
                                                           Icons.star,
-                                                          color:
-                                                              Color(0xFFF57C00),
                                                         ),
                                                         Text(moviesList![index]
                                                             .voteAverage!
@@ -620,8 +612,12 @@ class ScrollingMoviesState extends State<ScrollingMovies>
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 60, height: 60),
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 60,
+            height: 60,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
             child: Text('Please connect to the Internet and try again',
@@ -629,13 +625,11 @@ class ScrollingMoviesState extends State<ScrollingMovies>
           ),
           TextButton(
               style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0x0DF57C00)),
                   maximumSize: MaterialStateProperty.all(const Size(200, 60)),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          side: const BorderSide(color: Color(0xFFF57C00))))),
+                    borderRadius: BorderRadius.circular(5.0),
+                  ))),
               onPressed: () {
                 setState(() {
                   requestFailed = false;
@@ -716,7 +710,10 @@ class _SABTNState extends State<SABTN> {
               borderRadius: BorderRadius.circular(50.0),
               color: isDark ? Colors.black12 : Colors.white38),
           child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFFF57C00)),
+            icon: Icon(
+              Icons.arrow_back,
+              color: Theme.of(context).colorScheme.onBackground,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -807,6 +804,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -938,10 +936,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                                   : CachedNetworkImage(
                                       fit: BoxFit.fill,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          scrollingImageShimmer(isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -968,9 +963,11 @@ class MovieDetailQuickInfo extends StatelessWidget {
                             // _utilityController.toggleTitleVisibility();
                           },
                           child: Text(
-                            movie.releaseDate == ""
+                            movie.releaseDate == null
                                 ? movie.title!
-                                : '${movie.title!} (${DateTime.parse(movie.releaseDate!).year})',
+                                : movie.releaseDate == ""
+                                    ? movie.title!
+                                    : '${movie.title!} (${DateTime.parse(movie.releaseDate!).year})',
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -1034,7 +1031,7 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                 curve: Curves.ease,
                 animation: true,
                 animationDuration: 2500,
-                progressColor: Colors.orange,
+                progressColor: Theme.of(context).colorScheme.primary,
                 center: Text(
                   '${widget.movie.voteAverage!.toStringAsFixed(1)}/10',
                   style: const TextStyle(
@@ -1062,7 +1059,7 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
             // width: 46,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0xFFF57C00).withOpacity(0.9),
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -1130,12 +1127,11 @@ class MovieAbout extends StatefulWidget {
 class _MovieAboutState extends State<MovieAbout> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return SingleChildScrollView(
       // physics: const BouncingScrollPhysics(),
       child: Container(
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
         child: Column(
@@ -1162,17 +1158,17 @@ class _MovieAboutState extends State<MovieAbout> {
                       widget.movie.overview!,
                       trimLines: 4,
                       style: const TextStyle(fontFamily: 'Poppins'),
-                      colorClickableText: const Color(0xFFF57C00),
+                      colorClickableText: Theme.of(context).colorScheme.primary,
                       trimMode: TrimMode.Line,
                       trimCollapsedText: 'read more',
                       trimExpandedText: 'read less',
-                      lessStyle: const TextStyle(
+                      lessStyle: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFFF57C00),
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold),
-                      moreStyle: const TextStyle(
+                      moreStyle: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFFF57C00),
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold),
                     ),
             ),
@@ -1317,15 +1313,28 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                         ),
                       ),
                       TextButton(
-                          onPressed: () {
-                            if (credits != null) {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return MovieCastAndCrew(credits: credits!);
-                              }));
-                            }
-                          },
-                          child: const Text('See all cast and crew'))
+                        onPressed: () {
+                          if (credits != null) {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return MovieCastAndCrew(credits: credits!);
+                            }));
+                          }
+                        },
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                          maximumSize:
+                              MaterialStateProperty.all(const Size(200, 60)),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          ),
+                        ),
+                        child: const Text('See all cast and crew'),
+                      )
                     ],
                   ),
         SizedBox(
@@ -1507,7 +1516,6 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
                                         externalLinks!.facebookUsername!,
                                 icon: const Icon(
                                   SocialIcons.facebook_f,
-                                  color: Color(0xFFF57C00),
                                 ),
                               ),
                               SocialIconWidget(
@@ -1519,7 +1527,6 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
                                         externalLinks!.instagramUsername!,
                                 icon: const Icon(
                                   SocialIcons.instagram,
-                                  color: Color(0xFFF57C00),
                                 ),
                               ),
                               SocialIconWidget(
@@ -1530,7 +1537,6 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
                                         externalLinks!.twitterUsername!,
                                 icon: const Icon(
                                   SocialIcons.twitter,
-                                  color: Color(0xFFF57C00),
                                 ),
                               ),
                               SocialIconWidget(
@@ -1623,7 +1629,7 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                   : FadeInImage(
                                       fit: BoxFit.fill,
                                       placeholder: const AssetImage(
-                                          'assets/images/loading.gif'),
+                                          'assets/images/loading_5.gif'),
                                       image: NetworkImage(
                                           '${TMDB_BASE_IMAGE_URL}w500/${belongsToCollection!.backdropPath!}')),
                             ),
@@ -1637,8 +1643,11 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                     child: Text(
                                       'Belongs to the ${belongsToCollection!.name!}',
                                       textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                          backgroundColor: Color(0xFFF57C00)),
+                                      style: TextStyle(
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -1649,7 +1658,11 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                       style: ButtonStyle(
                                           backgroundColor:
                                               MaterialStateProperty.all(
-                                                  const Color(0x26F57C00)),
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                                .withOpacity(0.3),
+                                          ),
                                           maximumSize:
                                               MaterialStateProperty.all(
                                                   const Size(200, 40)),
@@ -1659,8 +1672,11 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           5.0),
-                                                  side: const BorderSide(
-                                                      color: Color(0xFFF57C00))))),
+                                                  side: BorderSide(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                  )))),
                                       onPressed: () {
                                         Navigator.push(context,
                                             MaterialPageRoute(
@@ -1753,39 +1769,31 @@ class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
-              const Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: Text('Please connect to the Internet and try again',
-                    textAlign: TextAlign.center),
-              ),
-              TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
-                  onPressed: () {
-                    setState(() {
-                      requestFailed = false;
-                      collectionDetails = null;
-                    });
-                    getData();
-                  },
-                  child: const Text('Retry')),
-            ],
-          )),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 60,
+            height: 60,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 8.0),
+            child: Text('Please connect to the Internet and try again',
+                textAlign: TextAlign.center),
+          ),
+          TextButton(
+              onPressed: () {
+                setState(() {
+                  requestFailed = false;
+                  collectionDetails = null;
+                });
+                getData();
+              },
+              child: const Text('Retry')),
+        ],
+      ),
     );
   }
 }
@@ -1981,12 +1989,10 @@ class PartsListState extends State<PartsList> {
                                                               ),
                                                             ),
                                                           ),
-                                                          placeholder:
-                                                              (context, url) =>
-                                                                  Image.asset(
-                                                            'assets/images/loading.gif',
-                                                            fit: BoxFit.cover,
-                                                          ),
+                                                          placeholder: (context,
+                                                                  url) =>
+                                                              scrollingImageShimmer(
+                                                                  isDark),
                                                           errorWidget: (context,
                                                                   url, error) =>
                                                               Image.asset(
@@ -2016,8 +2022,6 @@ class PartsListState extends State<PartsList> {
                                                       children: [
                                                         const Icon(
                                                           Icons.star,
-                                                          color:
-                                                              Color(0xFFF57C00),
                                                         ),
                                                         Text(collectionMovieList![
                                                                 index]
@@ -2061,29 +2065,23 @@ class PartsListState extends State<PartsList> {
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -2685,9 +2683,11 @@ class WatchNowButtonState extends State<WatchNowButton> {
     return Container(
       child: TextButton(
         style: ButtonStyle(
-            maximumSize: MaterialStateProperty.all(Size(buttonWidth!, 50)),
-            backgroundColor:
-                MaterialStateProperty.all(const Color(0xFFF57C00))),
+          maximumSize: MaterialStateProperty.all(Size(buttonWidth!, 50)),
+        ).copyWith(
+            backgroundColor: MaterialStateProperty.all(
+          Theme.of(context).colorScheme.primary,
+        )),
         onPressed: () async {
           mixpanel.track('Most viewed movie pages', properties: {
             'Movie name': widget.movieName,
@@ -2791,10 +2791,11 @@ class GenreDisplayState extends State<GenreDisplay>
                             },
                             child: Chip(
                               shape: RoundedRectangleBorder(
-                                side: const BorderSide(
-                                    width: 2,
-                                    style: BorderStyle.solid,
-                                    color: Color(0xFFF57C00)),
+                                side: BorderSide(
+                                  width: 2,
+                                  style: BorderStyle.solid,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                                 borderRadius: BorderRadius.circular(20.0),
                               ),
                               label: Text(
@@ -3073,6 +3074,7 @@ class CastTabState extends State<CastTab>
                       }));
                     },
                     child: Container(
+                      color: Colors.transparent,
                       child: Padding(
                         padding: const EdgeInsets.only(
                           top: 0.0,
@@ -3236,6 +3238,7 @@ class CrewTabState extends State<CrewTab>
                       }));
                     },
                     child: Container(
+                      color: Colors.transparent,
                       child: Padding(
                         padding: const EdgeInsets.only(
                           top: 0.0,
@@ -3479,29 +3482,23 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       //  requestFailed = false;
@@ -3654,29 +3651,23 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       //   requestFailed = false;
@@ -3833,22 +3824,18 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 60, height: 60),
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 60,
+            height: 60,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
             child: Text('Please connect to the Internet and try again',
                 textAlign: TextAlign.center),
           ),
           TextButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0x0DF57C00)),
-                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          side: const BorderSide(color: Color(0xFFF57C00))))),
               onPressed: () {
                 setState(() {
                   requestFailed = false;
@@ -4003,22 +3990,18 @@ class ParticularStreamingServiceMoviesState
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 60, height: 60),
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 60,
+            height: 60,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const Padding(
             padding: EdgeInsets.only(top: 8.0),
             child: Text('Please connect to the Internet and try again',
                 textAlign: TextAlign.center),
           ),
           TextButton(
-              style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(const Color(0x0DF57C00)),
-                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          side: const BorderSide(color: Color(0xFFF57C00))))),
               onPressed: () {
                 setState(() {
                   requestFailed = false;
@@ -4061,7 +4044,7 @@ class StreamingServicesWidget extends StatelessWidget {
           height: 60,
           width: 200,
           decoration: BoxDecoration(
-              color: const Color(0xFFF57C00),
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(15)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -4074,7 +4057,12 @@ class StreamingServicesWidget extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),
-                child: Text(title, style: const TextStyle(color: Colors.white)),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
               ),
             ],
           ),
@@ -4169,13 +4157,18 @@ class GenreListGridState extends State<GenreListGrid>
                                         width: 125,
                                         alignment: Alignment.center,
                                         decoration: BoxDecoration(
-                                            color: const Color(0xFFF57C00),
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
                                             borderRadius:
                                                 BorderRadius.circular(15)),
                                         child: Text(
                                           genreList![index].genreName!,
-                                          style: const TextStyle(
-                                              color: Colors.white),
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary,
+                                          ),
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
@@ -4196,8 +4189,12 @@ class GenreListGridState extends State<GenreListGrid>
       child: Container(
           child: Row(
         children: [
-          Image.asset('assets/images/network-signal.png',
-              width: 50, height: 50),
+          SvgPicture.asset(
+            'assets/images/network-signal.svg',
+            width: 50,
+            height: 50,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -4207,16 +4204,6 @@ class GenreListGridState extends State<GenreListGrid>
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -4254,12 +4241,16 @@ class TopButtonState extends State<TopButton> {
       padding: const EdgeInsets.all(10.0),
       child: TextButton(
         style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(const Color(0x26F57C00)),
+            backgroundColor: MaterialStateProperty.all(
+              Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            ),
             maximumSize: MaterialStateProperty.all(const Size(200, 60)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
-                    side: const BorderSide(color: Color(0xFFF57C00))))),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    )))),
         onPressed: () {
           Navigator.pop(context);
         },
@@ -4306,12 +4297,16 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
       padding: const EdgeInsets.all(10.0),
       child: TextButton(
         style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(const Color(0x26F57C00)),
+            backgroundColor: MaterialStateProperty.all(
+              Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            ),
             maximumSize: MaterialStateProperty.all(const Size(200, 60)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
-                    side: const BorderSide(color: Color(0xFFF57C00))))),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    )))),
         onPressed: () {
           widget.onTap!();
         },
@@ -4375,12 +4370,11 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
               children: [
                 Container(
                   width: double.infinity,
-                  decoration: BoxDecoration(),
+                  decoration: const BoxDecoration(),
                   child: Center(
                     child: TabBar(
                       controller: tabController,
                       isScrollable: true,
-                      indicatorColor: const Color(0xFFF57C00),
                       indicatorWeight: 3,
                       unselectedLabelColor: Colors.white54,
                       indicatorSize: TabBarIndicatorSize.tab,
@@ -4471,7 +4465,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                                                       'assets/images/logo_shadow.png'),
                                                   fit: BoxFit.cover,
                                                   placeholder: AssetImage(
-                                                      'assets/images/loading.gif'),
+                                                      'assets/images/loading_5.gif'),
                                                 ),
                                               ),
                                             ),
@@ -4503,29 +4497,23 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
 
   Widget retryWidget(isDark) {
     return Center(
-      child: Container(
+      child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/network-signal.png',
-                  width: 60, height: 60),
+              SvgPicture.asset(
+                'assets/images/network-signal.svg',
+                width: 60,
+                height: 60,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0),
                 child: Text('Please connect to the Internet and try again',
                     textAlign: TextAlign.center),
               ),
               TextButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0x0DF57C00)),
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                              side:
-                                  const BorderSide(color: Color(0xFFF57C00))))),
                   onPressed: () {
                     setState(() {
                       requestFailed = false;
@@ -4660,6 +4648,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Container(
       color: const Color(0xFF000000),
       child: moviesList == null
@@ -4736,12 +4725,10 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                                         ),
                                                       ),
                                                     ),
-                                                    placeholder:
-                                                        (context, url) =>
-                                                            Image.asset(
-                                                      'assets/images/loading.gif',
-                                                      fit: BoxFit.cover,
-                                                    ),
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        scrollingImageShimmer(
+                                                            isDark),
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
@@ -4777,8 +4764,9 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                                     style: const TextStyle(
                                                         fontFamily: 'Poppins'),
                                                   ),
-                                                  const Icon(Icons.star,
-                                                      color: Color(0xFFF57C00)),
+                                                  const Icon(
+                                                    Icons.star,
+                                                  ),
                                                 ],
                                               ),
                                             ],

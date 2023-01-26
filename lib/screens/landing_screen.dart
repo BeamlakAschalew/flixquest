@@ -78,10 +78,13 @@ class _LandingScreenState extends State<LandingScreen> {
                             ),
                             height: 100,
                             width: 100,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child:
-                                  Image.asset('assets/images/logo_shadow.png'),
+                            child: Hero(
+                              tag: 'logo_shadow',
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Image.asset(
+                                    'assets/images/logo_shadow.png'),
+                              ),
                             ),
                           ),
                         ),

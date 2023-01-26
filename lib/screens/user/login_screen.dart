@@ -71,12 +71,21 @@ class _LoginScreenState extends State<LoginScreen> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
 
     return Scaffold(
+      backgroundColor: isDark
+          ? Colors.black.withOpacity(0.90)
+          : Colors.white.withOpacity(0.90),
       appBar: AppBar(title: const Text('Login')),
       body: Container(
           padding: const EdgeInsets.all(8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Hero(
+                  tag: 'logo_shadow',
+                  child: SizedBox(
+                      height: 150,
+                      width: 150,
+                      child: Image.asset('assets/images/logo_shadow.png'))),
               SingleChildScrollView(
                 child: Center(
                   child: Form(

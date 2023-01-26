@@ -51,14 +51,15 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 SizedBox(
                   width: double.infinity,
                   child: DrawerHeader(
-                    decoration: BoxDecoration(color: Colors.white),
+                    decoration: BoxDecoration(
+                        color: isDark ? Colors.white : Colors.black),
                     child: Image.asset('assets/images/logo_shadow.png'),
                   ),
                 ),
                 ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     FontAwesomeIcons.bookmark,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   title: const Text('Bookmarks'),
                   onTap: () {
@@ -69,9 +70,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     FontAwesomeIcons.newspaper,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   title: const Text('News'),
                   onTap: () {
@@ -82,9 +83,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.settings,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   title: const Text('Settings'),
                   onTap: () {
@@ -95,9 +96,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.info_outline,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   title: const Text('About'),
                   onTap: () {
@@ -108,9 +109,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.update,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   title: const Text('Check for an update'),
                   onTap: () {
@@ -121,9 +122,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.share_sharp,
-                    color: Color(0xFFF57C00),
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   title: const Text('Share the app'),
                   onTap: () async {

@@ -70,7 +70,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
               spacing: 3,
               children: sortChoiceChipData.sortChoiceChip
                   .map((SortChoiceChipWidget choiceChipWidget) => ChoiceChip(
-                        selectedColor: const Color(0xFFF57C00),
+                        selectedColor: Theme.of(context).colorScheme.primary,
                         label: Text(choiceChipWidget.name),
                         selected: sortValue == choiceChipWidget.index,
                         onSelected: (bool selected) {
@@ -92,7 +92,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
               children: adultChoiceChipData.adultChoiceChip
                   .map((AdultChoiceChipWidget adultChoiceChipWidget) =>
                       ChoiceChip(
-                        selectedColor: const Color(0xFFF57C00),
+                        selectedColor: Theme.of(context).colorScheme.primary,
                         label: Text(adultChoiceChipWidget.name),
                         selected: adultValue == adultChoiceChipWidget.index,
                         onSelected: (bool selected) {
@@ -130,7 +130,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       style: kTextHeaderStyle,
                     ),
                     Checkbox(
-                      activeColor: const Color(0xFFF57C00),
+                      activeColor: Theme.of(context).colorScheme.primary,
                       value: enableOptionForSliderMovie,
                       onChanged: (newValue) {
                         setState(() {
@@ -169,34 +169,34 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
             Wrap(
               spacing: 3,
               children: movieGenreFilterChipData.movieGenreFilterdata
-                  .map(
-                      (MovieGenreFilterChipWidget movieGenreFilterChipWidget) =>
-                          FilterChip(
-                            selectedColor: const Color(0xFFF57C00),
-                            label: Text(movieGenreFilterChipWidget.genreName),
-                            selected: genreNames
-                                .contains(movieGenreFilterChipWidget.genreName),
-                            onSelected: (bool value) {
-                              setState(() {
-                                if (value) {
-                                  genreNames.add(
-                                      movieGenreFilterChipWidget.genreName);
-                                  genreIds.add(
-                                      movieGenreFilterChipWidget.genreValue);
-                                  genreIds.join(',');
-                                } else {
-                                  genreNames.removeWhere((String name) {
-                                    return name ==
-                                        movieGenreFilterChipWidget.genreName;
-                                  });
-                                  genreIds.removeWhere((String value) {
-                                    return value ==
-                                        movieGenreFilterChipWidget.genreValue;
-                                  });
-                                }
+                  .map((MovieGenreFilterChipWidget
+                          movieGenreFilterChipWidget) =>
+                      FilterChip(
+                        selectedColor: Theme.of(context).colorScheme.primary,
+                        label: Text(movieGenreFilterChipWidget.genreName),
+                        selected: genreNames
+                            .contains(movieGenreFilterChipWidget.genreName),
+                        onSelected: (bool value) {
+                          setState(() {
+                            if (value) {
+                              genreNames
+                                  .add(movieGenreFilterChipWidget.genreName);
+                              genreIds
+                                  .add(movieGenreFilterChipWidget.genreValue);
+                              genreIds.join(',');
+                            } else {
+                              genreNames.removeWhere((String name) {
+                                return name ==
+                                    movieGenreFilterChipWidget.genreName;
                               });
-                            },
-                          ))
+                              genreIds.removeWhere((String value) {
+                                return value ==
+                                    movieGenreFilterChipWidget.genreValue;
+                              });
+                            }
+                          });
+                        },
+                      ))
                   .toList(),
             ),
             const Text(
@@ -209,7 +209,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                   .map((WatchProvidersFilterChipWidget
                           watchProvidersFilterChipWidget) =>
                       FilterChip(
-                        selectedColor: const Color(0xFFF57C00),
+                        selectedColor: Theme.of(context).colorScheme.primary,
                         label: Text(watchProvidersFilterChipWidget.networkName),
                         selected: providersName.contains(
                             watchProvidersFilterChipWidget.networkName),
@@ -239,10 +239,9 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                   style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all(
-                          const Size(double.infinity, 50)),
-                      backgroundColor:
-                          MaterialStateProperty.all(const Color(0xFFF57C00))),
+                    minimumSize: MaterialStateProperty.all(
+                        const Size(double.infinity, 50)),
+                  ),
                   onPressed: () {
                     joinGenreStrings();
                     joinProviderStrings();
