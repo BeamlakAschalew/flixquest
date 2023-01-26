@@ -102,7 +102,7 @@ class AboutPage extends StatelessWidget {
                           ),
                           SocialIconContainer(
                             platformIcon: FontAwesomeIcons.instagram,
-                            uri: 'https://instagram.com/cinemax_app',
+                            uri: 'https://instagram.com/cinemaxhq',
                           ),
                           SocialIconContainer(
                             platformIcon: FontAwesomeIcons.telegram,
@@ -142,7 +142,7 @@ class AboutPage extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text('2014 EC, 2022 GC'),
+                  child: Text('2014 EC, 2023 GC'),
                 )
               ],
             ),
