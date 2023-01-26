@@ -34,7 +34,7 @@ class _MovieCastAndCrewState extends State<MovieCastAndCrew>
             elevation: 3,
             title: Text(
               'Cast And Crew',
-              style: TextStyle(color: isDark ? Colors.white : Colors.black),
+              style: TextStyle(color: Colors.black),
             ),
             leading: IconButton(
               icon: Icon(Icons.arrow_back,

@@ -4414,82 +4414,86 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                   ),
                 ),
                 Expanded(
-                  child: TabBarView(
-                    controller: tabController,
-                    children: watchProviders == null
-                        ? [
-                            watchProvidersShimmer(isDark),
-                            watchProvidersShimmer(isDark),
-                            watchProvidersShimmer(isDark),
-                            watchProvidersShimmer(isDark),
-                          ]
-                        : [
-                            watchProvidersTabData(
-                                isDark: isDark,
-                                imageQuality: imageQuality,
-                                noOptionMessage:
-                                    'This movie doesn\'t have an option to buy yet',
-                                watchOptions: watchProviders!.buy),
-                            watchProvidersTabData(
-                                isDark: isDark,
-                                imageQuality: imageQuality,
-                                noOptionMessage:
-                                    'This movie doesn\'t have an option to stream yet',
-                                watchOptions: watchProviders!.flatRate),
-                            watchProvidersTabData(
-                                isDark: isDark,
-                                imageQuality: imageQuality,
-                                noOptionMessage:
-                                    'This movie doesn\'t have an option to rent yet',
-                                watchOptions: watchProviders!.rent),
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              child: GridView.builder(
-                                  gridDelegate:
-                                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 100,
-                                    childAspectRatio: 0.65,
-                                    crossAxisSpacing: 5,
-                                    mainAxisSpacing: 5,
-                                  ),
-                                  itemCount: 1,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.all(4.0),
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            flex: 6,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              child: const FadeInImage(
-                                                image: AssetImage(
-                                                    'assets/images/logo_shadow.png'),
-                                                fit: BoxFit.cover,
-                                                placeholder: AssetImage(
-                                                    'assets/images/loading.gif'),
+                  child: Container(
+                    color: isDark ? Colors.black : Colors.white,
+                    child: TabBarView(
+                      controller: tabController,
+                      children: watchProviders == null
+                          ? [
+                              watchProvidersShimmer(isDark),
+                              watchProvidersShimmer(isDark),
+                              watchProvidersShimmer(isDark),
+                              watchProvidersShimmer(isDark),
+                            ]
+                          : [
+                              watchProvidersTabData(
+                                  isDark: isDark,
+                                  imageQuality: imageQuality,
+                                  noOptionMessage:
+                                      'This movie doesn\'t have an option to buy yet',
+                                  watchOptions: watchProviders!.buy),
+                              watchProvidersTabData(
+                                  isDark: isDark,
+                                  imageQuality: imageQuality,
+                                  noOptionMessage:
+                                      'This movie doesn\'t have an option to stream yet',
+                                  watchOptions: watchProviders!.flatRate),
+                              watchProvidersTabData(
+                                  isDark: isDark,
+                                  imageQuality: imageQuality,
+                                  noOptionMessage:
+                                      'This movie doesn\'t have an option to rent yet',
+                                  watchOptions: watchProviders!.rent),
+                              Container(
+                                padding: const EdgeInsets.all(8.0),
+                                child: GridView.builder(
+                                    gridDelegate:
+                                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 100,
+                                      childAspectRatio: 0.65,
+                                      crossAxisSpacing: 5,
+                                      mainAxisSpacing: 5,
+                                    ),
+                                    itemCount: 1,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: Column(
+                                          children: [
+                                            Expanded(
+                                              flex: 6,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: const FadeInImage(
+                                                  image: AssetImage(
+                                                      'assets/images/logo_shadow.png'),
+                                                  fit: BoxFit.cover,
+                                                  placeholder: AssetImage(
+                                                      'assets/images/loading.gif'),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
-                                          const Expanded(
-                                              flex: 6,
-                                              child: Text(
-                                                'Cinemax',
-                                                textAlign: TextAlign.center,
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                              )),
-                                        ],
-                                      ),
-                                    );
-                                  }),
-                            ),
-                          ],
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            const Expanded(
+                                                flex: 6,
+                                                child: Text(
+                                                  'Cinemax',
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                )),
+                                          ],
+                                        ),
+                                      );
+                                    }),
+                              ),
+                            ],
+                    ),
                   ),
                 )
               ],

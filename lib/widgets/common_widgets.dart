@@ -42,6 +42,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Drawer(
       child: Container(
+        color: isDark ? Colors.black : Colors.white,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -50,7 +51,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 SizedBox(
                   width: double.infinity,
                   child: DrawerHeader(
-                    decoration: BoxDecoration(),
+                    decoration: BoxDecoration(color: Colors.white),
                     child: Image.asset('assets/images/logo_shadow.png'),
                   ),
                 ),
