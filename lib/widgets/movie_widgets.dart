@@ -1135,7 +1135,6 @@ class _MovieAboutState extends State<MovieAbout> {
       // physics: const BouncingScrollPhysics(),
       child: Container(
         decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
@@ -1756,7 +1755,6 @@ class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -2065,7 +2063,6 @@ class PartsListState extends State<PartsList> {
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -3055,13 +3052,11 @@ class CastTabState extends State<CastTab>
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return widget.credits.cast!.isEmpty
         ? Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             child: const Center(
               child: Text('There is no cast available for this movie'),
             ),
           )
         : Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             padding: const EdgeInsets.only(top: 8),
             child: ListView.builder(
                 shrinkWrap: false,
@@ -3078,9 +3073,6 @@ class CastTabState extends State<CastTab>
                       }));
                     },
                     child: Container(
-                      color: isDark
-                          ? const Color(0xFF000000)
-                          : const Color(0xFFFFFFFF),
                       child: Padding(
                         padding: const EdgeInsets.only(
                           top: 0.0,
@@ -3229,7 +3221,6 @@ class CrewTabState extends State<CrewTab>
             ),
           )
         : Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             padding: const EdgeInsets.only(top: 8),
             child: ListView.builder(
                 physics: const BouncingScrollPhysics(),
@@ -3245,9 +3236,6 @@ class CrewTabState extends State<CrewTab>
                       }));
                     },
                     child: Container(
-                      color: isDark
-                          ? const Color(0xFF000000)
-                          : const Color(0xFFFFFFFF),
                       child: Padding(
                         padding: const EdgeInsets.only(
                           top: 0.0,
@@ -3432,31 +3420,7 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     super.build(context);
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    return /*movieList == null*/
-        // ? Container(
-        //     color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-        //     height: 250,
-        //     width: double.infinity,
-        //     child: Column(
-        //       children: [
-        //         scrollingMoviesAndTVShimmer(isDark),
-        //       ],
-        //     ))
-        // : movieList!.isEmpty
-        //     ? Container(
-        //         height: 250,
-        //         width: double.infinity,
-        //         color:
-        //             isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-        //         child: const Center(
-        //           child: Text(
-        //             'There are no recommendations available for this movie',
-        //             textAlign: TextAlign.center,
-        //           ),
-        //         ),
-        //       )
-        Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+    return Container(
       child: Column(
         children: <Widget>[
           Row(
@@ -3517,7 +3481,6 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -3637,7 +3600,6 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
       child: Column(
         children: <Widget>[
           Row(
@@ -3694,7 +3656,6 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -3823,9 +3784,6 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                 scrollController: _scrollController)
             : moviesList!.isEmpty
                 ? Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: const Center(
                       child:
                           Text('Oops! movies for this genre doesn\'t exist :('),
@@ -3834,49 +3792,43 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                 : requestFailed == true
                     ? retryWidget(isDark)
                     : Container(
-                        color: isDark
-                            ? const Color(0xFF000000)
-                            : const Color(0xFFFFFFFF),
                         child: Column(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: viewType == 'grid'
-                                          ? MovieGridView(
-                                              scrollController:
-                                                  _scrollController,
-                                              moviesList: moviesList,
-                                              imageQuality: imageQuality,
-                                              isDark: isDark)
-                                          : MovieListView(
-                                              scrollController:
-                                                  _scrollController,
-                                              moviesList: moviesList,
-                                              isDark: isDark,
-                                              imageQuality: imageQuality),
-                                    ),
-                                  ],
-                                ),
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: viewType == 'grid'
+                                        ? MovieGridView(
+                                            scrollController: _scrollController,
+                                            moviesList: moviesList,
+                                            imageQuality: imageQuality,
+                                            isDark: isDark)
+                                        : MovieListView(
+                                            scrollController: _scrollController,
+                                            moviesList: moviesList,
+                                            isDark: isDark,
+                                            imageQuality: imageQuality),
+                                  ),
+                                ],
                               ),
                             ),
-                            Visibility(
-                                visible: isLoading,
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Center(
-                                      child: CircularProgressIndicator()),
-                                )),
-                          ],
-                        ));
+                          ),
+                          Visibility(
+                              visible: isLoading,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              )),
+                        ],
+                      ));
   }
 
   Widget retryWidget(isDark) {
     return Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       child: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -4001,9 +3953,6 @@ class ParticularStreamingServiceMoviesState
                 scrollController: _scrollController)
             : moviesList!.isEmpty
                 ? Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: const Center(
                       child: Text(
                           'Oops! movies for this watch provider doesn\'t exist :('),
@@ -4012,48 +3961,44 @@ class ParticularStreamingServiceMoviesState
                 : requestFailed == true
                     ? retryWidget(isDark)
                     : Container(
-                        color: isDark
-                            ? const Color(0xFF000000)
-                            : const Color(0xFFFFFFFF),
                         child: Column(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                        child: viewType == 'grid'
-                                            ? MovieGridView(
-                                                scrollController:
-                                                    _scrollController,
-                                                moviesList: moviesList,
-                                                imageQuality: imageQuality,
-                                                isDark: isDark)
-                                            : MovieListView(
-                                                scrollController:
-                                                    _scrollController,
-                                                moviesList: moviesList,
-                                                isDark: isDark,
-                                                imageQuality: imageQuality)),
-                                  ],
-                                ),
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                      child: viewType == 'grid'
+                                          ? MovieGridView(
+                                              scrollController:
+                                                  _scrollController,
+                                              moviesList: moviesList,
+                                              imageQuality: imageQuality,
+                                              isDark: isDark)
+                                          : MovieListView(
+                                              scrollController:
+                                                  _scrollController,
+                                              moviesList: moviesList,
+                                              isDark: isDark,
+                                              imageQuality: imageQuality)),
+                                ],
                               ),
                             ),
-                            Visibility(
-                                visible: isLoading,
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Center(
-                                      child: CircularProgressIndicator()),
-                                )),
-                          ],
-                        ));
+                          ),
+                          Visibility(
+                              visible: isLoading,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              )),
+                        ],
+                      ));
   }
 
   Widget retryWidget(isDark) {
     return Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       child: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -4430,11 +4375,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
               children: [
                 Container(
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF2b2c30)
-                        : const Color(0xFFDFDEDE),
-                  ),
+                  decoration: BoxDecoration(),
                   child: Center(
                     child: TabBar(
                       controller: tabController,
@@ -4502,9 +4443,6 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                                     'This movie doesn\'t have an option to rent yet',
                                 watchOptions: watchProviders!.rent),
                             Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFF7F7F7),
                               padding: const EdgeInsets.all(8.0),
                               child: GridView.builder(
                                   gridDelegate:
@@ -4563,7 +4501,6 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

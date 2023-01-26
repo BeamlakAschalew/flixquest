@@ -52,7 +52,6 @@ class _TVStreamSelectState extends State<TVStreamSelect> {
         ),
       ),
       body: Container(
-        color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
         child: Column(
           children: [
             Expanded(

@@ -39,39 +39,38 @@ class _CountryChooseState extends State<CountryChoose> {
     return Scaffold(
         appBar: AppBar(title: const Text('Choose country')),
         body: Container(
-            color: isDark ? Colors.black : Colors.white,
             child: SingleChildScrollView(
-              child: Center(
-                  child: Column(
-                      children: count
-                          .map(
-                            (WatchProviderCountries countries) => ListTile(
-                              title: Text(countries.countryName),
-                              leading: Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  Radio(
-                                    value: countries.isoCode,
-                                    groupValue: countryChange.defaultCountry,
-                                    onChanged: (String? value) {
-                                      setState(() {
-                                        countryChange.defaultCountry = value!;
-                                      });
-                                    },
-                                    fillColor: const MaterialStatePropertyAll(
-                                        Color(0xFFF57C00)),
-                                  ),
-                                  Image.asset(
-                                    countries.flagPath,
-                                    width: 25,
-                                    height: 25,
-                                  ),
-                                ],
+          child: Center(
+              child: Column(
+                  children: count
+                      .map(
+                        (WatchProviderCountries countries) => ListTile(
+                          title: Text(countries.countryName),
+                          leading: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Radio(
+                                value: countries.isoCode,
+                                groupValue: countryChange.defaultCountry,
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    countryChange.defaultCountry = value!;
+                                  });
+                                },
+                                fillColor: const MaterialStatePropertyAll(
+                                    Color(0xFFF57C00)),
                               ),
-                            ),
-                          )
-                          .toList())),
-            )));
+                              Image.asset(
+                                countries.flagPath,
+                                width: 25,
+                                height: 25,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList())),
+        )));
     // ListTile(
     //   title: const Text('Lafayette'),
     //   leading: Radio(

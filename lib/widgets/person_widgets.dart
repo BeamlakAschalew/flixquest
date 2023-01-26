@@ -440,7 +440,6 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -739,7 +738,6 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -1067,7 +1065,6 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
@@ -1118,9 +1115,6 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                         children: [
                           SingleChildScrollView(
                             child: Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF),
                               child: Column(
                                 children: <Widget>[
                                   Padding(
@@ -1155,9 +1149,6 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonMovieListWidget(
                               isPersonAdult: widget.cast!.adult!,
                               includeAdult:
@@ -1168,9 +1159,6 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonTVListWidget(
                                 isPersonAdult: widget.cast!.adult!,
                                 includeAdult:
@@ -1406,7 +1394,6 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
@@ -1457,9 +1444,6 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                         children: [
                           SingleChildScrollView(
                             child: Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF),
                               child: Column(
                                 children: <Widget>[
                                   Padding(
@@ -1494,9 +1478,6 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonMovieListWidget(
                               includeAdult:
                                   Provider.of<SettingsProvider>(context)
@@ -1506,9 +1487,6 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonTVListWidget(
                                 includeAdult:
                                     Provider.of<SettingsProvider>(context)
@@ -1652,7 +1630,6 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
@@ -1703,9 +1680,6 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                         children: [
                           SingleChildScrollView(
                             child: Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF),
                               child: Column(
                                 children: <Widget>[
                                   Padding(
@@ -1740,9 +1714,6 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonMovieListWidget(
                               isPersonAdult: widget.crew!.adult!,
                               includeAdult:
@@ -1753,9 +1724,6 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonTVListWidget(
                                 isPersonAdult: widget.crew!.adult!,
                                 includeAdult:
@@ -1899,7 +1867,6 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
@@ -1950,9 +1917,6 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                         children: [
                           SingleChildScrollView(
                             child: Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF),
                               child: Column(
                                 children: <Widget>[
                                   Padding(
@@ -1987,9 +1951,6 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonMovieListWidget(
                               isPersonAdult: widget.cast!.adult!,
                               includeAdult:
@@ -2000,9 +1961,6 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonTVListWidget(
                                 isPersonAdult: widget.cast!.adult!,
                                 includeAdult:
@@ -2145,7 +2103,6 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
@@ -2196,9 +2153,6 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                         children: [
                           SingleChildScrollView(
                             child: Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF),
                               child: Column(
                                 children: <Widget>[
                                   Padding(
@@ -2233,9 +2187,6 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonMovieListWidget(
                               isPersonAdult: widget.person!.adult!,
                               includeAdult:
@@ -2246,9 +2197,6 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                             ),
                           ),
                           Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: PersonTVListWidget(
                                 isPersonAdult: widget.person!.adult!,
                                 includeAdult:

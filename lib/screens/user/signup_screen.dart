@@ -150,13 +150,11 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
-      backgroundColor: isDark ? Colors.black : Colors.white,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Signup'),
       ),
       body: Container(
-        color: isDark ? Colors.black : Colors.white,
         padding: const EdgeInsets.all(8),
         child: SingleChildScrollView(
           child: Column(

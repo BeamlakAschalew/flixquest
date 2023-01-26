@@ -98,9 +98,6 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                 ? moviesAndTVShowGridShimmer(isDark)
                 : tvList == null && viewType == 'list'
                     ? Container(
-                        color: isDark
-                            ? const Color(0xFF000000)
-                            : const Color(0xFFFFFFFF),
                         child: mainPageVerticalScrollShimmer(
                             isDark: isDark,
                             isLoading: isLoading,
@@ -108,9 +105,6 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                     : tvList!.isEmpty
                         ? Container(
                             padding: const EdgeInsets.all(8),
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: const Center(
                               child: Text(
                                 'Oops! TV series for the parameters you specified doesn\'t exist :(',
@@ -122,54 +116,46 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                         : requestFailed == true
                             ? retryWidget(isDark)
                             : Container(
-                                color: isDark
-                                    ? const Color(0xFF000000)
-                                    : const Color(0xFFFFFFFF),
                                 child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 8.0),
-                                        child: Column(
-                                          children: [
-                                            Expanded(
-                                              child: viewType == 'grid'
-                                                  ? TVGridView(
-                                                      tvList: tvList,
-                                                      imageQuality:
-                                                          imageQuality,
-                                                      isDark: isDark,
-                                                      scrollController:
-                                                          _scrollController,
-                                                    )
-                                                  : TVListView(
-                                                      scrollController:
-                                                          _scrollController,
-                                                      tvList: tvList,
-                                                      isDark: isDark,
-                                                      imageQuality:
-                                                          imageQuality),
-                                            ),
-                                          ],
-                                        ),
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Column(
+                                        children: [
+                                          Expanded(
+                                            child: viewType == 'grid'
+                                                ? TVGridView(
+                                                    tvList: tvList,
+                                                    imageQuality: imageQuality,
+                                                    isDark: isDark,
+                                                    scrollController:
+                                                        _scrollController,
+                                                  )
+                                                : TVListView(
+                                                    scrollController:
+                                                        _scrollController,
+                                                    tvList: tvList,
+                                                    isDark: isDark,
+                                                    imageQuality: imageQuality),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Visibility(
-                                        visible: isLoading,
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Center(
-                                              child:
-                                                  CircularProgressIndicator()),
-                                        )),
-                                  ],
-                                ))));
+                                  ),
+                                  Visibility(
+                                      visible: isLoading,
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Center(
+                                            child: CircularProgressIndicator()),
+                                      )),
+                                ],
+                              ))));
   }
 
   Widget retryWidget(isDark) {
     return Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       child: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

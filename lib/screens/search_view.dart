@@ -92,7 +92,6 @@ class Search extends SearchDelegate<String> {
       initialIndex: 0,
       child: Scaffold(
         body: Container(
-          color: isDark ? const Color(0xFF202124) : const Color(0xFFDFDEDE),
           child: Column(
             children: [
               TabBar(
@@ -193,8 +192,7 @@ class Search extends SearchDelegate<String> {
   }
 
   Widget searchSuggestionVerticalScrollShimmer(isDark) => Container(
-      color: isDark ? Colors.black : Colors.white,
-      child: Column(
+          child: Column(
         children: [
           Expanded(
             child: Padding(
@@ -204,7 +202,6 @@ class Search extends SearchDelegate<String> {
                   itemCount: 10,
                   itemBuilder: (BuildContext context, int index) {
                     return Container(
-                      color: isDark ? Colors.black : Colors.white,
                       child: Padding(
                         padding: const EdgeInsets.only(
                           top: 0.0,
@@ -289,13 +286,11 @@ class Search extends SearchDelegate<String> {
       ));
 
   Widget searchedPersonShimmer(isDark) => Container(
-      color: isDark ? Colors.black : Colors.white,
       child: ListView.builder(
           physics: const BouncingScrollPhysics(),
           itemCount: 10,
           itemBuilder: (BuildContext context, int index) {
             return Container(
-              color: isDark ? Colors.black : Colors.white,
               child: Padding(
                 padding: const EdgeInsets.only(
                   top: 3.0,
@@ -353,7 +348,6 @@ class Search extends SearchDelegate<String> {
 
   Widget errorMessageWidget(bool isDark) {
     return Container(
-      color: isDark ? Colors.black : Colors.white,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -373,7 +367,6 @@ class Search extends SearchDelegate<String> {
 
   Widget searchATermWidget(bool isDark) {
     return Container(
-      color: isDark ? Colors.black : Colors.white,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -394,401 +387,369 @@ class Search extends SearchDelegate<String> {
       List<Movie> moviesList, bool isDark, BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
-        color: isDark ? Colors.black : Colors.white,
         child: Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: moviesList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          mixpanel
-                              .track('Most viewed movie pages', properties: {
-                            'Movie name': '${moviesList[index].originalTitle}',
-                            'Movie id': '${moviesList[index].id}'
-                          });
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return MovieDetailPage(
-                              movie: moviesList[index],
-                              heroId: '${moviesList[index].id}',
-                            );
-                          }));
-                        },
-                        child: Container(
-                          color: isDark ? Colors.black : Colors.white,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 0.0,
-                              bottom: 3.0,
-                              left: 10,
-                            ),
-                            child: Column(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                itemCount: moviesList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      mixpanel.track('Most viewed movie pages', properties: {
+                        'Movie name': '${moviesList[index].originalTitle}',
+                        'Movie id': '${moviesList[index].id}'
+                      });
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return MovieDetailPage(
+                          movie: moviesList[index],
+                          heroId: '${moviesList[index].id}',
+                        );
+                      }));
+                    },
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 0.0,
+                          bottom: 3.0,
+                          left: 10,
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 10.0),
-                                      child: SizedBox(
-                                        width: 85,
-                                        height: 130,
-                                        child: Hero(
-                                          tag: '${moviesList[index].id}',
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                child: moviesList[index]
-                                                            .posterPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_square.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                moviesList[
-                                                                        index]
-                                                                    .posterPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            scrollingImageShimmer(
-                                                                isDark),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_sqaure.png',
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10.0),
+                                  child: SizedBox(
+                                    width: 85,
+                                    height: 130,
+                                    child: Hero(
+                                      tag: '${moviesList[index].id}',
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            child: moviesList[index]
+                                                        .posterPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_square.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : CachedNetworkImage(
+                                                    fadeOutDuration:
+                                                        const Duration(
+                                                            milliseconds: 300),
+                                                    fadeOutCurve:
+                                                        Curves.easeOut,
+                                                    fadeInDuration:
+                                                        const Duration(
+                                                            milliseconds: 700),
+                                                    fadeInCurve: Curves.easeIn,
+                                                    imageUrl:
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            imageQuality +
+                                                            moviesList[index]
+                                                                .posterPath!,
+                                                    imageBuilder: (context,
+                                                            imageProvider) =>
+                                                        Container(
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: imageProvider,
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                              ),
-                                              Positioned(
-                                                top: 0,
-                                                left: 0,
-                                                child: Container(
-                                                  margin:
-                                                      const EdgeInsets.all(3),
-                                                  alignment: Alignment.topLeft,
-                                                  width: 50,
-                                                  height: 25,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8),
-                                                      color: isDark
-                                                          ? Colors.black45
-                                                          : Colors.white60),
-                                                  child: Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.star,
-                                                        color:
-                                                            Color(0xFFF57C00),
-                                                      ),
-                                                      Text(
-                                                        moviesList[index]
-                                                            .voteAverage!
-                                                            .toStringAsFixed(1),
-                                                        style: const TextStyle(
-                                                            fontFamily:
-                                                                'Poppins'),
-                                                      )
-                                                    ],
+                                                    ),
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        scrollingImageShimmer(
+                                                            isDark),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Image.asset(
+                                                      'assets/images/na_sqaure.png',
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                            ],
                                           ),
-                                        ),
+                                          Positioned(
+                                            top: 0,
+                                            left: 0,
+                                            child: Container(
+                                              margin: const EdgeInsets.all(3),
+                                              alignment: Alignment.topLeft,
+                                              width: 50,
+                                              height: 25,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  color: isDark
+                                                      ? Colors.black45
+                                                      : Colors.white60),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.star,
+                                                    color: Color(0xFFF57C00),
+                                                  ),
+                                                  Text(
+                                                    moviesList[index]
+                                                        .voteAverage!
+                                                        .toStringAsFixed(1),
+                                                    style: const TextStyle(
+                                                        fontFamily: 'Poppins'),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        moviesList[index].title!,
+                                        style: TextStyle(
+                                            fontFamily: 'PoppinsSB',
+                                            fontSize: 15,
+                                            overflow: TextOverflow.ellipsis,
+                                            color: isDark
+                                                ? Colors.white
+                                                : Colors.black),
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          const Icon(Icons.star,
+                                              color: Color(0xFFF57C00)),
                                           Text(
-                                            moviesList[index].title!,
+                                            moviesList[index]
+                                                .voteAverage!
+                                                .toStringAsFixed(1),
                                             style: TextStyle(
-                                                fontFamily: 'PoppinsSB',
-                                                fontSize: 15,
-                                                overflow: TextOverflow.ellipsis,
+                                                fontFamily: 'Poppins',
                                                 color: isDark
                                                     ? Colors.white
                                                     : Colors.black),
                                           ),
-                                          Row(
-                                            children: <Widget>[
-                                              const Icon(Icons.star,
-                                                  color: Color(0xFFF57C00)),
-                                              Text(
-                                                moviesList[index]
-                                                    .voteAverage!
-                                                    .toStringAsFixed(1),
-                                                style: TextStyle(
-                                                    fontFamily: 'Poppins',
-                                                    color: isDark
-                                                        ? Colors.white
-                                                        : Colors.black),
-                                              ),
-                                            ],
-                                          ),
                                         ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                                Divider(
-                                  color:
-                                      !isDark ? Colors.black54 : Colors.white54,
-                                  thickness: 1,
-                                  endIndent: 20,
-                                  indent: 10,
-                                ),
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
-                          ),
+                            Divider(
+                              color: !isDark ? Colors.black54 : Colors.white54,
+                              thickness: 1,
+                              endIndent: 20,
+                              indent: 10,
+                            ),
+                          ],
                         ),
-                      );
-                    }),
-              ),
-            ),
-          ],
-        ));
+                      ),
+                    ),
+                  );
+                }),
+          ),
+        ),
+      ],
+    ));
   }
 
   Widget activeTVSearch(List<TV> tvList, bool isDark, BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
-        color: isDark ? Colors.black : Colors.white,
         child: Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: tvList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return TVDetailPage(
-                                tvSeries: tvList[index],
-                                heroId: '${tvList[index].id}');
-                          }));
-                        },
-                        child: Container(
-                          color: isDark ? Colors.black : Colors.white,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 0.0,
-                              bottom: 3.0,
-                              left: 10,
-                            ),
-                            child: Column(
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                itemCount: tvList.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return TVDetailPage(
+                            tvSeries: tvList[index],
+                            heroId: '${tvList[index].id}');
+                      }));
+                    },
+                    child: Container(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 0.0,
+                          bottom: 3.0,
+                          left: 10,
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 10.0),
-                                      child: SizedBox(
-                                        width: 85,
-                                        height: 130,
-                                        child: Hero(
-                                          tag: '${tvList[index].id}',
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                                child: tvList[index]
-                                                            .posterPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_square.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                tvList[index]
-                                                                    .posterPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            scrollingImageShimmer(
-                                                                isDark),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_square.png',
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 10.0),
+                                  child: SizedBox(
+                                    width: 85,
+                                    height: 130,
+                                    child: Hero(
+                                      tag: '${tvList[index].id}',
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            child: tvList[index].posterPath ==
+                                                    null
+                                                ? Image.asset(
+                                                    'assets/images/na_square.png',
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : CachedNetworkImage(
+                                                    fadeOutDuration:
+                                                        const Duration(
+                                                            milliseconds: 300),
+                                                    fadeOutCurve:
+                                                        Curves.easeOut,
+                                                    fadeInDuration:
+                                                        const Duration(
+                                                            milliseconds: 700),
+                                                    fadeInCurve: Curves.easeIn,
+                                                    imageUrl:
+                                                        TMDB_BASE_IMAGE_URL +
+                                                            imageQuality +
+                                                            tvList[index]
+                                                                .posterPath!,
+                                                    imageBuilder: (context,
+                                                            imageProvider) =>
+                                                        Container(
+                                                      decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                          image: imageProvider,
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                              ),
-                                              Positioned(
-                                                top: 0,
-                                                left: 0,
-                                                child: Container(
-                                                  margin:
-                                                      const EdgeInsets.all(3),
-                                                  alignment: Alignment.topLeft,
-                                                  width: 50,
-                                                  height: 25,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8),
-                                                      color: isDark
-                                                          ? Colors.black45
-                                                          : Colors.white60),
-                                                  child: Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.star,
-                                                        color:
-                                                            Color(0xFFF57C00),
-                                                      ),
-                                                      Text(
-                                                        tvList[index]
-                                                            .voteAverage!
-                                                            .toStringAsFixed(1),
-                                                        style: const TextStyle(
-                                                            fontFamily:
-                                                                'Poppins'),
-                                                      )
-                                                    ],
+                                                    ),
+                                                    placeholder: (context,
+                                                            url) =>
+                                                        scrollingImageShimmer(
+                                                            isDark),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Image.asset(
+                                                      'assets/images/na_square.png',
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                            ],
                                           ),
-                                        ),
+                                          Positioned(
+                                            top: 0,
+                                            left: 0,
+                                            child: Container(
+                                              margin: const EdgeInsets.all(3),
+                                              alignment: Alignment.topLeft,
+                                              width: 50,
+                                              height: 25,
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  color: isDark
+                                                      ? Colors.black45
+                                                      : Colors.white60),
+                                              child: Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.star,
+                                                    color: Color(0xFFF57C00),
+                                                  ),
+                                                  Text(
+                                                    tvList[index]
+                                                        .voteAverage!
+                                                        .toStringAsFixed(1),
+                                                    style: const TextStyle(
+                                                        fontFamily: 'Poppins'),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        tvList[index].name!,
+                                        style: TextStyle(
+                                            fontFamily: 'PoppinsSB',
+                                            fontSize: 15,
+                                            overflow: TextOverflow.ellipsis,
+                                            color: isDark
+                                                ? Colors.white
+                                                : Colors.black),
+                                      ),
+                                      Row(
+                                        children: <Widget>[
+                                          const Icon(Icons.star,
+                                              color: Color(0xFFF57C00)),
                                           Text(
-                                            tvList[index].name!,
+                                            tvList[index]
+                                                .voteAverage!
+                                                .toStringAsFixed(1),
                                             style: TextStyle(
-                                                fontFamily: 'PoppinsSB',
-                                                fontSize: 15,
-                                                overflow: TextOverflow.ellipsis,
+                                                fontFamily: 'Poppins',
                                                 color: isDark
                                                     ? Colors.white
                                                     : Colors.black),
                                           ),
-                                          Row(
-                                            children: <Widget>[
-                                              const Icon(Icons.star,
-                                                  color: Color(0xFFF57C00)),
-                                              Text(
-                                                tvList[index]
-                                                    .voteAverage!
-                                                    .toStringAsFixed(1),
-                                                style: TextStyle(
-                                                    fontFamily: 'Poppins',
-                                                    color: isDark
-                                                        ? Colors.white
-                                                        : Colors.black),
-                                              ),
-                                            ],
-                                          ),
                                         ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                                Divider(
-                                  color:
-                                      !isDark ? Colors.black54 : Colors.white54,
-                                  thickness: 1,
-                                  endIndent: 20,
-                                  indent: 10,
-                                ),
+                                    ],
+                                  ),
+                                )
                               ],
                             ),
-                          ),
+                            Divider(
+                              color: !isDark ? Colors.black54 : Colors.white54,
+                              thickness: 1,
+                              endIndent: 20,
+                              indent: 10,
+                            ),
+                          ],
                         ),
-                      );
-                    }),
-              ),
-            ),
-          ],
-        ));
+                      ),
+                    ),
+                  );
+                }),
+          ),
+        ),
+      ],
+    ));
   }
 
   Widget activePersonSearch(
       List<Person>? personList, bool isDark, BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
-        color: isDark ? Colors.black : Colors.white,
         child: ListView.builder(
             physics: const BouncingScrollPhysics(),
             itemCount: personList!.length,
@@ -802,7 +763,6 @@ class Search extends SearchDelegate<String> {
                   }));
                 },
                 child: Container(
-                  color: isDark ? Colors.black : Colors.white,
                   child: Padding(
                     padding: const EdgeInsets.only(
                       top: 3.0,

@@ -37,7 +37,6 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Scaffold(
         body: Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
       child: CustomScrollView(
         controller: scrollController,
         slivers: [
@@ -231,9 +230,6 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
             delegate: SliverChildListDelegate.fixed(
               [
                 Container(
-                  color: isDark
-                      ? const Color(0xFF000000)
-                      : const Color(0xFFFFFFFF),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Column(

@@ -52,9 +52,6 @@ class _TVBookmarkState extends State<TVBookmark> {
                     isDark: isDark, scrollController: _scrollController))
             : tvList!.isEmpty
                 ? Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: const Center(
                       child: Text(
                         'You don\'t have any TV shows bookmarked :)',
@@ -64,35 +61,32 @@ class _TVBookmarkState extends State<TVBookmark> {
                     ),
                   )
                 : Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: Column(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: viewType == 'grid'
-                                      ? TVGridView(
-                                          tvList: tvList,
-                                          imageQuality: imageQuality,
-                                          isDark: isDark,
-                                          scrollController: _scrollController,
-                                        )
-                                      : TVListView(
-                                          scrollController: _scrollController,
-                                          tvList: tvList,
-                                          isDark: isDark,
-                                          imageQuality: imageQuality),
-                                ),
-                              ],
-                            ),
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: viewType == 'grid'
+                                    ? TVGridView(
+                                        tvList: tvList,
+                                        imageQuality: imageQuality,
+                                        isDark: isDark,
+                                        scrollController: _scrollController,
+                                      )
+                                    : TVListView(
+                                        scrollController: _scrollController,
+                                        tvList: tvList,
+                                        isDark: isDark,
+                                        imageQuality: imageQuality),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ));
+                      ),
+                    ],
+                  ));
   }
 }

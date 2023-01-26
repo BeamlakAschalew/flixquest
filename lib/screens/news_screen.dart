@@ -35,7 +35,6 @@ class _NewsPageState extends State<NewsPage>
           elevation: 3,
           title: const Text(
             'News',
-            // style: TextStyle(color: isDark ? Colors.white : Colors.black),
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),

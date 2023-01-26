@@ -48,7 +48,6 @@ class _UpdateScreenState extends State<UpdateScreen> {
         title: const Text('Check for update'),
       ),
       body: Container(
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
           child: updateChecker == null
               ? const Center(child: CircularProgressIndicator())
               : updateChecker!.versionNumber != currentAppVersion

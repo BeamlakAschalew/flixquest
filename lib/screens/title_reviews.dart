@@ -76,7 +76,6 @@ class _TitleReviewsState extends State<TitleReviews> {
         title: const Text('Reviews'),
       ),
       body: Container(
-        color: isDark ? Colors.black : Colors.white,
         child: reviewDetail == null
             ? const Center(
                 child: CircularProgressIndicator(),

@@ -71,10 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
 
     return Scaffold(
-      backgroundColor: isDark ? Colors.black : Colors.white,
       appBar: AppBar(title: const Text('Login')),
       body: Container(
-          color: isDark ? Colors.black : Colors.white,
           padding: const EdgeInsets.all(8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -45,22 +45,15 @@ class _MovieBookmarkState extends State<MovieBookmark> {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return movieList == null && viewType == 'grid'
-        ? Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-            child: moviesAndTVShowGridShimmer(isDark))
+        ? Container(child: moviesAndTVShowGridShimmer(isDark))
         : movieList == null && viewType == 'list'
             ? Container(
-                color:
-                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
                 child: mainPageVerticalScrollShimmer(
                     isDark: isDark,
                     isLoading: false,
                     scrollController: _scrollController))
             : movieList!.isEmpty
                 ? Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: const Center(
                       child: Text(
                         'You don\'t have any movies bookmarked :)',
@@ -70,34 +63,31 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                     ),
                   )
                 : Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: Column(
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                    child: viewType == 'grid'
-                                        ? MovieGridView(
-                                            scrollController: _scrollController,
-                                            moviesList: movieList,
-                                            imageQuality: imageQuality,
-                                            isDark: isDark)
-                                        : MovieListView(
-                                            imageQuality: imageQuality,
-                                            isDark: isDark,
-                                            moviesList: movieList,
-                                            scrollController: _scrollController,
-                                          )),
-                              ],
-                            ),
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Column(
+                            children: [
+                              Expanded(
+                                  child: viewType == 'grid'
+                                      ? MovieGridView(
+                                          scrollController: _scrollController,
+                                          moviesList: movieList,
+                                          imageQuality: imageQuality,
+                                          isDark: isDark)
+                                      : MovieListView(
+                                          imageQuality: imageQuality,
+                                          isDark: isDark,
+                                          moviesList: movieList,
+                                          scrollController: _scrollController,
+                                        )),
+                            ],
                           ),
                         ),
-                      ],
-                    ));
+                      ),
+                    ],
+                  ));
   }
 }

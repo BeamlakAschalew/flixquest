@@ -155,11 +155,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                 flex: 10,
                 child: PhotoView(
                   imageProvider: widget.imageProvider,
-                  backgroundDecoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
-                  ),
+                  backgroundDecoration: BoxDecoration(),
                   enableRotation: true,
                   heroAttributes: PhotoViewHeroAttributes(tag: widget.heroId),
                 ),

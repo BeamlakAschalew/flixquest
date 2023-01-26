@@ -221,6 +221,7 @@ class Styles {
           brightness: isDarkTheme ? Brightness.dark : Brightness.light,
         ),
         bannerTheme: MaterialBannerThemeData(),
-        chipTheme: ChipThemeData());
+        chipTheme: ChipThemeData(),
+        snackBarTheme: SnackBarThemeData());
   }
 }

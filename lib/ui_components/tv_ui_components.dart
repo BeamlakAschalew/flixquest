@@ -171,7 +171,6 @@ class TVListView extends StatelessWidget {
               }));
             },
             child: Container(
-              color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
               child: Padding(
                 padding: const EdgeInsets.only(
                   top: 0.0,

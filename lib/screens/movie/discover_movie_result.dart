@@ -101,18 +101,12 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                 ? moviesAndTVShowGridShimmer(isDark)
                 : moviesList == null && viewType == 'list'
                     ? Container(
-                        color: isDark
-                            ? const Color(0xFF000000)
-                            : const Color(0xFFFFFFFF),
                         child: mainPageVerticalScrollShimmer(
                             isDark: isDark,
                             isLoading: isLoading,
                             scrollController: _scrollController))
                     : moviesList!.isEmpty
                         ? Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             padding: const EdgeInsets.all(8),
                             child: const Center(
                               child: Text(
@@ -125,9 +119,6 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                         : requestFailed == true
                             ? retryWidget(isDark)
                             : Container(
-                                color: isDark
-                                    ? const Color(0xFF000000)
-                                    : const Color(0xFFFFFFFF),
                                 child: Column(
                                   children: [
                                     Expanded(
@@ -171,7 +162,6 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
 
   Widget retryWidget(isDark) {
     return Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       child: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

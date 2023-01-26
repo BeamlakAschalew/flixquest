@@ -73,7 +73,6 @@ class _DidYouKnowScreenState extends State<DidYouKnowScreen> {
           title: Text(widget.dataName),
         ),
         body: Container(
-          color: isDark ? Colors.black : Colors.white,
           child: dataDetail == null
               ? const Center(child: CircularProgressIndicator())
               : requestFailed == true
@@ -102,15 +101,6 @@ class _DidYouKnowScreenState extends State<DidYouKnowScreen> {
                                           ? Colors.grey.shade900
                                           : Colors.grey.shade800
                                       : Colors.blue,
-
-                              //  color:
-                              //   !isDark
-                              //       ? index.isEven
-                              //           ? Colors.grey.shade500
-                              //           : Colors.grey.shade100
-                              //       : Colors.grey.shade800 ,
-                              // color: !isDark ? index.isEven
-                              //     ,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,

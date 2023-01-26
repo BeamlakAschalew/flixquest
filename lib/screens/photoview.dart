@@ -177,9 +177,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
           child: Stack(alignment: Alignment.bottomRight, children: [
         PhotoViewGallery.builder(
           allowImplicitScrolling: true,
-          backgroundDecoration: BoxDecoration(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-          ),
+          backgroundDecoration: BoxDecoration(),
           gaplessPlayback: true,
           wantKeepAlive: true,
           enableRotation: true,
@@ -209,7 +207,6 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                   : widget.stills!.length,
           onPageChanged: onPageChanged,
           loadingBuilder: (context, event) => Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             child: Center(
               child: SizedBox(
                 width: 50.0,

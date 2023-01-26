@@ -208,7 +208,6 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           ],
         ),
         bottomNavigationBar: Container(
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
@@ -267,7 +266,6 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           ),
         ),
         body: Container(
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
           child: IndexedStack(
             index: selectedIndex,
             children: const <Widget>[

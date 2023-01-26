@@ -340,7 +340,6 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
     return SingleChildScrollView(
       child: Container(
         decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),

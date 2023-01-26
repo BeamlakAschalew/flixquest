@@ -2406,9 +2406,7 @@ class TVCastTabState extends State<TVCastTab>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return credits == null
-        ? Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-            child: tvCastAndCrewTabShimmer(isDark))
+        ? Container(child: tvCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
             ? Container(
                 color:
@@ -2422,9 +2420,6 @@ class TVCastTabState extends State<TVCastTab>
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: ListView.builder(
                         itemCount: credits!.cast!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -2438,9 +2433,6 @@ class TVCastTabState extends State<TVCastTab>
                               }));
                             },
                             child: Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 8.0,
@@ -2569,7 +2561,6 @@ class TVCastTabState extends State<TVCastTab>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -2654,9 +2645,7 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return tvDetails == null
-        ? Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-            child: tvDetailsSeasonsTabShimmer(isDark))
+        ? Container(child: tvDetailsSeasonsTabShimmer(isDark))
         : tvDetails!.seasons!.isEmpty
             ? Container(
                 color:
@@ -2669,163 +2658,151 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: Column(
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                              itemCount: tvDetails!.seasons!.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SeasonsDetail(
-                                                seriesName: widget.seriesName,
-                                                tvId: widget.tvId,
-                                                tvDetails: tvDetails!,
-                                                seasons:
-                                                    tvDetails!.seasons![index],
-                                                heroId:
-                                                    '${tvDetails!.seasons![index].seasonId}')));
-                                  },
-                                  child: Container(
-                                    color: isDark
-                                        ? const Color(0xFF000000)
-                                        : const Color(0xFFFFFFFF),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        top: 0.0,
-                                        bottom: 5.0,
-                                        left: 15,
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            // crossAxisAlignment:
-                                            //     CrossAxisAlignment.start,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 30.0),
-                                                child: SizedBox(
-                                                  width: 85,
-                                                  height: 130,
-                                                  child: Hero(
-                                                    tag:
-                                                        '${tvDetails!.seasons![index].seasonId}',
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.0),
-                                                      child: tvDetails!
-                                                                  .seasons![
-                                                                      index]
-                                                                  .posterPath ==
-                                                              null
-                                                          ? Image.asset(
-                                                              'assets/images/na_logo.png',
-                                                              fit: BoxFit.cover,
-                                                            )
-                                                          : CachedNetworkImage(
-                                                              fadeOutDuration:
-                                                                  const Duration(
-                                                                      milliseconds:
-                                                                          300),
-                                                              fadeOutCurve:
-                                                                  Curves
-                                                                      .easeOut,
-                                                              fadeInDuration:
-                                                                  const Duration(
-                                                                      milliseconds:
-                                                                          700),
-                                                              fadeInCurve:
-                                                                  Curves.easeIn,
-                                                              imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                  imageQuality +
-                                                                  tvDetails!
-                                                                      .seasons![
-                                                                          index]
-                                                                      .posterPath!,
-                                                              imageBuilder:
-                                                                  (context,
-                                                                          imageProvider) =>
-                                                                      Container(
-                                                                decoration:
-                                                                    BoxDecoration(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                            itemCount: tvDetails!.seasons!.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SeasonsDetail(
+                                              seriesName: widget.seriesName,
+                                              tvId: widget.tvId,
+                                              tvDetails: tvDetails!,
+                                              seasons:
+                                                  tvDetails!.seasons![index],
+                                              heroId:
+                                                  '${tvDetails!.seasons![index].seasonId}')));
+                                },
+                                child: Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 0.0,
+                                      bottom: 5.0,
+                                      left: 15,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          // crossAxisAlignment:
+                                          //     CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 30.0),
+                                              child: SizedBox(
+                                                width: 85,
+                                                height: 130,
+                                                child: Hero(
+                                                  tag:
+                                                      '${tvDetails!.seasons![index].seasonId}',
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10.0),
+                                                    child: tvDetails!
+                                                                .seasons![index]
+                                                                .posterPath ==
+                                                            null
+                                                        ? Image.asset(
+                                                            'assets/images/na_logo.png',
+                                                            fit: BoxFit.cover,
+                                                          )
+                                                        : CachedNetworkImage(
+                                                            fadeOutDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                            fadeOutCurve:
+                                                                Curves.easeOut,
+                                                            fadeInDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        700),
+                                                            fadeInCurve:
+                                                                Curves.easeIn,
+                                                            imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                tvDetails!
+                                                                    .seasons![
+                                                                        index]
+                                                                    .posterPath!,
+                                                            imageBuilder: (context,
+                                                                    imageProvider) =>
+                                                                Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
                                                                   image:
-                                                                      DecorationImage(
-                                                                    image:
-                                                                        imageProvider,
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                  ),
+                                                                      imageProvider,
+                                                                  fit: BoxFit
+                                                                      .cover,
                                                                 ),
                                                               ),
-                                                              placeholder: (context,
-                                                                      url) =>
-                                                                  recommendationAndSimilarTabImageShimmer(
-                                                                      isDark),
-                                                              errorWidget: (context,
-                                                                      url,
-                                                                      error) =>
-                                                                  Image.asset(
-                                                                'assets/images/na_logo.png',
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              ),
                                                             ),
-                                                    ),
+                                                            placeholder: (context,
+                                                                    url) =>
+                                                                recommendationAndSimilarTabImageShimmer(
+                                                                    isDark),
+                                                            errorWidget:
+                                                                (context, url,
+                                                                        error) =>
+                                                                    Image.asset(
+                                                              'assets/images/na_logo.png',
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
                                                   ),
                                                 ),
                                               ),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      tvDetails!.seasons![index]
-                                                          .name!,
-                                                      style: const TextStyle(
-                                                          fontSize: 20,
-                                                          fontFamily:
-                                                              'PoppinsSB',
-                                                          overflow: TextOverflow
-                                                              .ellipsis),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          Divider(
-                                            color: !isDark
-                                                ? Colors.black54
-                                                : Colors.white54,
-                                            thickness: 1,
-                                            endIndent: 20,
-                                            indent: 10,
-                                          ),
-                                        ],
-                                      ),
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    tvDetails!
+                                                        .seasons![index].name!,
+                                                    style: const TextStyle(
+                                                        fontSize: 20,
+                                                        fontFamily: 'PoppinsSB',
+                                                        overflow: TextOverflow
+                                                            .ellipsis),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Divider(
+                                          color: !isDark
+                                              ? Colors.black54
+                                              : Colors.white54,
+                                          thickness: 1,
+                                          endIndent: 20,
+                                          indent: 10,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                );
-                              }),
-                        ),
-                      ],
-                    ));
+                                ),
+                              );
+                            }),
+                      ),
+                    ],
+                  ));
   }
 
   Widget retryWidget(isDark) {
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -2907,7 +2884,6 @@ class TVCrewTabState extends State<TVCrewTab>
     return credits == null
         ? Container(
             padding: const EdgeInsets.only(top: 8),
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.crew!.isEmpty
             ? Container(
@@ -2922,9 +2898,6 @@ class TVCrewTabState extends State<TVCrewTab>
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: ListView.builder(
                         itemCount: credits!.crew!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -2938,9 +2911,6 @@ class TVCrewTabState extends State<TVCrewTab>
                               }));
                             },
                             child: Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 8.0,
@@ -3062,7 +3032,6 @@ class TVCrewTabState extends State<TVCrewTab>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -3180,7 +3149,6 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
       child: Column(
         children: <Widget>[
           Row(
@@ -3239,7 +3207,6 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -3360,7 +3327,6 @@ class SimilarTVTabState extends State<SimilarTVTab>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
       child: Column(
         children: <Widget>[
           Row(
@@ -3417,7 +3383,6 @@ class SimilarTVTabState extends State<SimilarTVTab>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -3626,9 +3591,6 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
                     scrollController: _scrollController))
             : tvList!.isEmpty
                 ? Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: const Center(
                       child: Text(
                           'Oops! TV series for this genre doesn\'t exist :('),
@@ -3637,52 +3599,46 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
                 : requestFailed == true
                     ? retryWidget(isDark)
                     : Container(
-                        color: isDark
-                            ? const Color(0xFF000000)
-                            : const Color(0xFFFFFFFF),
                         child: Column(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: viewType == 'grid'
-                                          ? TVGridView(
-                                              tvList: tvList,
-                                              imageQuality: imageQuality,
-                                              isDark: isDark,
-                                              scrollController:
-                                                  _scrollController,
-                                            )
-                                          : TVListView(
-                                              scrollController:
-                                                  _scrollController,
-                                              tvList: tvList,
-                                              isDark: isDark,
-                                              imageQuality: imageQuality),
-                                    ),
-                                  ],
-                                ),
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: viewType == 'grid'
+                                        ? TVGridView(
+                                            tvList: tvList,
+                                            imageQuality: imageQuality,
+                                            isDark: isDark,
+                                            scrollController: _scrollController,
+                                          )
+                                        : TVListView(
+                                            scrollController: _scrollController,
+                                            tvList: tvList,
+                                            isDark: isDark,
+                                            imageQuality: imageQuality),
+                                  ),
+                                ],
                               ),
                             ),
-                            Visibility(
-                                visible: isLoading,
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Center(
-                                      child: CircularProgressIndicator()),
-                                )),
-                          ],
-                        ));
+                          ),
+                          Visibility(
+                              visible: isLoading,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              )),
+                        ],
+                      ));
   }
 
   Widget retryWidget(isDark) {
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -4257,7 +4213,6 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
-        color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
         child: tvDetails == null
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -4275,9 +4230,6 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
-                          color: isDark
-                              ? const Color(0xFF000000)
-                              : const Color(0xFFFFFFFF),
                           child: Padding(
                             padding: const EdgeInsets.only(
                               top: 0.0,
@@ -4404,9 +4356,6 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                     }));
                                   },
                                   child: Container(
-                                    color: isDark
-                                        ? const Color(0xFF000000)
-                                        : const Color(0xFFFFFFFF),
                                     child: Padding(
                                       padding: const EdgeInsets.only(
                                         top: 0.0,
@@ -4583,7 +4532,6 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -4760,9 +4708,6 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                     'This TV series doesn\'t have an option to rent yet',
                                 watchOptions: watchProviders!.rent),
                             Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFF7F7F7),
                               padding: const EdgeInsets.all(8.0),
                               child: GridView.builder(
                                   gridDelegate:
@@ -4821,7 +4766,6 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -4966,7 +4910,6 @@ class TVGenreListGridState extends State<TVGenreListGrid>
 
   Widget retryWidget(isDark) {
     return Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       child: Center(
           child: Row(
         children: [
@@ -5245,9 +5188,6 @@ class ParticularStreamingServiceTVShowsState
                     scrollController: _scrollController))
             : tvList!.isEmpty
                 ? Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: const Center(
                       child: Text(
                           'Oops! TV shows for this watch provider doesn\'t exist :('),
@@ -5256,52 +5196,46 @@ class ParticularStreamingServiceTVShowsState
                 : requestFailed == true
                     ? retryWidget(isDark)
                     : Container(
-                        color: isDark
-                            ? const Color(0xFF000000)
-                            : const Color(0xFFFFFFFF),
                         child: Column(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: viewType == 'grid'
-                                          ? TVGridView(
-                                              tvList: tvList,
-                                              imageQuality: imageQuality,
-                                              isDark: isDark,
-                                              scrollController:
-                                                  _scrollController,
-                                            )
-                                          : TVListView(
-                                              scrollController:
-                                                  _scrollController,
-                                              tvList: tvList,
-                                              isDark: isDark,
-                                              imageQuality: imageQuality),
-                                    ),
-                                  ],
-                                ),
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: viewType == 'grid'
+                                        ? TVGridView(
+                                            tvList: tvList,
+                                            imageQuality: imageQuality,
+                                            isDark: isDark,
+                                            scrollController: _scrollController,
+                                          )
+                                        : TVListView(
+                                            scrollController: _scrollController,
+                                            tvList: tvList,
+                                            isDark: isDark,
+                                            imageQuality: imageQuality),
+                                  ),
+                                ],
                               ),
                             ),
-                            Visibility(
-                                visible: isLoading,
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Center(
-                                      child: CircularProgressIndicator()),
-                                )),
-                          ],
-                        ));
+                          ),
+                          Visibility(
+                              visible: isLoading,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              )),
+                        ],
+                      ));
   }
 
   Widget retryWidget(isDark) {
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -5379,7 +5313,6 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     return credits == null
         ? Container(
             padding: const EdgeInsets.only(top: 8),
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
             ? Container(
@@ -5393,9 +5326,6 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: ListView.builder(
                         itemCount: credits!.cast!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -5409,9 +5339,6 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                               }));
                             },
                             child: Container(
-                              color: isDark
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF),
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 8.0,
@@ -5546,7 +5473,6 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -5625,9 +5551,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return credits == null
-        ? Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-            child: tvCastAndCrewTabShimmer(isDark))
+        ? Container(child: tvCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
             ? Container(
                 color:
@@ -5641,9 +5565,6 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
             : requestFailed == true
                 ? retryWidget(isDark)
                 : Container(
-                    color: isDark
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
                     child: ListView.builder(
                         itemCount: credits!.episodeGuestStars!.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -5658,122 +5579,115 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                 }));
                               },
                               child: Container(
-                                  color: isDark
-                                      ? const Color(0xFF000000)
-                                      : const Color(0xFFFFFFFF),
                                   child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 8.0,
-                                      bottom: 5.0,
-                                      left: 10,
-                                    ),
-                                    child: Column(
+                                padding: const EdgeInsets.only(
+                                  top: 8.0,
+                                  bottom: 5.0,
+                                  left: 10,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
                                       children: [
-                                        Row(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 20.0, left: 10),
-                                              child: SizedBox(
-                                                width: 80,
-                                                height: 80,
-                                                child: Hero(
-                                                  tag:
-                                                      '${credits!.episodeGuestStars![index].name}',
-                                                  child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            100.0),
-                                                    child: credits!
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 20.0, left: 10),
+                                          child: SizedBox(
+                                            width: 80,
+                                            height: 80,
+                                            child: Hero(
+                                              tag:
+                                                  '${credits!.episodeGuestStars![index].name}',
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        100.0),
+                                                child: credits!
+                                                            .episodeGuestStars![
+                                                                index]
+                                                            .profilePath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_square.png',
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl: TMDB_BASE_IMAGE_URL +
+                                                            imageQuality +
+                                                            credits!
                                                                 .episodeGuestStars![
                                                                     index]
-                                                                .profilePath ==
-                                                            null
-                                                        ? Image.asset(
-                                                            'assets/images/na_square.png',
-                                                            fit: BoxFit.cover,
-                                                          )
-                                                        : CachedNetworkImage(
-                                                            fadeOutDuration:
-                                                                const Duration(
-                                                                    milliseconds:
-                                                                        300),
-                                                            fadeOutCurve:
-                                                                Curves.easeOut,
-                                                            fadeInDuration:
-                                                                const Duration(
-                                                                    milliseconds:
-                                                                        700),
-                                                            fadeInCurve:
-                                                                Curves.easeIn,
-                                                            imageUrl: TMDB_BASE_IMAGE_URL +
-                                                                imageQuality +
-                                                                credits!
-                                                                    .episodeGuestStars![
-                                                                        index]
-                                                                    .profilePath!,
-                                                            imageBuilder: (context,
-                                                                    imageProvider) =>
-                                                                Container(
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                image:
-                                                                    DecorationImage(
-                                                                  image:
-                                                                      imageProvider,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            placeholder: (context,
-                                                                    url) =>
-                                                                castAndCrewTabImageShimmer(
-                                                                    isDark),
-                                                            errorWidget:
-                                                                (context, url,
-                                                                        error) =>
-                                                                    Image.asset(
-                                                              'assets/images/na_sqaure.png',
+                                                                .profilePath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
                                                               fit: BoxFit.cover,
                                                             ),
                                                           ),
-                                                  ),
-                                                ),
+                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            castAndCrewTabImageShimmer(
+                                                                isDark),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_sqaure.png',
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
                                               ),
                                             ),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    credits!
-                                                        .episodeGuestStars![
-                                                            index]
-                                                        .name!,
-                                                    style: const TextStyle(
-                                                        fontFamily: 'PoppinsSB',
-                                                        fontSize: 20),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
+                                          ),
                                         ),
-                                        Divider(
-                                          color: !isDark
-                                              ? Colors.black54
-                                              : Colors.white54,
-                                          thickness: 1,
-                                          endIndent: 20,
-                                          indent: 10,
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                credits!
+                                                    .episodeGuestStars![index]
+                                                    .name!,
+                                                style: const TextStyle(
+                                                    fontFamily: 'PoppinsSB',
+                                                    fontSize: 20),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  )));
+                                    Divider(
+                                      color: !isDark
+                                          ? Colors.black54
+                                          : Colors.white54,
+                                      thickness: 1,
+                                      endIndent: 20,
+                                      indent: 10,
+                                    ),
+                                  ],
+                                ),
+                              )));
                         }));
   }
 
@@ -5781,7 +5695,6 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     return Center(
       child: Container(
           width: double.infinity,
-          color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -6162,7 +6075,6 @@ class _TVAboutState extends State<TVAbout> {
       //  physics: const BouncingScrollPhysics(),
       child: Container(
         decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(8.0),
                 bottomRight: Radius.circular(8.0))),
@@ -6300,7 +6212,6 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[

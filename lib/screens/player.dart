@@ -502,7 +502,6 @@ class _PlayerState extends State<Player> {
       body: SafeArea(
         child: Center(
           child: Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             width: double.infinity,
             height: double.infinity,
             child: PodVideoPlayer(

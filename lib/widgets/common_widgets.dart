@@ -42,7 +42,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Drawer(
       child: Container(
-        color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -51,11 +50,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                 SizedBox(
                   width: double.infinity,
                   child: DrawerHeader(
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFFFFFFFF)
-                          : const Color(0xFF363636),
-                    ),
+                    decoration: BoxDecoration(),
                     child: Image.asset('assets/images/logo_shadow.png'),
                   ),
                 ),
@@ -654,7 +649,6 @@ Widget personDetailInfoTableShimmer(isDark) =>
     ]);
 
 Widget movieCastAndCrewTabShimmer(isDark) => Container(
-    color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
     child: ListView.builder(
         itemCount: 20,
         shrinkWrap: true,
@@ -662,7 +656,6 @@ Widget movieCastAndCrewTabShimmer(isDark) => Container(
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (BuildContext context, int index) {
           return Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             child: Shimmer.fromColors(
               baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
               highlightColor:
@@ -823,159 +816,12 @@ Widget detailsRecommendationsAndSimilarShimmer(
       ],
     );
 
-///
-///
-//
-
-// Container(
-//     color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-//     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-//       ListView.builder(
-//         itemCount: credits!.cast!.length,
-//         shrinkWrap: true,
-//         physics: const NeverScrollableScrollPhysics(),
-//         // separatorBuilder: (context, index) =>
-//         //     const SizedBox(height: 8),
-//         itemBuilder: (context, index) {
-//           // Cast cast = _detailsController.credits.value.cast![index];
-
-//           return GestureDetector(
-//             onTap: () {
-//               Navigator.push(context,
-//                   MaterialPageRoute(builder: (context) {
-//                 return CastDetailPage(
-//                     cast: credits!.cast![index],
-//                     heroId: '${credits!.cast![index].name}');
-//               }));
-//             },
-//             child: Container(
-//               color: isDark
-//                   ? const Color(0xFF000000)
-//                   : const Color(0xFFFFFFFF),
-//               child: Padding(
-//                 padding: const EdgeInsets.only(
-//                   top: 0.0,
-//                   bottom: 5.0,
-//                   left: 10,
-//                 ),
-//                 child: Column(
-//                   children: [
-//                     Row(
-//                       // crossAxisAlignment:
-//                       //     CrossAxisAlignment.start,
-//                       children: [
-//                         Padding(
-//                           padding: const EdgeInsets.only(
-//                               right: 20.0, left: 10),
-//                           child: SizedBox(
-//                             width: 80,
-//                             height: 80,
-//                             child: Hero(
-//                               tag:
-//                                   '${credits!.cast![index].name}',
-//                               child: ClipRRect(
-//                                 borderRadius:
-//                                     BorderRadius.circular(
-//                                         100.0),
-//                                 child: credits!.cast![index]
-//                                             .profilePath ==
-//                                         null
-//                                     ? Image.asset(
-//                                         'assets/images/na_square.png',
-//                                         fit: BoxFit.cover,
-//                                       )
-//                                     : CachedNetworkImage(
-//                                         fadeOutDuration:
-//                                             const Duration(
-//                                                 milliseconds:
-//                                                     300),
-//                                         fadeOutCurve:
-//                                             Curves.easeOut,
-//                                         fadeInDuration:
-//                                             const Duration(
-//                                                 milliseconds:
-//                                                     700),
-//                                         fadeInCurve:
-//                                             Curves.easeIn,
-//                                         imageUrl:
-//                                             TMDB_BASE_IMAGE_URL +
-//                                                 imageQuality +
-//                                                 credits!
-//                                                     .cast![
-//                                                         index]
-//                                                     .profilePath!,
-//                                         imageBuilder: (context,
-//                                                 imageProvider) =>
-//                                             Container(
-//                                           decoration:
-//                                               BoxDecoration(
-//                                             image:
-//                                                 DecorationImage(
-//                                               image:
-//                                                   imageProvider,
-//                                               fit: BoxFit.cover,
-//                                             ),
-//                                           ),
-//                                         ),
-//                                         placeholder: (context,
-//                                                 url) =>
-//                                             castAndCrewTabImageShimmer(
-//                                                 isDark),
-//                                         errorWidget: (context,
-//                                                 url, error) =>
-//                                             Image.asset(
-//                                           'assets/images/na_square.png',
-//                                           fit: BoxFit.cover,
-//                                         ),
-//                                       ),
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                         Expanded(
-//                           child: Column(
-//                             crossAxisAlignment:
-//                                 CrossAxisAlignment.start,
-//                             children: [
-//                               Text(
-//                                 credits!.cast![index].name!,
-//                                 style: const TextStyle(
-//                                     fontFamily: 'PoppinsSB'),
-//                                 overflow: TextOverflow.ellipsis,
-//                               ),
-//                               Text(
-//                                 'As : '
-//                                 '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
-//                               ),
-//                             ],
-//                           ),
-//                         )
-//                       ],
-//                     ),
-//                     Divider(
-//                       color: !isDark
-//                           ? Colors.black54
-//                           : Colors.white54,
-//                       thickness: 1,
-//                       endIndent: 20,
-//                       indent: 10,
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             ),
-//           );
-//         },
-//       )
-//     ]));
-
 Widget watchProvidersTabData(
         {required bool isDark,
         required String imageQuality,
         required String noOptionMessage,
         required List? watchOptions}) =>
     Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       padding: const EdgeInsets.all(8.0),
       child: watchOptions == null
           ? Center(
@@ -1052,7 +898,6 @@ Widget watchProvidersTabData(
     );
 
 Widget watchProvidersShimmer(isDark) => Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFF7F7F7),
       padding: const EdgeInsets.all(8.0),
       child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -1130,7 +975,6 @@ Widget watchProvidersImageShimmer(isDark) => Shimmer.fromColors(
 
 Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
     Container(
-      color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
       child: Column(
         children: [
           Expanded(
@@ -1145,9 +989,6 @@ Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
                         itemCount: 10,
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
-                            color: isDark
-                                ? const Color(0xFF000000)
-                                : const Color(0xFFFFFFFF),
                             child: Shimmer.fromColors(
                               baseColor: isDark
                                   ? Colors.grey.shade800
@@ -1325,9 +1166,6 @@ Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
               itemCount: 5,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
-                  color: isDark
-                      ? const Color(0xFF000000)
-                      : const Color(0xFFFFFFFF),
                   child: Shimmer.fromColors(
                     baseColor:
                         isDark ? Colors.grey.shade800 : Colors.grey.shade300,
@@ -1384,13 +1222,11 @@ Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
     );
 
 Widget tvCastAndCrewTabShimmer(isDark) => Container(
-    color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
     child: ListView.builder(
         itemCount: 10,
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
           return Container(
-            color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
             child: Shimmer.fromColors(
               baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
               highlightColor:
@@ -1546,7 +1382,6 @@ Widget personMoviesAndTVShowShimmer(isDark) => Column(
     );
 
 Widget moviesAndTVShowGridShimmer(isDark) => Container(
-      color: isDark ? Colors.black : Colors.white,
       padding: const EdgeInsets.only(top: 8),
       child: Row(
         children: [
@@ -1698,7 +1533,6 @@ Widget personAboutSimmer(isDark) => Column(
 
 Widget newsShimmer(isDark, scrollController, isLoading) {
   return Container(
-    color: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
     child: Column(
       children: [
         Expanded(
@@ -1713,9 +1547,6 @@ Widget newsShimmer(isDark, scrollController, isLoading) {
                       itemCount: 10,
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
-                          color: isDark
-                              ? const Color(0xFF000000)
-                              : const Color(0xFFFFFFFF),
                           child: Shimmer.fromColors(
                             baseColor: isDark
                                 ? Colors.grey.shade800
