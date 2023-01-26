@@ -37,7 +37,7 @@ dependencies:
   provider: ^6.0.3
   permission_handler: ^8.2.6
   flutter_downloader: ^1.8.3+2
-  #dio: ^4.0.6
+  dio: ^4.0.6
   #video_player: ^2.4.7
   web_scraper: ^0.1.4
   flutter_hls_parser: ^2.0.0
