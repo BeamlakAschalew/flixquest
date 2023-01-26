@@ -77,7 +77,7 @@ class _SettingsState extends State<Settings> {
               },
             ),
             SwitchListTile(
-              subtitle: const Text('beta'),
+              subtitle: const Text('beta and works on Android 12+'),
               activeColor: const Color(0xFFF57C00),
               value: m3.isMaterial3Enabled,
               secondary: const Icon(
