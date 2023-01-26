@@ -37,7 +37,7 @@ dependencies:
   provider: ^6.0.3
   permission_handler: ^8.2.6
   flutter_downloader: ^1.8.3+2
-  dio: ^4.0.6
+  #dio: ^4.0.6
   #video_player: ^2.4.7
   web_scraper: ^0.1.4
   flutter_hls_parser: ^2.0.0
@@ -53,12 +53,10 @@ dependencies:
   dynamic_color: ^1.5.4
   #adaptive_theme: ^3.1.1
   webview_flutter: ^3.0.4
-  smooth_page_indicator: ^1.0.0+2
   percent_indicator: ^4.2.2
   sqflite: ^2.2.2
   firebase_auth: ^3.11.2
   cloud_firestore: ^3.5.1
-  system_theme: ^2.1.0
 
 
 dev_dependencies:

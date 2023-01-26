@@ -142,7 +142,7 @@ packages:
     source: hosted
     version: "1.0.5"
   dio:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: dio
       url: "https://pub.dartlang.org"
@@ -770,13 +770,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  smooth_page_indicator:
-    dependency: "direct main"
-    description:
-      name: smooth_page_indicator
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0+2"
   source_span:
     dependency: transitive
     description:
@@ -833,20 +826,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0+3"
-  system_theme:
-    dependency: "direct main"
-    description:
-      name: system_theme
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.0"
-  system_theme_web:
-    dependency: transitive
-    description:
-      name: system_theme_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.2"
   term_glyph:
     dependency: transitive
     description:
