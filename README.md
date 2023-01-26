@@ -4,7 +4,7 @@
 
 Cinemax is a free and open source Android app for streaming Movies and TV-Series.
 
-<a href="https://www.buymeacoffee.com/cinemaxapp"><img src="https://helloimjessa.files.wordpress.com/2021/06/bmc-button.png" alt="buy me a coffee"></a>
+<a href="https://www.buymeacoffee.com/cinemaxapp"><img src="https://helloimjessa.files.wordpress.com/2021/06/bmc-button.png" height="90" width="320.4" alt="buy me a coffee"></a>
 
 Some UI and API functionality from: [Here](https://github.com/bimsina/Matinee-Flutter)
 
