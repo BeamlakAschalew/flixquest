@@ -150,9 +150,8 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
-      backgroundColor: isDark
-          ? Colors.black.withOpacity(0.90)
-          : Colors.white.withOpacity(0.90),
+      backgroundColor:
+          isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Signup'),
@@ -450,23 +449,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                         ),
                                       )),
                                   onPressed: _submitForm,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
-                                      Text(
-                                        'Sign up',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 17),
-                                      ),
-                                      SizedBox(
-                                        width: 5,
-                                      ),
-                                      Icon(
-                                        FontAwesomeIcons.user,
-                                        size: 18,
-                                      )
-                                    ],
+                                  child: const Text(
+                                    'Sign up',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 17),
                                   )),
                         ],
                       ),

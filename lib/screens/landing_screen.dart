@@ -226,7 +226,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                 content: const Text(
                                     'Do you want to Login anonymously? You\'ll lose bookmark syncing feature in the future, login or signup to Cinemax instead'),
                                 actions: [
-                                  TextButton(
+                                  ElevatedButton(
                                       onPressed: () async {
                                         Navigator.pop(context);
                                       },

@@ -156,10 +156,10 @@ class _UserInfoState extends State<UserInfo> {
                                         padding: EdgeInsets.all(8.0),
                                         child: Text('Sign out'),
                                       ),
-                                      content:
-                                          const Text('Do you wanna Sign out?'),
+                                      content: const Text(
+                                          'Do you want to Sign out?'),
                                       actions: [
-                                        TextButton(
+                                        ElevatedButton(
                                             onPressed: () async {
                                               Navigator.pop(context);
                                             },

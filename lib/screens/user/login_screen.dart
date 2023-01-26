@@ -71,9 +71,8 @@ class _LoginScreenState extends State<LoginScreen> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
 
     return Scaffold(
-      backgroundColor: isDark
-          ? Colors.black.withOpacity(0.90)
-          : Colors.white.withOpacity(0.90),
+      backgroundColor:
+          isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
       appBar: AppBar(title: const Text('Login')),
       body: Container(
           padding: const EdgeInsets.all(8),
@@ -188,24 +187,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ),
                                           )),
                                       onPressed: submitForm,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: const [
-                                          Text(
-                                            'Login',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 17),
-                                          ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Icon(
-                                            FontAwesomeIcons.user,
-                                            size: 18,
-                                          )
-                                        ],
+                                      child: const Text(
+                                        'Login',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 17),
                                       )),
                             ],
                           )
