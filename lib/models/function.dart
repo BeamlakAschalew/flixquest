@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:cinemax/models/update.dart';
+import '/models/update.dart';
 
 import '/models/images.dart';
 import '/models/person.dart';
@@ -173,14 +173,14 @@ Future<PersonDetails> fetchPersonDetails(String api) async {
   return personDetails;
 }
 
-Future<WatchProviders> fetchWatchProviders(String api) async {
+Future<WatchProviders> fetchWatchProviders(String api, String country) async {
   WatchProviders watchProviders;
   var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
       onTimeout: () {
     return http.Response('Error', 408);
   }).onError((error, stackTrace) => http.Response('Error', 408));
   var decodeRes = jsonDecode(res.body);
-  watchProviders = WatchProviders.fromJson(decodeRes);
+  watchProviders = WatchProviders.fromJson(decodeRes, country);
   return watchProviders;
 }
 

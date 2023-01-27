@@ -1,7 +1,7 @@
 // import 'dart:io';
 
 // import 'package:chewie/chewie.dart';
-// import 'package:cinemax/screens/movie_video_loader.dart';
+// import '/screens/movie_video_loader.dart';
 // import 'package:flutter/material.dart';
 // import 'package:subtitle/subtitle.dart' as sub;
 // import 'package:video_player/video_player.dart';
@@ -454,11 +454,9 @@
 //   );
 // }
 
-import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:pod_player/pod_player.dart';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
 
 class Player extends StatefulWidget {
   const Player({required this.videoUrl, required this.videoTitle, Key? key})
@@ -496,12 +494,10 @@ class _PlayerState extends State<Player> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Container(
-            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
+          child: SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: PodVideoPlayer(

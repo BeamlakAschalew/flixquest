@@ -1,18 +1,20 @@
-import 'package:cinemax/provider/darktheme_provider.dart';
-import 'package:cinemax/screens/discover_movies_tab.dart';
-import 'package:cinemax/screens/discover_tv_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../provider/settings_provider.dart';
+import 'movie/discover_movies_tab.dart';
+import 'tv/discover_tv_tab.dart';
 
 class DiscoverPage extends StatefulWidget {
-  const DiscoverPage({Key? key}) : super(key: key);
+  const DiscoverPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<DiscoverPage> createState() => _DiscoverPageState();
 }
 
 class _DiscoverPageState extends State<DiscoverPage>
-    with SingleTickerProviderStateMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   late TabController tabController;
 
   @override
@@ -23,11 +25,12 @@ class _DiscoverPageState extends State<DiscoverPage>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    super.build(context);
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
         Container(
-          color: const Color(0xFFF57C00),
+          color: Colors.grey,
           width: double.infinity,
           child: TabBar(
             tabs: [
@@ -81,4 +84,7 @@ class _DiscoverPageState extends State<DiscoverPage>
       ],
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

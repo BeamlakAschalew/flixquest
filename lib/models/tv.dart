@@ -44,6 +44,7 @@ class TV {
   String? overview;
   String? firstAirDate;
   bool? adult;
+  String? dateAdded = DateTime.now().toString();
 
   TV({
     this.voteCount,
@@ -59,6 +60,7 @@ class TV {
     this.overview,
     this.firstAirDate,
     this.adult,
+    this.dateAdded,
   });
 
   TV.fromJson(Map<String, dynamic> json) {
@@ -95,6 +97,44 @@ class TV {
     data['first_air_date'] = firstAirDate;
     // data['origin_country'] = originCountry;
     return data;
+  }
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{};
+    map['id'] = id;
+    //  map['genre_ids'] = genreIds;
+    map['poster_path'] = posterPath;
+    map['vote_count'] = voteCount;
+    map['name'] = name;
+    // map['video'] = video;
+    map['vote_average'] = voteAverage;
+    map['popularity'] = popularity;
+    map['original_language'] = originalLanguage;
+    map['original_title'] = originalName;
+    map['backdrop_path'] = backdropPath;
+    // map['adult'] = adult;
+    map['overview'] = overview;
+    map['first_air_date'] = firstAirDate;
+    map['date_added'] = dateAdded;
+
+    return map;
+  }
+
+  TV.fromMapObject(Map<String, dynamic> map) {
+    id = map['id'];
+    // genreIds = map['genre_ids'];
+    posterPath = map['poster_path'];
+    voteCount = map['vote_count'];
+    //video = map['video'];
+    name = map['name'];
+    voteAverage = map['vote_average'];
+    popularity = map['popularity'];
+    originalLanguage = map['original_language'];
+    originalName = map['original_title'];
+    backdropPath = map['backdrop_path'];
+    // adult = map['adult'];
+    overview = map['overview'];
+    firstAirDate = map['first_air_date'];
   }
 }
 

@@ -5,7 +5,7 @@ description: A Flutter movie app.
 publish_to: 'none'
 
 
-version: 1.4.0-dev+1
+version: 1.4.0+1
 
 
 environment:
@@ -50,7 +50,13 @@ dependencies:
   flutter_download_manager: ^0.5.4
   open_file_plus: ^3.3.0
   path_provider: ^2.0.11
+  dynamic_color: ^1.5.4
   #adaptive_theme: ^3.1.1
+  webview_flutter: ^3.0.4
+  percent_indicator: ^4.2.2
+  sqflite: ^2.2.2
+  firebase_auth: ^3.11.2
+  cloud_firestore: ^3.5.1
 
 
 dev_dependencies:
@@ -64,7 +70,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/m3u8/
+    - assets/images/country_flags/
+    - assets/images/profiles/
 
   fonts:
     - family: Poppins
@@ -76,6 +83,12 @@ flutter:
     - family: PoppinsSB
       fonts:
         - asset: assets/fonts/poppins/Poppins-SemiBold.ttf
+    - family: PoppinsMedium
+      fonts:
+        - asset: assets/fonts/poppins/Poppins-Medium.ttf
+    - family: PoppinsBlack
+      fonts:
+        - asset: assets/fonts/poppins/Poppins-Black.ttf
     - family: SocialIcons
       fonts:
         - asset: assets/fonts/SocialIcons.ttf
@@ -84,8 +97,10 @@ flutter:
         - asset: assets/fonts/imdb.ttf
   
 flutter_native_splash:
-  color: "#252625"
-  image: assets/images/logo_shadow.png
+  color: "#FFFFFF"
+  color_dark: "#161716"
+  image: assets/images/logo.png
   android_12:
-    image: assets/images/logo_shadow.png
-    color: "#252625"
+    image: assets/images/logo.png
+    color: "#FFFFFF"
+    color_dark: "#161716"

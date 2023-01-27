@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/darktheme_provider.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
@@ -13,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../constants/api_constants.dart';
 import '../models/images.dart';
-import '../provider/imagequality_provider.dart';
+import '../provider/settings_provider.dart';
 
 class HeroPhotoView extends StatefulWidget {
   const HeroPhotoView(
@@ -144,9 +143,8 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
 
   @override
   Widget build(BuildContext context) {
-    final imageQuality =
-        Provider.of<ImagequalityProvider>(context).imageQuality;
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
       appBar: AppBar(
           title: Text(widget.imageType == 'backdrop'
@@ -179,9 +177,6 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
           child: Stack(alignment: Alignment.bottomRight, children: [
         PhotoViewGallery.builder(
           allowImplicitScrolling: true,
-          backgroundDecoration: BoxDecoration(
-            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
-          ),
           gaplessPlayback: true,
           wantKeepAlive: true,
           enableRotation: true,
@@ -211,7 +206,6 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                   : widget.stills!.length,
           onPageChanged: onPageChanged,
           loadingBuilder: (context, event) => Container(
-            color: isDark ? const Color(0xFF202124) : const Color(0xFFFFFFFF),
             child: Center(
               child: SizedBox(
                 width: 50.0,

@@ -74,12 +74,12 @@ class Movie {
   String? posterPath;
   String? originalLanguage;
   String? originalTitle;
-  List<int>? genreIds;
+  // List<int>? genreIds;
   String? backdropPath;
   bool? adult;
   String? overview;
   String? releaseDate;
-  String? runtime;
+  String? dateAdded = DateTime.now().toString();
 
   Movie({
     this.voteCount,
@@ -91,12 +91,12 @@ class Movie {
     this.posterPath,
     this.originalLanguage,
     this.originalTitle,
-    this.genreIds,
+    //  this.genreIds,
     this.backdropPath,
     this.adult,
     this.overview,
+    this.dateAdded,
     this.releaseDate,
-    this.runtime,
   });
 
   Movie.fromJson(Map<String, dynamic> json) {
@@ -109,12 +109,11 @@ class Movie {
     posterPath = json['poster_path'];
     originalLanguage = json['original_language'];
     originalTitle = json['original_title'];
-    genreIds = json['genre_ids'].cast<int>();
+    //  genreIds = json['genre_ids'].cast<int>();
     backdropPath = json['backdrop_path'];
     adult = json['adult'];
     overview = json['overview'];
     releaseDate = json['release_date'];
-    runtime = json['runtime'];
   }
 
   Map<String, dynamic> toJson() {
@@ -128,14 +127,51 @@ class Movie {
     data['poster_path'] = posterPath;
     data['original_language'] = originalLanguage;
     data['original_title'] = originalTitle;
-    data['genre_ids'] = genreIds;
+    //  data['genre_ids'] = genreIds;
     data['backdrop_path'] = backdropPath;
     data['adult'] = adult;
     data['overview'] = overview;
     data['release_date'] = releaseDate;
-    data['runtime'] = runtime;
 
     return data;
+  }
+
+  Map<String, dynamic> toMap() {
+    var map = <String, dynamic>{};
+    map['id'] = id;
+    map['title'] = title;
+    //  map['genre_ids'] = genreIds;
+    map['poster_path'] = posterPath;
+    map['vote_count'] = voteCount;
+    // map['video'] = video;
+    map['vote_average'] = voteAverage;
+    map['popularity'] = popularity;
+    map['original_language'] = originalLanguage;
+    map['original_title'] = originalTitle;
+    map['backdrop_path'] = backdropPath;
+    // map['adult'] = adult;
+    map['overview'] = overview;
+    map['release_date'] = releaseDate;
+    map['date_added'] = dateAdded;
+
+    return map;
+  }
+
+  Movie.fromMapObject(Map<String, dynamic> map) {
+    id = map['id'];
+    title = map['title'];
+    // genreIds = map['genre_ids'];
+    posterPath = map['poster_path'];
+    voteCount = map['vote_count'];
+    //video = map['video'];
+    voteAverage = map['vote_average'];
+    popularity = map['popularity'];
+    originalLanguage = map['original_language'];
+    originalTitle = map['original_title'];
+    backdropPath = map['backdrop_path'];
+    // adult = map['adult'];
+    overview = map['overview'];
+    releaseDate = map['release_date'];
   }
 }
 

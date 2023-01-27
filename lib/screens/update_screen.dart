@@ -1,16 +1,17 @@
 // ignore_for_file: must_be_immutable
 
 import 'dart:io';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/models/function.dart';
-import 'package:cinemax/models/update.dart';
+import '/constants/api_constants.dart';
+import '/constants/app_constants.dart';
+import '/models/function.dart';
+import '/models/update.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:provider/provider.dart';
-import '../provider/darktheme_provider.dart';
 import 'package:flutter_download_manager/flutter_download_manager.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../provider/settings_provider.dart';
 
 class UpdateScreen extends StatefulWidget {
   const UpdateScreen({Key? key}) : super(key: key);
@@ -41,13 +42,11 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<DarkthemeProvider>(context).darktheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Check for update'),
       ),
       body: Container(
-          color: isDark ? const Color(0xFF202124) : const Color(0xFFF7F7F7),
           child: updateChecker == null
               ? const Center(child: CircularProgressIndicator())
               : updateChecker!.versionNumber != currentAppVersion
@@ -168,12 +167,13 @@ class ListItem extends StatefulWidget {
 class _ListItemState extends State<ListItem> {
   @override
   Widget build(BuildContext context) {
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
             border: Border.all(
-              color: const Color(0xFFF57C00),
+              color: Theme.of(context).colorScheme.primary,
             ),
             borderRadius: const BorderRadius.all(Radius.circular(20))),
         padding: const EdgeInsets.all(8.0),
@@ -231,7 +231,7 @@ class _ListItemState extends State<ListItem> {
                         color: widget.downloadTask!.status.value ==
                                 DownloadStatus.paused
                             ? Colors.grey
-                            : const Color(0xFFF57C00),
+                            : Theme.of(context).colorScheme.primary,
                       ),
                     );
                   }),
@@ -278,6 +278,9 @@ class _ListItemState extends State<ListItem> {
                         case DownloadStatus.canceled:
                           return ElevatedButton(
                               onPressed: () {
+                                mixpanel.track('Download event', properties: {
+                                  'App version': widget.appVersion
+                                });
                                 widget.onDownloadPlayPausedPressed(widget.url);
                               },
                               child: const Text('DOWNLOAD'));
@@ -289,6 +292,8 @@ class _ListItemState extends State<ListItem> {
                     })
                 : ElevatedButton(
                     onPressed: () {
+                      mixpanel.track('Download event',
+                          properties: {'App version': widget.appVersion});
                       widget.onDownloadPlayPausedPressed(widget.url);
                     },
                     child: const Text('DOWNLOAD'))

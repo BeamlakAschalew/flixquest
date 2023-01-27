@@ -1,4 +1,4 @@
-import 'package:cinemax/constants/app_constants.dart';
+import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,7 +39,7 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
                 const Text(
-                  'Cinemax 1.3.0',
+                  'Cinemax 1.4.0',
                   style: TextStyle(
                     fontSize: 30.0,
                   ),
@@ -102,7 +102,7 @@ class AboutPage extends StatelessWidget {
                           ),
                           SocialIconContainer(
                             platformIcon: FontAwesomeIcons.instagram,
-                            uri: 'https://instagram.com/cinemax_app',
+                            uri: 'https://instagram.com/cinemaxhq',
                           ),
                           SocialIconContainer(
                             platformIcon: FontAwesomeIcons.telegram,
@@ -142,7 +142,7 @@ class AboutPage extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text('2014 EC, 2022 GC'),
+                  child: Text('2014 EC, 2023 GC'),
                 )
               ],
             ),
@@ -194,7 +194,6 @@ class PlatformIcon extends StatelessWidget {
       },
       child: Icon(
         platformIcon,
-        color: const Color(0xFFF57C00),
       ),
     );
   }
