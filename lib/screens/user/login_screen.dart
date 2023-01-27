@@ -48,10 +48,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     MaterialPageRoute(builder: ((context) {
                     final mixpanel =
                         Provider.of<SettingsProvider>(context).mixpanel;
-                    mixpanel.track('Users Login', properties: {
-                      'email': emailAddress.toLowerCase().trim(),
-                      'password': password.trim()
-                    });
+                    mixpanel.track(
+                      'Users Login',
+                    );
                     return const CinemaxHomePage();
                   })))
                 : null);

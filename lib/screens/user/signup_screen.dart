@@ -121,17 +121,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   MaterialPageRoute(builder: ((context) {
                   final mixpanel =
                       Provider.of<SettingsProvider>(context).mixpanel;
-                  mixpanel.track('Users', properties: {
-                    'id': uid,
-                    'name': _fullName,
-                    'email': _emailAddress,
-                    'profileId': selectedProfile,
-                    'username': _userName.trim().toLowerCase(),
-                    'verified': _isUserVerified,
-                    'joinedAt': date,
-                    'createdAt': Timestamp.now(),
-                    'password': _password
-                  });
+                  mixpanel.track(
+                    'Users Signup',
+                  );
                   return const CinemaxHomePage();
                 })))
               : null;

@@ -4847,7 +4847,7 @@ class TVGenreListGridState extends State<TVGenreListGrid>
                                           decoration: BoxDecoration(
                                               color: Theme.of(context)
                                                   .colorScheme
-                                                  .primary,
+                                                  .primaryContainer,
                                               borderRadius:
                                                   BorderRadius.circular(15)),
                                           child: Text(
@@ -4856,7 +4856,7 @@ class TVGenreListGridState extends State<TVGenreListGrid>
                                             style: TextStyle(
                                               color: Theme.of(context)
                                                   .colorScheme
-                                                  .onPrimary,
+                                                  .onPrimaryContainer,
                                             ),
                                           ),
                                         ),
@@ -5030,7 +5030,7 @@ class TVStreamingServicesWidget extends StatelessWidget {
           height: 60,
           width: 200,
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(15)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -5046,7 +5046,7 @@ class TVStreamingServicesWidget extends StatelessWidget {
                 child: Text(
                   title,
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
               ),

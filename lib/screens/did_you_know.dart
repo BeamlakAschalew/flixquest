@@ -83,7 +83,7 @@ class _DidYouKnowScreenState extends State<DidYouKnowScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: Center(
                             child: Text(
-                              'There are no ${widget.dataName} available for this movie :(',
+                              'There are no ${widget.dataName} available for this title :(',
                               textAlign: TextAlign.center,
                               style: kTextHeaderStyle,
                             ),

@@ -4044,7 +4044,7 @@ class StreamingServicesWidget extends StatelessWidget {
           height: 60,
           width: 200,
           decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(15)),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -4060,7 +4060,7 @@ class StreamingServicesWidget extends StatelessWidget {
                 child: Text(
                   title,
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
               ),
@@ -4159,7 +4159,7 @@ class GenreListGridState extends State<GenreListGrid>
                                         decoration: BoxDecoration(
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .primary,
+                                                .primaryContainer,
                                             borderRadius:
                                                 BorderRadius.circular(15)),
                                         child: Text(
@@ -4167,7 +4167,7 @@ class GenreListGridState extends State<GenreListGrid>
                                           style: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .onPrimary,
+                                                .onPrimaryContainer,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),

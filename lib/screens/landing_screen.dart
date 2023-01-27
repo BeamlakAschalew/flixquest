@@ -1,7 +1,9 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:cinemax/provider/settings_provider.dart';
 import 'package:cinemax/screens/user/login_screen.dart';
 import 'package:cinemax/screens/user/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import '/main.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +23,8 @@ class _LandingScreenState extends State<LandingScreen> {
     //   final prefs = await SharedPreferences.getInstance();
     //   await prefs.setBool('isFirstRun', false);
     // }
+
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
 
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -236,6 +240,9 @@ class _LandingScreenState extends State<LandingScreen> {
                                         await auth
                                             .signInAnonymously()
                                             .then((value) {
+                                          mixpanel.track(
+                                            'Anonymous Login',
+                                          );
                                           Navigator.push(context,
                                               MaterialPageRoute(
                                                   builder: (context) {
