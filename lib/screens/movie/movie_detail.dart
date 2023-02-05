@@ -3,6 +3,7 @@
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../../provider/settings_provider.dart';
+import '../../widgets/common_widgets.dart';
 import '/api/endpoints.dart';
 import '/models/movie.dart';
 import '/widgets/movie_widgets.dart';

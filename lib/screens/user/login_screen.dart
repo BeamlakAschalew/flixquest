@@ -2,9 +2,7 @@ import 'package:cinemax/main.dart';
 import 'package:cinemax/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-
 import '../../services/globle_method.dart';
 
 class LoginScreen extends StatefulWidget {

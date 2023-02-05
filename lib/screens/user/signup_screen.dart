@@ -7,9 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-
 import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
 
@@ -109,7 +107,6 @@ class _SignupScreenState extends State<SignupScreen> {
             'verified': _isUserVerified,
             'joinedAt': date,
             'createdAt': Timestamp.now(),
-            'password': _password
           });
           await FirebaseFirestore.instance
               .collection('usernames')
