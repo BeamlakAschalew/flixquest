@@ -60,7 +60,7 @@ class _TitleReviewsState extends State<TitleReviews> {
         });
       }
     } finally {
-      // TODO
+      client.close();
     }
   }
 
