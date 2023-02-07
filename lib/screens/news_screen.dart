@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:retry/retry.dart';
 import 'package:web_scraper/web_scraper.dart';
 import '../provider/settings_provider.dart';
 import '../widgets/common_widgets.dart';
@@ -186,18 +190,35 @@ class _NewsViewState extends State<NewsView>
 
   bool isLoading = false;
   bool requestFailed = false;
+  final client = HttpClient();
+  final retryOptions = const RetryOptions(
+      maxDelay: Duration(milliseconds: 300),
+      delayFactor: Duration(seconds: 0),
+      maxAttempts: 1000);
+  final timeOut = const Duration(seconds: 10);
 
   Future<void> getNews() async {
-    if (await webScraper!.loadWebPage(widget.newsType)) {
-      setState(() {
-        articleNames = webScraper!.getElement(
-            'h2.news-article__title > a.tracked-offsite-link', ['href']);
-        atricleImage =
-            webScraper!.getElement('img.news-article__image', ['src']);
-        articleWebsite = webScraper!.getElement(
-            'ul.news-article__header-detail > li.ipl-inline-list__item > a.tracked-offsite-link',
-            ['class']);
-      });
+    try {
+      await retryOptions.retry(
+        () => webScraper!.loadWebPage(widget.newsType),
+        retryIf: (e) =>
+            e is SocketException ||
+            e is TimeoutException ||
+            e is WebScraperException,
+      );
+      {
+        setState(() {
+          articleNames = webScraper!.getElement(
+              'h2.news-article__title > a.tracked-offsite-link', ['href']);
+          atricleImage =
+              webScraper!.getElement('img.news-article__image', ['src']);
+          articleWebsite = webScraper!.getElement(
+              'ul.news-article__header-detail > li.ipl-inline-list__item > a.tracked-offsite-link',
+              ['class']);
+        });
+      }
+    } finally {
+      client.close();
     }
   }
 
@@ -214,8 +235,8 @@ class _NewsViewState extends State<NewsView>
 
   void getNewsWithRetry() async {
     getNews();
-    await Future.delayed(const Duration(seconds: 15));
-    checkLoad();
+    //  await Future.delayed(const Duration(seconds: 15));
+    //checkLoad();
   }
 
   @override

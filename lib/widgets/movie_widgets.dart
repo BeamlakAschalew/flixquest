@@ -143,14 +143,14 @@ class DiscoverMoviesState extends State<DiscoverMovies>
         moviesList = value;
       });
     });
-    Future.delayed(const Duration(seconds: 11), () {
-      if (moviesList == null) {
-        setState(() {
-          requestFailed = true;
-          moviesList = [];
-        });
-      }
-    });
+    // Future.delayed(const Duration(seconds: 11), () {
+    //   if (moviesList == null) {
+    //     setState(() {
+    //       requestFailed = true;
+    //       moviesList = [];
+    //     });
+    //   }
+    // });
   }
 
   @override

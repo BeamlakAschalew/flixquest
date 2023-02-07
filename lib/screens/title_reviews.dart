@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:retry/retry.dart';
 import 'package:web_scraper/web_scraper.dart';
 
 import '../constants/app_constants.dart';
@@ -26,27 +30,44 @@ class _TitleReviewsState extends State<TitleReviews> {
   bool isLoading = false;
   bool requestFailed = false;
 
-  Future<void> getData() async {
-    if (await webScraper!.loadWebPage(
-        '/title/${widget.imdbId}/reviews?sort=totalVotes&dir=desc&ratingFilter=0')) {
-      setState(() {
-        totalItems = webScraper!.getElement('div.lister-item', ['class']);
-        userRating = webScraper!
-            .getElement('span.rating-other-user-rating > span', ['class']);
-        reviewTitle = webScraper!.getElement('a.title', ['href']);
-        username =
-            webScraper!.getElement('span.display-name-link > a', ['href']);
+  final client = HttpClient();
+  final retryOptions = const RetryOptions(
+      maxDelay: Duration(milliseconds: 300),
+      delayFactor: Duration(seconds: 0),
+      maxAttempts: 1000);
+  final timeOut = const Duration(seconds: 10);
 
-        date = webScraper!.getElement('span.review-date', ['class']);
-        reviewDetail = webScraper!.getElement('div.text', ['class']);
-      });
+  Future<void> getData() async {
+    try {
+      if (await retryOptions.retry(
+        () => webScraper!.loadWebPage(
+            '/title/${widget.imdbId}/reviews?sort=totalVotes&dir=desc&ratingFilter=0'),
+        retryIf: (e) =>
+            e is SocketException ||
+            e is TimeoutException ||
+            e is WebScraperException,
+      )) {
+        setState(() {
+          totalItems = webScraper!.getElement('div.lister-item', ['class']);
+          userRating = webScraper!
+              .getElement('span.rating-other-user-rating > span', ['class']);
+          reviewTitle = webScraper!.getElement('a.title', ['href']);
+          username =
+              webScraper!.getElement('span.display-name-link > a', ['href']);
+
+          date = webScraper!.getElement('span.review-date', ['class']);
+          reviewDetail = webScraper!.getElement('div.text', ['class']);
+        });
+      }
+    } finally {
+      // TODO
     }
   }
 
   void getDataWithRetry() async {
     getData();
-    await Future.delayed(const Duration(seconds: 15));
-    checkLoad();
+    // await Future.delayed(const Duration(seconds: 15));
+    // checkLoad();
   }
 
   void checkLoad() {

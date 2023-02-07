@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import '/models/update.dart';
 
 import '/models/images.dart';
@@ -10,147 +12,209 @@ import 'package:http/http.dart' as http;
 import '/models/credits.dart';
 import '/models/genres.dart';
 import '/models/movie.dart';
+import 'package:retry/retry.dart';
+
+final client = HttpClient();
+const retryOptions = RetryOptions(
+    maxDelay: Duration(milliseconds: 300),
+    delayFactor: Duration(seconds: 0),
+    maxAttempts: 1000);
+const timeOut = Duration(seconds: 10);
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  movieList = MovieList.fromJson(decodeRes);
+
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    movieList = MovieList.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+
   return movieList.movies ?? [];
 }
 
 Future<List<Movie>> fetchCollectionMovies(String api) async {
   CollectionMovieList collectionMovieList;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  collectionMovieList = CollectionMovieList.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    collectionMovieList = CollectionMovieList.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return collectionMovieList.movies ?? [];
 }
 
 Future fetchCollectionDetails(String api) async {
   CollectionDetails collectionDetails;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  collectionDetails = CollectionDetails.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    collectionDetails = CollectionDetails.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return collectionDetails;
 }
 
 Future<List<Movie>> fetchPersonMovies(String api) async {
   PersonMoviesList personMoviesList;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  personMoviesList = PersonMoviesList.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    personMoviesList = PersonMoviesList.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return personMoviesList.movies ?? [];
 }
 
 Future<Images> fetchImages(String api) async {
   Images images;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  images = Images.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    images = Images.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return images;
 }
 
 Future<PersonImages> fetchPersonImages(String api) async {
   PersonImages personImages;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  personImages = PersonImages.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    personImages = PersonImages.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return personImages;
 }
 
 Future<Videos> fetchVideos(String api) async {
   Videos videos;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  videos = Videos.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    videos = Videos.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return videos;
 }
 
 Future<Credits> fetchCredits(String api) async {
   Credits credits;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  credits = Credits.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    credits = Credits.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return credits;
 }
 
 Future<List<Person>> fetchPerson(String api) async {
   PersonList credits;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  credits = PersonList.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    credits = PersonList.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return credits.person ?? [];
 }
 
 Future<List<Genres>> fetchGenre(String api) async {
   GenreList newGenreList;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  newGenreList = GenreList.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    newGenreList = GenreList.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return newGenreList.genre ?? [];
 }
 
 Future fetchSocialLinks(String api) async {
   ExternalLinks externalLinks;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  externalLinks = ExternalLinks.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    externalLinks = ExternalLinks.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return externalLinks;
 }
 
 Future fetchBelongsToCollection(String api) async {
   BelongsToCollection belongsToCollection;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  belongsToCollection = BelongsToCollection.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    belongsToCollection = BelongsToCollection.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return belongsToCollection;
 }
 
 Future<MovieDetails> fetchMovieDetails(String api) async {
   MovieDetails movieDetails;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  movieDetails = MovieDetails.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    movieDetails = MovieDetails.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return movieDetails;
 }
 
@@ -164,66 +228,90 @@ Future<MovieDetails> fetchMovieDetails(String api) async {
 
 Future<PersonDetails> fetchPersonDetails(String api) async {
   PersonDetails personDetails;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  personDetails = PersonDetails.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    personDetails = PersonDetails.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return personDetails;
 }
 
 Future<WatchProviders> fetchWatchProviders(String api, String country) async {
   WatchProviders watchProviders;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  watchProviders = WatchProviders.fromJson(decodeRes, country);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    watchProviders = WatchProviders.fromJson(decodeRes, country);
+  } finally {
+    client.close();
+  }
   return watchProviders;
 }
 
 Future<List<TV>> fetchTV(String api) async {
   TVList tvList;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  tvList = TVList.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    tvList = TVList.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return tvList.tvSeries ?? [];
 }
 
 Future<TVDetails> fetchTVDetails(String api) async {
   TVDetails tvDetails;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  tvDetails = TVDetails.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    tvDetails = TVDetails.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return tvDetails;
 }
 
 Future<List<TV>> fetchPersonTV(String api) async {
   PersonTVList personTVList;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  personTVList = PersonTVList.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    personTVList = PersonTVList.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return personTVList.tv ?? [];
 }
 
 Future checkForUpdate(String api) async {
   UpdateChecker updateChecker;
-  var res = await http.get(Uri.parse(api)).timeout(const Duration(seconds: 10),
-      onTimeout: () {
-    return http.Response('Error', 408);
-  }).onError((error, stackTrace) => http.Response('Error', 408));
-  var decodeRes = jsonDecode(res.body);
-  updateChecker = UpdateChecker.fromJson(decodeRes);
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    updateChecker = UpdateChecker.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
   return updateChecker;
 }

@@ -57,6 +57,7 @@ dependencies:
   sqflite: ^2.2.2
   firebase_auth: ^3.11.2
   cloud_firestore: ^3.5.1
+  retry: ^3.1.0
 
 
 dev_dependencies:

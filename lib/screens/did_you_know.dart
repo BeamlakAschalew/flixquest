@@ -1,8 +1,12 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cinemax/constants/app_constants.dart';
 import 'package:cinemax/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:retry/retry.dart';
 import 'package:web_scraper/web_scraper.dart';
 
 class DidYouKnowScreen extends StatefulWidget {
@@ -28,26 +32,43 @@ class _DidYouKnowScreenState extends State<DidYouKnowScreen> {
   bool isLoading = false;
   bool requestFailed = false;
 
+  final client = HttpClient();
+  final retryOptions = const RetryOptions(
+      maxDelay: Duration(milliseconds: 300),
+      delayFactor: Duration(seconds: 0),
+      maxAttempts: 1000);
+  final timeOut = const Duration(seconds: 10);
+
   Future<void> getData(String dataType) async {
-    if (await webScraper!.loadWebPage('/title/${widget.imdbId}/$dataType/')) {
-      setState(() {
-        dataDetail = webScraper!.getElement(
-            dataType == 'alternateversions' ||
-                    dataType == 'movieconnections' ||
-                    dataType == 'soundtrack'
-                ? 'div.soda'
-                : 'div.sodatext',
-            ['class']);
-        likedNumberOfData = webScraper!.getElement(
-            'div.did-you-know-actions > a.interesting-count-text', ['href']);
-      });
+    try {
+      if (await retryOptions.retry(
+        () => webScraper!.loadWebPage('/title/${widget.imdbId}/$dataType/'),
+        retryIf: (e) =>
+            e is SocketException ||
+            e is TimeoutException ||
+            e is WebScraperException,
+      )) {
+        setState(() {
+          dataDetail = webScraper!.getElement(
+              dataType == 'alternateversions' ||
+                      dataType == 'movieconnections' ||
+                      dataType == 'soundtrack'
+                  ? 'div.soda'
+                  : 'div.sodatext',
+              ['class']);
+          likedNumberOfData = webScraper!.getElement(
+              'div.did-you-know-actions > a.interesting-count-text', ['href']);
+        });
+      }
+    } finally {
+      client.close();
     }
   }
 
   void getDataWithRetry() async {
     getData(widget.dataType);
-    await Future.delayed(const Duration(seconds: 15));
-    checkLoad();
+    // await Future.delayed(const Duration(seconds: 15));
+    // checkLoad();
   }
 
   void checkLoad() {
