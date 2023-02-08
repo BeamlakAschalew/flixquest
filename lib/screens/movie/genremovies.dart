@@ -32,6 +32,7 @@ class GenreMovies extends StatelessWidget {
           includeAdult: Provider.of<SettingsProvider>(context).isAdult,
           genreId: genres.genreID!,
           api: Endpoints.getMoviesForGenre(genres.genreID!, 1),
+          watchRegion: Provider.of<SettingsProvider>(context).defaultCountry,
         ),
       ),
     );

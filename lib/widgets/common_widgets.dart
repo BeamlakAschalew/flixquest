@@ -2,7 +2,6 @@
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/screens/title_reviews.dart';
-import 'package:flutter_svg/svg.dart';
 import '../constants/app_constants.dart';
 import '../models/function.dart';
 import '../models/movie.dart';
@@ -1795,28 +1794,15 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
     with SingleTickerProviderStateMixin {
   WatchProviders? watchProviders;
   late TabController tabController;
-  bool requestFailed = false;
 
   @override
   void initState() {
     super.initState();
-    getData();
     tabController = TabController(length: 3, vsync: this);
-  }
-
-  void getData() {
     fetchWatchProviders(widget.api, widget.country).then((value) {
       setState(() {
         watchProviders = value;
       });
-    });
-    Future.delayed(const Duration(seconds: 11), () {
-      if (watchProviders == null) {
-        setState(() {
-          requestFailed = true;
-          watchProviders = WatchProviders();
-        });
-      }
     });
   }
 
@@ -1824,113 +1810,79 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    return requestFailed == true
-        ? retryWidget(isDark)
-        : Container(
-            child: Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(),
-                  child: Center(
-                    child: TabBar(
-                      controller: tabController,
-                      isScrollable: true,
-                      indicatorWeight: 3,
-                      unselectedLabelColor: Colors.white54,
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      tabs: [
-                        Tab(
-                          child: Text('Buy',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: isDark ? Colors.white : Colors.black)),
-                        ),
-                        Tab(
-                          child: Text('Stream',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: isDark ? Colors.white : Colors.black)),
-                        ),
-                        Tab(
-                          child: Text('Rent',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: isDark ? Colors.white : Colors.black)),
-                        ),
-                      ],
-                    ),
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(),
+            child: Center(
+              child: TabBar(
+                controller: tabController,
+                isScrollable: true,
+                indicatorWeight: 3,
+                unselectedLabelColor: Colors.white54,
+                indicatorSize: TabBarIndicatorSize.tab,
+                tabs: [
+                  Tab(
+                    child: Text('Buy',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: isDark ? Colors.white : Colors.black)),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    color: isDark ? Colors.black : Colors.white,
-                    child: TabBarView(
-                      controller: tabController,
-                      children: watchProviders == null
-                          ? [
-                              watchProvidersShimmer(isDark),
-                              watchProvidersShimmer(isDark),
-                              watchProvidersShimmer(isDark),
-                              watchProvidersShimmer(isDark),
-                            ]
-                          : [
-                              watchProvidersTabData(
-                                  isDark: isDark,
-                                  imageQuality: imageQuality,
-                                  noOptionMessage:
-                                      'This movie doesn\'t have an option to buy yet',
-                                  watchOptions: watchProviders!.buy),
-                              watchProvidersTabData(
-                                  isDark: isDark,
-                                  imageQuality: imageQuality,
-                                  noOptionMessage:
-                                      'This movie doesn\'t have an option to stream yet',
-                                  watchOptions: watchProviders!.flatRate),
-                              watchProvidersTabData(
-                                  isDark: isDark,
-                                  imageQuality: imageQuality,
-                                  noOptionMessage:
-                                      'This movie doesn\'t have an option to rent yet',
-                                  watchOptions: watchProviders!.rent),
-                            ],
-                    ),
+                  Tab(
+                    child: Text('Stream',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: isDark ? Colors.white : Colors.black)),
                   ),
-                )
-              ],
+                  Tab(
+                    child: Text('Rent',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: isDark ? Colors.white : Colors.black)),
+                  ),
+                ],
+              ),
             ),
-          );
-  }
-
-  Widget retryWidget(isDark) {
-    return Center(
-      child: SizedBox(
-          width: double.infinity,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                'assets/images/network-signal.svg',
-                width: 60,
-                height: 60,
-                color: Theme.of(context).colorScheme.primary,
+          ),
+          Expanded(
+            child: Container(
+              color: isDark ? Colors.black : Colors.white,
+              child: TabBarView(
+                controller: tabController,
+                children: watchProviders == null
+                    ? [
+                        watchProvidersShimmer(isDark),
+                        watchProvidersShimmer(isDark),
+                        watchProvidersShimmer(isDark),
+                        watchProvidersShimmer(isDark),
+                      ]
+                    : [
+                        watchProvidersTabData(
+                            isDark: isDark,
+                            imageQuality: imageQuality,
+                            noOptionMessage:
+                                'This movie doesn\'t have an option to buy yet',
+                            watchOptions: watchProviders!.buy),
+                        watchProvidersTabData(
+                            isDark: isDark,
+                            imageQuality: imageQuality,
+                            noOptionMessage:
+                                'This movie doesn\'t have an option to stream yet',
+                            watchOptions: watchProviders!.flatRate),
+                        watchProvidersTabData(
+                            isDark: isDark,
+                            imageQuality: imageQuality,
+                            noOptionMessage:
+                                'This movie doesn\'t have an option to rent yet',
+                            watchOptions: watchProviders!.rent),
+                      ],
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 8.0),
-                child: Text('Please connect to the Internet and try again',
-                    textAlign: TextAlign.center),
-              ),
-              TextButton(
-                  onPressed: () {
-                    setState(() {
-                      requestFailed = false;
-                      watchProviders = null;
-                    });
-                    getData();
-                  },
-                  child: const Text('Retry')),
-            ],
-          )),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

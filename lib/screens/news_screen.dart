@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:retry/retry.dart';
 import 'package:web_scraper/web_scraper.dart';
@@ -184,12 +182,11 @@ class _NewsViewState extends State<NewsView>
   final scrollController = ScrollController();
   @override
   void initState() {
-    getNewsWithRetry();
+    getNews();
     super.initState();
   }
 
   bool isLoading = false;
-  bool requestFailed = false;
   final client = HttpClient();
   final retryOptions = const RetryOptions(
       maxDelay: Duration(milliseconds: 300),
@@ -222,178 +219,121 @@ class _NewsViewState extends State<NewsView>
     }
   }
 
-  void checkLoad() {
-    if (articleNames == null) {
-      setState(() {
-        requestFailed = true;
-        articleNames = [];
-        articleWebsite = [];
-        atricleImage = [];
-      });
-    }
-  }
-
-  void getNewsWithRetry() async {
-    getNews();
-    //  await Future.delayed(const Duration(seconds: 15));
-    //checkLoad();
-  }
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return articleNames == null
         ? newsShimmer(isDark, scrollController, isLoading)
-        : requestFailed == true
-            ? newsRetryWidget()
-            : Column(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: ListView.builder(
-                        itemBuilder: ((context, index) {
-                          Map<String, dynamic> attributes =
-                              atricleImage![index]['attributes'];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return NewsWebView(
-                                    atricleUrl: articleNames![index]
-                                        ['attributes']['href']);
-                              }));
-                              // launch(
-                              //   articleNames![index]['attributes'][
-                              //       'href'], /* mode: LaunchMode.inAppWebView,*/
-                              // );
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Expanded(
-                                            child: SizedBox(
-                                          height: 150,
-                                          width: 100,
-                                          child: attributes['src'] == null
-                                              ? Image.asset(
-                                                  'assets/images/na_logo.png',
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : CachedNetworkImage(
-                                                  fadeOutDuration:
-                                                      const Duration(
-                                                          milliseconds: 300),
-                                                  fadeOutCurve: Curves.easeOut,
-                                                  fadeInDuration:
-                                                      const Duration(
-                                                          milliseconds: 700),
-                                                  fadeInCurve: Curves.easeIn,
-                                                  imageUrl: attributes['src'],
-                                                  imageBuilder: (context,
-                                                          imageProvider) =>
+        : Column(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: ListView.builder(
+                    itemBuilder: ((context, index) {
+                      Map<String, dynamic> attributes =
+                          atricleImage![index]['attributes'];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return NewsWebView(
+                                atricleUrl: articleNames![index]['attributes']
+                                    ['href']);
+                          }));
+                          // launch(
+                          //   articleNames![index]['attributes'][
+                          //       'href'], /* mode: LaunchMode.inAppWebView,*/
+                          // );
+                        },
+                        child: Container(
+                          color: Colors.transparent,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                        child: SizedBox(
+                                      height: 150,
+                                      width: 100,
+                                      child: attributes['src'] == null
+                                          ? Image.asset(
+                                              'assets/images/na_logo.png',
+                                              fit: BoxFit.cover,
+                                            )
+                                          : CachedNetworkImage(
+                                              fadeOutDuration: const Duration(
+                                                  milliseconds: 300),
+                                              fadeOutCurve: Curves.easeOut,
+                                              fadeInDuration: const Duration(
+                                                  milliseconds: 700),
+                                              fadeInCurve: Curves.easeIn,
+                                              imageUrl: attributes['src'],
+                                              imageBuilder:
+                                                  (context, imageProvider) =>
                                                       Container(
-                                                    decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                        image: imageProvider,
-                                                        // fit: BoxFit.cover,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  // placeholder: (context, url) =>
-                                                  //     scrollingImageShimmer(isDark),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: imageProvider,
+                                                    // fit: BoxFit.cover,
                                                   ),
                                                 ),
-                                        )),
-                                        Expanded(
-                                          flex: 2,
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                articleNames![index]['title'],
-                                                style: const TextStyle(
-                                                    fontFamily: 'PoppinsSB',
-                                                    /* fontSize: 18*/
-                                                    fontSize: 15),
                                               ),
-                                              Text(articleWebsite![index]
-                                                  ['title']),
-                                            ],
+                                              // placeholder: (context, url) =>
+                                              //     scrollingImageShimmer(isDark),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Image.asset(
+                                                'assets/images/na_logo.png',
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                    )),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            articleNames![index]['title'],
+                                            style: const TextStyle(
+                                                fontFamily: 'PoppinsSB',
+                                                /* fontSize: 18*/
+                                                fontSize: 15),
                                           ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Divider(
-                                    color: !isDark
-                                        ? Colors.black54
-                                        : Colors.white54,
-                                    thickness: 1,
-                                    endIndent: 20,
-                                    indent: 10,
-                                  ),
-                                ],
+                                          Text(articleWebsite![index]['title']),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        }),
-                        itemCount: atricleImage!.length,
-                      ),
-                    ),
+                              Divider(
+                                color:
+                                    !isDark ? Colors.black54 : Colors.white54,
+                                thickness: 1,
+                                endIndent: 20,
+                                indent: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                    itemCount: atricleImage!.length,
                   ),
-                ],
-              );
-  }
-
-  Widget newsRetryWidget() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            'assets/images/network-signal.svg',
-            width: 60,
-            height: 60,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 8.0),
-            child: Text('Please connect to the Internet and try again',
-                textAlign: TextAlign.center),
-          ),
-          TextButton(
-              onPressed: () async {
-                setState(() {
-                  requestFailed = false;
-                  articleNames = null;
-                  articleWebsite = null;
-                  atricleImage = null;
-                });
-                getNewsWithRetry();
-              },
-              child: const Text('Retry')),
-        ],
-      ),
-    );
+                ),
+              ),
+            ],
+          );
   }
 
   @override
