@@ -1012,6 +1012,10 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
     setState(() {
       isBookmarked = iB;
     });
+    if (isBookmarked == true) {
+      movieDatabaseController.updateMovie(widget.movie, widget.movie.id!);
+      print('updated movie');
+    }
   }
 
   @override

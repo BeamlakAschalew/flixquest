@@ -82,11 +82,6 @@ class _SignupScreenState extends State<SignupScreen> {
           }
         }
 
-        bool docExists = await checkIfDocExists(_userName);
-        // print("Document exists in Firestore? " + docExists.toString());
-
-        if (docExists) {}
-
         if (await checkIfDocExists(_userName) == true) {
           _globalMethods.authErrorHandle(
               'Username already exists, pick another one'.toString(), context);

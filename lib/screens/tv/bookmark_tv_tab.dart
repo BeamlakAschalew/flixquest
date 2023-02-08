@@ -49,7 +49,9 @@ class _TVBookmarkState extends State<TVBookmark> {
                 color:
                     isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
                 child: mainPageVerticalScrollShimmer(
-                    isDark: isDark, scrollController: _scrollController))
+                    isDark: isDark,
+                    scrollController: _scrollController,
+                    isLoading: false))
             : tvList!.isEmpty
                 ? const Center(
                     child: Text(

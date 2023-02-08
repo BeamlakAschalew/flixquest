@@ -5902,6 +5902,10 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
     setState(() {
       isBookmarked = iB;
     });
+    if (isBookmarked == true) {
+      tvDatabaseController.updateTV(widget.tvSeries, widget.tvSeries.id!);
+      print('updated tv');
+    }
   }
 
   @override
