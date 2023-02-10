@@ -5,7 +5,6 @@ import 'package:dynamic_color/dynamic_color.dart';
 import '/constants/theme_data.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-//import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

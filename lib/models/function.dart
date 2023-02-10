@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import '../constants/app_constants.dart';
 import '/models/update.dart';
 
 import '/models/images.dart';
@@ -12,14 +13,6 @@ import 'package:http/http.dart' as http;
 import '/models/credits.dart';
 import '/models/genres.dart';
 import '/models/movie.dart';
-import 'package:retry/retry.dart';
-
-final client = HttpClient();
-const retryOptions = RetryOptions(
-    maxDelay: Duration(milliseconds: 300),
-    delayFactor: Duration(seconds: 0),
-    maxAttempts: 1000);
-const timeOut = Duration(seconds: 10);
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;

@@ -39,7 +39,7 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
                 const Text(
-                  'Cinemax 1.4.0',
+                  'Cinemax 1.4.1',
                   style: TextStyle(
                     fontSize: 30.0,
                   ),
@@ -142,7 +142,7 @@ class AboutPage extends StatelessWidget {
                 ),
                 const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text('2014 EC, 2023 GC'),
+                  child: Text('2015 EC, 2023 GC'),
                 )
               ],
             ),

@@ -11,7 +11,7 @@ class WatchProviderCountries {
 class CountryData {
   List<WatchProviderCountries> countries = [
     WatchProviderCountries(
-        countryName: 'United Arab Emirates',
+        countryName: 'UAE',
         flagPath: 'assets/images/country_flags/united-arab-emirates.png',
         isoCode: 'AE'),
     WatchProviderCountries(
@@ -79,7 +79,7 @@ class CountryData {
         flagPath: 'assets/images/country_flags/france.png',
         isoCode: 'FR'),
     WatchProviderCountries(
-        countryName: 'United Kingdom',
+        countryName: 'UK',
         flagPath: 'assets/images/country_flags/united-kingdom.png',
         isoCode: 'GB'),
     WatchProviderCountries(
@@ -175,7 +175,7 @@ class CountryData {
         flagPath: 'assets/images/country_flags/turkey.png',
         isoCode: 'TR'),
     WatchProviderCountries(
-        countryName: 'United States of America',
+        countryName: 'USA',
         flagPath: 'assets/images/country_flags/united-states.png',
         isoCode: 'US'),
     WatchProviderCountries(

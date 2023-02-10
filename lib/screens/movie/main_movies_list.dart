@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
-import 'package:retry/retry.dart';
 import '../../constants/api_constants.dart';
+import '../../constants/app_constants.dart';
 import '../../models/function.dart';
 import '../../models/movie.dart';
 import '../../provider/settings_provider.dart';
@@ -35,12 +35,6 @@ class MainMoviesListState extends State<MainMoviesList> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  final client = HttpClient();
-  RetryOptions retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  Duration timeOut = const Duration(seconds: 10);
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {

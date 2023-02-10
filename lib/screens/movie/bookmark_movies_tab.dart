@@ -58,6 +58,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                       'You don\'t have any movies bookmarked :)',
                       textAlign: TextAlign.center,
                       style: kTextSmallHeaderStyle,
+                      maxLines: 4,
                     ),
                   )
                 : Column(

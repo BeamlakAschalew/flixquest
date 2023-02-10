@@ -58,6 +58,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                       'You don\'t have any TV shows bookmarked :)',
                       textAlign: TextAlign.center,
                       style: kTextSmallHeaderStyle,
+                      maxLines: 4,
                     ),
                   )
                 : Column(

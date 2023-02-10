@@ -259,6 +259,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               .requestFocus(_emailFocusNode),
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
+                            errorMaxLines: 3,
                             border: const UnderlineInputBorder(),
                             filled: true,
                             prefixIcon: const Icon(Icons.person),
@@ -289,6 +290,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               .requestFocus(_usernameFocusNode),
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
+                              errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.email),
@@ -327,6 +329,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               .requestFocus(_passwordFocusNode),
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
+                              errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.person),
@@ -347,6 +350,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           validator: (value) {
                             if (value!.isEmpty || value.length < 7) {
                               return 'Please enter a valid Password';
+                            } else if (value == '12345678' ||
+                                value == 'qwertyuiop' ||
+                                value == 'password') {
+                              return '*In Chandler\'s voice* Could your password be any lamer?';
                             }
                             return null;
                           },
@@ -356,6 +363,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           onEditingComplete: () => FocusScope.of(context)
                               .requestFocus(_passwordVerifyFocusNode),
                           decoration: InputDecoration(
+                              errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.lock),
@@ -393,6 +401,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           keyboardType: TextInputType.emailAddress,
                           focusNode: _passwordVerifyFocusNode,
                           decoration: InputDecoration(
+                              errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.lock),

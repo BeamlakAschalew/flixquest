@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:retry/retry.dart';
+import '../../constants/app_constants.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/tv_ui_components.dart';
 import '/models/tv.dart';
@@ -35,12 +35,6 @@ class MainTVListState extends State<MainTVList> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  final client = HttpClient();
-  RetryOptions retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  Duration timeOut = const Duration(seconds: 10);
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {

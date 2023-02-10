@@ -4,7 +4,6 @@ import 'package:cinemax/constants/app_constants.dart';
 import 'package:cinemax/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:retry/retry.dart';
 import 'package:web_scraper/web_scraper.dart';
 
 class DidYouKnowScreen extends StatefulWidget {
@@ -26,13 +25,6 @@ class _DidYouKnowScreenState extends State<DidYouKnowScreen> {
   final WebScraper? webScraper = WebScraper('https://imdb.com');
   List<Map<String, dynamic>>? dataDetail;
   List<Map<String, dynamic>>? likedNumberOfData;
-
-  final client = HttpClient();
-  final retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  final timeOut = const Duration(seconds: 10);
 
   Future<void> getData(String dataType) async {
     try {

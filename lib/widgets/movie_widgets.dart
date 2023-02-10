@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:retry/retry.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '../ui_components/movie_ui_components.dart';
 import '/models/dropdown_select.dart';
@@ -274,12 +273,6 @@ class ScrollingMoviesState extends State<ScrollingMovies>
 
   int pageNum = 2;
   bool isLoading = false;
-  final client = HttpClient();
-  RetryOptions retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  Duration timeOut = const Duration(seconds: 10);
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -1679,10 +1672,6 @@ class PartsListState extends State<PartsList> {
   @override
   void initState() {
     super.initState();
-    getData();
-  }
-
-  void getData() {
     fetchCollectionMovies(widget.api!).then((value) {
       setState(() {
         collectionMovieList = value;
@@ -3182,12 +3171,6 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  final client = HttpClient();
-  RetryOptions retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  Duration timeOut = const Duration(seconds: 10);
 
   @override
   void initState() {
@@ -3323,12 +3306,6 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  final client = HttpClient();
-  RetryOptions retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  Duration timeOut = const Duration(seconds: 10);
 
   @override
   void initState() {
@@ -3458,12 +3435,6 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  final client = HttpClient();
-  RetryOptions retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  Duration timeOut = const Duration(seconds: 10);
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -3590,12 +3561,6 @@ class ParticularStreamingServiceMoviesState
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  final client = HttpClient();
-  RetryOptions retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  Duration timeOut = const Duration(seconds: 10);
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {

@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:retry/retry.dart';
 import 'package:web_scraper/web_scraper.dart';
+import '../constants/app_constants.dart';
 import '../provider/settings_provider.dart';
 import '../widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
@@ -187,12 +187,6 @@ class _NewsViewState extends State<NewsView>
   }
 
   bool isLoading = false;
-  final client = HttpClient();
-  final retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  final timeOut = const Duration(seconds: 10);
 
   Future<void> getNews() async {
     try {

@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:retry/retry.dart';
 import 'package:web_scraper/web_scraper.dart';
-
 import '../constants/app_constants.dart';
 import '../provider/settings_provider.dart';
 
@@ -25,15 +22,7 @@ class _TitleReviewsState extends State<TitleReviews> {
   List<Map<String, dynamic>>? date;
   List<Map<String, dynamic>>? userRating;
   List<Map<String, dynamic>>? totalItems;
-
   bool isLoading = false;
-
-  final client = HttpClient();
-  final retryOptions = const RetryOptions(
-      maxDelay: Duration(milliseconds: 300),
-      delayFactor: Duration(seconds: 0),
-      maxAttempts: 1000);
-  final timeOut = const Duration(seconds: 10);
 
   Future<void> getData() async {
     try {
