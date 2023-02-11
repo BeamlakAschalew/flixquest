@@ -1,3 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../constants/app_constants.dart';
+import '../../controllers/database_controller.dart';
+import '../../services/globle_method.dart';
 import '/api/endpoints.dart';
 import '/models/function.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,36 +24,84 @@ class SyncScreen extends StatefulWidget {
 
 class _SyncScreenState extends State<SyncScreen>
     with SingleTickerProviderStateMixin {
-  late TabController tabController;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseFirestore firebaseInstance = FirebaseFirestore.instance;
   List<int> movieIds = [];
   bool? isLoading;
   List<Movie> movieList = [];
-  double progress = 0.0;
+  double firebaseProgress = 0.00;
+  double sqliteProgress = 0.00;
+  double newSqlitePr = 0.00;
   final scrollController = ScrollController();
-  double newPr = 0;
+  double newFirebasePr = 0.00;
+  bool isFinished = true;
+  List<int> dummyIds = [];
+  final GlobalMethods globalMethods = GlobalMethods();
+  MovieDatabaseController movieDatabaseController = MovieDatabaseController();
+  late StreamSubscription<DocumentSnapshot> subscription;
+  String? uid;
 
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 2, vsync: this);
-    getSavedMovies();
+    getSavedMoviesAndTV();
   }
 
-  void getSavedMovies() async {
+  Future<bool> checkIfDocExists(String docId) async {
+    try {
+      // Get reference to Firestore collection
+      var collectionRef = FirebaseFirestore.instance.collection('bookmarks');
+      var doc = await collectionRef.doc(docId).get();
+      return doc.exists;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  void getSavedMoviesAndTV() async {
+    User? user = _auth.currentUser;
+    uid = user!.uid;
     movieIds = [];
     movieList = [];
     setState(() {
       isLoading = true;
     });
-    await FirebaseFirestore.instance
+
+    if (await checkIfDocExists(uid!) == false) {
+      print('user doesnt exist');
+      await firebaseInstance.collection('bookmarks').doc(uid!).set({});
+    }
+
+    subscription = FirebaseFirestore.instance
         .collection('bookmarks')
-        .doc('movies')
+        .doc(uid!)
+        .snapshots()
+        .listen((datasnapshot) async {
+      final docData = datasnapshot.data() as Map<String, dynamic>;
+
+      if (docData.containsKey('movies') == false) {
+        print('field doesnt exist');
+        await firebaseInstance.collection('bookmarks').doc(uid!).set(
+          {'movies': dummyIds},
+        );
+      }
+
+      if (docData.containsKey('tv') == false) {
+        print('field doesnt exist');
+        await firebaseInstance.collection('bookmarks').doc(uid!).set(
+          {'movies': dummyIds},
+        );
+      }
+    });
+
+    await firebaseInstance
+        .collection('bookmarks')
+        .doc(uid!)
         .get()
         .then((value) {
       if (mounted) {
         setState(() {
-          for (int? element
-              in List.from(value.get('zDo2o0uqQTgxICRddRhVHe2rOYm2'))) {
+          for (int? element in List.from(value.get('movies'))) {
             movieIds.add(element!);
           }
           print(movieIds.toList());
@@ -53,20 +109,67 @@ class _SyncScreenState extends State<SyncScreen>
       }
     });
     for (int i = 0; i < movieIds.length; i++) {
-      await getMovie(Endpoints.getMovieDetails(movieIds[i])).then((value) {
-        if (mounted) {
-          setState(() {
-            movieList.add(value);
-            print(movieList);
-            progress = i / movieIds.length;
-            newPr = progress * 100;
-          });
-        }
-      });
+      await retryOptions.retry(
+        () => getMovie(Endpoints.getMovieDetails(movieIds[i])).then((value) {
+          if (mounted) {
+            setState(() {
+              movieList.add(value);
+              print(movieList);
+              firebaseProgress = i / movieIds.length;
+              newFirebasePr = firebaseProgress * 100;
+            });
+          }
+        }),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
     }
     setState(() {
       isLoading = false;
     });
+  }
+
+  void offlineMovieSync(List<Movie> movieList) async {
+    setState(() {
+      isFinished = false;
+    });
+    try {
+      for (int i = 0; i < movieList.length; i++) {
+        bool? isBookmarked;
+        // checks if a movie exists in sqlite database and assigns a true or false value to it
+        var iB = await movieDatabaseController.contain(movieList[i].id!);
+
+        setState(() {
+          isBookmarked = iB;
+        });
+
+        // adds a movie if isBookmarked is false
+        if (isBookmarked == false) {
+          await movieDatabaseController.insertMovie(movieList[i]).then((value) {
+            setState(() {
+              isBookmarked = true;
+              sqliteProgress = i / movieList.length;
+              newSqlitePr = sqliteProgress * 100;
+              print(sqliteProgress);
+              print('added movie ${movieList[i].originalTitle}');
+            });
+          });
+        }
+      }
+    } finally {
+      setState(() {
+        isFinished = true;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Finished syncing to local/offline bookmark',
+            style: kTextSmallBodyStyle,
+          ),
+          duration: Duration(seconds: 2),
+        ),
+      );
+      print(isFinished);
+    }
   }
 
   @override
@@ -78,93 +181,123 @@ class _SyncScreenState extends State<SyncScreen>
       appBar: AppBar(title: const Text('Sync')),
       body: Column(
         children: [
-          Container(
-            color: Colors.grey,
-            child: TabBar(
-              tabs: [
-                Tab(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.movie_creation_rounded),
-                    ),
-                    Text(
-                      'Movies',
-                    ),
-                  ],
-                )),
-                Tab(
-                    child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Padding(
-                        padding: EdgeInsets.only(right: 8.0),
-                        child: Icon(Icons.live_tv_rounded)),
-                    Text(
-                      'TV Series',
-                    ),
-                  ],
-                ))
-              ],
-              indicatorColor: isDark ? Colors.white : Colors.black,
-              indicatorWeight: 3,
-              //isScrollable: true,
-              labelStyle: const TextStyle(
-                fontFamily: 'PoppinsSB',
-                color: Colors.black,
-                fontSize: 17,
-              ),
-              unselectedLabelStyle:
-                  const TextStyle(fontFamily: 'Poppins', color: Colors.black87),
-              labelColor: Colors.black,
-              controller: tabController,
-              indicatorSize: TabBarIndicatorSize.tab,
-            ),
-          ),
           Expanded(
-              child: TabBarView(
-            controller: tabController,
-            children: [
-              isLoading!
-                  ? Center(
+            child: isLoading!
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          LinearProgressIndicator(
-                            value: progress,
+                          const Text(
+                            'Fetching your saved movies and TV shows from server...',
+                            style: kTextSmallHeaderStyle,
+                            maxLines: 3,
+                            textAlign: TextAlign.center,
                           ),
-                          Text(newPr.toStringAsFixed(1)),
-                          ElevatedButton(
-                              onPressed: () {
-                                getSavedMovies();
-                              },
-                              child: Text('GET'))
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: LinearProgressIndicator(
+                              value: firebaseProgress,
+                            ),
+                          ),
+                          Text('${newFirebasePr.toStringAsFixed(2)}%'),
                         ],
                       ),
-                    )
-                  : movieIds.isEmpty
-                      ? Center(
-                          child: Text('no data'),
-                        )
-                      : Column(
-                          children: [
-                            Text('Movies you have bookmarked online'),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 250,
-                              child: HorizontalScrollingMoviesList(
-                                  scrollController: scrollController,
-                                  movieList: movieList,
-                                  imageQuality: imageQuality,
-                                  isDark: isDark),
-                            ),
-                          ],
-                        ),
-              Container()
-            ],
-          ))
+                    ),
+                  )
+                : Column(
+                    children: [
+                      Expanded(
+                        child: movieIds.isEmpty
+                            ? const Center(
+                                child: Text('no data'),
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    'Movies you have bookmarked online:',
+                                    style: kTextSmallHeaderStyle,
+                                  ),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 250,
+                                    child: HorizontalScrollingMoviesList(
+                                        scrollController: scrollController,
+                                        movieList: movieList,
+                                        imageQuality: imageQuality,
+                                        isDark: isDark),
+                                  ),
+                                  SizedBox(
+                                    width: 300,
+                                    child: ElevatedButton(
+                                        onPressed: () {
+                                          offlineMovieSync(movieList);
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            const Text(
+                                                'Sync to offline movie bookmark'),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0),
+                                              child: Visibility(
+                                                visible: !isFinished,
+                                                child: const SizedBox(
+                                                  height: 20,
+                                                  width: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        )),
+                                  ),
+                                  ElevatedButton(
+                                      onPressed: () async {
+                                        offlineMovieSync(movieList);
+                                      },
+                                      child: const Text(
+                                          'Sync movies to your online account'))
+                                ],
+                              ),
+                      ),
+                      const Divider(thickness: 2, color: Colors.white54),
+                      // Expanded(
+                      //   child: movieIds.isEmpty
+                      //       ? const Center(
+                      //           child: Text('no data'),
+                      //         )
+                      //       : Column(
+                      //           mainAxisAlignment: MainAxisAlignment.center,
+                      //           children: [
+                      //             const Text(
+                      //               'Movies you have bookmarked online:',
+                      //               style: kTextSmallHeaderStyle,
+                      //             ),
+                      //             SizedBox(
+                      //               width: double.infinity,
+                      //               height: 250,
+                      //               child: HorizontalScrollingMoviesList(
+                      //                   scrollController: scrollController,
+                      //                   movieList: movieList,
+                      //                   imageQuality: imageQuality,
+                      //                   isDark: isDark),
+                      //             ),
+                      //           ],
+                      //         ),
+                      // ),
+                    ],
+                  ),
+          ),
         ],
       ),
     );

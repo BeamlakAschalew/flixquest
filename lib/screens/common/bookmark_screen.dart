@@ -1,3 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../constants/app_constants.dart';
 import '/screens/common/sync_screen.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +18,20 @@ class BookmarkScreen extends StatefulWidget {
 class _BookmarkScreenState extends State<BookmarkScreen>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
+  String? uid;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  User? user;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 2, vsync: this);
+    getData();
+  }
+
+  void getData() async {
+    user = _auth.currentUser;
+    uid = user!.uid;
   }
 
   @override
@@ -37,10 +49,23 @@ class _BookmarkScreenState extends State<BookmarkScreen>
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) {
-                    return const SyncScreen();
-                  })));
+                  if (user!.isAnonymous) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'This syncing feature is only available to signed in users. Register to Cinemax to synchronize your bookmarked movies and tv shows so that you won\'t lose them.',
+                          style: kTextVerySmallBodyStyle,
+                          maxLines: 6,
+                        ),
+                        duration: Duration(seconds: 10),
+                      ),
+                    );
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return const SyncScreen();
+                    })));
+                  }
                 },
                 icon: const Icon(Icons.sync_sharp))
           ]),

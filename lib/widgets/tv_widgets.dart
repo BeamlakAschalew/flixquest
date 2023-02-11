@@ -5378,7 +5378,7 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                   ],
                 )),
           ),
-        )
+        ),
       ],
     );
   }

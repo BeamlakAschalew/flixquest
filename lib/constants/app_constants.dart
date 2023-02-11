@@ -24,6 +24,12 @@ const kTextSmallBodyStyle = TextStyle(
   overflow: TextOverflow.ellipsis,
 );
 
+const kTextVerySmallBodyStyle = TextStyle(
+  fontFamily: 'Poppins',
+  fontSize: 13,
+  overflow: TextOverflow.ellipsis,
+);
+
 const kTextSmallAboutBodyStyle = TextStyle(
   fontFamily: 'Poppins',
   fontSize: 14,

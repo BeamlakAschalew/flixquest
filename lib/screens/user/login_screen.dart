@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void submitForm() async {
     final isValid = formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-    if (isValid) {
+    if (isValid && mounted) {
       setState(() {
         isLoading = true;
       });
@@ -70,9 +70,11 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         // print('error occured $error}');
       } finally {
-        setState(() {
-          isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+          });
+        }
       }
     }
   }

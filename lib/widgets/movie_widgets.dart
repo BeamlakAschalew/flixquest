@@ -1032,7 +1032,7 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                   ],
                 )),
           ),
-        )
+        ),
       ],
     );
   }
