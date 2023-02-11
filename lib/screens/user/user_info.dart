@@ -1,5 +1,5 @@
-import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/screens/landing_screen.dart';
+import '/constants/app_constants.dart';
+import '/screens/common/landing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -39,24 +39,28 @@ class _UserInfoState extends State<UserInfo> {
     DocumentSnapshot? userDoc;
 
     if (user.isAnonymous) {
-      setState(() {
-        userAnonymous = true;
-      });
+      if (mounted) {
+        setState(() {
+          userAnonymous = true;
+        });
+      }
     } else {
       userDoc =
           await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      setState(() {
-        userAnonymous = false;
-        name = userDoc!.get('name');
-        email = user.email;
-        joinedAt = userDoc.get('joinedAt');
-        month = DateFormat('MMMM')
-            .format(DateTime(0, DateTime.parse(joinedAt!).month));
-        year = DateTime.parse(joinedAt!).year;
-        isVerified = userDoc.get('verified');
-        profileId = userDoc.get('profileId');
-        username = userDoc.get('username');
-      });
+      if (mounted) {
+        setState(() {
+          userAnonymous = false;
+          name = userDoc!.get('name');
+          email = user.email;
+          joinedAt = userDoc.get('joinedAt');
+          month = DateFormat('MMMM')
+              .format(DateTime(0, DateTime.parse(joinedAt!).month));
+          year = DateTime.parse(joinedAt!).year;
+          isVerified = userDoc.get('verified');
+          profileId = userDoc.get('profileId');
+          username = userDoc.get('username');
+        });
+      }
     }
   }
 

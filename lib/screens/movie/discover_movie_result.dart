@@ -47,14 +47,17 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
             ),
             retryIf: (e) => e is SocketException || e is TimeoutException,
           );
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => Movie.fromJson(i))
-                .toList();
-            moviesList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => Movie.fromJson(i))
+                      .toList();
+              moviesList!.addAll(newlistMovies);
+            });
+          }
         } finally {
           client.close();
         }
@@ -68,9 +71,11 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   void initState() {
     super.initState();
     fetchMovies('${widget.api}&page=${widget.page}}').then((value) {
-      setState(() {
-        moviesList = value;
-      });
+      if (mounted) {
+        setState(() {
+          moviesList = value;
+        });
+      }
     });
     getMoreData();
   }

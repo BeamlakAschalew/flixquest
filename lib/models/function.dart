@@ -308,3 +308,18 @@ Future checkForUpdate(String api) async {
   }
   return updateChecker;
 }
+
+Future<Movie> getMovie(String api) async {
+  Movie movie;
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    movie = Movie.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return movie;
+}

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
-import '../constants/app_constants.dart';
-import '../provider/settings_provider.dart';
+import '../../constants/app_constants.dart';
+import '../../provider/settings_provider.dart';
 
 class TitleReviews extends StatefulWidget {
   const TitleReviews({Key? key, required this.imdbId}) : super(key: key);
@@ -34,17 +34,19 @@ class _TitleReviewsState extends State<TitleReviews> {
             e is TimeoutException ||
             e is WebScraperException,
       )) {
-        setState(() {
-          totalItems = webScraper!.getElement('div.lister-item', ['class']);
-          userRating = webScraper!
-              .getElement('span.rating-other-user-rating > span', ['class']);
-          reviewTitle = webScraper!.getElement('a.title', ['href']);
-          username =
-              webScraper!.getElement('span.display-name-link > a', ['href']);
+        if (mounted) {
+          setState(() {
+            totalItems = webScraper!.getElement('div.lister-item', ['class']);
+            userRating = webScraper!
+                .getElement('span.rating-other-user-rating > span', ['class']);
+            reviewTitle = webScraper!.getElement('a.title', ['href']);
+            username =
+                webScraper!.getElement('span.display-name-link > a', ['href']);
 
-          date = webScraper!.getElement('span.review-date', ['class']);
-          reviewDetail = webScraper!.getElement('div.text', ['class']);
-        });
+            date = webScraper!.getElement('span.review-date', ['class']);
+            reviewDetail = webScraper!.getElement('div.text', ['class']);
+          });
+        }
       }
     } finally {
       client.close();

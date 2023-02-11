@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
-import 'package:cinemax/screens/user/user_state.dart';
-import 'package:cinemax/screens/user/user_info.dart';
+import '/screens/user/user_state.dart';
+import '/screens/user/user_info.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import '/constants/theme_data.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,11 +12,11 @@ import 'widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
 import 'widgets/movie_widgets.dart';
-import 'screens/search_view.dart';
+import 'screens/common/search_view.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'provider/settings_provider.dart';
-import 'screens/discover.dart';
+import 'screens/common/discover.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {
   // print('background message ${message.notification!.body}');

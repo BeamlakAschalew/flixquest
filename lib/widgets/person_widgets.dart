@@ -9,7 +9,7 @@ import '../screens/person/crew_detail.dart';
 import '../screens/person/guest_star_detail.dart';
 import '../screens/person/searchedperson.dart';
 import '/widgets/common_widgets.dart';
-import '/screens/hero_photoview.dart';
+import '/screens/common/hero_photoview.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
@@ -52,9 +52,11 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
   void initState() {
     super.initState();
     fetchPersonImages(widget.api).then((value) {
-      setState(() {
-        personImages = value;
-      });
+      if (mounted) {
+        setState(() {
+          personImages = value;
+        });
+      }
     });
   }
 
@@ -202,9 +204,11 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
   void initState() {
     super.initState();
     fetchPersonMovies(widget.api).then((value) {
-      setState(() {
-        personMoviesList = value;
-      });
+      if (mounted) {
+        setState(() {
+          personMoviesList = value;
+        });
+      }
     });
   }
 
@@ -436,9 +440,11 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
   void initState() {
     super.initState();
     fetchPersonTV(widget.api).then((value) {
-      setState(() {
-        personTVList = value;
-      });
+      if (mounted) {
+        setState(() {
+          personTVList = value;
+        });
+      }
     });
   }
 
@@ -667,9 +673,11 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
   void initState() {
     super.initState();
     fetchPersonDetails(widget.api).then((value) {
-      setState(() {
-        personDetails = value;
-      });
+      if (mounted) {
+        setState(() {
+          personDetails = value;
+        });
+      }
     });
   }
 
@@ -739,9 +747,11 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
   void initState() {
     super.initState();
     fetchSocialLinks(widget.api!).then((value) {
-      setState(() {
-        externalLinks = value;
-      });
+      if (mounted) {
+        setState(() {
+          externalLinks = value;
+        });
+      }
     });
   }
 
@@ -852,9 +862,11 @@ class _PersonDataTableState extends State<PersonDataTable> {
   @override
   void initState() {
     fetchPersonDetails(widget.api).then((value) {
-      setState(() {
-        personDetails = value;
-      });
+      if (mounted) {
+        setState(() {
+          personDetails = value;
+        });
+      }
     });
     super.initState();
   }

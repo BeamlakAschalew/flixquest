@@ -1,8 +1,9 @@
+import '/screens/common/sync_screen.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'movie/bookmark_movies_tab.dart';
-import 'tv/bookmark_tv_tab.dart';
+import '../movie/bookmark_movies_tab.dart';
+import '../tv/bookmark_tv_tab.dart';
 
 class BookmarkScreen extends StatefulWidget {
   const BookmarkScreen({Key? key}) : super(key: key);
@@ -32,7 +33,17 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.arrow_back)),
-          title: const Text('Bookmarks')),
+          title: const Text('Bookmarks'),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) {
+                    return const SyncScreen();
+                  })));
+                },
+                icon: const Icon(Icons.sync_sharp))
+          ]),
       body: Column(
         children: [
           Container(

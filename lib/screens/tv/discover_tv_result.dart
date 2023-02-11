@@ -41,14 +41,16 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
             retryIf: (e) => e is SocketException || e is TimeoutException,
           );
 
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistTV = (json.decode(response.body)['results'] as List)
-                .map((i) => TV.fromJson(i))
-                .toList();
-            tvList!.addAll(newlistTV);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistTV = (json.decode(response.body)['results'] as List)
+                  .map((i) => TV.fromJson(i))
+                  .toList();
+              tvList!.addAll(newlistTV);
+            });
+          }
         } finally {
           client.close();
         }
@@ -62,9 +64,11 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
   void initState() {
     super.initState();
     fetchTV('${widget.api}&page=${widget.page}}').then((value) {
-      setState(() {
-        tvList = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvList = value;
+        });
+      }
     });
     getMoreData();
   }

@@ -1,5 +1,5 @@
-import 'package:cinemax/models/watchprovider_countries.dart';
-import 'package:cinemax/provider/settings_provider.dart';
+import '/models/watchprovider_countries.dart';
+import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

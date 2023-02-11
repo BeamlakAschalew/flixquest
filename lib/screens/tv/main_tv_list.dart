@@ -52,14 +52,16 @@ class MainTVListState extends State<MainTVList> {
               ),
               retryIf: (e) => e is SocketException || e is TimeoutException,
             );
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistTv = (json.decode(response.body)['results'] as List)
-                  .map((i) => TV.fromJson(i))
-                  .toList();
-              tvList!.addAll(newlistTv);
-            });
+            if (mounted) {
+              setState(() {
+                pageNum++;
+                isLoading = false;
+                var newlistTv = (json.decode(response.body)['results'] as List)
+                    .map((i) => TV.fromJson(i))
+                    .toList();
+                tvList!.addAll(newlistTv);
+              });
+            }
           } finally {
             client.close();
           }
@@ -72,14 +74,16 @@ class MainTVListState extends State<MainTVList> {
               ),
               retryIf: (e) => e is SocketException || e is TimeoutException,
             );
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistTv = (json.decode(response.body)['results'] as List)
-                  .map((i) => TV.fromJson(i))
-                  .toList();
-              tvList!.addAll(newlistTv);
-            });
+            if (mounted) {
+              setState(() {
+                pageNum++;
+                isLoading = false;
+                var newlistTv = (json.decode(response.body)['results'] as List)
+                    .map((i) => TV.fromJson(i))
+                    .toList();
+                tvList!.addAll(newlistTv);
+              });
+            }
           } finally {
             client.close();
           }
@@ -94,9 +98,11 @@ class MainTVListState extends State<MainTVList> {
   void initState() {
     super.initState();
     fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
-      setState(() {
-        tvList = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvList = value;
+        });
+      }
     });
     getMoreData();
   }

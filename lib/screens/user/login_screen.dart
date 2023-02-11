@@ -1,5 +1,5 @@
-import 'package:cinemax/main.dart';
-import 'package:cinemax/provider/settings_provider.dart';
+import '/main.dart';
+import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -52,8 +52,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     return const CinemaxHomePage();
                   })))
                 : null);
-      } catch (error) {
-        globalMethods.authErrorHandle(error.toString(), context);
+      } on FirebaseAuthException catch (error) {
+        if (error.code == 'wrong-password') {
+          globalMethods.authErrorHandle(
+              'The password entered is wrong, Or the account doesn\'t exist',
+              context);
+        } else if (error.code == 'invalid-email') {
+          globalMethods.authErrorHandle(
+              'The email address entered is invalid.', context);
+        } else if (error.code == 'user-disabled') {
+          globalMethods.authErrorHandle(
+              'This user account is banned.', context);
+        } else if (error.code == 'user-not-found') {
+          globalMethods.authErrorHandle(
+              'There is no user found for this email, maybe create an account?',
+              context);
+        }
         // print('error occured $error}');
       } finally {
         setState(() {

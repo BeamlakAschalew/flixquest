@@ -5,7 +5,7 @@ import '/widgets/common_widgets.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
-import '../provider/settings_provider.dart';
+import '../../provider/settings_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/person.dart';
 import 'package:flutter/material.dart';

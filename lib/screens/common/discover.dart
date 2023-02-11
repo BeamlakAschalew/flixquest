@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../provider/settings_provider.dart';
-import 'movie/discover_movies_tab.dart';
-import 'tv/discover_tv_tab.dart';
+import '../../provider/settings_provider.dart';
+import '../movie/discover_movies_tab.dart';
+import '../tv/discover_tv_tab.dart';
 
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({

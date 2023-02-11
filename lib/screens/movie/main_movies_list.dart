@@ -52,15 +52,17 @@ class MainMoviesListState extends State<MainMoviesList> {
               ),
               retryIf: (e) => e is SocketException || e is TimeoutException,
             );
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => Movie.fromJson(i))
-                      .toList();
-              moviesList!.addAll(newlistMovies);
-            });
+            if (mounted) {
+              setState(() {
+                pageNum++;
+                isLoading = false;
+                var newlistMovies =
+                    (json.decode(response.body)['results'] as List)
+                        .map((i) => Movie.fromJson(i))
+                        .toList();
+                moviesList!.addAll(newlistMovies);
+              });
+            }
           } finally {
             client.close();
           }
@@ -73,15 +75,17 @@ class MainMoviesListState extends State<MainMoviesList> {
               ),
               retryIf: (e) => e is SocketException || e is TimeoutException,
             );
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => Movie.fromJson(i))
-                      .toList();
-              moviesList!.addAll(newlistMovies);
-            });
+            if (mounted) {
+              setState(() {
+                pageNum++;
+                isLoading = false;
+                var newlistMovies =
+                    (json.decode(response.body)['results'] as List)
+                        .map((i) => Movie.fromJson(i))
+                        .toList();
+                moviesList!.addAll(newlistMovies);
+              });
+            }
           } finally {
             client.close();
           }
@@ -97,9 +101,11 @@ class MainMoviesListState extends State<MainMoviesList> {
     super.initState();
     fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
-      setState(() {
-        moviesList = value;
-      });
+      if (mounted) {
+        setState(() {
+          moviesList = value;
+        });
+      }
     });
     getMoreData();
   }

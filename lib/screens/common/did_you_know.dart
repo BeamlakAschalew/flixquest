@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/provider/settings_provider.dart';
+import '/constants/app_constants.dart';
+import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
@@ -35,17 +35,20 @@ class _DidYouKnowScreenState extends State<DidYouKnowScreen> {
             e is TimeoutException ||
             e is WebScraperException,
       )) {
-        setState(() {
-          dataDetail = webScraper!.getElement(
-              dataType == 'alternateversions' ||
-                      dataType == 'movieconnections' ||
-                      dataType == 'soundtrack'
-                  ? 'div.soda'
-                  : 'div.sodatext',
-              ['class']);
-          likedNumberOfData = webScraper!.getElement(
-              'div.did-you-know-actions > a.interesting-count-text', ['href']);
-        });
+        if (mounted) {
+          setState(() {
+            dataDetail = webScraper!.getElement(
+                dataType == 'alternateversions' ||
+                        dataType == 'movieconnections' ||
+                        dataType == 'soundtrack'
+                    ? 'div.soda'
+                    : 'div.sodatext',
+                ['class']);
+            likedNumberOfData = webScraper!.getElement(
+                'div.did-you-know-actions > a.interesting-count-text',
+                ['href']);
+          });
+        }
       }
     } finally {
       client.close();

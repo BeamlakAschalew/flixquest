@@ -294,4 +294,8 @@ class Endpoints {
   static String getTVWatchProviders(int id) {
     return '$TMDB_API_BASE_URL' '/tv/$id/watch/providers?api_key=$TMDB_API_KEY';
   }
+
+  static String getMovieDetails(int id) {
+    return '$TMDB_API_BASE_URL' '/movie/$id?api_key=$TMDB_API_KEY';
+  }
 }

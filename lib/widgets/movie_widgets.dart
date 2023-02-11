@@ -7,7 +7,7 @@ import '../screens/movie/movie_castandcrew.dart';
 import '../ui_components/movie_ui_components.dart';
 import '/models/dropdown_select.dart';
 import '/models/filter_chip.dart';
-import '/screens/photoview.dart';
+import '/screens/common/photoview.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import 'package:shimmer/shimmer.dart';
@@ -130,7 +130,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
   }
 
   void getData() {
-    List<String> years = yearDropdownData.yearsList.getRange(1, 24).toList();
+    List<String> years = yearDropdownData.yearsList.getRange(1, 25).toList();
     List<MovieGenreFilterChipWidget> genres =
         movieGenreFilterChipData.movieGenreFilterdata;
     years.shuffle();
@@ -138,9 +138,11 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     fetchMovies(
             '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&include_adult=${widget.includeAdult}&primary_release_year=${years.first}&with_genres=${genres.first.genreValue}')
         .then((value) {
-      setState(() {
-        moviesList = value;
-      });
+      if (mounted) {
+        setState(() {
+          moviesList = value;
+        });
+      }
     });
   }
 
@@ -286,27 +288,35 @@ class ScrollingMoviesState extends State<ScrollingMovies>
             Uri.parse(
                 "$TMDB_API_BASE_URL/movie/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
           );
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => Movie.fromJson(i))
-                .toList();
-            moviesList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            if (mounted) {
+              setState(() {
+                pageNum++;
+                isLoading = false;
+                var newlistMovies =
+                    (json.decode(response.body)['results'] as List)
+                        .map((i) => Movie.fromJson(i))
+                        .toList();
+                moviesList!.addAll(newlistMovies);
+              });
+            }
+          }
         } else if (widget.isTrending == true) {
           var response = await http.get(
             Uri.parse(
                 "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=${widget.includeAdult}&page=$pageNum"),
           );
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => Movie.fromJson(i))
-                .toList();
-            moviesList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => Movie.fromJson(i))
+                      .toList();
+              moviesList!.addAll(newlistMovies);
+            });
+          }
         }
       }
     });
@@ -319,9 +329,11 @@ class ScrollingMoviesState extends State<ScrollingMovies>
     super.initState();
     fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
-      setState(() {
-        moviesList = value;
-      });
+      if (mounted) {
+        setState(() {
+          moviesList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -910,9 +922,11 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
 
   void bookmarkChecker() async {
     var iB = await movieDatabaseController.contain(widget.movie.id!);
-    setState(() {
-      isBookmarked = iB;
-    });
+    if (mounted) {
+      setState(() {
+        isBookmarked = iB;
+      });
+    }
     if (isBookmarked == true) {
       movieDatabaseController.updateMovie(widget.movie, widget.movie.id!);
     }
@@ -993,14 +1007,18 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                 onPressed: () {
                   if (isBookmarked == false) {
                     movieDatabaseController.insertMovie(widget.movie);
-                    setState(() {
-                      isBookmarked = true;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        isBookmarked = true;
+                      });
+                    }
                   } else if (isBookmarked == true) {
                     movieDatabaseController.deleteMovie(widget.movie.id!);
-                    setState(() {
-                      isBookmarked = false;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        isBookmarked = false;
+                      });
+                    }
                   }
                 },
                 child: Row(
@@ -1163,9 +1181,11 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
   void initState() {
     super.initState();
     fetchCredits(widget.api!).then((value) {
-      setState(() {
-        credits = value;
-      });
+      if (mounted) {
+        setState(() {
+          credits = value;
+        });
+      }
     });
   }
 
@@ -1367,9 +1387,11 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
   void initState() {
     super.initState();
     fetchSocialLinks(widget.api!).then((value) {
-      setState(() {
-        externalLinks = value;
-      });
+      if (mounted) {
+        setState(() {
+          externalLinks = value;
+        });
+      }
     });
   }
 
@@ -1484,9 +1506,11 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
   void initState() {
     super.initState();
     fetchBelongsToCollection(widget.api!).then((value) {
-      setState(() {
-        belongsToCollection = value;
-      });
+      if (mounted) {
+        setState(() {
+          belongsToCollection = value;
+        });
+      }
     });
   }
 
@@ -1623,9 +1647,11 @@ class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
   void initState() {
     super.initState();
     fetchCollectionDetails(widget.api!).then((value) {
-      setState(() {
-        collectionDetails = value;
-      });
+      if (mounted) {
+        setState(() {
+          collectionDetails = value;
+        });
+      }
     });
   }
 
@@ -1673,9 +1699,11 @@ class PartsListState extends State<PartsList> {
   void initState() {
     super.initState();
     fetchCollectionMovies(widget.api!).then((value) {
-      setState(() {
-        collectionMovieList = value;
-      });
+      if (mounted) {
+        setState(() {
+          collectionMovieList = value;
+        });
+      }
     });
   }
 
@@ -1955,9 +1983,11 @@ class MovieImagesState extends State<MovieImagesDisplay> {
   void initState() {
     super.initState();
     fetchImages(widget.api!).then((value) {
-      setState(() {
-        movieImages = value;
-      });
+      if (mounted) {
+        setState(() {
+          movieImages = value;
+        });
+      }
     });
   }
 
@@ -2289,9 +2319,11 @@ class MovieVideosState extends State<MovieVideosDisplay> {
   void initState() {
     super.initState();
     fetchVideos(widget.api!).then((value) {
-      setState(() {
-        movieVideos = value;
-      });
+      if (mounted) {
+        setState(() {
+          movieVideos = value;
+        });
+      }
     });
   }
 
@@ -2559,9 +2591,11 @@ class GenreDisplayState extends State<GenreDisplay>
   void initState() {
     super.initState();
     fetchGenre(widget.api!).then((value) {
-      setState(() {
-        genreList = value;
-      });
+      if (mounted) {
+        setState(() {
+          genreList = value;
+        });
+      }
     });
   }
 
@@ -2641,9 +2675,11 @@ class MovieInfoTableState extends State<MovieInfoTable> {
   void initState() {
     super.initState();
     fetchMovieDetails(widget.api!).then((value) {
-      setState(() {
-        movieDetails = value;
-      });
+      if (mounted) {
+        setState(() {
+          movieDetails = value;
+        });
+      }
     });
   }
 
@@ -3177,9 +3213,11 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     super.initState();
     fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
-      setState(() {
-        movieList = value;
-      });
+      if (mounted) {
+        setState(() {
+          movieList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -3200,14 +3238,17 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                 '&page=$pageNum')),
             retryIf: (e) => e is SocketException || e is TimeoutException,
           );
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => Movie.fromJson(i))
-                .toList();
-            movieList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => Movie.fromJson(i))
+                      .toList();
+              movieList!.addAll(newlistMovies);
+            });
+          }
         } finally {
           client.close();
         }
@@ -3312,9 +3353,11 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
     super.initState();
     fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
-      setState(() {
-        movieList = value;
-      });
+      if (mounted) {
+        setState(() {
+          movieList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -3335,14 +3378,17 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
                 '&page=$pageNum')),
             retryIf: (e) => e is SocketException || e is TimeoutException,
           );
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => Movie.fromJson(i))
-                .toList();
-            movieList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => Movie.fromJson(i))
+                      .toList();
+              movieList!.addAll(newlistMovies);
+            });
+          }
         } finally {
           client.close();
         }
@@ -3454,14 +3500,17 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
               '&watch_region=${widget.watchRegion}'
               '&page=$pageNum'
               '&with_genres=${widget.genreId}')));
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => Movie.fromJson(i))
-                .toList();
-            moviesList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => Movie.fromJson(i))
+                      .toList();
+              moviesList!.addAll(newlistMovies);
+            });
+          }
         } finally {
           client.close();
         }
@@ -3476,9 +3525,11 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
     super.initState();
     fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
-      setState(() {
-        moviesList = value;
-      });
+      if (mounted) {
+        setState(() {
+          moviesList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -3581,14 +3632,17 @@ class ParticularStreamingServiceMoviesState
                 '&watch_region=${widget.watchRegion}')),
             retryIf: (e) => e is SocketException || e is TimeoutException,
           );
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => Movie.fromJson(i))
-                .toList();
-            moviesList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => Movie.fromJson(i))
+                      .toList();
+              moviesList!.addAll(newlistMovies);
+            });
+          }
         } finally {
           client.close();
         }
@@ -3603,9 +3657,11 @@ class ParticularStreamingServiceMoviesState
     super.initState();
     fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
         .then((value) {
-      setState(() {
-        moviesList = value;
-      });
+      if (mounted) {
+        setState(() {
+          moviesList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -3739,9 +3795,11 @@ class GenreListGridState extends State<GenreListGrid>
   void initState() {
     super.initState();
     fetchGenre(widget.api).then((value) {
-      setState(() {
-        genreList = value;
-      });
+      if (mounted) {
+        setState(() {
+          genreList = value;
+        });
+      }
     });
   }
 
@@ -3884,9 +3942,11 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
     super.initState();
 
     fetchWatchProviders(widget.api, widget.country).then((value) {
-      setState(() {
-        watchProviders = value;
-      });
+      if (mounted) {
+        setState(() {
+          watchProviders = value;
+        });
+      }
     });
   }
 
@@ -4029,9 +4089,11 @@ class CollectionMoviesState extends State<CollectionMovies> {
   void initState() {
     super.initState();
     fetchCollectionMovies(widget.api!).then((value) {
-      setState(() {
-        moviesList = value;
-      });
+      if (mounted) {
+        setState(() {
+          moviesList = value;
+        });
+      }
     });
   }
 

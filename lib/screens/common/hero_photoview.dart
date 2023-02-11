@@ -1,5 +1,4 @@
 // ignore_for_file: unused_local_variable, use_build_context_synchronously
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -7,10 +6,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'dart:isolate';
 import 'dart:ui';
-
 import 'package:provider/provider.dart';
-
-import '../provider/settings_provider.dart';
+import '../../provider/settings_provider.dart';
 
 class HeroPhotoView extends StatefulWidget {
   const HeroPhotoView(

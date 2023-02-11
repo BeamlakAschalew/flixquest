@@ -1,7 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:cinemax/provider/settings_provider.dart';
-import 'package:cinemax/screens/user/login_screen.dart';
-import 'package:cinemax/screens/user/signup_screen.dart';
+import '/provider/settings_provider.dart';
+import '/screens/user/login_screen.dart';
+import '/screens/user/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '/main.dart';

@@ -30,9 +30,11 @@ class _MovieBookmarkState extends State<MovieBookmark> {
 
   Future<void> setData() async {
     var mov = await movieDatabaseController.getMovieList();
-    setState(() {
-      movieList = mov;
-    });
+    if (mounted) {
+      setState(() {
+        movieList = mov;
+      });
+    }
   }
 
   void fetchBookmark() async {

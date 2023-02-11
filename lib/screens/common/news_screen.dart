@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:web_scraper/web_scraper.dart';
-import '../constants/app_constants.dart';
-import '../provider/settings_provider.dart';
-import '../widgets/common_widgets.dart';
+import '../../constants/app_constants.dart';
+import '../../provider/settings_provider.dart';
+import '../../widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'news_webview.dart';
@@ -198,15 +198,17 @@ class _NewsViewState extends State<NewsView>
             e is WebScraperException,
       );
       {
-        setState(() {
-          articleNames = webScraper!.getElement(
-              'h2.news-article__title > a.tracked-offsite-link', ['href']);
-          atricleImage =
-              webScraper!.getElement('img.news-article__image', ['src']);
-          articleWebsite = webScraper!.getElement(
-              'ul.news-article__header-detail > li.ipl-inline-list__item > a.tracked-offsite-link',
-              ['class']);
-        });
+        if (mounted) {
+          setState(() {
+            articleNames = webScraper!.getElement(
+                'h2.news-article__title > a.tracked-offsite-link', ['href']);
+            atricleImage =
+                webScraper!.getElement('img.news-article__image', ['src']);
+            articleWebsite = webScraper!.getElement(
+                'ul.news-article__header-detail > li.ipl-inline-list__item > a.tracked-offsite-link',
+                ['class']);
+          });
+        }
       }
     } finally {
       client.close();

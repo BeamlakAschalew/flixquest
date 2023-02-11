@@ -1,26 +1,24 @@
 // ignore_for_file: avoid_unnecessary_containers
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/screens/title_reviews.dart';
+import '/screens/common/title_reviews.dart';
 import '../constants/app_constants.dart';
 import '../models/function.dart';
 import '../models/movie.dart';
 import '../models/watch_providers.dart';
-import '../screens/did_you_know.dart';
-import '/screens/bookmark_screen.dart';
-import '/screens/settings.dart';
-import '/screens/update_screen.dart';
+import '../screens/common/did_you_know.dart';
+import '/screens/common/bookmark_screen.dart';
+import '/screens/common/settings.dart';
+import '/screens/common/update_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import '../constants/api_constants.dart';
 import '../provider/settings_provider.dart';
-import '../screens/about.dart';
+import '../screens/common/about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../screens/news_screen.dart';
+import '../screens/common/news_screen.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({
@@ -1661,9 +1659,11 @@ class _DidYouKnowState extends State<DidYouKnow> {
   @override
   void initState() {
     fetchSocialLinks(widget.api!).then((value) {
-      setState(() {
-        externalLinks = value;
-      });
+      if (mounted) {
+        setState(() {
+          externalLinks = value;
+        });
+      }
     });
     super.initState();
   }
@@ -1800,9 +1800,11 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
     super.initState();
     tabController = TabController(length: 3, vsync: this);
     fetchWatchProviders(widget.api, widget.country).then((value) {
-      setState(() {
-        watchProviders = value;
-      });
+      if (mounted) {
+        setState(() {
+          watchProviders = value;
+        });
+      }
     });
   }
 

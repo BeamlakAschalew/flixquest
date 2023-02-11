@@ -42,7 +42,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/person/crew_detail.dart';
-import '/screens/photoview.dart';
+import '/screens/common/photoview.dart';
 import '/screens/tv/main_tv_list.dart';
 import 'movie_widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -136,15 +136,17 @@ class DiscoverTVState extends State<DiscoverTV>
   }
 
   void getData() {
-    List<String> years = yearDropdownData.yearsList.getRange(1, 24).toList();
+    List<String> years = yearDropdownData.yearsList.getRange(1, 25).toList();
     List<TVGenreFilterChipWidget> genres = tvGenreFilterChipData.tvGenreList;
     years.shuffle();
     genres.shuffle();
     fetchTV('$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&first_air_date_year=${years.first}&with_genres=${genres.first.genreValue}')
         .then((value) {
-      setState(() {
-        tvList = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvList = value;
+        });
+      }
     });
   }
 
@@ -285,27 +287,33 @@ class ScrollingTVState extends State<ScrollingTV>
             Uri.parse(
                 "$TMDB_API_BASE_URL/tv/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
           );
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => TV.fromJson(i))
-                .toList();
-            tvList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => TV.fromJson(i))
+                      .toList();
+              tvList!.addAll(newlistMovies);
+            });
+          }
         } else if (widget.isTrending == true) {
           var response = await http.get(
             Uri.parse(
                 "$TMDB_API_BASE_URL/trending/tv/week?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}language=en-US&include_adult=false&page=$pageNum"),
           );
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => TV.fromJson(i))
-                .toList();
-            tvList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => TV.fromJson(i))
+                      .toList();
+              tvList!.addAll(newlistMovies);
+            });
+          }
         }
       }
     });
@@ -317,9 +325,11 @@ class ScrollingTVState extends State<ScrollingTV>
   void initState() {
     super.initState();
     fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
-      setState(() {
-        tvList = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -571,9 +581,11 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
   void initState() {
     super.initState();
     fetchCredits(widget.api!).then((value) {
-      setState(() {
-        credits = value;
-      });
+      if (mounted) {
+        setState(() {
+          credits = value;
+        });
+      }
     });
   }
 
@@ -776,9 +788,11 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
   void initState() {
     super.initState();
     fetchCredits(widget.api!).then((value) {
-      setState(() {
-        credits = value;
-      });
+      if (mounted) {
+        setState(() {
+          credits = value;
+        });
+      }
     });
   }
 
@@ -972,9 +986,11 @@ class ScrollingTVEpisodeGuestStarsState
   void initState() {
     super.initState();
     fetchCredits(widget.api!).then((value) {
-      setState(() {
-        credits = value;
-      });
+      if (mounted) {
+        setState(() {
+          credits = value;
+        });
+      }
     });
   }
 
@@ -1151,9 +1167,11 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
   void initState() {
     super.initState();
     fetchCredits(widget.api!).then((value) {
-      setState(() {
-        credits = value;
-      });
+      if (mounted) {
+        setState(() {
+          credits = value;
+        });
+      }
     });
   }
 
@@ -1328,9 +1346,11 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
   void initState() {
     super.initState();
     fetchTVDetails(widget.api!).then((value) {
-      setState(() {
-        tvDetails = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvDetails = value;
+        });
+      }
     });
   }
 
@@ -1486,9 +1506,11 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
   void initState() {
     super.initState();
     fetchImages(widget.api!).then((value) {
-      setState(() {
-        tvImages = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvImages = value;
+        });
+      }
     });
   }
 
@@ -1808,9 +1830,11 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
   void initState() {
     super.initState();
     fetchImages(widget.api!).then((value) {
-      setState(() {
-        tvImages = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvImages = value;
+        });
+      }
     });
   }
 
@@ -1956,9 +1980,11 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
   void initState() {
     super.initState();
     fetchImages(widget.api!).then((value) {
-      setState(() {
-        tvImages = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvImages = value;
+        });
+      }
     });
   }
 
@@ -2107,9 +2133,11 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
   void initState() {
     super.initState();
     fetchVideos(widget.api!).then((value) {
-      setState(() {
-        tvVideos = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvVideos = value;
+        });
+      }
     });
   }
 
@@ -2291,9 +2319,11 @@ class TVCastTabState extends State<TVCastTab>
   void initState() {
     super.initState();
     fetchCredits(widget.api!).then((value) {
-      setState(() {
-        credits = value;
-      });
+      if (mounted) {
+        setState(() {
+          credits = value;
+        });
+      }
     });
   }
 
@@ -2468,9 +2498,11 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
   void initState() {
     super.initState();
     fetchTVDetails(widget.api!).then((value) {
-      setState(() {
-        tvDetails = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvDetails = value;
+        });
+      }
     });
   }
 
@@ -2649,9 +2681,11 @@ class TVCrewTabState extends State<TVCrewTab>
   void initState() {
     super.initState();
     fetchCredits(widget.api!).then((value) {
-      setState(() {
-        credits = value;
-      });
+      if (mounted) {
+        setState(() {
+          credits = value;
+        });
+      }
     });
   }
 
@@ -2822,9 +2856,11 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
   void initState() {
     super.initState();
     fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
-      setState(() {
-        tvList = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -2846,14 +2882,16 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
             '$TMDB_API_BASE_URL/tv/${widget.tvId}/recommendations?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}'
             '&language=en-US'
             '&page=$pageNum'));
-        setState(() {
-          pageNum++;
-          isLoading = false;
-          var newlistTV = (json.decode(response.body)['results'] as List)
-              .map((i) => TV.fromJson(i))
-              .toList();
-          tvList!.addAll(newlistTV);
-        });
+        if (mounted) {
+          setState(() {
+            pageNum++;
+            isLoading = false;
+            var newlistTV = (json.decode(response.body)['results'] as List)
+                .map((i) => TV.fromJson(i))
+                .toList();
+            tvList!.addAll(newlistTV);
+          });
+        }
       }
     });
 
@@ -2949,9 +2987,11 @@ class SimilarTVTabState extends State<SimilarTVTab>
   void initState() {
     super.initState();
     fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
-      setState(() {
-        tvList = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -2973,14 +3013,16 @@ class SimilarTVTabState extends State<SimilarTVTab>
             '$TMDB_API_BASE_URL/tv/${widget.tvId}/similar?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}'
             '&language=en-US'
             '&page=$pageNum'));
-        setState(() {
-          pageNum++;
-          isLoading = false;
-          var newlistTV = (json.decode(response.body)['results'] as List)
-              .map((i) => TV.fromJson(i))
-              .toList();
-          tvList!.addAll(newlistTV);
-        });
+        if (mounted) {
+          setState(() {
+            pageNum++;
+            isLoading = false;
+            var newlistTV = (json.decode(response.body)['results'] as List)
+                .map((i) => TV.fromJson(i))
+                .toList();
+            tvList!.addAll(newlistTV);
+          });
+        }
       }
     });
 
@@ -3064,9 +3106,11 @@ class TVGenreDisplayState extends State<TVGenreDisplay>
   void initState() {
     super.initState();
     fetchGenre(widget.api!).then((value) {
-      setState(() {
-        genres = value;
-      });
+      if (mounted) {
+        setState(() {
+          genres = value;
+        });
+      }
     });
   }
 
@@ -3169,14 +3213,17 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
                     '&with_genres=${widget.genreId}')),
             retryIf: (e) => e is SocketException || e is TimeoutException,
           );
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistMovies = (json.decode(response.body)['results'] as List)
-                .map((i) => TV.fromJson(i))
-                .toList();
-            tvList!.addAll(newlistMovies);
-          });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => TV.fromJson(i))
+                      .toList();
+              tvList!.addAll(newlistMovies);
+            });
+          }
         } finally {
           client.close();
         }
@@ -3190,9 +3237,11 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
   void initState() {
     super.initState();
     fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
-      setState(() {
-        tvList = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -3271,9 +3320,11 @@ class TVInfoTableState extends State<TVInfoTable> {
   void initState() {
     super.initState();
     fetchTVDetails(widget.api!).then((value) {
-      setState(() {
-        tvDetails = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvDetails = value;
+        });
+      }
     });
   }
 
@@ -3471,9 +3522,11 @@ class TVSocialLinksState extends State<TVSocialLinks> {
   void initState() {
     super.initState();
     fetchSocialLinks(widget.api!).then((value) {
-      setState(() {
-        externalLinks = value;
-      });
+      if (mounted) {
+        setState(() {
+          externalLinks = value;
+        });
+      }
     });
   }
 
@@ -3594,9 +3647,11 @@ class SeasonsListState extends State<SeasonsList> {
   void initState() {
     super.initState();
     fetchTVDetails(widget.api!).then((value) {
-      setState(() {
-        tvDetails = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvDetails = value;
+        });
+      }
     });
   }
 
@@ -3772,9 +3827,11 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
   void initState() {
     super.initState();
     fetchTVDetails(widget.api!).then((value) {
-      setState(() {
-        tvDetails = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvDetails = value;
+        });
+      }
     });
   }
 
@@ -4115,9 +4172,11 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
     super.initState();
     tabController = TabController(length: 5, vsync: this);
     fetchWatchProviders(widget.api, widget.country).then((value) {
-      setState(() {
-        watchProviders = value;
-      });
+      if (mounted) {
+        setState(() {
+          watchProviders = value;
+        });
+      }
     });
   }
 
@@ -4283,9 +4342,11 @@ class TVGenreListGridState extends State<TVGenreListGrid>
   void initState() {
     super.initState();
     fetchGenre(widget.api).then((value) {
-      setState(() {
-        genreList = value;
-      });
+      if (mounted) {
+        setState(() {
+          genreList = value;
+        });
+      }
     });
   }
 
@@ -4551,14 +4612,16 @@ class ParticularStreamingServiceTVShowsState
             '.desc&include_adult=false&include_video=false&page=$pageNum'
             '&with_watch_providers=${widget.providerID}'
             '&watch_region=US'));
-        setState(() {
-          pageNum++;
-          isLoading = false;
-          var newlistTV = (json.decode(response.body)['results'] as List)
-              .map((i) => TV.fromJson(i))
-              .toList();
-          tvList!.addAll(newlistTV);
-        });
+        if (mounted) {
+          setState(() {
+            pageNum++;
+            isLoading = false;
+            var newlistTV = (json.decode(response.body)['results'] as List)
+                .map((i) => TV.fromJson(i))
+                .toList();
+            tvList!.addAll(newlistTV);
+          });
+        }
       }
     });
 
@@ -4569,9 +4632,11 @@ class ParticularStreamingServiceTVShowsState
   void initState() {
     super.initState();
     fetchTV('${widget.api}&include_adult=${widget.includeAdult}').then((value) {
-      setState(() {
-        tvList = value;
-      });
+      if (mounted) {
+        setState(() {
+          tvList = value;
+        });
+      }
     });
     getMoreData();
   }
@@ -4650,9 +4715,11 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
   void initState() {
     super.initState();
     fetchCredits(widget.api!).then((value) {
-      setState(() {
-        credits = value;
-      });
+      if (mounted) {
+        setState(() {
+          credits = value;
+        });
+      }
     });
   }
 
@@ -4828,9 +4895,11 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
   void initState() {
     super.initState();
     fetchCredits(widget.api!).then((value) {
-      setState(() {
-        credits = value;
-      });
+      if (mounted) {
+        setState(() {
+          credits = value;
+        });
+      }
     });
   }
 
@@ -5199,9 +5268,11 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
 
   void bookmarkChecker() async {
     var iB = await tvDatabaseController.contain(widget.tvSeries.id!);
-    setState(() {
-      isBookmarked = iB;
-    });
+    if (mounted) {
+      setState(() {
+        isBookmarked = iB;
+      });
+    }
     if (isBookmarked == true) {
       tvDatabaseController.updateTV(widget.tvSeries, widget.tvSeries.id!);
     }
@@ -5282,14 +5353,18 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                 onPressed: () {
                   if (isBookmarked == false) {
                     tvDatabaseController.insertTV(widget.tvSeries);
-                    setState(() {
-                      isBookmarked = true;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        isBookmarked = true;
+                      });
+                    }
                   } else if (isBookmarked == true) {
                     tvDatabaseController.deleteTV(widget.tvSeries.id!);
-                    setState(() {
-                      isBookmarked = false;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        isBookmarked = false;
+                      });
+                    }
                   }
                 },
                 child: Row(

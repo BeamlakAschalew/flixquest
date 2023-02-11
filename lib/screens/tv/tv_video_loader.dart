@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:web_scraper/web_scraper.dart';
 import '../../constants/api_constants.dart';
 import '../../provider/settings_provider.dart';
-import '../player.dart';
+import '../../screens/common/player.dart';
 
 class TVVideoLoader extends StatefulWidget {
   const TVVideoLoader(

@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/main.dart';
-import 'package:cinemax/models/profile_image_list.dart';
+import '/constants/app_constants.dart';
+import '/main.dart';
+import '/models/profile_image_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -120,8 +120,22 @@ class _SignupScreenState extends State<SignupScreen> {
                 })))
               : null;
         }
-      } catch (error) {
-        _globalMethods.authErrorHandle(error.toString(), context);
+      } on FirebaseAuthException catch (error) {
+        if (error.code == 'weak-password') {
+          _globalMethods.authErrorHandle(
+              'The password provided is too weak.', context);
+        } else if (error.code == 'email-already-in-use') {
+          _globalMethods.authErrorHandle(
+              'An account already exists for this email.', context);
+        } else if (error.code == 'invalid-email') {
+          _globalMethods.authErrorHandle(
+              'The email entered is invalid.', context);
+        } else if (error.code == 'operation-not-allowed') {
+          _globalMethods.authErrorHandle(
+              'This signup method is disabled this time', context);
+        }
+      } catch (e) {
+        _globalMethods.authErrorHandle(e.toString(), context);
       } finally {
         setState(() {
           _isLoading = false;
