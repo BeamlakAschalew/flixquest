@@ -323,3 +323,18 @@ Future<Movie> getMovie(String api) async {
   }
   return movie;
 }
+
+Future<TV> getTV(String api) async {
+  TV tv;
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    tv = TV.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return tv;
+}

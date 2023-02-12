@@ -26,7 +26,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final ProfileImages profileImages = ProfileImages();
 
   int profileValue = 0;
-  int selectedProfile = 1;
+  int selectedProfile = 0;
   bool _obscureText = true;
   String _emailAddress = '';
   String _password = '';
@@ -108,6 +108,11 @@ class _SignupScreenState extends State<SignupScreen> {
               .doc(_userName)
               .set({'uname': _userName.trim().toLowerCase(), 'uid': uid});
 
+          await FirebaseFirestore.instance
+              .collection('bookmarks')
+              .doc(uid)
+              .set({});
+
           Navigator.canPop(context)
               ? Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: ((context) {
@@ -137,9 +142,11 @@ class _SignupScreenState extends State<SignupScreen> {
       } catch (e) {
         _globalMethods.authErrorHandle(e.toString(), context);
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }

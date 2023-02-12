@@ -6,7 +6,7 @@ class Profile {
 class ProfileImages {
   List<Profile> profile() {
     List<Profile> profileImages = [];
-    for (int i = 0; i <= 80; i++) {
+    for (int i = 0; i <= 143; i++) {
       profileImages.add(Profile(index: i));
     }
     return profileImages;
