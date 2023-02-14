@@ -107,8 +107,8 @@ class MovieDetailPageState extends State<MovieDetailPage>
           ),
         ],
       ),
-      floatingActionButton:
-          FloatingActionButton(onPressed: () {}, child: Icon(Icons.share)),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {}, child: const Icon(Icons.share)),
     );
   }
 

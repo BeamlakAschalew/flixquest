@@ -96,8 +96,8 @@ class TVDetailPageState extends State<TVDetailPage>
           ),
         ],
       ),
-      floatingActionButton:
-          FloatingActionButton(onPressed: () {}, child: Icon(Icons.share)),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {}, child: const Icon(Icons.share)),
     );
   }
 
