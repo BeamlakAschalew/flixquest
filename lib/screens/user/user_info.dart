@@ -100,11 +100,17 @@ class _UserInfoState extends State<UserInfo> {
                         children: [
                           ClipRRect(
                               borderRadius: BorderRadius.circular(80),
-                              child: Image.asset(
-                                'assets/images/profiles/$profileId.png',
-                                width: 80,
-                                height: 80,
-                              )),
+                              child: profileId == null
+                                  ? Image.asset(
+                                      'assets/images/profiles/0.png',
+                                      width: 80,
+                                      height: 80,
+                                    )
+                                  : Image.asset(
+                                      'assets/images/profiles/$profileId.png',
+                                      width: 80,
+                                      height: 80,
+                                    )),
                           const SizedBox(
                             width: 10,
                           ),
@@ -116,11 +122,11 @@ class _UserInfoState extends State<UserInfo> {
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
                                     Text(
-                                      name!,
+                                      name ?? 'N/A',
                                       style: kTextHeaderStyle,
                                     ),
                                     Visibility(
-                                        visible: isVerified!,
+                                        visible: isVerified ?? false,
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(20),

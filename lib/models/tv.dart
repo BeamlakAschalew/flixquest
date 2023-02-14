@@ -73,7 +73,6 @@ class TV {
     posterPath = json['poster_path'];
     originalLanguage = json['original_language'];
     originalName = json['original_name'];
-    genreIds = json['genre_ids'].cast<int>();
     backdropPath = json['backdrop_path'];
     overview = json['overview'];
     firstAirDate = json['first_air_date'];

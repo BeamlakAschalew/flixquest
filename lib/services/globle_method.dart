@@ -63,37 +63,4 @@ class GlobalMethods {
           );
         });
   }
-
-  Future<void> showSyncProgress(
-      {required BuildContext context,
-      required double progress,
-      required double percentProgress,
-      required bool isFinished}) async {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: Row(
-            children: [
-              !isFinished
-                  ? const Text('Syncing...')
-                  : Text('Syncing finished.'),
-              Visibility(
-                  visible: !isFinished, child: CircularProgressIndicator())
-            ],
-          ),
-          children: [
-            Visibility(
-                visible: isFinished,
-                child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Dismiss')))
-          ],
-        );
-      },
-    );
-  }
 }

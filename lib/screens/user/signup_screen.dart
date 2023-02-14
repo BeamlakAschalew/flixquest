@@ -33,7 +33,7 @@ class _SignupScreenState extends State<SignupScreen> {
   String _fullName = '';
   String _userName = '';
   bool _isUserVerified = false;
-
+  late DocumentSnapshot subscription;
   final _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalMethods _globalMethods = GlobalMethods();
@@ -112,6 +112,31 @@ class _SignupScreenState extends State<SignupScreen> {
               .collection('bookmarks')
               .doc(uid)
               .set({});
+
+          subscription = await FirebaseFirestore.instance
+              .collection('bookmarks')
+              .doc(uid)
+              .get();
+
+          final docData = subscription.data() as Map<String, dynamic>;
+
+          if (docData.containsKey('movies') == false) {
+            await FirebaseFirestore.instance
+                .collection('bookmarks')
+                .doc(uid)
+                .update(
+              {'movies': []},
+            );
+          }
+
+          if (docData.containsKey('tv') == false) {
+            await FirebaseFirestore.instance
+                .collection('bookmarks')
+                .doc(uid)
+                .update(
+              {'tv': []},
+            );
+          }
 
           Navigator.canPop(context)
               ? Navigator.pushReplacement(context,
