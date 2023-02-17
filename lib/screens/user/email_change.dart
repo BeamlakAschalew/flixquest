@@ -145,7 +145,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
-      appBar: AppBar(title: Text('Change email')),
+      appBar: AppBar(title: const Text('Change email')),
       body: userDoc == null
           ? const Center(
               child: CircularProgressIndicator(),
