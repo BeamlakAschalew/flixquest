@@ -82,4 +82,30 @@ class GlobalMethods {
           );
         });
   }
+
+  Future<void> passwordResetException(
+      String subtitle, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: Row(
+              children: const [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('Error occured'),
+                ),
+              ],
+            ),
+            content: Text(subtitle),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Ok'))
+            ],
+          );
+        });
+  }
 }

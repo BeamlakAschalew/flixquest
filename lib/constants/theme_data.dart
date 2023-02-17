@@ -93,11 +93,11 @@ class Styles {
             backgroundColor: MaterialStateProperty.all(
               isM3Enabled
                   ? isDarkTheme
-                      ? darkDynamicColor?.primary.withOpacity(0.05) ??
-                          Color(0xFFF57C00).withOpacity(0.05)
-                      : lightDynamicColor?.primary.withOpacity(0.05) ??
-                          Color(0xFFF57C00).withOpacity(0.05)
-                  : Color(0xFFF57C00).withOpacity(0.05),
+                      ? darkDynamicColor?.primary.withOpacity(0.1) ??
+                          Color(0xFFF57C00).withOpacity(0.1)
+                      : lightDynamicColor?.primary.withOpacity(0.1) ??
+                          Color(0xFFF57C00).withOpacity(0.1)
+                  : Color(0xFFF57C00).withOpacity(0.1),
             ),
             maximumSize: MaterialStateProperty.all(const Size(200, 60)),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(

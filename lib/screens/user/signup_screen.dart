@@ -182,7 +182,6 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Signup'),
       ),
@@ -403,7 +402,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             }
                             return null;
                           },
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: TextInputType.visiblePassword,
                           focusNode: _passwordFocusNode,
                           obscureText: _obscureText,
                           onEditingComplete: () => FocusScope.of(context)
@@ -444,7 +443,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             return null;
                           },
                           obscureText: _obscureText,
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: TextInputType.visiblePassword,
                           focusNode: _passwordVerifyFocusNode,
                           decoration: InputDecoration(
                               errorMaxLines: 3,

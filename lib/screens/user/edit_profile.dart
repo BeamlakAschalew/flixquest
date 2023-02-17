@@ -1,4 +1,7 @@
 import 'package:cinemax/provider/settings_provider.dart';
+import 'package:cinemax/screens/user/delete_account.dart';
+import 'package:cinemax/screens/user/email_change.dart';
+import 'package:cinemax/screens/user/password_change.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -319,15 +322,6 @@ class _ProfileEditState extends State<ProfileEdit> {
                           ),
                         ],
                       ),
-                      Wrap(
-                        spacing: 15,
-                        children: [
-                          TextButton(
-                              onPressed: () {}, child: Text('Change password')),
-                          TextButton(
-                              onPressed: () {}, child: Text('Change email')),
-                        ],
-                      ),
                       _isLoading
                           ? const CircularProgressIndicator()
                           : ElevatedButton(
@@ -337,7 +331,73 @@ class _ProfileEditState extends State<ProfileEdit> {
                               onPressed: () {
                                 updateProfile();
                               },
-                              child: const Text('Confirm'))
+                              child: const Text('Confirm')),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        alignment: WrapAlignment.center,
+                        spacing: 15,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: ((context) {
+                                return const PasswordChangeScreen();
+                              })));
+                            },
+                            style: ButtonStyle(
+                                maximumSize: MaterialStateProperty.all(
+                                    const Size(200, 60)),
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ))),
+                            child: const Text('Change password'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: ((context) {
+                                return const EmailChangeScreen();
+                              })));
+                            },
+                            style: ButtonStyle(
+                                maximumSize: MaterialStateProperty.all(
+                                    const Size(200, 60)),
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ))),
+                            child: const Text('Change email'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: ((context) {
+                                return const DeleteAccountScreen();
+                              })));
+                            },
+                            style: ButtonStyle(
+                                maximumSize: MaterialStateProperty.all(
+                                    const Size(200, 60)),
+                                backgroundColor:
+                                    const MaterialStatePropertyAll(Colors.red),
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ))),
+                            child: const Text(
+                              'Delete account',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

@@ -37,6 +37,8 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           _globalMethods.authErrorHandle(
               'There is no registered user with this email account.\nMaybe Signup?',
               context);
+        } else {
+          _globalMethods.authErrorHandle(e.toString(), context);
         }
         // print('error occured ${error.message}');
       } finally {

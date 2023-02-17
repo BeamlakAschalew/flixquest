@@ -84,7 +84,7 @@ class Search extends SearchDelegate<String> {
                       )),
                 ),
                 Tab(
-                  child: Text('Celebrity',
+                  child: Text('Celebrities',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         color: !isDark

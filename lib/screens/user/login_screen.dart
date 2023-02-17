@@ -86,7 +86,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
       appBar: AppBar(title: const Text('Login')),
@@ -148,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     }
                                     return null;
                                   },
-                                  keyboardType: TextInputType.emailAddress,
+                                  keyboardType: TextInputType.visiblePassword,
                                   focusNode: passwordFocusNode,
                                   decoration: InputDecoration(
                                       border: const UnderlineInputBorder(),
@@ -210,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onPressed: () {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: ((context) {
-                                      return ForgotPasswordScreen();
+                                      return const ForgotPasswordScreen();
                                     })));
                                   },
                                   child: const Text(
