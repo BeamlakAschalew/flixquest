@@ -104,7 +104,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
-      appBar: AppBar(title: Text('Change password')),
+      appBar: AppBar(title: const Text('Change password')),
       body: _emailAddress == null
           ? const Center(
               child: CircularProgressIndicator(),

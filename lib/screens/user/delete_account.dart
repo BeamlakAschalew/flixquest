@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../../constants/app_constants.dart';
 import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
@@ -48,17 +46,13 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
   void _submitForm() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-    print('started');
-    print(isValid);
     if (isValid) {
-      print(isValid);
       setState(() {
         _isLoading = true;
       });
       _formKey.currentState!.save();
       try {
         user = _auth.currentUser;
-        print('p1');
         await user!.delete().then((value) async {
           await FirebaseFirestore.instance
               .collection('users')
@@ -119,7 +113,6 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
         setState(() {
           _isLoading = false;
         });
-        print('finished');
         Navigator.pop(context);
       }
     }
@@ -131,7 +124,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
     return Scaffold(
         backgroundColor:
             isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
-        appBar: AppBar(title: Text('Delete account')),
+        appBar: AppBar(title: const Text('Delete account')),
         body: userDoc == null
             ? const Center(
                 child: CircularProgressIndicator(),

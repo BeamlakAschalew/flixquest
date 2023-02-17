@@ -1,7 +1,7 @@
-import 'package:cinemax/provider/settings_provider.dart';
-import 'package:cinemax/screens/user/delete_account.dart';
-import 'package:cinemax/screens/user/email_change.dart';
-import 'package:cinemax/screens/user/password_change.dart';
+import '/provider/settings_provider.dart';
+import '/screens/user/delete_account.dart';
+import '/screens/user/email_change.dart';
+import '/screens/user/password_change.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

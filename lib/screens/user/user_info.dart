@@ -1,5 +1,4 @@
-import 'package:cinemax/screens/user/edit_profile.dart';
-
+import '/screens/user/edit_profile.dart';
 import '/constants/app_constants.dart';
 import '/screens/common/landing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

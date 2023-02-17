@@ -1,4 +1,4 @@
-import 'package:cinemax/screens/user/forgot_password.dart';
+import '/screens/user/forgot_password.dart';
 
 import '/main.dart';
 import '/provider/settings_provider.dart';
