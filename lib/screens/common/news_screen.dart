@@ -235,8 +235,10 @@ class _NewsViewState extends State<NewsView>
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return NewsWebView(
-                                atricleUrl: articleNames![index]['attributes']
-                                    ['href']);
+                              articleUrl: articleNames![index]['attributes']
+                                  ['href'],
+                              articleName: articleNames![index]['title'],
+                            );
                           }));
                           // launch(
                           //   articleNames![index]['attributes'][

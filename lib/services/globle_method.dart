@@ -63,4 +63,23 @@ class GlobalMethods {
           );
         });
   }
+
+  Future<void> checkMessage(String subtitle, BuildContext context) async {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            content: Text(subtitle),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Ok'))
+            ],
+          );
+        });
+  }
 }

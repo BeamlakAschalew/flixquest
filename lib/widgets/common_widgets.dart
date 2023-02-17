@@ -128,7 +128,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   title: const Text('Share the app'),
                   onTap: () async {
                     mixpanel.track('Share button data', properties: {
-                      'Sahre button click': 'Share',
+                      'Share button click': 'Share',
                     });
                     await Share.share(
                         'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');

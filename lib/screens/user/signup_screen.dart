@@ -56,7 +56,7 @@ class _SignupScreenState extends State<SignupScreen> {
           .docs
           .isEmpty;
 
-  void _submitForm() async {
+  void submitForm() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
     var date = DateTime.now().toString();
@@ -399,7 +399,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             } else if (value == '12345678' ||
                                 value == 'qwertyuiop' ||
                                 value == 'password') {
-                              return '*In Chandler\'s voice* Could your password be any lamer?';
+                              return '*In Chandler\'s voice* Could your password be any lamer? \ni.e your password is too weak';
                             }
                             return null;
                           },
@@ -487,7 +487,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                               BorderRadius.circular(10.0),
                                         ),
                                       )),
-                                  onPressed: _submitForm,
+                                  onPressed: submitForm,
                                   child: const Text(
                                     'Sign up',
                                     style: TextStyle(

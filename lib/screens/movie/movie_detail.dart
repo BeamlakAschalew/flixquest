@@ -2,6 +2,7 @@
 
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';
 import '/api/endpoints.dart';
@@ -108,7 +109,11 @@ class MovieDetailPageState extends State<MovieDetailPage>
         ],
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {}, child: const Icon(Icons.share)),
+          onPressed: () async {
+            await Share.share(
+                'Checkout the movie \'${widget.movie.originalTitle}\'!\nIt is rated ${widget.movie.voteAverage!.toStringAsFixed(1)} out of 10\nhttps://themoviedb.org/movie/${widget.movie.id}');
+          },
+          child: const Icon(Icons.share)),
     );
   }
 
