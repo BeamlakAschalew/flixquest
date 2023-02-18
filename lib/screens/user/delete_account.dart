@@ -1,3 +1,4 @@
+import 'package:cinemax/screens/common/landing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -68,17 +69,22 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   .collection('usernames')
                   .doc(username)
                   .delete()
-                  .then((value) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Your account was deleted successfully. We are sad to see you go :(, or are we? ;)',
-                      maxLines: 3,
-                      style: kTextSmallBodyStyle,
+                  .then((value) async {
+                await Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) {
+                  return const LandingScreen();
+                })).then((value) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Your account was deleted successfully. We are sad to see you go :(, or are we? ;)',
+                        maxLines: 3,
+                        style: kTextSmallBodyStyle,
+                      ),
+                      duration: Duration(seconds: 4),
                     ),
-                    duration: Duration(seconds: 4),
-                  ),
-                );
+                  );
+                });
               });
             });
           });
@@ -148,7 +154,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                       ),
                     ),
                     const Text(
-                      'Note: deleting your account will also delete your synced movies and TV shows from the server.\nType "CONFIRM" (all caps) and press "Delete account" to delete your account.',
+                      'Note: deleting your account will also delete your synced movies and TV shows from the server.\nType "CONFIRM" (all caps) and press "Delete account" to delete your account.\nIf the process is stuck, you need to logout and login and then try again.',
                       textAlign: TextAlign.center,
                     ),
                     Padding(

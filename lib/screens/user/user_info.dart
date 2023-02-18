@@ -83,11 +83,13 @@ class _UserInfoState extends State<UserInfo> {
                     ),
                     ElevatedButton(
                         onPressed: () async {
-                          await _auth.signOut().then((value) {
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: ((context) {
-                              return const LandingScreen();
-                            })));
+                          await _auth.currentUser!.delete().then((value) async {
+                            await _auth.signOut().then((value) {
+                              Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: ((context) {
+                                return const LandingScreen();
+                              })));
+                            });
                           });
                         },
                         child: const Text('Login/Signup'))

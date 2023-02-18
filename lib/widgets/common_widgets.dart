@@ -1744,15 +1744,6 @@ class _DidYouKnowState extends State<DidYouKnow> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                navToDYK(
-                                    'movieconnections',
-                                    'Movie Connections',
-                                    externalLinks!.imdbId!);
-                              },
-                              child: const Text('Movie Connections'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
                                 navToDYK('soundtrack', 'Soundtrack',
                                     externalLinks!.imdbId!);
                               },

@@ -230,7 +230,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                       child: Text('Login anonymously?'),
                                     ),
                                     content: const Text(
-                                        'Do you want to Login anonymously? You\'ll lose bookmark syncing feature in the future, login or signup to Cinemax instead'),
+                                        'Do you want to Login anonymously? You\'ll lose bookmark syncing feature, login or signup to Cinemax instead'),
                                     actions: [
                                       ElevatedButton(
                                           onPressed: () async {

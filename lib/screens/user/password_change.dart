@@ -127,6 +127,13 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                     ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'If the process is stuck, you need to logout and login and then try again.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Form(

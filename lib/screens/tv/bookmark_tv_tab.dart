@@ -207,13 +207,16 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                             ),
                                                             Positioned(
                                                               top: -15,
-                                                              right: 13,
+                                                              right: 8,
                                                               child: Container(
                                                                   alignment:
                                                                       Alignment
                                                                           .topRight,
                                                                   child:
                                                                       IconButton(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .topRight,
                                                                     onPressed:
                                                                         () async {
                                                                       tvDatabaseController
@@ -347,7 +350,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                           });
                                                                                         }
                                                                                       },
-                                                                                      icon: const Icon(Icons.bookmark_remove, size: 45),
+                                                                                      icon: const Icon(Icons.bookmark_remove, size: 50),
                                                                                     )),
                                                                               ),
                                                                             ])),

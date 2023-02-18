@@ -52,6 +52,7 @@ class _NewsPageState extends State<NewsPage>
               color: Colors.grey,
               width: double.infinity,
               child: TabBar(
+                physics: const AlwaysScrollableScrollPhysics(),
                 isScrollable: true,
                 onTap: (value) {
                   setState(() {
@@ -139,7 +140,9 @@ class _NewsPageState extends State<NewsPage>
             ),
             Expanded(
               child: IndexedStack(
+                
                 index: selectedIndex,
+
                 // controller: tabController,
                 children: const [
                   NewsView(newsType: '/news/top'),

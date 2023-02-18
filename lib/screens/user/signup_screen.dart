@@ -215,7 +215,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     const Expanded(
                       child: Text(
-                        'Signup to snyc your bookmarked Movies and TV shows with your online account in the future.',
+                        'Signup to snyc your bookmarked Movies and TV shows with your online account.',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 4,
                         style: kTextSmallHeaderStyle,

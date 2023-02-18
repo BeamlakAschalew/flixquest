@@ -210,13 +210,16 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                             ),
                                                             Positioned(
                                                               top: -15,
-                                                              right: 13,
+                                                              right: 8,
                                                               child: Container(
                                                                   alignment:
                                                                       Alignment
                                                                           .topRight,
                                                                   child:
                                                                       IconButton(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .topRight,
                                                                     onPressed:
                                                                         () async {
                                                                       movieDatabaseController
@@ -351,7 +354,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                                           });
                                                                                         }
                                                                                       },
-                                                                                      icon: const Icon(Icons.bookmark_remove, size: 45),
+                                                                                      icon: const Icon(Icons.bookmark_remove, size: 50),
                                                                                     )),
                                                                               ),
                                                                             ])),
