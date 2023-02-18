@@ -19,17 +19,18 @@ Some UI and API functionality from: [Here](https://github.com/bimsina/Matinee-Fl
     <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710394-min.png" alt="Screenshot 3"/></td>
   </tr>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1665745067.png" alt="Screenshot 1"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1665745337.png" alt="Screenshot 2"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389674.png" alt="Screenshot 3"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710412-min.png
+" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710412-min.png" alt="Screenshot 2"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710433-min.png" alt="Screenshot 3"/></td>
   </tr>
   <tr>
     <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389716.png" alt="Screenshot 1"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389747.png" alt="Screenshot 1"/></td>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389858.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710453-min.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710474-min.png" alt="Screenshot 1"/></td>
   </tr>
    <tr>
-    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710766-min.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710502-min.png" alt="Screenshot 1"/></td>
     <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389747.png" alt="Screenshot 1"/></td>
     <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389858.png" alt="Screenshot 1"/></td>
   </tr>
