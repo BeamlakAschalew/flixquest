@@ -1,5 +1,5 @@
-import 'package:flutter_svg/flutter_svg.dart';
-
+import 'dart:async';
+import 'dart:io';
 import '../../ui_components/tv_ui_components.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,6 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  bool requestFailed = false;
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -36,43 +35,41 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
           isLoading = true;
         });
 
-        var response = await http.get(Uri.parse('${widget.api}&page=$pageNum'));
+        try {
+          var response = await retryOptions.retry(
+            () => http.get(Uri.parse('${widget.api}&page=$pageNum')),
+            retryIf: (e) => e is SocketException || e is TimeoutException,
+          );
 
-        setState(() {
-          pageNum++;
-          isLoading = false;
-          var newlistTV = (json.decode(response.body)['results'] as List)
-              .map((i) => TV.fromJson(i))
-              .toList();
-          tvList!.addAll(newlistTV);
-        });
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistTV = (json.decode(response.body)['results'] as List)
+                  .map((i) => TV.fromJson(i))
+                  .toList();
+              tvList!.addAll(newlistTV);
+            });
+          }
+        } finally {
+          client.close();
+        }
       }
     });
 
     return "success";
   }
 
-  void getData() {
-    fetchTV('${widget.api}&page=${widget.page}}').then((value) {
-      setState(() {
-        tvList = value;
-      });
-    });
-    Future.delayed(const Duration(seconds: 11), () {
-      if (tvList == null) {
-        setState(() {
-          requestFailed = true;
-          tvList = [TV()];
-        });
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    getData();
-
+    fetchTV('${widget.api}&page=${widget.page}}').then((value) {
+      if (mounted) {
+        setState(() {
+          tvList = value;
+        });
+      }
+    });
     getMoreData();
   }
 
@@ -115,72 +112,41 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                               ),
                             ),
                           )
-                        : requestFailed == true
-                            ? retryWidget(isDark)
-                            : Column(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                            child: viewType == 'grid'
-                                                ? TVGridView(
-                                                    tvList: tvList,
-                                                    imageQuality: imageQuality,
-                                                    isDark: isDark,
-                                                    scrollController:
-                                                        _scrollController,
-                                                  )
-                                                : TVListView(
-                                                    scrollController:
-                                                        _scrollController,
-                                                    tvList: tvList,
-                                                    isDark: isDark,
-                                                    imageQuality: imageQuality),
-                                          ),
-                                        ],
+                        : Column(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: viewType == 'grid'
+                                            ? TVGridView(
+                                                tvList: tvList,
+                                                imageQuality: imageQuality,
+                                                isDark: isDark,
+                                                scrollController:
+                                                    _scrollController,
+                                              )
+                                            : TVListView(
+                                                scrollController:
+                                                    _scrollController,
+                                                tvList: tvList,
+                                                isDark: isDark,
+                                                imageQuality: imageQuality),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                  Visibility(
-                                      visible: isLoading,
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                            child: CircularProgressIndicator()),
-                                      )),
-                                ],
-                              )));
-  }
-
-  Widget retryWidget(isDark) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SvgPicture.asset(
-          'assets/images/network-signal.svg',
-          width: 60,
-          height: 60,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 8.0),
-          child: Text('Please connect to the Internet and try again',
-              textAlign: TextAlign.center),
-        ),
-        TextButton(
-            onPressed: () {
-              setState(() {
-                requestFailed = false;
-                tvList = null;
-              });
-              getData();
-            },
-            child: const Text('Retry')),
-      ],
-    ));
+                                ),
+                              ),
+                              Visibility(
+                                  visible: isLoading,
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Center(
+                                        child: CircularProgressIndicator()),
+                                  )),
+                            ],
+                          )));
   }
 }

@@ -1,5 +1,5 @@
-import 'package:cinemax/main.dart';
-import 'package:cinemax/screens/landing_screen.dart';
+import '/main.dart';
+import '/screens/common/landing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

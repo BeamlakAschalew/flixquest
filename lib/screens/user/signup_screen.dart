@@ -1,15 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/main.dart';
-import 'package:cinemax/models/profile_image_list.dart';
+import '/constants/app_constants.dart';
+import '/main.dart';
+import '/models/profile_image_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-
 import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
 
@@ -28,14 +26,14 @@ class _SignupScreenState extends State<SignupScreen> {
   final ProfileImages profileImages = ProfileImages();
 
   int profileValue = 0;
-  int selectedProfile = 1;
+  int selectedProfile = 0;
   bool _obscureText = true;
   String _emailAddress = '';
   String _password = '';
   String _fullName = '';
   String _userName = '';
   bool _isUserVerified = false;
-
+  late DocumentSnapshot subscription;
   final _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalMethods _globalMethods = GlobalMethods();
@@ -58,7 +56,7 @@ class _SignupScreenState extends State<SignupScreen> {
           .docs
           .isEmpty;
 
-  void _submitForm() async {
+  void submitForm() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
     var date = DateTime.now().toString();
@@ -84,11 +82,6 @@ class _SignupScreenState extends State<SignupScreen> {
           }
         }
 
-        bool docExists = await checkIfDocExists(_userName);
-        // print("Document exists in Firestore? " + docExists.toString());
-
-        if (docExists) {}
-
         if (await checkIfDocExists(_userName) == true) {
           _globalMethods.authErrorHandle(
               'Username already exists, pick another one'.toString(), context);
@@ -109,12 +102,41 @@ class _SignupScreenState extends State<SignupScreen> {
             'verified': _isUserVerified,
             'joinedAt': date,
             'createdAt': Timestamp.now(),
-            'password': _password
           });
           await FirebaseFirestore.instance
               .collection('usernames')
               .doc(_userName)
               .set({'uname': _userName.trim().toLowerCase(), 'uid': uid});
+
+          await FirebaseFirestore.instance
+              .collection('bookmarks')
+              .doc(uid)
+              .set({});
+
+          subscription = await FirebaseFirestore.instance
+              .collection('bookmarks')
+              .doc(uid)
+              .get();
+
+          final docData = subscription.data() as Map<String, dynamic>;
+
+          if (docData.containsKey('movies') == false) {
+            await FirebaseFirestore.instance
+                .collection('bookmarks')
+                .doc(uid)
+                .update(
+              {'movies': []},
+            );
+          }
+
+          if (docData.containsKey('tv') == false) {
+            await FirebaseFirestore.instance
+                .collection('bookmarks')
+                .doc(uid)
+                .update(
+              {'tv': []},
+            );
+          }
 
           Navigator.canPop(context)
               ? Navigator.pushReplacement(context,
@@ -128,12 +150,28 @@ class _SignupScreenState extends State<SignupScreen> {
                 })))
               : null;
         }
-      } catch (error) {
-        _globalMethods.authErrorHandle(error.toString(), context);
+      } on FirebaseAuthException catch (error) {
+        if (error.code == 'weak-password') {
+          _globalMethods.authErrorHandle(
+              'The password provided is too weak.', context);
+        } else if (error.code == 'email-already-in-use') {
+          _globalMethods.authErrorHandle(
+              'An account already exists for this email.', context);
+        } else if (error.code == 'invalid-email') {
+          _globalMethods.authErrorHandle(
+              'The email entered is invalid.', context);
+        } else if (error.code == 'operation-not-allowed') {
+          _globalMethods.authErrorHandle(
+              'This signup method is disabled this time', context);
+        }
+      } catch (e) {
+        _globalMethods.authErrorHandle(e.toString(), context);
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
@@ -144,7 +182,6 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Signup'),
       ),
@@ -178,7 +215,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     const Expanded(
                       child: Text(
-                        'Signup to snyc your bookmarked Movies and TV shows with your online account in the future.',
+                        'Signup to snyc your bookmarked Movies and TV shows with your online account.',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 4,
                         style: kTextSmallHeaderStyle,
@@ -267,6 +304,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               .requestFocus(_emailFocusNode),
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
+                            errorMaxLines: 3,
                             border: const UnderlineInputBorder(),
                             filled: true,
                             prefixIcon: const Icon(Icons.person),
@@ -297,6 +335,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               .requestFocus(_usernameFocusNode),
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
+                              errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.email),
@@ -335,6 +374,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               .requestFocus(_passwordFocusNode),
                           keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
+                              errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.person),
@@ -355,15 +395,20 @@ class _SignupScreenState extends State<SignupScreen> {
                           validator: (value) {
                             if (value!.isEmpty || value.length < 7) {
                               return 'Please enter a valid Password';
+                            } else if (value == '12345678' ||
+                                value == 'qwertyuiop' ||
+                                value == 'password') {
+                              return '*In Chandler\'s voice* Could your password be any lamer? \ni.e your password is too weak';
                             }
                             return null;
                           },
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: TextInputType.visiblePassword,
                           focusNode: _passwordFocusNode,
                           obscureText: _obscureText,
                           onEditingComplete: () => FocusScope.of(context)
                               .requestFocus(_passwordVerifyFocusNode),
                           decoration: InputDecoration(
+                              errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.lock),
@@ -398,9 +443,10 @@ class _SignupScreenState extends State<SignupScreen> {
                             return null;
                           },
                           obscureText: _obscureText,
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: TextInputType.visiblePassword,
                           focusNode: _passwordVerifyFocusNode,
                           decoration: InputDecoration(
+                              errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.lock),
@@ -440,7 +486,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                               BorderRadius.circular(10.0),
                                         ),
                                       )),
-                                  onPressed: _submitForm,
+                                  onPressed: submitForm,
                                   child: const Text(
                                     'Sign up',
                                     style: TextStyle(

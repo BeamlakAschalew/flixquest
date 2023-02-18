@@ -61,6 +61,14 @@ class MovieDatabaseController {
     return result;
   }
 
+  // this method will update a movie
+  Future<int> updateMovie(Movie movie, int id) async {
+    var db = await database;
+    var result =
+        await db.update(tableName, movie.toMap(), where: '$colId = $id');
+    return result;
+  }
+
   // this method will delete a movie
   Future<int> deleteMovie(int id) async {
     var db = await database;
@@ -154,6 +162,13 @@ class TVDatabaseController {
   Future<int> insertTV(TV tv) async {
     Database db = await database;
     var result = await db.insert(tableName, tv.toMap());
+    return result;
+  }
+
+  // this method will update a tv
+  Future<int> updateTV(TV tv, int id) async {
+    var db = await database;
+    var result = await db.update(tableName, tv.toMap(), where: '$colId = $id');
     return result;
   }
 

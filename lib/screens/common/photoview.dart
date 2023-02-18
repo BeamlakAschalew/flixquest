@@ -10,9 +10,9 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../constants/api_constants.dart';
-import '../models/images.dart';
-import '../provider/settings_provider.dart';
+import '../../constants/api_constants.dart';
+import '../../models/images.dart';
+import '../../provider/settings_provider.dart';
 
 class HeroPhotoView extends StatefulWidget {
   const HeroPhotoView(

@@ -2,12 +2,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:share_plus/share_plus.dart';
 
 class NewsWebView extends StatefulWidget {
-  final String atricleUrl;
+  final String articleUrl;
+  final String articleName;
   const NewsWebView({
     Key? key,
-    required this.atricleUrl,
+    required this.articleUrl,
+    required this.articleName,
   }) : super(key: key);
 
   @override
@@ -65,6 +68,14 @@ class NewsWebViewState extends State<NewsWebView> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Cinemax news'),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  await Share.share(
+                      '${widget.articleName} \n${widget.articleUrl}');
+                },
+                icon: const Icon(Icons.share))
+          ],
         ),
         body: SafeArea(
           child: Column(children: [
@@ -74,7 +85,7 @@ class NewsWebViewState extends State<NewsWebView> {
                   InAppWebView(
                     key: webViewKey,
                     initialUrlRequest:
-                        URLRequest(url: Uri.parse(widget.atricleUrl)),
+                        URLRequest(url: Uri.parse(widget.articleUrl)),
                     initialOptions: options,
                     pullToRefreshController: pullToRefreshController,
                     onWebViewCreated: (controller) {

@@ -1,6 +1,6 @@
-import 'package:cinemax/models/country_preferences.dart';
-import 'package:cinemax/models/material3_preferences.dart';
-import 'package:cinemax/models/view_perferences.dart';
+import '/models/country_preferences.dart';
+import '/models/material3_preferences.dart';
+import '/models/view_perferences.dart';
 import 'package:flutter/material.dart';
 
 import '/models/adultmode_preferences.dart';

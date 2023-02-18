@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../constants/app_constants.dart';
+import '/screens/common/sync_screen.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'movie/bookmark_movies_tab.dart';
-import 'tv/bookmark_tv_tab.dart';
+import '../movie/bookmark_movies_tab.dart';
+import '../tv/bookmark_tv_tab.dart';
 
 class BookmarkScreen extends StatefulWidget {
   const BookmarkScreen({Key? key}) : super(key: key);
@@ -14,11 +18,20 @@ class BookmarkScreen extends StatefulWidget {
 class _BookmarkScreenState extends State<BookmarkScreen>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
+  String? uid;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  User? user;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 2, vsync: this);
+    getData();
+  }
+
+  void getData() async {
+    user = _auth.currentUser;
+    uid = user!.uid;
   }
 
   @override
@@ -32,7 +45,30 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.arrow_back)),
-          title: const Text('Bookmarks')),
+          title: const Text('Bookmarks'),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  if (user!.isAnonymous) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'This syncing feature is only available to signed in users. Register to Cinemax to synchronize your bookmarked movies and tv shows so that you won\'t lose them.',
+                          style: kTextVerySmallBodyStyle,
+                          maxLines: 6,
+                        ),
+                        duration: Duration(seconds: 10),
+                      ),
+                    );
+                  } else {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return const SyncScreen();
+                    })));
+                  }
+                },
+                icon: const Icon(Icons.sync_sharp))
+          ]),
       body: Column(
         children: [
           Container(

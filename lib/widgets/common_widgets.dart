@@ -1,25 +1,24 @@
 // ignore_for_file: avoid_unnecessary_containers
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/screens/title_reviews.dart';
+import '/screens/common/title_reviews.dart';
 import '../constants/app_constants.dart';
 import '../models/function.dart';
 import '../models/movie.dart';
-import '../screens/did_you_know.dart';
-import '/screens/bookmark_screen.dart';
-import '/screens/settings.dart';
-import '/screens/update_screen.dart';
+import '../models/watch_providers.dart';
+import '../screens/common/did_you_know.dart';
+import '/screens/common/bookmark_screen.dart';
+import '/screens/common/settings.dart';
+import '/screens/common/update_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import '../constants/api_constants.dart';
 import '../provider/settings_provider.dart';
-import '../screens/about.dart';
+import '../screens/common/about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
-
-import '../screens/news_screen.dart';
+import '../screens/common/news_screen.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({
@@ -129,7 +128,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   title: const Text('Share the app'),
                   onTap: () async {
                     mixpanel.track('Share button data', properties: {
-                      'Sahre button click': 'Share',
+                      'Share button click': 'Share',
                     });
                     await Share.share(
                         'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
@@ -1660,9 +1659,11 @@ class _DidYouKnowState extends State<DidYouKnow> {
   @override
   void initState() {
     fetchSocialLinks(widget.api!).then((value) {
-      setState(() {
-        externalLinks = value;
-      });
+      if (mounted) {
+        setState(() {
+          externalLinks = value;
+        });
+      }
     });
     super.initState();
   }
@@ -1743,15 +1744,6 @@ class _DidYouKnowState extends State<DidYouKnow> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                navToDYK(
-                                    'movieconnections',
-                                    'Movie Connections',
-                                    externalLinks!.imdbId!);
-                              },
-                              child: const Text('Movie Connections'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
                                 navToDYK('soundtrack', 'Soundtrack',
                                     externalLinks!.imdbId!);
                               },
@@ -1767,20 +1759,120 @@ class _DidYouKnowState extends State<DidYouKnow> {
                               },
                               child: const Text('Reviews'),
                             ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: ((context) {
-                                  return TitleReviews(
-                                      imdbId: externalLinks!.imdbId!);
-                                })));
-                              },
-                              child: const Text('Reviews'),
-                            ),
                           ],
                         )),
           const SizedBox(
             height: 10,
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class WatchProvidersDetails extends StatefulWidget {
+  final String api;
+  final String country;
+  const WatchProvidersDetails(
+      {Key? key, required this.api, required this.country})
+      : super(key: key);
+
+  @override
+  State<WatchProvidersDetails> createState() => _WatchProvidersDetailsState();
+}
+
+class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
+    with SingleTickerProviderStateMixin {
+  WatchProviders? watchProviders;
+  late TabController tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = TabController(length: 3, vsync: this);
+    fetchWatchProviders(widget.api, widget.country).then((value) {
+      if (mounted) {
+        setState(() {
+          watchProviders = value;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(),
+            child: Center(
+              child: TabBar(
+                controller: tabController,
+                isScrollable: true,
+                indicatorWeight: 3,
+                unselectedLabelColor: Colors.white54,
+                indicatorSize: TabBarIndicatorSize.tab,
+                tabs: [
+                  Tab(
+                    child: Text('Buy',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: isDark ? Colors.white : Colors.black)),
+                  ),
+                  Tab(
+                    child: Text('Stream',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: isDark ? Colors.white : Colors.black)),
+                  ),
+                  Tab(
+                    child: Text('Rent',
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: isDark ? Colors.white : Colors.black)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: isDark ? Colors.black : Colors.white,
+              child: TabBarView(
+                controller: tabController,
+                children: watchProviders == null
+                    ? [
+                        watchProvidersShimmer(isDark),
+                        watchProvidersShimmer(isDark),
+                        watchProvidersShimmer(isDark),
+                        watchProvidersShimmer(isDark),
+                      ]
+                    : [
+                        watchProvidersTabData(
+                            isDark: isDark,
+                            imageQuality: imageQuality,
+                            noOptionMessage:
+                                'This movie doesn\'t have an option to buy yet',
+                            watchOptions: watchProviders!.buy),
+                        watchProvidersTabData(
+                            isDark: isDark,
+                            imageQuality: imageQuality,
+                            noOptionMessage:
+                                'This movie doesn\'t have an option to stream yet',
+                            watchOptions: watchProviders!.flatRate),
+                        watchProvidersTabData(
+                            isDark: isDark,
+                            imageQuality: imageQuality,
+                            noOptionMessage:
+                                'This movie doesn\'t have an option to rent yet',
+                            watchOptions: watchProviders!.rent),
+                      ],
+              ),
+            ),
           )
         ],
       ),

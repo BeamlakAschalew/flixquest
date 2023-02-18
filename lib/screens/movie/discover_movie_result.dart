@@ -1,6 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import '../../constants/app_constants.dart';
@@ -30,7 +31,6 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  bool requestFailed = false;
 
   Future<String> getMoreData() async {
     _scrollController.addListener(() async {
@@ -40,15 +40,27 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
           isLoading = true;
         });
 
-        var response = await http.get(Uri.parse('${widget.api}&page=$pageNum'));
-        setState(() {
-          pageNum++;
-          isLoading = false;
-          var newlistMovies = (json.decode(response.body)['results'] as List)
-              .map((i) => Movie.fromJson(i))
-              .toList();
-          moviesList!.addAll(newlistMovies);
-        });
+        try {
+          var response = await retryOptions.retry(
+            () => http.get(
+              Uri.parse('${widget.api}&page=$pageNum'),
+            ),
+            retryIf: (e) => e is SocketException || e is TimeoutException,
+          );
+          if (mounted) {
+            setState(() {
+              pageNum++;
+              isLoading = false;
+              var newlistMovies =
+                  (json.decode(response.body)['results'] as List)
+                      .map((i) => Movie.fromJson(i))
+                      .toList();
+              moviesList!.addAll(newlistMovies);
+            });
+          }
+        } finally {
+          client.close();
+        }
       }
     });
 
@@ -58,24 +70,14 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   @override
   void initState() {
     super.initState();
-    getData();
-    getMoreData();
-  }
-
-  void getData() {
     fetchMovies('${widget.api}&page=${widget.page}}').then((value) {
-      setState(() {
-        moviesList = value;
-      });
-    });
-    Future.delayed(const Duration(seconds: 11), () {
-      if (moviesList == null) {
+      if (mounted) {
         setState(() {
-          requestFailed = true;
-          moviesList = [Movie()];
+          moviesList = value;
         });
       }
     });
+    getMoreData();
   }
 
   @override
@@ -117,72 +119,39 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                               ),
                             ),
                           )
-                        : requestFailed == true
-                            ? retryWidget(isDark)
-                            : Column(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Column(
-                                        children: [
-                                          Expanded(
-                                              child: viewType == 'grid'
-                                                  ? MovieGridView(
-                                                      scrollController:
-                                                          _scrollController,
-                                                      moviesList: moviesList,
-                                                      imageQuality:
-                                                          imageQuality,
-                                                      isDark: isDark)
-                                                  : MovieListView(
-                                                      scrollController:
-                                                          _scrollController,
-                                                      moviesList: moviesList,
-                                                      isDark: isDark,
-                                                      imageQuality:
-                                                          imageQuality)),
-                                        ],
-                                      ),
-                                    ),
+                        : Column(
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                          child: viewType == 'grid'
+                                              ? MovieGridView(
+                                                  scrollController:
+                                                      _scrollController,
+                                                  moviesList: moviesList,
+                                                  imageQuality: imageQuality,
+                                                  isDark: isDark)
+                                              : MovieListView(
+                                                  scrollController:
+                                                      _scrollController,
+                                                  moviesList: moviesList,
+                                                  isDark: isDark,
+                                                  imageQuality: imageQuality)),
+                                    ],
                                   ),
-                                  Visibility(
-                                      visible: isLoading,
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Center(
-                                            child: CircularProgressIndicator()),
-                                      )),
-                                ],
-                              )));
-  }
-
-  Widget retryWidget(isDark) {
-    return Center(
-        child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SvgPicture.asset(
-          'assets/images/network-signal.svg',
-          width: 60,
-          height: 60,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 8.0),
-          child: Text('Please connect to the Internet and try again',
-              textAlign: TextAlign.center),
-        ),
-        TextButton(
-            onPressed: () {
-              setState(() {
-                requestFailed = false;
-                moviesList = null;
-              });
-              getData();
-            },
-            child: const Text('Retry')),
-      ],
-    ));
+                                ),
+                              ),
+                              Visibility(
+                                  visible: isLoading,
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Center(
+                                        child: CircularProgressIndicator()),
+                                  )),
+                            ],
+                          )));
   }
 }

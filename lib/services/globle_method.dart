@@ -63,4 +63,49 @@ class GlobalMethods {
           );
         });
   }
+
+  Future<void> checkMessage(String subtitle, BuildContext context) async {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            content: Text(subtitle),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Ok'))
+            ],
+          );
+        });
+  }
+
+  Future<void> passwordResetException(
+      String subtitle, BuildContext context) async {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: Row(
+              children: const [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('Error occured'),
+                ),
+              ],
+            ),
+            content: Text(subtitle),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Ok'))
+            ],
+          );
+        });
+  }
 }

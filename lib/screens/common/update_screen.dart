@@ -10,8 +10,7 @@ import 'package:open_file_plus/open_file_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_download_manager/flutter_download_manager.dart';
 import 'package:path_provider/path_provider.dart';
-
-import '../provider/settings_provider.dart';
+import '../../provider/settings_provider.dart';
 
 class UpdateScreen extends StatefulWidget {
   const UpdateScreen({Key? key}) : super(key: key);
@@ -28,14 +27,18 @@ class _UpdateScreenState extends State<UpdateScreen> {
   @override
   void initState() {
     checkForUpdate(CINEMAX_UPDATE_URL).then((value) {
-      setState(() {
-        updateChecker = value;
-      });
+      if (mounted) {
+        setState(() {
+          updateChecker = value;
+        });
+      }
     });
     getApplicationSupportDirectory().then((value) {
-      setState(() {
-        savedDir = value.path;
-      });
+      if (mounted) {
+        setState(() {
+          savedDir = value.path;
+        });
+      }
     });
     super.initState();
   }
