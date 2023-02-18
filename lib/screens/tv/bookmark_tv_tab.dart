@@ -10,43 +10,27 @@ import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';
 
 class TVBookmark extends StatefulWidget {
-  const TVBookmark({Key? key}) : super(key: key);
+  const TVBookmark({Key? key, required this.tvList}) : super(key: key);
+
+  final List<TV>? tvList;
 
   @override
   State<TVBookmark> createState() => _TVBookmarkState();
 }
 
 class _TVBookmarkState extends State<TVBookmark> {
-  List<TV>? tvList;
   int count = 0;
   TVDatabaseController tvDatabaseController = TVDatabaseController();
   final _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    fetchBookmark();
-    super.initState();
-  }
-
-  Future<void> setData() async {
-    var tv = await tvDatabaseController.getTVList();
-    setState(() {
-      tvList = tv;
-    });
-  }
-
-  void fetchBookmark() async {
-    await setData();
-  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
-    return tvList == null && viewType == 'grid'
+    return widget.tvList == null && viewType == 'grid'
         ? moviesAndTVShowGridShimmer(isDark)
-        : tvList == null && viewType == 'list'
+        : widget.tvList == null && viewType == 'list'
             ? Container(
                 color:
                     isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
@@ -54,7 +38,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                     isDark: isDark,
                     scrollController: _scrollController,
                     isLoading: false))
-            : tvList!.isEmpty
+            : widget.tvList!.isEmpty
                 ? const Center(
                     child: Text(
                       'You don\'t have any TV shows bookmarked :)',
@@ -81,7 +65,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                             crossAxisSpacing: 5,
                                             mainAxisSpacing: 5,
                                           ),
-                                          itemCount: tvList!.length,
+                                          itemCount: widget.tvList!.length,
                                           itemBuilder: (BuildContext context,
                                               int index) {
                                             return GestureDetector(
@@ -90,9 +74,10 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                     MaterialPageRoute(
                                                         builder: (context) {
                                                   return TVDetailPage(
-                                                      tvSeries: tvList![index],
+                                                      tvSeries:
+                                                          widget.tvList![index],
                                                       heroId:
-                                                          '${tvList![index].id}');
+                                                          '${widget.tvList![index].id}');
                                                 }));
                                               },
                                               child: Padding(
@@ -104,7 +89,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                       flex: 6,
                                                       child: Hero(
                                                         tag:
-                                                            '${tvList![index].id}',
+                                                            '${widget.tvList![index].id}',
                                                         child: Stack(
                                                           alignment:
                                                               Alignment.center,
@@ -114,7 +99,9 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           8.0),
-                                                              child: tvList![index]
+                                                              child: widget
+                                                                          .tvList![
+                                                                              index]
                                                                           .posterPath ==
                                                                       null
                                                                   ? Image.asset(
@@ -137,7 +124,8 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                               .easeIn,
                                                                       imageUrl: TMDB_BASE_IMAGE_URL +
                                                                           imageQuality +
-                                                                          tvList![index]
+                                                                          widget
+                                                                              .tvList![index]
                                                                               .posterPath!,
                                                                       imageBuilder:
                                                                           (context, imageProvider) =>
@@ -196,7 +184,8 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                       Icons
                                                                           .star,
                                                                     ),
-                                                                    Text(tvList![
+                                                                    Text(widget
+                                                                        .tvList![
                                                                             index]
                                                                         .voteAverage!
                                                                         .toStringAsFixed(
@@ -219,14 +208,17 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                             .topRight,
                                                                     onPressed:
                                                                         () async {
-                                                                      tvDatabaseController
-                                                                          .deleteTV(
-                                                                              tvList![index].id!);
+                                                                      tvDatabaseController.deleteTV(widget
+                                                                          .tvList![
+                                                                              index]
+                                                                          .id!);
                                                                       //  movieList[index].favorite = false;
                                                                       if (mounted) {
                                                                         setState(
                                                                             () {
-                                                                          setData();
+                                                                          widget
+                                                                              .tvList!
+                                                                              .removeAt(index);
                                                                         });
                                                                       }
                                                                     },
@@ -247,7 +239,8 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                     Expanded(
                                                         flex: 2,
                                                         child: Text(
-                                                          tvList![index].name!,
+                                                          widget.tvList![index]
+                                                              .name!,
                                                           textAlign:
                                                               TextAlign.center,
                                                           maxLines: 2,
@@ -263,7 +256,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                           controller: _scrollController,
                                           physics:
                                               const BouncingScrollPhysics(),
-                                          itemCount: tvList!.length,
+                                          itemCount: widget.tvList!.length,
                                           itemBuilder: (BuildContext context,
                                               int index) {
                                             return GestureDetector(
@@ -272,9 +265,10 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                     MaterialPageRoute(
                                                         builder: (context) {
                                                   return TVDetailPage(
-                                                    tvSeries: tvList![index],
+                                                    tvSeries:
+                                                        widget.tvList![index],
                                                     heroId:
-                                                        '${tvList![index].id}',
+                                                        '${widget.tvList![index].id}',
                                                   );
                                                 }));
                                               },
@@ -302,7 +296,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                               height: 130,
                                                               child: Hero(
                                                                 tag:
-                                                                    '${tvList![index].id}',
+                                                                    '${widget.tvList![index].id}',
                                                                 child:
                                                                     ClipRRect(
                                                                         borderRadius:
@@ -310,7 +304,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                 10.0),
                                                                         child: Stack(
                                                                             children: [
-                                                                              tvList![index].posterPath == null
+                                                                              widget.tvList![index].posterPath == null
                                                                                   ? Image.asset(
                                                                                       'assets/images/na_logo.png',
                                                                                       fit: BoxFit.cover,
@@ -320,7 +314,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                       fadeOutCurve: Curves.easeOut,
                                                                                       fadeInDuration: const Duration(milliseconds: 700),
                                                                                       fadeInCurve: Curves.easeIn,
-                                                                                      imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + tvList![index].posterPath!,
+                                                                                      imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + widget.tvList![index].posterPath!,
                                                                                       imageBuilder: (context, imageProvider) => Container(
                                                                                         decoration: BoxDecoration(
                                                                                           image: DecorationImage(
@@ -342,11 +336,11 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                     alignment: Alignment.topLeft,
                                                                                     child: IconButton(
                                                                                       onPressed: () async {
-                                                                                        tvDatabaseController.deleteTV(tvList![index].id!);
+                                                                                        tvDatabaseController.deleteTV(widget.tvList![index].id!);
                                                                                         //  movieList[index].favorite = false;
                                                                                         if (mounted) {
                                                                                           setState(() {
-                                                                                            setData();
+                                                                                            widget.tvList!.removeAt(index);
                                                                                           });
                                                                                         }
                                                                                       },
@@ -364,7 +358,9 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                       .start,
                                                               children: [
                                                                 Text(
-                                                                  tvList![index]
+                                                                  widget
+                                                                      .tvList![
+                                                                          index]
                                                                       .name!,
                                                                   style: const TextStyle(
                                                                       fontFamily:
@@ -383,7 +379,9 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                           .star,
                                                                     ),
                                                                     Text(
-                                                                      tvList![index]
+                                                                      widget
+                                                                          .tvList![
+                                                                              index]
                                                                           .voteAverage!
                                                                           .toStringAsFixed(
                                                                               1),
