@@ -28,6 +28,11 @@ Some UI and API functionality from: [Here](https://github.com/bimsina/Matinee-Fl
     <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389747.png" alt="Screenshot 1"/></td>
     <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389858.png" alt="Screenshot 1"/></td>
   </tr>
+   <tr>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/2f0bb762cd53901c6234628d13816974a9caab3c/cinemax/res/assets/images/Screenshot_1676710766-min.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389747.png" alt="Screenshot 1"/></td>
+    <td><img src="https://raw.githubusercontent.com/BeamlakAschalew/beamlakaschalew.github.io/main/cinemax/res/assets/images/Screenshot_1667389858.png" alt="Screenshot 1"/></td>
+  </tr>
 </table>
 
 ### 🔐 Replacing API keys
