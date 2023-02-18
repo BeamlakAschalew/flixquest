@@ -12,51 +12,34 @@ import 'movie_detail.dart';
 class MovieBookmark extends StatefulWidget {
   const MovieBookmark({
     Key? key,
+    required this.movieList,
   }) : super(key: key);
+
+  final List<Movie>? movieList;
 
   @override
   State<MovieBookmark> createState() => _MovieBookmarkState();
 }
 
 class _MovieBookmarkState extends State<MovieBookmark> {
-  List<Movie>? movieList;
   int count = 0;
   MovieDatabaseController movieDatabaseController = MovieDatabaseController();
   final _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    fetchBookmark();
-    super.initState();
-  }
-
-  Future<void> setData() async {
-    var mov = await movieDatabaseController.getMovieList();
-    if (mounted) {
-      setState(() {
-        movieList = mov;
-      });
-    }
-  }
-
-  void fetchBookmark() async {
-    await setData();
-  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
-    return movieList == null && viewType == 'grid'
+    return widget.movieList == null && viewType == 'grid'
         ? Container(child: moviesAndTVShowGridShimmer(isDark))
-        : movieList == null && viewType == 'list'
+        : widget.movieList == null && viewType == 'list'
             ? Container(
                 child: mainPageVerticalScrollShimmer(
                     isDark: isDark,
                     isLoading: false,
                     scrollController: _scrollController))
-            : movieList!.isEmpty
+            : widget.movieList!.isEmpty
                 ? const Center(
                     child: Text(
                       'You don\'t have any movies bookmarked :)',
@@ -83,7 +66,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                             crossAxisSpacing: 5,
                                             mainAxisSpacing: 5,
                                           ),
-                                          itemCount: movieList!.length,
+                                          itemCount: widget.movieList!.length,
                                           itemBuilder: (BuildContext context,
                                               int index) {
                                             return GestureDetector(
@@ -92,9 +75,10 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                     MaterialPageRoute(
                                                         builder: (context) {
                                                   return MovieDetailPage(
-                                                      movie: movieList![index],
+                                                      movie: widget
+                                                          .movieList![index],
                                                       heroId:
-                                                          '${movieList![index].id}');
+                                                          '${widget.movieList![index].id}');
                                                 }));
                                               },
                                               child: Padding(
@@ -106,7 +90,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                       flex: 6,
                                                       child: Hero(
                                                         tag:
-                                                            '${movieList![index].id}',
+                                                            '${widget.movieList![index].id}',
                                                         child: Stack(
                                                           alignment:
                                                               Alignment.center,
@@ -116,7 +100,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                   BorderRadius
                                                                       .circular(
                                                                           8.0),
-                                                              child: movieList![
+                                                              child: widget
+                                                                          .movieList![
                                                                               index]
                                                                           .posterPath ==
                                                                       null
@@ -140,7 +125,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                               .easeIn,
                                                                       imageUrl: TMDB_BASE_IMAGE_URL +
                                                                           imageQuality +
-                                                                          movieList![index]
+                                                                          widget
+                                                                              .movieList![index]
                                                                               .posterPath!,
                                                                       imageBuilder:
                                                                           (context, imageProvider) =>
@@ -199,7 +185,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                       Icons
                                                                           .star,
                                                                     ),
-                                                                    Text(movieList![
+                                                                    Text(widget
+                                                                        .movieList![
                                                                             index]
                                                                         .voteAverage!
                                                                         .toStringAsFixed(
@@ -222,16 +209,15 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                             .topRight,
                                                                     onPressed:
                                                                         () async {
-                                                                      movieDatabaseController
-                                                                          .deleteMovie(
-                                                                              movieList![index].id!);
+                                                                      movieDatabaseController.deleteMovie(widget
+                                                                          .movieList![
+                                                                              index]
+                                                                          .id!);
                                                                       //  movieList[index].favorite = false;
-                                                                      if (mounted) {
-                                                                        setState(
-                                                                            () {
-                                                                          setData();
-                                                                        });
-                                                                      }
+                                                                      widget
+                                                                          .movieList!
+                                                                          .removeAt(
+                                                                              index);
                                                                     },
                                                                     icon: const Icon(
                                                                         Icons
@@ -250,7 +236,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                     Expanded(
                                                         flex: 2,
                                                         child: Text(
-                                                          movieList![index]
+                                                          widget
+                                                              .movieList![index]
                                                               .originalTitle!,
                                                           textAlign:
                                                               TextAlign.center,
@@ -267,7 +254,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                           controller: _scrollController,
                                           physics:
                                               const BouncingScrollPhysics(),
-                                          itemCount: movieList!.length,
+                                          itemCount: widget.movieList!.length,
                                           itemBuilder: (BuildContext context,
                                               int index) {
                                             return GestureDetector(
@@ -276,9 +263,10 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                     MaterialPageRoute(
                                                         builder: (context) {
                                                   return MovieDetailPage(
-                                                    movie: movieList![index],
+                                                    movie: widget
+                                                        .movieList![index],
                                                     heroId:
-                                                        '${movieList![index].id}',
+                                                        '${widget.movieList![index].id}',
                                                   );
                                                 }));
                                               },
@@ -306,7 +294,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                               height: 130,
                                                               child: Hero(
                                                                 tag:
-                                                                    '${movieList![index].id}',
+                                                                    '${widget.movieList![index].id}',
                                                                 child:
                                                                     ClipRRect(
                                                                         borderRadius:
@@ -314,7 +302,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                                 10.0),
                                                                         child: Stack(
                                                                             children: [
-                                                                              movieList![index].posterPath == null
+                                                                              widget.movieList![index].posterPath == null
                                                                                   ? Image.asset(
                                                                                       'assets/images/na_logo.png',
                                                                                       fit: BoxFit.cover,
@@ -324,7 +312,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                                       fadeOutCurve: Curves.easeOut,
                                                                                       fadeInDuration: const Duration(milliseconds: 700),
                                                                                       fadeInCurve: Curves.easeIn,
-                                                                                      imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + movieList![index].posterPath!,
+                                                                                      imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + widget.movieList![index].posterPath!,
                                                                                       imageBuilder: (context, imageProvider) => Container(
                                                                                         decoration: BoxDecoration(
                                                                                           image: DecorationImage(
@@ -346,11 +334,11 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                                     alignment: Alignment.topLeft,
                                                                                     child: IconButton(
                                                                                       onPressed: () async {
-                                                                                        movieDatabaseController.deleteMovie(movieList![index].id!);
+                                                                                        movieDatabaseController.deleteMovie(widget.movieList![index].id!);
                                                                                         //  movieList[index].favorite = false;
                                                                                         if (mounted) {
                                                                                           setState(() {
-                                                                                            setData();
+                                                                                            widget.movieList!.removeAt(index);
                                                                                           });
                                                                                         }
                                                                                       },
@@ -368,7 +356,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                       .start,
                                                               children: [
                                                                 Text(
-                                                                  movieList![
+                                                                  widget
+                                                                      .movieList![
                                                                           index]
                                                                       .title!,
                                                                   style: const TextStyle(
@@ -388,7 +377,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                           .star,
                                                                     ),
                                                                     Text(
-                                                                      movieList![
+                                                                      widget
+                                                                          .movieList![
                                                                               index]
                                                                           .voteAverage!
                                                                           .toStringAsFixed(
