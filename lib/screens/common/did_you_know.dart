@@ -39,10 +39,11 @@ class _DidYouKnowScreenState extends State<DidYouKnowScreen> {
           setState(() {
             dataDetail = webScraper!.getElement(
                 dataType == 'alternateversions' ||
-                        dataType == 'movieconnections' ||
-                        dataType == 'soundtrack'
+                        dataType == 'movieconnections'
                     ? 'div.soda'
-                    : 'div.sodatext',
+                    : dataType == 'soundtrack'
+                        ? '.ipc-metadata-list__item'
+                        : 'div.sodatext',
                 ['class']);
             likedNumberOfData = webScraper!.getElement(
                 'div.did-you-know-actions > a.interesting-count-text',

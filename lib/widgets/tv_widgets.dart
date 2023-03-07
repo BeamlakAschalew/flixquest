@@ -499,9 +499,11 @@ class ScrollingTVState extends State<ScrollingTV>
                                                     const Icon(
                                                       Icons.star,
                                                     ),
-                                                    Text(tvList![index]
-                                                        .voteAverage!
-                                                        .toStringAsFixed(1))
+                                                    Material(
+                                                      child: Text(tvList![index]
+                                                          .voteAverage!
+                                                          .toStringAsFixed(1)),
+                                                    )
                                                   ],
                                                 ),
                                               ),
@@ -5554,7 +5556,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
               padding: const EdgeInsets.all(8.0),
               child: ReadMoreText(
                 widget.episodeList.overview!.isEmpty
-                    ? 'This season doesn\'t have an overview'
+                    ? 'This episode doesn\'t have an overview'
                     : widget.episodeList.overview!,
                 trimLines: 4,
                 style: const TextStyle(fontFamily: 'Poppins'),

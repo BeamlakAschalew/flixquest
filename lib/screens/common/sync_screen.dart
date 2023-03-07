@@ -28,13 +28,15 @@ class _SyncScreenState extends State<SyncScreen>
     with SingleTickerProviderStateMixin {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore firebaseInstance = FirebaseFirestore.instance;
-  List<int> firebaseMovieIds = [];
-  List<int> onlineSyncMovieIds = [];
-  List<int> firebaseTvIds = [];
-  List<int> onlineSyncTVIds = [];
+  List<Movie> firebaseMovies = [];
+  List<Movie> onlineSyncMovies = [];
+  List<Map<String, dynamic>> onlineMovieMap = [];
+  List<Map<String, dynamic>> onlineTVMap = [];
+  List<TV> firebaseTvShows = [];
+  List<TV> onlineSyncTVShows = [];
+  List<Map<String, dynamic>> offineMovieMap = [];
+  List<Map<String, dynamic>> offlineTVMap = [];
   bool? isLoading;
-  List<Movie> apiFetchedMovieList = [];
-  List<TV> apiFetchedTVList = [];
   double firebaseProgress = 0.00;
   double sqliteProgress = 0.00;
   double newSqlitePr = 0.00;
@@ -48,6 +50,8 @@ class _SyncScreenState extends State<SyncScreen>
   late DocumentSnapshot subscription;
   List<Movie>? offlineSavedMovies;
   List<TV>? offlineSavedTV;
+  Map<String, dynamic>? offlineSavedMoviesMap = {};
+  Map<String, dynamic>? offlineSavedTVMap;
   String? uid;
   bool isOnlineMovieSyncFinished = true;
   bool isOnlineTVSyncFinished = true;
@@ -63,7 +67,7 @@ class _SyncScreenState extends State<SyncScreen>
 
   Future<bool> checkIfDocExists(String docId) async {
     try {
-      var collectionRef = firebaseInstance.collection('bookmarks');
+      var collectionRef = firebaseInstance.collection('bookmarks-v2.0');
       var doc = await collectionRef.doc(docId).get();
       return doc.exists;
     } catch (e) {
@@ -74,95 +78,63 @@ class _SyncScreenState extends State<SyncScreen>
   void getSavedMoviesAndTV() async {
     User? user = _auth.currentUser;
     uid = user!.uid;
-    firebaseMovieIds = [];
-    firebaseTvIds = [];
-    apiFetchedMovieList = [];
-    apiFetchedTVList = [];
+    firebaseMovies = [];
+    firebaseTvShows = [];
     totalProg = 0;
     setState(() {
       isLoading = true;
     });
 
     if (await checkIfDocExists(uid!) == false) {
-      await firebaseInstance.collection('bookmarks').doc(uid!).set({});
+      await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).set({});
     }
 
     subscription =
-        await firebaseInstance.collection('bookmarks').doc(uid!).get();
+        await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).get();
     final docData = subscription.data() as Map<String, dynamic>;
 
     if (docData.containsKey('movies') == false) {
-      await firebaseInstance.collection('bookmarks').doc(uid!).update(
+      await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).update(
         {'movies': []},
       );
     }
 
-    if (docData.containsKey('tv') == false) {
-      await firebaseInstance.collection('bookmarks').doc(uid!).update(
-        {'tv': []},
+    if (docData.containsKey('tvShows') == false) {
+      await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).update(
+        {'tvShows': []},
       );
     }
 
     await firebaseInstance
-        .collection('bookmarks')
+        .collection('bookmarks-v2.0')
         .doc(uid!)
         .get()
         .then((value) {
       if (mounted) {
         setState(() {
-          for (int? element in List.from(value.get('movies'))) {
-            firebaseMovieIds.add(element!);
+          for (Map<String, dynamic>? element
+              in List.from(value.get('movies'))) {
+            firebaseMovies.add(Movie.fromJson(element!));
           }
         });
       }
     });
 
     await firebaseInstance
-        .collection('bookmarks')
+        .collection('bookmarks-v2.0')
         .doc(uid!)
         .get()
         .then((value) {
       if (mounted) {
         setState(() {
-          for (int? element in List.from(value.get('tv'))) {
-            firebaseTvIds.add(element!);
+          for (Map<String, dynamic>? element
+              in List.from(value.get('tvShows'))) {
+            firebaseTvShows.add(TV.fromJson(element!));
           }
         });
       }
     });
 
-    for (int i = 0; i < firebaseMovieIds.length; i++) {
-      await getMovie(Endpoints.getMovieDetails(firebaseMovieIds[i]))
-          .then((value) {
-        if (mounted) {
-          setState(() {
-            apiFetchedMovieList.add(value);
-            firebaseProgress = i / firebaseMovieIds.length;
-            newFirebasePr = firebaseProgress * 100;
-          });
-        }
-      });
-    }
-
-    setState(() {
-      totalProg = 1;
-    });
-
-    for (int i = 0; i < firebaseTvIds.length; i++) {
-      await getTV(Endpoints.getTVDetails(firebaseTvIds[i])).then((value) {
-        if (mounted) {
-          setState(() {
-            apiFetchedTVList.add(value);
-            firebaseProgress = i / firebaseTvIds.length;
-            newFirebasePr = firebaseProgress * 100;
-          });
-        }
-      });
-    }
-
-    setState(() {
-      totalProg = 2;
-    });
     if (mounted) {
       setState(() {
         isLoading = false;
@@ -248,17 +220,18 @@ class _SyncScreenState extends State<SyncScreen>
     setState(() {
       isOnlineMovieSyncFinished = false;
     });
-    onlineSyncMovieIds = [];
+    onlineMovieMap = [];
     try {
       await firebaseInstance
-          .collection('bookmarks')
+          .collection('bookmarks-v2.0')
           .doc(uid!)
           .get()
           .then((value) {
         if (mounted) {
           setState(() {
-            for (int? element in List.from(value.get('movies'))) {
-              onlineSyncMovieIds.add(element!);
+            for (List<Map<String, dynamic>>? element
+                in List.from(value.get('movies'))) {
+              onlineMovieMap = element!;
             }
           });
         }
@@ -268,23 +241,20 @@ class _SyncScreenState extends State<SyncScreen>
       if (mounted) {
         setState(() {
           offlineSavedMovies = mov;
+
+          for (int i = 0; i < offlineSavedMovies!.length; i++) {
+            Map<String, dynamic> movMap = offlineSavedMovies![i].toMap();
+            offineMovieMap.add(movMap);
+          }
         });
       }
 
-      List<int> offlineMovieId = [];
+      List<Map<String, dynamic>> difference =
+          offineMovieMap.toSet().difference(onlineMovieMap.toSet()).toList();
 
-      for (int i = 0; i < offlineSavedMovies!.length; i++) {
-        offlineMovieId.add(offlineSavedMovies![i].id!);
-      }
+      difference.insertAll(0, onlineMovieMap);
 
-      List<int> difference = offlineMovieId
-          .toSet()
-          .difference(onlineSyncMovieIds.toSet())
-          .toList();
-
-      difference.insertAll(0, onlineSyncMovieIds);
-
-      await firebaseInstance.collection('bookmarks').doc(uid!).update(
+      await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).update(
         {'movies': difference},
       );
     } finally {
@@ -309,17 +279,18 @@ class _SyncScreenState extends State<SyncScreen>
     setState(() {
       isOnlineTVSyncFinished = false;
     });
-    onlineSyncTVIds = [];
+    onlineSyncTVShows = [];
     try {
       await firebaseInstance
-          .collection('bookmarks')
+          .collection('bookmarks-v2.0')
           .doc(uid!)
           .get()
           .then((value) {
         if (mounted) {
           setState(() {
-            for (int? element in List.from(value.get('tv'))) {
-              onlineSyncTVIds.add(element!);
+            for (List<Map<String, dynamic>>? element
+                in List.from(value.get('tvShows'))) {
+              onlineTVMap = element!;
             }
           });
         }
@@ -329,22 +300,20 @@ class _SyncScreenState extends State<SyncScreen>
       if (mounted) {
         setState(() {
           offlineSavedTV = tv;
+          for (int i = 0; i < offlineSavedTV!.length; i++) {
+            Map<String, dynamic> movMap = offlineSavedTV![i].toMap();
+            offlineTVMap.add(movMap);
+          }
         });
       }
 
-      List<int> offlineTVId = [];
+      List<Map<String, dynamic>> difference =
+          offlineTVMap.toSet().difference(onlineSyncTVShows.toSet()).toList();
 
-      for (int i = 0; i < offlineSavedTV!.length; i++) {
-        offlineTVId.add(offlineSavedTV![i].id!);
-      }
+      difference.insertAll(0, onlineTVMap);
 
-      List<int> difference =
-          offlineTVId.toSet().difference(onlineSyncTVIds.toSet()).toList();
-
-      difference.insertAll(0, onlineSyncTVIds);
-
-      await firebaseInstance.collection('bookmarks').doc(uid!).update(
-        {'tv': difference},
+      await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).update(
+        {'tvShows': difference},
       );
     } finally {
       setState(() {
@@ -364,28 +333,28 @@ class _SyncScreenState extends State<SyncScreen>
     }
   }
 
-  void deleteMovieFromFirebase(int movieId, int index) async {
-    List<int> deletedId = [movieId];
-    await firebaseInstance
-        .collection('bookmarks')
-        .doc(uid)
-        .update({'movies': FieldValue.arrayRemove(deletedId)}).then((value) {
-      setState(() {
-        apiFetchedMovieList.removeAt(index);
-      });
-    });
+  void deleteMovieFromFirebase(int index) async {
+    DocumentReference documentReference =
+        firebaseInstance.collection('bookmarks-v2.0').doc(uid!);
+
+    List<dynamic> array = (await documentReference.get()).get('movies');
+    array.removeAt(index);
+    await documentReference
+        .update({'movies': array}).then((value) => setState(() {
+              firebaseMovies.removeAt(index);
+            }));
   }
 
-  void deleteTVFromFirebase(int tvId, int index) async {
-    List<int> deletedId = [tvId];
-    await firebaseInstance
-        .collection('bookmarks')
-        .doc(uid)
-        .update({'tv': FieldValue.arrayRemove(deletedId)}).then((value) {
-      setState(() {
-        apiFetchedTVList.removeAt(index);
-      });
-    });
+  void deleteTVFromFirebase(int index) async {
+    DocumentReference documentReference =
+        firebaseInstance.collection('bookmarks-v2.0').doc(uid!);
+
+    List<dynamic> array = (await documentReference.get()).get('tvShows');
+    array.removeAt(index);
+    await documentReference
+        .update({'tvShows': array}).then((value) => setState(() {
+              firebaseTvShows.removeAt(index);
+            }));
   }
 
   @override
@@ -398,34 +367,9 @@ class _SyncScreenState extends State<SyncScreen>
         title: const Text('Sync'),
       ),
       body: isLoading!
-          ? Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Fetching your saved movies and TV shows from server...',
-                      style: kTextSmallHeaderStyle,
-                      maxLines: 3,
-                      textAlign: TextAlign.center,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: LinearProgressIndicator(
-                        value: firebaseProgress,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('${newFirebasePr.toStringAsFixed(2)}%'),
-                        Text('$totalProg / 2')
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+          ? const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Center(child: CircularProgressIndicator()),
             )
           : Column(
               children: [
@@ -481,7 +425,7 @@ class _SyncScreenState extends State<SyncScreen>
                     Column(
                       children: [
                         Expanded(
-                          child: firebaseMovieIds.isEmpty
+                          child: firebaseMovies.isEmpty
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -549,8 +493,7 @@ class _SyncScreenState extends State<SyncScreen>
                                       width: 220,
                                       child: ElevatedButton(
                                           onPressed: () {
-                                            offlineMovieSync(
-                                                apiFetchedMovieList);
+                                            offlineMovieSync(firebaseMovies);
                                           },
                                           child: Row(
                                             mainAxisAlignment:
@@ -630,7 +573,7 @@ class _SyncScreenState extends State<SyncScreen>
                     Column(
                       children: [
                         Expanded(
-                          child: firebaseTvIds.isEmpty
+                          child: firebaseTvShows.isEmpty
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -698,7 +641,7 @@ class _SyncScreenState extends State<SyncScreen>
                                       width: 270,
                                       child: ElevatedButton(
                                           onPressed: () {
-                                            offlineTVSync(apiFetchedTVList);
+                                            offlineTVSync(firebaseTvShows);
                                           },
                                           child: Row(
                                             mainAxisAlignment:
@@ -785,7 +728,7 @@ class _SyncScreenState extends State<SyncScreen>
   Widget horizontalSyncedTV(String imageQuality, bool isDark) {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
-      itemCount: apiFetchedTVList.length,
+      itemCount: firebaseTvShows.length,
       scrollDirection: Axis.horizontal,
       itemBuilder: (BuildContext context, int index) {
         return Padding(
@@ -796,8 +739,8 @@ class _SyncScreenState extends State<SyncScreen>
                   context,
                   MaterialPageRoute(
                       builder: (context) => TVDetailPage(
-                          tvSeries: apiFetchedTVList[index],
-                          heroId: '${apiFetchedTVList[index].id}')));
+                          tvSeries: firebaseTvShows[index],
+                          heroId: '${firebaseTvShows[index].id}')));
             },
             child: SizedBox(
               width: 100,
@@ -806,13 +749,13 @@ class _SyncScreenState extends State<SyncScreen>
                   Expanded(
                     flex: 6,
                     child: Hero(
-                      tag: '${apiFetchedTVList[index].id}',
+                      tag: '${firebaseTvShows[index].id}',
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: apiFetchedTVList[index].posterPath == null
+                            child: firebaseTvShows[index].posterPath == null
                                 ? Image.asset(
                                     'assets/images/na_sqaure.png',
                                     fit: BoxFit.cover,
@@ -824,13 +767,13 @@ class _SyncScreenState extends State<SyncScreen>
                                     fadeInDuration:
                                         const Duration(milliseconds: 700),
                                     fadeInCurve: Curves.easeIn,
-                                    imageUrl: apiFetchedTVList[index]
+                                    imageUrl: firebaseTvShows[index]
                                                 .posterPath ==
                                             null
                                         ? ''
                                         : TMDB_BASE_IMAGE_URL +
                                             imageQuality +
-                                            apiFetchedTVList[index].posterPath!,
+                                            firebaseTvShows[index].posterPath!,
                                     imageBuilder: (context, imageProvider) =>
                                         Container(
                                       decoration: BoxDecoration(
@@ -856,8 +799,7 @@ class _SyncScreenState extends State<SyncScreen>
                                 alignment: Alignment.topLeft,
                                 child: IconButton(
                                   onPressed: () {
-                                    deleteTVFromFirebase(
-                                        apiFetchedTVList[index].id!, index);
+                                    deleteTVFromFirebase(index);
                                   },
                                   icon: const Icon(
                                     Icons.bookmark_remove,
@@ -874,7 +816,7 @@ class _SyncScreenState extends State<SyncScreen>
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        apiFetchedTVList[index].name!,
+                        firebaseTvShows[index].name!,
                         maxLines: 2,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
@@ -893,7 +835,7 @@ class _SyncScreenState extends State<SyncScreen>
   Widget horizontalSyncedMovies(String imageQuality, bool isDark) {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
-      itemCount: apiFetchedMovieList.length,
+      itemCount: firebaseMovies.length,
       scrollDirection: Axis.horizontal,
       itemBuilder: (BuildContext context, int index) {
         return Padding(
@@ -904,8 +846,8 @@ class _SyncScreenState extends State<SyncScreen>
                   context,
                   MaterialPageRoute(
                       builder: (context) => MovieDetailPage(
-                          movie: apiFetchedMovieList[index],
-                          heroId: '${apiFetchedMovieList[index].id}')));
+                          movie: firebaseMovies[index],
+                          heroId: '${firebaseMovies[index].id}')));
             },
             child: SizedBox(
               width: 100,
@@ -914,13 +856,13 @@ class _SyncScreenState extends State<SyncScreen>
                   Expanded(
                     flex: 6,
                     child: Hero(
-                      tag: '${apiFetchedMovieList[index].id}',
+                      tag: '${firebaseMovies[index].id}',
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: apiFetchedMovieList[index].posterPath == null
+                            child: firebaseMovies[index].posterPath == null
                                 ? Image.asset(
                                     'assets/images/na_square.png',
                                     fit: BoxFit.cover,
@@ -933,12 +875,11 @@ class _SyncScreenState extends State<SyncScreen>
                                         const Duration(milliseconds: 700),
                                     fadeInCurve: Curves.easeIn,
                                     imageUrl:
-                                        apiFetchedMovieList[index].posterPath ==
-                                                null
+                                        firebaseMovies[index].posterPath == null
                                             ? ''
                                             : TMDB_BASE_IMAGE_URL +
                                                 imageQuality +
-                                                apiFetchedMovieList[index]
+                                                firebaseMovies[index]
                                                     .posterPath!,
                                     imageBuilder: (context, imageProvider) =>
                                         Container(
@@ -971,8 +912,7 @@ class _SyncScreenState extends State<SyncScreen>
                                 //         isDark ? Colors.black45 : Colors.white60),
                                 child: IconButton(
                                   onPressed: () {
-                                    deleteMovieFromFirebase(
-                                        apiFetchedMovieList[index].id!, index);
+                                    deleteMovieFromFirebase(index);
                                   },
                                   icon: const Icon(
                                     Icons.bookmark_remove,
@@ -989,7 +929,7 @@ class _SyncScreenState extends State<SyncScreen>
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        apiFetchedMovieList[index].title!,
+                        firebaseMovies[index].title!,
                         maxLines: 2,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,

@@ -54,22 +54,23 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
       _formKey.currentState!.save();
       try {
         user = _auth.currentUser;
-        await user!.delete().then((value) async {
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .delete()
+            .then((value) async {
           await FirebaseFirestore.instance
-              .collection('users')
+              .collection('bookmarks')
               .doc(uid)
               .delete()
               .then((value) async {
             await FirebaseFirestore.instance
-                .collection('bookmarks')
-                .doc(uid)
+                .collection('usernames')
+                .doc(username)
                 .delete()
                 .then((value) async {
-              await FirebaseFirestore.instance
-                  .collection('usernames')
-                  .doc(username)
-                  .delete()
-                  .then((value) async {
+              await user!.delete().then((value) async {
                 await Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) {
                   return const LandingScreen();

@@ -378,11 +378,13 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                               const Icon(
                                                                 Icons.star,
                                                               ),
-                                                              Text(personMoviesList![
-                                                                      index]
-                                                                  .voteAverage!
-                                                                  .toStringAsFixed(
-                                                                      1))
+                                                              Material(
+                                                                child: Text(personMoviesList![
+                                                                        index]
+                                                                    .voteAverage!
+                                                                    .toStringAsFixed(
+                                                                        1)),
+                                                              )
                                                             ],
                                                           ),
                                                         ),
@@ -614,11 +616,13 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                               const Icon(
                                                                 Icons.star,
                                                               ),
-                                                              Text(personTVList![
-                                                                      index]
-                                                                  .voteAverage!
-                                                                  .toStringAsFixed(
-                                                                      1))
+                                                              Material(
+                                                                child: Text(personTVList![
+                                                                        index]
+                                                                    .voteAverage!
+                                                                    .toStringAsFixed(
+                                                                        1)),
+                                                              )
                                                             ],
                                                           ),
                                                         ),
@@ -888,9 +892,13 @@ class _PersonDataTableState extends State<PersonDataTable> {
                     style: kTableLeftStyle,
                   )),
                   DataColumn(
-                    label: Text(personDetails?.birthday != null
-                        ? '${DateTime.parse(DateTime.now().toString()).year.toInt() - DateTime.parse(personDetails!.birthday!.toString()).year - 1}'
-                        : '-'),
+                    label: personDetails!.deathday != null &&
+                            personDetails!.birthday != null
+                        ? Text(
+                            '${DateTime.parse(personDetails!.deathday.toString()).year.toInt() - DateTime.parse(personDetails!.birthday!.toString()).year - 1}')
+                        : Text(personDetails?.birthday != null
+                            ? '${DateTime.parse(DateTime.now().toString()).year.toInt() - DateTime.parse(personDetails!.birthday!.toString()).year - 1}'
+                            : '-'),
                   ),
                 ], rows: [
                   DataRow(cells: [

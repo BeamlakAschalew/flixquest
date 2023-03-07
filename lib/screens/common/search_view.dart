@@ -63,36 +63,39 @@ class Search extends SearchDelegate<String> {
       child: Scaffold(
         body: Column(
           children: [
-            TabBar(
-              tabs: [
-                Tab(
-                  child: Text('Movies',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: !isDark
-                            ? const Color(0xFF202124)
-                            : const Color(0xFFDFDEDE),
-                      )),
-                ),
-                Tab(
-                  child: Text('TV Shows',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: !isDark
-                            ? const Color(0xFF202124)
-                            : const Color(0xFFDFDEDE),
-                      )),
-                ),
-                Tab(
-                  child: Text('Celebrities',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        color: !isDark
-                            ? const Color(0xFF202124)
-                            : const Color(0xFFDFDEDE),
-                      )),
-                )
-              ],
+            Container(
+              color: isDark ? Colors.black : Colors.white,
+              child: TabBar(
+                tabs: [
+                  Tab(
+                    child: Text('Movies',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: !isDark
+                              ? const Color(0xFF202124)
+                              : const Color(0xFFDFDEDE),
+                        )),
+                  ),
+                  Tab(
+                    child: Text('TV Shows',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: !isDark
+                              ? const Color(0xFF202124)
+                              : const Color(0xFFDFDEDE),
+                        )),
+                  ),
+                  Tab(
+                    child: Text('Celebrities',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          color: !isDark
+                              ? const Color(0xFF202124)
+                              : const Color(0xFFDFDEDE),
+                        )),
+                  )
+                ],
+              ),
             ),
             Expanded(
                 child: TabBarView(children: [

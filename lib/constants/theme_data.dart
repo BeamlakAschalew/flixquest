@@ -63,7 +63,8 @@ class Styles {
       bannerTheme: MaterialBannerThemeData(),
       chipTheme: ChipThemeData(),
       snackBarTheme: SnackBarThemeData(),
-      scaffoldBackgroundColor: isDarkTheme ? Colors.black : Colors.white,
+      scaffoldBackgroundColor:
+          isDarkTheme ? Color(0xFF161716) : Color(0xFFf5f5f5),
       radioTheme: RadioThemeData(
           fillColor: MaterialStatePropertyAll(isM3Enabled
               ? isDarkTheme

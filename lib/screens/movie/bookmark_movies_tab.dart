@@ -185,12 +185,14 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                       Icons
                                                                           .star,
                                                                     ),
-                                                                    Text(widget
-                                                                        .movieList![
-                                                                            index]
-                                                                        .voteAverage!
-                                                                        .toStringAsFixed(
-                                                                            1))
+                                                                    Material(
+                                                                      child: Text(widget
+                                                                          .movieList![
+                                                                              index]
+                                                                          .voteAverage!
+                                                                          .toStringAsFixed(
+                                                                              1)),
+                                                                    )
                                                                   ],
                                                                 ),
                                                               ),
@@ -214,10 +216,14 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                               index]
                                                                           .id!);
                                                                       //  movieList[index].favorite = false;
-                                                                      widget
-                                                                          .movieList!
-                                                                          .removeAt(
-                                                                              index);
+                                                                      if (mounted) {
+                                                                        setState(
+                                                                            () {
+                                                                          widget
+                                                                              .movieList!
+                                                                              .removeAt(index);
+                                                                        });
+                                                                      }
                                                                     },
                                                                     icon: const Icon(
                                                                         Icons

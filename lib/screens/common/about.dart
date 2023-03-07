@@ -46,6 +46,7 @@ class AboutPage extends StatelessWidget {
                 ),
                 const Text(
                   'This product uses the TMDB API but is not endorsed or certified by TMDB.',
+                  maxLines: 5,
                   textAlign: TextAlign.center,
                   style:
                       TextStyle(fontSize: 20.0, overflow: TextOverflow.visible),
@@ -69,6 +70,7 @@ class AboutPage extends StatelessWidget {
                   child: GestureDetector(
                     child: const Text(
                       'Noticed any bugs? Inform me on Telegram, click here',
+                      maxLines: 5,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           decoration: TextDecoration.underline,
@@ -84,6 +86,7 @@ class AboutPage extends StatelessWidget {
                   children: [
                     const Text(
                       'Follow Cinemax on various platforms',
+                      maxLines: 5,
                       style: kTextSmallHeaderStyle,
                     ),
                     Container(
@@ -136,6 +139,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   child: Text(
                     'Made with ❤️ by Beamlak Aschalew',
+                    maxLines: 5,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 20.0),
                   ),

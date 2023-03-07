@@ -105,9 +105,11 @@ class HorizontalScrollingTVList extends StatelessWidget {
                                   const Icon(
                                     Icons.star,
                                   ),
-                                  Text(tvList![index]
-                                      .voteAverage!
-                                      .toStringAsFixed(1))
+                                  Material(
+                                    child: Text(tvList![index]
+                                        .voteAverage!
+                                        .toStringAsFixed(1)),
+                                  )
                                 ],
                               ),
                             ),
@@ -369,9 +371,11 @@ class TVGridView extends StatelessWidget {
                                   const Icon(
                                     Icons.star,
                                   ),
-                                  Text(tvList![index]
-                                      .voteAverage!
-                                      .toStringAsFixed(1))
+                                  Material(
+                                    child: Text(tvList![index]
+                                        .voteAverage!
+                                        .toStringAsFixed(1)),
+                                  )
                                 ],
                               ),
                             ),

@@ -1,4 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+
 import '/screens/user/user_state.dart';
 import '/screens/user/user_info.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -8,6 +13,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'constants/app_constants.dart';
 import 'widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
@@ -27,9 +33,15 @@ final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
+  for (int i = 0; i < appNames.length; i++) {
+    File file =
+        File("${(await getApplicationSupportDirectory()).path}${appNames[i]}");
+    if (file.existsSync()) {
+      file.delete();
+    }
+  }
   await settingsProvider.getCurrentThemeMode();
   await settingsProvider.getCurrentMaterial3Mode();
   await settingsProvider.initMixpanel();
@@ -56,41 +68,14 @@ class Cinemax extends StatefulWidget {
 
 class _CinemaxState extends State<Cinemax>
     with ChangeNotifier, WidgetsBindingObserver {
-  bool? isFirstLaunch;
-
-  // late FirebaseMessaging messaging;
-
-  void firstTimeCheck() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      if (prefs.getBool('isFirstRun') == null) {
-        isFirstLaunch = true;
-      } else {
-        isFirstLaunch = false;
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-      // print("message recieved");
-      // print(event.notification!.body);
-    });
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      //  print('Message clicked!');
-    });
-    firstTimeCheck();
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {});
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {});
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   }
-
-  // ignore: unused_field
-  static final _defaultLightColorScheme =
-      ColorScheme.fromSwatch(primarySwatch: Colors.blue);
-
-  // ignore: unused_field
-  static final _defaultDarkColorScheme = ColorScheme.fromSwatch(
-      primarySwatch: Colors.blue, brightness: Brightness.dark);
 
   @override
   Widget build(BuildContext context) {
@@ -125,16 +110,11 @@ class _CinemaxState extends State<Cinemax>
               ],
               child: Consumer<SettingsProvider>(
                   builder: (context, settingsProvider, snapshot) {
-                //  final isDark = Provider.of<SettingsProvider>(context).darktheme;
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
                     return MaterialApp(
                       debugShowCheckedModeBanner: false,
                       title: 'Cinemax',
-                      // theme: ThemeData(
-                      //   colorScheme: darkDynamic ?? _defaultLightColorScheme,
-                      //   useMaterial3: true,
-                      // ),
                       theme: Styles.themeData(
                           isDarkTheme: settingsProvider.darktheme,
                           isM3Enabled: settingsProvider.isMaterial3Enabled,

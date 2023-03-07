@@ -205,6 +205,7 @@ class PersonDetails {
   bool? isAdult;
   String? biography;
   String? birthday;
+  String? deathday;
   int? id;
   String? birthPlace;
   String? profilePath;
@@ -214,6 +215,7 @@ class PersonDetails {
       {this.biography,
       this.birthPlace,
       this.birthday,
+      this.deathday,
       this.department,
       this.id,
       this.isAdult,
@@ -223,6 +225,7 @@ class PersonDetails {
     isAdult = json['adult'];
     biography = json['biography'];
     birthday = json['birthday'];
+    deathday = json['deathday'];
     id = json['id'];
     birthPlace = json['place_of_birth'];
     profilePath = json['profile_path'];

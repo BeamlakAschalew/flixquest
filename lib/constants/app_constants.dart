@@ -39,7 +39,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '1.4.1';
+const String currentAppVersion = '1.4.0';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(
@@ -47,3 +47,12 @@ const retryOptions = RetryOptions(
     delayFactor: Duration(seconds: 0),
     maxAttempts: 100000);
 const timeOut = Duration(seconds: 10);
+
+final List<String> appNames = [
+  'cinemax-v1.4.1.apk',
+  'cinemax-v1.4.0.apk',
+  'cinemax-v1.3.0.apk',
+  'cinemax-1.3.0-build-v4.apk',
+  'cinemax-v1.3.0-build-v3.apk',
+  'cinemax-v1.3.0-build-v3.apk',
+];

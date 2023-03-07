@@ -146,9 +146,6 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
             child: Stack(
               alignment: AlignmentDirectional.bottomCenter,
               children: [
-                // Obx(
-                //   () =>
-
                 ShaderMask(
                   shaderCallback: (rect) {
                     return const LinearGradient(
