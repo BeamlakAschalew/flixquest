@@ -293,7 +293,8 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                       ClipRRect(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(8.0),
+                                                                .circular(
+                                                                    8.0),
                                                         child: personMoviesList![
                                                                         index]
                                                                     .posterPath ==
@@ -345,7 +346,8 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                 errorWidget: (context,
                                                                         url,
                                                                         error) =>
-                                                                    Image.asset(
+                                                                    Image
+                                                                        .asset(
                                                                   'assets/images/na_square.png',
                                                                   fit: BoxFit
                                                                       .cover,
@@ -378,13 +380,11 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                               const Icon(
                                                                 Icons.star,
                                                               ),
-                                                              Material(
-                                                                child: Text(personMoviesList![
-                                                                        index]
-                                                                    .voteAverage!
-                                                                    .toStringAsFixed(
-                                                                        1)),
-                                                              )
+                                                              Text(personMoviesList![
+                                                                      index]
+                                                                  .voteAverage!
+                                                                  .toStringAsFixed(
+                                                                      1))
                                                             ],
                                                           ),
                                                         ),
@@ -531,7 +531,8 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                       ClipRRect(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(8.0),
+                                                                .circular(
+                                                                    8.0),
                                                         child: personTVList![
                                                                         index]
                                                                     .posterPath ==
@@ -583,7 +584,8 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                 errorWidget: (context,
                                                                         url,
                                                                         error) =>
-                                                                    Image.asset(
+                                                                    Image
+                                                                        .asset(
                                                                   'assets/images/na_square.png',
                                                                   fit: BoxFit
                                                                       .cover,
@@ -616,13 +618,11 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                               const Icon(
                                                                 Icons.star,
                                                               ),
-                                                              Material(
-                                                                child: Text(personTVList![
-                                                                        index]
-                                                                    .voteAverage!
-                                                                    .toStringAsFixed(
-                                                                        1)),
-                                                              )
+                                                              Text(personTVList![
+                                                                      index]
+                                                                  .voteAverage!
+                                                                  .toStringAsFixed(
+                                                                      1))
                                                             ],
                                                           ),
                                                         ),

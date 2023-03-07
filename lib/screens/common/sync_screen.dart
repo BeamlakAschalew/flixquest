@@ -37,11 +37,7 @@ class _SyncScreenState extends State<SyncScreen>
   List<Map<String, dynamic>> offineMovieMap = [];
   List<Map<String, dynamic>> offlineTVMap = [];
   bool? isLoading;
-  double firebaseProgress = 0.00;
-  double sqliteProgress = 0.00;
-  double newSqlitePr = 0.00;
   final scrollController = ScrollController();
-  double newFirebasePr = 0.00;
   bool isOfflineMovieSyncFinished = true;
   bool isOfflineTVSyncFinished = true;
   final GlobalMethods globalMethods = GlobalMethods();
@@ -51,12 +47,11 @@ class _SyncScreenState extends State<SyncScreen>
   List<Movie>? offlineSavedMovies;
   List<TV>? offlineSavedTV;
   Map<String, dynamic>? offlineSavedMoviesMap = {};
-  Map<String, dynamic>? offlineSavedTVMap;
+  Map<String, dynamic>? offlineSavedTVMap = {};
   String? uid;
   bool isOnlineMovieSyncFinished = true;
   bool isOnlineTVSyncFinished = true;
   late TabController tabController;
-  int totalProg = 0;
 
   @override
   void initState() {
@@ -80,7 +75,6 @@ class _SyncScreenState extends State<SyncScreen>
     uid = user!.uid;
     firebaseMovies = [];
     firebaseTvShows = [];
-    totalProg = 0;
     setState(() {
       isLoading = true;
     });

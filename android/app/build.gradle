@@ -73,6 +73,6 @@ dependencies {
 }
 
 android {
-  compileSdkVersion 32
+  compileSdkVersion 33
 }
 

@@ -105,11 +105,9 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                   const Icon(
                                     Icons.star,
                                   ),
-                                  Material(
-                                    child: Text(movieList![index]
-                                        .voteAverage!
-                                        .toStringAsFixed(1)),
-                                  )
+                                  Text(movieList![index]
+                                      .voteAverage!
+                                      .toStringAsFixed(1))
                                 ],
                               ),
                             ),
@@ -373,11 +371,9 @@ class MovieGridView extends StatelessWidget {
                                   const Icon(
                                     Icons.star,
                                   ),
-                                  Material(
-                                    child: Text(moviesList![index]
-                                        .voteAverage!
-                                        .toStringAsFixed(1)),
-                                  )
+                                  Text(moviesList![index]
+                                      .voteAverage!
+                                      .toStringAsFixed(1))
                                 ],
                               ),
                             ),
@@ -503,11 +499,9 @@ class BookmarkMovieGridView extends StatelessWidget {
                                   const Icon(
                                     Icons.star,
                                   ),
-                                  Material(
-                                    child: Text(moviesList![index]
-                                        .voteAverage!
-                                        .toStringAsFixed(1)),
-                                  )
+                                  Text(moviesList![index]
+                                      .voteAverage!
+                                      .toStringAsFixed(1))
                                 ],
                               ),
                             ),

@@ -185,14 +185,12 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                       Icons
                                                                           .star,
                                                                     ),
-                                                                    Material(
-                                                                      child: Text(widget
-                                                                          .movieList![
-                                                                              index]
-                                                                          .voteAverage!
-                                                                          .toStringAsFixed(
-                                                                              1)),
-                                                                    )
+                                                                    Text(widget
+                                                                        .movieList![
+                                                                            index]
+                                                                        .voteAverage!
+                                                                        .toStringAsFixed(
+                                                                            1))
                                                                   ],
                                                                 ),
                                                               ),

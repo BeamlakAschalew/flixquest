@@ -184,14 +184,12 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                       Icons
                                                                           .star,
                                                                     ),
-                                                                    Material(
-                                                                      child: Text(widget
-                                                                          .tvList![
-                                                                              index]
-                                                                          .voteAverage!
-                                                                          .toStringAsFixed(
-                                                                              1)),
-                                                                    )
+                                                                    Text(widget
+                                                                        .tvList![
+                                                                            index]
+                                                                        .voteAverage!
+                                                                        .toStringAsFixed(
+                                                                            1))
                                                                   ],
                                                                 ),
                                                               ),

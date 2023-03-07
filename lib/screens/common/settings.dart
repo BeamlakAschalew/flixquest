@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
+
 import '/models/watchprovider_countries.dart';
 import '/screens/common/country_choose.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -19,6 +23,26 @@ class _SettingsState extends State<Settings> {
   CountryData countryData = CountryData();
   String? countryFlag;
   String? countryName;
+  String? release;
+  bool isBelow33 = true;
+
+  void androidVersionCheck() async {
+    if (Platform.isAndroid) {
+      var androidInfo = await DeviceInfoPlugin().androidInfo;
+      var sdkInt = androidInfo.version.sdkInt;
+      if (sdkInt >= 33) {
+        setState(() {
+          isBelow33 = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    androidVersionCheck();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,21 +99,24 @@ class _SettingsState extends State<Settings> {
               });
             },
           ),
-          SwitchListTile(
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: const Color(0xFF9B9B9B),
-            subtitle: const Text('beta and works on Android 12+'),
-            value: m3.isMaterial3Enabled,
-            secondary: Icon(
-              Icons.color_lens,
-              color: Theme.of(context).colorScheme.primary,
+          Visibility(
+            visible: !isBelow33,
+            child: SwitchListTile(
+              inactiveThumbColor: Colors.white,
+              inactiveTrackColor: const Color(0xFF9B9B9B),
+              subtitle: const Text('beta and works on Android 12+'),
+              value: m3.isMaterial3Enabled,
+              secondary: Icon(
+                Icons.color_lens,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: const Text('Material 3 color theming'),
+              onChanged: (bool value) {
+                setState(() {
+                  m3.isMaterial3Enabled = value;
+                });
+              },
             ),
-            title: const Text('Material 3 color theming'),
-            onChanged: (bool value) {
-              setState(() {
-                m3.isMaterial3Enabled = value;
-              });
-            },
           ),
           ListTile(
             leading: Icon(

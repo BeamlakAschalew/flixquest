@@ -505,13 +505,9 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                     const Icon(
                                                       Icons.star,
                                                     ),
-                                                    Material(
-                                                      child: Text(
-                                                          moviesList![index]
-                                                              .voteAverage!
-                                                              .toStringAsFixed(
-                                                                  1)),
-                                                    )
+                                                    Text(moviesList![index]
+                                                        .voteAverage!
+                                                        .toStringAsFixed(1))
                                                   ],
                                                 ),
                                               ),
@@ -1895,14 +1891,10 @@ class PartsListState extends State<PartsList> {
                                                     const Icon(
                                                       Icons.star,
                                                     ),
-                                                    Material(
-                                                      child: Text(
-                                                          collectionMovieList![
-                                                                  index]
-                                                              .voteAverage!
-                                                              .toStringAsFixed(
-                                                                  1)),
-                                                    )
+                                                    Text(collectionMovieList![
+                                                            index]
+                                                        .voteAverage!
+                                                        .toStringAsFixed(1))
                                                   ],
                                                 ),
                                               ),

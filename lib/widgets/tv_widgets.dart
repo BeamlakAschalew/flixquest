@@ -499,11 +499,9 @@ class ScrollingTVState extends State<ScrollingTV>
                                                     const Icon(
                                                       Icons.star,
                                                     ),
-                                                    Material(
-                                                      child: Text(tvList![index]
-                                                          .voteAverage!
-                                                          .toStringAsFixed(1)),
-                                                    )
+                                                    Text(tvList![index]
+                                                        .voteAverage!
+                                                        .toStringAsFixed(1))
                                                   ],
                                                 ),
                                               ),
