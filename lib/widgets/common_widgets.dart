@@ -812,7 +812,7 @@ Widget detailsRecommendationsAndSimilarShimmer(
             visible: isLoading,
             child: const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: LinearProgressIndicator()),
             )),
       ],
     );
@@ -1084,7 +1084,7 @@ Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
               visible: isLoading,
               child: const Padding(
                 padding: EdgeInsets.all(8.0),
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(child: LinearProgressIndicator()),
               )),
         ],
       ),
@@ -1637,7 +1637,7 @@ Widget newsShimmer(isDark, scrollController, isLoading) {
             visible: isLoading,
             child: const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: LinearProgressIndicator()),
             )),
       ],
     ),

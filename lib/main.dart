@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-
 import '/screens/user/user_state.dart';
 import '/screens/user/user_info.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -12,7 +11,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'constants/app_constants.dart';
 import 'widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +22,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'provider/settings_provider.dart';
 import 'screens/common/discover.dart';
 
-Future<void> _messageHandler(RemoteMessage message) async {
-  // print('background message ${message.notification!.body}');
-}
+Future<void> _messageHandler(RemoteMessage message) async {}
 
 SettingsProvider settingsProvider = SettingsProvider();
 final Future<FirebaseApp> _initialization = Firebase.initializeApp();
@@ -73,8 +69,8 @@ class _CinemaxState extends State<Cinemax>
     super.initState();
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {});
     FirebaseMessaging.onMessageOpenedApp.listen((message) {});
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    // SystemChrome.setPreferredOrientations(
+    //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   }
 
   @override

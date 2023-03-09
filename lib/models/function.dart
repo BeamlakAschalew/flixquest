@@ -23,7 +23,6 @@ Future<List<Movie>> fetchMovies(String api) async {
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
-    print(decodeRes);
     movieList = MovieList.fromJson(decodeRes);
   } finally {
     client.close();

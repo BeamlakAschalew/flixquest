@@ -3298,7 +3298,7 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
                           visible: isLoading,
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Center(child: CircularProgressIndicator()),
+                            child: Center(child: LinearProgressIndicator()),
                           )),
                     ],
                   ));
@@ -4693,7 +4693,7 @@ class ParticularStreamingServiceTVShowsState
                           visible: isLoading,
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Center(child: CircularProgressIndicator()),
+                            child: Center(child: LinearProgressIndicator()),
                           )),
                     ],
                   ));
@@ -5470,7 +5470,7 @@ class _TVAboutState extends State<TVAbout> {
             ),
             SeasonsList(
               tvId: widget.tvSeries.id!,
-              seriesName: widget.tvSeries.originalName!,
+              seriesName: widget.tvSeries.name!,
               title: 'Seasons',
               api: Endpoints.getTVSeasons(widget.tvSeries.id!),
             ),

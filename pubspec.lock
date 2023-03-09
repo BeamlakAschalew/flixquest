@@ -155,6 +155,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.6"
+  dpad_container:
+    dependency: "direct main"
+    description:
+      name: dpad_container
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.3"
   dynamic_color:
     dependency: "direct main"
     description:
@@ -300,6 +307,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.4"
+  flutter_hooks:
+    dependency: transitive
+    description:
+      name: flutter_hooks
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.18.6"
   flutter_inappwebview:
     dependency: "direct main"
     description:

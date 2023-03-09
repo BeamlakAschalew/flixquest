@@ -9,8 +9,6 @@ import '../../services/globle_method.dart';
 import '../../widgets/common_widgets.dart';
 import '../movie/movie_detail.dart';
 import '../tv/tv_detail.dart';
-import '/api/endpoints.dart';
-import '/models/function.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

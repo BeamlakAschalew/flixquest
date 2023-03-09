@@ -3582,7 +3582,7 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                           visible: isLoading,
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Center(child: CircularProgressIndicator()),
+                            child: Center(child: LinearProgressIndicator()),
                           )),
                     ],
                   ));
@@ -3713,7 +3713,7 @@ class ParticularStreamingServiceMoviesState
                           visible: isLoading,
                           child: const Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Center(child: CircularProgressIndicator()),
+                            child: Center(child: LinearProgressIndicator()),
                           )),
                     ],
                   ));
