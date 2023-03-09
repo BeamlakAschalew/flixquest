@@ -54,7 +54,7 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8.0),
                             child: movieList![index].posterPath == null
                                 ? Image.asset(
-                                    'assets/images/na_square.png',
+                                    'assets/images/na_rect.png',
                                     fit: BoxFit.cover,
                                   )
                                 : CachedNetworkImage(
@@ -83,7 +83,7 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                         scrollingImageShimmer(isDark),
                                     errorWidget: (context, url, error) =>
                                         Image.asset(
-                                      'assets/images/na_square.png',
+                                      'assets/images/na_rect.png',
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -323,7 +323,7 @@ class MovieGridView extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8.0),
                             child: moviesList![index].posterPath == null
                                 ? Image.asset(
-                                    'assets/images/na_square.png',
+                                    'assets/images/na_rect.png',
                                     fit: BoxFit.cover,
                                   )
                                 : CachedNetworkImage(
@@ -349,7 +349,7 @@ class MovieGridView extends StatelessWidget {
                                         scrollingImageShimmer(isDark),
                                     errorWidget: (context, url, error) =>
                                         Image.asset(
-                                      'assets/images/na_sqaure.png',
+                                      'assets/images/na_rect.png',
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -451,7 +451,7 @@ class BookmarkMovieGridView extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8.0),
                             child: moviesList![index].posterPath == null
                                 ? Image.asset(
-                                    'assets/images/na_square.png',
+                                    'assets/images/na_rect.png',
                                     fit: BoxFit.cover,
                                   )
                                 : CachedNetworkImage(
@@ -477,7 +477,7 @@ class BookmarkMovieGridView extends StatelessWidget {
                                         scrollingImageShimmer(isDark),
                                     errorWidget: (context, url, error) =>
                                         Image.asset(
-                                      'assets/images/na_sqaure.png',
+                                      'assets/images/na_rect.png',
                                       fit: BoxFit.cover,
                                     ),
                                   ),

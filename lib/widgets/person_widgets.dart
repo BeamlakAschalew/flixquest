@@ -157,7 +157,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
-                                                'assets/images/na_square.png',
+                                                'assets/images/na_rect.png',
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
@@ -299,7 +299,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                     .posterPath ==
                                                                 null
                                                             ? Image.asset(
-                                                                'assets/images/na_square.png',
+                                                                'assets/images/na_rect.png',
                                                                 fit: BoxFit
                                                                     .cover,
                                                               )
@@ -346,7 +346,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                         url,
                                                                         error) =>
                                                                     Image.asset(
-                                                                  'assets/images/na_square.png',
+                                                                  'assets/images/na_rect.png',
                                                                   fit: BoxFit
                                                                       .cover,
                                                                 ),
@@ -535,7 +535,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                     .posterPath ==
                                                                 null
                                                             ? Image.asset(
-                                                                'assets/images/na_square.png',
+                                                                'assets/images/na_rect.png',
                                                                 fit: BoxFit
                                                                     .cover,
                                                               )
@@ -582,7 +582,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                         url,
                                                                         error) =>
                                                                     Image.asset(
-                                                                  'assets/images/na_square.png',
+                                                                  'assets/images/na_rect.png',
                                                                   fit: BoxFit
                                                                       .cover,
                                                                 ),
@@ -1117,7 +1117,7 @@ class CastDetailQuickInfo extends StatelessWidget {
                               height: 120,
                               child: widget.cast!.profilePath == null
                                   ? Image.asset(
-                                      'assets/images/na_square.png',
+                                      'assets/images/na_rect.png',
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
@@ -1126,7 +1126,7 @@ class CastDetailQuickInfo extends StatelessWidget {
                                           scrollingImageShimmer(isDark),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
-                                        'assets/images/na_square.png',
+                                        'assets/images/na_rect.png',
                                         fit: BoxFit.cover,
                                       ),
                                       imageUrl: TMDB_BASE_IMAGE_URL +

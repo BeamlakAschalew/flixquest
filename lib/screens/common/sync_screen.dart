@@ -770,7 +770,7 @@ class _SyncScreenState extends State<SyncScreen>
                             borderRadius: BorderRadius.circular(8.0),
                             child: firebaseTvShows[index].posterPath == null
                                 ? Image.asset(
-                                    'assets/images/na_sqaure.png',
+                                    'assets/images/na_rect.png',
                                     fit: BoxFit.cover,
                                   )
                                 : CachedNetworkImage(
@@ -800,7 +800,7 @@ class _SyncScreenState extends State<SyncScreen>
                                         scrollingImageShimmer(isDark),
                                     errorWidget: (context, url, error) =>
                                         Image.asset(
-                                      'assets/images/na_square.png',
+                                      'assets/images/na_rect.png',
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -877,7 +877,7 @@ class _SyncScreenState extends State<SyncScreen>
                             borderRadius: BorderRadius.circular(8.0),
                             child: firebaseMovies[index].posterPath == null
                                 ? Image.asset(
-                                    'assets/images/na_square.png',
+                                    'assets/images/na_rect.png',
                                     fit: BoxFit.cover,
                                   )
                                 : CachedNetworkImage(
@@ -907,7 +907,7 @@ class _SyncScreenState extends State<SyncScreen>
                                         scrollingImageShimmer(isDark),
                                     errorWidget: (context, url, error) =>
                                         Image.asset(
-                                      'assets/images/na_square.png',
+                                      'assets/images/na_rect.png',
                                       fit: BoxFit.cover,
                                     ),
                                   ),

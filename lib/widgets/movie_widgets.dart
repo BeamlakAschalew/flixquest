@@ -411,7 +411,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                           .posterPath ==
                                                       null
                                                   ? Image.asset(
-                                                      'assets/images/na_square.png',
+                                                      'assets/images/na_rect.png',
                                                       fit: BoxFit.cover,
                                                     )
                                                   : CachedNetworkImage(
@@ -456,7 +456,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                       errorWidget: (context,
                                                               url, error) =>
                                                           Image.asset(
-                                                        'assets/images/na_square.png',
+                                                        'assets/images/na_rect.png',
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
@@ -1282,7 +1282,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                                                   .cast![index].profilePath ==
                                               null
                                           ? Image.asset(
-                                              'assets/images/na_square.png',
+                                              'assets/images/na_rect.png',
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
@@ -1312,7 +1312,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
-                                                'assets/images/na_square.png',
+                                                'assets/images/na_rect.png',
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
@@ -1800,7 +1800,7 @@ class PartsListState extends State<PartsList> {
                                                           .posterPath ==
                                                       null
                                                   ? Image.asset(
-                                                      'assets/images/na_square.png',
+                                                      'assets/images/na_rect.png',
                                                       fit: BoxFit.cover,
                                                     )
                                                   : CachedNetworkImage(
@@ -1842,7 +1842,7 @@ class PartsListState extends State<PartsList> {
                                                       errorWidget: (context,
                                                               url, error) =>
                                                           Image.asset(
-                                                        'assets/images/na_square.png',
+                                                        'assets/images/na_rect.png',
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
@@ -2417,7 +2417,7 @@ class MovieVideosState extends State<MovieVideosDisplay> {
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
-                                                      'assets/images/na_square.png',
+                                                      'assets/images/na_rect.png',
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -2952,7 +2952,7 @@ class CastTabState extends State<CastTab>
                                                     .profilePath ==
                                                 null
                                             ? Image.asset(
-                                                'assets/images/na_square.png',
+                                                'assets/images/na_rect.png',
                                                 fit: BoxFit.cover,
                                               )
                                             : CachedNetworkImage(
@@ -2982,7 +2982,7 @@ class CastTabState extends State<CastTab>
                                                 errorWidget:
                                                     (context, url, error) =>
                                                         Image.asset(
-                                                  'assets/images/na_square.png',
+                                                  'assets/images/na_rect.png',
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -3116,7 +3116,7 @@ class CrewTabState extends State<CrewTab>
                                                     .profilePath ==
                                                 null
                                             ? Image.asset(
-                                                'assets/images/na_square.png',
+                                                'assets/images/na_rect.png',
                                                 fit: BoxFit.cover,
                                               )
                                             : CachedNetworkImage(
@@ -3146,7 +3146,7 @@ class CrewTabState extends State<CrewTab>
                                                 errorWidget:
                                                     (context, url, error) =>
                                                         Image.asset(
-                                                  'assets/images/na_square.png',
+                                                  'assets/images/na_rect.png',
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
