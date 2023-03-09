@@ -105,7 +105,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                           .posterPath ==
                                                                       null
                                                                   ? Image.asset(
-                                                                      'assets/images/na_square.png',
+                                                                      'assets/images/na_rect.png',
                                                                       fit: BoxFit
                                                                           .cover,
                                                                     )
@@ -150,7 +150,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                               error) =>
                                                                           Image
                                                                               .asset(
-                                                                        'assets/images/na_sqaure.png',
+                                                                        'assets/images/na_rect.png',
                                                                         fit: BoxFit
                                                                             .cover,
                                                                       ),

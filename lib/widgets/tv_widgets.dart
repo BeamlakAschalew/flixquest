@@ -406,7 +406,7 @@ class ScrollingTVState extends State<ScrollingTV>
                                                           .posterPath ==
                                                       null
                                                   ? Image.asset(
-                                                      'assets/images/na_square.png',
+                                                      'assets/images/na_rect.png',
                                                       fit: BoxFit.cover,
                                                     )
                                                   : CachedNetworkImage(
@@ -450,7 +450,7 @@ class ScrollingTVState extends State<ScrollingTV>
                                                       errorWidget: (context,
                                                               url, error) =>
                                                           Image.asset(
-                                                        'assets/images/na_square.png',
+                                                        'assets/images/na_rect.png',
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
@@ -670,7 +670,7 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                                       .profilePath ==
                                                   null
                                               ? Image.asset(
-                                                  'assets/images/na_square.png',
+                                                  'assets/images/na_rect.png',
                                                   fit: BoxFit.cover,
                                                 )
                                               : CachedNetworkImage(
@@ -703,7 +703,7 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                                   errorWidget:
                                                       (context, url, error) =>
                                                           Image.asset(
-                                                    'assets/images/na_sqaure.png',
+                                                    'assets/images/na_rect.png',
                                                     fit: BoxFit.cover,
                                                   ),
                                                 ),
@@ -876,7 +876,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                                                   .cast![index].profilePath ==
                                               null
                                           ? Image.asset(
-                                              'assets/images/na_square.png',
+                                              'assets/images/na_rect.png',
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
@@ -906,7 +906,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
-                                                'assets/images/na_sqaure.png',
+                                                'assets/images/na_rect.png',
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
@@ -1060,7 +1060,7 @@ class ScrollingTVEpisodeGuestStarsState
                                                   .profilePath ==
                                               null
                                           ? Image.asset(
-                                              'assets/images/na_square.png',
+                                              'assets/images/na_rect.png',
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
@@ -1090,7 +1090,7 @@ class ScrollingTVEpisodeGuestStarsState
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
-                                                'assets/images/na_sqaure.png',
+                                                'assets/images/na_rect.png',
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
@@ -1237,7 +1237,7 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                                                   .crew![index].profilePath ==
                                               null
                                           ? Image.asset(
-                                              'assets/images/na_square.png',
+                                              'assets/images/na_rect.png',
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
@@ -1266,7 +1266,7 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
-                                                'assets/images/na_sqaure.png',
+                                                'assets/images/na_rect.png',
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
@@ -1397,7 +1397,7 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                                                       .profilePath ==
                                                   null
                                               ? Image.asset(
-                                                  'assets/images/na_square.png',
+                                                  'assets/images/na_rect.png',
                                                   fit: BoxFit.cover,
                                                 )
                                               : CachedNetworkImage(
@@ -1431,7 +1431,7 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                                                   errorWidget:
                                                       (context, url, error) =>
                                                           Image.asset(
-                                                    'assets/images/na_sqaure.png',
+                                                    'assets/images/na_rect.png',
                                                     fit: BoxFit.cover,
                                                   ),
                                                 ),
@@ -2362,7 +2362,7 @@ class TVCastTabState extends State<TVCastTab>
                                                         .profilePath ==
                                                     null
                                                 ? Image.asset(
-                                                    'assets/images/na_square.png',
+                                                    'assets/images/na_rect.png',
                                                     fit: BoxFit.cover,
                                                   )
                                                 : CachedNetworkImage(
@@ -2398,7 +2398,7 @@ class TVCastTabState extends State<TVCastTab>
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
-                                                      'assets/images/na_sqaure.png',
+                                                      'assets/images/na_rect.png',
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -2726,7 +2726,7 @@ class TVCrewTabState extends State<TVCrewTab>
                                                         .profilePath ==
                                                     null
                                                 ? Image.asset(
-                                                    'assets/images/na_square.png',
+                                                    'assets/images/na_rect.png',
                                                     fit: BoxFit.cover,
                                                   )
                                                 : CachedNetworkImage(
@@ -2762,7 +2762,7 @@ class TVCrewTabState extends State<TVCrewTab>
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
-                                                      'assets/images/na_sqaure.png',
+                                                      'assets/images/na_rect.png',
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -4721,7 +4721,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                                         .profilePath ==
                                                     null
                                                 ? Image.asset(
-                                                    'assets/images/na_square.png',
+                                                    'assets/images/na_rect.png',
                                                     fit: BoxFit.cover,
                                                   )
                                                 : CachedNetworkImage(
@@ -4757,7 +4757,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
-                                                      'assets/images/na_square.png',
+                                                      'assets/images/na_rect.png',
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -4904,7 +4904,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                                             .profilePath ==
                                                         null
                                                     ? Image.asset(
-                                                        'assets/images/na_square.png',
+                                                        'assets/images/na_rect.png',
                                                         fit: BoxFit.cover,
                                                       )
                                                     : CachedNetworkImage(
@@ -4946,7 +4946,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
-                                                          'assets/images/na_sqaure.png',
+                                                          'assets/images/na_rect.png',
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),

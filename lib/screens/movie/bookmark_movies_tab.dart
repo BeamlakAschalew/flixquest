@@ -106,7 +106,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                           .posterPath ==
                                                                       null
                                                                   ? Image.asset(
-                                                                      'assets/images/na_square.png',
+                                                                      'assets/images/na_rect.png',
                                                                       fit: BoxFit
                                                                           .cover,
                                                                     )
@@ -151,7 +151,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                               error) =>
                                                                           Image
                                                                               .asset(
-                                                                        'assets/images/na_sqaure.png',
+                                                                        'assets/images/na_rect.png',
                                                                         fit: BoxFit
                                                                             .cover,
                                                                       ),
