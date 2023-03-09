@@ -36,64 +36,28 @@ class MainMoviesListState extends State<MainMoviesList> {
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
           isLoading = true;
         });
-        if (widget.isTrending == false) {
-          try {
-            var response = await retryOptions.retry(
-              () => http.get(
-                Uri.parse(
-                    "$TMDB_API_BASE_URL/movie/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
-              ),
-              retryIf: (e) => e is SocketException || e is TimeoutException,
-            );
+        if (mounted) {
+          fetchMovies(
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+              .then((value) {
             if (mounted) {
               setState(() {
-                pageNum++;
+                moviesList!.addAll(value);
                 isLoading = false;
-                var newlistMovies =
-                    (json.decode(response.body)['results'] as List)
-                        .map((i) => Movie.fromJson(i))
-                        .toList();
-                moviesList!.addAll(newlistMovies);
+                pageNum++;
               });
             }
-          } finally {
-            client.close();
-          }
-        } else if (widget.isTrending == true) {
-          try {
-            var response = await retryOptions.retry(
-              () => http.get(
-                Uri.parse(
-                    "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=${widget.includeAdult}&page=$pageNum"),
-              ),
-              retryIf: (e) => e is SocketException || e is TimeoutException,
-            );
-            if (mounted) {
-              setState(() {
-                pageNum++;
-                isLoading = false;
-                var newlistMovies =
-                    (json.decode(response.body)['results'] as List)
-                        .map((i) => Movie.fromJson(i))
-                        .toList();
-                moviesList!.addAll(newlistMovies);
-              });
-            }
-          } finally {
-            client.close();
-          }
+          });
         }
       }
     });
-
-    return "success";
   }
 
   @override

@@ -32,7 +32,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -40,37 +40,29 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
           isLoading = true;
         });
 
-        try {
-          var response = await retryOptions.retry(
-            () => http.get(
-              Uri.parse('${widget.api}&page=$pageNum'),
-            ),
-            retryIf: (e) => e is SocketException || e is TimeoutException,
-          );
-          if (mounted) {
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => Movie.fromJson(i))
-                      .toList();
-              moviesList!.addAll(newlistMovies);
-            });
-          }
-        } finally {
-          client.close();
+        if (mounted) {
+          fetchMovies(
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+              .then((value) {
+            if (mounted) {
+              setState(() {
+                moviesList!.addAll(value);
+                isLoading = false;
+                pageNum++;
+              });
+            }
+          });
         }
       }
     });
-
-    return "success";
   }
 
   @override
   void initState() {
     super.initState();
-    fetchMovies('${widget.api}&page=${widget.page}}').then((value) {
+    fetchMovies(
+            '${widget.api}&page=${widget.page}&include_adult=${widget.includeAdult}')
+        .then((value) {
       if (mounted) {
         setState(() {
           moviesList = value;

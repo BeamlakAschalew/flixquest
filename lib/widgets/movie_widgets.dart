@@ -276,52 +276,28 @@ class ScrollingMoviesState extends State<ScrollingMovies>
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
           isLoading = true;
         });
-        if (widget.isTrending == false) {
-          var response = await http.get(
-            Uri.parse(
-                "$TMDB_API_BASE_URL/movie/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
-          );
-          if (mounted) {
+        if (mounted) {
+          fetchMovies(
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+              .then((value) {
             if (mounted) {
               setState(() {
-                pageNum++;
+                moviesList!.addAll(value);
                 isLoading = false;
-                var newlistMovies =
-                    (json.decode(response.body)['results'] as List)
-                        .map((i) => Movie.fromJson(i))
-                        .toList();
-                moviesList!.addAll(newlistMovies);
+                pageNum++;
               });
             }
-          }
-        } else if (widget.isTrending == true) {
-          var response = await http.get(
-            Uri.parse(
-                "$TMDB_API_BASE_URL/trending/movie/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=${widget.includeAdult}&page=$pageNum"),
-          );
-          if (mounted) {
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => Movie.fromJson(i))
-                      .toList();
-              moviesList!.addAll(newlistMovies);
-            });
-          }
+          });
         }
       }
     });
-
-    return "success";
   }
 
   @override
@@ -1110,7 +1086,7 @@ class _MovieAboutState extends State<MovieAbout> {
             ),
             WatchNowButton(
               movieId: widget.movie.id!,
-              movieName: widget.movie.originalTitle,
+              movieName: widget.movie.title,
               adult: widget.movie.adult,
               api: Endpoints.movieDetailsUrl(widget.movie.id!),
             ),
@@ -1121,7 +1097,7 @@ class _MovieAboutState extends State<MovieAbout> {
             MovieImagesDisplay(
               title: 'Images',
               api: Endpoints.getImages(widget.movie.id!),
-              name: widget.movie.originalTitle,
+              name: widget.movie.title,
             ),
             MovieVideosDisplay(
               api: Endpoints.getVideos(widget.movie.id!),
@@ -1147,7 +1123,7 @@ class _MovieAboutState extends State<MovieAbout> {
               movieId: widget.movie.id!,
             ),
             SimilarMoviesTab(
-                movieName: widget.movie.originalTitle!,
+                movieName: widget.movie.title!,
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 movieId: widget.movie.id!,
                 api: Endpoints.getSimilarMovies(widget.movie.id!, 1)),
@@ -2599,6 +2575,38 @@ class GenreDisplayState extends State<GenreDisplay>
     });
   }
 
+  // void getGenreWithoutData() {
+  //   genreList = [];
+  //   for (int i = 0; i < widget.movieGenres!.length; i++) {
+  //     print(i);
+  //     for (int k = 0; k < genreData.movieGenres.length; k++) {
+  //       if (widget.movieGenres![i] == genreData.movieGenres[k].genreValue) {
+  //         setState(() {
+  //           genreList!.add(Genres(
+  //               genreID: genreData.movieGenres[k].genreValue,
+  //               genreName: genreData.movieGenres[k].genreName));
+  //         });
+  //       } else {
+  //         print('inv: ${widget.movieGenres![i]}');
+  //       }
+  //     }
+  //   }
+  //   print(genreList);
+  // }
+
+  // void genreGet() {
+  //   print(widget.movieGenres);
+  //   widget.movieGenres == null
+  //       ? fetchGenre(widget.api!).then((value) {
+  //           if (mounted) {
+  //             setState(() {
+  //               genreList = value;
+  //             });
+  //           }
+  //         })
+  //       : getGenreWithoutData();
+  // }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
@@ -3222,40 +3230,28 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     getMoreData();
   }
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
           isLoading = true;
         });
-
-        try {
-          var response = await retryOptions.retry(
-            () => http.get(Uri.parse(
-                '$TMDB_API_BASE_URL/movie/${widget.movieId}/recommendations?api_key=$TMDB_API_KEY'
-                '&language=en-US&include_adult=${widget.includeAdult}'
-                '&page=$pageNum')),
-            retryIf: (e) => e is SocketException || e is TimeoutException,
-          );
-          if (mounted) {
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => Movie.fromJson(i))
-                      .toList();
-              movieList!.addAll(newlistMovies);
-            });
-          }
-        } finally {
-          client.close();
+        if (mounted) {
+          fetchMovies(
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+              .then((value) {
+            if (mounted) {
+              setState(() {
+                movieList!.addAll(value);
+                isLoading = false;
+                pageNum++;
+              });
+            }
+          });
         }
       }
     });
-
-    return "success";
   }
 
   @override
@@ -3362,40 +3358,28 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
     getMoreData();
   }
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
           isLoading = true;
         });
-
-        try {
-          var response = await retryOptions.retry(
-            () => http.get(Uri.parse(
-                '$TMDB_API_BASE_URL/movie/${widget.movieId}/similar?api_key=$TMDB_API_KEY'
-                '&language=en-US&include_adult=${widget.includeAdult}'
-                '&page=$pageNum')),
-            retryIf: (e) => e is SocketException || e is TimeoutException,
-          );
-          if (mounted) {
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => Movie.fromJson(i))
-                      .toList();
-              movieList!.addAll(newlistMovies);
-            });
-          }
-        } finally {
-          client.close();
+        if (mounted) {
+          fetchMovies(
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+              .then((value) {
+            if (mounted) {
+              setState(() {
+                movieList!.addAll(value);
+                isLoading = false;
+                pageNum++;
+              });
+            }
+          });
         }
       }
     });
-
-    return "success";
   }
 
   @override
@@ -3482,42 +3466,28 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
           isLoading = true;
         });
-
-        try {
-          var response = await retryOptions.retry(() => http.get(Uri.parse(
-              '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY'
-              '&language=en-US'
-              '&sort_by=popularity.desc'
-              '&include_adult=${widget.includeAdult}'
-              '&include_video=false'
-              '&watch_region=${widget.watchRegion}'
-              '&page=$pageNum'
-              '&with_genres=${widget.genreId}')));
-          if (mounted) {
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => Movie.fromJson(i))
-                      .toList();
-              moviesList!.addAll(newlistMovies);
-            });
-          }
-        } finally {
-          client.close();
+        if (mounted) {
+          fetchMovies(
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+              .then((value) {
+            if (mounted) {
+              setState(() {
+                moviesList!.addAll(value);
+                isLoading = false;
+                pageNum++;
+              });
+            }
+          });
         }
       }
     });
-
-    return "success";
   }
 
   @override
@@ -3613,43 +3583,28 @@ class ParticularStreamingServiceMoviesState
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
           isLoading = true;
         });
-
-        try {
-          var response = await retryOptions.retry(
-            () => http.get(Uri.parse('$TMDB_API_BASE_URL'
-                '/discover/movie?api_key='
-                '$TMDB_API_KEY'
-                '&language=en-US&sort_by=popularity'
-                '.desc&include_adult=${widget.includeAdult}&include_video=false&page=$pageNum'
-                '&with_watch_providers=${widget.providerID}'
-                '&watch_region=${widget.watchRegion}')),
-            retryIf: (e) => e is SocketException || e is TimeoutException,
-          );
-          if (mounted) {
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => Movie.fromJson(i))
-                      .toList();
-              moviesList!.addAll(newlistMovies);
-            });
-          }
-        } finally {
-          client.close();
+        if (mounted) {
+          fetchMovies(
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+              .then((value) {
+            if (mounted) {
+              setState(() {
+                moviesList!.addAll(value);
+                isLoading = false;
+                pageNum++;
+              });
+            }
+          });
         }
       }
     });
-
-    return "success";
   }
 
   @override

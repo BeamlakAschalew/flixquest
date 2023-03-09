@@ -361,7 +361,7 @@ class Search extends SearchDelegate<String> {
                   return GestureDetector(
                     onTap: () {
                       mixpanel.track('Most viewed movie pages', properties: {
-                        'Movie name': '${moviesList[index].originalTitle}',
+                        'Movie name': '${moviesList[index].title}',
                         'Movie id': '${moviesList[index].id}'
                       });
                       Navigator.push(context,

@@ -293,8 +293,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                       ClipRRect(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(
-                                                                    8.0),
+                                                                .circular(8.0),
                                                         child: personMoviesList![
                                                                         index]
                                                                     .posterPath ==
@@ -346,8 +345,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                 errorWidget: (context,
                                                                         url,
                                                                         error) =>
-                                                                    Image
-                                                                        .asset(
+                                                                    Image.asset(
                                                                   'assets/images/na_square.png',
                                                                   fit: BoxFit
                                                                       .cover,
@@ -400,7 +398,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                   flex: 2,
                                                   child: Text(
                                                     personMoviesList![index]
-                                                        .originalTitle!,
+                                                        .title!,
                                                     textAlign: TextAlign.center,
                                                     maxLines: 2,
                                                     overflow:
@@ -531,8 +529,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                       ClipRRect(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(
-                                                                    8.0),
+                                                                .circular(8.0),
                                                         child: personTVList![
                                                                         index]
                                                                     .posterPath ==
@@ -584,8 +581,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                 errorWidget: (context,
                                                                         url,
                                                                         error) =>
-                                                                    Image
-                                                                        .asset(
+                                                                    Image.asset(
                                                                   'assets/images/na_square.png',
                                                                   fit: BoxFit
                                                                       .cover,
@@ -886,11 +882,17 @@ class _PersonDataTableState extends State<PersonDataTable> {
           child: personDetails == null
               ? personDetailInfoTableShimmer(isDark)
               : DataTable(dataRowHeight: 40, columns: [
-                  const DataColumn(
-                      label: Text(
-                    'Age',
-                    style: kTableLeftStyle,
-                  )),
+                  DataColumn(
+                      label: personDetails!.deathday != null &&
+                              personDetails!.birthday != null
+                          ? const Text(
+                              'Died aged',
+                              style: kTableLeftStyle,
+                            )
+                          : const Text(
+                              'Age',
+                              style: kTableLeftStyle,
+                            )),
                   DataColumn(
                     label: personDetails!.deathday != null &&
                             personDetails!.birthday != null

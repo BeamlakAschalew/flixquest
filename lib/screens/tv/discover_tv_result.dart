@@ -27,7 +27,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -35,29 +35,17 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
           isLoading = true;
         });
 
-        try {
-          var response = await retryOptions.retry(
-            () => http.get(Uri.parse('${widget.api}&page=$pageNum')),
-            retryIf: (e) => e is SocketException || e is TimeoutException,
-          );
-
+        fetchTV('${widget.api}&page=$pageNum').then((value) {
           if (mounted) {
             setState(() {
-              pageNum++;
+              tvList!.addAll(value);
               isLoading = false;
-              var newlistTV = (json.decode(response.body)['results'] as List)
-                  .map((i) => TV.fromJson(i))
-                  .toList();
-              tvList!.addAll(newlistTV);
+              pageNum++;
             });
           }
-        } finally {
-          client.close();
-        }
+        });
       }
     });
-
-    return "success";
   }
 
   @override

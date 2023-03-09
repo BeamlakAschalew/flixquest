@@ -275,50 +275,26 @@ class ScrollingTVState extends State<ScrollingTV>
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
           isLoading = true;
         });
-        if (widget.isTrending == false) {
-          var response = await http.get(
-            Uri.parse(
-                "$TMDB_API_BASE_URL/tv/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
-          );
+
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}')
+            .then((value) {
           if (mounted) {
             setState(() {
-              pageNum++;
+              tvList!.addAll(value);
               isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => TV.fromJson(i))
-                      .toList();
-              tvList!.addAll(newlistMovies);
+              pageNum++;
             });
           }
-        } else if (widget.isTrending == true) {
-          var response = await http.get(
-            Uri.parse(
-                "$TMDB_API_BASE_URL/trending/tv/week?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}language=en-US&include_adult=false&page=$pageNum"),
-          );
-          if (mounted) {
-            setState(() {
-              pageNum++;
-              isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => TV.fromJson(i))
-                      .toList();
-              tvList!.addAll(newlistMovies);
-            });
-          }
-        }
+        });
       }
     });
-
-    return "success";
   }
 
   @override
@@ -2870,7 +2846,7 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -2878,24 +2854,18 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
           isLoading = true;
         });
 
-        var response = await http.get(Uri.parse(
-            '$TMDB_API_BASE_URL/tv/${widget.tvId}/recommendations?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}'
-            '&language=en-US'
-            '&page=$pageNum'));
-        if (mounted) {
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistTV = (json.decode(response.body)['results'] as List)
-                .map((i) => TV.fromJson(i))
-                .toList();
-            tvList!.addAll(newlistTV);
-          });
-        }
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}')
+            .then((value) {
+          if (mounted) {
+            setState(() {
+              tvList!.addAll(value);
+              isLoading = false;
+              pageNum++;
+            });
+          }
+        });
       }
     });
-
-    return "success";
   }
 
   @override
@@ -3001,7 +2971,7 @@ class SimilarTVTabState extends State<SimilarTVTab>
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -3009,24 +2979,18 @@ class SimilarTVTabState extends State<SimilarTVTab>
           isLoading = true;
         });
 
-        var response = await http.get(Uri.parse(
-            '$TMDB_API_BASE_URL/tv/${widget.tvId}/similar?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}'
-            '&language=en-US'
-            '&page=$pageNum'));
-        if (mounted) {
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistTV = (json.decode(response.body)['results'] as List)
-                .map((i) => TV.fromJson(i))
-                .toList();
-            tvList!.addAll(newlistTV);
-          });
-        }
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}')
+            .then((value) {
+          if (mounted) {
+            setState(() {
+              tvList!.addAll(value);
+              isLoading = false;
+              pageNum++;
+            });
+          }
+        });
       }
     });
-
-    return "success";
   }
 
   @override
@@ -3194,7 +3158,7 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -3202,35 +3166,18 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
           isLoading = true;
         });
 
-        try {
-          var response = await retryOptions.retry(
-            () => http.get(
-                Uri.parse('$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY'
-                    '&language=en-US'
-                    '&sort_by=popularity.desc'
-                    '&watch_region=US&include_adult=${widget.includeAdult}'
-                    '&page=$pageNum'
-                    '&with_genres=${widget.genreId}')),
-            retryIf: (e) => e is SocketException || e is TimeoutException,
-          );
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}')
+            .then((value) {
           if (mounted) {
             setState(() {
-              pageNum++;
+              tvList!.addAll(value);
               isLoading = false;
-              var newlistMovies =
-                  (json.decode(response.body)['results'] as List)
-                      .map((i) => TV.fromJson(i))
-                      .toList();
-              tvList!.addAll(newlistMovies);
+              pageNum++;
             });
           }
-        } finally {
-          client.close();
-        }
+        });
       }
     });
-
-    return "success";
   }
 
   @override
@@ -4597,7 +4544,7 @@ class ParticularStreamingServiceTVShowsState
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -4605,27 +4552,18 @@ class ParticularStreamingServiceTVShowsState
           isLoading = true;
         });
 
-        var response = await http.get(Uri.parse('$TMDB_API_BASE_URL'
-            '/discover/tv?api_key='
-            '$TMDB_API_KEY'
-            '&language=en-US&sort_by=popularity&include_adult=${widget.includeAdult}'
-            '.desc&include_adult=false&include_video=false&page=$pageNum'
-            '&with_watch_providers=${widget.providerID}'
-            '&watch_region=US'));
-        if (mounted) {
-          setState(() {
-            pageNum++;
-            isLoading = false;
-            var newlistTV = (json.decode(response.body)['results'] as List)
-                .map((i) => TV.fromJson(i))
-                .toList();
-            tvList!.addAll(newlistTV);
-          });
-        }
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}')
+            .then((value) {
+          if (mounted) {
+            setState(() {
+              tvList!.addAll(value);
+              isLoading = false;
+              pageNum++;
+            });
+          }
+        });
       }
     });
-
-    return "success";
   }
 
   @override
@@ -4909,7 +4847,8 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return credits == null
-        ? Container(child: tvCastAndCrewTabShimmer(isDark))
+        ? Container(
+            padding: EdgeInsets.all(8), child: searchedPersonShimmer(isDark))
         : credits!.cast!.isEmpty
             ? Container(
                 color:
@@ -5047,6 +4986,63 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                               )));
                     }));
   }
+
+  Widget searchedPersonShimmer(isDark) => ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      itemCount: 10,
+      itemBuilder: (BuildContext context, int index) {
+        return Padding(
+          padding: const EdgeInsets.only(
+            top: 3.0,
+            bottom: 3.0,
+            left: 15,
+          ),
+          child: Column(
+            children: [
+              Shimmer.fromColors(
+                baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+                highlightColor:
+                    isDark ? Colors.grey.shade700 : Colors.grey.shade100,
+                direction: ShimmerDirection.ltr,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20.0),
+                      child: SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100.0),
+                              color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 20,
+                            width: 140,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Divider(
+                color: !isDark ? Colors.black54 : Colors.white54,
+                thickness: 1,
+                endIndent: 20,
+                indent: 10,
+              ),
+            ],
+          ),
+        );
+      });
 
   @override
   bool get wantKeepAlive => true;

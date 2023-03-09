@@ -42,7 +42,8 @@ class Endpoints {
     return '$TMDB_API_BASE_URL'
         '/trending/movie/week?api_key='
         '$TMDB_API_KEY'
-        '&page=$page';
+        '&page=$page'
+        '&include_adult=$includeAdult';
   }
 
   static String upcomingMoviesUrl(int page) {

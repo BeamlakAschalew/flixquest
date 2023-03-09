@@ -36,62 +36,26 @@ class MainTVListState extends State<MainTVList> {
   int pageNum = 2;
   bool isLoading = false;
 
-  Future<String> getMoreData() async {
+  void getMoreData() async {
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
           isLoading = true;
         });
-        if (widget.isTrending == false) {
-          try {
-            var response = await retryOptions.retry(
-              () => http.get(
-                Uri.parse(
-                    "$TMDB_API_BASE_URL/tv/${widget.discoverType}?api_key=$TMDB_API_KEY&include_adult=${widget.includeAdult}&page=$pageNum"),
-              ),
-              retryIf: (e) => e is SocketException || e is TimeoutException,
-            );
-            if (mounted) {
-              setState(() {
-                pageNum++;
-                isLoading = false;
-                var newlistTv = (json.decode(response.body)['results'] as List)
-                    .map((i) => TV.fromJson(i))
-                    .toList();
-                tvList!.addAll(newlistTv);
-              });
-            }
-          } finally {
-            client.close();
+
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}')
+            .then((value) {
+          if (mounted) {
+            setState(() {
+              tvList!.addAll(value);
+              isLoading = false;
+              pageNum++;
+            });
           }
-        } else if (widget.isTrending == true) {
-          try {
-            var response = await retryOptions.retry(
-              () => http.get(
-                Uri.parse(
-                    "$TMDB_API_BASE_URL/trending/tv/week?api_key=$TMDB_API_KEY&language=en-US&include_adult=${widget.includeAdult}&page=$pageNum"),
-              ),
-              retryIf: (e) => e is SocketException || e is TimeoutException,
-            );
-            if (mounted) {
-              setState(() {
-                pageNum++;
-                isLoading = false;
-                var newlistTv = (json.decode(response.body)['results'] as List)
-                    .map((i) => TV.fromJson(i))
-                    .toList();
-                tvList!.addAll(newlistTv);
-              });
-            }
-          } finally {
-            client.close();
-          }
-        }
+        });
       }
     });
-
-    return "success";
   }
 
   @override

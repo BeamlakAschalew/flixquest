@@ -242,7 +242,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                         child: Text(
                                                           widget
                                                               .movieList![index]
-                                                              .originalTitle!,
+                                                              .title!,
                                                           textAlign:
                                                               TextAlign.center,
                                                           maxLines: 2,

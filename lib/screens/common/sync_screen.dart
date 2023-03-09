@@ -77,10 +77,12 @@ class _SyncScreenState extends State<SyncScreen>
       isLoading = true;
     });
 
+    // Checks if a bookmark document exists for a signed in user
     if (await checkIfDocExists(uid!) == false) {
       await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).set({});
     }
 
+    // Checks if a movie and tvShow collection exists for a signed in user and creates a collection if it doesn't exist
     subscription =
         await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).get();
     final docData = subscription.data() as Map<String, dynamic>;
@@ -97,6 +99,7 @@ class _SyncScreenState extends State<SyncScreen>
       );
     }
 
+    // Fetches movies and tvShows of the signed in user and converts the map into a Movie/TV object/list
     await firebaseInstance
         .collection('bookmarks-v2.0')
         .doc(uid!)
@@ -134,11 +137,13 @@ class _SyncScreenState extends State<SyncScreen>
     }
   }
 
+  // Function for transferring movie and tv items to sqlite db
   void offlineMovieSync(List<Movie> movieList) async {
     setState(() {
       isOfflineMovieSyncFinished = false;
     });
     try {
+      // loops for the movielist passed to the function and adds to the databse if it doesn't exist
       for (int i = 0; i < movieList.length; i++) {
         bool? isBookmarked;
         var iB = await movieDatabaseController.contain(movieList[i].id!);
@@ -171,6 +176,7 @@ class _SyncScreenState extends State<SyncScreen>
     }
   }
 
+  // Same functionality with offlineMovieSync
   void offlineTVSync(List<TV> tvList) async {
     setState(() {
       isOfflineTVSyncFinished = false;
@@ -208,12 +214,16 @@ class _SyncScreenState extends State<SyncScreen>
     }
   }
 
+  // Function to transfer sqlite movie and tv items to firebase firestore
   void onlineMovieSync() async {
     setState(() {
       isOnlineMovieSyncFinished = false;
     });
+
+    // makes the onlinemoviemap into a empty list instead of null to avoid null errors
     onlineMovieMap = [];
     try {
+      // get movie map saved into firebase first to compare between sqlite items and firebase items
       await firebaseInstance
           .collection('bookmarks-v2.0')
           .doc(uid!)
@@ -229,11 +239,12 @@ class _SyncScreenState extends State<SyncScreen>
         }
       });
 
+      // fetch movies from sqlite
       var mov = await movieDatabaseController.getMovieList();
       if (mounted) {
         setState(() {
           offlineSavedMovies = mov;
-
+          // loop through all movie items and convert them to list of maps
           for (int i = 0; i < offlineSavedMovies!.length; i++) {
             Map<String, dynamic> movMap = offlineSavedMovies![i].toMap();
             offineMovieMap.add(movMap);
@@ -241,11 +252,13 @@ class _SyncScreenState extends State<SyncScreen>
         });
       }
 
+      // Calculates the differences between the sqlite items and firebase items
       List<Map<String, dynamic>> difference =
           offineMovieMap.toSet().difference(onlineMovieMap.toSet()).toList();
 
       difference.insertAll(0, onlineMovieMap);
 
+      // finally update the firebase collection with the new difference list of maps
       await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).update(
         {'movies': difference},
       );
@@ -267,6 +280,7 @@ class _SyncScreenState extends State<SyncScreen>
     }
   }
 
+  // same functionality with onlineMovieSync()
   void onlineTVSync() async {
     setState(() {
       isOnlineTVSyncFinished = false;
@@ -325,18 +339,25 @@ class _SyncScreenState extends State<SyncScreen>
     }
   }
 
+  // function to delete a specific map from firebase
   void deleteMovieFromFirebase(int index) async {
+    // Get the document
     DocumentReference documentReference =
         firebaseInstance.collection('bookmarks-v2.0').doc(uid!);
 
+    // Get all list of map/array from firebase
     List<dynamic> array = (await documentReference.get()).get('movies');
+    // remove the array at a specific index, the index will be hooked to a bookmark-minus button
     array.removeAt(index);
+
+    // updates the movies with the new list of array in the firestore and removes items at a specific index for the end user
     await documentReference
         .update({'movies': array}).then((value) => setState(() {
               firebaseMovies.removeAt(index);
             }));
   }
 
+  // Same functionality with deleteMovieFromFirebase()
   void deleteTVFromFirebase(int index) async {
     DocumentReference documentReference =
         firebaseInstance.collection('bookmarks-v2.0').doc(uid!);

@@ -388,7 +388,7 @@ class MovieGridView extends StatelessWidget {
                   Expanded(
                       flex: 2,
                       child: Text(
-                        moviesList![index].originalTitle!,
+                        moviesList![index].title!,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -516,7 +516,7 @@ class BookmarkMovieGridView extends StatelessWidget {
                   Expanded(
                       flex: 2,
                       child: Text(
-                        moviesList![index].originalTitle!,
+                        moviesList![index].title!,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,

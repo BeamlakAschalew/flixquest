@@ -42,7 +42,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
     final mixpanel =
         Provider.of<SettingsProvider>(context, listen: false).mixpanel;
     mixpanel.track('Most viewed movie pages', properties: {
-      'Movie name': '${widget.movie.originalTitle}',
+      'Movie name': '${widget.movie.title}',
       'Movie id': '${widget.movie.id}',
       'Is Movie adult?': '${widget.movie.adult}'
     });
@@ -111,7 +111,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
             await Share.share(
-                'Checkout the movie \'${widget.movie.originalTitle}\'!\nIt is rated ${widget.movie.voteAverage!.toStringAsFixed(1)} out of 10\nhttps://themoviedb.org/movie/${widget.movie.id}');
+                'Checkout the movie \'${widget.movie.title}\'!\nIt is rated ${widget.movie.voteAverage!.toStringAsFixed(1)} out of 10\nhttps://themoviedb.org/movie/${widget.movie.id}');
           },
           child: const Icon(Icons.share)),
     );
