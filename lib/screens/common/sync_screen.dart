@@ -27,13 +27,7 @@ class _SyncScreenState extends State<SyncScreen>
   final FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore firebaseInstance = FirebaseFirestore.instance;
   List<Movie> firebaseMovies = [];
-  List<Movie> onlineSyncMovies = [];
-  List<Map<String, dynamic>> onlineMovieMap = [];
-  List<Map<String, dynamic>> onlineTVMap = [];
   List<TV> firebaseTvShows = [];
-  List<TV> onlineSyncTVShows = [];
-  List<Map<String, dynamic>> offineMovieMap = [];
-  List<Map<String, dynamic>> offlineTVMap = [];
   bool? isLoading;
   final scrollController = ScrollController();
   bool isOfflineMovieSyncFinished = true;
@@ -42,10 +36,6 @@ class _SyncScreenState extends State<SyncScreen>
   MovieDatabaseController movieDatabaseController = MovieDatabaseController();
   TVDatabaseController tvDatabaseController = TVDatabaseController();
   late DocumentSnapshot subscription;
-  List<Movie>? offlineSavedMovies;
-  List<TV>? offlineSavedTV;
-  Map<String, dynamic>? offlineSavedMoviesMap = {};
-  Map<String, dynamic>? offlineSavedTVMap = {};
   String? uid;
   bool isOnlineMovieSyncFinished = true;
   bool isOnlineTVSyncFinished = true;
@@ -220,10 +210,12 @@ class _SyncScreenState extends State<SyncScreen>
       isOnlineMovieSyncFinished = false;
     });
 
-    // makes the onlinemoviemap into a empty list instead of null to avoid null errors
-    onlineMovieMap = [];
+    // define three lists for those who come from firebase, sqlite and one to convert to a list of string
+    List<Movie> firebaseMovieForOnlineSync = [];
+    List<Movie> sqliteMovieForOnlineSync = [];
+    List<Map<String, dynamic>> toFirebase = [];
     try {
-      // get movie map saved into firebase first to compare between sqlite items and firebase items
+      // fetches movie map from firebase and converts it into a list of movie
       await firebaseInstance
           .collection('bookmarks-v2.0')
           .doc(uid!)
@@ -231,9 +223,9 @@ class _SyncScreenState extends State<SyncScreen>
           .then((value) {
         if (mounted) {
           setState(() {
-            for (List<Map<String, dynamic>>? element
+            for (Map<String, dynamic>? element
                 in List.from(value.get('movies'))) {
-              onlineMovieMap = element!;
+              firebaseMovieForOnlineSync.add(Movie.fromJson(element!));
             }
           });
         }
@@ -243,24 +235,24 @@ class _SyncScreenState extends State<SyncScreen>
       var mov = await movieDatabaseController.getMovieList();
       if (mounted) {
         setState(() {
-          offlineSavedMovies = mov;
-          // loop through all movie items and convert them to list of maps
-          for (int i = 0; i < offlineSavedMovies!.length; i++) {
-            Map<String, dynamic> movMap = offlineSavedMovies![i].toMap();
-            offineMovieMap.add(movMap);
-          }
+          sqliteMovieForOnlineSync.addAll(mov);
         });
       }
 
-      // Calculates the differences between the sqlite items and firebase items
-      List<Map<String, dynamic>> difference =
-          offineMovieMap.toSet().difference(onlineMovieMap.toSet()).toList();
+      // Calculates the differences between the converted firebase items and sqlite items
+      List<Movie> difference = sqliteMovieForOnlineSync
+          .toSet()
+          .difference(firebaseMovieForOnlineSync.toSet())
+          .toList();
 
-      difference.insertAll(0, onlineMovieMap);
+      // Loops through all items of difference and converts it to a list of map
+      for (int i = 0; i < difference.length; i++) {
+        toFirebase.add(difference[i].toMap());
+      }
 
       // finally update the firebase collection with the new difference list of maps
       await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).update(
-        {'movies': difference},
+        {'movies': toFirebase},
       );
     } finally {
       setState(() {
@@ -285,7 +277,9 @@ class _SyncScreenState extends State<SyncScreen>
     setState(() {
       isOnlineTVSyncFinished = false;
     });
-    onlineSyncTVShows = [];
+    List<TV> firebaseTVForOnlineSync = [];
+    List<TV> sqliteTVForOnlineSync = [];
+    List<Map<String, dynamic>> toFirebase = [];
     try {
       await firebaseInstance
           .collection('bookmarks-v2.0')
@@ -294,9 +288,9 @@ class _SyncScreenState extends State<SyncScreen>
           .then((value) {
         if (mounted) {
           setState(() {
-            for (List<Map<String, dynamic>>? element
+            for (Map<String, dynamic>? element
                 in List.from(value.get('tvShows'))) {
-              onlineTVMap = element!;
+              firebaseTVForOnlineSync.add(TV.fromJson(element!));
             }
           });
         }
@@ -305,21 +299,21 @@ class _SyncScreenState extends State<SyncScreen>
       var tv = await tvDatabaseController.getTVList();
       if (mounted) {
         setState(() {
-          offlineSavedTV = tv;
-          for (int i = 0; i < offlineSavedTV!.length; i++) {
-            Map<String, dynamic> movMap = offlineSavedTV![i].toMap();
-            offlineTVMap.add(movMap);
-          }
+          sqliteTVForOnlineSync.addAll(tv);
         });
       }
 
-      List<Map<String, dynamic>> difference =
-          offlineTVMap.toSet().difference(onlineSyncTVShows.toSet()).toList();
+      List<TV> difference = sqliteTVForOnlineSync
+          .toSet()
+          .difference(firebaseTVForOnlineSync.toSet())
+          .toList();
 
-      difference.insertAll(0, onlineTVMap);
+      for (int i = 0; i < difference.length; i++) {
+        toFirebase.add(difference[i].toMap());
+      }
 
       await firebaseInstance.collection('bookmarks-v2.0').doc(uid!).update(
-        {'tvShows': difference},
+        {'tvShows': toFirebase},
       );
     } finally {
       setState(() {

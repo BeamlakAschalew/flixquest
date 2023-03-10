@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'dart:io';
-
-import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import '/screens/user/user_state.dart';
 import '/screens/user/user_info.dart';

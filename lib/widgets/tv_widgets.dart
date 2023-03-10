@@ -1,7 +1,4 @@
 // ignore_for_file: avoid_unnecessary_containers
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
@@ -38,7 +35,6 @@ import '/screens/tv/tv_detail.dart';
 import '/screens/tv/genre_tv.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/person/crew_detail.dart';
@@ -4848,7 +4844,8 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return credits == null
         ? Container(
-            padding: EdgeInsets.all(8), child: searchedPersonShimmer(isDark))
+            padding: const EdgeInsets.all(8),
+            child: searchedPersonShimmer(isDark))
         : credits!.cast!.isEmpty
             ? Container(
                 color:
@@ -5660,13 +5657,13 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                   widget.episodeList.seasonNumber!,
                   widget.episodeList.episodeNumber!),
             ),
-            TVVideosDisplay(
-              api: Endpoints.getTVEpisodeVideosUrl(
-                  widget.tvId!,
-                  widget.episodeList.seasonNumber!,
-                  widget.episodeList.episodeNumber!),
-              title: 'Videos',
-            ),
+            // TVVideosDisplay(
+            //   api: Endpoints.getTVEpisodeVideosUrl(
+            //       widget.tvId!,
+            //       widget.episodeList.seasonNumber!,
+            //       widget.episodeList.episodeNumber!),
+            //   title: 'Videos',
+            // ),
           ],
         ),
       ),
