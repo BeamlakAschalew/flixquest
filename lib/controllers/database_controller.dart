@@ -155,7 +155,6 @@ class TVDatabaseController {
   Future<List<Map<String, dynamic>>> getTVMapList() async {
     Database db = await database;
     var result = await db.query(tableName, orderBy: '$colDateAdded DESC');
-    print(result);
     return result;
   }
 

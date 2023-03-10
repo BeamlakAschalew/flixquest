@@ -1,7 +1,4 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '../ui_components/movie_ui_components.dart';
@@ -31,7 +28,6 @@ import '/models/credits.dart';
 import '/screens/movie/collection_detail.dart';
 import '/screens/person/crew_detail.dart';
 import '/models/images.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/movie/genremovies.dart';

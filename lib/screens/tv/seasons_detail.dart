@@ -407,11 +407,11 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
               api: Endpoints.getTVSeasonImagesUrl(
                   widget.tvDetails.id!, widget.season.seasonNumber!),
             ),
-            TVVideosDisplay(
-              api: Endpoints.getTVSeasonVideosUrl(
-                  widget.tvDetails.id!, widget.season.seasonNumber!),
-              title: 'Videos',
-            ),
+            // TVVideosDisplay(
+            //   api: Endpoints.getTVSeasonVideosUrl(
+            //       widget.tvDetails.id!, widget.season.seasonNumber!),
+            //   title: 'Videos',
+            // ),
 
             // TVCastTab(
             //   api: Endpoints.getFullTVSeasonCreditsUrl(

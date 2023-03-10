@@ -1,11 +1,7 @@
-import 'dart:async';
-import 'dart:io';
 import '../../ui_components/tv_ui_components.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import '../../models/function.dart';
 import '../../models/tv.dart';
 import '../../provider/settings_provider.dart';
