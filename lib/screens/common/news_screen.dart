@@ -140,7 +140,6 @@ class _NewsPageState extends State<NewsPage>
             ),
             Expanded(
               child: IndexedStack(
-                
                 index: selectedIndex,
 
                 // controller: tabController,
@@ -203,13 +202,12 @@ class _NewsViewState extends State<NewsView>
       {
         if (mounted) {
           setState(() {
-            articleNames = webScraper!.getElement(
-                'h2.news-article__title > a.tracked-offsite-link', ['href']);
-            atricleImage =
-                webScraper!.getElement('img.news-article__image', ['src']);
-            articleWebsite = webScraper!.getElement(
-                'ul.news-article__header-detail > li.ipl-inline-list__item > a.tracked-offsite-link',
-                ['class']);
+            articleNames = webScraper!
+                .getElement('div.sc-f10a2b83-2 > a.ipc-link', ['href']);
+            atricleImage = webScraper!
+                .getElement('div.ipc-media > img.ipc-image', ['src']);
+            articleWebsite = webScraper!
+                .getElement('div.sc-f10a2b83-2 > a.ipc-link', ['class']);
           });
         }
       }

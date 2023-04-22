@@ -29,13 +29,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
-  for (int i = 0; i < appNames.length; i++) {
-    File file =
-        File("${(await getApplicationSupportDirectory()).path}${appNames[i]}");
-    if (file.existsSync()) {
-      file.delete();
-    }
-  }
   await settingsProvider.getCurrentThemeMode();
   await settingsProvider.getCurrentMaterial3Mode();
   await settingsProvider.initMixpanel();
@@ -62,6 +55,17 @@ class Cinemax extends StatefulWidget {
 
 class _CinemaxState extends State<Cinemax>
     with ChangeNotifier, WidgetsBindingObserver {
+      
+  void fileDelete() async {
+    for (int i = 0; i < appNames.length; i++) {
+      File file = File(
+          "${(await getApplicationSupportDirectory()).path}${appNames[i]}");
+      if (file.existsSync()) {
+        file.delete();
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -69,6 +73,7 @@ class _CinemaxState extends State<Cinemax>
     FirebaseMessaging.onMessageOpenedApp.listen((message) {});
     // SystemChrome.setPreferredOrientations(
     //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    fileDelete();
   }
 
   @override
@@ -91,7 +96,7 @@ class _CinemaxState extends State<Cinemax>
             const MaterialApp(
               home: Scaffold(
                 body: Center(
-                  child: Text('Error occured'),
+                  child: Text('Error occurred'),
                 ),
               ),
             );
