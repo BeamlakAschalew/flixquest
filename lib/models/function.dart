@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import '/models/movie_stream.dart';
 import '../constants/app_constants.dart';
 import '/models/update.dart';
-
 import '/models/images.dart';
 import '/models/person.dart';
 import '/models/tv.dart';
@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import '/models/credits.dart';
 import '/models/genres.dart';
 import '/models/movie.dart';
+import 'tv_stream.dart';
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
@@ -337,4 +338,99 @@ Future<TV> getTV(String api) async {
     client.close();
   }
   return tv;
+}
+
+Future<List<MovieResults>> fetchMoviesForStream(String api) async {
+  MovieStream movieStream;
+  try {
+    print(api);
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    movieStream = MovieStream.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return movieStream.results ?? [];
+}
+
+Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
+  MovieInfo movieInfo;
+  try {
+    print(api);
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    movieInfo = MovieInfo.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+
+  return movieInfo.episodes ?? [];
+}
+
+Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
+  MovieVideoSources movieVideoSources;
+  try {
+    print(api);
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    movieVideoSources = MovieVideoSources.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return movieVideoSources;
+}
+
+Future<List<TVResults>> fetchTVForStream(String api) async {
+  TVStream tvStream;
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    tvStream = TVStream.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return tvStream.results ?? [];
+}
+
+Future<List<TVEpisodes>> getTVStreamEpisodes(String api) async {
+  TVInfo tvInfo;
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    tvInfo = TVInfo.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+
+  return tvInfo.episodes ?? [];
+}
+
+Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
+  TVVideoSources tvVideoSources;
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    tvVideoSources = TVVideoSources.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return tvVideoSources;
 }

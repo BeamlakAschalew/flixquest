@@ -303,4 +303,17 @@ class Endpoints {
   static String getTVDetails(int id) {
     return '$TMDB_API_BASE_URL' '/tv/$id?api_key=$TMDB_API_KEY';
   }
+
+  static String searchMovieTVForStream(String titleName) {
+    return '$CONSUMET_API' 'movies/flixhq/$titleName';
+  }
+
+  static String getMovieTVStreamInfo(String titleStreamId) {
+    return '$CONSUMET_API' 'movies/flixhq/info?id=$titleStreamId';
+  }
+
+  static String getMovieTVStreamLinks(String episodeId, String mediaId) {
+    return '$CONSUMET_API'
+        'movies/flixhq/watch?episodeId=$episodeId&mediaId=$mediaId';
+  }
 }

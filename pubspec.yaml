@@ -57,6 +57,12 @@ dependencies:
   retry: ^3.1.0
   device_info_plus: ^8.1.0
   dpad_container: ^2.0.3
+  video_viewer: ^1.2.7
+  native_device_orientation: ^1.1.4
+  google_fonts: ^4.0.3
+  subtitle_wrapper_package: ^2.1.1
+  subtitle: ^0.1.0-beta.3
+  flutter_spinkit: ^5.1.0
 
 dev_dependencies:
   flutter_test:

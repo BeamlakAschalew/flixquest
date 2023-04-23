@@ -1,27 +1,27 @@
-class MovieStream {
-  MovieStream(
+class TVStream {
+  TVStream(
       {required this.currentPage,
       required this.hasNextPage,
       required this.results});
 
   int? currentPage;
   bool? hasNextPage;
-  List<MovieResults>? results;
+  List<TVResults>? results;
 
-  MovieStream.fromJson(Map<String, dynamic> json) {
+  TVStream.fromJson(Map<String, dynamic> json) {
     currentPage = json['currentPage'];
     hasNextPage = json['hasNextPage'];
     if (json['results'] != null) {
       results = [];
       json['results'].forEach((v) {
-        results!.add(MovieResults.fromJson(v));
+        results!.add(TVResults.fromJson(v));
       });
     }
   }
 }
 
-class MovieResults {
-  MovieResults(
+class TVResults {
+  TVResults(
       {required this.id,
       required this.image,
       required this.releaseDate,
@@ -36,7 +36,7 @@ class MovieResults {
   String? releaseDate;
   String? type;
 
-  MovieResults.fromJson(Map<String, dynamic> json) {
+  TVResults.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     url = json['url'];
@@ -46,17 +46,17 @@ class MovieResults {
   }
 }
 
-class MovieInfo {
-  MovieInfo();
+class TVInfo {
+  TVInfo();
 
   String? id;
   String? title;
   String? url;
   String? type;
   String? releaseDate;
-  List<MovieEpisodes>? episodes;
+  List<TVEpisodes>? episodes;
 
-  MovieInfo.fromJson(Map<String, dynamic> json) {
+  TVInfo.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     url = json['url'];
@@ -65,67 +65,71 @@ class MovieInfo {
     if (json['episodes'] != null) {
       episodes = [];
       json['episodes'].forEach((v) {
-        episodes!.add(MovieEpisodes.fromJson(v));
+        episodes!.add(TVEpisodes.fromJson(v));
       });
     }
   }
 }
 
-class MovieEpisodes {
-  MovieEpisodes();
+class TVEpisodes {
+  TVEpisodes();
 
   String? id;
   String? title;
   String? url;
+  int? season;
+  int? episode;
 
-  MovieEpisodes.fromJson(Map<String, dynamic> json) {
+  TVEpisodes.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     url = json['url'];
+    season = json['season'];
+    episode = json['number'];
   }
 }
 
-class MovieVideoSources {
-  MovieVideoSources();
+class TVVideoSources {
+  TVVideoSources();
 
-  List<MovieVideoLinks>? videoLinks;
-  List<MovieVideoSubtitles>? videoSubtitles;
+  List<TVVideoLinks>? videoLinks;
+  List<TVVideoSubtitles>? videoSubtitles;
 
-  MovieVideoSources.fromJson(Map<String, dynamic> json) {
+  TVVideoSources.fromJson(Map<String, dynamic> json) {
     if (json['sources'] != null) {
       videoLinks = [];
       json['sources'].forEach((v) {
-        videoLinks!.add(MovieVideoLinks.fromJson(v));
+        videoLinks!.add(TVVideoLinks.fromJson(v));
       });
     }
     if (json['subtitles'] != null) {
       videoSubtitles = [];
       json['subtitles'].forEach((v) {
-        videoSubtitles!.add(MovieVideoSubtitles.fromJson(v));
+        videoSubtitles!.add(TVVideoSubtitles.fromJson(v));
       });
     }
   }
 }
 
-class MovieVideoLinks {
-  MovieVideoLinks();
+class TVVideoLinks {
+  TVVideoLinks();
 
   String? url;
   String? quality;
   bool? isM3U8;
 
-  MovieVideoLinks.fromJson(Map<String, dynamic> json) {
+  TVVideoLinks.fromJson(Map<String, dynamic> json) {
     url = json['url'];
     quality = json['quality'];
     isM3U8 = json['isM3U8'];
   }
 }
 
-class MovieVideoSubtitles {
+class TVVideoSubtitles {
   String? url;
   String? language;
 
-  MovieVideoSubtitles.fromJson(Map<String, dynamic> json) {
+  TVVideoSubtitles.fromJson(Map<String, dynamic> json) {
     url = json['url'];
     language = json['lang'];
   }

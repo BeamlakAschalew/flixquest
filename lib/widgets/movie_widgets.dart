@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 import 'package:cached_network_image/cached_network_image.dart';
 import '../screens/movie/movie_castandcrew.dart';
+import '../screens/movie/movie_video_loader.dart';
 import '../ui_components/movie_ui_components.dart';
 import '/models/dropdown_select.dart';
 import '/models/filter_chip.dart';
@@ -1081,9 +1082,11 @@ class _MovieAboutState extends State<MovieAbout> {
               ],
             ),
             WatchNowButton(
+              releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
               movieId: widget.movie.id!,
               movieName: widget.movie.title,
               adult: widget.movie.adult,
+              thumbnail: widget.movie.backdropPath,
               api: Endpoints.movieDetailsUrl(widget.movie.id!),
             ),
             ScrollingArtists(
@@ -2462,10 +2465,12 @@ class MovieVideosState extends State<MovieVideosDisplay> {
 class WatchNowButton extends StatefulWidget {
   const WatchNowButton({
     Key? key,
+    required this.thumbnail,
     required this.movieId,
     this.movieName,
     this.movieImdbId,
     this.api,
+    required this.releaseYear,
     required this.adult,
   }) : super(key: key);
   final String? movieName;
@@ -2473,6 +2478,8 @@ class WatchNowButton extends StatefulWidget {
   final int? movieImdbId;
   final bool? adult;
   final String? api;
+  final int releaseYear;
+  final String? thumbnail;
 
   @override
   WatchNowButtonState createState() => WatchNowButtonState();
@@ -2506,10 +2513,15 @@ class WatchNowButtonState extends State<WatchNowButton> {
             'Is Movie adult?': widget.adult,
           });
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return MovieStream(
-              streamUrl:
-                  'https://www.2embed.to/embed/tmdb/movie?id=${widget.movieId}',
-              movieName: widget.movieName!,
+            // return MovieStream(
+            //   streamUrl:
+            //       'https://www.2embed.to/embed/tmdb/movie?id=${widget.movieId}',
+            //   movieName: widget.movieName!,
+            // );
+            return MovieVideoLoader(
+              videoTitle: widget.movieName!,
+              releaseYear: widget.releaseYear,
+              thumbnail: widget.thumbnail,
             );
           }));
         },

@@ -1,136 +1,172 @@
-// // ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously
 
-// import '/constants/app_constants.dart';
-// import 'package:dio/dio.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_hls_parser/flutter_hls_parser.dart';
-// import 'package:flutter_spinkit/flutter_spinkit.dart';
-// import 'package:pod_player/pod_player.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:provider/provider.dart';
-// import 'package:web_scraper/web_scraper.dart';
-// import '../../constants/api_constants.dart';
-// import '../../provider/settings_provider.dart';
-// import '../../screens/common/player.dart';
+import 'package:cinemax/api/endpoints.dart';
+import 'package:cinemax/models/function.dart';
+import 'package:cinemax/models/movie_stream.dart';
+import 'package:video_viewer/video_viewer.dart';
+import '/constants/app_constants.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart' as http;
+import '../../screens/common/player.dart';
+import 'dart:convert';
 
-// class MovieVideoLoader extends StatefulWidget {
-//   const MovieVideoLoader(
-//       {required this.imdbID,
-//       required this.videoTitle,
-//       required this.isDark,
-//       Key? key})
-//       : super(key: key);
-//   final String imdbID;
-//   final String videoTitle;
-//   final bool isDark;
+class MovieVideoLoader extends StatefulWidget {
+  MovieVideoLoader(
+      {required this.videoTitle,
+      required this.thumbnail,
+      required this.releaseYear,
+      Key? key})
+      : super(key: key);
 
-//   @override
-//   State<MovieVideoLoader> createState() => _MovieVideoLoaderState();
-// }
+  final String videoTitle;
+  final int releaseYear;
+  final String? thumbnail;
 
-// class _MovieVideoLoaderState extends State<MovieVideoLoader> {
-//   List<VideoQalityUrls>? videoUrls = [];
-//   late Uri completem3u8;
-//   final webScraper = WebScraper(TWOEMBED_BASE_URL);
-//   List<Map<String, dynamic>>? videoSrc;
+  @override
+  State<MovieVideoLoader> createState() => _MovieVideoLoaderState();
+}
 
-//   @override
-//   void initState() {
-//     parseHls();
-//     super.initState();
-//   }
+class _MovieVideoLoaderState extends State<MovieVideoLoader> {
+  List<MovieResults>? movies;
+  List<MovieEpisodes>? epi;
+  MovieVideoSources? movieVideoSources;
+  List<MovieVideoLinks>? movieVideoLinks;
+  List<MovieVideoSubtitles>? movieVideoSubs;
 
-//   Future<void> parseHls([HlsMasterPlaylist? masterPlaylist]) async {
-//     if (await webScraper.loadWebPage('/play/movie.php?imdb=${widget.imdbID}')) {
-//       setState(() {
-//         videoSrc = webScraper.getElement('#player > source', ['src', 'type']);
-//       });
-//     }
-//     HlsPlaylist playlist;
-//     var dio = Dio();
-//     completem3u8 = await dio
-//         .getUri(
-//           Uri.parse('https://2embed.biz/play/'
-//               '${videoSrc![0]['attributes']['src']}'),
-//         )
-//         .then((value) => value.redirects[0].location);
-//     if (completem3u8.host.isEmpty) {
-//       //  SnackBar(content: Text('The video couldn\'t be found on the server :('));
-//       Navigator.pop(context);
-//       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-//           content: Text(
-//         'Couldn\'t find the video on the server :(',
-//         style: TextStyle(
-//             color: widget.isDark ? Colors.white : Colors.black,
-//             fontFamily: 'PoppinsSB'),
-//       )));
-//     }
-//     final data = await http.get(completem3u8).then((res) => res.body);
-//     final bodyLength =
-//         await http.get(completem3u8).then((value) => value.bodyBytes.length);
-//     if (bodyLength <= 110) {
-//       videoUrls!.add(VideoQalityUrls(quality: 0, url: completem3u8.toString()));
-//       Navigator.pushReplacement(context, MaterialPageRoute(builder: ((context) {
-//         return Player(
-//           videoUrl: videoUrls!,
-//           videoTitle: widget.videoTitle,
-//         );
-//       })));
-//     }
-//     playlist = await HlsPlaylistParser.create(masterPlaylist: masterPlaylist)
-//         .parseString(completem3u8, data);
-//     if (playlist is HlsMasterPlaylist) {
-//       // master m3u8 file
-//       playlist.variants
-//         ..sort((a, b) => b.format.bitrate! - a.format.bitrate!)
-//         ..forEach((v) {
-//           setState(() {
-//             videoUrls!.add(VideoQalityUrls(
-//                 quality: v.format.height!, url: v.url.toString()));
-//             Navigator.pushReplacement(context,
-//                 MaterialPageRoute(builder: ((context) {
-//               return Player(
-//                 videoUrl: videoUrls!,
-//                 videoTitle: widget.videoTitle,
-//               );
-//             })));
-//           });
-//         });
-//       videoUrls!
-//           .insert(0, VideoQalityUrls(quality: 0, url: completem3u8.toString()));
+  @override
+  void initState() {
+    super.initState();
+    load();
+  }
 
-//       return parseHls(playlist);
-//     } else if (playlist is HlsMediaPlaylist) {}
-//   }
+  String processVttFileTimestamps(String vttFile) {
+    final lines = vttFile.split('\n');
+    final processedLines = <String>[];
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-//     SpinKitChasingDots spinKitChasingDots = SpinKitChasingDots(
-//       color: isDark ? Colors.white : Colors.black,
-//       size: 60,
-//     );
-//     return Scaffold(
-//       body: Container(
-//         color:
-//             widget.isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-//         child: Center(
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             crossAxisAlignment: CrossAxisAlignment.center,
-//             children: [
-//               spinKitChasingDots,
-//               const Padding(
-//                 padding: EdgeInsets.only(top: 8.0),
-//                 child: Text(
-//                   'Initializing player',
-//                   style: kTextSmallHeaderStyle,
-//                 ),
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      if (line.contains('-->') && line.trim().length == 23) {
+        String endTimeModifiedString =
+            '${line.trim().substring(0, line.trim().length - 9)}00:${line.trim().substring(line.trim().length - 9)}';
+        String finalStr = '00:$endTimeModifiedString';
+        processedLines.add(finalStr);
+      } else {
+        processedLines.add(line);
+      }
+    }
+
+    return processedLines.join('\n');
+  }
+
+  Future<String> getVttFileAsString(String url) async {
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final bytes = response.bodyBytes;
+      final decoded = utf8.decode(bytes);
+      return decoded;
+    } else {
+      throw Exception('Failed to load VTT file');
+    }
+  }
+
+  void load() async {
+    await fetchMoviesForStream(
+            Endpoints.searchMovieTVForStream(widget.videoTitle))
+        .then((value) {
+      setState(() {
+        movies = value;
+      });
+      print('moviessss ${movies!.length}');
+    });
+    for (int i = 0; i < movies!.length; i++) {
+      if (movies![i].releaseDate == widget.releaseYear.toString()) {
+        print('titleeeeeee: ${movies![i].title!}');
+        await getMovieStreamEpisodes(
+                Endpoints.getMovieTVStreamInfo(movies![i].id!))
+            .then((value) {
+          //   print(movies![i].id);
+          setState(() {
+            epi = value;
+          });
+          //  print('epiiiiiii ${epi!.length}');
+        });
+        await getMovieStreamLinksAndSubs(
+                Endpoints.getMovieTVStreamLinks(epi![0].id!, movies![i].id!))
+            .then((value) {
+          setState(() {
+            movieVideoSources = value;
+            print('huwefhu ${movieVideoSources!.videoLinks}');
+          });
+          movieVideoLinks = movieVideoSources!.videoLinks;
+          movieVideoSubs = movieVideoSources!.videoSubtitles;
+        });
+
+        //  print('linkkkkkkkkkk ${movieVideoLinks!.first.url}');
+        break;
+      }
+      // break;
+    }
+    Map<String, VideoSource> videos = {};
+    Map<String, VideoViewerSubtitle> subs = {};
+
+    for (int i = 0; i < movieVideoSubs!.length; i++) {
+      getVttFileAsString(movieVideoSubs![i].url!).then((value) {
+        subs.addAll({
+          movieVideoSubs![i].language!: VideoViewerSubtitle.content(
+              processVttFileTimestamps(value),
+              type: SubtitleType.webvtt)
+        });
+      });
+    }
+
+    for (int k = 0; k < movieVideoLinks!.length; k++) {
+      videos.addAll({
+        movieVideoLinks![k].quality!: VideoSource(
+          video: VideoPlayerController.network(movieVideoLinks![k].url!),
+          subtitle: subs,
+        ),
+      });
+    }
+
+    Navigator.pushReplacement(context, MaterialPageRoute(
+      builder: (context) {
+        return Player(
+          sources: videos,
+          subs: subs,
+          thumbnail: widget.thumbnail,
+        );
+      },
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SpinKitChasingDots spinKitChasingDots = SpinKitChasingDots(
+      color: Colors.white,
+      size: 60,
+    );
+
+    return Scaffold(
+      body: Container(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              spinKitChasingDots,
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Initializing player',
+                  style: kTextSmallHeaderStyle,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
