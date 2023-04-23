@@ -1,141 +1,181 @@
-// // ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously
+import 'package:cinemax/api/endpoints.dart';
+import 'package:cinemax/models/function.dart';
+import 'package:cinemax/models/movie_stream.dart';
+import 'package:video_viewer/video_viewer.dart';
+import '../../models/tv_stream.dart';
+import '/constants/app_constants.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart' as http;
+import '../../screens/common/player.dart';
+import 'dart:convert';
 
-// import '/constants/app_constants.dart';
-// import 'package:dio/dio.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_hls_parser/flutter_hls_parser.dart';
-// import 'package:flutter_spinkit/flutter_spinkit.dart';
-// import 'package:pod_player/pod_player.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:provider/provider.dart';
-// import 'package:web_scraper/web_scraper.dart';
-// import '../../constants/api_constants.dart';
-// import '../../provider/settings_provider.dart';
-// import '../../screens/common/player.dart';
+class TVVideoLoader extends StatefulWidget {
+  const TVVideoLoader(
+      {required this.videoTitle,
+      required this.thumbnail,
+      required this.seasons,
+      required this.episodeNumber,
+      required this.seasonNumber,
+      Key? key})
+      : super(key: key);
 
-// class TVVideoLoader extends StatefulWidget {
-//   const TVVideoLoader(
-//       {required this.imdbID,
-//       required this.episodeNumber,
-//       required this.seasonNumber,
-//       required this.videoTitle,
-//       required this.isDark,
-//       Key? key})
-//       : super(key: key);
-//   final String imdbID;
-//   final int seasonNumber;
-//   final int episodeNumber;
-//   final String videoTitle;
-//   final bool isDark;
+  final String videoTitle;
+  final int seasons;
+  final String? thumbnail;
+  final int episodeNumber;
+  final int seasonNumber;
 
-//   @override
-//   State<TVVideoLoader> createState() => _TVVideoLoaderState();
-// }
+  @override
+  State<TVVideoLoader> createState() => _TVVideoLoaderState();
+}
 
-// class _TVVideoLoaderState extends State<TVVideoLoader> {
-//   List<VideoQalityUrls>? videoUrls = [];
-//   late Uri completem3u8;
-//   final webScraper = WebScraper(TWOEMBED_BASE_URL);
-//   List<Map<String, dynamic>>? videoSrc;
+class _TVVideoLoaderState extends State<TVVideoLoader> {
+  List<TVResults>? tvShows;
+  List<TVEpisodes>? epi;
+  TVVideoSources? tvVideoSources;
+  List<TVVideoLinks>? tvVideoLinks;
+  List<TVVideoSubtitles>? tvVideoSubs;
 
-//   @override
-//   void initState() {
-//     parseHls();
-//     super.initState();
-//   }
+  @override
+  void initState() {
+    super.initState();
+    loadVideo();
+  }
 
-//   Future<void> parseHls([HlsMasterPlaylist? masterPlaylist]) async {
-//     if (await webScraper.loadWebPage(
-//         '/play/series.php?imdb=${widget.imdbID}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}')) {
-//       setState(() {
-//         videoSrc = webScraper.getElement('#player > source', ['src', 'type']);
-//       });
-//     }
-//     HlsPlaylist playlist;
-//     var dio = Dio();
-//     completem3u8 = await dio
-//         .getUri(
-//           Uri.parse('https://2embed.biz/play/'
-//               '${videoSrc![0]['attributes']['src']}'),
-//         )
-//         .then((value) => value.redirects[0].location);
-//     if (completem3u8.host.isEmpty) {
-//       //   SnackBar(content: Text('The video couldn\'t be found on the server :('));
-//       Navigator.pop(context);
-//       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-//           content: Text(
-//         'Couldn\'t find the video on the server :(',
-//         style: TextStyle(
-//             color: widget.isDark ? Colors.white : Colors.black,
-//             fontFamily: 'PoppinsSB'),
-//       )));
-//     }
-//     final data = await http.get(completem3u8).then((res) => res.body);
-//     final bodyLength =
-//         await http.get(completem3u8).then((value) => value.bodyBytes.length);
-//     if (bodyLength <= 110) {
-//       videoUrls!.add(VideoQalityUrls(quality: 0, url: completem3u8.toString()));
-//       Navigator.pushReplacement(context, MaterialPageRoute(builder: ((context) {
-//         return Player(
-//           videoUrl: videoUrls!,
-//           videoTitle: widget.videoTitle,
-//         );
-//       })));
-//     }
-//     playlist = await HlsPlaylistParser.create(masterPlaylist: masterPlaylist)
-//         .parseString(completem3u8, data);
-//     if (playlist is HlsMasterPlaylist) {
-//       // master m3u8 file
-//       playlist.variants
-//         ..sort((a, b) => b.format.bitrate! - a.format.bitrate!)
-//         ..forEach((v) {
-//           setState(() {
-//             videoUrls!.add(VideoQalityUrls(
-//                 quality: v.format.height!, url: v.url.toString()));
-//             Navigator.pushReplacement(context,
-//                 MaterialPageRoute(builder: ((context) {
-//               return Player(
-//                 videoUrl: videoUrls!,
-//                 videoTitle: widget.videoTitle,
-//               );
-//             })));
-//           });
-//         });
-//       videoUrls!
-//           .insert(0, VideoQalityUrls(quality: 0, url: completem3u8.toString()));
+  String processVttFileTimestamps(String vttFile) {
+    final lines = vttFile.split('\n');
+    final processedLines = <String>[];
 
-//       return parseHls(playlist);
-//     } else if (playlist is HlsMediaPlaylist) {}
-//   }
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      if (line.contains('-->') && line.trim().length == 23) {
+        String endTimeModifiedString =
+            '${line.trim().substring(0, line.trim().length - 9)}00:${line.trim().substring(line.trim().length - 9)}';
+        String finalStr = '00:$endTimeModifiedString';
+        processedLines.add(finalStr);
+      } else {
+        processedLines.add(line);
+      }
+    }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-//     SpinKitChasingDots spinKitChasingDots = SpinKitChasingDots(
-//       color: isDark ? Colors.white : Colors.black,
-//       size: 60,
-//     );
-//     return Scaffold(
-//       body: Container(
-//         color:
-//             widget.isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-//         child: Center(
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             crossAxisAlignment: CrossAxisAlignment.center,
-//             children: [
-//               spinKitChasingDots,
-//               const Padding(
-//                 padding: EdgeInsets.only(top: 8.0),
-//                 child: Text(
-//                   'Initializing player',
-//                   style: kTextSmallHeaderStyle,
-//                 ),
-//               )
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+    return processedLines.join('\n');
+  }
+
+  Future<String> getVttFileAsString(String url) async {
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final bytes = response.bodyBytes;
+      final decoded = utf8.decode(bytes);
+      return decoded;
+    } else {
+      throw Exception('Failed to load VTT file');
+    }
+  }
+
+  void loadVideo() async {
+    await fetchTVForStream(Endpoints.searchMovieTVForStream(widget.videoTitle))
+        .then((value) {
+      setState(() {
+        tvShows = value;
+      });
+    });
+
+    for (int i = 0; i < tvShows!.length; i++) {
+      if (tvShows![i].seasons == widget.seasons &&
+          tvShows![i].type == 'TV Series') {
+        await getTVStreamEpisodes(
+                Endpoints.getMovieTVStreamInfo(tvShows![i].id!))
+            .then((value) {
+          setState(() {
+            epi = value;
+          });
+        });
+        for (int i = 0; i < epi!.length; i++) {
+          if (epi![i].episode == widget.episodeNumber &&
+              epi![i].season == widget.seasonNumber) {
+            await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
+                    epi![i].id!, tvShows![0].id!))
+                .then((value) {
+              setState(() {
+                tvVideoSources = value;
+              });
+              tvVideoLinks = tvVideoSources!.videoLinks;
+              tvVideoSubs = tvVideoSources!.videoSubtitles;
+            });
+            break;
+          }
+        }
+
+        break;
+      }
+    }
+
+    Map<String, VideoSource> videos = {};
+    Map<String, VideoViewerSubtitle> subs = {};
+
+    for (int i = 0; i < tvVideoSubs!.length; i++) {
+      getVttFileAsString(tvVideoSubs![i].url!).then((value) {
+        subs.addAll({
+          tvVideoSubs![i].language!: VideoViewerSubtitle.content(
+              processVttFileTimestamps(value),
+              type: SubtitleType.webvtt)
+        });
+      });
+    }
+
+    for (int k = 0; k < tvVideoLinks!.length; k++) {
+      videos.addAll({
+        tvVideoLinks![k].quality!: VideoSource(
+          video: VideoPlayerController.network(tvVideoLinks![k].url!),
+          subtitle: subs,
+        ),
+      });
+    }
+
+    List<MapEntry<String, VideoSource>> reversedVideoList =
+        videos.entries.toList().reversed.toList();
+    Map<String, VideoSource> reversedVids = Map.fromEntries(reversedVideoList);
+
+    Navigator.pushReplacement(context, MaterialPageRoute(
+      builder: (context) {
+        return Player(
+          sources: reversedVids,
+          subs: subs,
+          thumbnail: widget.thumbnail,
+        );
+      },
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SpinKitChasingDots spinKitChasingDots = const SpinKitChasingDots(
+      color: Colors.white,
+      size: 60,
+    );
+
+    return Scaffold(
+      body: Container(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              spinKitChasingDots,
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Initializing player',
+                  style: kTextSmallHeaderStyle,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

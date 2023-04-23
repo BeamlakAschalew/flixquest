@@ -24,7 +24,7 @@ class TVResults {
   TVResults(
       {required this.id,
       required this.image,
-      required this.releaseDate,
+      required this.seasons,
       required this.title,
       required this.type,
       required this.url});
@@ -33,7 +33,7 @@ class TVResults {
   String? title;
   String? url;
   String? image;
-  String? releaseDate;
+  int? seasons;
   String? type;
 
   TVResults.fromJson(Map<String, dynamic> json) {
@@ -41,7 +41,7 @@ class TVResults {
     title = json['title'];
     url = json['url'];
     image = json['image'];
-    releaseDate = json['releaseDate'];
+    seasons = json['seasons'];
     type = json['type'];
   }
 }

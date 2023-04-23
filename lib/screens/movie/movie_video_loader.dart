@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:cinemax/models/movie_stream.dart';
@@ -12,7 +11,7 @@ import '../../screens/common/player.dart';
 import 'dart:convert';
 
 class MovieVideoLoader extends StatefulWidget {
-  MovieVideoLoader(
+  const MovieVideoLoader(
       {required this.videoTitle,
       required this.thumbnail,
       required this.releaseYear,
@@ -37,7 +36,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   @override
   void initState() {
     super.initState();
-    load();
+    loadVideo();
   }
 
   String processVttFileTimestamps(String vttFile) {
@@ -71,43 +70,39 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     }
   }
 
-  void load() async {
+  void loadVideo() async {
     await fetchMoviesForStream(
             Endpoints.searchMovieTVForStream(widget.videoTitle))
         .then((value) {
       setState(() {
         movies = value;
       });
-      print('moviessss ${movies!.length}');
     });
+
     for (int i = 0; i < movies!.length; i++) {
-      if (movies![i].releaseDate == widget.releaseYear.toString()) {
-        print('titleeeeeee: ${movies![i].title!}');
+      if (movies![i].releaseDate == widget.releaseYear.toString() &&
+          movies![i].type == 'Movie') {
         await getMovieStreamEpisodes(
                 Endpoints.getMovieTVStreamInfo(movies![i].id!))
             .then((value) {
-          //   print(movies![i].id);
           setState(() {
             epi = value;
           });
-          //  print('epiiiiiii ${epi!.length}');
         });
         await getMovieStreamLinksAndSubs(
                 Endpoints.getMovieTVStreamLinks(epi![0].id!, movies![i].id!))
             .then((value) {
           setState(() {
             movieVideoSources = value;
-            print('huwefhu ${movieVideoSources!.videoLinks}');
           });
           movieVideoLinks = movieVideoSources!.videoLinks;
           movieVideoSubs = movieVideoSources!.videoSubtitles;
         });
 
-        //  print('linkkkkkkkkkk ${movieVideoLinks!.first.url}');
         break;
       }
-      // break;
     }
+
     Map<String, VideoSource> videos = {};
     Map<String, VideoViewerSubtitle> subs = {};
 
@@ -130,10 +125,14 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       });
     }
 
+    List<MapEntry<String, VideoSource>> reversedVideoList =
+        videos.entries.toList().reversed.toList();
+    Map<String, VideoSource> reversedVids = Map.fromEntries(reversedVideoList);
+
     Navigator.pushReplacement(context, MaterialPageRoute(
       builder: (context) {
         return Player(
-          sources: videos,
+          sources: reversedVids,
           subs: subs,
           thumbnail: widget.thumbnail,
         );

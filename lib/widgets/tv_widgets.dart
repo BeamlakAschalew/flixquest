@@ -4,6 +4,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/database_controller.dart';
 import '../screens/tv/tv_stream.dart';
+import '../screens/tv/tv_video_loader.dart';
 import '../screens/tv/tvdetail_castandcrew.dart';
 import '../screens/tv/tvepisode_castandcrew.dart';
 import '../screens/tv/tvseason_castandcrew.dart';
@@ -5523,7 +5524,8 @@ class EpisodeAbout extends StatefulWidget {
 
 class _EpisodeAboutState extends State<EpisodeAbout> {
   bool? isVisible = false;
-  double? buttonWidth = 150;
+  double? buttonWidth = 180;
+  TVDetails? tvDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -5599,13 +5601,28 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                     'TV series episode number':
                         '${widget.episodeList.episodeNumber}'
                   });
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return TVStream(
-                      streamUrl:
-                          'https://www.2embed.to/embed/tmdb/tv?id=${widget.tvId}&s=${widget.episodeList.seasonNumber}&e=${widget.episodeList.episodeNumber}',
-                      tvSeriesName: '${widget.seriesName}',
-                    );
-                  }));
+                  setState(() {
+                    isVisible = true;
+                  });
+                  fetchTVDetails(Endpoints.tvDetailsUrl(widget.tvId!))
+                      .then((value) {
+                    if (mounted) {
+                      setState(() {
+                        isVisible = false;
+                        tvDetails = value;
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return TVVideoLoader(
+                            videoTitle: widget.seriesName!,
+                            thumbnail: value.backdropPath,
+                            seasons: value.numberOfSeasons!,
+                            episodeNumber: widget.episodeList.episodeNumber!,
+                            seasonNumber: widget.episodeList.seasonNumber!,
+                          );
+                        }));
+                      });
+                    }
+                  });
                 },
                 child: Row(
                   children: [
