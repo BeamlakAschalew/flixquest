@@ -343,7 +343,6 @@ Future<TV> getTV(String api) async {
 Future<List<MovieResults>> fetchMoviesForStream(String api) async {
   MovieStream movieStream;
   try {
-    print(api);
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
@@ -359,7 +358,6 @@ Future<List<MovieResults>> fetchMoviesForStream(String api) async {
 Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
   MovieInfo movieInfo;
   try {
-    print(api);
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
@@ -376,7 +374,6 @@ Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
 Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
   MovieVideoSources movieVideoSources;
   try {
-    print(api);
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
@@ -404,7 +401,7 @@ Future<List<TVResults>> fetchTVForStream(String api) async {
   return tvStream.results ?? [];
 }
 
-Future<List<TVEpisodes>> getTVStreamEpisodes(String api) async {
+Future<TVInfo> getTVStreamEpisodes(String api) async {
   TVInfo tvInfo;
   try {
     var res = await retryOptions.retry(
@@ -417,7 +414,7 @@ Future<List<TVEpisodes>> getTVStreamEpisodes(String api) async {
     client.close();
   }
 
-  return tvInfo.episodes ?? [];
+  return tvInfo;
 }
 
 Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
@@ -433,4 +430,22 @@ Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
     client.close();
   }
   return tvVideoSources;
+}
+
+Future<String> getVttFileAsString(String url) async {
+  try {
+    var response = await retryOptions.retry(
+      () => http.get(Uri.parse(url)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    if (response.statusCode == 200) {
+      final bytes = response.bodyBytes;
+      final decoded = utf8.decode(bytes);
+      return decoded;
+    } else {
+      throw Exception('Failed to load VTT file');
+    }
+  } finally {
+    client.close();
+  }
 }

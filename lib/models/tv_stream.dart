@@ -47,7 +47,13 @@ class TVResults {
 }
 
 class TVInfo {
-  TVInfo();
+  TVInfo(
+      {required this.episodes,
+      required this.id,
+      required this.releaseDate,
+      required this.title,
+      required this.type,
+      required this.url});
 
   String? id;
   String? title;
@@ -72,7 +78,12 @@ class TVInfo {
 }
 
 class TVEpisodes {
-  TVEpisodes();
+  TVEpisodes(
+      {required this.episode,
+      required this.id,
+      required this.season,
+      required this.title,
+      required this.url});
 
   String? id;
   String? title;
@@ -90,7 +101,7 @@ class TVEpisodes {
 }
 
 class TVVideoSources {
-  TVVideoSources();
+  TVVideoSources({required this.videoLinks, required this.videoSubtitles});
 
   List<TVVideoLinks>? videoLinks;
   List<TVVideoSubtitles>? videoSubtitles;
@@ -112,7 +123,8 @@ class TVVideoSources {
 }
 
 class TVVideoLinks {
-  TVVideoLinks();
+  TVVideoLinks(
+      {required this.isM3U8, required this.quality, required this.url});
 
   String? url;
   String? quality;

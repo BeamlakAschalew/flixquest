@@ -3,7 +3,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/database_controller.dart';
-import '../screens/tv/tv_stream.dart';
 import '../screens/tv/tv_video_loader.dart';
 import '../screens/tv/tvdetail_castandcrew.dart';
 import '../screens/tv/tvepisode_castandcrew.dart';
@@ -5524,7 +5523,7 @@ class EpisodeAbout extends StatefulWidget {
 
 class _EpisodeAboutState extends State<EpisodeAbout> {
   bool? isVisible = false;
-  double? buttonWidth = 180;
+  double? buttonWidth = 150;
   TVDetails? tvDetails;
 
   @override
@@ -5603,12 +5602,14 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                   });
                   setState(() {
                     isVisible = true;
+                    buttonWidth = 180;
                   });
                   fetchTVDetails(Endpoints.tvDetailsUrl(widget.tvId!))
                       .then((value) {
                     if (mounted) {
                       setState(() {
                         isVisible = false;
+                        buttonWidth = 150;
                         tvDetails = value;
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {

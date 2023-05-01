@@ -34,7 +34,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '/screens/movie/genremovies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/screens/movie/main_movies_list.dart';
-import '/screens/movie/movie_stream.dart';
 import 'package:provider/provider.dart';
 import 'common_widgets.dart';
 
