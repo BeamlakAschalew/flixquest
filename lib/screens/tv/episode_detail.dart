@@ -76,7 +76,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                 color: Theme.of(context).colorScheme.onBackground,
               ),
             )),
-            expandedHeight: 360,
+            expandedHeight: 375,
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.pin,
               background: Column(

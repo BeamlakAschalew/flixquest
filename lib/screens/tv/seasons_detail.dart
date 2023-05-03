@@ -83,7 +83,7 @@ class SeasonsDetailState extends State<SeasonsDetail>
                 color: Theme.of(context).colorScheme.onBackground,
               ),
             )),
-            expandedHeight: 300,
+            expandedHeight: 315,
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.pin,
               background: Column(

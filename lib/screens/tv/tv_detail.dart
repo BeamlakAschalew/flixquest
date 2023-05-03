@@ -75,7 +75,7 @@ class TVDetailPageState extends State<TVDetailPage>
                 color: Theme.of(context).colorScheme.onBackground,
               ),
             )),
-            expandedHeight: 385,
+            expandedHeight: 390,
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.pin,
               background: Column(

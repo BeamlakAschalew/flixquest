@@ -18,7 +18,7 @@ import '../provider/settings_provider.dart';
 import '../screens/common/about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
-import '../screens/common/news_screen.dart';
+//import '../screens/common/news_screen.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({
