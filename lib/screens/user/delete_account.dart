@@ -66,25 +66,31 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
               .delete()
               .then((value) async {
             await FirebaseFirestore.instance
-                .collection('usernames')
-                .doc(username)
+                .collection('bookmarks-v2.0')
+                .doc(uid)
                 .delete()
                 .then((value) async {
-              await user!.delete().then((value) async {
-                await Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) {
-                  return const LandingScreen();
-                })).then((value) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Your account was deleted successfully. We are sad to see you go :(, or are we? ;)',
-                        maxLines: 3,
-                        style: kTextSmallBodyStyle,
+              await FirebaseFirestore.instance
+                  .collection('usernames')
+                  .doc(username)
+                  .delete()
+                  .then((value) async {
+                await user!.delete().then((value) async {
+                  await Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
+                    return const LandingScreen();
+                  })).then((value) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Your account was deleted successfully. We are sad to see you go :(, or are we? ;)',
+                          maxLines: 3,
+                          style: kTextSmallBodyStyle,
+                        ),
+                        duration: Duration(seconds: 4),
                       ),
-                      duration: Duration(seconds: 4),
-                    ),
-                  );
+                    );
+                  });
                 });
               });
             });

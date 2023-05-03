@@ -178,6 +178,7 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           Image.asset(
@@ -243,6 +244,7 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.fill,
                                       placeholder: (context, url) =>
                                           scrollingImageShimmer(isDark),

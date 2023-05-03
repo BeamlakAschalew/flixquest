@@ -81,7 +81,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
                 color: Theme.of(context).colorScheme.onBackground,
               ),
             )),
-            expandedHeight: 390,
+            expandedHeight: 385,
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.pin,
               background: Column(

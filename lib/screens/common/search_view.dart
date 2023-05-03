@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../constants/app_constants.dart';
 import '/api/endpoints.dart';
 import '/models/function.dart';
 import '/widgets/common_widgets.dart';
@@ -401,6 +402,7 @@ class Search extends SearchDelegate<String> {
                                                 fit: BoxFit.cover,
                                               )
                                             : CachedNetworkImage(
+                                                cacheManager: cacheProp(),
                                                 fadeOutDuration: const Duration(
                                                     milliseconds: 300),
                                                 fadeOutCurve: Curves.easeOut,
@@ -538,6 +540,7 @@ class Search extends SearchDelegate<String> {
                                                 fit: BoxFit.cover,
                                               )
                                             : CachedNetworkImage(
+                                                cacheManager: cacheProp(),
                                                 fadeOutDuration: const Duration(
                                                     milliseconds: 300),
                                                 fadeOutCurve: Curves.easeOut,
@@ -668,6 +671,7 @@ class Search extends SearchDelegate<String> {
                                         fit: BoxFit.cover,
                                       )
                                     : CachedNetworkImage(
+                                        cacheManager: cacheProp(),
                                         fadeOutDuration:
                                             const Duration(milliseconds: 300),
                                         fadeOutCurve: Curves.easeOut,

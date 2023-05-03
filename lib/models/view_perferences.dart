@@ -11,6 +11,6 @@ class ViewPreferences {
 
   Future<String> getViewType() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(VIEW_PREFERENCE_STATUS) ?? "list";
+    return prefs.getString(VIEW_PREFERENCE_STATUS) ?? "grid";
   }
 }

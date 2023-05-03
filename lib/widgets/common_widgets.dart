@@ -855,6 +855,7 @@ Widget watchProvidersTabData(
                                   fit: BoxFit.cover,
                                 )
                               : CachedNetworkImage(
+                                  cacheManager: cacheProp(),
                                   fadeOutDuration:
                                       const Duration(milliseconds: 300),
                                   fadeOutCurve: Curves.easeOut,

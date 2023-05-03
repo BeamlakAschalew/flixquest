@@ -110,6 +110,8 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                           .cover,
                                                                     )
                                                                   : CachedNetworkImage(
+                                                                      cacheManager:
+                                                                          cacheProp(),
                                                                       fadeOutDuration:
                                                                           const Duration(
                                                                               milliseconds: 300),
@@ -310,6 +312,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                       fit: BoxFit.cover,
                                                                                     )
                                                                                   : CachedNetworkImage(
+                                                                                      cacheManager: cacheProp(),
                                                                                       fadeOutDuration: const Duration(milliseconds: 300),
                                                                                       fadeOutCurve: Curves.easeOut,
                                                                                       fadeInDuration: const Duration(milliseconds: 700),

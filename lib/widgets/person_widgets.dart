@@ -111,6 +111,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                             borderRadius:
                                                 BorderRadius.circular(8.0),
                                             child: CachedNetworkImage(
+                                              cacheManager: cacheProp(),
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
@@ -304,6 +305,8 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                     .cover,
                                                               )
                                                             : CachedNetworkImage(
+                                                                cacheManager:
+                                                                    cacheProp(),
                                                                 fadeOutDuration:
                                                                     const Duration(
                                                                         milliseconds:
@@ -540,6 +543,8 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                     .cover,
                                                               )
                                                             : CachedNetworkImage(
+                                                                cacheManager:
+                                                                    cacheProp(),
                                                                 fadeOutDuration:
                                                                     const Duration(
                                                                         milliseconds:
@@ -1121,6 +1126,7 @@ class CastDetailQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           scrollingImageShimmer(isDark),
@@ -1217,6 +1223,7 @@ class CreatedByQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           scrollingImageShimmer(isDark),
@@ -1442,6 +1449,7 @@ class CrewDetailQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           scrollingImageShimmer(isDark),
@@ -1677,6 +1685,7 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           scrollingImageShimmer(isDark),
@@ -1910,6 +1919,7 @@ class SearchedPersonQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           scrollingImageShimmer(isDark),

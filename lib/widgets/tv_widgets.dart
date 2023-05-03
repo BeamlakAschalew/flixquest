@@ -203,6 +203,7 @@ class DiscoverTVState extends State<DiscoverTV>
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: CachedNetworkImage(
+                                  cacheManager: cacheProp(),
                                   fadeOutDuration:
                                       const Duration(milliseconds: 300),
                                   fadeOutCurve: Curves.easeOut,
@@ -407,6 +408,7 @@ class ScrollingTVState extends State<ScrollingTV>
                                                       fit: BoxFit.cover,
                                                     )
                                                   : CachedNetworkImage(
+                                                      cacheManager: cacheProp(),
                                                       fadeOutDuration:
                                                           const Duration(
                                                               milliseconds:
@@ -671,6 +673,7 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                                   fit: BoxFit.cover,
                                                 )
                                               : CachedNetworkImage(
+                                                  cacheManager: cacheProp(),
                                                   fadeOutDuration:
                                                       const Duration(
                                                           milliseconds: 300),
@@ -877,6 +880,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
+                                              cacheManager: cacheProp(),
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
@@ -1061,6 +1065,7 @@ class ScrollingTVEpisodeGuestStarsState
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
+                                              cacheManager: cacheProp(),
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
@@ -1238,6 +1243,7 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
+                                              cacheManager: cacheProp(),
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
@@ -1398,6 +1404,7 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                                                   fit: BoxFit.cover,
                                                 )
                                               : CachedNetworkImage(
+                                                  cacheManager: cacheProp(),
                                                   fadeOutDuration:
                                                       const Duration(
                                                           milliseconds: 300),
@@ -1557,6 +1564,8 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                                             fit: BoxFit.cover,
                                                           )
                                                         : CachedNetworkImage(
+                                                            cacheManager:
+                                                                cacheProp(),
                                                             fadeOutDuration:
                                                                 const Duration(
                                                                     milliseconds:
@@ -1684,6 +1693,8 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                                             fit: BoxFit.cover,
                                                           )
                                                         : CachedNetworkImage(
+                                                            cacheManager:
+                                                                cacheProp(),
                                                             fadeOutDuration:
                                                                 const Duration(
                                                                     milliseconds:
@@ -1876,6 +1887,7 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fadeOutDuration:
                                           const Duration(milliseconds: 300),
                                       fadeOutCurve: Curves.easeOut,
@@ -2028,6 +2040,7 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8.0),
                                     child: CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fadeOutDuration:
                                           const Duration(milliseconds: 300),
                                       fadeOutCurve: Curves.easeOut,
@@ -2199,6 +2212,7 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
                                                 fit: StackFit.expand,
                                                 children: [
                                                   CachedNetworkImage(
+                                                    cacheManager: cacheProp(),
                                                     fadeOutDuration:
                                                         const Duration(
                                                             milliseconds: 300),
@@ -2363,6 +2377,7 @@ class TVCastTabState extends State<TVCastTab>
                                                     fit: BoxFit.cover,
                                                   )
                                                 : CachedNetworkImage(
+                                                    cacheManager: cacheProp(),
                                                     fadeOutDuration:
                                                         const Duration(
                                                             milliseconds: 300),
@@ -2549,6 +2564,8 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
                                                         fit: BoxFit.cover,
                                                       )
                                                     : CachedNetworkImage(
+                                                        cacheManager:
+                                                            cacheProp(),
                                                         fadeOutDuration:
                                                             const Duration(
                                                                 milliseconds:
@@ -2727,6 +2744,7 @@ class TVCrewTabState extends State<TVCrewTab>
                                                     fit: BoxFit.cover,
                                                   )
                                                 : CachedNetworkImage(
+                                                    cacheManager: cacheProp(),
                                                     fadeOutDuration:
                                                         const Duration(
                                                             milliseconds: 300),
@@ -3674,6 +3692,7 @@ class SeasonsListState extends State<SeasonsList> {
                                                       fit: BoxFit.cover,
                                                     )
                                                   : CachedNetworkImage(
+                                                      cacheManager: cacheProp(),
                                                       fadeOutDuration:
                                                           const Duration(
                                                               milliseconds:
@@ -3964,6 +3983,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                         fit: BoxFit.cover,
                                                       )
                                                     : CachedNetworkImage(
+                                                        cacheManager:
+                                                            cacheProp(),
                                                         fadeOutDuration:
                                                             const Duration(
                                                                 milliseconds:
@@ -4722,6 +4743,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                                     fit: BoxFit.cover,
                                                   )
                                                 : CachedNetworkImage(
+                                                    cacheManager: cacheProp(),
                                                     fadeOutDuration:
                                                         const Duration(
                                                             milliseconds: 300),
@@ -4906,6 +4928,8 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                                         fit: BoxFit.cover,
                                                       )
                                                     : CachedNetworkImage(
+                                                        cacheManager:
+                                                            cacheProp(),
                                                         fadeOutDuration:
                                                             const Duration(
                                                                 milliseconds:
@@ -5107,6 +5131,7 @@ class TVDetailQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           Image.asset(
@@ -5189,6 +5214,7 @@ class TVDetailQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.fill,
                                       placeholder: (context, url) =>
                                           scrollingImageShimmer(isDark),
@@ -5866,6 +5892,7 @@ class TVEpisodeQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           Image.asset(

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/api_constants.dart';
+import '../constants/app_constants.dart';
 import '../models/tv.dart';
 import '../screens/tv/tv_detail.dart';
 import '../widgets/common_widgets.dart';
@@ -59,6 +60,7 @@ class HorizontalScrollingTVList extends StatelessWidget {
                                     fit: BoxFit.cover,
                                   )
                                 : CachedNetworkImage(
+                                    cacheManager: cacheProp(),
                                     fadeOutDuration:
                                         const Duration(milliseconds: 300),
                                     fadeOutCurve: Curves.easeOut,
@@ -196,6 +198,7 @@ class TVListView extends StatelessWidget {
                                         fit: BoxFit.cover,
                                       )
                                     : CachedNetworkImage(
+                                        cacheManager: cacheProp(),
                                         fadeOutDuration:
                                             const Duration(milliseconds: 300),
                                         fadeOutCurve: Curves.easeOut,
@@ -325,6 +328,7 @@ class TVGridView extends StatelessWidget {
                                     fit: BoxFit.cover,
                                   )
                                 : CachedNetworkImage(
+                                    cacheManager: cacheProp(),
                                     fadeOutDuration:
                                         const Duration(milliseconds: 300),
                                     fadeOutCurve: Curves.easeOut,

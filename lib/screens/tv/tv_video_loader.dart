@@ -204,7 +204,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             const SizedBox(width: 160, child: LinearProgressIndicator()),
             Text(
               '${loadProgress.toStringAsFixed(0).toString()}%',
-              style: const TextStyle(color: Colors.black),
+              style: TextStyle(color: Theme.of(context).colorScheme.background),
             ),
           ],
         ),

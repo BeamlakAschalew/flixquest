@@ -111,6 +111,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                           .cover,
                                                                     )
                                                                   : CachedNetworkImage(
+                                                                      cacheManager:
+                                                                          cacheProp(),
                                                                       fadeOutDuration:
                                                                           const Duration(
                                                                               milliseconds: 300),
@@ -312,6 +314,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                                       fit: BoxFit.cover,
                                                                                     )
                                                                                   : CachedNetworkImage(
+                                                                                      cacheManager: cacheProp(),
                                                                                       fadeOutDuration: const Duration(milliseconds: 300),
                                                                                       fadeOutCurve: Curves.easeOut,
                                                                                       fadeInDuration: const Duration(milliseconds: 700),

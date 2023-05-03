@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:retry/retry.dart';
 import 'dart:io';
 
@@ -39,7 +40,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '1.4.2';
+const String currentAppVersion = '2.0.0';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(
@@ -56,4 +57,10 @@ final List<String> appNames = [
   'cinemax-1.3.0-build-v4.apk',
   'cinemax-v1.3.0-build-v3.apk',
   'cinemax-v1.3.0-build-v3.apk',
+  'cinemax-v2.0.0.apk'
 ];
+
+CacheManager cacheProp() {
+  return CacheManager(
+      Config('cacheKey', stalePeriod: const Duration(days: 10)));
+}

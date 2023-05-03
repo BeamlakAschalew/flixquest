@@ -768,6 +768,7 @@ class _SyncScreenState extends State<SyncScreen>
                                     fit: BoxFit.cover,
                                   )
                                 : CachedNetworkImage(
+                                    cacheManager: cacheProp(),
                                     fadeOutDuration:
                                         const Duration(milliseconds: 300),
                                     fadeOutCurve: Curves.easeOut,
@@ -875,6 +876,7 @@ class _SyncScreenState extends State<SyncScreen>
                                     fit: BoxFit.cover,
                                   )
                                 : CachedNetworkImage(
+                                    cacheManager: cacheProp(),
                                     fadeOutDuration:
                                         const Duration(milliseconds: 300),
                                     fadeOutCurve: Curves.easeOut,

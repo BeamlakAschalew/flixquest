@@ -201,6 +201,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: CachedNetworkImage(
+                                  cacheManager: cacheProp(),
                                   fadeOutDuration:
                                       const Duration(milliseconds: 300),
                                   fadeOutCurve: Curves.easeOut,
@@ -412,6 +413,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                       fit: BoxFit.cover,
                                                     )
                                                   : CachedNetworkImage(
+                                                      cacheManager: cacheProp(),
                                                       fadeOutDuration:
                                                           const Duration(
                                                               milliseconds:
@@ -737,6 +739,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
                                           Image.asset(
@@ -820,6 +823,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                                       fit: BoxFit.cover,
                                     )
                                   : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
                                       fit: BoxFit.fill,
                                       placeholder: (context, url) =>
                                           scrollingImageShimmer(isDark),
@@ -1285,6 +1289,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                                               fit: BoxFit.cover,
                                             )
                                           : CachedNetworkImage(
+                                              cacheManager: cacheProp(),
                                               fadeOutDuration: const Duration(
                                                   milliseconds: 300),
                                               fadeOutCurve: Curves.easeOut,
@@ -1803,6 +1808,7 @@ class PartsListState extends State<PartsList> {
                                                       fit: BoxFit.cover,
                                                     )
                                                   : CachedNetworkImage(
+                                                      cacheManager: cacheProp(),
                                                       fadeOutDuration:
                                                           const Duration(
                                                               milliseconds:
@@ -2040,6 +2046,8 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                               fit: BoxFit.cover,
                                                             )
                                                           : CachedNetworkImage(
+                                                              cacheManager:
+                                                                  cacheProp(),
                                                               fadeOutDuration:
                                                                   const Duration(
                                                                       milliseconds:
@@ -2171,6 +2179,8 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                               fit: BoxFit.cover,
                                                             )
                                                           : CachedNetworkImage(
+                                                              cacheManager:
+                                                                  cacheProp(),
                                                               fadeOutDuration:
                                                                   const Duration(
                                                                       milliseconds:
@@ -2388,6 +2398,7 @@ class MovieVideosState extends State<MovieVideosDisplay> {
                                                 fit: StackFit.expand,
                                                 children: [
                                                   CachedNetworkImage(
+                                                    cacheManager: cacheProp(),
                                                     fadeOutDuration:
                                                         const Duration(
                                                             milliseconds: 300),
@@ -3047,6 +3058,7 @@ class CastTabState extends State<CastTab>
                                                 fit: BoxFit.cover,
                                               )
                                             : CachedNetworkImage(
+                                                cacheManager: cacheProp(),
                                                 fadeOutDuration: const Duration(
                                                     milliseconds: 300),
                                                 fadeOutCurve: Curves.easeOut,
@@ -3211,6 +3223,7 @@ class CrewTabState extends State<CrewTab>
                                                 fit: BoxFit.cover,
                                               )
                                             : CachedNetworkImage(
+                                                cacheManager: cacheProp(),
                                                 fadeOutDuration: const Duration(
                                                     milliseconds: 300),
                                                 fadeOutCurve: Curves.easeOut,
@@ -4199,6 +4212,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                                     fit: BoxFit.cover,
                                                   )
                                                 : CachedNetworkImage(
+                                                    cacheManager: cacheProp(),
                                                     fadeOutDuration:
                                                         const Duration(
                                                             milliseconds: 300),

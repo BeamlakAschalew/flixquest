@@ -112,6 +112,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                                   fit: BoxFit.cover,
                                                 )
                                               : CachedNetworkImage(
+                                                  cacheManager: cacheProp(),
                                                   fit: BoxFit.cover,
                                                   placeholder: (context, url) =>
                                                       Image.asset(
@@ -166,6 +167,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                                 fit: BoxFit.cover,
                                               )
                                             : CachedNetworkImage(
+                                                cacheManager: cacheProp(),
                                                 fit: BoxFit.fill,
                                                 placeholder: (context, url) =>
                                                     scrollingImageShimmer(
