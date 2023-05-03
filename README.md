@@ -58,6 +58,8 @@ In case of copyright infringement, please directly contact the responsible parti
 It merely scrapes 3rd-party websites that are publicly accessable via any regular web browser.
 
 ---
+
+<i>GNU, but for Entertainment</i>
 <h4 align='center'>© 2023 ツ BeamlakAschalew</h4>
 
 <!-- DO NOT REMOVE THIS CREDIT 🤬 -->
