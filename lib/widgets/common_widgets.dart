@@ -42,101 +42,103 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     return Drawer(
       child: Container(
         color: isDark ? Colors.black : Colors.white,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: DrawerHeader(
-                    decoration: BoxDecoration(
-                        color: isDark ? Colors.white : Colors.black),
-                    child: Image.asset('assets/images/logo_shadow.png'),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: DrawerHeader(
+                      decoration: BoxDecoration(
+                          color: isDark ? Colors.white : Colors.black),
+                      child: Image.asset('assets/images/logo_shadow.png'),
+                    ),
                   ),
-                ),
-                ListTile(
-                  leading: Icon(
-                    FontAwesomeIcons.bookmark,
-                    color: Theme.of(context).colorScheme.primary,
+                  ListTile(
+                    leading: Icon(
+                      FontAwesomeIcons.bookmark,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: const Text('Bookmarks'),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: ((context) {
+                        return const BookmarkScreen();
+                      })));
+                    },
                   ),
-                  title: const Text('Bookmarks'),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: ((context) {
-                      return const BookmarkScreen();
-                    })));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    FontAwesomeIcons.newspaper,
-                    color: Theme.of(context).colorScheme.primary,
+                  // ListTile(
+                  //   leading: Icon(
+                  //     FontAwesomeIcons.newspaper,
+                  //     color: Theme.of(context).colorScheme.primary,
+                  //   ),
+                  //   title: const Text('News'),
+                  //   onTap: () {
+                  //     Navigator.push(context,
+                  //         MaterialPageRoute(builder: ((context) {
+                  //       return const NewsPage();
+                  //     })));
+                  //   },
+                  // ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.settings,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: const Text('Settings'),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: ((context) {
+                        return const Settings();
+                      })));
+                    },
                   ),
-                  title: const Text('News'),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: ((context) {
-                      return const NewsPage();
-                    })));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    Icons.settings,
-                    color: Theme.of(context).colorScheme.primary,
+                  ListTile(
+                    leading: Icon(
+                      Icons.info_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: const Text('About'),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const AboutPage();
+                      }));
+                    },
                   ),
-                  title: const Text('Settings'),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: ((context) {
-                      return const Settings();
-                    })));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    Icons.info_outline,
-                    color: Theme.of(context).colorScheme.primary,
+                  ListTile(
+                    leading: Icon(
+                      Icons.update,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: const Text('Check for an update'),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: ((context) {
+                        return const UpdateScreen();
+                      })));
+                    },
                   ),
-                  title: const Text('About'),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const AboutPage();
-                    }));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    Icons.update,
-                    color: Theme.of(context).colorScheme.primary,
+                  ListTile(
+                    leading: Icon(
+                      Icons.share_sharp,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: const Text('Share the app'),
+                    onTap: () async {
+                      mixpanel.track('Share button data', properties: {
+                        'Share button click': 'Share',
+                      });
+                      await Share.share(
+                          'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
+                    },
                   ),
-                  title: const Text('Check for an update'),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: ((context) {
-                      return const UpdateScreen();
-                    })));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    Icons.share_sharp,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  title: const Text('Share the app'),
-                  onTap: () async {
-                    mixpanel.track('Share button data', properties: {
-                      'Share button click': 'Share',
-                    });
-                    await Share.share(
-                        'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
-                  },
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

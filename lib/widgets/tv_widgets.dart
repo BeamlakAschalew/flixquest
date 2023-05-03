@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/database_controller.dart';
+import '../screens/tv/tv_stream.dart';
 import '../screens/tv/tv_video_loader.dart';
 import '../screens/tv/tvdetail_castandcrew.dart';
 import '../screens/tv/tvepisode_castandcrew.dart';
@@ -5526,6 +5527,112 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
   double? buttonWidth = 150;
   TVDetails? tvDetails;
 
+  void streamSelectBottomSheet(
+      {required String thumbnail,
+      required String seriesName,
+      required int numberOfSeasons,
+      required int tvId,
+      required int episodeNumber,
+      required int seasonNumber}) {
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+          return Container(
+              child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Watch with:',
+                      style: kTextSmallHeaderStyle,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      mixpanel.track('Most viewed TV series', properties: {
+                        'TV series name': '${widget.seriesName}',
+                        'TV series id': '${widget.tvId}',
+                        'TV series episode name': '${widget.episodeList.name}',
+                        'TV series season number':
+                            '${widget.episodeList.seasonNumber}',
+                        'TV series episode number':
+                            '${widget.episodeList.episodeNumber}'
+                      });
+
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: ((context) {
+                        return TVVideoLoader(
+                          videoTitle: seriesName,
+                          thumbnail: thumbnail,
+                          seasons: numberOfSeasons,
+                          episodeNumber: episodeNumber,
+                          seasonNumber: seasonNumber,
+                        );
+                      })));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFF57C00),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: const Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Text(
+                          'Cinemax player (recommended)',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      mixpanel.track('Most viewed TV series', properties: {
+                        'TV series name': '${widget.seriesName}',
+                        'TV series id': '${widget.tvId}',
+                        'TV series episode name': '${widget.episodeList.name}',
+                        'TV series season number':
+                            '${widget.episodeList.seasonNumber}',
+                        'TV series episode number':
+                            '${widget.episodeList.episodeNumber}'
+                      });
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: ((context) {
+                        return TVStream(
+                          streamUrl:
+                              'https://www.2embed.to/embed/tmdb/tv?id=$tvId&s=$seasonNumber&e=$episodeNumber',
+                        );
+                      })));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFF57C00),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: const Padding(
+                        padding: EdgeInsets.all(20.0),
+                        child: Text(
+                          'Legacy (Webview)',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ));
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
@@ -5611,16 +5718,23 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                         isVisible = false;
                         buttonWidth = 150;
                         tvDetails = value;
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return TVVideoLoader(
-                            videoTitle: widget.seriesName!,
-                            thumbnail: value.backdropPath,
-                            seasons: value.numberOfSeasons!,
+                        streamSelectBottomSheet(
+                            thumbnail: value.backdropPath!,
+                            tvId: widget.tvId!,
+                            seriesName: widget.seriesName!,
+                            numberOfSeasons: value.numberOfSeasons!,
                             episodeNumber: widget.episodeList.episodeNumber!,
-                            seasonNumber: widget.episodeList.seasonNumber!,
-                          );
-                        }));
+                            seasonNumber: widget.episodeList.seasonNumber!);
+                        // Navigator.push(context,
+                        //     MaterialPageRoute(builder: (context) {
+                        //   return TVVideoLoader(
+                        //     videoTitle: widget.seriesName!,
+                        //     thumbnail: value.backdropPath,
+                        //     seasons: value.numberOfSeasons!,
+                        //     episodeNumber: widget.episodeList.episodeNumber!,
+                        //     seasonNumber: widget.episodeList.seasonNumber!,
+                        //   );
+                        // }));
                       });
                     }
                   });

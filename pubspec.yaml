@@ -3,7 +3,7 @@ description: A Flutter movie app.
 
 publish_to: 'none'
 
-version: 2.0.0-dev+1
+version: 2.0.0+1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -57,7 +57,8 @@ dependencies:
   retry: ^3.1.0
   device_info_plus: ^8.1.0
   dpad_container: ^2.0.3
-  #video_viewer: ^1.2.7
+  # video_viewer: ^1.2.7
+  # wakelock: ^0.6.1+2
   native_device_orientation: ^1.1.4
   google_fonts: ^4.0.3
   subtitle: ^0.1.0-beta.3

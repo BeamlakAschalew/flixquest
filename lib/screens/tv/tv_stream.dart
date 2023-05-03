@@ -8,9 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class TVStream extends StatefulWidget {
   final String streamUrl;
-  final String tvSeriesName;
   const TVStream(
-      {Key? key, required this.streamUrl, required this.tvSeriesName})
+      {Key? key, required this.streamUrl,})
       : super(key: key);
 
   @override

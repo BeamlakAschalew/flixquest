@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
-import 'tv_stream.dart';
 
 class TVStreamSelect extends StatefulWidget {
   final String tvSeriesName;
@@ -163,12 +162,12 @@ class StreamListWidget extends StatelessWidget {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return TVStream(
-            streamUrl: streamLink,
-            tvSeriesName: tvSeriesName,
-          );
-        }));
+        // Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //   return TVStream(
+        //     streamUrl: streamLink,
+        //     tvSeriesName: tvSeriesName,
+        //   );
+        // }));
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

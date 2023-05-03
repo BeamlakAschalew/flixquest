@@ -178,7 +178,7 @@ class _NewsViewState extends State<NewsView>
     with AutomaticKeepAliveClientMixin {
   final WebScraper? webScraper = WebScraper('https://imdb.com');
   List<Map<String, dynamic>>? articleNames;
-  List<Map<String, dynamic>>? atricleImage;
+  List<Map<String, dynamic>>? articleImage;
   List<Map<String, dynamic>>? articleWebsite;
 
   final scrollController = ScrollController();
@@ -203,14 +203,38 @@ class _NewsViewState extends State<NewsView>
         if (mounted) {
           setState(() {
             articleNames = webScraper!
-                .getElement('div.sc-f10a2b83-2 > a.ipc-link', ['href']);
-            atricleImage = webScraper!
+                .getElement('div.sc-684fd964-2 > a.ipc-link', ['href']);
+            articleImage = webScraper!
                 .getElement('div.ipc-media > img.ipc-image', ['src']);
             articleWebsite = webScraper!
-                .getElement('div.sc-f10a2b83-2 > a.ipc-link', ['class']);
+                .getElement('div.sc-684fd964-2 > a.ipc-link', ['class']);
           });
         }
       }
+
+      // print(articleImage!.toList());
+
+      // List removeDuplicates(List list) {
+      //   Set uniqueElements = {};
+      //   List resultList = [];
+
+      //   for (var element in list) {
+      //     if (uniqueElements.add(element)) {
+      //       resultList.add(element);
+      //     }
+      //   }
+
+      //   return resultList;
+      // }
+
+      // List noDuplicates = [];
+
+      // setState(() {
+      //   noDuplicates = removeDuplicates(articleImage!);
+      // });
+
+      // print('Original length: ${articleImage!.length}');
+      // print('Modified length: ${noDuplicates.length}');
     } finally {
       client.close();
     }
@@ -230,7 +254,7 @@ class _NewsViewState extends State<NewsView>
                   child: ListView.builder(
                     itemBuilder: ((context, index) {
                       Map<String, dynamic> attributes =
-                          atricleImage![index]['attributes'];
+                          articleImage![index]['attributes'];
                       return GestureDetector(
                         onTap: () {
                           Navigator.push(context,
@@ -327,7 +351,7 @@ class _NewsViewState extends State<NewsView>
                         ),
                       );
                     }),
-                    itemCount: atricleImage!.length,
+                    itemCount: articleNames!.length,
                   ),
                 ),
               ),

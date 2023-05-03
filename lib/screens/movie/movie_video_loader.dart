@@ -5,7 +5,6 @@ import 'package:cinemax/models/function.dart';
 import 'package:cinemax/models/movie_stream.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../screens/common/player.dart';
 
 class MovieVideoLoader extends StatefulWidget {
@@ -30,6 +29,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   MovieVideoSources? movieVideoSources;
   List<MovieVideoLinks>? movieVideoLinks;
   List<MovieVideoSubtitles>? movieVideoSubs;
+  double loadProgress = 0.00;
 
   @override
   void initState() {
@@ -95,6 +95,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
       if (movieVideoSubs != null) {
         for (int i = 0; i < movieVideoSubs!.length; i++) {
+          setState(() {
+            loadProgress = (i / movieVideoSubs!.length) * 100;
+          });
           await getVttFileAsString(movieVideoSubs![i].url!).then((value) {
             subs.addAll({
               BetterPlayerSubtitlesSource(
@@ -168,28 +171,35 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   @override
   Widget build(BuildContext context) {
-    SpinKitChasingDots spinKitChasingDots = const SpinKitChasingDots(
-      color: Colors.white,
-      size: 60,
-    );
-
     return Scaffold(
-      body: Center(
+        body: Center(
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).colorScheme.onBackground,
+        ),
+        height: 120,
+        width: 180,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            spinKitChasingDots,
-            const Padding(
-              padding: EdgeInsets.only(top: 8.0),
-              child: Text(
-                'Initializing player',
-                style: kTextSmallHeaderStyle,
-              ),
-            )
+            Image.asset(
+              'assets/images/logo_shadow.png',
+              height: 65,
+              width: 65,
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            const SizedBox(width: 160, child: LinearProgressIndicator()),
+            Text(
+              '${loadProgress.toStringAsFixed(0).toString()}%',
+              style: const TextStyle(color: Colors.black),
+            ),
           ],
         ),
       ),
-    );
+    ));
   }
 }
