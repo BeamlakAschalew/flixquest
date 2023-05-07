@@ -399,95 +399,101 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                       child: Hero(
                                         tag:
                                             '${moviesList![index].id}${widget.title}',
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              child: moviesList![index]
-                                                          .posterPath ==
-                                                      null
-                                                  ? Image.asset(
-                                                      'assets/images/na_rect.png',
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : CachedNetworkImage(
-                                                      cacheManager: cacheProp(),
-                                                      fadeOutDuration:
-                                                          const Duration(
-                                                              milliseconds:
-                                                                  300),
-                                                      fadeOutCurve:
-                                                          Curves.easeOut,
-                                                      fadeInDuration:
-                                                          const Duration(
-                                                              milliseconds:
-                                                                  700),
-                                                      fadeInCurve:
-                                                          Curves.easeIn,
-                                                      imageUrl: moviesList![
-                                                                      index]
-                                                                  .posterPath ==
-                                                              null
-                                                          ? ''
-                                                          : TMDB_BASE_IMAGE_URL +
-                                                              imageQuality +
-                                                              moviesList![index]
-                                                                  .posterPath!,
-                                                      imageBuilder: (context,
-                                                              imageProvider) =>
-                                                          Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          image:
-                                                              DecorationImage(
-                                                            image:
-                                                                imageProvider,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      placeholder: (context,
-                                                              url) =>
-                                                          scrollingImageShimmer(
-                                                              isDark),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          Image.asset(
+                                        child: Material(
+                                          type: MaterialType.transparency,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: moviesList![index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? Image.asset(
                                                         'assets/images/na_rect.png',
                                                         fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        cacheManager:
+                                                            cacheProp(),
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl: moviesList![
+                                                                        index]
+                                                                    .posterPath ==
+                                                                null
+                                                            ? ''
+                                                            : TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                moviesList![
+                                                                        index]
+                                                                    .posterPath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            scrollingImageShimmer(
+                                                                isDark),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_rect.png',
+                                                          fit: BoxFit.cover,
+                                                        ),
                                                       ),
-                                                    ),
-                                            ),
-                                            Positioned(
-                                              top: 0,
-                                              left: 0,
-                                              child: Container(
-                                                margin: const EdgeInsets.all(3),
-                                                alignment: Alignment.topLeft,
-                                                width: 50,
-                                                height: 25,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    color: isDark
-                                                        ? Colors.black45
-                                                        : Colors.white60),
-                                                child: Row(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.star,
-                                                    ),
-                                                    Text(moviesList![index]
-                                                        .voteAverage!
-                                                        .toStringAsFixed(1))
-                                                  ],
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                left: 0,
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.all(3),
+                                                  alignment: Alignment.topLeft,
+                                                  width: 50,
+                                                  height: 25,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      color: isDark
+                                                          ? Colors.black45
+                                                          : Colors.white60),
+                                                  child: Row(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.star,
+                                                      ),
+                                                      Text(moviesList![index]
+                                                          .voteAverage!
+                                                          .toStringAsFixed(1))
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -808,37 +814,40 @@ class MovieDetailQuickInfo extends StatelessWidget {
                   // poster
                   Hero(
                     tag: heroId,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: SizedBox(
-                              width: 94,
-                              height: 140,
-                              child: movie.posterPath == null
-                                  ? Image.asset(
-                                      'assets/images/na_logo.png',
-                                      fit: BoxFit.cover,
-                                    )
-                                  : CachedNetworkImage(
-                                      cacheManager: cacheProp(),
-                                      fit: BoxFit.fill,
-                                      placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
-                                      errorWidget: (context, url, error) =>
-                                          Image.asset(
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: SizedBox(
+                                width: 94,
+                                height: 140,
+                                child: movie.posterPath == null
+                                    ? Image.asset(
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
+                                      )
+                                    : CachedNetworkImage(
+                                        cacheManager: cacheProp(),
+                                        fit: BoxFit.fill,
+                                        placeholder: (context, url) =>
+                                            scrollingImageShimmer(isDark),
+                                        errorWidget: (context, url, error) =>
+                                            Image.asset(
+                                          'assets/images/na_logo.png',
+                                          fit: BoxFit.cover,
+                                        ),
+                                        imageUrl: TMDB_BASE_IMAGE_URL +
+                                            imageQuality +
+                                            movie.posterPath!,
                                       ),
-                                      imageUrl: TMDB_BASE_IMAGE_URL +
-                                          imageQuality +
-                                          movie.posterPath!,
-                                    ),
+                              ),
                             ),
-                          ),
-                        )),
+                          )),
+                    ),
                   ),
                   const SizedBox(width: 16),
                   //  titles
@@ -2482,7 +2491,7 @@ class WatchNowButton extends StatefulWidget {
     this.movieImdbId,
     this.api,
     required this.releaseYear,
-    required this.adult,
+    this.adult,
   }) : super(key: key);
   final String? movieName;
   final int movieId;
@@ -2509,7 +2518,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
   void streamSelectBottomSheet(
       {required String movieName,
       required String thumbnail,
-      required bool adult,
+      bool? adult,
       required int releaseYear,
       required int movieId}) {
     showModalBottomSheet(
@@ -2538,7 +2547,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
                       mixpanel.track('Most viewed movies', properties: {
                         'Movie name': movieName,
                         'Movie id': movieId,
-                        'Is Movie adult?': adult,
+                        'Is Movie adult?': adult ?? 'unknown',
                       });
 
                       Navigator.pushReplacement(context,
@@ -2571,7 +2580,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
                       mixpanel.track('Most viewed movies', properties: {
                         'Movie name': movieName,
                         'Movie id': movieId,
-                        'Is Movie adult?': adult,
+                        'Is Movie adult?': adult ?? 'unknown',
                       });
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: ((context) {
@@ -2615,7 +2624,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
           streamSelectBottomSheet(
               movieName: widget.movieName!,
               thumbnail: widget.thumbnail!,
-              adult: widget.adult!,
+              adult: widget.adult ?? false,
               releaseYear: widget.releaseYear,
               movieId: widget.movieId);
         },

@@ -106,7 +106,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       List<BetterPlayerSubtitlesSource> subs = [];
 
       if (tvVideoSubs != null) {
-        for (int i = 0; i < tvVideoSubs!.length; i++) {
+        for (int i = 0; i < tvVideoSubs!.length - 1; i++) {
           setState(() {
             loadProgress = (i / tvVideoSubs!.length) * 100;
           });
@@ -117,7 +117,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   content: processVttFileTimestamps(value),
                   selectedByDefault: tvVideoSubs![i].language == 'English' ||
                           tvVideoSubs![i].language == 'English - English' ||
-                          tvVideoSubs![i].language == 'English - SDH'
+                          tvVideoSubs![i].language == 'English - SDH' ||
+                          tvVideoSubs![i].language == 'English 1'
                       ? true
                       : false,
                   type: BetterPlayerSubtitlesSourceType.memory)

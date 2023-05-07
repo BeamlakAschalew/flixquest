@@ -299,58 +299,61 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                               child: Hero(
                                                                 tag:
                                                                     '${widget.tvList![index].id}',
-                                                                child:
-                                                                    ClipRRect(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(
-                                                                                10.0),
-                                                                        child: Stack(
-                                                                            children: [
-                                                                              widget.tvList![index].posterPath == null
-                                                                                  ? Image.asset(
-                                                                                      'assets/images/na_logo.png',
+                                                                child: Material(
+                                                                  type: MaterialType
+                                                                      .transparency,
+                                                                  child: ClipRRect(
+                                                                      borderRadius: BorderRadius.circular(10.0),
+                                                                      child: Stack(children: [
+                                                                        widget.tvList![index].posterPath ==
+                                                                                null
+                                                                            ? Image.asset(
+                                                                                'assets/images/na_logo.png',
+                                                                                fit: BoxFit.cover,
+                                                                              )
+                                                                            : CachedNetworkImage(
+                                                                                cacheManager: cacheProp(),
+                                                                                fadeOutDuration: const Duration(milliseconds: 300),
+                                                                                fadeOutCurve: Curves.easeOut,
+                                                                                fadeInDuration: const Duration(milliseconds: 700),
+                                                                                fadeInCurve: Curves.easeIn,
+                                                                                imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + widget.tvList![index].posterPath!,
+                                                                                imageBuilder: (context, imageProvider) => Container(
+                                                                                  decoration: BoxDecoration(
+                                                                                    image: DecorationImage(
+                                                                                      image: imageProvider,
                                                                                       fit: BoxFit.cover,
-                                                                                    )
-                                                                                  : CachedNetworkImage(
-                                                                                      cacheManager: cacheProp(),
-                                                                                      fadeOutDuration: const Duration(milliseconds: 300),
-                                                                                      fadeOutCurve: Curves.easeOut,
-                                                                                      fadeInDuration: const Duration(milliseconds: 700),
-                                                                                      fadeInCurve: Curves.easeIn,
-                                                                                      imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + widget.tvList![index].posterPath!,
-                                                                                      imageBuilder: (context, imageProvider) => Container(
-                                                                                        decoration: BoxDecoration(
-                                                                                          image: DecorationImage(
-                                                                                            image: imageProvider,
-                                                                                            fit: BoxFit.cover,
-                                                                                          ),
-                                                                                        ),
-                                                                                      ),
-                                                                                      placeholder: (context, url) => mainPageVerticalScrollImageShimmer(isDark),
-                                                                                      errorWidget: (context, url, error) => Image.asset(
-                                                                                        'assets/images/na_logo.png',
-                                                                                        fit: BoxFit.cover,
-                                                                                      ),
                                                                                     ),
-                                                                              Positioned(
-                                                                                left: -18,
-                                                                                top: -15,
-                                                                                child: Container(
-                                                                                    alignment: Alignment.topLeft,
-                                                                                    child: IconButton(
-                                                                                      onPressed: () async {
-                                                                                        tvDatabaseController.deleteTV(widget.tvList![index].id!);
-                                                                                        //  movieList[index].favorite = false;
-                                                                                        if (mounted) {
-                                                                                          setState(() {
-                                                                                            widget.tvList!.removeAt(index);
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                      icon: const Icon(Icons.bookmark_remove, size: 50),
-                                                                                    )),
+                                                                                  ),
+                                                                                ),
+                                                                                placeholder: (context, url) => mainPageVerticalScrollImageShimmer(isDark),
+                                                                                errorWidget: (context, url, error) => Image.asset(
+                                                                                  'assets/images/na_logo.png',
+                                                                                  fit: BoxFit.cover,
+                                                                                ),
                                                                               ),
-                                                                            ])),
+                                                                        Positioned(
+                                                                          left:
+                                                                              -18,
+                                                                          top:
+                                                                              -15,
+                                                                          child: Container(
+                                                                              alignment: Alignment.topLeft,
+                                                                              child: IconButton(
+                                                                                onPressed: () async {
+                                                                                  tvDatabaseController.deleteTV(widget.tvList![index].id!);
+                                                                                  //  movieList[index].favorite = false;
+                                                                                  if (mounted) {
+                                                                                    setState(() {
+                                                                                      widget.tvList!.removeAt(index);
+                                                                                    });
+                                                                                  }
+                                                                                },
+                                                                                icon: const Icon(Icons.bookmark_remove, size: 50),
+                                                                              )),
+                                                                        ),
+                                                                      ])),
+                                                                ),
                                                               ),
                                                             ),
                                                           ),

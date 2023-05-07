@@ -49,72 +49,77 @@ class HorizontalScrollingTVList extends StatelessWidget {
                     flex: 6,
                     child: Hero(
                       tag: '${tvList![index].id}',
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: tvList![index].posterPath == null
-                                ? Image.asset(
-                                    'assets/images/na_rect.png',
-                                    fit: BoxFit.cover,
-                                  )
-                                : CachedNetworkImage(
-                                    cacheManager: cacheProp(),
-                                    fadeOutDuration:
-                                        const Duration(milliseconds: 300),
-                                    fadeOutCurve: Curves.easeOut,
-                                    fadeInDuration:
-                                        const Duration(milliseconds: 700),
-                                    fadeInCurve: Curves.easeIn,
-                                    imageUrl: tvList![index].posterPath == null
-                                        ? ''
-                                        : TMDB_BASE_IMAGE_URL +
-                                            imageQuality +
-                                            tvList![index].posterPath!,
-                                    imageBuilder: (context, imageProvider) =>
-                                        Container(
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: imageProvider,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    placeholder: (context, url) =>
-                                        scrollingImageShimmer(isDark),
-                                    errorWidget: (context, url, error) =>
-                                        Image.asset(
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: tvList![index].posterPath == null
+                                  ? Image.asset(
                                       'assets/images/na_rect.png',
                                       fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
+                                      fadeOutDuration:
+                                          const Duration(milliseconds: 300),
+                                      fadeOutCurve: Curves.easeOut,
+                                      fadeInDuration:
+                                          const Duration(milliseconds: 700),
+                                      fadeInCurve: Curves.easeIn,
+                                      imageUrl:
+                                          tvList![index].posterPath == null
+                                              ? ''
+                                              : TMDB_BASE_IMAGE_URL +
+                                                  imageQuality +
+                                                  tvList![index].posterPath!,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          scrollingImageShimmer(isDark),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_rect.png',
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                  ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              margin: const EdgeInsets.all(3),
-                              alignment: Alignment.topLeft,
-                              width: 50,
-                              height: 25,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color:
-                                      isDark ? Colors.black45 : Colors.white60),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.star,
-                                  ),
-                                  Text(tvList![index]
-                                      .voteAverage!
-                                      .toStringAsFixed(1))
-                                ],
+                            ),
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              child: Container(
+                                margin: const EdgeInsets.all(3),
+                                alignment: Alignment.topLeft,
+                                width: 50,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: isDark
+                                        ? Colors.black45
+                                        : Colors.white60),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.star,
+                                    ),
+                                    Text(tvList![index]
+                                        .voteAverage!
+                                        .toStringAsFixed(1))
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -317,70 +322,74 @@ class TVGridView extends StatelessWidget {
                     flex: 6,
                     child: Hero(
                       tag: '${tvList![index].id}',
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: tvList![index].posterPath == null
-                                ? Image.asset(
-                                    'assets/images/na_rect.png',
-                                    fit: BoxFit.cover,
-                                  )
-                                : CachedNetworkImage(
-                                    cacheManager: cacheProp(),
-                                    fadeOutDuration:
-                                        const Duration(milliseconds: 300),
-                                    fadeOutCurve: Curves.easeOut,
-                                    fadeInDuration:
-                                        const Duration(milliseconds: 700),
-                                    fadeInCurve: Curves.easeIn,
-                                    imageUrl: TMDB_BASE_IMAGE_URL +
-                                        imageQuality +
-                                        tvList![index].posterPath!,
-                                    imageBuilder: (context, imageProvider) =>
-                                        Container(
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: imageProvider,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    placeholder: (context, url) =>
-                                        scrollingImageShimmer(isDark),
-                                    errorWidget: (context, url, error) =>
-                                        Image.asset(
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: tvList![index].posterPath == null
+                                  ? Image.asset(
                                       'assets/images/na_rect.png',
                                       fit: BoxFit.cover,
+                                    )
+                                  : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
+                                      fadeOutDuration:
+                                          const Duration(milliseconds: 300),
+                                      fadeOutCurve: Curves.easeOut,
+                                      fadeInDuration:
+                                          const Duration(milliseconds: 700),
+                                      fadeInCurve: Curves.easeIn,
+                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                          imageQuality +
+                                          tvList![index].posterPath!,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          scrollingImageShimmer(isDark),
+                                      errorWidget: (context, url, error) =>
+                                          Image.asset(
+                                        'assets/images/na_rect.png',
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                  ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            child: Container(
-                              margin: const EdgeInsets.all(3),
-                              alignment: Alignment.topLeft,
-                              width: 50,
-                              height: 25,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color:
-                                      isDark ? Colors.black45 : Colors.white60),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.star,
-                                  ),
-                                  Text(tvList![index]
-                                      .voteAverage!
-                                      .toStringAsFixed(1))
-                                ],
+                            ),
+                            Positioned(
+                              top: 0,
+                              left: 0,
+                              child: Container(
+                                margin: const EdgeInsets.all(3),
+                                alignment: Alignment.topLeft,
+                                width: 50,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: isDark
+                                        ? Colors.black45
+                                        : Colors.white60),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.star,
+                                    ),
+                                    Text(tvList![index]
+                                        .voteAverage!
+                                        .toStringAsFixed(1))
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

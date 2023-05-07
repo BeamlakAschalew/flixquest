@@ -39,9 +39,9 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
                 const Text(
-                  'Cinemax v2.0.0',
+                  'Cinemax v2.0.0-bv2',
                   style: TextStyle(
-                    fontSize: 30.0,
+                    fontSize: 27.0,
                   ),
                 ),
                 const Text(
@@ -77,7 +77,7 @@ class AboutPage extends StatelessWidget {
                           decorationStyle: TextDecorationStyle.solid),
                     ),
                     onTap: () {
-                      launchUrl(Uri.parse('https://t.me/beamlakaschalew'),
+                      launchUrl(Uri.parse('https://t.me/birrle'),
                           mode: LaunchMode.externalApplication);
                     },
                   ),

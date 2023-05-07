@@ -53,6 +53,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
+      appBar: AppBar(title: const Text('Reset password')),
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
       body: Center(

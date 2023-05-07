@@ -60,6 +60,7 @@ class _PlayerOneState extends State<PlayerOne> {
                 backgroundColor: Colors.black45,
                 fontFamily: 'Poppins',
                 fontColor: Colors.white,
+                outlineEnabled: false,
                 fontSize: 17));
 
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
