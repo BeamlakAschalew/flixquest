@@ -162,13 +162,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.6"
-  dpad_container:
-    dependency: "direct main"
-    description:
-      name: dpad_container
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.3"
   dynamic_color:
     dependency: "direct main"
     description:
@@ -314,13 +307,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.4"
-  flutter_hooks:
-    dependency: transitive
-    description:
-      name: flutter_hooks
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.18.6"
   flutter_inappwebview:
     dependency: "direct main"
     description:
@@ -342,20 +328,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.10+1"
-  flutter_screen_wake:
-    dependency: "direct main"
-    description:
-      name: flutter_screen_wake
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
-  flutter_spinkit:
-    dependency: "direct main"
-    description:
-      name: flutter_spinkit
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.1.0"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -520,13 +492,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.0"
-  orientation:
-    dependency: "direct main"
-    description:
-      name: orientation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.3.0"
   path:
     dependency: transitive
     description:
@@ -840,13 +805,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.1"
-  subtitle:
-    dependency: "direct main"
-    description:
-      name: subtitle
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.0-beta.3"
   synchronized:
     dependency: transitive
     description:
