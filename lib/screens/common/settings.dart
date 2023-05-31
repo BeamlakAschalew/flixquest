@@ -1,11 +1,8 @@
 import 'dart:io';
-
 import 'package:device_info_plus/device_info_plus.dart';
-
 import '/models/watchprovider_countries.dart';
 import '/screens/common/country_choose.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -99,6 +96,15 @@ class _SettingsState extends State<Settings> {
               });
             },
           ),
+          // ListTile(
+          //   leading: const Icon(Icons.play_arrow),
+          //   title: const Text('Player settings'),
+          //   onTap: () {
+          //     Navigator.push(context, MaterialPageRoute(builder: ((context) {
+          //       return const PlayerSettings();
+          //     })));
+          //   },
+          // ),
           Visibility(
             visible: !isBelow33,
             child: SwitchListTile(

@@ -25,7 +25,7 @@ Future<void> _messageHandler(RemoteMessage message) async {}
 SettingsProvider settingsProvider = SettingsProvider();
 final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
-void main() async {
+Future<void> appInitialize() async {
   WidgetsFlutterBinding.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
@@ -38,7 +38,10 @@ void main() async {
   await settingsProvider.getCurrentWatchCountry();
   await settingsProvider.getCurrentViewType();
   await _initialization;
+}
 
+void main() async {
+  await appInitialize();
   runApp(Cinemax(
     settingsProvider: settingsProvider,
   ));
@@ -55,7 +58,6 @@ class Cinemax extends StatefulWidget {
 
 class _CinemaxState extends State<Cinemax>
     with ChangeNotifier, WidgetsBindingObserver {
-      
   void fileDelete() async {
     for (int i = 0; i < appNames.length; i++) {
       File file = File(

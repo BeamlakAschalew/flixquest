@@ -1,16 +1,8 @@
-import '/models/country_preferences.dart';
-import '/models/material3_preferences.dart';
-import '/models/view_perferences.dart';
 import 'package:flutter/material.dart';
-
-import '/models/adultmode_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-
 import '../constants/api_constants.dart';
-import '../models/default_screen_preferences.dart';
-import '../models/image_preferences.dart';
-import '../models/theme_preferences.dart';
+import '../models/setting_preferences.dart';
 
 class SettingsProvider with ChangeNotifier {
   ThemeModePreferences themeModePreferences = ThemeModePreferences();
@@ -20,6 +12,7 @@ class SettingsProvider with ChangeNotifier {
   ViewPreferences viewPreferences = ViewPreferences();
   CountryPreferences countryPreferences = CountryPreferences();
   Material3Preferences material3preferences = Material3Preferences();
+  VideoPlayerPreferences videoPlayerPreferences = VideoPlayerPreferences();
 
   bool _isAdult = false;
   bool get isAdult => _isAdult;
@@ -42,6 +35,14 @@ class SettingsProvider with ChangeNotifier {
   String _defaultView = 'list';
   String get defaultView => _defaultView;
 
+  int _defaultSeekDuration = 10;
+  int get defaultSeekDuration => _defaultSeekDuration;
+
+  int _defaultMinBufferDuration = 120000;
+  int get defaultMinBufferDuration => _defaultMinBufferDuration;
+
+  int _defaultMaxBufferDuration = 240000;
+  int get defaultMaxBufferDuration => _defaultMaxBufferDuration;
   late Mixpanel mixpanel;
 
   // theme change
@@ -125,6 +126,36 @@ class SettingsProvider with ChangeNotifier {
   set defaultView(String value) {
     _defaultView = value;
     viewPreferences.setViewType(value);
+    notifyListeners();
+  }
+
+  Future<void> getSeekDuration() async {
+    defaultSeekDuration = await videoPlayerPreferences.getSeekDuraion();
+  }
+
+  set defaultSeekDuration(int value) {
+    _defaultSeekDuration = value;
+    videoPlayerPreferences.setSeekDuration(value);
+    notifyListeners();
+  }
+
+  Future<void> getMinBufferDuration() async {
+    defaultMinBufferDuration = await videoPlayerPreferences.getMinBuffer();
+  }
+
+  set defaultMinBufferDuration(int value) {
+    _defaultMinBufferDuration = value;
+    videoPlayerPreferences.setMinBufferDuration(value);
+    notifyListeners();
+  }
+
+  Future<void> getMaxBufferDuration() async {
+    defaulMaxBufferDuration = await videoPlayerPreferences.getMaxBuffer();
+  }
+
+  set defaulMaxBufferDuration(int value) {
+    _defaultMaxBufferDuration = value;
+    videoPlayerPreferences.setMinBufferDuration(value);
     notifyListeners();
   }
 }

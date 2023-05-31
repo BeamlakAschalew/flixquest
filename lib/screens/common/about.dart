@@ -39,7 +39,7 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
                 const Text(
-                  'Cinemax v2.0.0-bv2',
+                  'Cinemax v2.0.0-bv3',
                   style: TextStyle(
                     fontSize: 27.0,
                   ),
