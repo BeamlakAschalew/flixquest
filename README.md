@@ -55,7 +55,7 @@ Cinemax does not host any content on the app, and has no control over what media
 
 In case of copyright infringement, please directly contact the responsible parties or the streaming websites.
 
-It merely scrapes 3rd-party websites that are publicly accessable via any regular web browser.
+It merely scrapes 3rd-party websites that are publicly accessable via any regular web browser and third-party APIs
 
 ---
 
