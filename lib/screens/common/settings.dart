@@ -137,13 +137,8 @@ class _SettingsState extends State<Settings> {
                 items: const [
                   DropdownMenuItem(value: 'original/', child: Text('High')),
                   DropdownMenuItem(
-                    value: 'w600_and_h900_bestv2/',
-                    child: Text('Medium'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'w500/',
-                    child: Text('Low'),
-                  )
+                      value: 'w600_and_h900_bestv2/', child: Text('Medium')),
+                  DropdownMenuItem(value: 'w500/', child: Text('Low'))
                 ],
                 onChanged: (String? value) {
                   setState(() {
@@ -162,28 +157,22 @@ class _SettingsState extends State<Settings> {
                 items: [
                   DropdownMenuItem(
                       value: 'list',
-                      child: Wrap(
-                        spacing: 3,
-                        children: [
-                          Icon(
-                            Icons.list,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const Text('List')
-                        ],
-                      )),
-                  DropdownMenuItem(
-                    value: 'grid',
-                    child: Wrap(
-                      spacing: 3,
-                      children: [
+                      child: Wrap(spacing: 3, children: [
                         Icon(
-                          Icons.grid_view,
+                          Icons.list,
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                        const Text('Grid')
-                      ],
-                    ),
+                        const Text('List')
+                      ])),
+                  DropdownMenuItem(
+                    value: 'grid',
+                    child: Wrap(spacing: 3, children: [
+                      Icon(
+                        Icons.grid_view,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const Text('Grid')
+                    ]),
                   ),
                 ],
                 onChanged: (String? value) {
@@ -202,15 +191,9 @@ class _SettingsState extends State<Settings> {
                 value: defaultHomeValue.defaultValue,
                 items: const [
                   DropdownMenuItem(value: 0, child: Text('Movies')),
-                  DropdownMenuItem(
-                    value: 1,
-                    child: Text('TV shows'),
-                  ),
+                  DropdownMenuItem(value: 1, child: Text('TV shows')),
                   DropdownMenuItem(value: 2, child: Text('Discover')),
-                  DropdownMenuItem(
-                    value: 3,
-                    child: Text('Profile'),
-                  )
+                  DropdownMenuItem(value: 3, child: Text('Profile'))
                 ],
                 onChanged: (int? value) {
                   setState(() {

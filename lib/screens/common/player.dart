@@ -1,6 +1,9 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+
+import '../../provider/settings_provider.dart';
 //import 'package:video_viewer/video_viewer.dart';
 
 class PlayerOne extends StatefulWidget {
@@ -9,12 +12,14 @@ class PlayerOne extends StatefulWidget {
       required this.thumbnail,
       required this.subs,
       required this.colors,
+      required this.videoProperties,
       Key? key})
       : super(key: key);
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
   final String? thumbnail;
   final List<Color> colors;
+  final List videoProperties;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -23,16 +28,16 @@ class PlayerOne extends StatefulWidget {
 class _PlayerOneState extends State<PlayerOne> {
   late BetterPlayerController _betterPlayerController;
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
-  late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration =
-      const BetterPlayerBufferingConfiguration(
-    maxBufferMs: 240000,
-    minBufferMs: 120000,
-  );
+  late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
 
   @override
   void initState() {
     super.initState();
 
+    betterPlayerBufferingConfiguration = BetterPlayerBufferingConfiguration(
+      maxBufferMs: widget.videoProperties.first,
+      minBufferMs: 15000,
+    );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
       enableFullscreen: true,
       backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
@@ -43,6 +48,10 @@ class _PlayerOneState extends State<PlayerOne> {
       showControlsOnInitialize: true,
       loadingColor: widget.colors.first,
       iconsColor: widget.colors.first,
+      backwardSkipTimeInMilliseconds:
+          Duration(seconds: widget.videoProperties.elementAt(1)).inMilliseconds,
+      forwardSkipTimeInMilliseconds:
+          Duration(seconds: widget.videoProperties.elementAt(1)).inMilliseconds,
       progressBarPlayedColor: widget.colors.first,
       progressBarBufferedColor: Colors.black45,
     );
@@ -63,8 +72,14 @@ class _PlayerOneState extends State<PlayerOne> {
                 outlineEnabled: false,
                 fontSize: 17));
 
+    String keyToFind = widget.videoProperties.elementAt(2) == 0 ? 'auto' : widget.videoProperties.elementAt(2).toString();
+    String link = widget.sources.entries
+        .where((entry) => entry.key == keyToFind)
+        .map((entry) => entry.value)
+        .first;
+
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network, widget.sources.values.first,
+        BetterPlayerDataSourceType.network, link,
         resolutions: widget.sources,
         subtitles: widget.subs,
         cacheConfiguration: const BetterPlayerCacheConfiguration(

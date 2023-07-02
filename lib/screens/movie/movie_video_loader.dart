@@ -3,6 +3,9 @@ import 'package:better_player/better_player.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:cinemax/models/movie_stream.dart';
+import 'package:cinemax/provider/settings_provider.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
@@ -30,6 +33,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   List<MovieVideoLinks>? movieVideoLinks;
   List<MovieVideoSubtitles>? movieVideoSubs;
   double loadProgress = 0.00;
+  late int maxBuffer;
+  late int seekDuration;
+  late int videoQuality;
 
   @override
   void initState() {
@@ -57,6 +63,14 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   }
 
   void loadVideo() async {
+    setState(() {
+      maxBuffer = Provider.of<SettingsProvider>(context, listen: false)
+          .defaultMaxBufferDuration;
+      seekDuration = Provider.of<SettingsProvider>(context, listen: false)
+          .defaultSeekDuration;
+      videoQuality = Provider.of<SettingsProvider>(context, listen: false)
+          .defaultVideoResolution;
+    });
     try {
       await fetchMoviesForStream(
               Endpoints.searchMovieTVForStream(widget.videoTitle))
@@ -139,6 +153,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 Theme.of(context).primaryColor,
                 Theme.of(context).colorScheme.background
               ],
+              videoProperties: [maxBuffer, seekDuration, videoQuality],
             );
           },
         ));

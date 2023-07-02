@@ -43,6 +43,10 @@ class SettingsProvider with ChangeNotifier {
 
   int _defaultMaxBufferDuration = 240000;
   int get defaultMaxBufferDuration => _defaultMaxBufferDuration;
+
+  int _defaultVideoResolution = 0;
+  int get defaultVideoResolution => _defaultVideoResolution;
+
   late Mixpanel mixpanel;
 
   // theme change
@@ -139,23 +143,34 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getMinBufferDuration() async {
-    defaultMinBufferDuration = await videoPlayerPreferences.getMinBuffer();
+  // Future<void> getMinBufferDuration() async {
+  //   defaultMinBufferDuration = await videoPlayerPreferences.getMinBuffer();
+  // }
+
+  // set defaultMinBufferDuration(int value) {
+  //   _defaultMinBufferDuration = value;
+  //   videoPlayerPreferences.setMinBufferDuration(value);
+  //   notifyListeners();
+  // }
+
+  Future<void> getMaxBufferDuration() async {
+    defaultMaxBufferDuration = await videoPlayerPreferences.getMaxBuffer();
   }
 
-  set defaultMinBufferDuration(int value) {
-    _defaultMinBufferDuration = value;
-    videoPlayerPreferences.setMinBufferDuration(value);
+  set defaultMaxBufferDuration(int value) {
+    _defaultMaxBufferDuration = value;
+    videoPlayerPreferences.setMaxBufferDuration(value);
     notifyListeners();
   }
 
-  Future<void> getMaxBufferDuration() async {
-    defaulMaxBufferDuration = await videoPlayerPreferences.getMaxBuffer();
+  Future<void> getVideoResolution() async {
+    defaultVideoResolution =
+        await videoPlayerPreferences.getDefaultVideoQuality();
   }
 
-  set defaulMaxBufferDuration(int value) {
-    _defaultMaxBufferDuration = value;
-    videoPlayerPreferences.setMinBufferDuration(value);
+  set defaultVideoResolution(int value) {
+    _defaultVideoResolution = value;
+    videoPlayerPreferences.setDefaultVideoQuality(value);
     notifyListeners();
   }
 }

@@ -108,16 +108,16 @@ class VideoPlayerPreferences {
     return prefs.getInt(SEEK_PREFERENCE) ?? 10;
   }
 
-  static const MIN_BUFFER_PREFERENCE = 'min_buffer';
-  setMinBufferDuration(int bufferDuration) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt(MIN_BUFFER_PREFERENCE, bufferDuration);
-  }
+  // static const MIN_BUFFER_PREFERENCE = 'min_buffer';
+  // setMinBufferDuration(int bufferDuration) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   prefs.setInt(MIN_BUFFER_PREFERENCE, bufferDuration);
+  // }
 
-  Future<int> getMinBuffer() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(MIN_BUFFER_PREFERENCE) ?? 120000;
-  }
+  // Future<int> getMinBuffer() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return prefs.getInt(MIN_BUFFER_PREFERENCE) ?? 120000;
+  // }
 
   static const MAX_BUFFER_PREFERENCE = 'max_buffer';
   setMaxBufferDuration(int bufferDuration) async {
@@ -134,6 +134,11 @@ class VideoPlayerPreferences {
   setDefaultVideoQuality(int videoQuality) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt(DEFAULT_VIDEO_QUALITY, videoQuality);
+  }
+
+  Future<int> getDefaultVideoQuality() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(DEFAULT_VIDEO_QUALITY) ?? 0;
   }
 
   static const DEFAULT_SUBTITLE = 'default_subtitle';
