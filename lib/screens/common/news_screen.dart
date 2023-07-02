@@ -59,11 +59,11 @@ class _NewsPageState extends State<NewsPage>
                     selectedIndex = value;
                   });
                 },
-                tabs: [
+                tabs: const [
                   Tab(
                       child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Icon(FontAwesomeIcons.fire),
@@ -76,7 +76,7 @@ class _NewsPageState extends State<NewsPage>
                   Tab(
                       child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Icon(Icons.movie_creation_rounded),
@@ -89,7 +89,7 @@ class _NewsPageState extends State<NewsPage>
                   Tab(
                       child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Padding(
                           padding: EdgeInsets.only(right: 8.0),
                           child: Icon(Icons.live_tv_rounded)),
@@ -101,7 +101,7 @@ class _NewsPageState extends State<NewsPage>
                   Tab(
                       child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Padding(
                           padding: EdgeInsets.only(right: 8.0),
                           child: Icon(FontAwesomeIcons.user)),
@@ -113,7 +113,7 @@ class _NewsPageState extends State<NewsPage>
                   Tab(
                       child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Padding(
                           padding: EdgeInsets.only(right: 8.0),
                           child: Icon(FontAwesomeIcons.starOfLife)),

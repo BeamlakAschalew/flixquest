@@ -130,8 +130,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       filled: true,
                                       prefixIcon: const Icon(Icons.email),
                                       labelText: 'Email Address',
-                                      fillColor:
-                                          Theme.of(context).backgroundColor),
+                                      fillColor: Theme.of(context)
+                                          .colorScheme
+                                          .background),
                                   onSaved: (value) {
                                     emailAddress = value!;
                                   },
@@ -164,8 +165,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                             : Icons.visibility_off),
                                       ),
                                       labelText: 'Password',
-                                      fillColor:
-                                          Theme.of(context).backgroundColor),
+                                      fillColor: Theme.of(context)
+                                          .colorScheme
+                                          .background),
                                   onSaved: (value) {
                                     password = value!;
                                   },

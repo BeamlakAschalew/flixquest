@@ -151,9 +151,9 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: const <Widget>[
+          children: <Widget>[
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
@@ -569,7 +569,7 @@ class _SABTNState extends State<SABTN> {
   }
 
   void _addListener() {
-    _position = Scrollable.of(context)?.position;
+    _position = Scrollable.of(context).position;
     _position?.addListener(_positionListener);
     _positionListener();
   }
@@ -649,7 +649,7 @@ class _SABTState extends State<SABT> {
   }
 
   void _addListener() {
-    _position = Scrollable.of(context)?.position;
+    _position = Scrollable.of(context).position;
     _position?.addListener(_positionListener);
     _positionListener();
   }
@@ -1047,8 +1047,8 @@ class _MovieAboutState extends State<MovieAbout> {
             GenreDisplay(
               api: Endpoints.movieDetailsUrl(widget.movie.id!),
             ),
-            Row(
-              children: const <Widget>[
+            const Row(
+              children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 8.0),
                   child: Text(
@@ -1185,10 +1185,10 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
     return Column(
       children: <Widget>[
         credits == null
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
+            ? const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Row(
-                  children: const <Widget>[
+                  children: <Widget>[
                     Text(
                       'Cast',
                       style: kTextHeaderStyle,
@@ -1197,12 +1197,12 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                 ),
               )
             : credits!.cast!.isEmpty
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
+                ? const Padding(
+                    padding: EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           'Cast',
                           style: kTextHeaderStyle,
@@ -2821,7 +2821,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                 scrollDirection: Axis.horizontal,
                 child: movieDetails == null
                     ? detailInfoTableShimmer(isDark)
-                    : DataTable(dataRowHeight: 40, columns: [
+                    : DataTable(dataRowMinHeight: 40, columns: [
                         const DataColumn(
                             label: Text(
                           'Original Title',
@@ -3001,11 +3001,6 @@ class CastTab extends StatefulWidget {
 
 class CastTabState extends State<CastTab>
     with AutomaticKeepAliveClientMixin<CastTab> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
@@ -3375,9 +3370,9 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     return Container(
       child: Column(
         children: <Widget>[
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const <Widget>[
+            children: <Widget>[
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
@@ -3877,9 +3872,9 @@ class GenreListGridState extends State<GenreListGrid>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: const <Widget>[
+          children: <Widget>[
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(

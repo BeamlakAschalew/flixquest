@@ -155,9 +155,9 @@ class DiscoverTVState extends State<DiscoverTV>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: const <Widget>[
+          children: <Widget>[
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
@@ -785,10 +785,10 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
     return Column(
       children: <Widget>[
         credits == null
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
+            ? const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Row(
-                  children: const <Widget>[
+                  children: <Widget>[
                     Text(
                       'Cast',
                       style: kTextHeaderStyle,
@@ -985,10 +985,10 @@ class ScrollingTVEpisodeGuestStarsState
     return Column(
       children: <Widget>[
         credits == null
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
+            ? const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Row(
-                  children: const <Widget>[
+                  children: <Widget>[
                     Text(
                       'Guest stars',
                       style: kTextHeaderStyle,
@@ -1004,9 +1004,9 @@ class ScrollingTVEpisodeGuestStarsState
                             'There is no guest star list available for this episode',
                             textAlign: TextAlign.center)),
                   )
-                : Row(
+                : const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
@@ -1167,10 +1167,10 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
     return Column(
       children: <Widget>[
         credits == null
-            ? Padding(
-                padding: const EdgeInsets.all(8.0),
+            ? const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Row(
-                  children: const <Widget>[
+                  children: <Widget>[
                     Text(
                       'Crew',
                       style: kTextHeaderStyle,
@@ -1186,9 +1186,9 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                             'There is no crew list available for this episode',
                             textAlign: TextAlign.center)),
                   )
-                : Row(
+                : const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
@@ -1345,10 +1345,10 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(8.0),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
           child: Row(
-            children: const <Widget>[
+            children: <Widget>[
               Text(
                 'Created by',
                 style: kTextHeaderStyle,
@@ -2896,9 +2896,9 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
     return Container(
       child: Column(
         children: <Widget>[
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const <Widget>[
+            children: <Widget>[
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
@@ -3314,7 +3314,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                 scrollDirection: Axis.horizontal,
                 child: tvDetails == null
                     ? detailInfoTableShimmer(isDark)
-                    : DataTable(dataRowHeight: 40, columns: [
+                    : DataTable(dataRowMinHeight: 40, columns: [
                         const DataColumn(
                             label: Text(
                           'Original Title',
@@ -4328,9 +4328,9 @@ class TVGenreListGridState extends State<TVGenreListGrid>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: const <Widget>[
+          children: <Widget>[
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
@@ -5436,8 +5436,8 @@ class _TVAboutState extends State<TVAbout> {
             TVGenreDisplay(
               api: Endpoints.tvDetailsUrl(widget.tvSeries.id!),
             ),
-            Row(
-              children: const <Widget>[
+            const Row(
+              children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 8.0),
                   child: Text(
@@ -5674,8 +5674,8 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Row(
-              children: const <Widget>[
+            const Row(
+              children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 8.0),
                   child: Text(

@@ -309,7 +309,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             filled: true,
                             prefixIcon: const Icon(Icons.person),
                             labelText: 'Full name',
-                            fillColor: Theme.of(context).backgroundColor,
+                            fillColor: Theme.of(context).colorScheme.background,
                           ),
                           onSaved: (value) {
                             _fullName = value!;
@@ -340,7 +340,8 @@ class _SignupScreenState extends State<SignupScreen> {
                               filled: true,
                               prefixIcon: const Icon(Icons.email),
                               labelText: 'Email Address',
-                              fillColor: Theme.of(context).backgroundColor),
+                              fillColor:
+                                  Theme.of(context).colorScheme.background),
                           onSaved: (value) {
                             _emailAddress = value!;
                           },
@@ -379,7 +380,8 @@ class _SignupScreenState extends State<SignupScreen> {
                               filled: true,
                               prefixIcon: const Icon(Icons.person),
                               labelText: 'Username',
-                              fillColor: Theme.of(context).backgroundColor),
+                              fillColor:
+                                  Theme.of(context).colorScheme.background),
                           onSaved: (value) {
                             _userName = value!;
                           },
@@ -423,7 +425,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                     : Icons.visibility_off),
                               ),
                               labelText: 'Enter password',
-                              fillColor: Theme.of(context).backgroundColor),
+                              fillColor:
+                                  Theme.of(context).colorScheme.background),
                           onSaved: (value) {
                             _password = value!;
                           },
@@ -461,7 +464,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                     : Icons.visibility_off),
                               ),
                               labelText: 'Repeat password',
-                              fillColor: Theme.of(context).backgroundColor),
+                              fillColor:
+                                  Theme.of(context).colorScheme.background),
                           // onSaved: (value) {
                           //   _passwordVerify = value!;
                           // },

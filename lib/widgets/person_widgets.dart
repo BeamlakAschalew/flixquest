@@ -886,7 +886,7 @@ class _PersonDataTableState extends State<PersonDataTable> {
           scrollDirection: Axis.horizontal,
           child: personDetails == null
               ? personDetailInfoTableShimmer(isDark)
-              : DataTable(dataRowHeight: 40, columns: [
+              : DataTable(dataRowMinHeight: 40, columns: [
                   DataColumn(
                       label: personDetails!.deathday != null &&
                               personDetails!.birthday != null

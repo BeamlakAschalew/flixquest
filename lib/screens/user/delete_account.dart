@@ -191,8 +191,9 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                         const Icon(Icons.text_fields_sharp),
                                     labelText:
                                         'Type \'CONFIRM\' to delete your account',
-                                    fillColor:
-                                        Theme.of(context).backgroundColor),
+                                    fillColor: Theme.of(context)
+                                        .colorScheme
+                                        .background),
                                 onSaved: (value) {
                                   setState(() {
                                     confirmationText = value!;
@@ -230,10 +231,10 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                       onPressed: () {
                                         _submitForm();
                                       },
-                                      child: Row(
+                                      child: const Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
-                                        children: const [
+                                        children: [
                                           Text(
                                             'Delete account',
                                             style: TextStyle(

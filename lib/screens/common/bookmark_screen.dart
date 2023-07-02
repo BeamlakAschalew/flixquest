@@ -110,11 +110,11 @@ class _BookmarkScreenState extends State<BookmarkScreen>
           Container(
             color: Colors.grey,
             child: TabBar(
-              tabs: [
+              tabs: const [
                 Tab(
                     child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Padding(
                       padding: EdgeInsets.only(right: 8.0),
                       child: Icon(Icons.movie_creation_rounded),
@@ -127,7 +127,7 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                 Tab(
                     child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Icon(Icons.live_tv_rounded)),

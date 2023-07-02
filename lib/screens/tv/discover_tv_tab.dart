@@ -252,10 +252,10 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                       );
                     }));
                   },
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
+                    children: [
                       Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Text('Discover'),

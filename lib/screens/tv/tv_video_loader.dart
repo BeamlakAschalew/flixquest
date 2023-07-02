@@ -146,7 +146,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               thumbnail: widget.thumbnail,
               colors: [
                 Theme.of(context).primaryColor,
-                Theme.of(context).backgroundColor
+                Theme.of(context).colorScheme.background
               ],
             );
           },

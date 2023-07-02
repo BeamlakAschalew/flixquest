@@ -176,8 +176,9 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                           : Icons.visibility_off),
                                     ),
                                     labelText: 'Enter new password',
-                                    fillColor:
-                                        Theme.of(context).backgroundColor),
+                                    fillColor: Theme.of(context)
+                                        .colorScheme
+                                        .background),
                                 onChanged: (value) {
                                   setState(() {
                                     newPassword = value;
@@ -218,8 +219,9 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                           : Icons.visibility_off),
                                     ),
                                     labelText: 'Repeat new password',
-                                    fillColor:
-                                        Theme.of(context).backgroundColor),
+                                    fillColor: Theme.of(context)
+                                        .colorScheme
+                                        .background),
                               ),
                             ),
                           ],
@@ -245,9 +247,9 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                               onPressed: () {
                                 _submitForm();
                               },
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Text(
                                     'Reset password',
                                     style: TextStyle(

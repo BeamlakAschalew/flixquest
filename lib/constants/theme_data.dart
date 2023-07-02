@@ -53,13 +53,6 @@ class Styles {
                 : lightDynamicColor?.primary ?? Color(0xFFF57C00)
             : Color(0xFFF57C00),
       ),
-      backgroundColor: isM3Enabled
-          ? isDarkTheme
-              ? darkDynamicColor?.background ?? Colors.black
-              : lightDynamicColor?.background ?? Colors.white
-          : isDarkTheme
-              ? Colors.black
-              : Colors.white,
       bannerTheme: MaterialBannerThemeData(),
       chipTheme: ChipThemeData(),
       snackBarTheme: SnackBarThemeData(),
@@ -326,7 +319,14 @@ class Styles {
                 ? Color(0xFF52443c)
                 : Color(0xFFf4ded3),
         brightness: isDarkTheme ? Brightness.dark : Brightness.light,
-      ),
+      ).copyWith(
+          background: isM3Enabled
+              ? isDarkTheme
+                  ? darkDynamicColor?.background ?? Colors.black
+                  : lightDynamicColor?.background ?? Colors.white
+              : isDarkTheme
+                  ? Colors.black
+                  : Colors.white),
     );
   }
 }

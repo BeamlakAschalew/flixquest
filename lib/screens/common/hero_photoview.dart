@@ -77,8 +77,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   }
 
   @pragma('vm:entry-point')
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
+  static void downloadCallback(String id, int status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName('downloader_send_port')!;
     send.send([id, status, progress]);
@@ -166,9 +165,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                     minimumSize: MaterialStateProperty.all(
                         const Size(double.infinity, 50)),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Icon(Icons.save),

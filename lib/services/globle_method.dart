@@ -44,8 +44,8 @@ class GlobalMethods {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
-            title: Row(
-              children: const [
+            title: const Row(
+              children: [
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text('Error occured'),
@@ -89,8 +89,8 @@ class GlobalMethods {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
-            title: Row(
-              children: const [
+            title: const Row(
+              children: [
                 Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text('Error occured'),

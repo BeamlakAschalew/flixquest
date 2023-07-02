@@ -113,16 +113,18 @@ class _ProfileEditState extends State<ProfileEdit> {
           });
         } else if (username != _userName) {
           if (await checkIfDocExists(_userName) == true) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'This username already exists, choose another one.',
-                  maxLines: 3,
-                  style: kTextSmallBodyStyle,
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'This username already exists, choose another one.',
+                    maxLines: 3,
+                    style: kTextSmallBodyStyle,
+                  ),
+                  duration: Duration(seconds: 4),
                 ),
-                duration: Duration(seconds: 4),
-              ),
-            );
+              );
+            }
             setState(() {
               username = userDoc!.get('username');
             });
@@ -272,7 +274,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                                 filled: true,
                                 prefixIcon: const Icon(Icons.person),
                                 labelText: 'Full name',
-                                fillColor: Theme.of(context).backgroundColor,
+                                fillColor:
+                                    Theme.of(context).colorScheme.background,
                               ),
                               onSaved: (value) {
                                 _fullName = value!;
@@ -311,7 +314,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                                   filled: true,
                                   prefixIcon: const Icon(Icons.person),
                                   labelText: 'Username',
-                                  fillColor: Theme.of(context).backgroundColor),
+                                  fillColor:
+                                      Theme.of(context).colorScheme.background),
                               onSaved: (value) {
                                 _userName = value!;
                               },

@@ -202,8 +202,9 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                     filled: true,
                                     prefixIcon: const Icon(Icons.email),
                                     labelText: 'Enter new email Address',
-                                    fillColor:
-                                        Theme.of(context).backgroundColor),
+                                    fillColor: Theme.of(context)
+                                        .colorScheme
+                                        .background),
                                 onSaved: (value) {
                                   newEmail = value!;
                                 },
@@ -230,8 +231,9 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                     filled: true,
                                     prefixIcon: const Icon(Icons.mail),
                                     labelText: 'Repeat new email',
-                                    fillColor:
-                                        Theme.of(context).backgroundColor),
+                                    fillColor: Theme.of(context)
+                                        .colorScheme
+                                        .background),
                               ),
                             ),
                           ],
@@ -257,9 +259,9 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                               onPressed: () {
                                 _submitForm();
                               },
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Text(
                                     'Change email',
                                     style: TextStyle(

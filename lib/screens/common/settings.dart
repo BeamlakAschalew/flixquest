@@ -7,6 +7,8 @@ import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'player_settings.dart';
+
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);
 
@@ -96,15 +98,15 @@ class _SettingsState extends State<Settings> {
               });
             },
           ),
-          // ListTile(
-          //   leading: const Icon(Icons.play_arrow),
-          //   title: const Text('Player settings'),
-          //   onTap: () {
-          //     Navigator.push(context, MaterialPageRoute(builder: ((context) {
-          //       return const PlayerSettings();
-          //     })));
-          //   },
-          // ),
+          ListTile(
+            leading: const Icon(Icons.play_arrow),
+            title: const Text('Player settings'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                return const PlayerSettings();
+              })));
+            },
+          ),
           Visibility(
             visible: !isBelow33,
             child: SwitchListTile(

@@ -91,7 +91,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       filled: true,
                       prefixIcon: const Icon(Icons.email),
                       labelText: 'Email Address',
-                      fillColor: Theme.of(context).backgroundColor),
+                      fillColor: Theme.of(context).colorScheme.background),
                   onSaved: (value) {
                     _emailAddress = value!;
                   },
@@ -115,9 +115,9 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                           )),
                       onPressed: _submitForm,
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text(
                             'Reset password',
                             style: TextStyle(

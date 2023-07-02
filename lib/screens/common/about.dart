@@ -95,10 +95,10 @@ class AboutPage extends StatelessWidget {
                         color: Colors.black26,
                       ),
                       padding: const EdgeInsets.all(10),
-                      child: Wrap(
+                      child: const Wrap(
                         spacing: 10,
                         runSpacing: 10,
-                        children: const [
+                        children: [
                           SocialIconContainer(
                             platformIcon: FontAwesomeIcons.twitter,
                             uri: 'https://twitter.com/cinemaxapp',

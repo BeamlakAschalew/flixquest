@@ -255,10 +255,10 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                           includeAdult: includeAdult);
                     }));
                   },
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
+                    children: [
                       Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Text('Discover'),

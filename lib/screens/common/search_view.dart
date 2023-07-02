@@ -736,12 +736,12 @@ class Search extends SearchDelegate<String> {
   }
 
   Widget buildSuggestionsSuccess(List<TV> moviesList) {
-    return DefaultTabController(
+    return const DefaultTabController(
       length: 3,
       initialIndex: 0,
       child: Scaffold(
         body: Column(
-          children: const [
+          children: [
             TabBar(
               tabs: [
                 Tab(

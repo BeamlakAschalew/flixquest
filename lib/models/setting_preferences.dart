@@ -129,4 +129,16 @@ class VideoPlayerPreferences {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getInt(MAX_BUFFER_PREFERENCE) ?? 240000;
   }
+
+  static const DEFAULT_VIDEO_QUALITY = 'video_quality';
+  setDefaultVideoQuality(int videoQuality) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(DEFAULT_VIDEO_QUALITY, videoQuality);
+  }
+
+  static const DEFAULT_SUBTITLE = 'default_subtitle';
+  setDefaultSubtitle(String language) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(DEFAULT_SUBTITLE, language);
+  }
 }

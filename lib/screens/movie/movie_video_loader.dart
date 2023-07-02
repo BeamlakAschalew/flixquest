@@ -137,7 +137,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               thumbnail: widget.thumbnail,
               colors: [
                 Theme.of(context).primaryColor,
-                Theme.of(context).backgroundColor
+                Theme.of(context).colorScheme.background
               ],
             );
           },
