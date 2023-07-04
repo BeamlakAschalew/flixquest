@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/screens/common/live_tv_screen.dart';
 import '/screens/common/title_reviews.dart';
 import '../constants/app_constants.dart';
 import '../models/function.dart';
@@ -66,6 +67,19 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Navigator.push(context,
                           MaterialPageRoute(builder: ((context) {
                         return const BookmarkScreen();
+                      })));
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      FontAwesomeIcons.tv,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: const Text('Live TV (beta)'),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: ((context) {
+                        return const LiveTV();
                       })));
                     },
                   ),

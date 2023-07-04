@@ -1,3 +1,4 @@
+import 'package:cinemax/screens/common/sublanguage_choose.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/provider/settings_provider.dart';
@@ -96,9 +97,14 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   videoResolution.defaultVideoResolution = value!;
                 }),
           ),
-          const ListTile(
-            leading: Icon(FontAwesomeIcons.closedCaptioning),
-            title: Text('Subtitle language'),
+          ListTile(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                return const SubLangChoose();
+              })));
+            },
+            leading: const Icon(FontAwesomeIcons.closedCaptioning),
+            title: const Text('Subtitle language'),
           )
         ],
       ),

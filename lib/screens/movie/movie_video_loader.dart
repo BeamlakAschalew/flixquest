@@ -4,7 +4,6 @@ import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:cinemax/models/movie_stream.dart';
 import 'package:cinemax/provider/settings_provider.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +35,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   late int maxBuffer;
   late int seekDuration;
   late int videoQuality;
+  late String subLanguage;
 
   @override
   void initState() {
@@ -70,6 +70,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           .defaultSeekDuration;
       videoQuality = Provider.of<SettingsProvider>(context, listen: false)
           .defaultVideoResolution;
+      subLanguage = Provider.of<SettingsProvider>(context, listen: false)
+          .defaultSubtitleLanguage;
     });
     try {
       await fetchMoviesForStream(
@@ -108,22 +110,37 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       List<BetterPlayerSubtitlesSource> subs = [];
 
       if (movieVideoSubs != null) {
-        for (int i = 0; i < movieVideoSubs!.length - 1; i++) {
-          setState(() {
-            loadProgress = (i / movieVideoSubs!.length) * 100;
-          });
-          await getVttFileAsString(movieVideoSubs![i].url!).then((value) {
+        if (subLanguage == '') {
+          for (int i = 0; i < movieVideoSubs!.length - 1; i++) {
+            setState(() {
+              loadProgress = (i / movieVideoSubs!.length) * 100;
+            });
+            await getVttFileAsString(movieVideoSubs![i].url!).then((value) {
+              subs.addAll({
+                BetterPlayerSubtitlesSource(
+                    name: movieVideoSubs![i].language!,
+                    //  urls: [movieVideoSubs![i].url],
+                    content: processVttFileTimestamps(value),
+                    type: BetterPlayerSubtitlesSourceType.memory),
+              });
+            });
+          }
+        } else {
+          await getVttFileAsString(movieVideoSubs!
+                  .where((element) => element.language!.startsWith(subLanguage))
+                  .first
+                  .url!)
+              .then((value) {
             subs.addAll({
               BetterPlayerSubtitlesSource(
-                  name: movieVideoSubs![i].language!,
+                  name: movieVideoSubs!
+                      .where((element) =>
+                          element.language!.startsWith(subLanguage))
+                      .first
+                      .language,
                   //  urls: [movieVideoSubs![i].url],
+                  selectedByDefault: true,
                   content: processVttFileTimestamps(value),
-                  selectedByDefault: movieVideoSubs![i].language == 'English' ||
-                          movieVideoSubs![i].language == 'English - English' ||
-                          movieVideoSubs![i].language == 'English - SDH' ||
-                          movieVideoSubs![i].language == 'English 1'
-                      ? true
-                      : false,
                   type: BetterPlayerSubtitlesSourceType.memory),
             });
           });

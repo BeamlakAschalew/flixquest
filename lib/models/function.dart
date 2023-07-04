@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import '/models/credits.dart';
 import '/models/genres.dart';
 import '/models/movie.dart';
+import 'live_tv.dart';
 import 'tv_stream.dart';
 
 Future<List<Movie>> fetchMovies(String api) async {
@@ -448,4 +449,19 @@ Future<String> getVttFileAsString(String url) async {
   } finally {
     client.close();
   }
+}
+
+Future<List<Channel>> fetchChannels(String api) async {
+  ChannelsList channelsList;
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    channelsList = ChannelsList.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return channelsList.channels ?? [];
 }

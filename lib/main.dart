@@ -40,6 +40,7 @@ Future<void> appInitialize() async {
   await settingsProvider.getSeekDuration();
   await settingsProvider.getMaxBufferDuration();
   await settingsProvider.getVideoResolution();
+  await settingsProvider.getSubtitleLanguage();
   await _initialization;
 }
 

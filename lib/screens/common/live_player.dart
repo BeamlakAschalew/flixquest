@@ -2,26 +2,17 @@ import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class PlayerOne extends StatefulWidget {
-  const PlayerOne(
-      {required this.sources,
-      required this.thumbnail,
-      required this.subs,
-      required this.colors,
-      required this.videoProperties,
-      Key? key})
+class LivePlayer extends StatefulWidget {
+  const LivePlayer({required this.sources, required this.colors, Key? key})
       : super(key: key);
   final Map<String, String> sources;
-  final List<BetterPlayerSubtitlesSource> subs;
-  final String? thumbnail;
   final List<Color> colors;
-  final List videoProperties;
 
   @override
-  State<PlayerOne> createState() => _PlayerOneState();
+  State<LivePlayer> createState() => _LivePlayerState();
 }
 
-class _PlayerOneState extends State<PlayerOne> {
+class _LivePlayerState extends State<LivePlayer> {
   late BetterPlayerController _betterPlayerController;
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
@@ -30,8 +21,9 @@ class _PlayerOneState extends State<PlayerOne> {
   void initState() {
     super.initState();
 
-    betterPlayerBufferingConfiguration = BetterPlayerBufferingConfiguration(
-      maxBufferMs: widget.videoProperties.first,
+    betterPlayerBufferingConfiguration =
+        const BetterPlayerBufferingConfiguration(
+      maxBufferMs: 120000,
       minBufferMs: 15000,
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
@@ -44,10 +36,6 @@ class _PlayerOneState extends State<PlayerOne> {
       showControlsOnInitialize: true,
       loadingColor: widget.colors.first,
       iconsColor: widget.colors.first,
-      backwardSkipTimeInMilliseconds:
-          Duration(seconds: widget.videoProperties.elementAt(1)).inMilliseconds,
-      forwardSkipTimeInMilliseconds:
-          Duration(seconds: widget.videoProperties.elementAt(1)).inMilliseconds,
       progressBarPlayedColor: widget.colors.first,
       progressBarBufferedColor: Colors.black45,
     );
@@ -55,7 +43,8 @@ class _PlayerOneState extends State<PlayerOne> {
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
             autoDetectFullscreenDeviceOrientation: true,
-            fullScreenByDefault: true,
+            //  fullScreenByDefault: true,
+            looping: true,
             autoPlay: true,
             fit: BoxFit.contain,
             autoDispose: true,
@@ -68,30 +57,35 @@ class _PlayerOneState extends State<PlayerOne> {
                 outlineEnabled: false,
                 fontSize: 17));
 
-    String keyToFind = widget.videoProperties.elementAt(2) == 0
-        ? 'auto'
-        : widget.videoProperties.elementAt(2).toString();
-    String link = widget.sources.entries
-        .where((entry) => entry.key == keyToFind)
-        .map((entry) => entry.value)
-        .first;
+    // String keyToFind = widget.videoProperties.elementAt(2) == 0
+    //     ? 'auto'
+    //     : widget.videoProperties.elementAt(2).toString();
+    // String link = widget.sources.entries
+    //     .where((entry) => entry.key == keyToFind)
+    //     .map((entry) => entry.value)
+    //     .first;
 
-    BetterPlayerDataSource dataSource =
-        BetterPlayerDataSource(BetterPlayerDataSourceType.network, link,
-            resolutions: widget.sources,
-            subtitles: widget.subs,
-            cacheConfiguration: const BetterPlayerCacheConfiguration(
-              useCache: true,
-              preCacheSize: 471859200 * 471859200,
-              maxCacheSize: 1073741824 * 1073741824,
-              maxCacheFileSize: 471859200 * 471859200,
+    BetterPlayerDataSource dataSource = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network, widget.sources.entries.first.value,
+        resolutions: widget.sources,
+        liveStream: true,
+        cacheConfiguration: const BetterPlayerCacheConfiguration(
+          useCache: true,
+          preCacheSize: 471859200 * 471859200,
+          maxCacheSize: 1073741824 * 1073741824,
+          maxCacheFileSize: 471859200 * 471859200,
 
-              ///Android only option to use cached video between app sessions
-              key: "testCacheKey",
-            ),
-            bufferingConfiguration: betterPlayerBufferingConfiguration);
+          ///Android only option to use cached video between app sessions
+          key: "testCacheKey",
+        ),
+        bufferingConfiguration: betterPlayerBufferingConfiguration);
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    _betterPlayerController.setupDataSource(dataSource);
+    _betterPlayerController.setupDataSource(dataSource).then((value) {
+      if (_betterPlayerController.videoPlayerController!.value.aspectRatio >
+          1.0) {
+        _betterPlayerController.enterFullScreen();
+      }
+    });
   }
 
   @override
@@ -109,8 +103,12 @@ class _PlayerOneState extends State<PlayerOne> {
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
           width: double.infinity,
-          child: BetterPlayer(
-            controller: _betterPlayerController,
+          child: AspectRatio(
+            aspectRatio: _betterPlayerController
+                .videoPlayerController!.value.aspectRatio,
+            child: BetterPlayer(
+              controller: _betterPlayerController,
+            ),
           ),
         ),
       ),

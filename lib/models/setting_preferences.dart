@@ -146,4 +146,9 @@ class VideoPlayerPreferences {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(DEFAULT_SUBTITLE, language);
   }
+
+  Future<String> getSubLanguage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(DEFAULT_SUBTITLE) ?? '';
+  }
 }

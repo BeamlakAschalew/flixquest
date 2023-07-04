@@ -38,14 +38,17 @@ class SettingsProvider with ChangeNotifier {
   int _defaultSeekDuration = 10;
   int get defaultSeekDuration => _defaultSeekDuration;
 
-  int _defaultMinBufferDuration = 120000;
-  int get defaultMinBufferDuration => _defaultMinBufferDuration;
+  // int _defaultMinBufferDuration = 120000;
+  // int get defaultMinBufferDuration => _defaultMinBufferDuration;
 
   int _defaultMaxBufferDuration = 240000;
   int get defaultMaxBufferDuration => _defaultMaxBufferDuration;
 
   int _defaultVideoResolution = 0;
   int get defaultVideoResolution => _defaultVideoResolution;
+
+  String _defaultSubtitleLanguage = 'English';
+  String get defaultSubtitleLanguage => _defaultSubtitleLanguage;
 
   late Mixpanel mixpanel;
 
@@ -171,6 +174,16 @@ class SettingsProvider with ChangeNotifier {
   set defaultVideoResolution(int value) {
     _defaultVideoResolution = value;
     videoPlayerPreferences.setDefaultVideoQuality(value);
+    notifyListeners();
+  }
+
+  Future<void> getSubtitleLanguage() async {
+    defaultSubtitleLanguage = await videoPlayerPreferences.getSubLanguage();
+  }
+
+  set defaultSubtitleLanguage(String value) {
+    _defaultSubtitleLanguage = value;
+    videoPlayerPreferences.setDefaultSubtitle(value);
     notifyListeners();
   }
 }
