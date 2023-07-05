@@ -4,9 +4,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/models/live_tv.dart';
 import 'package:cinemax/screens/common/live_player.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
 import '../../models/function.dart';
 import 'package:startapp_sdk/startapp.dart';
+
+import '../../provider/settings_provider.dart';
 
 class LiveTV extends StatefulWidget {
   const LiveTV({Key? key}) : super(key: key);
@@ -168,6 +171,7 @@ class _ChannelListState extends State<ChannelList> {
                       itemBuilder: (context, index) {
                         return ChannelWidget(
                           channel: channels![index],
+                          catName: widget.catName,
                         );
                       },
                     ),
@@ -181,9 +185,11 @@ class _ChannelListState extends State<ChannelList> {
 }
 
 class ChannelWidget extends StatefulWidget {
-  const ChannelWidget({Key? key, required this.channel}) : super(key: key);
+  const ChannelWidget({Key? key, required this.channel, required this.catName})
+      : super(key: key);
 
   final Channel channel;
+  final String catName;
 
   @override
   State<ChannelWidget> createState() => _ChannelWidgetState();
@@ -211,7 +217,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
 
   bool isEventOccur() {
     Random random = Random();
-    int randomNumber = random.nextInt(3);
+    int randomNumber = random.nextInt(4);
     return randomNumber == 0;
   }
 
@@ -243,6 +249,13 @@ class _ChannelWidgetState extends State<ChannelWidget> {
             onTap: () {
               setState(() {
                 showAd = isEventOccur();
+              });
+              final mixpanel =
+                  Provider.of<SettingsProvider>(context, listen: false)
+                      .mixpanel;
+              mixpanel.track('Most viewed TV channels', properties: {
+                'TV Channel name': widget.channel.channelName,
+                'Category': widget.catName,
               });
               if (interstitialAd != null && showAd == true) {
                 interstitialAd!.show().then((shown) {
