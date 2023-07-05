@@ -2621,12 +2621,21 @@ class WatchNowButtonState extends State<WatchNowButton> {
           Theme.of(context).colorScheme.primary,
         )),
         onPressed: () async {
-          streamSelectBottomSheet(
-              movieName: widget.movieName!,
-              thumbnail: widget.thumbnail!,
-              adult: widget.adult ?? false,
+          final mixpanel =
+              Provider.of<SettingsProvider>(context, listen: false).mixpanel;
+          mixpanel.track('Most viewed movies', properties: {
+            'Movie name': widget.movieName,
+            'Movie id': widget.movieId,
+            'Is Movie adult?': widget.adult ?? 'unknown',
+          });
+
+          Navigator.push(context, MaterialPageRoute(builder: ((context) {
+            return MovieVideoLoader(
               releaseYear: widget.releaseYear,
-              movieId: widget.movieId);
+              thumbnail: widget.thumbnail,
+              videoTitle: widget.movieName!,
+            );
+          })));
         },
         child: Row(
           children: [

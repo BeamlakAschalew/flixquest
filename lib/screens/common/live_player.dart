@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 class LivePlayer extends StatefulWidget {
   const LivePlayer({required this.sources, required this.colors, Key? key})
@@ -16,11 +19,33 @@ class _LivePlayerState extends State<LivePlayer> {
   late BetterPlayerController _betterPlayerController;
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
+  var startAppSdk = StartAppSdk();
+  StartAppRewardedVideoAd? rewardedVideoAd;
+  StartAppBannerAd? playerBannerAd;
+  late bool loadAd;
+
+  bool isEventOccur() {
+    Random random = Random();
+    int randomNumber = random.nextInt(10);
+    return randomNumber == 0;
+  }
 
   @override
   void initState() {
     super.initState();
-
+    loadAd = isEventOccur();
+    if (loadAd == true) {
+      loadRewardedVideoAd();
+    }
+    startAppSdk.loadBannerAd(StartAppBannerType.MREC).then((bannerAd) {
+      setState(() {
+        playerBannerAd = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
     betterPlayerBufferingConfiguration =
         const BetterPlayerBufferingConfiguration(
       maxBufferMs: 120000,
@@ -33,7 +58,7 @@ class _LivePlayerState extends State<LivePlayer> {
       pauseIcon: Icons.pause_outlined,
       pipMenuIcon: Icons.picture_in_picture_sharp,
       playIcon: Icons.play_arrow_sharp,
-      showControlsOnInitialize: true,
+      showControlsOnInitialize: false,
       loadingColor: widget.colors.first,
       iconsColor: widget.colors.first,
       progressBarPlayedColor: widget.colors.first,
@@ -57,27 +82,10 @@ class _LivePlayerState extends State<LivePlayer> {
                 outlineEnabled: false,
                 fontSize: 17));
 
-    // String keyToFind = widget.videoProperties.elementAt(2) == 0
-    //     ? 'auto'
-    //     : widget.videoProperties.elementAt(2).toString();
-    // String link = widget.sources.entries
-    //     .where((entry) => entry.key == keyToFind)
-    //     .map((entry) => entry.value)
-    //     .first;
-
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network, widget.sources.entries.first.value,
         resolutions: widget.sources,
         liveStream: true,
-        cacheConfiguration: const BetterPlayerCacheConfiguration(
-          useCache: true,
-          preCacheSize: 471859200 * 471859200,
-          maxCacheSize: 1073741824 * 1073741824,
-          maxCacheFileSize: 471859200 * 471859200,
-
-          ///Android only option to use cached video between app sessions
-          key: "testCacheKey",
-        ),
         bufferingConfiguration: betterPlayerBufferingConfiguration);
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(dataSource).then((value) {
@@ -88,8 +96,41 @@ class _LivePlayerState extends State<LivePlayer> {
     });
   }
 
+  void loadRewardedVideoAd() {
+    startAppSdk.loadRewardedVideoAd(
+      onAdNotDisplayed: () {
+        debugPrint('onAdNotDisplayed: rewarded video');
+        setState(() {
+          rewardedVideoAd?.dispose();
+          rewardedVideoAd = null;
+        });
+      },
+      onAdHidden: () {
+        debugPrint('onAdHidden: rewarded video');
+        setState(() {
+          rewardedVideoAd?.dispose();
+          rewardedVideoAd = null;
+        });
+      },
+    ).then((rewardedVideoAd) {
+      setState(() {
+        this.rewardedVideoAd = rewardedVideoAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Rewarded Video ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Rewarded Video ad: $error");
+    });
+  }
+
   @override
   void dispose() {
+    if (rewardedVideoAd != null && loadAd == true) {
+      rewardedVideoAd!.show().onError((error, stackTrace) {
+        debugPrint("Error showing Rewarded Video ad: $error");
+        return false;
+      });
+    }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -99,17 +140,28 @@ class _LivePlayerState extends State<LivePlayer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        forceMaterialTransparency: true,
+        leading: null,
+        automaticallyImplyLeading: false,
+      ),
       body: Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: double.infinity,
-          child: AspectRatio(
-            aspectRatio: _betterPlayerController
-                .videoPlayerController!.value.aspectRatio,
-            child: BetterPlayer(
-              controller: _betterPlayerController,
+        child: Column(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: double.infinity,
+                child: BetterPlayer(
+                  controller: _betterPlayerController,
+                ),
+              ),
             ),
-          ),
+            playerBannerAd != null
+                ? StartAppBanner(playerBannerAd!)
+                : Container(),
+          ],
         ),
       ),
     );

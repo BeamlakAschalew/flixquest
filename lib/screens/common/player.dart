@@ -41,7 +41,7 @@ class _PlayerOneState extends State<PlayerOne> {
       pauseIcon: Icons.pause_outlined,
       pipMenuIcon: Icons.picture_in_picture_sharp,
       playIcon: Icons.play_arrow_sharp,
-      showControlsOnInitialize: true,
+      showControlsOnInitialize: false,
       loadingColor: widget.colors.first,
       iconsColor: widget.colors.first,
       backwardSkipTimeInMilliseconds:
@@ -71,10 +71,18 @@ class _PlayerOneState extends State<PlayerOne> {
     String keyToFind = widget.videoProperties.elementAt(2) == 0
         ? 'auto'
         : widget.videoProperties.elementAt(2).toString();
-    String link = widget.sources.entries
+    String? link;
+
+    if (widget.sources.entries
         .where((entry) => entry.key == keyToFind)
-        .map((entry) => entry.value)
-        .first;
+        .isNotEmpty) {
+      link = widget.sources.entries
+          .where((entry) => entry.key == keyToFind)
+          .map((entry) => entry.value)
+          .first;
+    } else {
+      link = widget.sources.values.first;
+    }
 
     BetterPlayerDataSource dataSource =
         BetterPlayerDataSource(BetterPlayerDataSourceType.network, link,

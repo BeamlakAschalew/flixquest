@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/models/live_tv.dart';
 import 'package:cinemax/screens/common/live_player.dart';
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../models/function.dart';
+import 'package:startapp_sdk/startapp.dart';
 
 class LiveTV extends StatefulWidget {
   const LiveTV({Key? key}) : super(key: key);
@@ -59,7 +62,7 @@ class _LiveTVState extends State<LiveTV> {
                             color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(30)),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(15.0),
                           child: CategoryWidget(category: categories[index]),
                         ),
                       ),
@@ -87,15 +90,15 @@ class CategoryWidget extends StatelessWidget {
       children: [
         Image.asset(
           category.imagePath,
-          height: 60,
-          width: 60,
+          height: 40,
+          width: 40,
         ),
         const SizedBox(
           width: 15,
         ),
         Expanded(
           child: Text(
-            category.categoryName,
+            category.categoryName.replaceAll(RegExp(r'_'), ' '),
             style: TextStyle(
               color: Theme.of(context).colorScheme.onPrimary,
               fontSize: 20.0,
@@ -118,9 +121,25 @@ class ChannelList extends StatefulWidget {
 
 class _ChannelListState extends State<ChannelList> {
   List<Channel>? channels;
+  var startAppSdk = StartAppSdk();
+
+  StartAppBannerAd? bannerAd;
 
   @override
   void initState() {
+    startAppSdk
+        .loadBannerAd(
+      StartAppBannerType.BANNER,
+    )
+        .then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
     fetchChannels(
             'https://raw.githubusercontent.com/BeamlakAschalew/cinemax_live_channels/master/${widget.catName}.json')
         .then((value) {
@@ -152,7 +171,8 @@ class _ChannelListState extends State<ChannelList> {
                         );
                       },
                     ),
-                  )
+                  ),
+                  bannerAd != null ? StartAppBanner(bannerAd!) : Container()
                 ],
               ),
       ),
@@ -171,6 +191,10 @@ class ChannelWidget extends StatefulWidget {
 
 class _ChannelWidgetState extends State<ChannelWidget> {
   Map<String, String> videos = {};
+  var startAppSdk = StartAppSdk();
+  late bool showAd;
+  StartAppInterstitialAd? interstitialAd;
+  Map<String, String> reversedVids = {};
 
   void sett() {
     for (int k = 0; k < widget.channel.channelStream!.length; k++) {
@@ -178,13 +202,36 @@ class _ChannelWidgetState extends State<ChannelWidget> {
         widget.channel.channelStream![k].videoQuality!:
             widget.channel.channelStream![k].streamLink!,
       });
+
+      List<MapEntry<String, String>> reversedVideoList =
+          videos.entries.toList().reversed.toList();
+      reversedVids = Map.fromEntries(reversedVideoList);
     }
+  }
+
+  bool isEventOccur() {
+    Random random = Random();
+    int randomNumber = random.nextInt(3);
+    return randomNumber == 0;
   }
 
   @override
   void initState() {
+    loadInterstitialAd();
     sett();
     super.initState();
+  }
+
+  void loadInterstitialAd() {
+    startAppSdk.loadInterstitialAd().then((interstitialAd) {
+      setState(() {
+        this.interstitialAd = interstitialAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
+    });
   }
 
   @override
@@ -194,9 +241,27 @@ class _ChannelWidgetState extends State<ChannelWidget> {
         InkWell(
           child: GestureDetector(
             onTap: () {
+              setState(() {
+                showAd = isEventOccur();
+              });
+              if (interstitialAd != null && showAd == true) {
+                interstitialAd!.show().then((shown) {
+                  if (shown) {
+                    setState(() {
+                      interstitialAd = null;
+                      loadInterstitialAd();
+                    });
+                  }
+
+                  return null;
+                }).onError((error, stackTrace) {
+                  debugPrint("Error showing Interstitial ad: $error");
+                });
+              }
+
               Navigator.push(context, MaterialPageRoute(builder: ((context) {
                 return LivePlayer(
-                  sources: videos,
+                  sources: reversedVids,
                   colors: [
                     Theme.of(context).primaryColor,
                     Theme.of(context).colorScheme.background
@@ -226,6 +291,9 @@ class _ChannelWidgetState extends State<ChannelWidget> {
                         fit: BoxFit.cover,
                       ),
                     ),
+                  ),
+                  const SizedBox(
+                    width: 20,
                   ),
                   Text(widget.channel.channelName!)
                 ],

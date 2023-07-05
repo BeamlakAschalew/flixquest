@@ -51,6 +51,7 @@ dependencies:
   native_device_orientation: ^1.1.4
   better_player: ^0.0.83
   flutter_cache_manager: ^3.3.0
+  startapp_sdk: ^0.4.1
 
 dev_dependencies:
   flutter_test:

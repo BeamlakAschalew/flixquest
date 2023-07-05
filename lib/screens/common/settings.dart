@@ -99,7 +99,10 @@ class _SettingsState extends State<Settings> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.play_arrow),
+            leading: Icon(
+              Icons.play_arrow,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             title: const Text('Player settings'),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: ((context) {
@@ -112,7 +115,7 @@ class _SettingsState extends State<Settings> {
             child: SwitchListTile(
               inactiveThumbColor: Colors.white,
               inactiveTrackColor: const Color(0xFF9B9B9B),
-              subtitle: const Text('beta and works on Android 12+'),
+              subtitle: const Text('Works on Android 12+'),
               value: m3.isMaterial3Enabled,
               secondary: Icon(
                 Icons.color_lens,

@@ -40,6 +40,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   late int maxBuffer;
   late int seekDuration;
   late int videoQuality;
+  late String subLanguage;
 
   @override
   void initState() {
@@ -74,14 +75,18 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           .defaultSeekDuration;
       videoQuality = Provider.of<SettingsProvider>(context, listen: false)
           .defaultVideoResolution;
+      subLanguage = Provider.of<SettingsProvider>(context, listen: false)
+          .defaultSubtitleLanguage;
     });
     try {
       await fetchTVForStream(
               Endpoints.searchMovieTVForStream(widget.videoTitle))
           .then((value) {
-        setState(() {
-          tvShows = value;
-        });
+        if (mounted) {
+          setState(() {
+            tvShows = value;
+          });
+        }
       });
 
       for (int i = 0; i < tvShows!.length; i++) {
@@ -119,24 +124,49 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       List<BetterPlayerSubtitlesSource> subs = [];
 
       if (tvVideoSubs != null) {
-        for (int i = 0; i < tvVideoSubs!.length - 1; i++) {
-          setState(() {
-            loadProgress = (i / tvVideoSubs!.length) * 100;
-          });
-          await getVttFileAsString(tvVideoSubs![i].url!).then((value) {
-            subs.addAll({
-              BetterPlayerSubtitlesSource(
-                  name: tvVideoSubs![i].language!,
-                  content: processVttFileTimestamps(value),
-                  selectedByDefault: tvVideoSubs![i].language == 'English' ||
-                          tvVideoSubs![i].language == 'English - English' ||
-                          tvVideoSubs![i].language == 'English - SDH' ||
-                          tvVideoSubs![i].language == 'English 1'
-                      ? true
-                      : false,
-                  type: BetterPlayerSubtitlesSourceType.memory)
+        if (subLanguage == '') {
+          for (int i = 0; i < tvVideoSubs!.length - 1; i++) {
+            setState(() {
+              loadProgress = (i / tvVideoSubs!.length) * 100;
             });
-          });
+            await getVttFileAsString(tvVideoSubs![i].url!).then((value) {
+              subs.addAll({
+                BetterPlayerSubtitlesSource(
+                    name: tvVideoSubs![i].language!,
+                    content: processVttFileTimestamps(value),
+                    selectedByDefault: tvVideoSubs![i].language == 'English' ||
+                            tvVideoSubs![i].language == 'English - English' ||
+                            tvVideoSubs![i].language == 'English - SDH' ||
+                            tvVideoSubs![i].language == 'English 1'
+                        ? true
+                        : false,
+                    type: BetterPlayerSubtitlesSourceType.memory)
+              });
+            });
+          }
+        } else {
+          if (tvVideoSubs!
+              .where((element) => element.language!.startsWith(subLanguage))
+              .isNotEmpty) {
+            await getVttFileAsString(tvVideoSubs!
+                    .where(
+                        (element) => element.language!.startsWith(subLanguage))
+                    .first
+                    .url!)
+                .then((value) {
+              subs.addAll({
+                BetterPlayerSubtitlesSource(
+                    name: tvVideoSubs!
+                        .where((element) =>
+                            element.language!.startsWith(subLanguage))
+                        .first
+                        .language,
+                    content: processVttFileTimestamps(value),
+                    selectedByDefault: true,
+                    type: BetterPlayerSubtitlesSourceType.memory)
+              });
+            });
+          }
         }
       }
 
@@ -217,9 +247,13 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               height: 15,
             ),
             const SizedBox(width: 160, child: LinearProgressIndicator()),
-            Text(
-              '${loadProgress.toStringAsFixed(0).toString()}%',
-              style: TextStyle(color: Theme.of(context).colorScheme.background),
+            Visibility(
+              visible: subLanguage != '' ? false : true,
+              child: Text(
+                '${loadProgress.toStringAsFixed(0).toString()}%',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.background),
+              ),
             ),
           ],
         ),

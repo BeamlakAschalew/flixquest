@@ -87,6 +87,7 @@ class AboutPage extends StatelessWidget {
                     const Text(
                       'Follow Cinemax on various platforms',
                       maxLines: 5,
+                      textAlign: TextAlign.center,
                       style: kTextSmallHeaderStyle,
                     ),
                     Container(

@@ -77,9 +77,11 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       await fetchMoviesForStream(
               Endpoints.searchMovieTVForStream(widget.videoTitle))
           .then((value) {
-        setState(() {
-          movies = value;
-        });
+        if (mounted) {
+          setState(() {
+            movies = value;
+          });
+        }
       });
 
       for (int i = 0; i < movies!.length; i++) {
@@ -126,24 +128,28 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             });
           }
         } else {
-          await getVttFileAsString(movieVideoSubs!
-                  .where((element) => element.language!.startsWith(subLanguage))
-                  .first
-                  .url!)
-              .then((value) {
-            subs.addAll({
-              BetterPlayerSubtitlesSource(
-                  name: movieVideoSubs!
-                      .where((element) =>
-                          element.language!.startsWith(subLanguage))
-                      .first
-                      .language,
-                  //  urls: [movieVideoSubs![i].url],
-                  selectedByDefault: true,
-                  content: processVttFileTimestamps(value),
-                  type: BetterPlayerSubtitlesSourceType.memory),
+          if (movieVideoSubs!
+              .where((element) => element.language!.startsWith(subLanguage))
+              .isNotEmpty) {
+            await getVttFileAsString((movieVideoSubs!.where(
+                        (element) => element.language!.startsWith(subLanguage)))
+                    .first
+                    .url!)
+                .then((value) {
+              subs.addAll({
+                BetterPlayerSubtitlesSource(
+                    name: movieVideoSubs!
+                        .where((element) =>
+                            element.language!.startsWith(subLanguage))
+                        .first
+                        .language,
+                    //  urls: [movieVideoSubs![i].url],
+                    selectedByDefault: true,
+                    content: processVttFileTimestamps(value),
+                    type: BetterPlayerSubtitlesSourceType.memory),
+              });
             });
-          });
+          }
         }
       }
 
@@ -226,9 +232,13 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               height: 15,
             ),
             const SizedBox(width: 160, child: LinearProgressIndicator()),
-            Text(
-              '${loadProgress.toStringAsFixed(0).toString()}%',
-              style: TextStyle(color: Theme.of(context).colorScheme.background),
+            Visibility(
+              visible: subLanguage != '' ? false : true,
+              child: Text(
+                '${loadProgress.toStringAsFixed(0).toString()}%',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.background),
+              ),
             ),
           ],
         ),
