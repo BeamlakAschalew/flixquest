@@ -50,6 +50,9 @@ class SettingsProvider with ChangeNotifier {
   String _defaultSubtitleLanguage = 'English';
   String get defaultSubtitleLanguage => _defaultSubtitleLanguage;
 
+  bool _defaultViewMode = true;
+  bool get defaultViewMode => _defaultViewMode;
+
   late Mixpanel mixpanel;
 
   // theme change
@@ -143,6 +146,16 @@ class SettingsProvider with ChangeNotifier {
   set defaultSeekDuration(int value) {
     _defaultSeekDuration = value;
     videoPlayerPreferences.setSeekDuration(value);
+    notifyListeners();
+  }
+
+  Future<void> getViewMode() async {
+    defaultViewMode = await videoPlayerPreferences.autoFullScreen();
+  }
+
+  set defaultViewMode(bool value) {
+    _defaultViewMode = value;
+    videoPlayerPreferences.setDefaultFullScreen(value);
     notifyListeners();
   }
 

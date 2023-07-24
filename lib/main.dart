@@ -41,7 +41,15 @@ Future<void> appInitialize() async {
   await settingsProvider.getMaxBufferDuration();
   await settingsProvider.getVideoResolution();
   await settingsProvider.getSubtitleLanguage();
+  await settingsProvider.getViewMode();
   await _initialization;
+  // UnityAds.init(
+  //   testMode: false,
+  //   gameId: '5280322',
+  //   onComplete: () => print('Initialization Complete'),
+  //   onFailed: (error, message) =>
+  //       print('Initialization Failed: $error $message'),
+  // );
 }
 
 void main() async {

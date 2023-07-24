@@ -1,15 +1,18 @@
-import 'dart:math';
-
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:startapp_sdk/startapp.dart';
 
 class LivePlayer extends StatefulWidget {
-  const LivePlayer({required this.sources, required this.colors, Key? key})
+  const LivePlayer(
+      {required this.sources,
+      required this.colors,
+      required this.autoFullScreen,
+      Key? key})
       : super(key: key);
   final Map<String, String> sources;
   final List<Color> colors;
+  final bool autoFullScreen;
 
   @override
   State<LivePlayer> createState() => _LivePlayerState();
@@ -20,24 +23,12 @@ class _LivePlayerState extends State<LivePlayer> {
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
   var startAppSdk = StartAppSdk();
-  StartAppRewardedVideoAd? rewardedVideoAd;
   StartAppBannerAd? playerBannerAd;
-  late bool loadAd;
-
-  bool isEventOccur() {
-    Random random = Random();
-    int randomNumber = random.nextInt(10);
-    return randomNumber == 0;
-  }
 
   @override
   void initState() {
     super.initState();
-    loadAd = isEventOccur();
-    if (loadAd == true) {
-      loadRewardedVideoAd();
-    }
-    startAppSdk.loadBannerAd(StartAppBannerType.MREC).then((bannerAd) {
+    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
       setState(() {
         playerBannerAd = bannerAd;
       });
@@ -52,7 +43,7 @@ class _LivePlayerState extends State<LivePlayer> {
       minBufferMs: 15000,
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
-      enableFullscreen: true,
+      enableFullscreen: widget.autoFullScreen,
       backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
       progressBarBackgroundColor: Colors.white,
       pauseIcon: Icons.pause_outlined,
@@ -91,46 +82,15 @@ class _LivePlayerState extends State<LivePlayer> {
     _betterPlayerController.setupDataSource(dataSource).then((value) {
       if (_betterPlayerController.videoPlayerController!.value.aspectRatio >
           1.0) {
-        _betterPlayerController.enterFullScreen();
+        if (widget.autoFullScreen) {
+          _betterPlayerController.enterFullScreen();
+        }
       }
-    });
-  }
-
-  void loadRewardedVideoAd() {
-    startAppSdk.loadRewardedVideoAd(
-      onAdNotDisplayed: () {
-        debugPrint('onAdNotDisplayed: rewarded video');
-        setState(() {
-          rewardedVideoAd?.dispose();
-          rewardedVideoAd = null;
-        });
-      },
-      onAdHidden: () {
-        debugPrint('onAdHidden: rewarded video');
-        setState(() {
-          rewardedVideoAd?.dispose();
-          rewardedVideoAd = null;
-        });
-      },
-    ).then((rewardedVideoAd) {
-      setState(() {
-        this.rewardedVideoAd = rewardedVideoAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Rewarded Video ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Rewarded Video ad: $error");
     });
   }
 
   @override
   void dispose() {
-    if (rewardedVideoAd != null && loadAd == true) {
-      rewardedVideoAd!.show().onError((error, stackTrace) {
-        debugPrint("Error showing Rewarded Video ad: $error");
-        return false;
-      });
-    }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);

@@ -69,6 +69,13 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
             isTrending: false,
             includeAdult: includeAdult,
           ),
+          // UnityBannerAd(
+          //   placementId: 'Movies_one',
+          //   onLoad: (placementId) => print('Banner loaded: $placementId'),
+          //   onClick: (placementId) => print('Banner clicked: $placementId'),
+          //   onFailed: (placementId, error, message) =>
+          //       print('Banner Ad $placementId failed: $error $message'),
+          // ),
           ScrollingMovies(
             title: 'Trending this week',
             api: Endpoints.trendingMoviesUrl(1, includeAdult),

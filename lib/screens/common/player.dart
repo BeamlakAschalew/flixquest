@@ -35,7 +35,7 @@ class _PlayerOneState extends State<PlayerOne> {
       minBufferMs: 15000,
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
-      enableFullscreen: true,
+      enableFullscreen: widget.videoProperties.elementAt(3),
       backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
       progressBarBackgroundColor: Colors.white,
       pauseIcon: Icons.pause_outlined,
