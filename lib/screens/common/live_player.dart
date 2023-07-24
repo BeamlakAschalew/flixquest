@@ -43,7 +43,7 @@ class _LivePlayerState extends State<LivePlayer> {
       minBufferMs: 15000,
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
-      enableFullscreen: widget.autoFullScreen,
+      enableFullscreen: true,
       backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
       progressBarBackgroundColor: Colors.white,
       pauseIcon: Icons.pause_outlined,
