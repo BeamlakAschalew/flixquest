@@ -17,6 +17,27 @@ class LiveTV extends StatefulWidget {
 }
 
 class _LiveTVState extends State<LiveTV> {
+  var startAppSdk = StartAppSdk();
+
+  StartAppBannerAd? bannerAd;
+
+  @override
+  void initState() {
+    startAppSdk
+        .loadBannerAd(StartAppBannerType.BANNER,
+            prefs: const StartAppAdPreferences(minCPM: 0.01))
+        .then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+    super.initState();
+  }
+
   final List<CatImage> categories = [
     CatImage(categoryName: 'General', imagePath: 'assets/images/general.png'),
     CatImage(
@@ -70,7 +91,8 @@ class _LiveTVState extends State<LiveTV> {
                     ),
                   );
                 }),
-              )))
+              ))),
+              bannerAd != null ? StartAppBanner(bannerAd!) : Container()
             ],
           ),
         ));
