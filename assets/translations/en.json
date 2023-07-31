@@ -1,0 +1,12 @@
+{
+    "app_title" : "Cinemax",
+    "featured_movies" : "Featured movies",
+    "popular" : "Popular",
+    "trending_this_week" : "Trending this week",
+    "top_rated" : "Top rated",
+    "now_playing" : "Now playing",
+    "upcoming" : "Upcoming",
+    "genres" : "Genres",
+    "streaming_services" : "Streaming services",
+    "view_all" : "View all"
+}

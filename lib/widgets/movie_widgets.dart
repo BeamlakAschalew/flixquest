@@ -1,7 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '../screens/movie/movie_video_loader.dart';
+import '../translations/locale_keys.g.dart';
 import '../ui_components/movie_ui_components.dart';
 import '/models/dropdown_select.dart';
 import '/models/filter_chip.dart';
@@ -158,13 +160,13 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                'Featured movies',
+                tr('featured_movies'),
                 style: kTextHeaderStyle,
               ),
             ),

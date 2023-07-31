@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'dart:io';
+import 'package:cinemax/models/translation.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:path_provider/path_provider.dart';
 import '/screens/user/user_state.dart';
 import '/screens/user/user_info.dart';
@@ -27,6 +29,7 @@ final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
   await settingsProvider.getCurrentThemeMode();
@@ -43,19 +46,18 @@ Future<void> appInitialize() async {
   await settingsProvider.getSubtitleLanguage();
   await settingsProvider.getViewMode();
   await _initialization;
-  // UnityAds.init(
-  //   testMode: false,
-  //   gameId: '5280322',
-  //   onComplete: () => print('Initialization Complete'),
-  //   onFailed: (error, message) =>
-  //       print('Initialization Failed: $error $message'),
-  // );
 }
 
 void main() async {
   await appInitialize();
-  runApp(Cinemax(
-    settingsProvider: settingsProvider,
+  runApp(EasyLocalization(
+    supportedLocales: Translation.all,
+    path: 'assets/translations',
+    fallbackLocale: Translation.all[0],
+    startLocale: Locale('es'),
+    child: Cinemax(
+      settingsProvider: settingsProvider,
+    ),
   ));
 }
 
@@ -100,6 +102,7 @@ class _CinemaxState extends State<Cinemax>
         ) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const MaterialApp(
+              debugShowCheckedModeBanner: true,
               home: Scaffold(
                 body: Center(
                   child: CircularProgressIndicator(),
@@ -108,6 +111,7 @@ class _CinemaxState extends State<Cinemax>
             );
           } else if (snapshot.hasError) {
             const MaterialApp(
+              debugShowCheckedModeBanner: true,
               home: Scaffold(
                 body: Center(
                   child: Text('Error occurred'),
@@ -126,7 +130,10 @@ class _CinemaxState extends State<Cinemax>
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
                     return MaterialApp(
-                      debugShowCheckedModeBanner: false,
+                      localizationsDelegates: context.localizationDelegates,
+                      supportedLocales: context.supportedLocales,
+                      locale: context.locale,
+                      debugShowCheckedModeBanner: true,
                       title: 'Cinemax',
                       theme: Styles.themeData(
                           isDarkTheme: settingsProvider.darktheme,
