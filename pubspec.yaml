@@ -54,6 +54,7 @@ dependencies:
   startapp_sdk: ^0.4.1
   flutter_localization: ^0.1.13
   easy_localization: ^3.0.2
+  ffmpeg_kit_flutter: ^5.1.0
 
 dev_dependencies:
   flutter_test:

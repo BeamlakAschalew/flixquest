@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'dart:io';
+import 'package:cinemax/models/download_manager.dart';
 import 'package:cinemax/models/translation.dart';
+import 'package:cinemax/screens/common/video_download_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:path_provider/path_provider.dart';
 import '/screens/user/user_state.dart';
@@ -25,6 +27,7 @@ import 'screens/common/discover.dart';
 Future<void> _messageHandler(RemoteMessage message) async {}
 
 SettingsProvider settingsProvider = SettingsProvider();
+DownloadProvider downloadProvider = DownloadProvider();
 final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
@@ -57,14 +60,20 @@ void main() async {
     startLocale: Locale('es'),
     child: Cinemax(
       settingsProvider: settingsProvider,
+      downloadProvider: downloadProvider,
     ),
   ));
 }
 
 class Cinemax extends StatefulWidget {
-  const Cinemax({required this.settingsProvider, Key? key}) : super(key: key);
+  const Cinemax(
+      {required this.settingsProvider,
+      required this.downloadProvider,
+      Key? key})
+      : super(key: key);
 
   final SettingsProvider settingsProvider;
+  final DownloadProvider downloadProvider;
 
   @override
   State<Cinemax> createState() => _CinemaxState();
@@ -123,10 +132,13 @@ class _CinemaxState extends State<Cinemax>
               providers: [
                 ChangeNotifierProvider(create: (_) {
                   return widget.settingsProvider;
+                }),
+                ChangeNotifierProvider(create: (_) {
+                  return widget.downloadProvider;
                 })
               ],
-              child: Consumer<SettingsProvider>(
-                  builder: (context, settingsProvider, snapshot) {
+              child: Consumer2<SettingsProvider, DownloadProvider>(builder:
+                  (context, settingsProvider, downloadProvider, snapshot) {
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
                     return MaterialApp(
@@ -202,6 +214,14 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                               .isAdult));
                 },
                 icon: const Icon(Icons.search)),
+            IconButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) {
+                    return VideoDownloadScreen();
+                  })));
+                },
+                icon: Icon(Icons.download))
           ],
         ),
         bottomNavigationBar: Container(

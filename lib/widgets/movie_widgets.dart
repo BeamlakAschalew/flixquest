@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '../screens/movie/movie_video_loader.dart';
-import '../translations/locale_keys.g.dart';
 import '../ui_components/movie_ui_components.dart';
 import '/models/dropdown_select.dart';
 import '/models/filter_chip.dart';
@@ -1042,6 +1041,8 @@ class MovieAbout extends StatefulWidget {
 }
 
 class _MovieAboutState extends State<MovieAbout> {
+  bool? isVisible = false;
+  double? buttonWidth = 150;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -1103,13 +1104,29 @@ class _MovieAboutState extends State<MovieAbout> {
                 ),
               ],
             ),
-            WatchNowButton(
-              releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
-              movieId: widget.movie.id!,
-              movieName: widget.movie.title,
-              adult: widget.movie.adult,
-              thumbnail: widget.movie.backdropPath,
-              api: Endpoints.movieDetailsUrl(widget.movie.id!),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                WatchNowButton(
+                  releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
+                  movieId: widget.movie.id!,
+                  movieName: widget.movie.title,
+                  adult: widget.movie.adult,
+                  thumbnail: widget.movie.backdropPath,
+                  api: Endpoints.movieDetailsUrl(widget.movie.id!),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                DownloadMovie(
+                  releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
+                  movieId: widget.movie.id!,
+                  movieName: widget.movie.title,
+                  adult: widget.movie.adult,
+                  thumbnail: widget.movie.backdropPath,
+                  api: Endpoints.movieDetailsUrl(widget.movie.id!),
+                )
+              ],
             ),
             ScrollingArtists(
               api: Endpoints.getCreditsUrl(widget.movie.id!),
@@ -1151,6 +1168,83 @@ class _MovieAboutState extends State<MovieAbout> {
             DidYouKnow(
               api: Endpoints.getExternalLinksForMovie(
                 widget.movie.id!,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DownloadMovie extends StatelessWidget {
+  const DownloadMovie({
+    Key? key,
+    required this.adult,
+    required this.api,
+    required this.movieId,
+    this.movieImdbId,
+    required this.movieName,
+    required this.releaseYear,
+    required this.thumbnail,
+  }) : super(key: key);
+
+  final String? movieName;
+  final int movieId;
+  final int? movieImdbId;
+  final bool? adult;
+  final String? api;
+  final int releaseYear;
+  final String? thumbnail;
+
+  @override
+  Widget build(BuildContext context) {
+    bool? isVisible = false;
+    double? buttonWidth = 150;
+    return Container(
+      child: TextButton(
+        style: ButtonStyle(
+          maximumSize: MaterialStateProperty.all(Size(buttonWidth, 50)),
+        ).copyWith(
+            backgroundColor: MaterialStateProperty.all(
+          Theme.of(context).colorScheme.primary,
+        )),
+        onPressed: () async {
+          Navigator.push(context, MaterialPageRoute(builder: ((context) {
+            return MovieVideoLoader(
+              releaseYear: releaseYear,
+              thumbnail: thumbnail,
+              videoTitle: movieName!,
+              download: true,
+            );
+          })));
+        },
+        child: Row(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: Icon(
+                Icons.download_rounded,
+                color: Colors.white,
+              ),
+            ),
+            const Text(
+              'DOWNLOAD',
+              style: TextStyle(color: Colors.white),
+            ),
+            Visibility(
+              visible: isVisible,
+              child: const Padding(
+                padding: EdgeInsets.only(
+                  left: 10.0,
+                ),
+                child: SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
@@ -2515,7 +2609,6 @@ class WatchNowButton extends StatefulWidget {
 }
 
 class WatchNowButtonState extends State<WatchNowButton> {
-  MovieDetails? movieDetails;
   bool? isVisible = false;
   double? buttonWidth = 150;
 
@@ -2565,6 +2658,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
                           releaseYear: releaseYear,
                           thumbnail: thumbnail,
                           videoTitle: movieName,
+                          download: false,
                         );
                       })));
                     },
@@ -2643,6 +2737,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
               releaseYear: widget.releaseYear,
               thumbnail: widget.thumbnail,
               videoTitle: widget.movieName!,
+              download: false,
             );
           })));
         },

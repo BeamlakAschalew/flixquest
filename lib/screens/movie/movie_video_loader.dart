@@ -14,12 +14,14 @@ class MovieVideoLoader extends StatefulWidget {
       {required this.videoTitle,
       required this.thumbnail,
       required this.releaseYear,
+      required this.download,
       Key? key})
       : super(key: key);
 
   final String videoTitle;
   final int releaseYear;
   final String? thumbnail;
+  final bool download;
 
   @override
   State<MovieVideoLoader> createState() => _MovieVideoLoaderState();
@@ -168,21 +170,71 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           videos.entries.toList().reversed.toList();
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
+      void streamSelectBottomSheet({
+        //   required String movieName,
+        // required String thumbnail,
+        // bool? adult,
+        required Map vids,
+        // required int releaseYear,
+        // required int movieId
+      }) {
+        showModalBottomSheet(
+            context: context,
+            builder: (builder) {
+              final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+              vids.removeWhere((key, value) => key == 'auto');
+              return Container(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Choose resolution:',
+                        style: kTextSmallHeaderStyle,
+                      ),
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      for (var entry in vids.entries)
+                        ListTile(
+                          title: Text(entry.key),
+                          //  subtitle: Text(entry.value),
+                        ),
+                    ],
+                  )
+                ],
+              ));
+            });
+      }
+
       if (movieVideoLinks != null && movieVideoSubs != null) {
-        Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) {
-            return PlayerOne(
-              sources: reversedVids,
-              subs: subs,
-              thumbnail: widget.thumbnail,
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).colorScheme.background
-              ],
-              videoProperties: [maxBuffer, seekDuration, videoQuality, autoFS],
-            );
-          },
-        ));
+        if (widget.download) {
+          streamSelectBottomSheet(vids: reversedVids);
+        } else {
+          Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context) {
+              return PlayerOne(
+                sources: reversedVids,
+                subs: subs,
+                thumbnail: widget.thumbnail,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.background
+                ],
+                videoProperties: [
+                  maxBuffer,
+                  seekDuration,
+                  videoQuality,
+                  autoFS
+                ],
+              );
+            },
+          ));
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
