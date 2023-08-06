@@ -53,7 +53,7 @@ class VideoConverter {
       print('PRRR: ${progress}');
       print('Tota; dur: ${duration}');
 
-      _onProgress(progress.toDouble());
+      _onProgress(progress.toDouble() / 100);
     }
   }
 }

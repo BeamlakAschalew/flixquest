@@ -24,13 +24,24 @@ class DownloadProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateDownload(double progress, int index) {
-    _downloads[index].progress = progress;
-    notifyListeners();
-  }
-
   void startDownload(Download download) async {
-    notifyListeners();
+    final downloadIndex = _downloads.indexOf(download);
+    if (downloadIndex != -1) {
+      _downloads[downloadIndex].progress = 0.0;
+      notifyListeners();
+
+      await VideoConverter().convertM3U8toMP4(
+        download.input,
+        download.output,
+        downloadIndex,
+        (double progress) {
+          _downloads[downloadIndex].progress = progress;
+          notifyListeners();
+        },
+      );
+
+      // ... (existing code)
+    }
   }
 
   void cancelDownload(Download download) {

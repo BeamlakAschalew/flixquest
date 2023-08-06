@@ -59,20 +59,22 @@ class _VideoDownloadScreenState extends State<VideoDownloadScreen> {
 
     final downloadProvider =
         Provider.of<DownloadProvider>(context, listen: false);
+    final dwn = Download(input: input, output: outputPath, progress: _progress);
 
-    downloadProvider.addDownload(
-        Download(input: input, output: outputPath, progress: _progress));
+    downloadProvider.addDownload(dwn);
 
-    await VideoConverter().convertM3U8toMP4(
-      input,
-      outputPath,
-      downloadProvider.downloads.length - 1,
-      (double progress) {
-        setState(() {
-          _progress = progress / 100;
-        });
-      },
-    );
+    // await VideoConverter().convertM3U8toMP4(
+    //   input,
+    //   outputPath,
+    //   downloadProvider.downloads.length - 1,
+    //   (double progress) {
+    //     setState(() {
+    //       _progress = progress / 100;
+    //     });
+    //   },
+    // );
+
+    downloadProvider.startDownload(dwn);
 
     setState(() {
       _outputPath = outputPath;
@@ -92,22 +94,29 @@ class _VideoDownloadScreenState extends State<VideoDownloadScreen> {
             onPressed: _convertM3U8toMP4,
             child: Text("Convert to MP4"),
           ),
-          if (_progress > 0.0) LinearProgressIndicator(value: _progress),
-          Expanded(
-            child: ListView.builder(
-              itemCount: downloadProvider.downloads.length,
-              itemBuilder: (context, index) {
-                final download = downloadProvider.downloads[index];
-                return ListTile(
-                  title: Text('Download: ${download.input}'),
-                  subtitle: Text('Output: ${download.output}'),
-                  trailing: Text('${download.progress.toStringAsFixed(2)}%'),
-                );
-              },
+          for (var download in downloadProvider.downloads)
+            Column(
+              children: [
+                Text(download.output),
+                LinearProgressIndicator(value: download.progress),
+              ],
             ),
-          ),
         ],
       ),
     );
   }
 }
+
+//Expanded(
+//   child: ListView.builder(
+//     itemCount: downloadProvider.downloads.length,
+//     itemBuilder: (context, index) {
+//       final download = downloadProvider.downloads[index];
+//       return ListTile(
+//         title: Text('Download: ${download.input}'),
+//         subtitle: Text('Output: ${download.output}'),
+//         trailing: Text('${download.progress.toStringAsFixed(2)}%'),
+//       );
+//     },
+//   ),
+// ),
