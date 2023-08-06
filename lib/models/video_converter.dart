@@ -4,14 +4,17 @@ import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter/media_information_session.dart';
 import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:ffmpeg_kit_flutter/statistics.dart';
+import 'package:provider/provider.dart';
+
+import 'download_manager.dart';
 
 class VideoConverter {
   Statistics? _statistics;
   late Function(double) _onProgress;
   String? duration;
 
-  Future<String?> convertM3U8toMP4(
-      String inputPath, String outputPath, Function(double) onProgress) async {
+  Future<String?> convertM3U8toMP4(String inputPath, String outputPath,
+      int index, Function(double) onProgress) async {
     _onProgress = onProgress;
 
     FFprobeKit.getMediaInformation(inputPath)
@@ -36,7 +39,6 @@ class VideoConverter {
       ((log) => print(log.getMessage())),
       (statistics) {
         _statistics = statistics;
-
         _updateProgressDialog();
       },
     );
@@ -50,6 +52,7 @@ class VideoConverter {
       // final progress = _statistics!.getTime();
       print('PRRR: ${progress}');
       print('Tota; dur: ${duration}');
+
       _onProgress(progress.toDouble());
     }
   }
