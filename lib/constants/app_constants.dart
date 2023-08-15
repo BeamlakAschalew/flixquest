@@ -40,7 +40,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '2.1.1';
+const String currentAppVersion = '2.1.1-bv2';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(
@@ -62,6 +62,7 @@ final List<String> appNames = [
   'cinemax-v2.0.0-build-v3.apk',
   'cinemax-v2.1.0.apk',
   'cinemax-v2.1.1.apk',
+  'cinemax-v2.1.1-bv2.apk',
 ];
 
 CacheManager cacheProp() {
