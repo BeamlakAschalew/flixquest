@@ -10,7 +10,7 @@ import '/screens/common/photoview.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import 'package:shimmer/shimmer.dart';
-import '../controllers/database_controller.dart';
+import '../controllers/bookmark_database_controller.dart';
 import '../provider/settings_provider.dart';
 import '/constants/app_constants.dart';
 import '/models/social_icons_icons.dart';
@@ -30,7 +30,6 @@ import '/models/credits.dart';
 import '/screens/movie/collection_detail.dart';
 import '/screens/person/crew_detail.dart';
 import '/models/images.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/movie/genremovies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -163,7 +162,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
                 tr('featured_movies'),
                 style: kTextHeaderStyle,
@@ -1115,7 +1114,7 @@ class _MovieAboutState extends State<MovieAbout> {
                   thumbnail: widget.movie.backdropPath,
                   api: Endpoints.movieDetailsUrl(widget.movie.id!),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 15,
                 ),
                 DownloadMovie(
@@ -1212,10 +1211,8 @@ class DownloadMovie extends StatelessWidget {
         onPressed: () async {
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return MovieVideoLoader(
-              releaseYear: releaseYear,
-              thumbnail: thumbnail,
-              videoTitle: movieName!,
               download: true,
+              metadata: [movieId, movieName, thumbnail, releaseYear],
             );
           })));
         },
@@ -2655,10 +2652,13 @@ class WatchNowButtonState extends State<WatchNowButton> {
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: ((context) {
                         return MovieVideoLoader(
-                          releaseYear: releaseYear,
-                          thumbnail: thumbnail,
-                          videoTitle: movieName,
                           download: false,
+                          metadata: [
+                            widget.movieId,
+                            movieName,
+                            thumbnail,
+                            releaseYear
+                          ],
                         );
                       })));
                     },
@@ -2734,10 +2734,13 @@ class WatchNowButtonState extends State<WatchNowButton> {
 
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return MovieVideoLoader(
-              releaseYear: widget.releaseYear,
-              thumbnail: widget.thumbnail,
-              videoTitle: widget.movieName!,
               download: false,
+              metadata: [
+                widget.movieId,
+                widget.movieName,
+                widget.thumbnail,
+                widget.releaseYear
+              ],
             );
           })));
         },

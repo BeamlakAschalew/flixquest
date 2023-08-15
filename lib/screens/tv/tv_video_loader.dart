@@ -187,15 +187,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) {
             return PlayerOne(
-              sources: reversedVids,
-              subs: subs,
-              thumbnail: widget.thumbnail,
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).colorScheme.background
-              ],
-              videoProperties: [maxBuffer, seekDuration, videoQuality, autoFS],
-            );
+                sources: reversedVids,
+                subs: subs,
+                thumbnail: widget.thumbnail,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.background
+                ],
+                videoProperties: [
+                  maxBuffer,
+                  seekDuration,
+                  videoQuality,
+                  autoFS
+                ],
+                metadata: []);
           },
         ));
       } else {

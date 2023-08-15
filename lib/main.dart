@@ -57,7 +57,7 @@ void main() async {
     supportedLocales: Translation.all,
     path: 'assets/translations',
     fallbackLocale: Translation.all[0],
-    startLocale: Locale('es'),
+    startLocale: const Locale('en'),
     child: Cinemax(
       settingsProvider: settingsProvider,
       downloadProvider: downloadProvider,
@@ -218,10 +218,10 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: ((context) {
-                    return VideoDownloadScreen();
+                    return const VideoDownloadScreen();
                   })));
                 },
-                icon: Icon(Icons.download))
+                icon: const Icon(Icons.download))
           ],
         ),
         bottomNavigationBar: Container(

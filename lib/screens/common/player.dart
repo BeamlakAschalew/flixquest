@@ -1,4 +1,6 @@
 import 'package:better_player/better_player.dart';
+import 'package:cinemax/controllers/recently_watched_database_controller.dart';
+import 'package:cinemax/models/recently_watched.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,6 +11,7 @@ class PlayerOne extends StatefulWidget {
       required this.subs,
       required this.colors,
       required this.videoProperties,
+      required this.metadata,
       Key? key})
       : super(key: key);
   final Map<String, String> sources;
@@ -16,6 +19,7 @@ class PlayerOne extends StatefulWidget {
   final String? thumbnail;
   final List<Color> colors;
   final List videoProperties;
+  final List metadata;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -25,6 +29,9 @@ class _PlayerOneState extends State<PlayerOne> {
   late BetterPlayerController _betterPlayerController;
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
+  RecentlyWatchedMoviesController recentlyWatchedMoviesController =
+      RecentlyWatchedMoviesController();
+  late int duration;
 
   @override
   void initState() {
@@ -99,11 +106,52 @@ class _PlayerOneState extends State<PlayerOne> {
             ),
             bufferingConfiguration: betterPlayerBufferingConfiguration);
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    _betterPlayerController.setupDataSource(dataSource);
+    _betterPlayerController.setupDataSource(dataSource).then((value) =>
+        duration = _betterPlayerController
+            .videoPlayerController!.value.duration!.inSeconds);
+  }
+
+  Future<void> getMovieData() async {
+    int elapsed = await _betterPlayerController.videoPlayerController!.position
+        .then((value) => value!.inSeconds);
+
+    int remaining = duration - elapsed;
+    String dt = DateTime.now().toString();
+
+    bool isBookmarked = false;
+
+    var iB = await recentlyWatchedMoviesController
+        .contain(widget.metadata.elementAt(0));
+
+    if (!iB) {
+      recentlyWatchedMoviesController
+          .insertMovie(RecentMovie(
+              dateTime: dt,
+              elapsed: elapsed,
+              id: widget.metadata.elementAt(0),
+              posterPath: widget.metadata.elementAt(2),
+              releaseYear: widget.metadata.elementAt(3),
+              remaining: remaining,
+              title: widget.metadata.elementAt(1)))
+          .then((value) => print(value));
+    } else {
+      print('Existssss');
+      recentlyWatchedMoviesController.updateMovie(
+          RecentMovie(
+              dateTime: dt,
+              elapsed: elapsed,
+              id: widget.metadata.elementAt(0),
+              posterPath: widget.metadata.elementAt(2),
+              releaseYear: widget.metadata.elementAt(3),
+              remaining: remaining,
+              title: widget.metadata.elementAt(1)),
+          widget.metadata.elementAt(0));
+    }
   }
 
   @override
   void dispose() {
+    _betterPlayerController.isVideoInitialized()! ? getMovieData() : '';
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -112,6 +160,7 @@ class _PlayerOneState extends State<PlayerOne> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.metadata.elementAt(0));
     return Scaffold(
       body: Center(
         child: SizedBox(

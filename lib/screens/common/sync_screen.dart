@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
-import '../../controllers/database_controller.dart';
+import '../../controllers/bookmark_database_controller.dart';
 import '../../models/tv.dart';
 import '../../services/globle_method.dart';
 import '../../widgets/common_widgets.dart';

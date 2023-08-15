@@ -8,7 +8,7 @@ import '../../widgets/common_widgets.dart';
 import '/api/endpoints.dart';
 import '/models/movie.dart';
 import '/widgets/movie_widgets.dart';
-import '../../controllers/database_controller.dart';
+import '../../controllers/bookmark_database_controller.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;

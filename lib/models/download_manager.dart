@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:cinemax/models/video_converter.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 
 class Download {
   final String input, output;
@@ -11,7 +8,7 @@ class Download {
 }
 
 class DownloadProvider extends ChangeNotifier {
-  List<Download> _downloads = [];
+  final List<Download> _downloads = [];
   List<Download> get downloads => _downloads;
 
   void addDownload(Download download) {

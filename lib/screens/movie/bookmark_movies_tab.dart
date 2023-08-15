@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
-import '../../controllers/database_controller.dart';
+import '../../controllers/bookmark_database_controller.dart';
 import '../../models/movie.dart';
 import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';

@@ -344,6 +344,7 @@ Future<TV> getTV(String api) async {
 }
 
 Future<List<MovieResults>> fetchMoviesForStream(String api) async {
+  print('ftc mov');
   MovieStream movieStream;
   try {
     var res = await retryOptions.retry(
@@ -359,6 +360,7 @@ Future<List<MovieResults>> fetchMoviesForStream(String api) async {
 }
 
 Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
+  print('mov ep');
   MovieInfo movieInfo;
   try {
     var res = await retryOptions.retry(
@@ -375,6 +377,7 @@ Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
 }
 
 Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
+  print('mov str');
   MovieVideoSources movieVideoSources;
   try {
     var res = await retryOptions.retry(
@@ -391,6 +394,7 @@ Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
 
 Future<List<TVResults>> fetchTVForStream(String api) async {
   TVStream tvStream;
+  print('tvstr');
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
@@ -405,6 +409,7 @@ Future<List<TVResults>> fetchTVForStream(String api) async {
 }
 
 Future<TVInfo> getTVStreamEpisodes(String api) async {
+  print('epi');
   TVInfo tvInfo;
   try {
     var res = await retryOptions.retry(
@@ -421,6 +426,7 @@ Future<TVInfo> getTVStreamEpisodes(String api) async {
 }
 
 Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
+  print('link');
   TVVideoSources tvVideoSources;
   try {
     var res = await retryOptions.retry(
@@ -436,6 +442,7 @@ Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
 }
 
 Future<String> getVttFileAsString(String url) async {
+  print('vtt');
   try {
     var response = await retryOptions.retry(
       () => http.get(Uri.parse(url)),
@@ -455,6 +462,7 @@ Future<String> getVttFileAsString(String url) async {
 
 Future<List<Channel>> fetchChannels(String api) async {
   ChannelsList channelsList;
+  print('fetchChan');
   try {
     var res = await retryOptions.retry(
       () => http.get(Uri.parse(api)),

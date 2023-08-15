@@ -16,4 +16,5 @@ const String IMDB_BASE_URL = 'https://imdb.com/title/';
 const String TWOEMBED_BASE_URL = 'https://2embed.biz';
 const String CINEMAX_UPDATE_URL =
     'https://beamlakaschalew.github.io/cinemax/res/update.json';
-const String CONSUMET_API = 'https://consumet-railway.justchill.tv/';
+const String CONSUMET_API = 'https://pleasedontspam.justchill.tv/';
+const String CONSUMET_INFO_API = 'https://cinemax-backend.vercel.app';

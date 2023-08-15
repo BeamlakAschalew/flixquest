@@ -2,11 +2,7 @@ import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit_config.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter/media_information_session.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
 import 'package:ffmpeg_kit_flutter/statistics.dart';
-import 'package:provider/provider.dart';
-
-import 'download_manager.dart';
 
 class VideoConverter {
   Statistics? _statistics;
@@ -19,7 +15,7 @@ class VideoConverter {
 
     FFprobeKit.getMediaInformation(inputPath)
         .then((MediaInformationSession session) async {
-      var information = await session.getMediaInformation();
+      var information = session.getMediaInformation();
 
       if (information != null) {
         duration = information.getDuration();

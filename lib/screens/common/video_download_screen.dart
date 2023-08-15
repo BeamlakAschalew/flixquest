@@ -1,11 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-
 import '../../models/download_manager.dart';
-import '../../models/video_converter.dart';
 
 class VideoDownloadScreen extends StatefulWidget {
   const VideoDownloadScreen({Key? key}) : super(key: key);
@@ -50,7 +46,7 @@ class _VideoDownloadScreenState extends State<VideoDownloadScreen> {
   Future<void> _convertM3U8toMP4() async {
     Directory? appDir = Directory("storage/emulated/0/Cinemax/Backdrops");
 
-    String outputPath = "${appDir!.path}/output1.mp4";
+    String outputPath = "${appDir.path}/output1.mp4";
     String _outputPath;
 
     setState(() {
