@@ -11,7 +11,8 @@ class PlayerOne extends StatefulWidget {
       required this.subs,
       required this.colors,
       required this.videoProperties,
-      required this.metadata,
+      this.movieMetadata,
+      this.tvMetadata,
       Key? key})
       : super(key: key);
   final Map<String, String> sources;
@@ -19,7 +20,8 @@ class PlayerOne extends StatefulWidget {
   final String? thumbnail;
   final List<Color> colors;
   final List videoProperties;
-  final List metadata;
+  final List? movieMetadata;
+  final List? tvMetadata;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -111,28 +113,26 @@ class _PlayerOneState extends State<PlayerOne> {
             .videoPlayerController!.value.duration!.inSeconds);
   }
 
-  Future<void> getMovieData() async {
+  Future<void> insertRecentMovieData() async {
     int elapsed = await _betterPlayerController.videoPlayerController!.position
         .then((value) => value!.inSeconds);
 
     int remaining = duration - elapsed;
     String dt = DateTime.now().toString();
 
-    bool isBookmarked = false;
+    var isBookmarked = await recentlyWatchedMoviesController
+        .contain(widget.movieMetadata!.elementAt(0));
 
-    var iB = await recentlyWatchedMoviesController
-        .contain(widget.metadata.elementAt(0));
-
-    if (!iB) {
+    if (!isBookmarked) {
       recentlyWatchedMoviesController
           .insertMovie(RecentMovie(
               dateTime: dt,
               elapsed: elapsed,
-              id: widget.metadata.elementAt(0),
-              posterPath: widget.metadata.elementAt(2),
-              releaseYear: widget.metadata.elementAt(3),
+              id: widget.movieMetadata!.elementAt(0),
+              posterPath: widget.movieMetadata!.elementAt(2),
+              releaseYear: widget.movieMetadata!.elementAt(3),
               remaining: remaining,
-              title: widget.metadata.elementAt(1)))
+              title: widget.movieMetadata!.elementAt(1)))
           .then((value) => print(value));
     } else {
       print('Existssss');
@@ -140,18 +140,20 @@ class _PlayerOneState extends State<PlayerOne> {
           RecentMovie(
               dateTime: dt,
               elapsed: elapsed,
-              id: widget.metadata.elementAt(0),
-              posterPath: widget.metadata.elementAt(2),
-              releaseYear: widget.metadata.elementAt(3),
+              id: widget.movieMetadata!.elementAt(0),
+              posterPath: widget.movieMetadata!.elementAt(2),
+              releaseYear: widget.movieMetadata!.elementAt(3),
               remaining: remaining,
-              title: widget.metadata.elementAt(1)),
-          widget.metadata.elementAt(0));
+              title: widget.movieMetadata!.elementAt(1)),
+          widget.movieMetadata!.elementAt(0));
     }
   }
 
   @override
   void dispose() {
-    _betterPlayerController.isVideoInitialized()! ? getMovieData() : '';
+    _betterPlayerController.isVideoInitialized()!
+        ? insertRecentMovieData()
+        : '';
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
@@ -160,7 +162,7 @@ class _PlayerOneState extends State<PlayerOne> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.metadata.elementAt(0));
+    print(widget.movieMetadata!.elementAt(0));
     return Scaffold(
       body: Center(
         child: SizedBox(

@@ -244,7 +244,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                   videoQuality,
                   autoFS
                 ],
-                metadata: [
+                movieMetadata: [
                   widget.metadata.elementAt(0),
                   widget.metadata.elementAt(1),
                   widget.metadata.elementAt(2),

@@ -200,7 +200,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   videoQuality,
                   autoFS
                 ],
-                metadata: []);
+                tvMetadata: []);
           },
         ));
       } else {
