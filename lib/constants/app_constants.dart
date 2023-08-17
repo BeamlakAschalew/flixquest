@@ -62,6 +62,8 @@ final List<String> appNames = [
   'cinemax-v2.0.0-build-v3.apk',
   'cinemax-v2.1.0.apk',
   'cinemax-v2.1.1.apk',
+  'cinemax-v2.1.1-build-v2.apk',
+  'cinemax-v2.1.1-build-v3.apk',
 ];
 
 CacheManager cacheProp() {
