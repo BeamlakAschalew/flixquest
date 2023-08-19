@@ -41,6 +41,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   late int seekDuration;
   late int videoQuality;
   late String subLanguage;
+  late bool autoFS;
 
   @override
   void initState() {
@@ -77,6 +78,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           .defaultVideoResolution;
       subLanguage = Provider.of<SettingsProvider>(context, listen: false)
           .defaultSubtitleLanguage;
+      autoFS =
+          Provider.of<SettingsProvider>(context, listen: false).defaultViewMode;
     });
     try {
       await fetchTVForStream(
@@ -191,7 +194,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 Theme.of(context).primaryColor,
                 Theme.of(context).colorScheme.background
               ],
-              videoProperties: [maxBuffer, seekDuration, videoQuality],
+              videoProperties: [maxBuffer, seekDuration, videoQuality, autoFS],
             );
           },
         ));

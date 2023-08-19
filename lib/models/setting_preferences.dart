@@ -56,7 +56,7 @@ class ImagePreferences {
 }
 
 class Material3Preferences {
-  static const MATERIAL3_MODE_STATUS = "adultStatus";
+  static const MATERIAL3_MODE_STATUS = "materialStatus";
 
   setMaterial3Mode(bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -150,5 +150,16 @@ class VideoPlayerPreferences {
   Future<String> getSubLanguage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(DEFAULT_SUBTITLE) ?? '';
+  }
+
+  static const DEFAULT_FULL_SCREEN = 'default_full_screen';
+  setDefaultFullScreen(bool mode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(DEFAULT_FULL_SCREEN, mode);
+  }
+
+  Future<bool> autoFullScreen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(DEFAULT_FULL_SCREEN) ?? true;
   }
 }

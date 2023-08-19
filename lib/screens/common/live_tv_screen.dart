@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/models/live_tv.dart';
 import 'package:cinemax/screens/common/live_player.dart';
@@ -19,6 +17,27 @@ class LiveTV extends StatefulWidget {
 }
 
 class _LiveTVState extends State<LiveTV> {
+  var startAppSdk = StartAppSdk();
+
+  StartAppBannerAd? bannerAd;
+
+  @override
+  void initState() {
+    startAppSdk
+        .loadBannerAd(StartAppBannerType.BANNER,
+            prefs: const StartAppAdPreferences(minCPM: 0.01))
+        .then((bannerAd) {
+      setState(() {
+        this.bannerAd = bannerAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Banner ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Banner ad: $error");
+    });
+    super.initState();
+  }
+
   final List<CatImage> categories = [
     CatImage(categoryName: 'General', imagePath: 'assets/images/general.png'),
     CatImage(
@@ -72,7 +91,8 @@ class _LiveTVState extends State<LiveTV> {
                     ),
                   );
                 }),
-              )))
+              ))),
+              bannerAd != null ? StartAppBanner(bannerAd!) : Container()
             ],
           ),
         ));
@@ -131,9 +151,8 @@ class _ChannelListState extends State<ChannelList> {
   @override
   void initState() {
     startAppSdk
-        .loadBannerAd(
-      StartAppBannerType.BANNER,
-    )
+        .loadBannerAd(StartAppBannerType.BANNER,
+            prefs: const StartAppAdPreferences(minCPM: 0.01))
         .then((bannerAd) {
       setState(() {
         this.bannerAd = bannerAd;
@@ -197,9 +216,6 @@ class ChannelWidget extends StatefulWidget {
 
 class _ChannelWidgetState extends State<ChannelWidget> {
   Map<String, String> videos = {};
-  var startAppSdk = StartAppSdk();
-  late bool showAd;
-  StartAppInterstitialAd? interstitialAd;
   Map<String, String> reversedVids = {};
 
   void sett() {
@@ -215,29 +231,10 @@ class _ChannelWidgetState extends State<ChannelWidget> {
     }
   }
 
-  bool isEventOccur() {
-    Random random = Random();
-    int randomNumber = random.nextInt(4);
-    return randomNumber == 0;
-  }
-
   @override
   void initState() {
-    loadInterstitialAd();
     sett();
     super.initState();
-  }
-
-  void loadInterstitialAd() {
-    startAppSdk.loadInterstitialAd().then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
   }
 
   @override
@@ -247,34 +244,21 @@ class _ChannelWidgetState extends State<ChannelWidget> {
         InkWell(
           child: GestureDetector(
             onTap: () {
-              setState(() {
-                showAd = isEventOccur();
-              });
               final mixpanel =
                   Provider.of<SettingsProvider>(context, listen: false)
                       .mixpanel;
+              final autoFS =
+                  Provider.of<SettingsProvider>(context, listen: false)
+                      .defaultViewMode;
               mixpanel.track('Most viewed TV channels', properties: {
                 'TV Channel name': widget.channel.channelName,
                 'Category': widget.catName,
               });
-              if (interstitialAd != null && showAd == true) {
-                interstitialAd!.show().then((shown) {
-                  if (shown) {
-                    setState(() {
-                      interstitialAd = null;
-                      loadInterstitialAd();
-                    });
-                  }
-
-                  return null;
-                }).onError((error, stackTrace) {
-                  debugPrint("Error showing Interstitial ad: $error");
-                });
-              }
 
               Navigator.push(context, MaterialPageRoute(builder: ((context) {
                 return LivePlayer(
                   sources: reversedVids,
+                  autoFullScreen: autoFS,
                   colors: [
                     Theme.of(context).primaryColor,
                     Theme.of(context).colorScheme.background

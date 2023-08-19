@@ -17,6 +17,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
     final seekSecond = Provider.of<SettingsProvider>(context);
     final bufferAmount = Provider.of<SettingsProvider>(context);
     final videoResolution = Provider.of<SettingsProvider>(context);
+    final videoOrientation = Provider.of<SettingsProvider>(context);
     // final subtitleLanguage = Provider.of<SettingsProvider>(context);
     return Scaffold(
       appBar: AppBar(
@@ -24,6 +25,19 @@ class _PlayerSettingsState extends State<PlayerSettings> {
       ),
       body: Column(
         children: [
+          ListTile(
+              leading: const Icon(Icons.fullscreen),
+              title: const Text('Auto full screen'),
+              trailing: Switch(
+                inactiveThumbColor: Colors.white,
+                inactiveTrackColor: const Color(0xFF9B9B9B),
+                value: videoOrientation.defaultViewMode,
+                onChanged: ((value) {
+                  setState(() {
+                    videoOrientation.defaultViewMode = value;
+                  });
+                }),
+              )),
           ListTile(
             leading: const Icon(Icons.forward_10),
             title: const Text('Seek second'),
