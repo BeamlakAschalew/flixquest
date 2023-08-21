@@ -402,6 +402,7 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
               tvId: widget.tvDetails.id,
               api: Endpoints.getSeasonDetails(
                   widget.tvDetails.id!, widget.season.seasonNumber!),
+              posterPath: widget.season.posterPath,
             ),
             TVSeasonImagesDisplay(
               title: 'Images',

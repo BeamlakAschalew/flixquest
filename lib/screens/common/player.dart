@@ -1,44 +1,48 @@
 import 'package:better_player/better_player.dart';
+import 'package:cinemax/constants/app_constants.dart';
 import 'package:cinemax/controllers/recently_watched_database_controller.dart';
 import 'package:cinemax/models/recently_watched.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import '../../provider/recently_watched_provider.dart';
 
 class PlayerOne extends StatefulWidget {
   const PlayerOne(
       {required this.sources,
-      required this.thumbnail,
       required this.subs,
       required this.colors,
       required this.videoProperties,
       this.movieMetadata,
       this.tvMetadata,
+      required this.mediaType,
       Key? key})
       : super(key: key);
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
-  final String? thumbnail;
   final List<Color> colors;
   final List videoProperties;
   final List? movieMetadata;
   final List? tvMetadata;
+  final MediaType? mediaType;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
 }
 
-class _PlayerOneState extends State<PlayerOne> {
+class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   late BetterPlayerController _betterPlayerController;
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
   RecentlyWatchedMoviesController recentlyWatchedMoviesController =
       RecentlyWatchedMoviesController();
+  RecentlyWatchedEpisodeController recentlyWatchedEpisodeController =
+      RecentlyWatchedEpisodeController();
   late int duration;
 
   @override
   void initState() {
     super.initState();
-
+    WidgetsBinding.instance.addObserver(this);
     betterPlayerBufferingConfiguration = BetterPlayerBufferingConfiguration(
       maxBufferMs: widget.videoProperties.first,
       minBufferMs: 15000,
@@ -108,9 +112,14 @@ class _PlayerOneState extends State<PlayerOne> {
             ),
             bufferingConfiguration: betterPlayerBufferingConfiguration);
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
-    _betterPlayerController.setupDataSource(dataSource).then((value) =>
-        duration = _betterPlayerController
-            .videoPlayerController!.value.duration!.inSeconds);
+    _betterPlayerController.setupDataSource(dataSource).then((value) {
+      _betterPlayerController.videoPlayerController!.seekTo(Duration(
+          seconds: widget.mediaType == MediaType.movie
+              ? widget.movieMetadata!.elementAt(5)
+              : widget.tvMetadata!.elementAt(8)));
+      duration = _betterPlayerController
+          .videoPlayerController!.value.duration!.inSeconds;
+    });
   }
 
   Future<void> insertRecentMovieData() async {
@@ -122,54 +131,109 @@ class _PlayerOneState extends State<PlayerOne> {
 
     var isBookmarked = await recentlyWatchedMoviesController
         .contain(widget.movieMetadata!.elementAt(0));
+    dynamic prv;
+    if (mounted) {
+      prv = Provider.of<RecentProvider>(context, listen: false);
+    }
+
+    RecentMovie rMov = RecentMovie(
+        dateTime: dt,
+        elapsed: elapsed,
+        id: widget.movieMetadata!.elementAt(0),
+        posterPath: widget.movieMetadata!.elementAt(2),
+        releaseYear: widget.movieMetadata!.elementAt(4),
+        remaining: remaining,
+        title: widget.movieMetadata!.elementAt(1),
+        backdropPath: widget.movieMetadata!.elementAt(3));
+
+    double precentage = (elapsed / duration) * 100;
 
     if (!isBookmarked) {
-      recentlyWatchedMoviesController
-          .insertMovie(RecentMovie(
-              dateTime: dt,
-              elapsed: elapsed,
-              id: widget.movieMetadata!.elementAt(0),
-              posterPath: widget.movieMetadata!.elementAt(2),
-              releaseYear: widget.movieMetadata!.elementAt(3),
-              remaining: remaining,
-              title: widget.movieMetadata!.elementAt(1)))
-          .then((value) => print(value));
+      prv.addMovie(rMov);
     } else {
-      print('Existssss');
-      recentlyWatchedMoviesController.updateMovie(
-          RecentMovie(
-              dateTime: dt,
-              elapsed: elapsed,
-              id: widget.movieMetadata!.elementAt(0),
-              posterPath: widget.movieMetadata!.elementAt(2),
-              releaseYear: widget.movieMetadata!.elementAt(3),
-              remaining: remaining,
-              title: widget.movieMetadata!.elementAt(1)),
-          widget.movieMetadata!.elementAt(0));
+      if (precentage <= 90) {
+        prv.updateMovie(rMov, widget.movieMetadata!.elementAt(0));
+      } else {
+        prv.deleteMovie(widget.movieMetadata!.elementAt(0));
+      }
+    }
+  }
+
+  Future<void> insertRecentEpisodeData() async {
+    int elapsed = await _betterPlayerController.videoPlayerController!.position
+        .then((value) => value!.inSeconds);
+
+    int remaining = duration - elapsed;
+    String dt = DateTime.now().toString();
+
+    var isBookmarked = await recentlyWatchedEpisodeController
+        .contain(widget.tvMetadata!.elementAt(0));
+
+    dynamic prv;
+    if (mounted) {
+      prv = Provider.of<RecentProvider>(context, listen: false);
+    }
+
+    RecentEpisode rEpisode = RecentEpisode(
+        dateTime: dt,
+        elapsed: elapsed,
+        id: widget.tvMetadata!.elementAt(0),
+        posterPath: widget.tvMetadata!.elementAt(7),
+        totalSeasons: widget.tvMetadata!.elementAt(5),
+        remaining: remaining,
+        seriesName: widget.tvMetadata!.elementAt(1),
+        backdropPath: widget.tvMetadata!.elementAt(6),
+        episodeName: widget.tvMetadata!.elementAt(2),
+        episodeNum: widget.tvMetadata!.elementAt(3),
+        seasonNum: widget.tvMetadata!.elementAt(4));
+
+    double precentage = (elapsed / duration) * 100;
+    if (!isBookmarked) {
+      prv.addEpisode(rEpisode);
+    } else {
+      if (precentage <= 95) {
+        prv.updateEpisode(rEpisode, widget.tvMetadata!.elementAt(0),
+            widget.tvMetadata!.elementAt(3), widget.tvMetadata!.elementAt(4));
+      } else {
+        prv.deleteEpisode(widget.tvMetadata!.elementAt(0),
+            widget.tvMetadata!.elementAt(3), widget.tvMetadata!.elementAt(4));
+      }
     }
   }
 
   @override
-  void dispose() {
-    _betterPlayerController.isVideoInitialized()!
-        ? insertRecentMovieData()
-        : '';
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-    ]);
-    super.dispose();
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final isInBackground = (state == AppLifecycleState.paused) ||
+        (state == AppLifecycleState.inactive);
+    if (isInBackground) {
+      if (_betterPlayerController.isVideoInitialized()!) {
+        widget.mediaType == MediaType.movie
+            ? insertRecentMovieData()
+            : insertRecentEpisodeData();
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    print(widget.movieMetadata!.elementAt(0));
-    return Scaffold(
-      body: Center(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: double.infinity,
-          child: BetterPlayer(
-            controller: _betterPlayerController,
+    // print(widget.movieMetadata!.elementAt(0));
+    return WillPopScope(
+      onWillPop: () async {
+        if (_betterPlayerController.isVideoInitialized()!) {
+          widget.mediaType == MediaType.movie
+              ? insertRecentMovieData()
+              : insertRecentEpisodeData();
+        }
+        return true;
+      },
+      child: Scaffold(
+        body: Center(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: double.infinity,
+            child: BetterPlayer(
+              controller: _betterPlayerController,
+            ),
           ),
         ),
       ),

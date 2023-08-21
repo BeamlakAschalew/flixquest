@@ -14,6 +14,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
 import 'constants/app_constants.dart';
+import 'provider/recently_watched_provider.dart';
 import 'widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
@@ -28,6 +29,8 @@ Future<void> _messageHandler(RemoteMessage message) async {}
 
 SettingsProvider settingsProvider = SettingsProvider();
 DownloadProvider downloadProvider = DownloadProvider();
+RecentProvider recentProvider = RecentProvider();
+
 final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
@@ -48,6 +51,8 @@ Future<void> appInitialize() async {
   await settingsProvider.getVideoResolution();
   await settingsProvider.getSubtitleLanguage();
   await settingsProvider.getViewMode();
+  await recentProvider.fetchMovies();
+  await recentProvider.fetchEpisodes();
   await _initialization;
 }
 
@@ -61,6 +66,7 @@ void main() async {
     child: Cinemax(
       settingsProvider: settingsProvider,
       downloadProvider: downloadProvider,
+      recentProvider: recentProvider,
     ),
   ));
 }
@@ -69,11 +75,13 @@ class Cinemax extends StatefulWidget {
   const Cinemax(
       {required this.settingsProvider,
       required this.downloadProvider,
+      required this.recentProvider,
       Key? key})
       : super(key: key);
 
   final SettingsProvider settingsProvider;
   final DownloadProvider downloadProvider;
+  final RecentProvider recentProvider;
 
   @override
   State<Cinemax> createState() => _CinemaxState();
@@ -135,10 +143,15 @@ class _CinemaxState extends State<Cinemax>
                 }),
                 ChangeNotifierProvider(create: (_) {
                   return widget.downloadProvider;
+                }),
+                ChangeNotifierProvider(create: (_) {
+                  return widget.recentProvider;
                 })
               ],
-              child: Consumer2<SettingsProvider, DownloadProvider>(builder:
-                  (context, settingsProvider, downloadProvider, snapshot) {
+              child:
+                  Consumer3<SettingsProvider, DownloadProvider, RecentProvider>(
+                      builder: (context, settingsProvider, downloadProvider,
+                          recentProvider, snapshot) {
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
                     return MaterialApp(
@@ -189,21 +202,36 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
     });
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Scaffold(
-        drawer: const DrawerWidget(),
+        key: _scaffoldKey,
+        drawer: const Drawer(child: DrawerWidget()),
         appBar: AppBar(
-          elevation: 1,
-          title: const Text(
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.menu,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+          ),
+          title: Text(
             'Cinemax',
             style: TextStyle(
               fontFamily: 'PoppinsSB',
+              color: Theme.of(context).primaryColor,
             ),
           ),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           actions: [
             IconButton(
+                color: Theme.of(context).primaryColor,
                 onPressed: () {
                   showSearch(
                       context: context,
@@ -215,6 +243,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                 },
                 icon: const Icon(Icons.search)),
             IconButton(
+                color: Theme.of(context).primaryColor,
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: ((context) {

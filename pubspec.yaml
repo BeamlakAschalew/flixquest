@@ -55,6 +55,7 @@ dependencies:
   flutter_localization: ^0.1.13
   easy_localization: ^3.0.2
   ffmpeg_kit_flutter: ^5.1.0
+  marquee: ^2.2.3
 
 dev_dependencies:
   flutter_test:

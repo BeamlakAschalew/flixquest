@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_print
 import 'package:better_player/better_player.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
@@ -11,19 +11,11 @@ import '../../screens/common/player.dart';
 
 class TVVideoLoader extends StatefulWidget {
   const TVVideoLoader(
-      {required this.videoTitle,
-      required this.thumbnail,
-      required this.seasons,
-      required this.episodeNumber,
-      required this.seasonNumber,
-      Key? key})
+      {required this.metadata, required this.download, Key? key})
       : super(key: key);
 
-  final String videoTitle;
-  final int seasons;
-  final String? thumbnail;
-  final int episodeNumber;
-  final int seasonNumber;
+  final List metadata;
+  final bool download;
 
   @override
   State<TVVideoLoader> createState() => _TVVideoLoaderState();
@@ -83,7 +75,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     });
     try {
       await fetchTVForStream(
-              Endpoints.searchMovieTVForStream(widget.videoTitle))
+              Endpoints.searchMovieTVForStream(widget.metadata.elementAt(1)))
           .then((value) {
         if (mounted) {
           setState(() {
@@ -91,9 +83,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           });
         }
       });
-
       for (int i = 0; i < tvShows!.length; i++) {
-        if (tvShows![i].seasons == widget.seasons &&
+        if (tvShows![i].seasons == widget.metadata.elementAt(5) &&
             tvShows![i].type == 'TV Series') {
           await getTVStreamEpisodes(
                   Endpoints.getMovieTVStreamInfo(tvShows![i].id!))
@@ -103,9 +94,10 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               epi = tvInfo!.episodes;
             });
           });
+          print('wtf');
           for (int k = 0; k < epi!.length; k++) {
-            if (epi![k].episode == widget.episodeNumber &&
-                epi![k].season == widget.seasonNumber) {
+            if (epi![k].episode == widget.metadata.elementAt(3) &&
+                epi![k].season == widget.metadata.elementAt(4)) {
               await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
                       epi![k].id!, tvShows![i].id!))
                   .then((value) {
@@ -187,9 +179,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) {
             return PlayerOne(
+                mediaType: MediaType.tvShow,
                 sources: reversedVids,
                 subs: subs,
-                thumbnail: widget.thumbnail,
                 colors: [
                   Theme.of(context).primaryColor,
                   Theme.of(context).colorScheme.background
@@ -200,7 +192,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   videoQuality,
                   autoFS
                 ],
-                tvMetadata: []);
+                tvMetadata: widget.metadata);
           },
         ));
       } else {

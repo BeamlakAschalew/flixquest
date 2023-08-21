@@ -300,6 +300,7 @@ class Networks {
 
 class EpisodeList {
   int? episodeNumber;
+  int? episodeId;
   String? name;
   String? airDate;
   String? stillPath;
@@ -315,6 +316,7 @@ class EpisodeList {
       this.episodeNumber,
       this.name,
       this.stillPath,
+      this.episodeId,
       this.episodeCrew,
       this.overview,
       this.seasonNumber,
@@ -330,6 +332,7 @@ class EpisodeList {
     seasonNumber = json['season_number'];
     voteAverage = json['vote_average'];
     voteCount = json['vote_count'];
+    episodeId = json['id'];
     if (json['crew'] != null) {
       episodeCrew = [];
       json['crew'].forEach((v) {
@@ -353,6 +356,7 @@ class EpisodeList {
     data['season_number'] = seasonNumber;
     data['vote_average'] = voteAverage;
     data['vote_count'] = voteCount;
+    data['id'] = episodeId;
     if (episodeCrew != null) {
       data['crew'] = episodeCrew?.map((v) => v.toJson()).toList();
     }

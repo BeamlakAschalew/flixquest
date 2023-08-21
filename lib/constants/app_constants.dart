@@ -70,3 +70,5 @@ CacheManager cacheProp() {
   return CacheManager(
       Config('cacheKey', stalePeriod: const Duration(days: 10)));
 }
+
+enum MediaType { movie, tvShow }

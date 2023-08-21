@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../models/recently_watched.dart';
+import '../provider/recently_watched_provider.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '../screens/movie/movie_video_loader.dart';
 import '../ui_components/movie_ui_components.dart';
@@ -56,6 +58,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
   @override
   Widget build(BuildContext context) {
     bool includeAdult = Provider.of<SettingsProvider>(context).isAdult;
+    var rMovies = Provider.of<RecentProvider>(context).movies;
     return Container(
       child: ListView(
         children: [
@@ -76,6 +79,9 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
           //   onFailed: (placementId, error, message) =>
           //       print('Banner Ad $placementId failed: $error $message'),
           // ),
+          rMovies.isEmpty
+              ? Container()
+              : ScrollingRecentMovies(moviesList: rMovies),
           ScrollingMovies(
             title: 'Trending this week',
             api: Endpoints.trendingMoviesUrl(1, includeAdult),
@@ -546,6 +552,201 @@ class ScrollingMoviesState extends State<ScrollingMovies>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class ScrollingRecentMovies extends StatefulWidget {
+  const ScrollingRecentMovies({required this.moviesList, Key? key})
+      : super(key: key);
+
+  final List<RecentMovie> moviesList;
+
+  @override
+  State<ScrollingRecentMovies> createState() => _ScrollingRecentMoviesState();
+}
+
+class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
+  final ScrollController _scrollController = ScrollController();
+  @override
+  Widget build(BuildContext context) {
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    return Column(
+      children: <Widget>[
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Recently Watched',
+                style: kTextHeaderStyle,
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.all(8),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const MovieVideoLoader(
+                          download: false, metadata: []);
+                    }));
+                  },
+                  style: ButtonStyle(
+                      maximumSize:
+                          MaterialStateProperty.all(const Size(200, 60)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ))),
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Text('View all'),
+                  ),
+                )),
+          ],
+        ),
+        SizedBox(
+          width: double.infinity,
+          height: 250,
+          child: Row(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: widget.moviesList.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MovieVideoLoader(
+                                        download: false,
+                                        metadata: [
+                                          widget.moviesList[index].id,
+                                          widget.moviesList[index].title,
+                                          widget.moviesList[index].posterPath,
+                                          widget.moviesList[index].releaseYear,
+                                          widget.moviesList[index].elapsed
+                                        ],
+                                      )));
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 6,
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        child: widget.moviesList[index]
+                                                    .posterPath ==
+                                                null
+                                            ? Image.asset(
+                                                'assets/images/na_rect.png',
+                                                fit: BoxFit.cover,
+                                              )
+                                            : CachedNetworkImage(
+                                                cacheManager: cacheProp(),
+                                                fadeOutDuration: const Duration(
+                                                    milliseconds: 300),
+                                                fadeOutCurve: Curves.easeOut,
+                                                fadeInDuration: const Duration(
+                                                    milliseconds: 700),
+                                                fadeInCurve: Curves.easeIn,
+                                                imageUrl: widget
+                                                            .moviesList[index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? ''
+                                                    : TMDB_BASE_IMAGE_URL +
+                                                        imageQuality +
+                                                        widget.moviesList[index]
+                                                            .posterPath!,
+                                                imageBuilder:
+                                                    (context, imageProvider) =>
+                                                        Container(
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ),
+                                                placeholder: (context, url) =>
+                                                    scrollingImageShimmer(
+                                                        isDark),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Image.asset(
+                                                  'assets/images/na_rect.png',
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                              bottomLeft: Radius.circular(8),
+                                              bottomRight: Radius.circular(8)),
+                                          child: LinearProgressIndicator(
+                                            value: (widget.moviesList[index]
+                                                    .elapsed! /
+                                                (widget.moviesList[index]
+                                                        .remaining! +
+                                                    widget.moviesList[index]
+                                                        .elapsed!)),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    widget.moviesList[index].title!,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        Divider(
+          color: !isDark ? Colors.black54 : Colors.white54,
+          thickness: 1,
+          endIndent: 20,
+          indent: 10,
+        ),
+      ],
+    );
+  }
 }
 
 class SABTN extends StatefulWidget {
@@ -1111,7 +1312,8 @@ class _MovieAboutState extends State<MovieAbout> {
                   movieId: widget.movie.id!,
                   movieName: widget.movie.title,
                   adult: widget.movie.adult,
-                  thumbnail: widget.movie.backdropPath,
+                  posterPath: widget.movie.posterPath,
+                  backdropPath: widget.movie.backdropPath,
                   api: Endpoints.movieDetailsUrl(widget.movie.id!),
                 ),
                 const SizedBox(
@@ -2585,12 +2787,13 @@ class MovieVideosState extends State<MovieVideosDisplay> {
 class WatchNowButton extends StatefulWidget {
   const WatchNowButton({
     Key? key,
-    required this.thumbnail,
+    required this.posterPath,
     required this.movieId,
     this.movieName,
     this.movieImdbId,
     this.api,
     required this.releaseYear,
+    required this.backdropPath,
     this.adult,
   }) : super(key: key);
   final String? movieName;
@@ -2599,7 +2802,8 @@ class WatchNowButton extends StatefulWidget {
   final bool? adult;
   final String? api;
   final int releaseYear;
-  final String? thumbnail;
+  final String? posterPath;
+  final String? backdropPath;
 
   @override
   WatchNowButtonState createState() => WatchNowButtonState();
@@ -2738,8 +2942,10 @@ class WatchNowButtonState extends State<WatchNowButton> {
               metadata: [
                 widget.movieId,
                 widget.movieName,
-                widget.thumbnail,
-                widget.releaseYear
+                widget.posterPath,
+                widget.backdropPath,
+                widget.releaseYear,
+                0
               ],
             );
           })));

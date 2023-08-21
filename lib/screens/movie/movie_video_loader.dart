@@ -175,7 +175,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         showModalBottomSheet(
           context: context,
           builder: (builder) {
-            final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+           //TODO: use this mixpanel variable final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
             return Container(
                 padding: const EdgeInsets.all(8),
                 height: 300,
@@ -231,26 +231,20 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           Navigator.pushReplacement(context, MaterialPageRoute(
             builder: (context) {
               return PlayerOne(
-                sources: reversedVids,
-                subs: subs,
-                thumbnail: widget.metadata.elementAt(2),
-                colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).colorScheme.background
-                ],
-                videoProperties: [
-                  maxBuffer,
-                  seekDuration,
-                  videoQuality,
-                  autoFS
-                ],
-                movieMetadata: [
-                  widget.metadata.elementAt(0),
-                  widget.metadata.elementAt(1),
-                  widget.metadata.elementAt(2),
-                  widget.metadata.elementAt(3)
-                ],
-              );
+                  mediaType: MediaType.movie,
+                  sources: reversedVids,
+                  subs: subs,
+                  colors: [
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).colorScheme.background
+                  ],
+                  videoProperties: [
+                    maxBuffer,
+                    seekDuration,
+                    videoQuality,
+                    autoFS
+                  ],
+                  movieMetadata: widget.metadata);
             },
           ));
         }

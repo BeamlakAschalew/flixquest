@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, unnecessary_brace_in_string_interps, avoid_print
+
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter/ffmpeg_kit_config.dart';
 import 'package:ffmpeg_kit_flutter/ffprobe_kit.dart';
@@ -38,6 +40,8 @@ class VideoConverter {
         _updateProgressDialog();
       },
     );
+
+    return '';
   }
 
   void _updateProgressDialog() {

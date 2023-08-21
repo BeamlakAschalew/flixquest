@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, no_leading_underscores_for_local_identifiers
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -82,13 +84,13 @@ class _VideoDownloadScreenState extends State<VideoDownloadScreen> {
     final downloadProvider = Provider.of<DownloadProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Video Downloader'),
+        title: const Text('Video Downloader'),
       ),
       body: Column(
         children: [
           ElevatedButton(
             onPressed: _convertM3U8toMP4,
-            child: Text("Convert to MP4"),
+            child: const Text("Convert to MP4"),
           ),
           for (var download in downloadProvider.downloads)
             Column(
