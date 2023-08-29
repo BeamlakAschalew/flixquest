@@ -84,7 +84,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           });
         }
       });
-
       for (int i = 0; i < movies!.length; i++) {
         if (movies![i].releaseDate == widget.metadata.elementAt(3).toString() &&
             movies![i].type == 'Movie') {
@@ -175,7 +174,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         showModalBottomSheet(
           context: context,
           builder: (builder) {
-           //TODO: use this mixpanel variable final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+            //TODO: use this mixpanel variable final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
             return Container(
                 padding: const EdgeInsets.all(8),
                 height: 300,

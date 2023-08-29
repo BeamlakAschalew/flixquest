@@ -572,38 +572,38 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
                 'Recently Watched',
                 style: kTextHeaderStyle,
               ),
             ),
-            Padding(
-                padding: const EdgeInsets.all(8),
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const MovieVideoLoader(
-                          download: false, metadata: []);
-                    }));
-                  },
-                  style: ButtonStyle(
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ))),
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: Text('View all'),
-                  ),
-                )),
+            // Padding(
+            //     padding: const EdgeInsets.all(8),
+            //     child: TextButton(
+            //       onPressed: () {
+            //         Navigator.push(context,
+            //             MaterialPageRoute(builder: (context) {
+            //           return const MovieVideoLoader(
+            //               download: false, metadata: []);
+            //         }));
+            //       },
+            //       style: ButtonStyle(
+            //           maximumSize:
+            //               MaterialStateProperty.all(const Size(200, 60)),
+            //           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            //               RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(20.0),
+            //           ))),
+            //       child: const Padding(
+            //         padding: EdgeInsets.only(left: 8.0, right: 8.0),
+            //         child: Text('View all'),
+            //       ),
+            //     )),
           ],
         ),
         SizedBox(
@@ -632,6 +632,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                           widget.moviesList[index].title,
                                           widget.moviesList[index].posterPath,
                                           widget.moviesList[index].releaseYear,
+                                          widget.moviesList[index].backdropPath,
                                           widget.moviesList[index].elapsed
                                         ],
                                       )));
@@ -907,6 +908,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -1366,11 +1368,11 @@ class _MovieAboutState extends State<MovieAbout> {
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 movieId: widget.movie.id!,
                 api: Endpoints.getSimilarMovies(widget.movie.id!, 1)),
-            DidYouKnow(
-              api: Endpoints.getExternalLinksForMovie(
-                widget.movie.id!,
-              ),
-            ),
+            // DidYouKnow(
+            //   api: Endpoints.getExternalLinksForMovie(
+            //     widget.movie.id!,
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -1414,7 +1416,7 @@ class DownloadMovie extends StatelessWidget {
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return MovieVideoLoader(
               download: true,
-              metadata: [movieId, movieName, thumbnail, releaseYear],
+              metadata: [movieId, movieName, thumbnail, releaseYear, 0.0],
             );
           })));
         },
@@ -2823,7 +2825,8 @@ class WatchNowButtonState extends State<WatchNowButton> {
       required String thumbnail,
       bool? adult,
       required int releaseYear,
-      required int movieId}) {
+      required int movieId,
+      required String backdropPath}) {
     showModalBottomSheet(
         context: context,
         builder: (builder) {
@@ -2943,8 +2946,8 @@ class WatchNowButtonState extends State<WatchNowButton> {
                 widget.movieId,
                 widget.movieName,
                 widget.posterPath,
-                widget.backdropPath,
                 widget.releaseYear,
+                widget.backdropPath,
                 0
               ],
             );

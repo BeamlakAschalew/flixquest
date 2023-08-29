@@ -558,37 +558,37 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
                 'Recently Watched',
                 style: kTextHeaderStyle,
               ),
             ),
-            Padding(
-                padding: const EdgeInsets.all(8),
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const TVVideoLoader(download: false, metadata: []);
-                    }));
-                  },
-                  style: ButtonStyle(
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ))),
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: Text('View all'),
-                  ),
-                )),
+            // Padding(
+            //     padding: const EdgeInsets.all(8),
+            //     child: TextButton(
+            //       onPressed: () {
+            //         Navigator.push(context,
+            //             MaterialPageRoute(builder: (context) {
+            //           return const TVVideoLoader(download: false, metadata: []);
+            //         }));
+            //       },
+            //       style: ButtonStyle(
+            //           maximumSize:
+            //               MaterialStateProperty.all(const Size(200, 60)),
+            //           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            //               RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(20.0),
+            //           ))),
+            //       child: const Padding(
+            //         padding: EdgeInsets.only(left: 8.0, right: 8.0),
+            //         child: Text('View all'),
+            //       ),
+            //     )),
           ],
         ),
         SizedBox(
@@ -5782,11 +5782,11 @@ class _TVAboutState extends State<TVAbout> {
                 tvId: widget.tvSeries.id!,
                 tvName: widget.tvSeries.name!,
                 api: Endpoints.getSimilarTV(widget.tvSeries.id!, 1)),
-            DidYouKnow(
-              api: Endpoints.getExternalLinksForTV(
-                widget.tvSeries.id!,
-              ),
-            ),
+            // DidYouKnow(
+            //   api: Endpoints.getExternalLinksForTV(
+            //     widget.tvSeries.id!,
+            //   ),
+            // ),
           ],
         ),
       ),

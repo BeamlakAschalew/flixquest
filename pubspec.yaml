@@ -56,6 +56,8 @@ dependencies:
   easy_localization: ^3.0.2
   ffmpeg_kit_flutter: ^5.1.0
   marquee: ^2.2.3
+  wakelock: ^0.6.2
+  firebase_remote_config: ^4.2.5
 
 dev_dependencies:
   flutter_test:

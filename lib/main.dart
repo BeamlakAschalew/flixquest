@@ -2,8 +2,10 @@
 import 'dart:io';
 import 'package:cinemax/models/download_manager.dart';
 import 'package:cinemax/models/translation.dart';
+import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/screens/common/video_download_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:path_provider/path_provider.dart';
 import '/screens/user/user_state.dart';
 import '/screens/user/user_info.dart';
@@ -30,7 +32,7 @@ Future<void> _messageHandler(RemoteMessage message) async {}
 SettingsProvider settingsProvider = SettingsProvider();
 DownloadProvider downloadProvider = DownloadProvider();
 RecentProvider recentProvider = RecentProvider();
-
+AppDependencyProvider appDependencyProvider = AppDependencyProvider();
 final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
@@ -53,6 +55,7 @@ Future<void> appInitialize() async {
   await settingsProvider.getViewMode();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
+  await appDependencyProvider.getConsumetUrl();
   await _initialization;
 }
 
@@ -67,6 +70,7 @@ void main() async {
       settingsProvider: settingsProvider,
       downloadProvider: downloadProvider,
       recentProvider: recentProvider,
+      appDependencyProvider: appDependencyProvider,
     ),
   ));
 }
@@ -76,12 +80,14 @@ class Cinemax extends StatefulWidget {
       {required this.settingsProvider,
       required this.downloadProvider,
       required this.recentProvider,
+      required this.appDependencyProvider,
       Key? key})
       : super(key: key);
 
   final SettingsProvider settingsProvider;
   final DownloadProvider downloadProvider;
   final RecentProvider recentProvider;
+  final AppDependencyProvider appDependencyProvider;
 
   @override
   State<Cinemax> createState() => _CinemaxState();
@@ -99,14 +105,31 @@ class _CinemaxState extends State<Cinemax>
     }
   }
 
+  final FirebaseRemoteConfig _remoteConfig = FirebaseRemoteConfig.instance;
+  Future<void> _initConfig() async {
+    await _remoteConfig.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: const Duration(minutes: 1),
+      minimumFetchInterval: const Duration(days: 5),
+    ));
+
+    _fetchConfig();
+  }
+
+  void _fetchConfig() async {
+    await _remoteConfig.fetchAndActivate();
+    appDependencyProvider.consumetUrl = _remoteConfig.getString('consumet_url');
+  }
+
   @override
   void initState() {
     super.initState();
+    _initConfig();
+    fileDelete();
+
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {});
     FirebaseMessaging.onMessageOpenedApp.listen((message) {});
     // SystemChrome.setPreferredOrientations(
     //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    fileDelete();
   }
 
   @override
@@ -146,12 +169,15 @@ class _CinemaxState extends State<Cinemax>
                 }),
                 ChangeNotifierProvider(create: (_) {
                   return widget.recentProvider;
+                }),
+                ChangeNotifierProvider(create: (_) {
+                  return widget.appDependencyProvider;
                 })
               ],
-              child:
-                  Consumer3<SettingsProvider, DownloadProvider, RecentProvider>(
-                      builder: (context, settingsProvider, downloadProvider,
-                          recentProvider, snapshot) {
+              child: Consumer4<SettingsProvider, DownloadProvider,
+                      RecentProvider, AppDependencyProvider>(
+                  builder: (context, settingsProvider, downloadProvider,
+                      recentProvider, appDependencyProvider, snapshot) {
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
                     return MaterialApp(

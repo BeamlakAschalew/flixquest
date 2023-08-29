@@ -4,6 +4,7 @@ import 'package:cinemax/controllers/recently_watched_database_controller.dart';
 import 'package:cinemax/models/recently_watched.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock/wakelock.dart';
 import '../../provider/recently_watched_provider.dart';
 
 class PlayerOne extends StatefulWidget {
@@ -42,6 +43,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      Wakelock.enable();
+    });
     WidgetsBinding.instance.addObserver(this);
     betterPlayerBufferingConfiguration = BetterPlayerBufferingConfiguration(
       maxBufferMs: widget.videoProperties.first,
@@ -141,10 +145,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         elapsed: elapsed,
         id: widget.movieMetadata!.elementAt(0),
         posterPath: widget.movieMetadata!.elementAt(2),
-        releaseYear: widget.movieMetadata!.elementAt(4),
+        releaseYear: widget.movieMetadata!.elementAt(3),
         remaining: remaining,
         title: widget.movieMetadata!.elementAt(1),
-        backdropPath: widget.movieMetadata!.elementAt(3));
+        backdropPath: widget.movieMetadata!.elementAt(4));
 
     double precentage = (elapsed / duration) * 100;
 
@@ -215,11 +219,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // print(widget.movieMetadata!.elementAt(0));
     return WillPopScope(
       onWillPop: () async {
         if (_betterPlayerController.isVideoInitialized()!) {
+          Wakelock.disable();
           widget.mediaType == MediaType.movie
               ? insertRecentMovieData()
               : insertRecentEpisodeData();
