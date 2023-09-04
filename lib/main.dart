@@ -110,10 +110,9 @@ class _CinemaxState extends State<Cinemax>
 
   final FirebaseRemoteConfig _remoteConfig = FirebaseRemoteConfig.instance;
   Future<void> _initConfig() async {
-    print('COLORRRRRRRR: ${Colors.white.toString()}');
     await _remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(days: 5),
+      minimumFetchInterval: const Duration(minutes: 1),
     ));
 
     _fetchConfig();

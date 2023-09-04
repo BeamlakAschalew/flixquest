@@ -4,6 +4,7 @@ import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:provider/provider.dart';
 import '../../models/tv_stream.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   double loadProgress = 0.00;
   late SettingsProvider settings =
       Provider.of<SettingsProvider>(context, listen: false);
+  late AppDependencyProvider appDep =
+      Provider.of<AppDependencyProvider>(context, listen: false);
 
   @override
   void initState() {
@@ -59,8 +62,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   void loadVideo() async {
     try {
-      await fetchTVForStream(
-              Endpoints.searchMovieTVForStream(widget.metadata.elementAt(1)))
+      await fetchTVForStream(Endpoints.searchMovieTVForStream(
+              widget.metadata.elementAt(1), appDep.consumetUrl))
           .then((value) {
         if (mounted) {
           setState(() {
@@ -71,8 +74,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       for (int i = 0; i < tvShows!.length; i++) {
         if (tvShows![i].seasons == widget.metadata.elementAt(5) &&
             tvShows![i].type == 'TV Series') {
-          await getTVStreamEpisodes(
-                  Endpoints.getMovieTVStreamInfo(tvShows![i].id!))
+          await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                  tvShows![i].id!, appDep.consumetUrl))
               .then((value) {
             setState(() {
               tvInfo = value;
@@ -84,7 +87,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             if (epi![k].episode == widget.metadata.elementAt(3) &&
                 epi![k].season == widget.metadata.elementAt(4)) {
               await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                      epi![k].id!, tvShows![i].id!))
+                      epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
                   .then((value) {
                 setState(() {
                   tvVideoSources = value;
@@ -101,8 +104,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
         if (tvShows![i].seasons == (widget.metadata.elementAt(5) - 1) &&
             tvShows![i].type == 'TV Series') {
-          await getTVStreamEpisodes(
-                  Endpoints.getMovieTVStreamInfo(tvShows![i].id!))
+          await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                  tvShows![i].id!, appDep.consumetUrl))
               .then((value) {
             setState(() {
               tvInfo = value;
@@ -114,7 +117,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             if (epi![k].episode == widget.metadata.elementAt(3) &&
                 epi![k].season == widget.metadata.elementAt(4)) {
               await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                      epi![k].id!, tvShows![i].id!))
+                      epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
                   .then((value) {
                 setState(() {
                   tvVideoSources = value;

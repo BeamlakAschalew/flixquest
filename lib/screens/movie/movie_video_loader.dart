@@ -4,6 +4,7 @@ import 'package:better_player/better_player.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:cinemax/models/movie_stream.dart';
+import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 import '../../models/download_manager.dart';
@@ -32,6 +33,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   double loadProgress = 0.00;
   late SettingsProvider settings =
       Provider.of<SettingsProvider>(context, listen: false);
+  late AppDependencyProvider appDep =
+      Provider.of<AppDependencyProvider>(context, listen: false);
 
   @override
   void initState() {
@@ -60,8 +63,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   void loadVideo() async {
     try {
-      await fetchMoviesForStream(
-              Endpoints.searchMovieTVForStream(widget.metadata.elementAt(1)))
+      await fetchMoviesForStream(Endpoints.searchMovieTVForStream(
+              widget.metadata.elementAt(1), appDep.consumetUrl))
           .then((value) {
         if (mounted) {
           setState(() {
@@ -72,15 +75,15 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       for (int i = 0; i < movies!.length; i++) {
         if (movies![i].releaseDate == widget.metadata.elementAt(3).toString() &&
             movies![i].type == 'Movie') {
-          await getMovieStreamEpisodes(
-                  Endpoints.getMovieTVStreamInfo(movies![i].id!))
+          await getMovieStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                  movies![i].id!, appDep.consumetUrl))
               .then((value) {
             setState(() {
               epi = value;
             });
           });
-          await getMovieStreamLinksAndSubs(
-                  Endpoints.getMovieTVStreamLinks(epi![0].id!, movies![i].id!))
+          await getMovieStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
+                  epi![0].id!, movies![i].id!, appDep.consumetUrl))
               .then((value) {
             setState(() {
               movieVideoSources = value;

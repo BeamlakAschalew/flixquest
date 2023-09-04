@@ -1,5 +1,4 @@
 // ignore_for_file: constant_identifier_names
-import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdultModePreferences {
