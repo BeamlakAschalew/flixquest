@@ -314,6 +314,6 @@ class Endpoints {
 
   static String getMovieTVStreamLinks(String episodeId, String mediaId) {
     return '$CONSUMET_API'
-        'movies/flixhq/watch?episodeId=$episodeId&mediaId=$mediaId';
+        'movies/flixhq/watch?episodeId=$episodeId&mediaId=$mediaId&server=vidcloud';
   }
 }

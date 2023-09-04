@@ -1,12 +1,10 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/screens/common/live_tv_screen.dart';
-import '/screens/common/title_reviews.dart';
 import '../constants/app_constants.dart';
 import '../models/function.dart';
 import '../models/movie.dart';
 import '../models/watch_providers.dart';
-import '../screens/common/did_you_know.dart';
 import '/screens/common/bookmark_screen.dart';
 import '/screens/common/settings.dart';
 import '/screens/common/update_screen.dart';
@@ -1687,13 +1685,13 @@ class _DidYouKnowState extends State<DidYouKnow> {
   }
 
   void navToDYK(String dataType, String dataName, String imdbId) {
-    Navigator.push(context, MaterialPageRoute(builder: ((context) {
-      return DidYouKnowScreen(
-        dataType: dataType,
-        dataName: dataName,
-        imdbId: imdbId,
-      );
-    })));
+    // Navigator.push(context, MaterialPageRoute(builder: ((context) {
+    //   return DidYouKnowScreen(
+    //     dataType: dataType,
+    //     dataName: dataName,
+    //     imdbId: imdbId,
+    //   );
+    // })));
   }
 
   @override
@@ -1769,11 +1767,11 @@ class _DidYouKnowState extends State<DidYouKnow> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: ((context) {
-                                  return TitleReviews(
-                                      imdbId: externalLinks!.imdbId!);
-                                })));
+                                // Navigator.push(context,
+                                //     MaterialPageRoute(builder: ((context) {
+                                //   return TitleReviews(
+                                //       imdbId: externalLinks!.imdbId!);
+                                // })));
                               },
                               child: const Text('Reviews'),
                             ),

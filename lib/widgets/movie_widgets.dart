@@ -38,7 +38,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/screens/movie/main_movies_list.dart';
 import 'package:provider/provider.dart';
 import 'common_widgets.dart';
-import '/screens/movie/movie_stream.dart';
 
 class MainMoviesDisplay extends StatefulWidget {
   const MainMoviesDisplay({
@@ -618,9 +617,14 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                   itemCount: widget.moviesList.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext context, int index) {
+                    final prv =
+                        Provider.of<RecentProvider>(context, listen: false);
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
+                        onLongPress: () {
+                          prv.deleteMovie(widget.moviesList[index].id!);
+                        },
                         onTap: () {
                           Navigator.push(
                               context,
@@ -711,7 +715,23 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                         .elapsed!)),
                                           ),
                                         ),
-                                      )
+                                      ),
+                                      Positioned(
+                                        top: -15,
+                                        right: 8,
+                                        child: Container(
+                                            alignment: Alignment.topRight,
+                                            child: IconButton(
+                                              alignment: Alignment.topRight,
+                                              onPressed: () async {
+                                                prv.deleteMovie(widget
+                                                    .moviesList[index].id!);
+                                              },
+                                              icon: const Icon(
+                                                  Icons.bookmark_remove,
+                                                  size: 60),
+                                            )),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -1318,17 +1338,17 @@ class _MovieAboutState extends State<MovieAbout> {
                   backdropPath: widget.movie.backdropPath,
                   api: Endpoints.movieDetailsUrl(widget.movie.id!),
                 ),
-                const SizedBox(
-                  width: 15,
-                ),
-                DownloadMovie(
-                  releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
-                  movieId: widget.movie.id!,
-                  movieName: widget.movie.title,
-                  adult: widget.movie.adult,
-                  thumbnail: widget.movie.backdropPath,
-                  api: Endpoints.movieDetailsUrl(widget.movie.id!),
-                )
+                // const SizedBox(
+                //   width: 15,
+                // ),
+                // DownloadMovie(
+                //   releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
+                //   movieId: widget.movie.id!,
+                //   movieName: widget.movie.title,
+                //   adult: widget.movie.adult,
+                //   thumbnail: widget.movie.backdropPath,
+                //   api: Endpoints.movieDetailsUrl(widget.movie.id!),
+                // )
               ],
             ),
             ScrollingArtists(
@@ -2892,13 +2912,13 @@ class WatchNowButtonState extends State<WatchNowButton> {
                         'Movie id': movieId,
                         'Is Movie adult?': adult ?? 'unknown',
                       });
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: ((context) {
-                        return MovieStream(
-                            streamUrl:
-                                'https://2embed.to/embed/tmdb/movie?id=$movieId',
-                            movieName: movieName);
-                      })));
+                      // Navigator.pushReplacement(context,
+                      //     MaterialPageRoute(builder: ((context) {
+                      //   return MovieStream(
+                      //       streamUrl:
+                      //           'https://2embed.to/embed/tmdb/movie?id=$movieId',
+                      //       movieName: movieName);
+                      // })));
                     },
                     child: Container(
                       decoration: BoxDecoration(

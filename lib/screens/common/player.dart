@@ -4,15 +4,15 @@ import 'package:cinemax/controllers/recently_watched_database_controller.dart';
 import 'package:cinemax/models/recently_watched.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wakelock/wakelock.dart';
 import '../../provider/recently_watched_provider.dart';
+import '../../provider/settings_provider.dart';
 
 class PlayerOne extends StatefulWidget {
   const PlayerOne(
       {required this.sources,
       required this.subs,
       required this.colors,
-      required this.videoProperties,
+      required this.settings,
       this.movieMetadata,
       this.tvMetadata,
       required this.mediaType,
@@ -21,7 +21,7 @@ class PlayerOne extends StatefulWidget {
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
   final List<Color> colors;
-  final List videoProperties;
+  final SettingsProvider settings;
   final List? movieMetadata;
   final List? tvMetadata;
   final MediaType? mediaType;
@@ -43,12 +43,19 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      Wakelock.enable();
-    });
+    String backgroundColorString = widget.settings.subtitleBackgroundColor;
+    String foregroundColorString = widget.settings.subtitleForegroundColor;
+    String hexColorBackground =
+        backgroundColorString.replaceAll("Color(0x", "").replaceAll(")", "");
+    String hexColorForeground =
+        foregroundColorString.replaceAll("Color(0x", "").replaceAll(")", "");
+
+    Color backgroundColor = Color(int.parse("0x$hexColorBackground"));
+    Color foregroundColor = Color(int.parse("0x$hexColorForeground"));
+
     WidgetsBinding.instance.addObserver(this);
     betterPlayerBufferingConfiguration = BetterPlayerBufferingConfiguration(
-      maxBufferMs: widget.videoProperties.first,
+      maxBufferMs: widget.settings.defaultMaxBufferDuration,
       minBufferMs: 15000,
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
@@ -62,9 +69,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       loadingColor: widget.colors.first,
       iconsColor: widget.colors.first,
       backwardSkipTimeInMilliseconds:
-          Duration(seconds: widget.videoProperties.elementAt(1)).inMilliseconds,
+          Duration(seconds: widget.settings.defaultSeekDuration).inMilliseconds,
       forwardSkipTimeInMilliseconds:
-          Duration(seconds: widget.videoProperties.elementAt(1)).inMilliseconds,
+          Duration(seconds: widget.settings.defaultSeekDuration).inMilliseconds,
       progressBarPlayedColor: widget.colors.first,
       progressBarBufferedColor: Colors.black45,
     );
@@ -72,22 +79,23 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
             autoDetectFullscreenDeviceOrientation: true,
-            fullScreenByDefault: widget.videoProperties.elementAt(3),
+            fullScreenByDefault: widget.settings.defaultViewMode,
             autoPlay: true,
             fit: BoxFit.contain,
             autoDispose: true,
             controlsConfiguration: betterPlayerControlsConfiguration,
             showPlaceholderUntilPlay: true,
-            subtitlesConfiguration: const BetterPlayerSubtitlesConfiguration(
-                backgroundColor: Colors.black45,
+            allowedScreenSleep: false,
+            subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
+                backgroundColor: backgroundColor,
                 fontFamily: 'Poppins',
-                fontColor: Colors.white,
+                fontColor: foregroundColor,
                 outlineEnabled: false,
-                fontSize: 17));
+                fontSize: widget.settings.subtitleFontSize.toDouble()));
 
-    String keyToFind = widget.videoProperties.elementAt(2) == 0
+    String keyToFind = widget.settings.defaultVideoResolution == 0
         ? 'auto'
-        : widget.videoProperties.elementAt(2).toString();
+        : widget.settings.defaultVideoResolution.toString();
     String? link;
 
     if (widget.sources.entries
@@ -229,7 +237,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     return WillPopScope(
       onWillPop: () async {
         if (_betterPlayerController.isVideoInitialized()!) {
-          Wakelock.disable();
           widget.mediaType == MediaType.movie
               ? insertRecentMovieData()
               : insertRecentEpisodeData();

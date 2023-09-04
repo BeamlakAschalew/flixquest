@@ -1,9 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
-import 'movie_stream.dart';
 
 class MovieStreamSelect extends StatefulWidget {
   final String movieName;
@@ -164,12 +162,12 @@ class StreamListWidget extends StatelessWidget {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return MovieStream(
-            streamUrl: streamLink,
-            movieName: movieName,
-          );
-        }));
+        // Navigator.push(context, MaterialPageRoute(builder: (context) {
+        //   return MovieStream(
+        //     streamUrl: streamLink,
+        //     movieName: movieName,
+        //   );
+        // }));
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

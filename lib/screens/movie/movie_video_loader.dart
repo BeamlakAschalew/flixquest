@@ -30,11 +30,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   List<MovieVideoLinks>? movieVideoLinks;
   List<MovieVideoSubtitles>? movieVideoSubs;
   double loadProgress = 0.00;
-  late int maxBuffer;
-  late int seekDuration;
-  late int videoQuality;
-  late String subLanguage;
-  late bool autoFS;
+  late SettingsProvider settings =
+      Provider.of<SettingsProvider>(context, listen: false);
 
   @override
   void initState() {
@@ -62,18 +59,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   }
 
   void loadVideo() async {
-    setState(() {
-      maxBuffer = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultMaxBufferDuration;
-      seekDuration = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultSeekDuration;
-      videoQuality = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultVideoResolution;
-      subLanguage = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultSubtitleLanguage;
-      autoFS =
-          Provider.of<SettingsProvider>(context, listen: false).defaultViewMode;
-    });
     try {
       await fetchMoviesForStream(
               Endpoints.searchMovieTVForStream(widget.metadata.elementAt(1)))
@@ -112,7 +97,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       List<BetterPlayerSubtitlesSource> subs = [];
 
       if (movieVideoSubs != null) {
-        if (subLanguage == '') {
+        if (settings.defaultSubtitleLanguage == '') {
           for (int i = 0; i < movieVideoSubs!.length - 1; i++) {
             setState(() {
               loadProgress = (i / movieVideoSubs!.length) * 100;
@@ -129,18 +114,18 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           }
         } else {
           if (movieVideoSubs!
-              .where((element) => element.language!.startsWith(subLanguage))
+              .where((element) => element.language!
+                  .startsWith(settings.defaultSubtitleLanguage))
               .isNotEmpty) {
-            await getVttFileAsString((movieVideoSubs!.where(
-                        (element) => element.language!.startsWith(subLanguage)))
-                    .first
-                    .url!)
+            await getVttFileAsString((movieVideoSubs!.where((element) => element
+                    .language!
+                    .startsWith(settings.defaultSubtitleLanguage))).first.url!)
                 .then((value) {
               subs.addAll({
                 BetterPlayerSubtitlesSource(
                     name: movieVideoSubs!
-                        .where((element) =>
-                            element.language!.startsWith(subLanguage))
+                        .where((element) => element.language!
+                            .startsWith(settings.defaultSubtitleLanguage))
                         .first
                         .language,
                     //  urls: [movieVideoSubs![i].url],
@@ -237,12 +222,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                     Theme.of(context).primaryColor,
                     Theme.of(context).colorScheme.background
                   ],
-                  videoProperties: [
-                    maxBuffer,
-                    seekDuration,
-                    videoQuality,
-                    autoFS
-                  ],
+                  settings: settings,
                   movieMetadata: widget.metadata);
             },
           ));
@@ -300,7 +280,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             ),
             const SizedBox(width: 160, child: LinearProgressIndicator()),
             Visibility(
-              visible: subLanguage != '' ? false : true,
+              visible: settings.defaultSubtitleLanguage != '' ? false : true,
               child: Text(
                 '${loadProgress.toStringAsFixed(0).toString()}%',
                 style:

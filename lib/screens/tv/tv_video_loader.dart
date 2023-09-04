@@ -29,11 +29,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   List<TVVideoSubtitles>? tvVideoSubs;
   TVInfo? tvInfo;
   double loadProgress = 0.00;
-  late int maxBuffer;
-  late int seekDuration;
-  late int videoQuality;
-  late String subLanguage;
-  late bool autoFS;
+  late SettingsProvider settings =
+      Provider.of<SettingsProvider>(context, listen: false);
 
   @override
   void initState() {
@@ -61,18 +58,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   }
 
   void loadVideo() async {
-    setState(() {
-      maxBuffer = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultMaxBufferDuration;
-      seekDuration = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultSeekDuration;
-      videoQuality = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultVideoResolution;
-      subLanguage = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultSubtitleLanguage;
-      autoFS =
-          Provider.of<SettingsProvider>(context, listen: false).defaultViewMode;
-    });
     try {
       await fetchTVForStream(
               Endpoints.searchMovieTVForStream(widget.metadata.elementAt(1)))
@@ -113,13 +98,43 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
           break;
         }
+
+        if (tvShows![i].seasons == (widget.metadata.elementAt(5) - 1) &&
+            tvShows![i].type == 'TV Series') {
+          await getTVStreamEpisodes(
+                  Endpoints.getMovieTVStreamInfo(tvShows![i].id!))
+              .then((value) {
+            setState(() {
+              tvInfo = value;
+              epi = tvInfo!.episodes;
+            });
+          });
+          print('wtf');
+          for (int k = 0; k < epi!.length; k++) {
+            if (epi![k].episode == widget.metadata.elementAt(3) &&
+                epi![k].season == widget.metadata.elementAt(4)) {
+              await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
+                      epi![k].id!, tvShows![i].id!))
+                  .then((value) {
+                setState(() {
+                  tvVideoSources = value;
+                });
+                tvVideoLinks = tvVideoSources!.videoLinks;
+                tvVideoSubs = tvVideoSources!.videoSubtitles;
+              });
+              break;
+            }
+          }
+
+          break;
+        }
       }
 
       Map<String, String> videos = {};
       List<BetterPlayerSubtitlesSource> subs = [];
 
       if (tvVideoSubs != null) {
-        if (subLanguage == '') {
+        if (settings.defaultSubtitleLanguage == '') {
           for (int i = 0; i < tvVideoSubs!.length - 1; i++) {
             setState(() {
               loadProgress = (i / tvVideoSubs!.length) * 100;
@@ -141,19 +156,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           }
         } else {
           if (tvVideoSubs!
-              .where((element) => element.language!.startsWith(subLanguage))
+              .where((element) => element.language!
+                  .startsWith(settings.defaultSubtitleLanguage))
               .isNotEmpty) {
             await getVttFileAsString(tvVideoSubs!
-                    .where(
-                        (element) => element.language!.startsWith(subLanguage))
+                    .where((element) => element.language!
+                        .startsWith(settings.defaultSubtitleLanguage))
                     .first
                     .url!)
                 .then((value) {
               subs.addAll({
                 BetterPlayerSubtitlesSource(
                     name: tvVideoSubs!
-                        .where((element) =>
-                            element.language!.startsWith(subLanguage))
+                        .where((element) => element.language!
+                            .startsWith(settings.defaultSubtitleLanguage))
                         .first
                         .language,
                     content: processVttFileTimestamps(value),
@@ -186,12 +202,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   Theme.of(context).primaryColor,
                   Theme.of(context).colorScheme.background
                 ],
-                videoProperties: [
-                  maxBuffer,
-                  seekDuration,
-                  videoQuality,
-                  autoFS
-                ],
+                settings: settings,
                 tvMetadata: widget.metadata);
           },
         ));
@@ -248,7 +259,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             ),
             const SizedBox(width: 160, child: LinearProgressIndicator()),
             Visibility(
-              visible: subLanguage != '' ? false : true,
+              visible: settings.defaultSubtitleLanguage != '' ? false : true,
               child: Text(
                 '${loadProgress.toStringAsFixed(0).toString()}%',
                 style:

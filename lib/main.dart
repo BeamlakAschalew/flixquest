@@ -56,6 +56,9 @@ Future<void> appInitialize() async {
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
   await appDependencyProvider.getConsumetUrl();
+  await settingsProvider.getSubtitleSize();
+  await settingsProvider.getForegroundSubtitleColor();
+  await settingsProvider.getBackgroundSubtitleColor();
   await _initialization;
 }
 
@@ -107,6 +110,7 @@ class _CinemaxState extends State<Cinemax>
 
   final FirebaseRemoteConfig _remoteConfig = FirebaseRemoteConfig.instance;
   Future<void> _initConfig() async {
+    print('COLORRRRRRRR: ${Colors.white.toString()}');
     await _remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: const Duration(minutes: 1),
       minimumFetchInterval: const Duration(days: 5),
@@ -268,15 +272,15 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                               .isAdult));
                 },
                 icon: const Icon(Icons.search)),
-            IconButton(
-                color: Theme.of(context).primaryColor,
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) {
-                    return const VideoDownloadScreen();
-                  })));
-                },
-                icon: const Icon(Icons.download))
+            // IconButton(
+            //     color: Theme.of(context).primaryColor,
+            //     onPressed: () {
+            //       Navigator.push(context,
+            //           MaterialPageRoute(builder: ((context) {
+            //         return const VideoDownloadScreen();
+            //       })));
+            //     },
+            //     icon: const Icon(Icons.download))
           ],
         ),
         bottomNavigationBar: Container(

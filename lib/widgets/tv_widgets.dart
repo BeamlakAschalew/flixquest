@@ -603,9 +603,17 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                   itemCount: widget.episodesList.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (BuildContext context, int index) {
+                    final recentEpisodes =
+                        Provider.of<RecentProvider>(context, listen: false);
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
+                        onLongPress: () {
+                          recentEpisodes.deleteEpisode(
+                              widget.episodesList[index].id!,
+                              widget.episodesList[index].episodeNum!,
+                              widget.episodesList[index].seasonNum!);
+                        },
                         onTap: () {
                           Navigator.push(
                               context,
@@ -732,7 +740,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                                         .elapsed!)),
                                           ),
                                         ),
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ),

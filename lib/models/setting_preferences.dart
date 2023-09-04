@@ -1,4 +1,5 @@
 // ignore_for_file: constant_identifier_names
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdultModePreferences {
@@ -161,5 +162,38 @@ class VideoPlayerPreferences {
   Future<bool> autoFullScreen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(DEFAULT_FULL_SCREEN) ?? true;
+  }
+
+  static const SUBTITLE_FOREGROUND_COLOR = 'subtitle_foreground_color';
+  setSubtitleForeground(String color) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(SUBTITLE_FOREGROUND_COLOR, color);
+  }
+
+  Future<String> subtitleForeground() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(SUBTITLE_FOREGROUND_COLOR) ?? 'Color(0xffffffff)';
+  }
+
+  static const SUBTITLE_BACKGROUND_COLOR = 'subtitle_background_color';
+  setSubtitleBackground(String color) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(SUBTITLE_BACKGROUND_COLOR, color);
+  }
+
+  Future<String> subtitleBackground() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(SUBTITLE_BACKGROUND_COLOR) ?? 'Color(0x73000000)';
+  }
+
+  static const SUBTITLE_FONT_SIZE = 'subtitle_font_size';
+  setSubtitleFont(int size) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt(SUBTITLE_FONT_SIZE, size);
+  }
+
+  Future<int> subtitleFont() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(SUBTITLE_FONT_SIZE) ?? 17;
   }
 }
