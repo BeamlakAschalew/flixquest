@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-
 import '../../constants/app_constants.dart';
 import '../../controllers/bookmark_database_controller.dart';
 import '../../models/movie.dart';
