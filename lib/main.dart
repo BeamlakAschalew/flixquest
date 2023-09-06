@@ -30,7 +30,6 @@ import 'screens/common/discover.dart';
 Future<void> _messageHandler(RemoteMessage message) async {}
 
 SettingsProvider settingsProvider = SettingsProvider();
-DownloadProvider downloadProvider = DownloadProvider();
 RecentProvider recentProvider = RecentProvider();
 AppDependencyProvider appDependencyProvider = AppDependencyProvider();
 final Future<FirebaseApp> _initialization = Firebase.initializeApp();
@@ -72,7 +71,6 @@ void main() async {
     startLocale: const Locale('en'),
     child: Cinemax(
       settingsProvider: settingsProvider,
-      downloadProvider: downloadProvider,
       recentProvider: recentProvider,
       appDependencyProvider: appDependencyProvider,
     ),
@@ -82,14 +80,12 @@ void main() async {
 class Cinemax extends StatefulWidget {
   const Cinemax(
       {required this.settingsProvider,
-      required this.downloadProvider,
       required this.recentProvider,
       required this.appDependencyProvider,
       Key? key})
       : super(key: key);
 
   final SettingsProvider settingsProvider;
-  final DownloadProvider downloadProvider;
   final RecentProvider recentProvider;
   final AppDependencyProvider appDependencyProvider;
 
@@ -170,19 +166,16 @@ class _CinemaxState extends State<Cinemax>
                   return widget.settingsProvider;
                 }),
                 ChangeNotifierProvider(create: (_) {
-                  return widget.downloadProvider;
-                }),
-                ChangeNotifierProvider(create: (_) {
                   return widget.recentProvider;
                 }),
                 ChangeNotifierProvider(create: (_) {
                   return widget.appDependencyProvider;
                 })
               ],
-              child: Consumer4<SettingsProvider, DownloadProvider,
-                      RecentProvider, AppDependencyProvider>(
-                  builder: (context, settingsProvider, downloadProvider,
-                      recentProvider, appDependencyProvider, snapshot) {
+              child: Consumer3<SettingsProvider, RecentProvider,
+                      AppDependencyProvider>(
+                  builder: (context, settingsProvider, recentProvider,
+                      appDependencyProvider, snapshot) {
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
                     return MaterialApp(
