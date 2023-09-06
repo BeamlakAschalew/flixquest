@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-import 'dart:io';
 import 'package:better_player/better_player.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
@@ -8,7 +7,6 @@ import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
-import '../../models/download_manager.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
@@ -154,86 +152,21 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           videos.entries.toList().reversed.toList();
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
-      void streamSelectBottomSheet({
-        required Map vids,
-      }) {
-        final downloadProvider =
-            Provider.of<DownloadProvider>(context, listen: false);
-        vids.removeWhere((key, value) => key == 'auto');
-        showModalBottomSheet(
-          context: context,
-          builder: (builder) {
-            //TODO: use this mixpanel variable final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
-            return Container(
-                padding: const EdgeInsets.all(8),
-                height: 300,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      tr(
-                        "download_movie",
-                        namedArgs: {"name": widget.metadata.elementAt(1)},
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      tr("choose_resolution"),
-                      style: kTextSmallHeaderStyle,
-                    ),
-                    Column(
-                      children: [
-                        for (var entry in vids.entries)
-                          InkWell(
-                            child: ListTile(
-                              onTap: () {
-                                Directory? appDir = Directory(
-                                    "storage/emulated/0/Cinemax/Backdrops");
-
-                                // String outputPath =
-                                //     "${appDir!.path}/output1.mp4";
-                                Download dwn = Download(
-                                    input: entry.value,
-                                    output:
-                                        '${appDir.path}/${widget.metadata.elementAt(1)}_${entry.key}p_Downloaded_from_Cinemax.mp4',
-                                    progress: 0.0);
-                                downloadProvider.addDownload(dwn);
-                                downloadProvider.startDownload(dwn);
-                              },
-                              title: Text(entry.key),
-                              trailing:
-                                  const Icon(Icons.arrow_forward_ios_rounded),
-                            ),
-                          ),
-                      ],
-                    )
-                  ],
-                ));
-          },
-        );
-      }
-
       if (movieVideoLinks != null && movieVideoSubs != null) {
-        if (widget.download) {
-          Navigator.pop(context);
-          streamSelectBottomSheet(vids: reversedVids);
-        } else {
-          Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) {
-              return PlayerOne(
-                  mediaType: MediaType.movie,
-                  sources: reversedVids,
-                  subs: subs,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.background
-                  ],
-                  settings: settings,
-                  movieMetadata: widget.metadata);
-            },
-          ));
-        }
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) {
+            return PlayerOne(
+                mediaType: MediaType.movie,
+                sources: reversedVids,
+                subs: subs,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.background
+                ],
+                settings: settings,
+                movieMetadata: widget.metadata);
+          },
+        ));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

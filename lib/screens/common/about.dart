@@ -144,10 +144,7 @@ class AboutPage extends StatelessWidget {
                     right: 7.0,
                   ),
                   child: Text(
-                    tr("made_with", args: [
-                      "❤️",
-                      "Beamlak Aschalew"
-                    ]), // Translate "Made with ❤️ by Beamlak Aschalew"
+                    tr("made_with"), // Translate "Made with ❤️ by Beamlak Aschalew"
                     maxLines: 5,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20.0),

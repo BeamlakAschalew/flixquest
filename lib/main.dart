@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 //TODO: finished until email changes, set the translation arguments to named arguments
 import 'dart:io';
-import 'package:cinemax/models/download_manager.dart';
 import 'package:cinemax/models/translation.dart';
 import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
