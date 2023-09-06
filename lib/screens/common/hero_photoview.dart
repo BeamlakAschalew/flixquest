@@ -1,5 +1,6 @@
 // ignore_for_file: unused_local_variable, use_build_context_synchronously
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -126,7 +127,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
-          'File permission isn\'t given to Cinemax, therefore image couldn\'t be downloaded.',
+          tr("no_file_premission"),
           style: TextStyle(
               color: isDark ? Colors.white : Colors.black,
               fontFamily: 'PoppinsSB'),
@@ -142,8 +143,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
       child: Scaffold(
           appBar: AppBar(
             title: Text(widget.name.endsWith('s')
-                ? '${widget.name}\' image'
-                : '${widget.name}\'s image'),
+                ? tr("plular_person_image", namedArgs: {"name": widget.name})
+                : tr("singular_person_image",
+                    namedArgs: {"name": widget.name})),
           ),
           body: Column(
             children: [
@@ -165,14 +167,14 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                     minimumSize: MaterialStateProperty.all(
                         const Size(double.infinity, 50)),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Icon(Icons.save),
                       ),
-                      Text('DOWNLOAD'),
+                      Text(tr("download")),
                     ],
                   ),
                 ),

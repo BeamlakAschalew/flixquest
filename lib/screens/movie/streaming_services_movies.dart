@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:easy_localization/easy_localization.dart';
+
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +20,7 @@ class StreamingServicesMovies extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Movies from $providerName',
+          tr("streaming_service_movie", namedArgs: {"provider": providerName}),
         ),
         leading: IconButton(
           icon: const Icon(

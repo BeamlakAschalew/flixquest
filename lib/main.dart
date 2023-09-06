@@ -1,7 +1,11 @@
 // ignore_for_file: avoid_unnecessary_containers
+//TODO: finished until email changes, set the translation arguments to named arguments
 import 'dart:io';
+import 'package:cinemax/models/download_manager.dart';
 import 'package:cinemax/models/translation.dart';
+import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:path_provider/path_provider.dart';
 import '/screens/user/user_state.dart';
 import '/screens/user/user_info.dart';
@@ -12,6 +16,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
 import 'constants/app_constants.dart';
+import 'provider/recently_watched_provider.dart';
 import 'widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import 'widgets/common_widgets.dart';
@@ -25,6 +30,9 @@ import 'screens/common/discover.dart';
 Future<void> _messageHandler(RemoteMessage message) async {}
 
 SettingsProvider settingsProvider = SettingsProvider();
+DownloadProvider downloadProvider = DownloadProvider();
+RecentProvider recentProvider = RecentProvider();
+AppDependencyProvider appDependencyProvider = AppDependencyProvider();
 final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
@@ -45,6 +53,13 @@ Future<void> appInitialize() async {
   await settingsProvider.getVideoResolution();
   await settingsProvider.getSubtitleLanguage();
   await settingsProvider.getViewMode();
+  await recentProvider.fetchMovies();
+  await recentProvider.fetchEpisodes();
+  await appDependencyProvider.getConsumetUrl();
+  await appDependencyProvider.getCinemaxLogo();
+  await settingsProvider.getSubtitleSize();
+  await settingsProvider.getForegroundSubtitleColor();
+  await settingsProvider.getBackgroundSubtitleColor();
   await _initialization;
 }
 
@@ -54,17 +69,29 @@ void main() async {
     supportedLocales: Translation.all,
     path: 'assets/translations',
     fallbackLocale: Translation.all[0],
-    startLocale: Locale('es'),
+    startLocale: const Locale('en'),
     child: Cinemax(
       settingsProvider: settingsProvider,
+      downloadProvider: downloadProvider,
+      recentProvider: recentProvider,
+      appDependencyProvider: appDependencyProvider,
     ),
   ));
 }
 
 class Cinemax extends StatefulWidget {
-  const Cinemax({required this.settingsProvider, Key? key}) : super(key: key);
+  const Cinemax(
+      {required this.settingsProvider,
+      required this.downloadProvider,
+      required this.recentProvider,
+      required this.appDependencyProvider,
+      Key? key})
+      : super(key: key);
 
   final SettingsProvider settingsProvider;
+  final DownloadProvider downloadProvider;
+  final RecentProvider recentProvider;
+  final AppDependencyProvider appDependencyProvider;
 
   @override
   State<Cinemax> createState() => _CinemaxState();
@@ -82,14 +109,32 @@ class _CinemaxState extends State<Cinemax>
     }
   }
 
+  final FirebaseRemoteConfig _remoteConfig = FirebaseRemoteConfig.instance;
+  Future<void> _initConfig() async {
+    await _remoteConfig.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: const Duration(minutes: 1),
+      minimumFetchInterval: const Duration(minutes: 1),
+    ));
+
+    _fetchConfig();
+  }
+
+  void _fetchConfig() async {
+    await _remoteConfig.fetchAndActivate();
+    appDependencyProvider.consumetUrl = _remoteConfig.getString('consumet_url');
+    appDependencyProvider.cinemaxLogo = _remoteConfig.getString('cinemax_logo');
+  }
+
   @override
   void initState() {
     super.initState();
+    _initConfig();
+    fileDelete();
+
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {});
     FirebaseMessaging.onMessageOpenedApp.listen((message) {});
     // SystemChrome.setPreferredOrientations(
     //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    fileDelete();
   }
 
   @override
@@ -123,10 +168,21 @@ class _CinemaxState extends State<Cinemax>
               providers: [
                 ChangeNotifierProvider(create: (_) {
                   return widget.settingsProvider;
+                }),
+                ChangeNotifierProvider(create: (_) {
+                  return widget.downloadProvider;
+                }),
+                ChangeNotifierProvider(create: (_) {
+                  return widget.recentProvider;
+                }),
+                ChangeNotifierProvider(create: (_) {
+                  return widget.appDependencyProvider;
                 })
               ],
-              child: Consumer<SettingsProvider>(
-                  builder: (context, settingsProvider, snapshot) {
+              child: Consumer4<SettingsProvider, DownloadProvider,
+                      RecentProvider, AppDependencyProvider>(
+                  builder: (context, settingsProvider, downloadProvider,
+                      recentProvider, appDependencyProvider, snapshot) {
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
                     return MaterialApp(
@@ -177,21 +233,36 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
     });
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Scaffold(
-        drawer: const DrawerWidget(),
+        key: _scaffoldKey,
+        drawer: const Drawer(child: DrawerWidget()),
         appBar: AppBar(
-          elevation: 1,
-          title: const Text(
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              Icons.menu,
+              color: Theme.of(context).primaryColor,
+            ),
+            onPressed: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+          ),
+          title: Text(
             'Cinemax',
             style: TextStyle(
               fontFamily: 'PoppinsSB',
+              color: Theme.of(context).primaryColor,
             ),
           ),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           actions: [
             IconButton(
+                color: Theme.of(context).primaryColor,
                 onPressed: () {
                   showSearch(
                       context: context,
@@ -202,6 +273,15 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                               .isAdult));
                 },
                 icon: const Icon(Icons.search)),
+            // IconButton(
+            //     color: Theme.of(context).primaryColor,
+            //     onPressed: () {
+            //       Navigator.push(context,
+            //           MaterialPageRoute(builder: ((context) {
+            //         return const VideoDownloadScreen();
+            //       })));
+            //     },
+            //     icon: const Icon(Icons.download))
           ],
         ),
         bottomNavigationBar: Container(

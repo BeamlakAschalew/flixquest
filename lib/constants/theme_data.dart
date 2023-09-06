@@ -10,6 +10,14 @@ class Styles {
       required BuildContext context}) {
     return ThemeData(
       useMaterial3: false,
+
+      // drawerTheme: DrawerThemeData(
+      //   : isM3Enabled
+      //       ? isDarkTheme
+      //           ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+      //           : lightDynamicColor?.primary ?? Color(0xFFF57C00)
+      //       : Color(0xFFF57C00),
+      // ),
       textTheme: isDarkTheme
           ? ThemeData.dark().textTheme.apply(
                 fontFamily: 'Poppins',

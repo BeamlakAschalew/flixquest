@@ -1,7 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import '../../constants/app_constants.dart';
-import '../../controllers/database_controller.dart';
+import '../../controllers/bookmark_database_controller.dart';
 import '../../models/movie.dart';
 import '../../models/tv.dart';
 import '/screens/common/sync_screen.dart';
@@ -78,19 +78,19 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.arrow_back)),
-          title: const Text('Bookmarks'),
+          title: Text(tr("bookmarks")),
           actions: [
             IconButton(
                 onPressed: () {
                   if (user!.isAnonymous) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text(
-                          'This syncing feature is only available for signed in users. Register to Cinemax to synchronize your bookmarked movies and tv shows so that you won\'t lose them.',
+                          tr("bookmark_feature_notice"),
                           style: kTextVerySmallBodyStyle,
                           maxLines: 6,
                         ),
-                        duration: Duration(seconds: 10),
+                        duration: const Duration(seconds: 10),
                       ),
                     );
                   } else {
@@ -110,17 +110,17 @@ class _BookmarkScreenState extends State<BookmarkScreen>
           Container(
             color: Colors.grey,
             child: TabBar(
-              tabs: const [
+              tabs: [
                 Tab(
                     child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.only(right: 8.0),
                       child: Icon(Icons.movie_creation_rounded),
                     ),
                     Text(
-                      'Movies',
+                      tr("movies"),
                     ),
                   ],
                 )),
@@ -128,11 +128,11 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                     child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
+                    const Padding(
                         padding: EdgeInsets.only(right: 8.0),
                         child: Icon(Icons.live_tv_rounded)),
                     Text(
-                      'TV Series',
+                      tr("tv_series"),
                     ),
                   ],
                 ))

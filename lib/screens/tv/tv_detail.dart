@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '/provider/settings_provider.dart';
@@ -100,8 +101,11 @@ class TVDetailPageState extends State<TVDetailPage>
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Share.share(
-                'Checkout the TV show \'${widget.tvSeries.name}\'!\nIt is rated ${widget.tvSeries.voteAverage!.toStringAsFixed(1)} out of 10\nhttps://themoviedb.org/tv/${widget.tvSeries.id}');
+            await Share.share(tr("share_tv", namedArgs: {
+              "title": widget.tvSeries.name!,
+              "rating": widget.tvSeries.voteAverage!.toStringAsFixed(1),
+              "id": widget.tvSeries.id.toString()
+            }));
           },
           child: const Icon(Icons.share)),
     );

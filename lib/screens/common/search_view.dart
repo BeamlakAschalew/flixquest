@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../constants/app_constants.dart';
 import '/api/endpoints.dart';
 import '/models/function.dart';
@@ -21,7 +22,7 @@ class Search extends SearchDelegate<String> {
   final bool includeAdult;
   Search({required this.mixpanel, required this.includeAdult})
       : super(
-          searchFieldLabel: 'Search for a movie, TV show or a person',
+          searchFieldLabel: tr("search_text"),
         );
 
   @override
@@ -69,7 +70,7 @@ class Search extends SearchDelegate<String> {
               child: TabBar(
                 tabs: [
                   Tab(
-                    child: Text('Movies',
+                    child: Text(tr("movies"),
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           color: !isDark
@@ -78,7 +79,7 @@ class Search extends SearchDelegate<String> {
                         )),
                   ),
                   Tab(
-                    child: Text('TV Shows',
+                    child: Text(tr("tv_shows"),
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           color: !isDark
@@ -87,7 +88,7 @@ class Search extends SearchDelegate<String> {
                         )),
                   ),
                   Tab(
-                    child: Text('Celebrities',
+                    child: Text(tr("celebrities"),
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           color: !isDark
@@ -321,7 +322,7 @@ class Search extends SearchDelegate<String> {
         children: [
           Image.asset('assets/images/404.png'),
           Text(
-            'The term you entered didn\'t bring any results',
+            tr("no_result"),
             style: TextStyle(
                 fontFamily: 'Poppins',
                 color: isDark ? Colors.white : Colors.black),
@@ -338,7 +339,7 @@ class Search extends SearchDelegate<String> {
         children: [
           Image.asset('assets/images/search.png'),
           const Padding(padding: EdgeInsets.only(top: 10, bottom: 5)),
-          Text('Enter a word to search',
+          Text(tr("enter_word"),
               style: TextStyle(
                   color: isDark ? Colors.white : Colors.black,
                   fontFamily: 'Poppins'))
@@ -736,7 +737,7 @@ class Search extends SearchDelegate<String> {
   }
 
   Widget buildSuggestionsSuccess(List<TV> moviesList) {
-    return const DefaultTabController(
+    return DefaultTabController(
       length: 3,
       initialIndex: 0,
       child: Scaffold(
@@ -745,13 +746,13 @@ class Search extends SearchDelegate<String> {
             TabBar(
               tabs: [
                 Tab(
-                  text: 'Movies',
+                  text: tr("movies"),
                 ),
                 Tab(
-                  text: 'TV',
+                  text: tr("tv"),
                 ),
                 Tab(
-                  text: 'Person',
+                  text: tr("celebrities"),
                 )
               ],
             ),

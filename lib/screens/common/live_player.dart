@@ -1,7 +1,6 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:startapp_sdk/startapp.dart';
 
 class LivePlayer extends StatefulWidget {
   const LivePlayer(
@@ -22,21 +21,11 @@ class _LivePlayerState extends State<LivePlayer> {
   late BetterPlayerController _betterPlayerController;
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
-  var startAppSdk = StartAppSdk();
-  StartAppBannerAd? playerBannerAd;
 
   @override
   void initState() {
     super.initState();
-    startAppSdk.loadBannerAd(StartAppBannerType.BANNER).then((bannerAd) {
-      setState(() {
-        playerBannerAd = bannerAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Banner ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Banner ad: $error");
-    });
+
     betterPlayerBufferingConfiguration =
         const BetterPlayerBufferingConfiguration(
       maxBufferMs: 120000,
@@ -62,6 +51,7 @@ class _LivePlayerState extends State<LivePlayer> {
             //  fullScreenByDefault: true,
             looping: true,
             autoPlay: true,
+            allowedScreenSleep: false,
             fit: BoxFit.contain,
             autoDispose: true,
             controlsConfiguration: betterPlayerControlsConfiguration,
@@ -107,21 +97,14 @@ class _LivePlayerState extends State<LivePlayer> {
         automaticallyImplyLeading: false,
       ),
       body: Center(
-        child: Column(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-                width: double.infinity,
-                child: BetterPlayer(
-                  controller: _betterPlayerController,
-                ),
-              ),
+        child: Expanded(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: double.infinity,
+            child: BetterPlayer(
+              controller: _betterPlayerController,
             ),
-            playerBannerAd != null
-                ? StartAppBanner(playerBannerAd!)
-                : Container(),
-          ],
+          ),
         ),
       ),
     );

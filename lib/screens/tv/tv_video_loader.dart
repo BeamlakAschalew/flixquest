@@ -1,9 +1,11 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_print
 import 'package:better_player/better_player.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import '../../models/tv_stream.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -11,19 +13,11 @@ import '../../screens/common/player.dart';
 
 class TVVideoLoader extends StatefulWidget {
   const TVVideoLoader(
-      {required this.videoTitle,
-      required this.thumbnail,
-      required this.seasons,
-      required this.episodeNumber,
-      required this.seasonNumber,
-      Key? key})
+      {required this.metadata, required this.download, Key? key})
       : super(key: key);
 
-  final String videoTitle;
-  final int seasons;
-  final String? thumbnail;
-  final int episodeNumber;
-  final int seasonNumber;
+  final List metadata;
+  final bool download;
 
   @override
   State<TVVideoLoader> createState() => _TVVideoLoaderState();
@@ -37,11 +31,10 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   List<TVVideoSubtitles>? tvVideoSubs;
   TVInfo? tvInfo;
   double loadProgress = 0.00;
-  late int maxBuffer;
-  late int seekDuration;
-  late int videoQuality;
-  late String subLanguage;
-  late bool autoFS;
+  late SettingsProvider settings =
+      Provider.of<SettingsProvider>(context, listen: false);
+  late AppDependencyProvider appDep =
+      Provider.of<AppDependencyProvider>(context, listen: false);
 
   @override
   void initState() {
@@ -69,21 +62,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   }
 
   void loadVideo() async {
-    setState(() {
-      maxBuffer = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultMaxBufferDuration;
-      seekDuration = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultSeekDuration;
-      videoQuality = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultVideoResolution;
-      subLanguage = Provider.of<SettingsProvider>(context, listen: false)
-          .defaultSubtitleLanguage;
-      autoFS =
-          Provider.of<SettingsProvider>(context, listen: false).defaultViewMode;
-    });
     try {
-      await fetchTVForStream(
-              Endpoints.searchMovieTVForStream(widget.videoTitle))
+      await fetchTVForStream(Endpoints.searchMovieTVForStream(
+              widget.metadata.elementAt(1), appDep.consumetUrl))
           .then((value) {
         if (mounted) {
           setState(() {
@@ -91,23 +72,53 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           });
         }
       });
-
       for (int i = 0; i < tvShows!.length; i++) {
-        if (tvShows![i].seasons == widget.seasons &&
+        if (tvShows![i].seasons == widget.metadata.elementAt(5) &&
             tvShows![i].type == 'TV Series') {
-          await getTVStreamEpisodes(
-                  Endpoints.getMovieTVStreamInfo(tvShows![i].id!))
+          await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                  tvShows![i].id!, appDep.consumetUrl))
               .then((value) {
             setState(() {
               tvInfo = value;
               epi = tvInfo!.episodes;
             });
           });
+          print('wtf');
           for (int k = 0; k < epi!.length; k++) {
-            if (epi![k].episode == widget.episodeNumber &&
-                epi![k].season == widget.seasonNumber) {
+            if (epi![k].episode == widget.metadata.elementAt(3) &&
+                epi![k].season == widget.metadata.elementAt(4)) {
               await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                      epi![k].id!, tvShows![i].id!))
+                      epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
+                  .then((value) {
+                setState(() {
+                  tvVideoSources = value;
+                });
+                tvVideoLinks = tvVideoSources!.videoLinks;
+                tvVideoSubs = tvVideoSources!.videoSubtitles;
+              });
+              break;
+            }
+          }
+
+          break;
+        }
+
+        if (tvShows![i].seasons == (widget.metadata.elementAt(5) - 1) &&
+            tvShows![i].type == 'TV Series') {
+          await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                  tvShows![i].id!, appDep.consumetUrl))
+              .then((value) {
+            setState(() {
+              tvInfo = value;
+              epi = tvInfo!.episodes;
+            });
+          });
+          print('wtf');
+          for (int k = 0; k < epi!.length; k++) {
+            if (epi![k].episode == widget.metadata.elementAt(3) &&
+                epi![k].season == widget.metadata.elementAt(4)) {
+              await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
+                      epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
                   .then((value) {
                 setState(() {
                   tvVideoSources = value;
@@ -127,7 +138,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       List<BetterPlayerSubtitlesSource> subs = [];
 
       if (tvVideoSubs != null) {
-        if (subLanguage == '') {
+        if (settings.defaultSubtitleLanguage == '') {
           for (int i = 0; i < tvVideoSubs!.length - 1; i++) {
             setState(() {
               loadProgress = (i / tvVideoSubs!.length) * 100;
@@ -149,19 +160,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           }
         } else {
           if (tvVideoSubs!
-              .where((element) => element.language!.startsWith(subLanguage))
+              .where((element) => element.language!
+                  .startsWith(settings.defaultSubtitleLanguage))
               .isNotEmpty) {
             await getVttFileAsString(tvVideoSubs!
-                    .where(
-                        (element) => element.language!.startsWith(subLanguage))
+                    .where((element) => element.language!
+                        .startsWith(settings.defaultSubtitleLanguage))
                     .first
                     .url!)
                 .then((value) {
               subs.addAll({
                 BetterPlayerSubtitlesSource(
                     name: tvVideoSubs!
-                        .where((element) =>
-                            element.language!.startsWith(subLanguage))
+                        .where((element) => element.language!
+                            .startsWith(settings.defaultSubtitleLanguage))
                         .first
                         .language,
                     content: processVttFileTimestamps(value),
@@ -187,26 +199,26 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) {
             return PlayerOne(
-              sources: reversedVids,
-              subs: subs,
-              thumbnail: widget.thumbnail,
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).colorScheme.background
-              ],
-              videoProperties: [maxBuffer, seekDuration, videoQuality, autoFS],
-            );
+                mediaType: MediaType.tvShow,
+                sources: reversedVids,
+                subs: subs,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.background
+                ],
+                settings: settings,
+                tvMetadata: widget.metadata);
           },
         ));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'The TV episode couldn\'t be found on our servers :(',
+              tr("tv_vid_404"),
               maxLines: 3,
               style: kTextSmallBodyStyle,
             ),
-            duration: Duration(seconds: 3),
+            duration: const Duration(seconds: 3),
           ),
         );
         Navigator.pop(context);
@@ -215,7 +227,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'The TV episode couldn\'t be found on our servers :( Error: ${e.toString()}',
+            tr("tv_vid_404_desc", namedArgs: {"err": e.toString()}),
             maxLines: 3,
             style: kTextSmallBodyStyle,
           ),
@@ -251,7 +263,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             ),
             const SizedBox(width: 160, child: LinearProgressIndicator()),
             Visibility(
-              visible: subLanguage != '' ? false : true,
+              visible: settings.defaultSubtitleLanguage != '' ? false : true,
               child: Text(
                 '${loadProgress.toStringAsFixed(0).toString()}%',
                 style:

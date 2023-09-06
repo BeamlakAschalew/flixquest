@@ -32,9 +32,9 @@ class MovieDatabaseController {
   Future<Database> initializeDatabase() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = '${directory.path}movies.db';
-    var notesDatabase =
+    var bookmarkDatabase =
         await openDatabase(path, version: 1, onCreate: _createDb);
-    return notesDatabase;
+    return bookmarkDatabase;
   }
 
   Future<Database> get database async {

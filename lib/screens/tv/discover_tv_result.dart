@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import '../../ui_components/tv_ui_components.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -64,8 +65,8 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            'Discover TV series',
+          title: Text(
+            tr("discover_tv_series"),
           ),
           leading: IconButton(
             icon: const Icon(
@@ -88,9 +89,9 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                     : tvList!.isEmpty
                         ? Container(
                             padding: const EdgeInsets.all(8),
-                            child: const Center(
+                            child: Center(
                               child: Text(
-                                'Oops! TV series for the parameters you specified doesn\'t exist :(',
+                                tr("parameter_tv_404"),
                                 style: kTextHeaderStyle,
                                 textAlign: TextAlign.center,
                               ),

@@ -1,7 +1,11 @@
 class CatImage {
-  CatImage({required this.categoryName, required this.imagePath});
+  CatImage(
+      {required this.categoryName,
+      required this.imagePath,
+      required this.urlKey});
   String categoryName;
   String imagePath;
+  String urlKey;
 }
 
 class ChannelsList {

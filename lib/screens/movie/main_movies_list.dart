@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/function.dart';
@@ -75,7 +76,7 @@ class MainMoviesListState extends State<MainMoviesList> {
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.title} movies'),
+        title: Text(tr("movie_type", namedArgs: {"t": widget.title})),
       ),
       body: moviesList == null && viewType == 'grid'
           ? moviesAndTVShowGridShimmer(isDark)
@@ -85,8 +86,8 @@ class MainMoviesListState extends State<MainMoviesList> {
                   isLoading: isLoading,
                   scrollController: _scrollController)
               : moviesList!.isEmpty
-                  ? const Center(
-                      child: Text('Oops! the movies don\'t exist :('),
+                  ? Center(
+                      child: Text(tr("movie_404")),
                     )
                   : Column(
                       children: [

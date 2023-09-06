@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../constants/api_constants.dart';
@@ -62,8 +63,8 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Sort by',
+            Text(
+              tr("sort_by"),
               style: kTextHeaderStyle,
             ),
             Wrap(
@@ -83,8 +84,8 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       ))
                   .toList(),
             ),
-            const Text(
-              'Include explicit results',
+            Text(
+              tr("include_adult"),
               style: kTextHeaderStyle,
             ),
             Wrap(
@@ -106,8 +107,8 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       ))
                   .toList(),
             ),
-            const Text(
-              'Release year',
+            Text(
+              tr("release_year"),
               style: kTextHeaderStyle,
             ),
             DropdownButton<String>(
@@ -125,8 +126,8 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Total ratings',
+                    Text(
+                      tr("total_results"),
                       style: kTextHeaderStyle,
                     ),
                     Checkbox(
@@ -155,15 +156,17 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30, 15),
                   child: Text(
-                    '${movieTotalRatingSlider.toInt().toString()}: ratings',
+                    tr("ratings_count", namedArgs: {
+                      "r": movieTotalRatingSlider.toInt().toString()
+                    }),
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20),
                   ),
                 ),
               ],
             ),
-            const Text(
-              'With Genres',
+            Text(
+              tr("with_genres"),
               style: kTextHeaderStyle,
             ),
             Wrap(
@@ -199,8 +202,8 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       ))
                   .toList(),
             ),
-            const Text(
-              'With Sreaming services',
+            Text(
+              tr("with_streaming_services"),
               style: kTextHeaderStyle,
             ),
             Wrap(
@@ -255,15 +258,15 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                           includeAdult: includeAdult);
                     }));
                   },
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(right: 8.0),
-                        child: Text('Discover'),
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Text(tr("discover")),
                       ),
-                      Icon(FontAwesomeIcons.wandMagicSparkles)
+                      const Icon(FontAwesomeIcons.wandMagicSparkles)
                     ],
                   )),
             )

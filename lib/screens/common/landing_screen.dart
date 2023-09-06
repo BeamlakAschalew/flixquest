@@ -1,4 +1,5 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '/provider/settings_provider.dart';
 import '/screens/user/login_screen.dart';
 import '/screens/user/signup_screen.dart';
@@ -94,8 +95,8 @@ class _LandingScreenState extends State<LandingScreen> {
                                 ),
                               ),
                             ),
-                            const Text('Thousands of:',
-                                style: TextStyle(color: Colors.black)),
+                            Text(tr("thousands_of"),
+                                style: const TextStyle(color: Colors.black)),
                             SizedBox(
                               height: 75,
                               child: Padding(
@@ -104,38 +105,38 @@ class _LandingScreenState extends State<LandingScreen> {
                                   repeatForever: true,
                                   animatedTexts: [
                                     animatedTextWIdget(
-                                        textTitle: 'Top rated movies',
+                                        textTitle: tr("top_rated_movies"),
                                         animationDuration: 90,
                                         fontSize: 25),
                                     animatedTextWIdget(
-                                        textTitle: 'Top rated tv shows',
+                                        textTitle: tr("top_rated_tv_shows"),
                                         animationDuration: 90,
                                         fontSize: 25),
                                     animatedTextWIdget(
-                                        textTitle: 'Trending movies',
+                                        textTitle: tr("trending_movies"),
                                         animationDuration: 90,
                                         fontSize: 25),
                                     animatedTextWIdget(
-                                        textTitle: 'Trending tv shows',
+                                        textTitle: tr("trending_tv_shows"),
                                         animationDuration: 90,
                                         fontSize: 25),
                                     animatedTextWIdget(
-                                        textTitle: 'Popular movies',
+                                        textTitle: tr("popular_movies"),
                                         animationDuration: 90,
                                         fontSize: 25),
                                     animatedTextWIdget(
-                                        textTitle: 'Popular tv shows',
+                                        textTitle: tr("popular_tv_shows"),
                                         animationDuration: 90,
                                         fontSize: 25),
                                   ],
                                 ),
                               ),
                             ),
-                            const Padding(
-                              padding: EdgeInsets.only(top: 10.0),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
                               child: Text(
-                                'Unlimited, for free, any time on Cinemax',
-                                style: TextStyle(
+                                tr("unlimited_on_cinemax"),
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 20,
                                 ),
@@ -174,9 +175,9 @@ class _LandingScreenState extends State<LandingScreen> {
                               return const LoginScreen();
                             }));
                           },
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(color: Colors.white),
+                          child: Text(
+                            tr("log_in"),
+                            style: const TextStyle(color: Colors.white),
                           )),
                       const SizedBox(
                         height: 10,
@@ -200,9 +201,9 @@ class _LandingScreenState extends State<LandingScreen> {
                               return const SignupScreen();
                             }));
                           },
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(color: Colors.black),
+                          child: Text(
+                            tr("sign_up"),
+                            style: const TextStyle(color: Colors.black),
                           )),
                       const SizedBox(
                         height: 40,
@@ -225,18 +226,23 @@ class _LandingScreenState extends State<LandingScreen> {
                                 context: context,
                                 builder: (BuildContext ctx) {
                                   return AlertDialog(
-                                    title: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text('Login anonymously?'),
+                                    title: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        tr("login_anonymously"),
+                                      ),
                                     ),
-                                    content: const Text(
-                                        'Do you want to Login anonymously? You\'ll lose bookmark syncing feature, login or signup to Cinemax instead'),
+                                    content: Text(
+                                      tr("login_anon_question"),
+                                    ),
                                     actions: [
                                       ElevatedButton(
                                           onPressed: () async {
                                             Navigator.pop(context);
                                           },
-                                          child: const Text('Go back')),
+                                          child: Text(
+                                            tr("go_back"),
+                                          )),
                                       TextButton(
                                           onPressed: () async {
                                             await auth
@@ -252,17 +258,18 @@ class _LandingScreenState extends State<LandingScreen> {
                                               }));
                                             });
                                           },
-                                          child: const Text(
-                                            'Proceed anonymously',
-                                            style: TextStyle(color: Colors.red),
+                                          child: Text(
+                                            tr("proceed_anon"),
+                                            style: const TextStyle(
+                                                color: Colors.red),
                                           ))
                                     ],
                                   );
                                 });
                           },
-                          child: const Text(
-                            'Continue anonymously',
-                            style: TextStyle(color: Colors.black),
+                          child: Text(
+                            tr("continue_anonymously"),
+                            style: const TextStyle(color: Colors.black),
                           )),
                     ],
                   ),

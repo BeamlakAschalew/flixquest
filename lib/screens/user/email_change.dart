@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
-
 import '../../constants/app_constants.dart';
 import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
@@ -92,41 +91,32 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
             'verified': isVerified
           }).then((value) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
+              SnackBar(
                 content: Text(
-                  'Your email has been changed successfully :)',
+                  tr("email_successful"),
                   maxLines: 3,
                   style: kTextSmallBodyStyle,
                 ),
-                duration: Duration(seconds: 4),
+                duration: const Duration(seconds: 4),
               ),
             );
           });
         });
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-mismatch') {
-          _globalMethods.authErrorHandle(
-              'The given email and password doesn\'t correspond to this user.',
-              context);
+          _globalMethods.authErrorHandle(tr("user_mismatch"), context);
         } else if (e.code == 'user-not-found') {
-          _globalMethods.authErrorHandle(
-              'A user was not found with this email address.', context);
+          _globalMethods.authErrorHandle(tr("user_not_found"), context);
         } else if (e.code == 'invalid-credential') {
-          _globalMethods.authErrorHandle(
-              'The password or email enterd is invalid.', context);
+          _globalMethods.authErrorHandle(tr("invalid_credential"), context);
         } else if (e.code == 'invalid-email') {
-          _globalMethods.authErrorHandle(
-              'The email entered is invalid.', context);
+          _globalMethods.authErrorHandle(tr("invalid_email"), context);
         } else if (e.code == 'wrong-password:') {
-          _globalMethods.authErrorHandle(
-              'The password entered is wrong.', context);
+          _globalMethods.authErrorHandle(tr("wrong_password"), context);
         } else if (e.code == 'weak-password') {
-          _globalMethods.authErrorHandle(
-              'The password entered is too weak, try another one.', context);
+          _globalMethods.authErrorHandle(tr("weak_password"), context);
         } else if (e.code == 'requires-recent-login') {
-          _globalMethods.authErrorHandle(
-              'You have been signed with this account for too long, re-authenticate to change your password. Logout and Signin to change your password.',
-              context);
+          _globalMethods.authErrorHandle(tr("requires_recent_login"), context);
         }
         // print('error occured ${error.message}');
       } finally {
@@ -145,7 +135,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
-      appBar: AppBar(title: const Text('Change email')),
+      appBar: AppBar(title: Text(tr("change_email"))),
       body: userDoc == null
           ? const Center(
               child: CircularProgressIndicator(),
@@ -160,18 +150,18 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                     const SizedBox(
                       height: 80,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        'Email change',
-                        style: TextStyle(
+                        tr("change_email"),
+                        style: const TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        'If the process is stuck, you need to logout and login and then try again.',
+                        tr("process_stuck"),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -188,7 +178,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                 focusNode: _newEmailFocusNode,
                                 validator: (value) {
                                   if (value!.isEmpty || !value.contains('@')) {
-                                    return 'Please enter a valid email address';
+                                    return tr("invalid_email");
                                   }
                                   return null;
                                 },
@@ -201,7 +191,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                     border: const UnderlineInputBorder(),
                                     filled: true,
                                     prefixIcon: const Icon(Icons.email),
-                                    labelText: 'Enter new email Address',
+                                    labelText: tr("new_email_address"),
                                     fillColor: Theme.of(context)
                                         .colorScheme
                                         .background),
@@ -219,7 +209,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                 key: const ValueKey('verifyEmail'),
                                 validator: (value) {
                                   if (value != newEmail) {
-                                    return 'The emails entered don\'t match';
+                                    return tr("email_mismatch");
                                   }
                                   return null;
                                 },
@@ -230,7 +220,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                     border: const UnderlineInputBorder(),
                                     filled: true,
                                     prefixIcon: const Icon(Icons.mail),
-                                    labelText: 'Repeat new email',
+                                    labelText: tr("repeat_new_email"),
                                     fillColor: Theme.of(context)
                                         .colorScheme
                                         .background),
@@ -259,19 +249,19 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                               onPressed: () {
                                 _submitForm();
                               },
-                              child: const Row(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Change email',
-                                    style: TextStyle(
+                                    tr("change_email"),
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 17),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
-                                  Icon(
+                                  const Icon(
                                     Icons.refresh_outlined,
                                     size: 18,
                                   )

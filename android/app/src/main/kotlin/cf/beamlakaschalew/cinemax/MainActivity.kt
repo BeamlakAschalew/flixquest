@@ -1,4 +1,4 @@
-package cf.beamlakaschalew.cinemax
+package dev.beamlak.cinemax
 
 import io.flutter.embedding.android.FlutterActivity
 

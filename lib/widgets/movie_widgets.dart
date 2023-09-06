@@ -1,9 +1,10 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../models/recently_watched.dart';
+import '../provider/recently_watched_provider.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '../screens/movie/movie_video_loader.dart';
-import '../translations/locale_keys.g.dart';
 import '../ui_components/movie_ui_components.dart';
 import '/models/dropdown_select.dart';
 import '/models/filter_chip.dart';
@@ -11,7 +12,7 @@ import '/screens/common/photoview.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import 'package:shimmer/shimmer.dart';
-import '../controllers/database_controller.dart';
+import '../controllers/bookmark_database_controller.dart';
 import '../provider/settings_provider.dart';
 import '/constants/app_constants.dart';
 import '/models/social_icons_icons.dart';
@@ -31,14 +32,12 @@ import '/models/credits.dart';
 import '/screens/movie/collection_detail.dart';
 import '/screens/person/crew_detail.dart';
 import '/models/images.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/movie/genremovies.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/screens/movie/main_movies_list.dart';
 import 'package:provider/provider.dart';
 import 'common_widgets.dart';
-import '/screens/movie/movie_stream.dart';
 
 class MainMoviesDisplay extends StatefulWidget {
   const MainMoviesDisplay({
@@ -58,6 +57,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
   @override
   Widget build(BuildContext context) {
     bool includeAdult = Provider.of<SettingsProvider>(context).isAdult;
+    var rMovies = Provider.of<RecentProvider>(context).movies;
     return Container(
       child: ListView(
         children: [
@@ -78,6 +78,9 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
           //   onFailed: (placementId, error, message) =>
           //       print('Banner Ad $placementId failed: $error $message'),
           // ),
+          rMovies.isEmpty
+              ? Container()
+              : ScrollingRecentMovies(moviesList: rMovies),
           ScrollingMovies(
             title: 'Trending this week',
             api: Endpoints.trendingMoviesUrl(1, includeAdult),
@@ -164,7 +167,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
                 tr('featured_movies'),
                 style: kTextHeaderStyle,
@@ -550,6 +553,223 @@ class ScrollingMoviesState extends State<ScrollingMovies>
   bool get wantKeepAlive => true;
 }
 
+class ScrollingRecentMovies extends StatefulWidget {
+  const ScrollingRecentMovies({required this.moviesList, Key? key})
+      : super(key: key);
+
+  final List<RecentMovie> moviesList;
+
+  @override
+  State<ScrollingRecentMovies> createState() => _ScrollingRecentMoviesState();
+}
+
+class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
+  final ScrollController _scrollController = ScrollController();
+  @override
+  Widget build(BuildContext context) {
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    return Column(
+      children: <Widget>[
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'Recently Watched',
+                style: kTextHeaderStyle,
+              ),
+            ),
+            // Padding(
+            //     padding: const EdgeInsets.all(8),
+            //     child: TextButton(
+            //       onPressed: () {
+            //         Navigator.push(context,
+            //             MaterialPageRoute(builder: (context) {
+            //           return const MovieVideoLoader(
+            //               download: false, metadata: []);
+            //         }));
+            //       },
+            //       style: ButtonStyle(
+            //           maximumSize:
+            //               MaterialStateProperty.all(const Size(200, 60)),
+            //           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            //               RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.circular(20.0),
+            //           ))),
+            //       child: const Padding(
+            //         padding: EdgeInsets.only(left: 8.0, right: 8.0),
+            //         child: Text('View all'),
+            //       ),
+            //     )),
+          ],
+        ),
+        SizedBox(
+          width: double.infinity,
+          height: 250,
+          child: Row(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: widget.moviesList.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) {
+                    final prv =
+                        Provider.of<RecentProvider>(context, listen: false);
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onLongPress: () {
+                          prv.deleteMovie(widget.moviesList[index].id!);
+                        },
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MovieVideoLoader(
+                                        download: false,
+                                        metadata: [
+                                          widget.moviesList[index].id,
+                                          widget.moviesList[index].title,
+                                          widget.moviesList[index].posterPath,
+                                          widget.moviesList[index].releaseYear,
+                                          widget.moviesList[index].backdropPath,
+                                          widget.moviesList[index].elapsed
+                                        ],
+                                      )));
+                        },
+                        child: SizedBox(
+                          width: 100,
+                          child: Column(
+                            children: <Widget>[
+                              Expanded(
+                                flex: 6,
+                                child: Material(
+                                  type: MaterialType.transparency,
+                                  child: Stack(
+                                    alignment: Alignment.bottomCenter,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        child: widget.moviesList[index]
+                                                    .posterPath ==
+                                                null
+                                            ? Image.asset(
+                                                'assets/images/na_rect.png',
+                                                fit: BoxFit.cover,
+                                              )
+                                            : CachedNetworkImage(
+                                                cacheManager: cacheProp(),
+                                                fadeOutDuration: const Duration(
+                                                    milliseconds: 300),
+                                                fadeOutCurve: Curves.easeOut,
+                                                fadeInDuration: const Duration(
+                                                    milliseconds: 700),
+                                                fadeInCurve: Curves.easeIn,
+                                                imageUrl: widget
+                                                            .moviesList[index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? ''
+                                                    : TMDB_BASE_IMAGE_URL +
+                                                        imageQuality +
+                                                        widget.moviesList[index]
+                                                            .posterPath!,
+                                                imageBuilder:
+                                                    (context, imageProvider) =>
+                                                        Container(
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ),
+                                                placeholder: (context, url) =>
+                                                    scrollingImageShimmer(
+                                                        isDark),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Image.asset(
+                                                  'assets/images/na_rect.png',
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                      ),
+                                      SizedBox(
+                                        height: 10,
+                                        child: ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                              bottomLeft: Radius.circular(8),
+                                              bottomRight: Radius.circular(8)),
+                                          child: LinearProgressIndicator(
+                                            value: (widget.moviesList[index]
+                                                    .elapsed! /
+                                                (widget.moviesList[index]
+                                                        .remaining! +
+                                                    widget.moviesList[index]
+                                                        .elapsed!)),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        top: -15,
+                                        right: 8,
+                                        child: Container(
+                                            alignment: Alignment.topRight,
+                                            child: IconButton(
+                                              alignment: Alignment.topRight,
+                                              onPressed: () async {
+                                                prv.deleteMovie(widget
+                                                    .moviesList[index].id!);
+                                              },
+                                              icon: const Icon(
+                                                  Icons.bookmark_remove,
+                                                  size: 60),
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    widget.moviesList[index].title!,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        Divider(
+          color: !isDark ? Colors.black54 : Colors.white54,
+          thickness: 1,
+          endIndent: 20,
+          indent: 10,
+        ),
+      ],
+    );
+  }
+}
+
 class SABTN extends StatefulWidget {
   final void Function()? onBack;
 
@@ -708,6 +928,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -1042,6 +1263,8 @@ class MovieAbout extends StatefulWidget {
 }
 
 class _MovieAboutState extends State<MovieAbout> {
+  bool? isVisible = false;
+  double? buttonWidth = 150;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -1103,13 +1326,30 @@ class _MovieAboutState extends State<MovieAbout> {
                 ),
               ],
             ),
-            WatchNowButton(
-              releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
-              movieId: widget.movie.id!,
-              movieName: widget.movie.title,
-              adult: widget.movie.adult,
-              thumbnail: widget.movie.backdropPath,
-              api: Endpoints.movieDetailsUrl(widget.movie.id!),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                WatchNowButton(
+                  releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
+                  movieId: widget.movie.id!,
+                  movieName: widget.movie.title,
+                  adult: widget.movie.adult,
+                  posterPath: widget.movie.posterPath,
+                  backdropPath: widget.movie.backdropPath,
+                  api: Endpoints.movieDetailsUrl(widget.movie.id!),
+                ),
+                // const SizedBox(
+                //   width: 15,
+                // ),
+                // DownloadMovie(
+                //   releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
+                //   movieId: widget.movie.id!,
+                //   movieName: widget.movie.title,
+                //   adult: widget.movie.adult,
+                //   thumbnail: widget.movie.backdropPath,
+                //   api: Endpoints.movieDetailsUrl(widget.movie.id!),
+                // )
+              ],
             ),
             ScrollingArtists(
               api: Endpoints.getCreditsUrl(widget.movie.id!),
@@ -1148,9 +1388,84 @@ class _MovieAboutState extends State<MovieAbout> {
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 movieId: widget.movie.id!,
                 api: Endpoints.getSimilarMovies(widget.movie.id!, 1)),
-            DidYouKnow(
-              api: Endpoints.getExternalLinksForMovie(
-                widget.movie.id!,
+            // DidYouKnow(
+            //   api: Endpoints.getExternalLinksForMovie(
+            //     widget.movie.id!,
+            //   ),
+            // ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class DownloadMovie extends StatelessWidget {
+  const DownloadMovie({
+    Key? key,
+    required this.adult,
+    required this.api,
+    required this.movieId,
+    this.movieImdbId,
+    required this.movieName,
+    required this.releaseYear,
+    required this.thumbnail,
+  }) : super(key: key);
+
+  final String? movieName;
+  final int movieId;
+  final int? movieImdbId;
+  final bool? adult;
+  final String? api;
+  final int releaseYear;
+  final String? thumbnail;
+
+  @override
+  Widget build(BuildContext context) {
+    bool? isVisible = false;
+    double? buttonWidth = 150;
+    return Container(
+      child: TextButton(
+        style: ButtonStyle(
+          maximumSize: MaterialStateProperty.all(Size(buttonWidth, 50)),
+        ).copyWith(
+            backgroundColor: MaterialStateProperty.all(
+          Theme.of(context).colorScheme.primary,
+        )),
+        onPressed: () async {
+          Navigator.push(context, MaterialPageRoute(builder: ((context) {
+            return MovieVideoLoader(
+              download: true,
+              metadata: [movieId, movieName, thumbnail, releaseYear, 0.0],
+            );
+          })));
+        },
+        child: Row(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(right: 10),
+              child: Icon(
+                Icons.download_rounded,
+                color: Colors.white,
+              ),
+            ),
+            const Text(
+              'DOWNLOAD',
+              style: TextStyle(color: Colors.white),
+            ),
+            Visibility(
+              visible: isVisible,
+              child: const Padding(
+                padding: EdgeInsets.only(
+                  left: 10.0,
+                ),
+                child: SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ],
@@ -2494,12 +2809,13 @@ class MovieVideosState extends State<MovieVideosDisplay> {
 class WatchNowButton extends StatefulWidget {
   const WatchNowButton({
     Key? key,
-    required this.thumbnail,
+    required this.posterPath,
     required this.movieId,
     this.movieName,
     this.movieImdbId,
     this.api,
     required this.releaseYear,
+    required this.backdropPath,
     this.adult,
   }) : super(key: key);
   final String? movieName;
@@ -2508,14 +2824,14 @@ class WatchNowButton extends StatefulWidget {
   final bool? adult;
   final String? api;
   final int releaseYear;
-  final String? thumbnail;
+  final String? posterPath;
+  final String? backdropPath;
 
   @override
   WatchNowButtonState createState() => WatchNowButtonState();
 }
 
 class WatchNowButtonState extends State<WatchNowButton> {
-  MovieDetails? movieDetails;
   bool? isVisible = false;
   double? buttonWidth = 150;
 
@@ -2529,7 +2845,8 @@ class WatchNowButtonState extends State<WatchNowButton> {
       required String thumbnail,
       bool? adult,
       required int releaseYear,
-      required int movieId}) {
+      required int movieId,
+      required String backdropPath}) {
     showModalBottomSheet(
         context: context,
         builder: (builder) {
@@ -2562,9 +2879,13 @@ class WatchNowButtonState extends State<WatchNowButton> {
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: ((context) {
                         return MovieVideoLoader(
-                          releaseYear: releaseYear,
-                          thumbnail: thumbnail,
-                          videoTitle: movieName,
+                          download: false,
+                          metadata: [
+                            widget.movieId,
+                            movieName,
+                            thumbnail,
+                            releaseYear
+                          ],
                         );
                       })));
                     },
@@ -2591,13 +2912,13 @@ class WatchNowButtonState extends State<WatchNowButton> {
                         'Movie id': movieId,
                         'Is Movie adult?': adult ?? 'unknown',
                       });
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: ((context) {
-                        return MovieStream(
-                            streamUrl:
-                                'https://2embed.to/embed/tmdb/movie?id=$movieId',
-                            movieName: movieName);
-                      })));
+                      // Navigator.pushReplacement(context,
+                      //     MaterialPageRoute(builder: ((context) {
+                      //   return MovieStream(
+                      //       streamUrl:
+                      //           'https://2embed.to/embed/tmdb/movie?id=$movieId',
+                      //       movieName: movieName);
+                      // })));
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -2640,9 +2961,15 @@ class WatchNowButtonState extends State<WatchNowButton> {
 
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return MovieVideoLoader(
-              releaseYear: widget.releaseYear,
-              thumbnail: widget.thumbnail,
-              videoTitle: widget.movieName!,
+              download: false,
+              metadata: [
+                widget.movieId,
+                widget.movieName,
+                widget.posterPath,
+                widget.releaseYear,
+                widget.backdropPath,
+                0
+              ],
             );
           })));
         },

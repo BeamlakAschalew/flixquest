@@ -1,9 +1,8 @@
 import 'package:cinemax/screens/common/landing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
-import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -81,13 +80,13 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                     return const LandingScreen();
                   })).then((value) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text(
-                          'Your account was deleted successfully. We are sad to see you go :(, or are we? ;)',
+                          tr("account_deleted_successfully"),
                           maxLines: 3,
                           style: kTextSmallBodyStyle,
                         ),
-                        duration: Duration(seconds: 4),
+                        duration: const Duration(seconds: 4),
                       ),
                     );
                   });
@@ -98,28 +97,19 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
         });
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-mismatch') {
-          _globalMethods.authErrorHandle(
-              'The given email and password doesn\'t correspond to this user.',
-              context);
+          _globalMethods.authErrorHandle(tr("user_mismatch"), context);
         } else if (e.code == 'user-not-found') {
-          _globalMethods.authErrorHandle(
-              'A user was not found with this email address.', context);
+          _globalMethods.authErrorHandle(tr("user_not_found"), context);
         } else if (e.code == 'invalid-credential') {
-          _globalMethods.authErrorHandle(
-              'The password or email enterd is invalid.', context);
+          _globalMethods.authErrorHandle(tr("invalid_credential"), context);
         } else if (e.code == 'invalid-email') {
-          _globalMethods.authErrorHandle(
-              'The email entered is invalid.', context);
+          _globalMethods.authErrorHandle(tr("invalid_email"), context);
         } else if (e.code == 'wrong-password:') {
-          _globalMethods.authErrorHandle(
-              'The password entered is wrong.', context);
+          _globalMethods.authErrorHandle(tr("wrong_password"), context);
         } else if (e.code == 'weak-password') {
-          _globalMethods.authErrorHandle(
-              'The password entered is too weak, try another one.', context);
+          _globalMethods.authErrorHandle(tr("weak_password"), context);
         } else if (e.code == 'requires-recent-login') {
-          _globalMethods.authErrorHandle(
-              'You have been signed with this account for too long, re-authenticate to change your password. Logout and Signin to change your password.',
-              context);
+          _globalMethods.authErrorHandle(tr("requires_recent_login"), context);
         }
         // print('error occured ${error.message}');
       } finally {
@@ -133,11 +123,8 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
-        backgroundColor:
-            isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
-        appBar: AppBar(title: const Text('Delete account')),
+        appBar: AppBar(title: Text(tr("delete_account"))),
         body: userDoc == null
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -152,16 +139,16 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                     const SizedBox(
                       height: 80,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        'Delete account',
-                        style: TextStyle(
+                        tr("delete_account"),
+                        style: const TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    const Text(
-                      'Note: deleting your account will also delete your synced movies and TV shows from the server.\nType "CONFIRM" (all caps) and press "Delete account" to delete your account.\nIf the process is stuck, you need to logout and login and then try again.',
+                    Text(
+                      tr("delete_notice"),
                       textAlign: TextAlign.center,
                     ),
                     Padding(
@@ -176,7 +163,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                 key: const ValueKey('confirmation'),
                                 validator: (value) {
                                   if (value != 'CONFIRM') {
-                                    return 'Type: \'Confirm\' or \'CONFIRM\' to delete your account, if you are not deleting your account, you can go back.';
+                                    return tr("del_input_err");
                                   }
                                   return null;
                                 },
@@ -189,8 +176,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                     filled: true,
                                     prefixIcon:
                                         const Icon(Icons.text_fields_sharp),
-                                    labelText:
-                                        'Type \'CONFIRM\' to delete your account',
+                                    labelText: tr("type_confirm"),
                                     fillColor: Theme.of(context)
                                         .colorScheme
                                         .background),
@@ -231,20 +217,20 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                       onPressed: () {
                                         _submitForm();
                                       },
-                                      child: const Row(
+                                      child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            'Delete account',
-                                            style: TextStyle(
+                                            tr("delete_account"),
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: 17),
                                           ),
-                                          SizedBox(
+                                          const SizedBox(
                                             width: 5,
                                           ),
-                                          Icon(
+                                          const Icon(
                                             FontAwesomeIcons.trash,
                                             size: 18,
                                           )

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import '../constants/api_constants.dart';
 import '../models/setting_preferences.dart';
@@ -54,6 +53,15 @@ class SettingsProvider with ChangeNotifier {
   bool get defaultViewMode => _defaultViewMode;
 
   late Mixpanel mixpanel;
+
+  String _subtitleForegroundColor = Colors.white.toString();
+  String get subtitleForegroundColor => _subtitleForegroundColor;
+
+  String _subtitleBackgroundColor = Colors.black45.toString();
+  String get subtitleBackgroundColor => _subtitleBackgroundColor;
+
+  int _subtitleFontSize = 17;
+  int get subtitleFontSize => _subtitleFontSize;
 
   // theme change
   Future<void> getCurrentThemeMode() async {
@@ -197,6 +205,36 @@ class SettingsProvider with ChangeNotifier {
   set defaultSubtitleLanguage(String value) {
     _defaultSubtitleLanguage = value;
     videoPlayerPreferences.setDefaultSubtitle(value);
+    notifyListeners();
+  }
+
+  Future<void> getForegroundSubtitleColor() async {
+    subtitleForegroundColor = await videoPlayerPreferences.subtitleForeground();
+  }
+
+  set subtitleForegroundColor(String value) {
+    _subtitleForegroundColor = value;
+    videoPlayerPreferences.setSubtitleForeground(value);
+    notifyListeners();
+  }
+
+  Future<void> getBackgroundSubtitleColor() async {
+    subtitleBackgroundColor = await videoPlayerPreferences.subtitleBackground();
+  }
+
+  set subtitleBackgroundColor(String value) {
+    _subtitleBackgroundColor = value;
+    videoPlayerPreferences.setSubtitleBackground(value);
+    notifyListeners();
+  }
+
+  Future<void> getSubtitleSize() async {
+    subtitleFontSize = await videoPlayerPreferences.subtitleFont();
+  }
+
+  set subtitleFontSize(int value) {
+    _subtitleFontSize = value;
+    videoPlayerPreferences.setSubtitleFont(value);
     notifyListeners();
   }
 }

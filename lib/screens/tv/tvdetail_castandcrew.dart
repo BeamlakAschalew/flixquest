@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 import '../../api/endpoints.dart';
 import '../../widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +38,8 @@ class _TVDetailCastAndCrewState extends State<TVDetailCastAndCrew>
         child: Scaffold(
           appBar: AppBar(
             elevation: 3,
-            title: const Text(
-              'Cast And Crew',
+            title: Text(
+              tr("cast_and_crew"),
             ),
             leading: IconButton(
               icon: const Icon(
@@ -53,14 +55,14 @@ class _TVDetailCastAndCrewState extends State<TVDetailCastAndCrew>
               Container(
                 color: Colors.grey,
                 child: TabBar(
-                  tabs: const [
+                  tabs: [
                     Tab(
                         child: Text(
-                      'Cast',
+                      tr("cast"),
                     )),
                     Tab(
                         child: Text(
-                      'Crew',
+                      tr("crew"),
                     ))
                   ],
                   indicatorColor: isDark ? Colors.white : Colors.black,

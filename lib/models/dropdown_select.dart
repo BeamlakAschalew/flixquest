@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class YearDropdownData {
@@ -49,7 +50,7 @@ class YearDropdownData {
       String years = yearsList[i];
       var newItem = DropdownMenuItem(
         value: years,
-        child: Text(years.isEmpty ? 'Any' : years),
+        child: Text(years.isEmpty ? tr('any') : years),
       );
       dropdownItems.add(newItem);
     }

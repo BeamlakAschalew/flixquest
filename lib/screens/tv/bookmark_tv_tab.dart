@@ -1,10 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '/screens/tv/tv_detail.dart';
 import '../../constants/api_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
-import '../../controllers/database_controller.dart';
+import '../../controllers/bookmark_database_controller.dart';
 import '../../models/tv.dart';
 import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';
@@ -39,9 +40,9 @@ class _TVBookmarkState extends State<TVBookmark> {
                     scrollController: _scrollController,
                     isLoading: false))
             : widget.tvList!.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
-                      'You don\'t have any TV shows bookmarked :)',
+                      tr("no_tv_bookmarked"),
                       textAlign: TextAlign.center,
                       style: kTextSmallHeaderStyle,
                       maxLines: 4,
@@ -378,8 +379,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                               .ellipsis),
                                                                 ),
                                                                 Row(
-                                                                  children: <
-                                                                      Widget>[
+                                                                  children: <Widget>[
                                                                     const Icon(
                                                                       Icons
                                                                           .star,

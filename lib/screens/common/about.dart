@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,7 +12,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About'),
+        title: Text(tr("about")), // Translate "About"
       ),
       body: Center(
         child: Padding(
@@ -38,18 +40,20 @@ class AboutPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Text(
-                  'Cinemax v2.2.0',
-                  style: TextStyle(
+                Text(
+                  tr("app_version", namedArgs: {
+                    "version": "2.2.0"
+                  }), // Translate "Cinemax v2.2.0"
+                  style: const TextStyle(
                     fontSize: 27.0,
                   ),
                 ),
-                const Text(
-                  'This product uses the TMDB API but is not endorsed or certified by TMDB.',
+                Text(
+                  tr("endorsment"), // Translate "This product uses the TMDB API but is not endorsed or certified by TMDB."
                   maxLines: 5,
                   textAlign: TextAlign.center,
-                  style:
-                      TextStyle(fontSize: 20.0, overflow: TextOverflow.visible),
+                  style: const TextStyle(
+                      fontSize: 20.0, overflow: TextOverflow.visible),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -68,13 +72,14 @@ class AboutPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
-                    child: const Text(
-                      'Noticed any bugs? Inform me on Telegram, click here',
+                    child: Text(
+                      tr("bug_notice"), // Translate "Noticed any bugs? Inform me on Telegram, click here"
                       maxLines: 5,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          decorationStyle: TextDecorationStyle.solid),
+                      style: const TextStyle(
+                        decoration: TextDecoration.underline,
+                        decorationStyle: TextDecorationStyle.solid,
+                      ),
                     ),
                     onTap: () {
                       launchUrl(Uri.parse('https://t.me/birrle'),
@@ -84,8 +89,8 @@ class AboutPage extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    const Text(
-                      'Follow Cinemax on various platforms',
+                    Text(
+                      tr("follow_cinemax"), // Translate "Follow Cinemax on various platforms"
                       maxLines: 5,
                       textAlign: TextAlign.center,
                       style: kTextSmallHeaderStyle,
@@ -132,22 +137,28 @@ class AboutPage extends StatelessWidget {
                     )
                   ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(
+                Padding(
+                  padding: const EdgeInsets.only(
                     top: 30,
                     left: 7.0,
                     right: 7.0,
                   ),
                   child: Text(
-                    'Made with ❤️ by Beamlak Aschalew',
+                    tr("made_with", args: [
+                      "❤️",
+                      "Beamlak Aschalew"
+                    ]), // Translate "Made with ❤️ by Beamlak Aschalew"
                     maxLines: 5,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20.0),
+                    style: const TextStyle(fontSize: 20.0),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('2015 EC, 2023 GC'),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(tr("year_range", namedArgs: {
+                    "startYear": "2016",
+                    "endYear": "2023"
+                  })), // Translate "2015 EC, 2023 GC"
                 )
               ],
             ),
