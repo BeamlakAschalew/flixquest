@@ -111,11 +111,14 @@ class MovieDetailPageState extends State<MovieDetailPage>
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Share.share(tr("share_movie", args: [
-              widget.movie.title!,
-              widget.movie.voteAverage!.toStringAsFixed(1),
-              widget.movie.id.toString()
-            ]));
+            await Share.share(tr(
+              "share_movie",
+              namedArgs: {
+                "title": widget.movie.title!,
+                "rating": widget.movie.voteAverage!.toStringAsFixed(1),
+                "id": widget.movie.id.toString()
+              },
+            ));
           },
           child: const Icon(Icons.share)),
     );

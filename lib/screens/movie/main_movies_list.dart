@@ -76,7 +76,7 @@ class MainMoviesListState extends State<MainMoviesList> {
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("movie_type", args: [widget.title])),
+        title: Text(tr("movie_type", namedArgs: {"t": widget.title})),
       ),
       body: moviesList == null && viewType == 'grid'
           ? moviesAndTVShowGridShimmer(isDark)

@@ -156,8 +156,9 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30, 15),
                   child: Text(
-                    tr("ratings_count",
-                        args: [movieTotalRatingSlider.toInt().toString()]),
+                    tr("ratings_count", namedArgs: {
+                      "r": movieTotalRatingSlider.toInt().toString()
+                    }),
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20),
                   ),

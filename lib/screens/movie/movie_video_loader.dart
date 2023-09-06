@@ -172,8 +172,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      tr("download_movie",
-                          args: [widget.metadata.elementAt(1)]),
+                      tr(
+                        "download_movie",
+                        namedArgs: {"name": widget.metadata.elementAt(1)},
+                      ),
                       textAlign: TextAlign.center,
                     ),
                     Text(
@@ -249,7 +251,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            tr("movie_vid_404_desc", args: [e.toString()]),
+            tr(
+              "movie_vid_404_desc",
+              namedArgs: {"error": e.toString()},
+            ),
             maxLines: 3,
             style: kTextSmallBodyStyle,
           ),

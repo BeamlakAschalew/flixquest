@@ -381,16 +381,16 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
                   child: Text(
                     widget.season.airDate == null
                         ? tr("no_first_episode_air_date")
-                        : tr("first_episode_air_date", args: [
-                            DateTime.parse(widget.season.airDate!)
+                        : tr("first_episode_air_date", namedArgs: {
+                            "day": DateTime.parse(widget.season.airDate!)
                                 .day
                                 .toString(),
-                            DateFormat("MMMM")
+                            "date": DateFormat("MMMM")
                                 .format(DateTime.parse(widget.season.airDate!)),
-                            DateTime.parse(widget.season.airDate!)
+                            "year": DateTime.parse(widget.season.airDate!)
                                 .year
                                 .toString()
-                          ]),
+                          }),
                     style: const TextStyle(
                       fontFamily: 'PoppinsSB',
                     ),

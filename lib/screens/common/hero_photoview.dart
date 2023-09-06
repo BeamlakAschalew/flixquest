@@ -143,8 +143,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
       child: Scaffold(
           appBar: AppBar(
             title: Text(widget.name.endsWith('s')
-                ? tr("plular_person_image", args: [widget.name])
-                : tr("singular_person_name", args: [widget.name])),
+                ? tr("plular_person_image", namedArgs: {"name": widget.name})
+                : tr("singular_person_image",
+                    namedArgs: {"name": widget.name})),
           ),
           body: Column(
             children: [

@@ -101,11 +101,11 @@ class TVDetailPageState extends State<TVDetailPage>
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Share.share(tr("share_tv", args: [
-              widget.tvSeries.name!,
-              widget.tvSeries.voteAverage!.toStringAsFixed(1),
-              widget.tvSeries.id.toString()
-            ]));
+            await Share.share(tr("share_tv", namedArgs: {
+              "title": widget.tvSeries.name!,
+              "rating": widget.tvSeries.voteAverage!.toStringAsFixed(1),
+              "id": widget.tvSeries.id.toString()
+            }));
           },
           child: const Icon(Icons.share)),
     );

@@ -65,8 +65,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
                             style: kTextHeaderStyle,
                           ),
                           Text(
-                            tr("new_version",
-                                args: [(updateChecker!.versionNumber!)]),
+                            tr("new_version", namedArgs: {
+                              "v": updateChecker!.versionNumber!
+                            }),
                             style: kTextSmallBodyStyle,
                           ),
                           ElevatedButton(

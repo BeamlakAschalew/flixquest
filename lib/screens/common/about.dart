@@ -41,8 +41,9 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  tr("app_version",
-                      args: ["2.2.0"]), // Translate "Cinemax v2.2.0"
+                  tr("app_version", namedArgs: {
+                    "version": "2.2.0"
+                  }), // Translate "Cinemax v2.2.0"
                   style: const TextStyle(
                     fontSize: 27.0,
                   ),
@@ -154,10 +155,10 @@ class AboutPage extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(tr("year_range", args: [
-                    "2015 EC",
-                    "2023 GC"
-                  ])), // Translate "2015 EC, 2023 GC"
+                  child: Text(tr("year_range", namedArgs: {
+                    "startYear": "2016",
+                    "endYear": "2023"
+                  })), // Translate "2015 EC, 2023 GC"
                 )
               ],
             ),

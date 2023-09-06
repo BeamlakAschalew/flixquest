@@ -19,7 +19,8 @@ class StreamingServicesTVShows extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("streaming_service_tv", args: [providerName])),
+        title: Text(
+            tr("streaming_service_tv", namedArgs: {"provider": providerName})),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,

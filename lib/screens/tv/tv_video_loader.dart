@@ -227,7 +227,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            tr("tv_vid_404_desc", args: [e.toString()]),
+            tr("tv_vid_404_desc", namedArgs: {"err": e.toString()}),
             maxLines: 3,
             style: kTextSmallBodyStyle,
           ),

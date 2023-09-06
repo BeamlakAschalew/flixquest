@@ -56,7 +56,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                           color: isDark ? Colors.white : Colors.black),
                       child: cinemaxLogo == 'default'
                           ? Image.asset('assets/images/logo_shadow.png')
-                          : Image.network(cinemaxLogo),
+                          : CachedNetworkImage(
+                              imageUrl: cinemaxLogo,
+                            ),
                     ),
                   ),
                   ListTile(

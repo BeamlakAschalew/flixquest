@@ -20,7 +20,7 @@ class StreamingServicesMovies extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          tr("streaming_service_movie"),
+          tr("streaming_service_movie", namedArgs: {"provider": providerName}),
         ),
         leading: IconButton(
           icon: const Icon(
