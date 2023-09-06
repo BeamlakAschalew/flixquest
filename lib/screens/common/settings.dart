@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '/models/watchprovider_countries.dart';
 import '/screens/common/country_choose.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -64,7 +65,9 @@ class _SettingsState extends State<Settings> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(
+          tr("settings"),
+        ),
       ),
       body: Column(
         children: [
@@ -76,7 +79,9 @@ class _SettingsState extends State<Settings> {
               Icons.explicit,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: const Text('Include Adult'),
+            title: Text(
+              tr("include_adult"),
+            ),
             onChanged: (bool value) {
               setState(() {
                 adultChange.isAdult = value;
@@ -91,7 +96,9 @@ class _SettingsState extends State<Settings> {
               Icons.dark_mode,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: const Text('Dark mode'),
+            title: Text(
+              tr("dark_mode"),
+            ),
             onChanged: (bool value) {
               setState(() {
                 themeChange.darktheme = value;
@@ -103,7 +110,9 @@ class _SettingsState extends State<Settings> {
               Icons.play_arrow,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: const Text('Player settings'),
+            title: Text(
+              tr("player_settings"),
+            ),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: ((context) {
                 return const PlayerSettings();
@@ -115,13 +124,17 @@ class _SettingsState extends State<Settings> {
             child: SwitchListTile(
               inactiveThumbColor: Colors.white,
               inactiveTrackColor: const Color(0xFF9B9B9B),
-              subtitle: const Text('Works on Android 12+'),
+              subtitle: Text(
+                tr("android_12"),
+              ),
               value: m3.isMaterial3Enabled,
               secondary: Icon(
                 Icons.color_lens,
                 color: Theme.of(context).colorScheme.primary,
               ),
-              title: const Text('Material 3 color theming'),
+              title: Text(
+                tr("material_theming"),
+              ),
               onChanged: (bool value) {
                 setState(() {
                   m3.isMaterial3Enabled = value;
@@ -134,14 +147,27 @@ class _SettingsState extends State<Settings> {
               Icons.image,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: const Text('Image quality'),
+            title: Text(
+              tr("image_quality"),
+            ),
             trailing: DropdownButton(
                 value: imagequalityChange.imageQuality,
-                items: const [
-                  DropdownMenuItem(value: 'original/', child: Text('High')),
+                items: [
                   DropdownMenuItem(
-                      value: 'w600_and_h900_bestv2/', child: Text('Medium')),
-                  DropdownMenuItem(value: 'w500/', child: Text('Low'))
+                      value: 'original/',
+                      child: Text(
+                        tr("high"),
+                      )),
+                  DropdownMenuItem(
+                      value: 'w600_and_h900_bestv2/',
+                      child: Text(
+                        tr("medium"),
+                      )),
+                  DropdownMenuItem(
+                      value: 'w500/',
+                      child: Text(
+                        tr("low"),
+                      ))
                 ],
                 onChanged: (String? value) {
                   setState(() {
@@ -154,7 +180,9 @@ class _SettingsState extends State<Settings> {
               Icons.list,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: const Text('List view type'),
+            title: Text(
+              tr("list_view_type"),
+            ),
             trailing: DropdownButton(
                 value: viewType.defaultView,
                 items: [
@@ -165,7 +193,9 @@ class _SettingsState extends State<Settings> {
                           Icons.list,
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                        const Text('List')
+                        Text(
+                          tr("list"),
+                        )
                       ])),
                   DropdownMenuItem(
                     value: 'grid',
@@ -174,7 +204,9 @@ class _SettingsState extends State<Settings> {
                         Icons.grid_view,
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                      const Text('Grid')
+                      Text(
+                        tr("grid"),
+                      )
                     ]),
                   ),
                 ],
@@ -189,14 +221,32 @@ class _SettingsState extends State<Settings> {
               Icons.phone_android_sharp,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: const Text('Default home screen'),
+            title: Text(
+              tr("default_home_screen"),
+            ),
             trailing: DropdownButton(
                 value: defaultHomeValue.defaultValue,
-                items: const [
-                  DropdownMenuItem(value: 0, child: Text('Movies')),
-                  DropdownMenuItem(value: 1, child: Text('TV shows')),
-                  DropdownMenuItem(value: 2, child: Text('Discover')),
-                  DropdownMenuItem(value: 3, child: Text('Profile'))
+                items: [
+                  DropdownMenuItem(
+                      value: 0,
+                      child: Text(
+                        tr("movies"),
+                      )),
+                  DropdownMenuItem(
+                      value: 1,
+                      child: Text(
+                        tr("tv_shows"),
+                      )),
+                  DropdownMenuItem(
+                      value: 2,
+                      child: Text(
+                        tr("discover"),
+                      )),
+                  DropdownMenuItem(
+                      value: 3,
+                      child: Text(
+                        tr("profile"),
+                      ))
                 ],
                 onChanged: (int? value) {
                   setState(() {
@@ -214,7 +264,9 @@ class _SettingsState extends State<Settings> {
               FontAwesomeIcons.earthAmericas,
               color: Theme.of(context).colorScheme.primary,
             ),
-            title: const Text('Watch Country'),
+            title: Text(
+              tr("watch_country"),
+            ),
             trailing: Wrap(
                 spacing: 10,
                 crossAxisAlignment: WrapCrossAlignment.center,

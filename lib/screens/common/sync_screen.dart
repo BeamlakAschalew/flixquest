@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
@@ -153,13 +154,13 @@ class _SyncScreenState extends State<SyncScreen>
         isOfflineMovieSyncFinished = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Finished syncing to local/offline bookmark',
+            tr("finished_sync_local"),
             maxLines: 3,
             style: kTextSmallBodyStyle,
           ),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
       //  print(isOfflineMovieSyncFinished);
@@ -192,13 +193,13 @@ class _SyncScreenState extends State<SyncScreen>
         isOfflineTVSyncFinished = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Finished syncing to local/offline bookmark',
+            tr("finished_sync_local"),
             style: kTextSmallBodyStyle,
             maxLines: 3,
           ),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -272,13 +273,13 @@ class _SyncScreenState extends State<SyncScreen>
         isOnlineMovieSyncFinished = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Finished syncing to online bookmark',
+            tr("finished_sync_online"),
             maxLines: 3,
             style: kTextSmallBodyStyle,
           ),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
       getSavedMoviesAndTV();
@@ -346,13 +347,13 @@ class _SyncScreenState extends State<SyncScreen>
         isOnlineTVSyncFinished = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Finished syncing to online bookmark',
+            tr("finished_sync_online"),
             maxLines: 3,
             style: kTextSmallBodyStyle,
           ),
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
       getSavedMoviesAndTV();
@@ -397,7 +398,7 @@ class _SyncScreenState extends State<SyncScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sync'),
+        title: Text(tr("sync")),
       ),
       body: isLoading!
           ? const Padding(
@@ -409,17 +410,17 @@ class _SyncScreenState extends State<SyncScreen>
                 Container(
                   color: Colors.grey,
                   child: TabBar(
-                    tabs: const [
+                    tabs: [
                       Tab(
                           child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Padding(
+                          const Padding(
                             padding: EdgeInsets.only(right: 8.0),
                             child: Icon(Icons.movie_creation_rounded),
                           ),
                           Text(
-                            'Movies',
+                            tr("movies"),
                           ),
                         ],
                       )),
@@ -427,11 +428,11 @@ class _SyncScreenState extends State<SyncScreen>
                           child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Padding(
+                          const Padding(
                               padding: EdgeInsets.only(right: 8.0),
                               child: Icon(Icons.live_tv_rounded)),
                           Text(
-                            'TV Series',
+                            tr("tv_series"),
                           ),
                         ],
                       ))
@@ -462,9 +463,9 @@ class _SyncScreenState extends State<SyncScreen>
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Center(
+                                    Center(
                                       child: Text(
-                                        'You don\'t have any Movies synced to online account',
+                                        tr("no_movies_online"),
                                         textAlign: TextAlign.center,
                                         maxLines: 3,
                                         style: kTextSmallBodyStyle,
@@ -482,9 +483,9 @@ class _SyncScreenState extends State<SyncScreen>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              const Expanded(
+                                              Expanded(
                                                 child: Text(
-                                                  'Sync movies to your online account',
+                                                  tr("online_movie_sync"),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -513,8 +514,8 @@ class _SyncScreenState extends State<SyncScreen>
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text(
-                                      'Movies you have bookmarked online:',
+                                    Text(
+                                      tr("movies_online"),
                                       style: kTextSmallHeaderStyle,
                                     ),
                                     SizedBox(
@@ -534,9 +535,9 @@ class _SyncScreenState extends State<SyncScreen>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              const Expanded(
+                                              Expanded(
                                                 child: Text(
-                                                  'Sync to offline movie bookmark',
+                                                  tr("offline_movie_sync"),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -572,9 +573,9 @@ class _SyncScreenState extends State<SyncScreen>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              const Expanded(
+                                              Expanded(
                                                 child: Text(
-                                                  'Sync movies to your online account',
+                                                  tr("online_movie_sync"),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -610,9 +611,9 @@ class _SyncScreenState extends State<SyncScreen>
                               ? Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Center(
+                                    Center(
                                       child: Text(
-                                        'You don\'t have any TV shows synced to online account',
+                                        tr("no_tv_online"),
                                         textAlign: TextAlign.center,
                                         maxLines: 3,
                                         style: kTextSmallBodyStyle,
@@ -630,9 +631,9 @@ class _SyncScreenState extends State<SyncScreen>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              const Expanded(
+                                              Expanded(
                                                 child: Text(
-                                                  'Sync TV shows to your online account',
+                                                  tr("online_tv_sync"),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -661,8 +662,8 @@ class _SyncScreenState extends State<SyncScreen>
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Text(
-                                      'TV shows you have bookmarked online:',
+                                    Text(
+                                      tr("tv_online"),
                                       style: kTextSmallHeaderStyle,
                                     ),
                                     SizedBox(
@@ -682,9 +683,9 @@ class _SyncScreenState extends State<SyncScreen>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              const Expanded(
+                                              Expanded(
                                                 child: Text(
-                                                  'Sync to offline tv bookmark',
+                                                  tr("offline_tv_sync"),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -720,9 +721,9 @@ class _SyncScreenState extends State<SyncScreen>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              const Expanded(
+                                              Expanded(
                                                 child: Text(
-                                                  'Sync TV shows to your online account',
+                                                  tr("online_tv_sync"),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),

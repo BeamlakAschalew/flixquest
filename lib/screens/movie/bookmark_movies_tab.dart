@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/api_constants.dart';
@@ -40,9 +41,9 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                     isLoading: false,
                     scrollController: _scrollController))
             : widget.movieList!.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
-                      'You don\'t have any movies bookmarked :)',
+                      tr("no_movies_bookmarked"),
                       textAlign: TextAlign.center,
                       style: kTextSmallHeaderStyle,
                       maxLines: 4,
@@ -364,8 +365,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                               .ellipsis),
                                                                 ),
                                                                 Row(
-                                                                  children: <
-                                                                      Widget>[
+                                                                  children: <Widget>[
                                                                     const Icon(
                                                                       Icons
                                                                           .star,

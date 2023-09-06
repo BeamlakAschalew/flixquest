@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
@@ -28,9 +29,7 @@ class _MovieStreamSelectState extends State<MovieStreamSelect> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Watch: ${widget.movieName}',
-        ),
+        title: Text(tr("watch_movie", args: [widget.movieName])),
         leading: IconButton(
             icon: const Icon(
               Icons.arrow_back,

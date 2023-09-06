@@ -1,4 +1,5 @@
 import 'package:cinemax/screens/common/sublanguage_choose.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -56,7 +57,9 @@ class _PlayerSettingsState extends State<PlayerSettings> {
             ),
             actions: <Widget>[
               ElevatedButton(
-                child: const Text('Save'),
+                child: Text(
+                  tr("save"),
+                ),
                 onPressed: () {
                   setState(() => currentColor = pickerColor);
                   type == 1
@@ -75,7 +78,9 @@ class _PlayerSettingsState extends State<PlayerSettings> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Player settings'),
+        title: Text(
+          tr("player_settings"),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -83,8 +88,8 @@ class _PlayerSettingsState extends State<PlayerSettings> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Subtitle',
+              Text(
+                tr("subtitle"),
                 style: kTextHeaderStyle,
               ),
               Container(
@@ -96,7 +101,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                     Image.asset('assets/images/sample_frame.jpg'),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15.0),
-                      child: Text('I\'m looking for your syptoms on WebMd',
+                      child: Text(tr("sample_player_text"),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               backgroundColor: backgroundColor,
@@ -110,8 +115,8 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Text size',
+                  Text(
+                    tr("text_size"),
                     style: kTextSmallBodyStyle,
                   ),
                   Text(
@@ -132,8 +137,8 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Text color',
+                  Text(
+                    tr("text_color"),
                     style: kTextSmallBodyStyle,
                   ),
                   GestureDetector(
@@ -152,8 +157,8 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Background color',
+                  Text(
+                    tr("background_color"),
                     style: kTextSmallBodyStyle,
                   ),
                   GestureDetector(
@@ -169,13 +174,15 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               const SizedBox(
                 height: 25,
               ),
-              const Text(
-                'General',
+              Text(
+                tr("general"),
                 style: kTextHeaderStyle,
               ),
               ListTile(
                   leading: const Icon(Icons.fullscreen),
-                  title: const Text('Auto full screen'),
+                  title: Text(
+                    tr("auto_full_screen"),
+                  ),
                   trailing: Switch(
                     inactiveThumbColor: Colors.white,
                     inactiveTrackColor: const Color(0xFF9B9B9B),
@@ -188,7 +195,9 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   )),
               ListTile(
                 leading: const Icon(Icons.forward_10),
-                title: const Text('Seek second'),
+                title: Text(
+                  tr("seek_second"),
+                ),
                 trailing: DropdownButton(
                     value: seekSecond.defaultSeekDuration,
                     items: const [
@@ -206,7 +215,9 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               ),
               ListTile(
                 leading: const Icon(FontAwesomeIcons.spinner),
-                title: const Text('Buffer amount'),
+                title: Text(
+                  tr("buffer_amount"),
+                ),
                 trailing: DropdownButton(
                     value: bufferAmount.defaultMaxBufferDuration,
                     items: [
@@ -246,14 +257,20 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               ),
               ListTile(
                 leading: const Icon(FontAwesomeIcons.fileVideo),
-                title: const Text('Video resolution'),
+                title: Text(
+                  tr("video_resolution"),
+                ),
                 trailing: DropdownButton(
                     value: videoResolution.defaultVideoResolution,
-                    items: const [
-                      DropdownMenuItem(value: 0, child: Text('Auto')),
-                      DropdownMenuItem(value: 360, child: Text('360p')),
-                      DropdownMenuItem(value: 720, child: Text('720p')),
-                      DropdownMenuItem(value: 1080, child: Text('1080p')),
+                    items: [
+                      DropdownMenuItem(
+                          value: 0,
+                          child: Text(
+                            tr("auto"),
+                          )),
+                      const DropdownMenuItem(value: 360, child: Text('360p')),
+                      const DropdownMenuItem(value: 720, child: Text('720p')),
+                      const DropdownMenuItem(value: 1080, child: Text('1080p')),
                     ],
                     onChanged: (int? value) {
                       videoResolution.defaultVideoResolution = value!;
@@ -267,7 +284,9 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   })));
                 },
                 leading: const Icon(FontAwesomeIcons.closedCaptioning),
-                title: const Text('Subtitle language'),
+                title: Text(
+                  tr("subtitle_language"),
+                ),
               )
             ],
           ),

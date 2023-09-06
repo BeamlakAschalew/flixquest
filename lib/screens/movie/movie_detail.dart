@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -110,8 +111,11 @@ class MovieDetailPageState extends State<MovieDetailPage>
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Share.share(
-                'Checkout the movie \'${widget.movie.title}\'!\nIt is rated ${widget.movie.voteAverage!.toStringAsFixed(1)} out of 10\nhttps://themoviedb.org/movie/${widget.movie.id}');
+            await Share.share(tr("share_movie", args: [
+              widget.movie.title!,
+              widget.movie.voteAverage!.toStringAsFixed(1),
+              widget.movie.id.toString()
+            ]));
           },
           child: const Icon(Icons.share)),
     );

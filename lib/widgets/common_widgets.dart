@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/screens/common/live_tv_screen.dart';
 import '../constants/app_constants.dart';
 import '../models/function.dart';
@@ -36,6 +37,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final cinemaxLogo = Provider.of<AppDependencyProvider>(context).cinemaxLogo;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Drawer(
@@ -52,7 +54,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     child: DrawerHeader(
                       decoration: BoxDecoration(
                           color: isDark ? Colors.white : Colors.black),
-                      child: Image.asset('assets/images/logo_shadow.png'),
+                      child: cinemaxLogo == 'default'
+                          ? Image.asset('assets/images/logo_shadow.png')
+                          : Image.network(cinemaxLogo),
                     ),
                   ),
                   ListTile(

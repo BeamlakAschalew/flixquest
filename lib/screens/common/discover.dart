@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
@@ -33,17 +34,17 @@ class _DiscoverPageState extends State<DiscoverPage>
           color: Colors.grey,
           width: double.infinity,
           child: TabBar(
-            tabs: const [
+            tabs: [
               Tab(
                   child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(right: 8.0),
                     child: Icon(Icons.movie_creation_rounded),
                   ),
                   Text(
-                    'Movies',
+                    tr("movies"),
                   ),
                 ],
               )),
@@ -51,11 +52,11 @@ class _DiscoverPageState extends State<DiscoverPage>
                   child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
+                  const Padding(
                       padding: EdgeInsets.only(right: 8.0),
                       child: Icon(Icons.live_tv_rounded)),
                   Text(
-                    'TV Series',
+                    tr("tv_series"),
                   ),
                 ],
               ))

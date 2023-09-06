@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';
@@ -8,7 +9,6 @@ import '../../constants/app_constants.dart';
 import '/models/tv.dart';
 import '/widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
 import '/widgets/movie_widgets.dart';
 
@@ -203,8 +203,8 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                             child: SafeArea(
                               child: Container(
                                 alignment: Alignment.topRight,
-                                child: const TopButton(
-                                  buttonText: 'Open show',
+                                child: TopButton(
+                                  buttonText: tr("open_show"),
                                 ),
                               ),
                             ),
@@ -341,12 +341,12 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
                 bottomRight: Radius.circular(8.0))),
         child: Column(
           children: [
-            const Row(
+            Row(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    'Overview',
+                    tr("overview"),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -356,14 +356,14 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
               padding: const EdgeInsets.all(8.0),
               child: ReadMoreText(
                 widget.season.overview!.isEmpty
-                    ? 'This season doesn\'t have an overview'
+                    ? tr("no_season_overview")
                     : widget.season.overview!,
                 trimLines: 4,
                 style: const TextStyle(fontFamily: 'Poppins'),
                 colorClickableText: Theme.of(context).colorScheme.primary,
                 trimMode: TrimMode.Line,
-                trimCollapsedText: 'read more',
-                trimExpandedText: 'read less',
+                trimCollapsedText: tr("read_more"),
+                trimExpandedText: tr("read_less"),
                 lessStyle: TextStyle(
                     fontSize: 14,
                     color: Theme.of(context).colorScheme.primary,
@@ -380,8 +380,17 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
                   padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
                   child: Text(
                     widget.season.airDate == null
-                        ? 'First episode air date: N/A'
-                        : 'First episode air date:  ${DateTime.parse(widget.season.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.season.airDate!))}, ${DateTime.parse(widget.season.airDate!).year}',
+                        ? tr("no_first_episode_air_date")
+                        : tr("first_episode_air_date", args: [
+                            DateTime.parse(widget.season.airDate!)
+                                .day
+                                .toString(),
+                            DateFormat("MMMM")
+                                .format(DateTime.parse(widget.season.airDate!)),
+                            DateTime.parse(widget.season.airDate!)
+                                .year
+                                .toString()
+                          ]),
                     style: const TextStyle(
                       fontFamily: 'PoppinsSB',
                     ),
@@ -405,7 +414,7 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
               posterPath: widget.season.posterPath,
             ),
             TVSeasonImagesDisplay(
-              title: 'Images',
+              title: tr("images"),
               name: '${widget.seriesName}_season_${widget.season.seasonNumber}',
               api: Endpoints.getTVSeasonImagesUrl(
                   widget.tvDetails.id!, widget.season.seasonNumber!),

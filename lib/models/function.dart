@@ -391,7 +391,6 @@ Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
 
 Future<List<TVResults>> fetchTVForStream(String api) async {
   TVStream tvStream;
-  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
@@ -406,7 +405,6 @@ Future<List<TVResults>> fetchTVForStream(String api) async {
 }
 
 Future<TVInfo> getTVStreamEpisodes(String api) async {
-  print(api);
   TVInfo tvInfo;
   try {
     var res = await retryOptions.retry(
@@ -423,7 +421,6 @@ Future<TVInfo> getTVStreamEpisodes(String api) async {
 }
 
 Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
-  print(api);
   TVVideoSources tvVideoSources;
   try {
     var res = await retryOptions.retry(
@@ -439,7 +436,6 @@ Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
 }
 
 Future<String> getVttFileAsString(String url) async {
-  print(url);
   try {
     var response = await retryOptions.retry(
       () => http.get(Uri.parse(url)),

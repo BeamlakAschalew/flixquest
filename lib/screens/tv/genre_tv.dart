@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:easy_localization/easy_localization.dart';
+
 import '/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -16,9 +18,7 @@ class TVGenre extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          '${genres.genreName!} TV shows',
-        ),
+        title: Text(tr("genre_tv_title", args: [genres.genreName!])),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,

@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:easy_localization/easy_localization.dart';
+
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +18,7 @@ class GenreMovies extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${genres.genreName!} movies',
+          tr("genre_movie_title", args: [genres.genreName!]),
         ),
         leading: IconButton(
           icon: const Icon(

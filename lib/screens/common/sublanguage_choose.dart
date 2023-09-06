@@ -1,5 +1,6 @@
 import 'package:cinemax/models/languages.dart';
 import 'package:cinemax/provider/settings_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,14 +18,14 @@ class _SubLangChooseState extends State<SubLangChoose> {
   Widget build(BuildContext context) {
     final languageChange = Provider.of<SettingsProvider>(context);
     return Scaffold(
-        appBar: AppBar(title: const Text('Choose subtitle language')),
+        appBar: AppBar(title: Text(tr("choose_subtitle_language"))),
         body: SingleChildScrollView(
           child: Center(
               child: Column(
                   children: languages.supportedLanguages
                       .map(
                         (String languages) => ListTile(
-                          title: Text(languages == '' ? 'Any' : languages),
+                          title: Text(languages == '' ? tr("any") : languages),
                           leading: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [

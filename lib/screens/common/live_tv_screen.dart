@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/models/live_tv.dart';
 import 'package:cinemax/screens/common/live_player.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
@@ -17,22 +18,47 @@ class LiveTV extends StatefulWidget {
 
 class _LiveTVState extends State<LiveTV> {
   final List<CatImage> categories = [
-    CatImage(categoryName: 'General', imagePath: 'assets/images/general.png'),
     CatImage(
-        categoryName: 'Entertainment',
-        imagePath: 'assets/images/entertainment.png'),
-    CatImage(categoryName: 'Sport', imagePath: 'assets/images/sport.png'),
-    CatImage(categoryName: 'Family', imagePath: 'assets/images/family.png'),
-    CatImage(categoryName: 'Movie', imagePath: 'assets/images/movie.png'),
-    CatImage(categoryName: 'TV_Series', imagePath: 'assets/images/series.png'),
-    CatImage(categoryName: 'Music', imagePath: 'assets/images/music.png'),
-    CatImage(categoryName: 'News', imagePath: 'assets/images/news.png'),
+        categoryName: tr("general"),
+        imagePath: 'assets/images/general.png',
+        urlKey: 'general'),
+    CatImage(
+        categoryName: tr("entertainment"),
+        imagePath: 'assets/images/entertainment.png',
+        urlKey: 'entertainment'),
+    CatImage(
+        categoryName: tr("sport"),
+        imagePath: 'assets/images/sport.png',
+        urlKey: 'sport'),
+    CatImage(
+        categoryName: tr("family"),
+        imagePath: 'assets/images/family.png',
+        urlKey: 'family'),
+    CatImage(
+        categoryName: tr("movie"),
+        imagePath: 'assets/images/movie.png',
+        urlKey: 'movie'),
+    CatImage(
+        categoryName: tr("tv_series"),
+        imagePath: 'assets/images/series.png',
+        urlKey: 'tv_series'),
+    CatImage(
+        categoryName: tr("music"),
+        imagePath: 'assets/images/music.png',
+        urlKey: 'music'),
+    CatImage(
+        categoryName: tr("news"),
+        imagePath: 'assets/images/news.png',
+        urlKey: 'news'),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Live TV')),
+        appBar: AppBar(
+            title: Text(
+          tr("live_tv"),
+        )),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -51,7 +77,7 @@ class _LiveTVState extends State<LiveTV> {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (((context) {
                         return ChannelList(
-                          catName: categories[index].categoryName.toLowerCase(),
+                          catName: categories[index].urlKey,
                         );
                       }))));
                     },
@@ -98,7 +124,7 @@ class CategoryWidget extends StatelessWidget {
         ),
         Expanded(
           child: Text(
-            category.categoryName.replaceAll(RegExp(r'_'), ' '),
+            category.categoryName,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onPrimary,
               fontSize: 20.0,
@@ -138,7 +164,9 @@ class _ChannelListState extends State<ChannelList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Channels'),
+        title: Text(
+          tr("channels"),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

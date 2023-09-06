@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 import '/models/watchprovider_countries.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +38,7 @@ class _CountryChooseState extends State<CountryChoose> {
     );
 
     return Scaffold(
-        appBar: AppBar(title: const Text('Choose country')),
+        appBar: AppBar(title: Text(tr("choose_country"))),
         body: SingleChildScrollView(
           child: Center(
               child: Column(
@@ -67,15 +69,5 @@ class _CountryChooseState extends State<CountryChoose> {
                       )
                       .toList())),
         ));
-    // ListTile(
-    //   title: const Text('Lafayette'),
-    //   leading: Radio(
-    //     value: 'STH1',
-    //     groupValue: 'country',
-    //     onChanged: (value) {
-    //       setState(() {});
-    //     },
-    //   ),
-    // ),
   }
 }

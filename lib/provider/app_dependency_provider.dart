@@ -7,6 +7,9 @@ class AppDependencyProvider extends ChangeNotifier {
   String _consumetUrl = 'https://consumet.beamlak.dev';
   String get consumetUrl => _consumetUrl;
 
+  String _cinemaxLogo = 'default';
+  String get cinemaxLogo => _cinemaxLogo;
+
   Future<void> getConsumetUrl() async {
     consumetUrl = await appDependencies.getConsumetUrl();
   }
@@ -14,6 +17,16 @@ class AppDependencyProvider extends ChangeNotifier {
   set consumetUrl(String value) {
     _consumetUrl = value;
     appDependencies.setConsumetUrl(value);
+    notifyListeners();
+  }
+
+  Future<void> getCinemaxLogo() async {
+    cinemaxLogo = await appDependencies.getCinemaxLogo();
+  }
+
+  set cinemaxLogo(String value) {
+    _cinemaxLogo = value;
+    appDependencies.setCinemaxUrl(value);
     notifyListeners();
   }
 }

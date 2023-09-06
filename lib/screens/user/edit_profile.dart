@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 import '/provider/settings_provider.dart';
 import '/screens/user/delete_account.dart';
 import '/screens/user/email_change.dart';
@@ -6,9 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import '../../constants/app_constants.dart';
 import '../../models/profile_image_list.dart';
 import '../../services/globle_method.dart';
@@ -115,13 +115,13 @@ class _ProfileEditState extends State<ProfileEdit> {
           if (await checkIfDocExists(_userName) == true) {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
-                    'This username already exists, choose another one.',
+                    tr("username_exists"),
                     maxLines: 3,
                     style: kTextSmallBodyStyle,
                   ),
-                  duration: Duration(seconds: 4),
+                  duration: const Duration(seconds: 4),
                 ),
               );
             }
@@ -182,7 +182,7 @@ class _ProfileEditState extends State<ProfileEdit> {
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
       appBar: AppBar(
-        title: const Text('Edit profile'),
+        title: Text(tr("edit_profile")),
       ),
       body: Container(
         padding: const EdgeInsets.all(8),
@@ -198,9 +198,9 @@ class _ProfileEditState extends State<ProfileEdit> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Profile picture',
-                            style: TextStyle(
+                          Text(
+                            tr("profile_picture"),
+                            style: const TextStyle(
                               fontFamily: 'PoppinsSB',
                               fontSize: 20,
                               overflow: TextOverflow.ellipsis,
@@ -257,10 +257,10 @@ class _ProfileEditState extends State<ProfileEdit> {
                               key: const ValueKey('name'),
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'Name cannot be empty';
+                                  return tr("name_empty");
                                 } else if (value.length > 40 ||
                                     value.length < 2) {
-                                  return 'Name enterted is either too short or too long';
+                                  return tr("name_short_long");
                                 }
                                 return null;
                               },
@@ -273,7 +273,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                                 border: const UnderlineInputBorder(),
                                 filled: true,
                                 prefixIcon: const Icon(Icons.person),
-                                labelText: 'Full name',
+                                labelText: tr("full_name"),
                                 fillColor:
                                     Theme.of(context).colorScheme.background,
                               ),
@@ -296,13 +296,13 @@ class _ProfileEditState extends State<ProfileEdit> {
                               key: const ValueKey('username'),
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'Username cannot be empty';
+                                  return tr("username_empty");
                                 } else if (value.length < 5 ||
                                     value.length > 30) {
-                                  return 'Username is either too short or too long';
+                                  return tr("username_short_long");
                                 } else if (!value
                                     .contains(RegExp('^[a-zA-Z0-9_]*'))) {
-                                  return 'Only alphanumeric and underscores are allowed in username';
+                                  return tr("invalid_username");
                                 }
                                 return null;
                               },
@@ -313,7 +313,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                                   border: const UnderlineInputBorder(),
                                   filled: true,
                                   prefixIcon: const Icon(Icons.person),
-                                  labelText: 'Username',
+                                  labelText: tr("username"),
                                   fillColor:
                                       Theme.of(context).colorScheme.background),
                               onSaved: (value) {
@@ -335,7 +335,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                               onPressed: () {
                                 updateProfile();
                               },
-                              child: const Text('Confirm')),
+                              child: const Text("confirm")),
                       const SizedBox(
                         height: 40,
                       ),
@@ -359,7 +359,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                                     RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ))),
-                            child: const Text('Change password'),
+                            child: Text(tr("change_password")),
                           ),
                           TextButton(
                             onPressed: () {
@@ -376,7 +376,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                                     RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ))),
-                            child: const Text('Change email'),
+                            child: Text(tr("change_email")),
                           ),
                           TextButton(
                             onPressed: () {
@@ -395,9 +395,9 @@ class _ProfileEditState extends State<ProfileEdit> {
                                     RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ))),
-                            child: const Text(
-                              'Delete account',
-                              style: TextStyle(color: Colors.white),
+                            child: Text(
+                              tr("delete_account"),
+                              style: const TextStyle(color: Colors.white),
                             ),
                           ),
                         ],

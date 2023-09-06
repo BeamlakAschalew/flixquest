@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:easy_localization/easy_localization.dart';
+
 import '/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 import '/widgets/tv_widgets.dart';
@@ -17,9 +19,7 @@ class StreamingServicesTVShows extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'TV shows from $providerName',
-        ),
+        title: Text(tr("streaming_service_tv", args: [providerName])),
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,

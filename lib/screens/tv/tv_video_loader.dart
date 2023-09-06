@@ -2,6 +2,7 @@
 import 'package:better_player/better_player.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import '../../models/tv_stream.dart';
 import '../../provider/app_dependency_provider.dart';
@@ -211,13 +212,13 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         ));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'The TV episode couldn\'t be found on our servers :(',
+              tr("tv_vid_404"),
               maxLines: 3,
               style: kTextSmallBodyStyle,
             ),
-            duration: Duration(seconds: 3),
+            duration: const Duration(seconds: 3),
           ),
         );
         Navigator.pop(context);
@@ -226,7 +227,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'The TV episode couldn\'t be found on our servers :( Error: ${e.toString()}',
+            tr("tv_vid_404_desc", args: [e.toString()]),
             maxLines: 3,
             style: kTextSmallBodyStyle,
           ),

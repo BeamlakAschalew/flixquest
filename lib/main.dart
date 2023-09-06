@@ -1,9 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
+//TODO: finished until email changes, set the translation arguments to named arguments
 import 'dart:io';
 import 'package:cinemax/models/download_manager.dart';
 import 'package:cinemax/models/translation.dart';
 import 'package:cinemax/provider/app_dependency_provider.dart';
-import 'package:cinemax/screens/common/video_download_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:path_provider/path_provider.dart';
@@ -56,6 +56,7 @@ Future<void> appInitialize() async {
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
   await appDependencyProvider.getConsumetUrl();
+  await appDependencyProvider.getCinemaxLogo();
   await settingsProvider.getSubtitleSize();
   await settingsProvider.getForegroundSubtitleColor();
   await settingsProvider.getBackgroundSubtitleColor();
@@ -121,6 +122,7 @@ class _CinemaxState extends State<Cinemax>
   void _fetchConfig() async {
     await _remoteConfig.fetchAndActivate();
     appDependencyProvider.consumetUrl = _remoteConfig.getString('consumet_url');
+    appDependencyProvider.cinemaxLogo = _remoteConfig.getString('cinemax_logo');
   }
 
   @override

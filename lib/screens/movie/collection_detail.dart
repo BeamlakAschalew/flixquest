@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
 import 'package:flutter/material.dart';
@@ -225,12 +226,12 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: <Widget>[
-                    const Row(
+                    Row(
                       children: <Widget>[
                         Padding(
-                          padding: EdgeInsets.only(left: 8.0),
+                          padding: const EdgeInsets.only(left: 8.0),
                           child: Text(
-                            'Overview',
+                            tr("overview"),
                             style: kTextHeaderStyle,
                           ),
                         ),
@@ -245,7 +246,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                       // child: CollectionOverviewWidget(),
                     ),
                     PartsList(
-                      title: 'Movies',
+                      title: tr("movies"),
                       api: Endpoints.getCollectionDetails(
                           widget.belongsToCollection!.id!),
                     )
