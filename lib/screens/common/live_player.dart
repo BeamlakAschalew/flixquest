@@ -97,13 +97,11 @@ class _LivePlayerState extends State<LivePlayer> {
         automaticallyImplyLeading: false,
       ),
       body: Center(
-        child: Expanded(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: double.infinity,
-            child: BetterPlayer(
-              controller: _betterPlayerController,
-            ),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          child: BetterPlayer(
+            controller: _betterPlayerController,
           ),
         ),
       ),

@@ -42,7 +42,7 @@ class AboutPage extends StatelessWidget {
                 ),
                 Text(
                   tr("app_version", namedArgs: {
-                    "version": "2.2.0"
+                    "version": "2.2.0-bv2"
                   }), // Translate "Cinemax v2.2.0"
                   style: const TextStyle(
                     fontSize: 27.0,
