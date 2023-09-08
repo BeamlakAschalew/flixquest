@@ -3,7 +3,7 @@ description: A Flutter movie app.
 
 publish_to: 'none'
 
-version: 2.2.0+1
+version: 2.2.0+2
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
