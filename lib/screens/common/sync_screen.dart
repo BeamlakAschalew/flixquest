@@ -153,16 +153,18 @@ class _SyncScreenState extends State<SyncScreen>
       setState(() {
         isOfflineMovieSyncFinished = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            tr("finished_sync_local"),
-            maxLines: 3,
-            style: kTextSmallBodyStyle,
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              tr("finished_sync_local"),
+              maxLines: 3,
+              style: kTextSmallBodyStyle,
+            ),
+            duration: const Duration(seconds: 2),
           ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+        );
+      }
       //  print(isOfflineMovieSyncFinished);
     }
   }
@@ -192,16 +194,18 @@ class _SyncScreenState extends State<SyncScreen>
       setState(() {
         isOfflineTVSyncFinished = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            tr("finished_sync_local"),
-            style: kTextSmallBodyStyle,
-            maxLines: 3,
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              tr("finished_sync_local"),
+              style: kTextSmallBodyStyle,
+              maxLines: 3,
+            ),
+            duration: const Duration(seconds: 2),
           ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+        );
+      }
     }
   }
 

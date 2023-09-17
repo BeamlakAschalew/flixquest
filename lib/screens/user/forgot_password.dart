@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/settings_provider.dart';
@@ -29,16 +30,15 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       try {
         await _auth
             .sendPasswordResetEmail(email: _emailAddress.trim().toLowerCase())
-            .then((value) => _globalMethods.checkMessage(
-                'A reset email has been to your account. Reset your password there and come back :).',
-                context));
+            .then((value) =>
+                _globalMethods.checkMessage(tr("reset_sent"), context));
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-not-found') {
-          _globalMethods.authErrorHandle(
-              'There is no registered user with this email account.\nMaybe Signup?',
-              context);
-        } else {
-          _globalMethods.authErrorHandle(e.toString(), context);
+        if (mounted) {
+          if (e.code == 'user-not-found') {
+            _globalMethods.authErrorHandle(tr("no_account"), context);
+          } else {
+            _globalMethods.authErrorHandle(e.toString(), context);
+          }
         }
         // print('error occured ${error.message}');
       } finally {
@@ -53,7 +53,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Reset password')),
+      appBar: AppBar(title: Text(tr("reset_password"))),
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
       body: Center(
@@ -65,11 +65,12 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             const SizedBox(
               height: 80,
             ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Forgot password?',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                tr("forgot_password"),
+                style:
+                    const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
             ),
             Padding(
@@ -80,7 +81,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   key: const ValueKey('email'),
                   validator: (value) {
                     if (value!.isEmpty || !value.contains('@')) {
-                      return 'Please enter a valid email address';
+                      return tr("invalid_email");
                     }
                     return null;
                   },
@@ -90,7 +91,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       border: const UnderlineInputBorder(),
                       filled: true,
                       prefixIcon: const Icon(Icons.email),
-                      labelText: 'Email Address',
+                      labelText: tr("email_address"),
                       fillColor: Theme.of(context).colorScheme.background),
                   onSaved: (value) {
                     _emailAddress = value!;
@@ -115,18 +116,18 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                           )),
                       onPressed: _submitForm,
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Reset password',
-                            style: TextStyle(
+                            tr("reset_password"),
+                            style: const TextStyle(
                                 fontWeight: FontWeight.w500, fontSize: 17),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 5,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.refresh_outlined,
                             size: 18,
                           )

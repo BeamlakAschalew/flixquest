@@ -335,7 +335,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                               onPressed: () {
                                 updateProfile();
                               },
-                              child: const Text("confirm")),
+                              child: Text(tr("confirm"))),
                       const SizedBox(
                         height: 40,
                       ),

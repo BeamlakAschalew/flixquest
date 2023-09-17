@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:easy_localization/easy_localization.dart';
+
 import '/constants/app_constants.dart';
 import '/main.dart';
 import '/models/profile_image_list.dart';
@@ -84,7 +86,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
         if (await checkIfDocExists(_userName) == true) {
           _globalMethods.authErrorHandle(
-              'Username already exists, pick another one'.toString(), context);
+              tr("username_exists").toString(), context);
           return;
         } else {
           await _auth.createUserWithEmailAndPassword(
@@ -152,17 +154,13 @@ class _SignupScreenState extends State<SignupScreen> {
         }
       } on FirebaseAuthException catch (error) {
         if (error.code == 'weak-password') {
-          _globalMethods.authErrorHandle(
-              'The password provided is too weak.', context);
+          _globalMethods.authErrorHandle(tr("weak_password"), context);
         } else if (error.code == 'email-already-in-use') {
-          _globalMethods.authErrorHandle(
-              'An account already exists for this email.', context);
+          _globalMethods.authErrorHandle(tr("email_exists"), context);
         } else if (error.code == 'invalid-email') {
-          _globalMethods.authErrorHandle(
-              'The email entered is invalid.', context);
+          _globalMethods.authErrorHandle(tr("invalid_email"), context);
         } else if (error.code == 'operation-not-allowed') {
-          _globalMethods.authErrorHandle(
-              'This signup method is disabled this time', context);
+          _globalMethods.authErrorHandle(tr("operation_not_allowed"), context);
         }
       } catch (e) {
         _globalMethods.authErrorHandle(e.toString(), context);
@@ -183,7 +181,7 @@ class _SignupScreenState extends State<SignupScreen> {
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
       appBar: AppBar(
-        title: const Text('Signup'),
+        title: Text(tr("signup")),
       ),
       body: Container(
         padding: const EdgeInsets.all(8),
@@ -213,9 +211,9 @@ class _SignupScreenState extends State<SignupScreen> {
                     const SizedBox(
                       width: 10,
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        'Signup to snyc your bookmarked Movies and TV shows with your online account.',
+                        tr("signup_to_sync"),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 4,
                         style: kTextSmallHeaderStyle,
@@ -232,9 +230,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Choose your profile picture:',
-                            style: TextStyle(
+                          Text(
+                            tr("choose_profile"),
+                            style: const TextStyle(
                               fontFamily: 'PoppinsSB',
                               fontSize: 20,
                               overflow: TextOverflow.ellipsis,
@@ -293,9 +291,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           key: const ValueKey('name'),
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Name cannot be empty';
+                              return tr("name_empty");
                             } else if (value.length > 40 || value.length < 2) {
-                              return 'Name enterted is either too short or too long';
+                              return tr("name_short_long");
                             }
                             return null;
                           },
@@ -308,7 +306,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             border: const UnderlineInputBorder(),
                             filled: true,
                             prefixIcon: const Icon(Icons.person),
-                            labelText: 'Full name',
+                            labelText: tr("full_name"),
                             fillColor: Theme.of(context).colorScheme.background,
                           ),
                           onSaved: (value) {
@@ -326,7 +324,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           focusNode: _emailFocusNode,
                           validator: (value) {
                             if (value!.isEmpty || !value.contains('@')) {
-                              return 'Please enter a valid email address';
+                              return tr("invalid_email");
                             }
                             return null;
                           },
@@ -339,7 +337,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.email),
-                              labelText: 'Email Address',
+                              labelText: tr("email_address"),
                               fillColor:
                                   Theme.of(context).colorScheme.background),
                           onSaved: (value) {
@@ -360,12 +358,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           key: const ValueKey('username'),
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Username cannot be empty';
+                              return tr("username_empty");
                             } else if (value.length < 5 || value.length > 30) {
-                              return 'Username is either too short or too long';
+                              return tr("username_short_long");
                             } else if (!value
                                 .contains(RegExp('^[a-zA-Z0-9_]*'))) {
-                              return 'Only alphanumeric and underscores are allowed in username';
+                              return tr("invalid_username");
                             }
                             return null;
                           },
@@ -379,7 +377,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(Icons.person),
-                              labelText: 'Username',
+                              labelText: tr("username"),
                               fillColor:
                                   Theme.of(context).colorScheme.background),
                           onSaved: (value) {
@@ -396,11 +394,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           key: const ValueKey('Password'),
                           validator: (value) {
                             if (value!.isEmpty || value.length < 7) {
-                              return 'Please enter a valid Password';
+                              return tr("invalid_password");
                             } else if (value == '12345678' ||
                                 value == 'qwertyuiop' ||
                                 value == 'password') {
-                              return '*In Chandler\'s voice* Could your password be any lamer? \ni.e your password is too weak';
+                              return tr("lame_password");
                             }
                             return null;
                           },
@@ -424,7 +422,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ? Icons.visibility
                                     : Icons.visibility_off),
                               ),
-                              labelText: 'Enter password',
+                              labelText: tr("enter_password"),
                               fillColor:
                                   Theme.of(context).colorScheme.background),
                           onSaved: (value) {
@@ -441,7 +439,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           key: const ValueKey('VerifyPassword'),
                           validator: (value) {
                             if (value != _password) {
-                              return 'The passwords entered don\'t match';
+                              return tr("password_mismatch");
                             }
                             return null;
                           },
@@ -463,12 +461,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ? Icons.visibility
                                     : Icons.visibility_off),
                               ),
-                              labelText: 'Repeat password',
+                              labelText: tr("repeat_password"),
                               fillColor:
                                   Theme.of(context).colorScheme.background),
                           // onSaved: (value) {
                           //   _passwordVerify = value!;
-                          // },
+                          // }
                           // onChanged: (value) {
                           //   _passwordVerify = value;
                           // },
@@ -491,9 +489,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                         ),
                                       )),
                                   onPressed: submitForm,
-                                  child: const Text(
-                                    'Sign up',
-                                    style: TextStyle(
+                                  child: Text(
+                                    tr("sign_up"),
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 17),
                                   )),

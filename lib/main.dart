@@ -1,5 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
-//TODO: finished until email changes, set the translation arguments to named arguments
+//TODO: finished until password changes, set the translation arguments to named arguments
 import 'dart:io';
 import 'package:cinemax/models/translation.dart';
 import 'package:cinemax/provider/app_dependency_provider.dart';
@@ -150,11 +150,11 @@ class _CinemaxState extends State<Cinemax>
               ),
             );
           } else if (snapshot.hasError) {
-            const MaterialApp(
+            MaterialApp(
               debugShowCheckedModeBanner: true,
               home: Scaffold(
                 body: Center(
-                  child: Text('Error occurred'),
+                  child: Text(tr("error_occured")),
                 ),
               ),
             );
@@ -182,7 +182,7 @@ class _CinemaxState extends State<Cinemax>
                       supportedLocales: context.supportedLocales,
                       locale: context.locale,
                       debugShowCheckedModeBanner: true,
-                      title: 'Cinemax',
+                      title: tr("cinemax"),
                       theme: Styles.themeData(
                           isDarkTheme: settingsProvider.darktheme,
                           isM3Enabled: settingsProvider.isMaterial3Enabled,
@@ -245,7 +245,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
             },
           ),
           title: Text(
-            'Cinemax',
+            tr("cinemax"),
             style: TextStyle(
               fontFamily: 'PoppinsSB',
               color: Theme.of(context).primaryColor,
@@ -307,22 +307,22 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                   tabs: [
                     GButton(
                       icon: FontAwesomeIcons.clapperboard,
-                      text: 'Movies',
+                      text: tr("movies"),
                       iconColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                     GButton(
                       icon: FontAwesomeIcons.tv,
-                      text: ' TV Shows',
+                      text: tr("tv_shows"),
                       iconColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                     GButton(
                       icon: FontAwesomeIcons.compass,
-                      text: 'Discover',
+                      text: tr("discover"),
                       iconColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                     GButton(
                       icon: FontAwesomeIcons.user,
-                      text: 'Profile',
+                      text: tr("profile"),
                       iconColor: Theme.of(context).colorScheme.primaryContainer,
                     ),
                   ],

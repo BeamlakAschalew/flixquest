@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 import '/screens/user/forgot_password.dart';
 
 import '/main.dart';
@@ -55,20 +57,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   })))
                 : null);
       } on FirebaseAuthException catch (error) {
-        if (error.code == 'wrong-password') {
-          globalMethods.authErrorHandle(
-              'The password entered is wrong, Or the account doesn\'t exist',
-              context);
-        } else if (error.code == 'invalid-email') {
-          globalMethods.authErrorHandle(
-              'The email address entered is invalid.', context);
-        } else if (error.code == 'user-disabled') {
-          globalMethods.authErrorHandle(
-              'This user account is banned.', context);
-        } else if (error.code == 'user-not-found') {
-          globalMethods.authErrorHandle(
-              'There is no user found for this email, maybe create an account?',
-              context);
+        if (mounted) {
+          if (error.code == 'wrong-password') {
+            globalMethods.authErrorHandle(tr("invalid_credential"), context);
+          } else if (error.code == 'invalid-email') {
+            globalMethods.authErrorHandle(tr("invalid_email"), context);
+          } else if (error.code == 'user-disabled') {
+            globalMethods.authErrorHandle(tr("banned_user"), context);
+          } else if (error.code == 'user-not-found') {
+            globalMethods.authErrorHandle(tr("user_not_found"), context);
+          }
         }
         // print('error occured $error}');
       } finally {
@@ -88,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: Text(tr("login"))),
       body: Container(
           padding: const EdgeInsets.all(8),
           child: Center(
@@ -116,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   validator: (value) {
                                     if (value!.isEmpty ||
                                         !value.contains('@')) {
-                                      return 'Please enter a valid email address';
+                                      return tr("invalid_email");
                                     }
                                     return null;
                                   },
@@ -129,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       border: const UnderlineInputBorder(),
                                       filled: true,
                                       prefixIcon: const Icon(Icons.email),
-                                      labelText: 'Email Address',
+                                      labelText: tr("email_address"),
                                       fillColor: Theme.of(context)
                                           .colorScheme
                                           .background),
@@ -144,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   key: const ValueKey('Password'),
                                   validator: (value) {
                                     if (value!.isEmpty || value.length < 7) {
-                                      return 'Please enter a valid Password';
+                                      return tr("weak_password");
                                     }
                                     return null;
                                   },
@@ -164,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ? Icons.visibility
                                             : Icons.visibility_off),
                                       ),
-                                      labelText: 'Password',
+                                      labelText: tr("password"),
                                       fillColor: Theme.of(context)
                                           .colorScheme
                                           .background),
@@ -193,9 +191,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 ),
                                               )),
                                           onPressed: submitForm,
-                                          child: const Text(
-                                            'Login',
-                                            style: TextStyle(
+                                          child: Text(
+                                            tr("login"),
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: 17),
                                           )),
@@ -214,8 +212,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       return const ForgotPasswordScreen();
                                     })));
                                   },
-                                  child: const Text(
-                                    'Forgot password?',
+                                  child: Text(
+                                    tr("forgot_password"),
                                   )),
                             ],
                           )),

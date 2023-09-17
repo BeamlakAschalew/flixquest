@@ -65,7 +65,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
-            title: 'Popular',
+            title: tr("popular"),
             api: Endpoints.popularMoviesUrl(1),
             discoverType: 'popular',
             isTrending: false,
@@ -82,28 +82,28 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
               ? Container()
               : ScrollingRecentMovies(moviesList: rMovies),
           ScrollingMovies(
-            title: 'Trending this week',
+            title: tr("trending_this_week"),
             api: Endpoints.trendingMoviesUrl(1, includeAdult),
             discoverType: 'Trending',
             isTrending: true,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
-            title: 'Top Rated',
+            title: tr("top_rated"),
             api: Endpoints.topRatedUrl(1),
             discoverType: 'top_rated',
             isTrending: false,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
-            title: 'Now playing',
+            title: tr("now_playing"),
             api: Endpoints.nowPlayingMoviesUrl(1),
             discoverType: 'now_playing',
             isTrending: false,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
-            title: 'Upcoming',
+            title: tr("upcoming"),
             api: Endpoints.upcomingMoviesUrl(1),
             discoverType: 'upcoming',
             isTrending: false,
@@ -182,9 +182,9 @@ class DiscoverMoviesState extends State<DiscoverMovies>
           child: moviesList == null
               ? discoverMoviesAndTVShimmer(isDark)
               : moviesList!.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        'Wow, that\'s odd :/',
+                        tr("wow_odd"),
                         style: kTextSmallBodyStyle,
                       ),
                     )
@@ -369,9 +369,9 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                           RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ))),
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: Text('View all'),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Text(tr("view_all")),
                   ),
                 )),
           ],
@@ -571,13 +571,13 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Recently Watched',
+                tr("recently_watched"),
                 style: kTextHeaderStyle,
               ),
             ),
@@ -1174,10 +1174,10 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                 ),
               ),
               const SizedBox(width: 4),
-              const Text(
-                'User\nScore',
+              Text(
+                tr("rating"),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
@@ -1206,10 +1206,10 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
             ),
           ),
           const SizedBox(width: 4),
-          const Text(
-            'Vote\nCounts',
+          Text(
+            tr("total_ratings"),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
@@ -1279,12 +1279,12 @@ class _MovieAboutState extends State<MovieAbout> {
             GenreDisplay(
               api: Endpoints.movieDetailsUrl(widget.movie.id!),
             ),
-            const Row(
+            Row(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    'Overview',
+                    tr("overview"),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -1293,15 +1293,15 @@ class _MovieAboutState extends State<MovieAbout> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: widget.movie.overview!.isEmpty
-                  ? const Text('There is no overview for this movie')
+                  ? Text(tr("no_overview_movie"))
                   : ReadMoreText(
                       widget.movie.overview!,
                       trimLines: 4,
                       style: const TextStyle(fontFamily: 'Poppins'),
                       colorClickableText: Theme.of(context).colorScheme.primary,
                       trimMode: TrimMode.Line,
-                      trimCollapsedText: 'read more',
-                      trimExpandedText: 'read less',
+                      trimCollapsedText: tr("read_more"),
+                      trimExpandedText: tr("read_less"),
                       lessStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.primary,
@@ -1319,8 +1319,8 @@ class _MovieAboutState extends State<MovieAbout> {
                   child: Text(
                     widget.movie.releaseDate == null ||
                             widget.movie.releaseDate!.isEmpty
-                        ? 'Release date: N/A'
-                        : 'Release date : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
+                        ? tr("no_release_date")
+                        : '${tr("release_date")} : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
                     style: const TextStyle(fontFamily: 'PoppinsSB'),
                   ),
                 ),
@@ -1353,16 +1353,16 @@ class _MovieAboutState extends State<MovieAbout> {
             ),
             ScrollingArtists(
               api: Endpoints.getCreditsUrl(widget.movie.id!),
-              title: 'Cast',
+              title: tr("cast"),
             ),
             MovieImagesDisplay(
-              title: 'Images',
+              title: tr("images"),
               api: Endpoints.getImages(widget.movie.id!),
               name: widget.movie.title,
             ),
             MovieVideosDisplay(
               api: Endpoints.getVideos(widget.movie.id!),
-              title: 'Videos',
+              title: tr("videos"),
             ),
             MovieSocialLinks(
               api: Endpoints.getExternalLinksForMovie(
@@ -1449,9 +1449,9 @@ class DownloadMovie extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            const Text(
-              'DOWNLOAD',
-              style: TextStyle(color: Colors.white),
+            Text(
+              tr("download"),
+              style: const TextStyle(color: Colors.white),
             ),
             Visibility(
               visible: isVisible,
@@ -1504,36 +1504,34 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
         credits == null
-            ? const Padding(
-                padding: EdgeInsets.all(8.0),
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
                     Text(
-                      'Cast',
+                      tr("cast"),
                       style: kTextHeaderStyle,
                     ),
                   ],
                 ),
               )
             : credits!.cast!.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(8.0),
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Cast',
+                          tr("cast"),
                           style: kTextHeaderStyle,
                         ),
                         Center(
-                            child: Text(
-                                'There are no casts available for this movie',
+                            child: Text(tr("no_cast_movie"),
                                 textAlign: TextAlign.center)),
                       ],
                     ),
@@ -1541,10 +1539,10 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Cast',
+                          tr("cast"),
                           style: kTextHeaderStyle,
                         ),
                       ),
@@ -1569,7 +1567,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                             ),
                           ),
                         ),
-                        child: const Text('See all cast and crew'),
+                        child: Text(tr("see_all_cast_crew")),
                       )
                     ],
                   ),
@@ -1587,11 +1585,6 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          mixpanel
-                              .track('Most viewed person pages', properties: {
-                            'Person name': '${credits!.cast![index].name}',
-                            'Person id': '${credits!.cast![index].id}'
-                          });
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return CastDetailPage(
@@ -1718,8 +1711,8 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Social media links',
+            Text(
+              tr("social_media_links"),
               style: kTextHeaderStyle,
             ),
             SizedBox(
@@ -1731,9 +1724,9 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
                           externalLinks?.imdbId == null
-                      ? const Center(
+                      ? Center(
                           child: Text(
-                            'This movie doesn\'t have social media links provided :(',
+                            tr("no_social_link_movie"),
                             textAlign: TextAlign.center,
                           ),
                         )
@@ -1882,7 +1875,9 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      'Belongs to the ${belongsToCollection!.name!}',
+                                      tr("belongs_to_the", namedArgs: {
+                                        "collection": belongsToCollection!.name!
+                                      }),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         backgroundColor: Theme.of(context)
@@ -1927,9 +1922,10 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                                   belongsToCollection!);
                                         }));
                                       },
-                                      child: const Text(
-                                        'View the collection',
-                                        style: TextStyle(color: Colors.white),
+                                      child: Text(
+                                        tr("view_collection"),
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                       ),
                                     ),
                                   ),
@@ -2467,8 +2463,21 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                                   .poster!
                                                                   .length ==
                                                               1
-                                                          ? '${movieImages!.poster!.length} Poster'
-                                                          : '${movieImages!.poster!.length} Posters'),
+                                                          ? tr(
+                                                              "poster_singular",
+                                                              namedArgs: {
+                                                                  "poster": movieImages!
+                                                                      .poster!
+                                                                      .length
+                                                                      .toString()
+                                                                })
+                                                          : tr("poster_plural",
+                                                              namedArgs: {
+                                                                  "poster": movieImages!
+                                                                      .poster!
+                                                                      .length
+                                                                      .toString()
+                                                                })),
                                                     ),
                                                   )
                                                 ]),
@@ -2600,8 +2609,22 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                                   .backdrop!
                                                                   .length ==
                                                               1
-                                                          ? '${movieImages!.backdrop!.length} Backdrop'
-                                                          : '${movieImages!.backdrop!.length} Backdrops'),
+                                                          ? tr(
+                                                              "backdrop_singular",
+                                                              namedArgs: {
+                                                                  "backdrop": movieImages!
+                                                                      .backdrop!
+                                                                      .length
+                                                                      .toString()
+                                                                })
+                                                          : tr(
+                                                              "backdrop_plural",
+                                                              namedArgs: {
+                                                                  "backdrop": movieImages!
+                                                                      .backdrop!
+                                                                      .length
+                                                                      .toString()
+                                                                })),
                                                     ),
                                                   )
                                                 ]),
@@ -2684,12 +2707,11 @@ class MovieVideosState extends State<MovieVideosDisplay> {
             child: movieVideos == null
                 ? detailVideoShimmer(isDark)
                 : movieVideos!.result!.isEmpty
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: double.infinity,
                         height: 80,
                         child: Center(
-                          child: Text(
-                              'This movie doesn\'t have a video provided',
+                          child: Text(tr("no_video_movie"),
                               textAlign: TextAlign.center),
                         ),
                       )
@@ -2982,9 +3004,9 @@ class WatchNowButtonState extends State<WatchNowButton> {
                 color: Colors.white,
               ),
             ),
-            const Text(
-              'WATCH NOW',
-              style: TextStyle(color: Colors.white),
+            Text(
+              tr("watch_now"),
+              style: const TextStyle(color: Colors.white),
             ),
             Visibility(
               visible: isVisible!,
@@ -3155,8 +3177,8 @@ class MovieInfoTableState extends State<MovieInfoTable> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Movie Info',
+          Text(
+            tr("movie_info"),
             style: kTextHeaderStyle,
           ),
           Container(
@@ -3167,9 +3189,9 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                 child: movieDetails == null
                     ? detailInfoTableShimmer(isDark)
                     : DataTable(dataRowMinHeight: 40, columns: [
-                        const DataColumn(
+                        DataColumn(
                             label: Text(
-                          'Original Title',
+                          tr("original_title"),
                           style: kTableLeftStyle,
                         )),
                         DataColumn(
@@ -3181,26 +3203,28 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                         ),
                       ], rows: [
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Status',
+                          DataCell(Text(
+                            tr("status"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(movieDetails!.status!.isEmpty
-                              ? 'unknown'
+                              ? tr("unknown")
                               : movieDetails!.status!)),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Runtime',
+                          DataCell(Text(
+                            tr("runtime"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(movieDetails!.runtime! == 0
-                              ? 'N/A'
-                              : '${movieDetails!.runtime!} mins')),
+                              ? tr("not_available")
+                              : tr("runtime_mins", namedArgs: {
+                                  "mins": movieDetails!.runtime!.toString()
+                                }))),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Spoken language',
+                          DataCell(Text(
+                            tr("spoken_language"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3218,7 +3242,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(movieDetails!
                                                 .spokenLanguages!.isEmpty
-                                            ? 'N/A'
+                                            ? tr("not_available")
                                             : '${movieDetails!.spokenLanguages![index].englishName},'),
                                       );
                                     },
@@ -3226,8 +3250,8 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                           )),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Budget',
+                          DataCell(Text(
+                            tr("budget"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(movieDetails!.budget == 0
@@ -3237,8 +3261,8 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                                   .toString())),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Revenue',
+                          DataCell(Text(
+                            tr("revenue"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(movieDetails!.budget == 0
@@ -3248,8 +3272,8 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                                   .toString())),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Tagline',
+                          DataCell(Text(
+                            tr("tagline"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(
@@ -3263,8 +3287,8 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                           ),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Production companies',
+                          DataCell(Text(
+                            tr("production_companies"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3282,7 +3306,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(movieDetails!
                                                 .productionCompanies!.isEmpty
-                                            ? 'N/A'
+                                            ? tr("not_available")
                                             : '${movieDetails!.productionCompanies![index].name},'),
                                       );
                                     },
@@ -3295,8 +3319,8 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                               ),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Production countries',
+                          DataCell(Text(
+                            tr("production_countries"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3314,7 +3338,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(movieDetails!
                                                 .productionCountries!.isEmpty
-                                            ? 'N/A'
+                                            ? tr("not_available")
                                             : '${movieDetails!.productionCountries![index].name},'),
                                       );
                                     },
@@ -3353,8 +3377,8 @@ class CastTabState extends State<CastTab>
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return widget.credits.cast!.isEmpty
         ? Container(
-            child: const Center(
-              child: Text('There is no cast available for this movie'),
+            child: Center(
+              child: Text(tr("no_cast_movie")),
             ),
           )
         : Container(
@@ -3454,10 +3478,13 @@ class CastTabState extends State<CastTab>
                                             fontFamily: 'PoppinsSB',
                                             fontSize: 20),
                                       ),
-                                      Text(
-                                        'As : '
-                                        '${widget.credits.cast![index].character!.isEmpty ? 'N/A' : widget.credits.cast![index].character!}',
-                                      ),
+                                      Text(widget.credits.cast![index]
+                                              .character!.isEmpty
+                                          ? tr("as_empty")
+                                          : tr("as", namedArgs: {
+                                              "character": widget.credits
+                                                  .cast![index].character!
+                                            })),
                                       Visibility(
                                         visible:
                                             widget.credits.cast![0].roles ==
@@ -3473,8 +3500,24 @@ class CastTabState extends State<CastTab>
                                                           .roles![0]
                                                           .episodeCount! ==
                                                       1
-                                                  ? '${widget.credits.cast![index].roles![0].episodeCount!} episode'
-                                                  : '${widget.credits.cast![index].roles![0].episodeCount!} episodes',
+                                                  ? tr("single_episode",
+                                                      namedArgs: {
+                                                          "count": widget
+                                                              .credits
+                                                              .cast![index]
+                                                              .roles![0]
+                                                              .episodeCount!
+                                                              .toString()
+                                                        })
+                                                  : tr("multi_episode",
+                                                      namedArgs: {
+                                                          "count": widget
+                                                              .credits
+                                                              .cast![index]
+                                                              .roles![0]
+                                                              .episodeCount!
+                                                              .toString()
+                                                        }),
                                         ),
                                       ),
                                     ],
@@ -3519,8 +3562,8 @@ class CrewTabState extends State<CrewTab>
     return widget.credits.crew!.isEmpty
         ? Container(
             color: const Color(0xFF000000),
-            child: const Center(
-              child: Text('There is no data available for this TV show cast'),
+            child: Center(
+              child: Text(tr("no_crew_movie")),
             ),
           )
         : Container(
@@ -3619,10 +3662,13 @@ class CrewTabState extends State<CrewTab>
                                             fontFamily: 'PoppinsSB',
                                             fontSize: 20),
                                       ),
-                                      Text(
-                                        'Job : '
-                                        '${widget.credits.crew![index].department!.isEmpty ? 'N/A' : widget.credits.crew![index].department!}',
-                                      ),
+                                      Text(widget.credits.crew![index]
+                                              .department!.isEmpty
+                                          ? tr("job_empty")
+                                          : tr("job", namedArgs: {
+                                              "job": widget.credits.crew![index]
+                                                  .department!
+                                            })),
                                     ],
                                   ),
                                 )
@@ -3715,13 +3761,13 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
     return Container(
       child: Column(
         children: <Widget>[
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'Movie recommendations',
+                  tr("movie_recommendations"),
                   style: kTextHeaderStyle,
                 ),
               ),
@@ -3733,9 +3779,9 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
             child: movieList == null || widget.includeAdult == null
                 ? scrollingMoviesAndTVShimmer(isDark)
                 : movieList!.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
-                          'There are no recommendations available for this movie',
+                          tr("no_recommendations_movie"),
                           textAlign: TextAlign.center,
                         ),
                       )
@@ -3850,7 +3896,8 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Movies similar with ${widget.movieName}',
+                    tr("movies_similar_with",
+                        namedArgs: {"movie": widget.movieName}),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -3863,9 +3910,9 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
             child: movieList == null || widget.includeAdult == null
                 ? scrollingMoviesAndTVShimmer(isDark)
                 : movieList!.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
-                          'There are no similars available for this movie',
+                          tr("no_similars_movie"),
                           textAlign: TextAlign.center,
                         ),
                       )
@@ -3971,9 +4018,8 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                 scrollController: _scrollController)
             : moviesList!.isEmpty
                 ? Container(
-                    child: const Center(
-                      child:
-                          Text('Oops! movies for this genre doesn\'t exist :('),
+                    child: Center(
+                      child: Text(tr("no_genre_movie")),
                     ),
                   )
                 : Container(
@@ -4088,9 +4134,8 @@ class ParticularStreamingServiceMoviesState
                 scrollController: _scrollController)
             : moviesList!.isEmpty
                 ? Container(
-                    child: const Center(
-                      child: Text(
-                          'Oops! movies for this watch provider doesn\'t exist :('),
+                    child: Center(
+                      child: Text(tr("no_watchprovider_movie")),
                     ),
                   )
                 : Container(
@@ -4217,13 +4262,13 @@ class GenreListGridState extends State<GenreListGrid>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Genres',
+                tr("genres"),
                 style: kTextHeaderStyle,
               ),
             ),
@@ -4377,9 +4422,9 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
         onPressed: () {
           widget.onTap!();
         },
-        child: const Text(
-          'Watch providers',
-          style: TextStyle(color: Colors.white),
+        child: Text(
+          tr("watch_providers"),
+          style: const TextStyle(color: Colors.white),
         ),
       ),
     );
@@ -4401,10 +4446,10 @@ class MoviesFromWatchProvidersState extends State<MoviesFromWatchProviders> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Streaming services',
+              tr("streaming_services"),
               style: kTextHeaderStyle,
             ),
           ),
@@ -4516,10 +4561,10 @@ class CollectionMoviesState extends State<CollectionMovies> {
               child: CircularProgressIndicator(),
             )
           : moviesList!.isEmpty
-              ? const Center(
+              ? Center(
                   child: Text(
-                    'Oops! movies for this watch provider doesn\'t exist :(',
-                    style: TextStyle(fontFamily: 'Poppins'),
+                    tr("no_watchprovider_movie"),
+                    style: const TextStyle(fontFamily: 'Poppins'),
                   ),
                 )
               : Column(

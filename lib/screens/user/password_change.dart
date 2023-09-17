@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/app_constants.dart';
@@ -52,40 +53,34 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
         await user!.updatePassword(newPassword).then((value) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Your password has been changed successfully :)',
+                tr("password_changed"),
                 maxLines: 3,
                 style: kTextSmallBodyStyle,
               ),
-              duration: Duration(seconds: 4),
+              duration: const Duration(seconds: 4),
             ),
           );
         });
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-mismatch') {
-          _globalMethods.authErrorHandle(
-              'The given email and password doesn\'t correspond to this user.',
-              context);
-        } else if (e.code == 'user-not-found') {
-          _globalMethods.authErrorHandle(
-              'A user was not found with this email address.', context);
-        } else if (e.code == 'invalid-credential') {
-          _globalMethods.authErrorHandle(
-              'The password or email enterd is invalid.', context);
-        } else if (e.code == 'invalid-email') {
-          _globalMethods.authErrorHandle(
-              'The email entered is invalid.', context);
-        } else if (e.code == 'wrong-password:') {
-          _globalMethods.authErrorHandle(
-              'The password entered is wrong.', context);
-        } else if (e.code == 'weak-password') {
-          _globalMethods.authErrorHandle(
-              'The password entered is too weak, try another one.', context);
-        } else if (e.code == 'requires-recent-login') {
-          _globalMethods.authErrorHandle(
-              'You have been signed with this account for too long, re-authenticate to change your password. Logout and Signin to change your password.',
-              context);
+        if (mounted) {
+          if (e.code == 'user-mismatch') {
+            _globalMethods.authErrorHandle(tr("user_mismatch"), context);
+          } else if (e.code == 'user-not-found') {
+            _globalMethods.authErrorHandle(tr("user_not_found"), context);
+          } else if (e.code == 'invalid-credential') {
+            _globalMethods.authErrorHandle(tr("invalid_credential"), context);
+          } else if (e.code == 'invalid-email') {
+            _globalMethods.authErrorHandle(tr("invalid_email"), context);
+          } else if (e.code == 'wrong-password:') {
+            _globalMethods.authErrorHandle(tr("wrong_password"), context);
+          } else if (e.code == 'weak-password') {
+            _globalMethods.authErrorHandle(tr("weak_password"), context);
+          } else if (e.code == 'requires-recent-login') {
+            _globalMethods.authErrorHandle(
+                tr("requires_recent_login"), context);
+          }
         }
         // print('error occured ${error.message}');
       } finally {
@@ -93,7 +88,9 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
           _isLoading = false;
         });
 
-        Navigator.pop(context);
+        if (mounted) {
+          Navigator.pop(context);
+        }
       }
     }
   }
@@ -104,7 +101,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
-      appBar: AppBar(title: const Text('Change password')),
+      appBar: AppBar(title: Text(tr('change_password'))),
       body: _emailAddress == null
           ? const Center(
               child: CircularProgressIndicator(),
@@ -119,18 +116,18 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                     const SizedBox(
                       height: 80,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        'Password change',
-                        style: TextStyle(
+                        tr("password_change"),
+                        style: const TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        'If the process is stuck, you need to logout and login and then try again.',
+                        tr("process_stuck"),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -146,11 +143,11 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 key: const ValueKey('newPassword'),
                                 validator: (value) {
                                   if (value!.isEmpty || value.length < 7) {
-                                    return 'Please enter a valid Password';
+                                    return tr("weak_password");
                                   } else if (value == '12345678' ||
                                       value == 'qwertyuiop' ||
                                       value == 'password') {
-                                    return '*In Chandler\'s voice* Could your password be any lamer? \ni.e your password is too weak';
+                                    return tr("lame_password");
                                   }
                                   return null;
                                 },
@@ -175,7 +172,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                           ? Icons.visibility
                                           : Icons.visibility_off),
                                     ),
-                                    labelText: 'Enter new password',
+                                    labelText: tr("enter_new_pass"),
                                     fillColor: Theme.of(context)
                                         .colorScheme
                                         .background),
@@ -195,7 +192,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 key: const ValueKey('verifyPassword'),
                                 validator: (value) {
                                   if (value != newPassword) {
-                                    return 'The passwords entered don\'t match';
+                                    return tr("password_mismatch");
                                   }
                                   return null;
                                 },
@@ -218,7 +215,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                           ? Icons.visibility
                                           : Icons.visibility_off),
                                     ),
-                                    labelText: 'Repeat new password',
+                                    labelText: tr("repeat_new_password"),
                                     fillColor: Theme.of(context)
                                         .colorScheme
                                         .background),
@@ -247,19 +244,19 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                               onPressed: () {
                                 _submitForm();
                               },
-                              child: const Row(
+                              child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Reset password',
-                                    style: TextStyle(
+                                    tr("reset_password"),
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 17),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
-                                  Icon(
+                                  const Icon(
                                     Icons.refresh_outlined,
                                     size: 18,
                                   )

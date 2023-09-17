@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../api/endpoints.dart';
 import '../models/credits.dart';
 import '../screens/person/cast_detail.dart';
@@ -10,7 +11,6 @@ import '../screens/person/guest_star_detail.dart';
 import '../screens/person/searchedperson.dart';
 import '/widgets/common_widgets.dart';
 import '/screens/common/hero_photoview.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../provider/settings_provider.dart';
@@ -87,8 +87,8 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
             child: personImages == null
                 ? personImageShimmer(isDark)
                 : personImages!.profile!.isEmpty
-                    ? const Center(
-                        child: Text('No images available for this person'),
+                    ? Center(
+                        child: Text(tr("no_images_person")),
                       )
                     : Row(
                         children: [
@@ -223,11 +223,11 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
     return personMoviesList == null
         ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
-            ? const Padding(
+            ? Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
-                    'This section contains NSFW & 18+ content',
+                    tr("contains_nsfw"),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -240,7 +240,9 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
-                          '${personMoviesList!.length} movies',
+                          tr("person_movie_count", namedArgs: {
+                            "count": personMoviesList!.length.toString()
+                          }),
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -461,11 +463,11 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
     return personTVList == null
         ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
-            ? const Padding(
+            ? Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
-                    'This section contains NSFW & 18+ content',
+                    tr("contains_nsfw"),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -478,7 +480,9 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
-                          '${personTVList!.length} TV shows',
+                          tr("person_tv_count", namedArgs: {
+                            "count": personTVList!.length.toString()
+                          }),
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
@@ -698,23 +702,23 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(top: 8.0, bottom: 8),
                     child: Text(
-                      'Biography',
+                      tr("biography"),
                       style: TextStyle(fontSize: 20),
                     ),
                   ),
                   ReadMoreText(
                     personDetails?.biography != ""
                         ? personDetails!.biography!
-                        : 'We don\'t have a biography for this person',
+                        : tr("no_biography_person"),
                     trimLines: 4,
                     style: kTextSmallAboutBodyStyle,
                     colorClickableText: Theme.of(context).colorScheme.primary,
                     trimMode: TrimMode.Line,
-                    trimCollapsedText: 'read more',
-                    trimExpandedText: 'read less',
+                    trimCollapsedText: tr("read_more"),
+                    trimExpandedText: tr("read_less"),
                     lessStyle: TextStyle(
                         fontSize: 14,
                         color: Theme.of(context).colorScheme.primary,
@@ -770,8 +774,8 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Social media links',
+            Text(
+              tr("social_media_links"),
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(
@@ -783,9 +787,9 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
                           externalLinks?.imdbId == null
-                      ? const Center(
+                      ? Center(
                           child: Text(
-                            'This person doesn\'t have social media links provided :(',
+                            tr("no_social_link_person"),
                             textAlign: TextAlign.center,
                             style: kTextSmallBodyStyle,
                           ),
@@ -890,12 +894,12 @@ class _PersonDataTableState extends State<PersonDataTable> {
                   DataColumn(
                       label: personDetails!.deathday != null &&
                               personDetails!.birthday != null
-                          ? const Text(
-                              'Died aged',
+                          ? Text(
+                              tr("died_aged"),
                               style: kTableLeftStyle,
                             )
-                          : const Text(
-                              'Age',
+                          : Text(
+                              tr("age"),
                               style: kTableLeftStyle,
                             )),
                   DataColumn(
@@ -909,8 +913,8 @@ class _PersonDataTableState extends State<PersonDataTable> {
                   ),
                 ], rows: [
                   DataRow(cells: [
-                    const DataCell(Text(
-                      'Born on',
+                    DataCell(Text(
+                      tr("born_on"),
                       style: kTableLeftStyle,
                     )),
                     DataCell(
@@ -920,8 +924,8 @@ class _PersonDataTableState extends State<PersonDataTable> {
                     ),
                   ]),
                   DataRow(cells: [
-                    const DataCell(Text(
-                      'From',
+                    DataCell(Text(
+                      tr("from"),
                       style: kTableLeftStyle,
                     )),
                     DataCell(
@@ -983,19 +987,19 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text('About',
+                      child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('Movies',
+                      child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('TV Shows',
+                      child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
@@ -1033,7 +1037,7 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.cast!.id!,
                                           ),
-                                          title: 'Images',
+                                          title: tr("images"),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
@@ -1309,19 +1313,19 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text('About',
+                      child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('Movies',
+                      child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('TV Shows',
+                      child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
@@ -1359,7 +1363,7 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.createdBy!.id!,
                                           ),
-                                          title: 'Images',
+                                          title: tr("images"),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
@@ -1543,19 +1547,19 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text('About',
+                      child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('Movies',
+                      child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('TV Shows',
+                      child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
@@ -1593,7 +1597,7 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.crew!.id!,
                                           ),
-                                          title: 'Images',
+                                          title: tr("images"),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
@@ -1778,19 +1782,19 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text('About',
+                      child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('Movies',
+                      child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('TV Shows',
+                      child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
@@ -1828,7 +1832,7 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.cast!.id!,
                                           ),
-                                          title: 'Images',
+                                          title: tr("images"),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
@@ -2012,19 +2016,19 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text('About',
+                      child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('Movies',
+                      child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
                     ),
                     Tab(
-                      child: Text('TV Shows',
+                      child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color: isDark ? Colors.white : Colors.black)),
@@ -2062,7 +2066,7 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.person!.id!,
                                           ),
-                                          title: 'Images',
+                                          title: tr("images"),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(

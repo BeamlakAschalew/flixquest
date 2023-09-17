@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class GlobalMethods {
@@ -27,13 +28,13 @@ class GlobalMethods {
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel')),
+                  child: Text(tr("cancel"))),
               TextButton(
                   onPressed: () {
                     fct();
                     Navigator.pop(context);
                   },
-                  child: const Text('ok'))
+                  child: Text(tr("ok")))
             ],
           );
         });
@@ -44,11 +45,11 @@ class GlobalMethods {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
                 Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Error occured'),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(tr("error_occured")),
                 ),
               ],
             ),
@@ -58,7 +59,7 @@ class GlobalMethods {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text('Ok'))
+                  child: Text(tr("ok")))
             ],
           );
         });
@@ -77,7 +78,7 @@ class GlobalMethods {
                     Navigator.pop(context);
                     Navigator.pop(context);
                   },
-                  child: const Text('Ok'))
+                  child: Text(tr("ok")))
             ],
           );
         });
@@ -89,11 +90,11 @@ class GlobalMethods {
         context: context,
         builder: (BuildContext ctx) {
           return AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
                 Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('Error occured'),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(tr("error_occured")),
                 ),
               ],
             ),
@@ -103,7 +104,7 @@ class GlobalMethods {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text('Ok'))
+                  child: Text(tr("ok")))
             ],
           );
         });

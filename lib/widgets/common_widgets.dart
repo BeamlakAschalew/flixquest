@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/screens/common/live_tv_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../constants/app_constants.dart';
 import '../models/function.dart';
 import '../models/movie.dart';
@@ -66,7 +67,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       FontAwesomeIcons.bookmark,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: const Text('Bookmarks'),
+                    title: Text(tr("bookmarks")),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: ((context) {
@@ -79,7 +80,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       FontAwesomeIcons.tv,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: const Text('Live TV (beta)'),
+                    title: Text(tr("live_tv")),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: ((context) {
@@ -105,7 +106,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Icons.settings,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: const Text('Settings'),
+                    title: Text(tr("settings")),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: ((context) {
@@ -118,7 +119,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Icons.info_outline,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: const Text('About'),
+                    title: Text(tr("about")),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
@@ -131,7 +132,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Icons.update,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: const Text('Check for an update'),
+                    title: Text(tr("check_for_update")),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: ((context) {
@@ -144,13 +145,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Icons.share_sharp,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: const Text('Share the app'),
+                    title: Text(tr("shared_the_app")),
                     onTap: () async {
                       mixpanel.track('Share button data', properties: {
                         'Share button click': 'Share',
                       });
-                      await Share.share(
-                          'Download the Cinemax app for free and watch your favorite movies and TV shows for free! Download the app from the link below.\nhttps://cinemax.rf.gd/');
+                      await Share.share(tr("share_text"));
                     },
                   ),
                 ],
@@ -354,8 +354,8 @@ Widget detailGenreShimmer(isDark) => Shimmer.fromColors(
                   width: 2, style: BorderStyle.solid, color: Colors.white),
               borderRadius: BorderRadius.circular(20.0),
             ),
-            label: const Text(
-              'Placeholder',
+            label: Text(
+              tr("placeholder"),
             ),
             backgroundColor:
                 isDark ? const Color(0xFF2b2c30) : const Color(0xFFDFDEDE),
@@ -1503,10 +1503,10 @@ Widget personAboutSimmer(isDark) => Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.only(top: 8.0, bottom: 8),
           child: Text(
-            'Biography',
+            tr("biography"),
             style: TextStyle(fontSize: 20),
           ),
         ),
@@ -1707,8 +1707,8 @@ class _DidYouKnowState extends State<DidYouKnow> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Did You Know',
+          Text(
+            tr("did_you_know"),
             style: kTextHeaderStyle,
           ),
           const SizedBox(
@@ -1719,9 +1719,9 @@ class _DidYouKnowState extends State<DidYouKnow> {
                   ? const Center(child: CircularProgressIndicator())
                   : externalLinks!.imdbId == null ||
                           externalLinks!.imdbId!.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
-                          'This movie doesn\'t have IMDB id therefore additional data can\'t be fetched.',
+                          tr("no_imdb_id"),
                           textAlign: TextAlign.center,
                         ))
                       : Wrap(
@@ -1729,47 +1729,47 @@ class _DidYouKnowState extends State<DidYouKnow> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                navToDYK(
-                                    'trivia', 'Trivia', externalLinks!.imdbId!);
-                              },
-                              child: const Text('Trivia'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                navToDYK(
-                                    'quotes', 'Quotes', externalLinks!.imdbId!);
-                              },
-                              child: const Text('Quotes'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                navToDYK(
-                                    'goofs', 'Goofs', externalLinks!.imdbId!);
-                              },
-                              child: const Text('Goofs'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                navToDYK('crazycredits', 'Crazy Credits',
+                                navToDYK('trivia', tr("trivia"),
                                     externalLinks!.imdbId!);
                               },
-                              child: const Text('Crazy Credits'),
+                              child: Text(tr("trivia")),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK('quotes', tr("quotes"),
+                                    externalLinks!.imdbId!);
+                              },
+                              child: Text(tr("quotes")),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK('goofs', tr("goofs"),
+                                    externalLinks!.imdbId!);
+                              },
+                              child: Text(tr("goofs")),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                navToDYK('crazycredits', tr("crazy_credits"),
+                                    externalLinks!.imdbId!);
+                              },
+                              child: Text(tr("crazy_credits")),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 navToDYK(
                                     'alternateversions',
-                                    'Alternate Versions',
+                                    tr("alternate_versions"),
                                     externalLinks!.imdbId!);
                               },
-                              child: const Text('Alternate Versions'),
+                              child: Text(tr("alternate_versions")),
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                navToDYK('soundtrack', 'Soundtrack',
+                                navToDYK('soundtrack', tr("soundtrack"),
                                     externalLinks!.imdbId!);
                               },
-                              child: const Text('Soundtrack'),
+                              child: Text(tr("soundtrack")),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -1779,7 +1779,7 @@ class _DidYouKnowState extends State<DidYouKnow> {
                                 //       imdbId: externalLinks!.imdbId!);
                                 // })));
                               },
-                              child: const Text('Reviews'),
+                              child: Text(tr("reviews")),
                             ),
                           ],
                         )),
@@ -1840,19 +1840,19 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                 indicatorSize: TabBarIndicatorSize.tab,
                 tabs: [
                   Tab(
-                    child: Text('Buy',
+                    child: Text(tr("buy"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
                             color: isDark ? Colors.white : Colors.black)),
                   ),
                   Tab(
-                    child: Text('Stream',
+                    child: Text(tr("stream"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
                             color: isDark ? Colors.white : Colors.black)),
                   ),
                   Tab(
-                    child: Text('Rent',
+                    child: Text(tr("rent"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
                             color: isDark ? Colors.white : Colors.black)),
@@ -1877,20 +1877,17 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                         watchProvidersTabData(
                             isDark: isDark,
                             imageQuality: imageQuality,
-                            noOptionMessage:
-                                'This movie doesn\'t have an option to buy yet',
+                            noOptionMessage: tr("no_buy"),
                             watchOptions: watchProviders!.buy),
                         watchProvidersTabData(
                             isDark: isDark,
                             imageQuality: imageQuality,
-                            noOptionMessage:
-                                'This movie doesn\'t have an option to stream yet',
+                            noOptionMessage: tr("no_stream"),
                             watchOptions: watchProviders!.flatRate),
                         watchProvidersTabData(
                             isDark: isDark,
                             imageQuality: imageQuality,
-                            noOptionMessage:
-                                'This movie doesn\'t have an option to rent yet',
+                            noOptionMessage: tr("no_rent"),
                             watchOptions: watchProviders!.rent),
                       ],
               ),

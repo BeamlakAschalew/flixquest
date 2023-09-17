@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import '/main.dart';
 import '/screens/common/landing_screen.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +24,8 @@ class UserState extends StatelessWidget {
               return const LandingScreen();
             }
           } else {
-            return const Center(
-              child: Text('Error occured'),
+            return Center(
+              child: Text(tr("error_occured")),
             );
           }
         });

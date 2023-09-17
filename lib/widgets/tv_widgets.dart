@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/bookmark_database_controller.dart';
@@ -37,7 +38,6 @@ import '/screens/tv/tv_detail.dart';
 import '/screens/tv/genre_tv.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/person/crew_detail.dart';
 import '/screens/common/photoview.dart';
@@ -71,7 +71,7 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
               includeAdult: Provider.of<SettingsProvider>(context).isAdult),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: 'Popular',
+            title: tr("popular"),
             api: Endpoints.popularTVUrl(1),
             discoverType: 'popular',
             isTrending: false,
@@ -81,28 +81,28 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
               : ScrollingRecentEpisodes(episodesList: rEpisodes),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: 'Trending this week',
+            title: tr("trending_this_week"),
             api: Endpoints.trendingTVUrl(1),
             discoverType: 'trending',
             isTrending: true,
           ),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: 'Top Rated',
+            title: tr("top_rated"),
             api: Endpoints.topRatedTVUrl(1),
             discoverType: 'top_rated',
             isTrending: false,
           ),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: 'Airing today',
+            title: tr("airing_today"),
             api: Endpoints.airingTodayUrl(1),
             discoverType: 'airing_today',
             isTrending: false,
           ),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: 'On the air',
+            title: tr("on_the_air"),
             api: Endpoints.onTheAirUrl(1),
             discoverType: 'on_the_air',
             isTrending: false,
@@ -160,13 +160,13 @@ class DiscoverTVState extends State<DiscoverTV>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Featured TV shows',
+                tr("featured_tv_shows"),
                 style: kTextHeaderStyle,
               ),
             ),
@@ -178,9 +178,9 @@ class DiscoverTVState extends State<DiscoverTV>
           child: tvList == null
               ? discoverMoviesAndTVShimmer(isDark)
               : tvList!.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
-                        'Wow, that\'s odd :/',
+                        tr("wow_odd"),
                         style: kTextSmallBodyStyle,
                       ),
                     )
@@ -357,9 +357,9 @@ class ScrollingTVState extends State<ScrollingTV>
                           RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ))),
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: Text('View all'),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                    child: Text(tr("view_all")),
                   ),
                 )),
           ],
@@ -558,13 +558,13 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Recently Watched',
+                tr("recently_watched"),
                 style: kTextHeaderStyle,
               ),
             ),
@@ -839,10 +839,10 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Cast',
+                tr("cast"),
                 style: kTextHeaderStyle,
               ),
             ),
@@ -879,7 +879,7 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                     ),
                   ),
                 ),
-                child: const Text('See all cast and crew'))
+                child: Text(tr("see_all_cast_crew")))
           ],
         ),
         SizedBox(
@@ -888,14 +888,14 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
           child: credits == null
               ? detailCastShimmer(isDark)
               : credits!.cast!.isEmpty
-                  ? const Padding(
-                      padding: EdgeInsets.all(8.0),
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: SizedBox(
                         height: 160,
                         width: double.infinity,
                         child: Center(
                             child: Text(
-                          'There are no casts available for this TV show',
+                          tr("no_cast_tv"),
                         )),
                       ))
                   : ListView.builder(
@@ -1045,32 +1045,31 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
     return Column(
       children: <Widget>[
         credits == null
-            ? const Padding(
-                padding: EdgeInsets.all(8.0),
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
                     Text(
-                      'Cast',
+                      tr("cast"),
                       style: kTextHeaderStyle,
                     ),
                   ],
                 ),
               )
             : credits!.cast!.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(8.0),
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Center(
-                        child: Text(
-                            'There is no cast list available for this episode',
+                        child: Text(tr("no_cast_episode"),
                             textAlign: TextAlign.center)),
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Cast',
+                          tr("cast"),
                           style: kTextHeaderStyle,
                         ),
                       ),
@@ -1099,7 +1098,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                               ),
                             ),
                           ),
-                          child: const Text('See all cast and crew'))
+                          child: Text(tr("see_all_cast_crew")))
                     ],
                   ),
         SizedBox(
@@ -1245,32 +1244,31 @@ class ScrollingTVEpisodeGuestStarsState
     return Column(
       children: <Widget>[
         credits == null
-            ? const Padding(
-                padding: EdgeInsets.all(8.0),
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
                     Text(
-                      'Guest stars',
+                      tr("guest_stars"),
                       style: kTextHeaderStyle,
                     ),
                   ],
                 ),
               )
             : credits!.episodeGuestStars!.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(8.0),
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Center(
-                        child: Text(
-                            'There is no guest star list available for this episode',
+                        child: Text(tr("no_guest_episode"),
                             textAlign: TextAlign.center)),
                   )
-                : const Row(
+                : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Guest stars',
+                          tr("guest_stars"),
                           style: kTextHeaderStyle,
                         ),
                       ),
@@ -1427,32 +1425,31 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
     return Column(
       children: <Widget>[
         credits == null
-            ? const Padding(
-                padding: EdgeInsets.all(8.0),
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
                     Text(
-                      'Crew',
+                      tr("crew"),
                       style: kTextHeaderStyle,
                     ),
                   ],
                 ),
               )
             : credits!.crew!.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(8.0),
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Center(
-                        child: Text(
-                            'There is no crew list available for this episode',
+                        child: Text(tr("no_crew_episode"),
                             textAlign: TextAlign.center)),
                   )
-                : const Row(
+                : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Crew',
+                          tr("crew"),
                           style: kTextHeaderStyle,
                         ),
                       ),
@@ -1605,12 +1602,12 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.all(8.0),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Row(
             children: <Widget>[
               Text(
-                'Created by',
+                tr("created_by"),
                 style: kTextHeaderStyle,
               ),
             ],
@@ -1622,11 +1619,10 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
           child: tvDetails == null
               ? detailCastShimmer(isDark)
               : tvDetails!.createdBy!.isEmpty
-                  ? const Padding(
-                      padding: EdgeInsets.all(8.0),
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
                       child: Center(
-                          child: Text(
-                              'There is/are no creator/s available for this TV show',
+                          child: Text(tr("no_creators"),
                               textAlign: TextAlign.center)),
                     )
                   : ListView.builder(
@@ -1913,8 +1909,20 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                                                 .poster!
                                                                 .length ==
                                                             1
-                                                        ? '${tvImages!.poster!.length} Poster'
-                                                        : '${tvImages!.poster!.length} Posters'),
+                                                        ? tr("poster_singular",
+                                                            namedArgs: {
+                                                                "poster": tvImages!
+                                                                    .poster!
+                                                                    .length
+                                                                    .toString()
+                                                              })
+                                                        : tr("poster_plural",
+                                                            namedArgs: {
+                                                                "poster": tvImages!
+                                                                    .poster!
+                                                                    .length
+                                                                    .toString()
+                                                              })),
                                                   ),
                                                 )
                                               ]),
@@ -2043,8 +2051,21 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                                                 .backdrop!
                                                                 .length ==
                                                             1
-                                                        ? '${tvImages!.backdrop!.length} Backdrop'
-                                                        : '${tvImages!.backdrop!.length} Backdrops'),
+                                                        ? tr(
+                                                            "backdrop_singular",
+                                                            namedArgs: {
+                                                                "backdrop": tvImages!
+                                                                    .backdrop!
+                                                                    .length
+                                                                    .toString()
+                                                              })
+                                                        : tr("backdrop_plural",
+                                                            namedArgs: {
+                                                                "backdrop": tvImages!
+                                                                    .backdrop!
+                                                                    .length
+                                                                    .toString()
+                                                              })),
                                                   ),
                                                 )
                                               ]),
@@ -2124,12 +2145,12 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
             child: tvImages == null
                 ? detailImageShimmer(isDark)
                 : tvImages!.poster!.isEmpty
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: double.infinity,
                         height: 130,
                         child: Center(
                           child: Text(
-                            'This tv season doesn\'t have an image provided',
+                            tr("no_season_image"),
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -2198,8 +2219,14 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                                     child: Container(
                                       color: Colors.black38,
                                       child: Text(tvImages!.poster!.length == 1
-                                          ? '${tvImages!.poster!.length} Poster'
-                                          : '${tvImages!.poster!.length} Posters'),
+                                          ? tr("poster_singular", namedArgs: {
+                                              "poster": tvImages!.poster!.length
+                                                  .toString()
+                                            })
+                                          : tr("poster_plural", namedArgs: {
+                                              "poster": tvImages!.poster!.length
+                                                  .toString()
+                                            })),
                                     ),
                                   )
                                 ],
@@ -2275,14 +2302,14 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
             child: tvImages == null
                 ? detailImageShimmer(isDark)
                 : tvImages!.still!.isEmpty
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: double.infinity,
                         height: 80,
                         child: Center(
                           child: Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'No images found :(',
+                              tr("no_images"),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -2352,8 +2379,14 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                                   child: Container(
                                     color: Colors.black38,
                                     child: Text(tvImages!.still!.length == 1
-                                        ? '${tvImages!.still!.length} Still image'
-                                        : '${tvImages!.still!.length} Still images'),
+                                        ? tr("still_singular", namedArgs: {
+                                            "poster": tvImages!.still!.length
+                                                .toString()
+                                          })
+                                        : tr("still_plural", namedArgs: {
+                                            "poster": tvImages!.still!.length
+                                                .toString()
+                                          })),
                                   ),
                                 )
                               ],
@@ -2429,14 +2462,14 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
             child: tvVideos == null
                 ? detailVideoShimmer(isDark)
                 : tvVideos!.result!.isEmpty
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: double.infinity,
                         height: 100,
                         child: Center(
                             child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text('No video found :(',
-                              textAlign: TextAlign.center),
+                          padding: const EdgeInsets.all(8.0),
+                          child:
+                              Text(tr("no_video"), textAlign: TextAlign.center),
                         )),
                       )
                     : SizedBox(
@@ -2590,10 +2623,8 @@ class TVCastTabState extends State<TVCastTab>
             ? Container(
                 color:
                     isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: const Center(
-                  child: Text(
-                      'There is no data available for this TV show cast',
-                      style: kTextSmallHeaderStyle),
+                child: Center(
+                  child: Text(tr("no_cast_tv"), style: kTextSmallHeaderStyle),
                 ),
               )
             : Container(
@@ -2695,16 +2726,39 @@ class TVCastTabState extends State<TVCastTab>
                                                 fontSize: 20),
                                             overflow: TextOverflow.ellipsis,
                                           ),
+                                          Text(credits!.cast![index].roles![0]
+                                                  .character!.isEmpty
+                                              ? tr("as_empty")
+                                              : tr("as", namedArgs: {
+                                                  "character": credits!
+                                                      .cast![index]
+                                                      .roles![0]
+                                                      .character!
+                                                })),
                                           Text(
-                                            'As : '
-                                            '${credits!.cast![index].roles![0].character!.isEmpty ? 'N/A' : credits!.cast![index].roles![0].character!}',
-                                          ),
-                                          Text(
-                                            credits!.cast![index].roles![0]
-                                                        .episodeCount! ==
-                                                    1
-                                                ? '${credits!.cast![index].roles![0].episodeCount!} episode'
-                                                : '${credits!.cast![index].roles![0].episodeCount!} episodes',
+                                            credits!.cast![0].roles == null
+                                                ? ''
+                                                : credits!
+                                                            .cast![index]
+                                                            .roles![0]
+                                                            .episodeCount! ==
+                                                        1
+                                                    ? tr("single_episode",
+                                                        namedArgs: {
+                                                            "count": credits!
+                                                                .cast![index]
+                                                                .roles![0]
+                                                                .episodeCount!
+                                                                .toString()
+                                                          })
+                                                    : tr("multi_episode",
+                                                        namedArgs: {
+                                                            "count": credits!
+                                                                .cast![index]
+                                                                .roles![0]
+                                                                .episodeCount!
+                                                                .toString()
+                                                          }),
                                           ),
                                         ],
                                       ),
@@ -2770,9 +2824,8 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
             ? Container(
                 color:
                     isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: const Center(
-                  child: Text('There is no season available for this TV show',
-                      style: kTextSmallHeaderStyle),
+                child: Center(
+                  child: Text(tr("no_season_tv"), style: kTextSmallHeaderStyle),
                 ),
               )
             : Container(
@@ -2957,10 +3010,8 @@ class TVCrewTabState extends State<TVCrewTab>
             ? Container(
                 color:
                     isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: const Center(
-                  child: Text(
-                      'There is no data available for this TV show cast',
-                      style: kTextSmallHeaderStyle),
+                child: Center(
+                  child: Text(tr("no_cast_tv"), style: kTextSmallHeaderStyle),
                 ),
               )
             : Container(
@@ -3062,10 +3113,13 @@ class TVCrewTabState extends State<TVCrewTab>
                                                 fontFamily: 'PoppinsSB',
                                                 fontSize: 20),
                                           ),
-                                          Text(
-                                            'Job : '
-                                            '${credits!.crew![index].department!.isEmpty ? 'N/A' : credits!.crew![index].department!}',
-                                          ),
+                                          Text(credits!.crew![index].department!
+                                                  .isEmpty
+                                              ? tr("job_empty")
+                                              : tr("job", namedArgs: {
+                                                  "job": credits!
+                                                      .crew![index].department!
+                                                })),
                                         ],
                                       ),
                                     )
@@ -3156,13 +3210,13 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
     return Container(
       child: Column(
         children: <Widget>[
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  'TV Show recommendations',
+                  tr("tv_recommendations"),
                   style: kTextHeaderStyle,
                 ),
               ),
@@ -3174,8 +3228,8 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
             child: tvList == null || widget.includeAdult == null
                 ? scrollingMoviesAndTVShimmer(isDark)
                 : tvList!.isEmpty
-                    ? const Text(
-                        'There are no recommendations available for this TV Show',
+                    ? Text(
+                        tr("no_recommendations_tv"),
                         textAlign: TextAlign.center,
                       )
                     : Row(
@@ -3288,7 +3342,7 @@ class SimilarTVTabState extends State<SimilarTVTab>
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'TV Shows similar with ${widget.tvName}',
+                    tr("tv_similar_with", namedArgs: {"show": widget.tvName}),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: kTextHeaderStyle,
@@ -3303,8 +3357,8 @@ class SimilarTVTabState extends State<SimilarTVTab>
             child: tvList == null || widget.includeAdult == null
                 ? scrollingMoviesAndTVShimmer(isDark)
                 : tvList!.isEmpty
-                    ? const Text(
-                        'There are no similars available for this TV Show',
+                    ? Text(
+                        tr("no_similars_tv"),
                         textAlign: TextAlign.center,
                       )
                     : Row(
@@ -3490,9 +3544,8 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
                     scrollController: _scrollController))
             : tvList!.isEmpty
                 ? Container(
-                    child: const Center(
-                      child: Text(
-                          'Oops! TV series for this genre doesn\'t exist :('),
+                    child: Center(
+                      child: Text(tr("no_genre_tv")),
                     ),
                   )
                 : Container(
@@ -3563,8 +3616,8 @@ class TVInfoTableState extends State<TVInfoTable> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'TV series Info',
+          Text(
+            tr("tv_series_info"),
             style: kTextHeaderStyle,
           ),
           Container(
@@ -3575,9 +3628,9 @@ class TVInfoTableState extends State<TVInfoTable> {
                 child: tvDetails == null
                     ? detailInfoTableShimmer(isDark)
                     : DataTable(dataRowMinHeight: 40, columns: [
-                        const DataColumn(
+                        DataColumn(
                             label: Text(
-                          'Original Title',
+                          tr("original_title"),
                           style: kTableLeftStyle,
                         )),
                         DataColumn(
@@ -3588,28 +3641,30 @@ class TVInfoTableState extends State<TVInfoTable> {
                         ),
                       ], rows: [
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Status',
+                          DataCell(Text(
+                            tr("status"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(tvDetails!.status!.isEmpty
-                              ? 'unknown'
+                              ? tr("unknown")
                               : tvDetails!.status!)),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Runtime',
+                          DataCell(Text(
+                            tr("runtime"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(tvDetails!.runtime!.isEmpty
                               ? '-'
                               : tvDetails!.runtime![0] == 0
-                                  ? 'N/A'
-                                  : '${tvDetails!.runtime![0]} mins')),
+                                  ? tr("not_available")
+                                  : tr("runtime_mins", namedArgs: {
+                                      "mins": tvDetails!.runtime![0]
+                                    }))),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Spoken languages',
+                          DataCell(Text(
+                            tr("spoken_language"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3627,7 +3682,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(tvDetails!
                                                 .spokenLanguages!.isEmpty
-                                            ? 'N/A'
+                                            ? tr("not_available")
                                             : '${tvDetails!.spokenLanguages![index].englishName},'),
                                       );
                                     },
@@ -3635,8 +3690,8 @@ class TVInfoTableState extends State<TVInfoTable> {
                           )),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Total seasons',
+                          DataCell(Text(
+                            tr("total_seasons"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(tvDetails!.numberOfSeasons! == 0
@@ -3644,8 +3699,8 @@ class TVInfoTableState extends State<TVInfoTable> {
                               : '${tvDetails!.numberOfSeasons!}')),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Total episodes',
+                          DataCell(Text(
+                            tr("total_episodes"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(tvDetails!.numberOfEpisodes! == 0
@@ -3653,8 +3708,8 @@ class TVInfoTableState extends State<TVInfoTable> {
                               : '${tvDetails!.numberOfEpisodes!}')),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Tagline',
+                          DataCell(Text(
+                            tr("tagline"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(
@@ -3668,8 +3723,8 @@ class TVInfoTableState extends State<TVInfoTable> {
                           ),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Production companies',
+                          DataCell(Text(
+                            tr("producation_companies"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3687,7 +3742,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(tvDetails!
                                                 .productionCompanies!.isEmpty
-                                            ? 'N/A'
+                                            ? tr("not_available")
                                             : '${tvDetails!.productionCompanies![index].name},'),
                                       );
                                     },
@@ -3695,8 +3750,8 @@ class TVInfoTableState extends State<TVInfoTable> {
                           )),
                         ]),
                         DataRow(cells: [
-                          const DataCell(Text(
-                            'Production countries',
+                          DataCell(Text(
+                            tr("production_countries"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3714,7 +3769,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(tvDetails!
                                                 .productionCountries!.isEmpty
-                                            ? 'N/A'
+                                            ? tr("not_available")
                                             : '${tvDetails!.productionCountries![index].name},'),
                                       );
                                     },
@@ -3767,8 +3822,8 @@ class TVSocialLinksState extends State<TVSocialLinks> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Social media links',
+            Text(
+              tr("social_media_links"),
               style: kTextHeaderStyle,
             ),
             SizedBox(
@@ -3780,9 +3835,9 @@ class TVSocialLinksState extends State<TVSocialLinks> {
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
                           externalLinks?.imdbId == null
-                      ? const Center(
+                      ? Center(
                           child: Text(
-                            'This tv show doesn\'t have social media links provided :(',
+                            tr("no_social_link_tv"),
                             textAlign: TextAlign.center,
                           ),
                         )
@@ -3908,9 +3963,8 @@ class SeasonsListState extends State<SeasonsList> {
               : tvDetails!.seasons!.isEmpty
                   ? Container(
                       color: const Color(0xFF000000),
-                      child: const Center(
-                        child: Text(
-                            'There is no season available for this TV show',
+                      child: Center(
+                        child: Text(tr("no_season_tv"),
                             textAlign: TextAlign.center),
                       ),
                     )
@@ -4075,10 +4129,10 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Episodes',
+                      tr("episodes"),
                       style: kTextHeaderStyle,
                     ),
                   ),
@@ -4180,17 +4234,17 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                 ],
               )
             : tvDetails!.episodes!.isEmpty
-                ? const Center(
-                    child: Text('No episodes found :(',
-                        style: kTextSmallHeaderStyle),
+                ? Center(
+                    child:
+                        Text(tr("no_episodes"), style: kTextSmallHeaderStyle),
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Episodes',
+                          tr("episodes"),
                           style: kTextHeaderStyle,
                         ),
                       ),
@@ -4334,7 +4388,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                               .episodes![index]
                                                               .airDate!
                                                               .isEmpty
-                                                      ? 'Air date unknown'
+                                                      ? tr("air_date_unknown")
                                                       : '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
                                                   style: TextStyle(
                                                     color: isDark
@@ -4435,31 +4489,31 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                 indicatorSize: TabBarIndicatorSize.tab,
                 tabs: [
                   Tab(
-                    child: Text('Buy',
+                    child: Text(tr("buy"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
                             color: isDark ? Colors.white : Colors.black)),
                   ),
                   Tab(
-                    child: Text('Stream',
+                    child: Text(tr("stream"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
                             color: isDark ? Colors.white : Colors.black)),
                   ),
                   Tab(
-                    child: Text('ADS',
+                    child: Text(tr("ads"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
                             color: isDark ? Colors.white : Colors.black)),
                   ),
                   Tab(
-                    child: Text('Rent',
+                    child: Text(tr("rent"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
                             color: isDark ? Colors.white : Colors.black)),
                   ),
                   Tab(
-                    child: Text('Free',
+                    child: Text(tr("free"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
                             color: isDark ? Colors.white : Colors.black)),
@@ -4483,26 +4537,22 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                       watchProvidersTabData(
                           isDark: isDark,
                           imageQuality: imageQuality,
-                          noOptionMessage:
-                              'This TV series doesn\'t have an option to buy yet',
+                          noOptionMessage: tr("no_buy_tv"),
                           watchOptions: watchProviders!.buy),
                       watchProvidersTabData(
                           isDark: isDark,
                           imageQuality: imageQuality,
-                          noOptionMessage:
-                              'This TV series doesn\'t have an option to stream yet',
+                          noOptionMessage: tr("no_stream_tv"),
                           watchOptions: watchProviders!.flatRate),
                       watchProvidersTabData(
                           isDark: isDark,
                           imageQuality: imageQuality,
-                          noOptionMessage:
-                              'This TV series doesn\'t have an option to watch through ADS yet',
+                          noOptionMessage: tr("no_ads_tv"),
                           watchOptions: watchProviders!.ads),
                       watchProvidersTabData(
                           isDark: isDark,
                           imageQuality: imageQuality,
-                          noOptionMessage:
-                              'This TV series doesn\'t have an option to rent yet',
+                          noOptionMessage: tr("no_rent_tv"),
                           watchOptions: watchProviders!.rent),
                       Container(
                         padding: const EdgeInsets.all(8.0),
@@ -4537,10 +4587,10 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                     const SizedBox(
                                       height: 5,
                                     ),
-                                    const Expanded(
+                                    Expanded(
                                         flex: 6,
                                         child: Text(
-                                          'Cinemax',
+                                          tr("cinemax"),
                                           textAlign: TextAlign.center,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
@@ -4591,13 +4641,13 @@ class TVGenreListGridState extends State<TVGenreListGrid>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Column(
       children: [
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Genres',
+                tr("genres"),
                 style: kTextHeaderStyle,
               ),
             ),
@@ -4672,10 +4722,10 @@ class TVShowsFromWatchProvidersState extends State<TVShowsFromWatchProviders> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Text(
-              'Streaming services',
+              tr("streaming_services"),
               style: kTextHeaderStyle,
             ),
           ),
@@ -4882,9 +4932,8 @@ class ParticularStreamingServiceTVShowsState
                     scrollController: _scrollController))
             : tvList!.isEmpty
                 ? Container(
-                    child: const Center(
-                      child: Text(
-                          'Oops! TV shows for this watch provider doesn\'t exist :('),
+                    child: Center(
+                      child: Text(tr("no_watchprovider_tv")),
                     ),
                   )
                 : Container(
@@ -4960,9 +5009,8 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
             ? Container(
                 color:
                     isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: const Center(
-                  child: Text('No cast available :(',
-                      style: kTextSmallHeaderStyle),
+                child: Center(
+                  child: Text(tr("no_cast"), style: kTextSmallHeaderStyle),
                 ),
               )
             : Container(
@@ -5064,10 +5112,13 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                                 fontSize: 20),
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                          Text(
-                                            'As : '
-                                            '${credits!.cast![index].character!.isEmpty ? 'N/A' : credits!.cast![index].character!}',
-                                          ),
+                                          Text(credits!.cast![index].character!
+                                                  .isEmpty
+                                              ? tr("as_empty")
+                                              : tr("as", namedArgs: {
+                                                  "character": credits!
+                                                      .cast![index].character!
+                                                })),
                                           // Text(
                                           //   credits!.cast![index].roles![0]
                                           //               .episodeCount! ==
@@ -5141,9 +5192,8 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
             ? Container(
                 color:
                     isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: const Center(
-                  child: Text(
-                      'There is no data available for this TV episode Guest stars',
+                child: Center(
+                  child: Text(tr("no_guest_episode"),
                       style: kTextSmallHeaderStyle),
                 ),
               )
@@ -5595,10 +5645,10 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                 ),
               ),
               const SizedBox(width: 4),
-              const Text(
-                'User\nScore',
+              Text(
+                tr("rating"),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
@@ -5627,10 +5677,10 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
             ),
           ),
           const SizedBox(width: 4),
-          const Text(
-            'Vote\nCounts',
+          Text(
+            tr("total_ratings"),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
             ),
@@ -5699,12 +5749,12 @@ class _TVAboutState extends State<TVAbout> {
             TVGenreDisplay(
               api: Endpoints.tvDetailsUrl(widget.tvSeries.id!),
             ),
-            const Row(
+            Row(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    'Overview',
+                    tr("overview"),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -5714,15 +5764,15 @@ class _TVAboutState extends State<TVAbout> {
               padding: const EdgeInsets.all(8.0),
               child: widget.tvSeries.overview!.isEmpty ||
                       widget.tvSeries.overview == null
-                  ? const Text('There is no overview for this TV series :(')
+                  ? Text(tr("no_overview_tv"))
                   : ReadMoreText(
                       widget.tvSeries.overview!,
                       trimLines: 4,
                       style: const TextStyle(fontFamily: 'Poppins'),
                       colorClickableText: Theme.of(context).colorScheme.primary,
                       trimMode: TrimMode.Line,
-                      trimCollapsedText: 'read more',
-                      trimExpandedText: 'read less',
+                      trimCollapsedText: tr("read_more"),
+                      trimExpandedText: tr("read_less"),
                       lessStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.primary,
@@ -5740,8 +5790,8 @@ class _TVAboutState extends State<TVAbout> {
                   child: Text(
                     widget.tvSeries.firstAirDate == null ||
                             widget.tvSeries.firstAirDate!.isEmpty
-                        ? 'First episode air date: N/A'
-                        : 'First episode air date : ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
+                        ? tr("first_episode_air_empty")
+                        : '${tr("first_episode_air")} ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
                     style: const TextStyle(
                       fontFamily: 'PoppinsSB',
                     ),
@@ -5752,28 +5802,28 @@ class _TVAboutState extends State<TVAbout> {
             ScrollingTVArtists(
               passedFrom: 'tv_detail',
               api: Endpoints.getTVCreditsUrl(widget.tvSeries.id!),
-              title: 'Cast',
+              title: tr("cast"),
               id: widget.tvSeries.id!,
             ),
             ScrollingTVCreators(
               api: Endpoints.tvDetailsUrl(widget.tvSeries.id!),
-              title: 'Created by',
+              title: tr("created_by"),
             ),
             SeasonsList(
               tvId: widget.tvSeries.id!,
               seriesName: widget.tvSeries.name!,
-              title: 'Seasons',
+              title: tr("seasons"),
               api: Endpoints.getTVSeasons(widget.tvSeries.id!),
             ),
             TVImagesDisplay(
-              title: 'Images',
+              title: tr("images"),
               api: Endpoints.getTVImages(widget.tvSeries.id!),
               name: widget.tvSeries.originalName,
             ),
             TVVideosDisplay(
               api: Endpoints.getTVVideos(widget.tvSeries.id!),
               api2: Endpoints.tvDetailsUrl(widget.tvSeries.id!),
-              title: 'Videos',
+              title: tr("videos"),
             ),
             TVSocialLinks(
               api: Endpoints.getExternalLinksForTV(widget.tvSeries.id!),
@@ -5833,12 +5883,12 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            const Row(
+            Row(
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
-                    'Overview',
+                    tr("overview"),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -5848,14 +5898,14 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
               padding: const EdgeInsets.all(8.0),
               child: ReadMoreText(
                 widget.episodeList.overview!.isEmpty
-                    ? 'This episode doesn\'t have an overview'
+                    ? ''
                     : widget.episodeList.overview!,
                 trimLines: 4,
                 style: const TextStyle(fontFamily: 'Poppins'),
                 colorClickableText: Theme.of(context).colorScheme.primary,
                 trimMode: TrimMode.Line,
-                trimCollapsedText: 'read more',
-                trimExpandedText: 'read less',
+                trimCollapsedText: tr("read_more"),
+                trimExpandedText: tr("read_less"),
                 lessStyle: TextStyle(
                     fontSize: 14,
                     color: Theme.of(context).colorScheme.primary,
@@ -5873,8 +5923,8 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                   child: Text(
                     widget.episodeList.airDate == null ||
                             widget.episodeList.airDate!.isEmpty
-                        ? 'Episode air date: N/A'
-                        : 'Episode air date:  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
+                        ? tr("episode_air_empty")
+                        : '${tr("episode_air")}  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
                     style: const TextStyle(
                       fontFamily: 'PoppinsSB',
                     ),
@@ -5952,9 +6002,9 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                         color: Colors.white,
                       ),
                     ),
-                    const Text(
-                      'WATCH NOW',
-                      style: TextStyle(color: Colors.white),
+                    Text(
+                      tr("watch_now"),
+                      style: const TextStyle(color: Colors.white),
                     ),
                     Visibility(
                       visible: isVisible!,
@@ -5986,7 +6036,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                   widget.episodeList.episodeNumber!),
             ),
             TVEpisodeImagesDisplay(
-              title: 'Images',
+              title: tr("images"),
               name: '${widget.seriesName}_${widget.episodeList.name}',
               api: Endpoints.getTVEpisodeImagesUrl(
                   widget.tvId!,
@@ -6095,8 +6145,7 @@ class TVEpisodeQuickInfo extends StatelessWidget {
                             child: SafeArea(
                               child: Container(
                                 alignment: Alignment.topRight,
-                                child:
-                                    const TopButton(buttonText: 'Open Season'),
+                                child: TopButton(buttonText: tr("open_season")),
                               ),
                             ),
                           ),
@@ -6205,10 +6254,10 @@ class TVEpisodeOptions extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              const Text(
-                'User\nScore',
+              Text(
+                tr("rating"),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
@@ -6237,10 +6286,10 @@ class TVEpisodeOptions extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 4),
-          const Text(
-            'Vote\nCounts',
+          Text(
+            tr("total_ratings"),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
             ),

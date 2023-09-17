@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import '/screens/user/edit_profile.dart';
 import '/constants/app_constants.dart';
 import '/screens/common/landing_screen.dart';
@@ -5,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 
 class UserInfo extends StatefulWidget {
   const UserInfo({Key? key}) : super(key: key);
@@ -77,8 +77,8 @@ class _UserInfoState extends State<UserInfo> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'This current account is anonymous, signup or login to access this page',
+                    Text(
+                      tr("current_account_anonymous"),
                       textAlign: TextAlign.center,
                     ),
                     ElevatedButton(
@@ -92,7 +92,7 @@ class _UserInfoState extends State<UserInfo> {
                             });
                           });
                         },
-                        child: const Text('Login/Signup'))
+                        child: Text(tr("login_signup")))
                   ],
                 ),
               )
@@ -107,8 +107,8 @@ class _UserInfoState extends State<UserInfo> {
                       child: CircularProgressIndicator(),
                     );
                   } else if (snapshot.hasError) {
-                    const Center(
-                      child: Text('Error occured :('),
+                    Center(
+                      child: Text(tr("error_occured")),
                     );
                   }
                   return Container(
@@ -142,7 +142,8 @@ class _UserInfoState extends State<UserInfo> {
                                           WrapCrossAlignment.center,
                                       children: [
                                         Text(
-                                          snapshot.data!['name'] ?? 'N/A',
+                                          snapshot.data!['name'] ??
+                                              tr("not_available"),
                                           style: kTextHeaderStyle,
                                         ),
                                         Visibility(
@@ -181,16 +182,16 @@ class _UserInfoState extends State<UserInfo> {
                                     return const ProfileEdit();
                                   }));
                                 },
-                                child: const Text('Edit profile')),
+                                child: Text(tr("edit_profile"))),
                           ),
                           const Divider(
                             thickness: 1,
                             color: Colors.grey,
                           ),
-                          userListTile('Email', snapshot.data!['email'] ?? '',
-                              0, context),
+                          userListTile(tr("email"),
+                              snapshot.data!['email'] ?? '', 0, context),
                           userListTile(
-                              'Joined',
+                              tr("joined"),
                               '${DateFormat('MMMM').format(DateTime(0, DateTime.parse(snapshot.data!['joinedAt']).month))} ${DateTime.parse(snapshot.data!['joinedAt']).year}',
                               3,
                               context),
@@ -205,18 +206,17 @@ class _UserInfoState extends State<UserInfo> {
                                       context: context,
                                       builder: (BuildContext ctx) {
                                         return AlertDialog(
-                                          title: const Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Text('Sign out'),
+                                          title: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(tr("sign_out")),
                                           ),
-                                          content: const Text(
-                                              'Do you want to Sign out?'),
+                                          content: Text(tr("want_to_sign_out")),
                                           actions: [
                                             ElevatedButton(
                                                 onPressed: () async {
                                                   Navigator.pop(context);
                                                 },
-                                                child: const Text('Cancel')),
+                                                child: Text(tr("cancel"))),
                                             TextButton(
                                                 onPressed: () async {
                                                   await _auth
@@ -231,16 +231,16 @@ class _UserInfoState extends State<UserInfo> {
                                                     })));
                                                   });
                                                 },
-                                                child: const Text(
-                                                  'Ok',
-                                                  style: TextStyle(
+                                                child: Text(
+                                                  tr("ok"),
+                                                  style: const TextStyle(
                                                       color: Colors.red),
                                                 ))
                                           ],
                                         );
                                       });
                                 },
-                                title: const Text('Logout'),
+                                title: Text(tr("logout")),
                                 leading: Icon(
                                   Icons.exit_to_app_rounded,
                                   color: Theme.of(context).colorScheme.primary,
