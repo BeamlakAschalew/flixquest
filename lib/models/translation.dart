@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
 class Translation {
-  static final all = [
-    const Locale('en'), /*const Locale('es')*/
-  ];
+  static const all = [Locale('en'), Locale('es'), Locale('ar')];
 }

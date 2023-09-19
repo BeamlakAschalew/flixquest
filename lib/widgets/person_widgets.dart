@@ -224,7 +224,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
         ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
             ? Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
                     tr("contains_nsfw"),
@@ -464,7 +464,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
         ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
             ? Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
                     tr("contains_nsfw"),
@@ -703,10 +703,10 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.only(top: 8.0, bottom: 8),
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8),
                     child: Text(
                       tr("biography"),
-                      style: TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20),
                     ),
                   ),
                   ReadMoreText(
@@ -776,7 +776,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
           children: [
             Text(
               tr("social_media_links"),
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
             SizedBox(
               height: 55,

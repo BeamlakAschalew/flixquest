@@ -276,16 +276,18 @@ class _SyncScreenState extends State<SyncScreen>
       setState(() {
         isOnlineMovieSyncFinished = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            tr("finished_sync_online"),
-            maxLines: 3,
-            style: kTextSmallBodyStyle,
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              tr("finished_sync_online"),
+              maxLines: 3,
+              style: kTextSmallBodyStyle,
+            ),
+            duration: const Duration(seconds: 2),
           ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+        );
+      }
       getSavedMoviesAndTV();
     }
   }
@@ -350,16 +352,18 @@ class _SyncScreenState extends State<SyncScreen>
       setState(() {
         isOnlineTVSyncFinished = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            tr("finished_sync_online"),
-            maxLines: 3,
-            style: kTextSmallBodyStyle,
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              tr("finished_sync_online"),
+              maxLines: 3,
+              style: kTextSmallBodyStyle,
+            ),
+            duration: const Duration(seconds: 2),
           ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+        );
+      }
       getSavedMoviesAndTV();
     }
   }

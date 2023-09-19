@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
@@ -221,7 +222,8 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
         Container(
           padding: const EdgeInsets.all(20.0),
           child: Text(
-            "Image ${currentIndex + 1}",
+            tr("image_index",
+                namedArgs: {"index": (currentIndex + 1).toString()}),
             style: TextStyle(
               color: isDark ? Colors.white : Colors.black,
               fontSize: 17.0,

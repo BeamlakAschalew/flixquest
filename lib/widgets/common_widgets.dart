@@ -1504,10 +1504,10 @@ Widget personAboutSimmer(isDark) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.only(top: 8.0, bottom: 8),
+          padding: const EdgeInsets.only(top: 8.0, bottom: 8),
           child: Text(
             tr("biography"),
-            style: TextStyle(fontSize: 20),
+            style: const TextStyle(fontSize: 20),
           ),
         ),
         Shimmer.fromColors(

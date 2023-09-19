@@ -67,7 +67,7 @@ void main() async {
     supportedLocales: Translation.all,
     path: 'assets/translations',
     fallbackLocale: Translation.all[0],
-    startLocale: const Locale('en'),
+    startLocale: const Locale('ar'),
     child: Cinemax(
       settingsProvider: settingsProvider,
       recentProvider: recentProvider,

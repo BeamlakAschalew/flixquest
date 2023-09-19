@@ -96,27 +96,32 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
           });
         });
       } on FirebaseAuthException catch (e) {
-        if (e.code == 'user-mismatch') {
-          _globalMethods.authErrorHandle(tr("user_mismatch"), context);
-        } else if (e.code == 'user-not-found') {
-          _globalMethods.authErrorHandle(tr("user_not_found"), context);
-        } else if (e.code == 'invalid-credential') {
-          _globalMethods.authErrorHandle(tr("invalid_credential"), context);
-        } else if (e.code == 'invalid-email') {
-          _globalMethods.authErrorHandle(tr("invalid_email"), context);
-        } else if (e.code == 'wrong-password:') {
-          _globalMethods.authErrorHandle(tr("wrong_password"), context);
-        } else if (e.code == 'weak-password') {
-          _globalMethods.authErrorHandle(tr("weak_password"), context);
-        } else if (e.code == 'requires-recent-login') {
-          _globalMethods.authErrorHandle(tr("requires_recent_login"), context);
+        if (mounted) {
+          if (e.code == 'user-mismatch') {
+            _globalMethods.authErrorHandle(tr("user_mismatch"), context);
+          } else if (e.code == 'user-not-found') {
+            _globalMethods.authErrorHandle(tr("user_not_found"), context);
+          } else if (e.code == 'invalid-credential') {
+            _globalMethods.authErrorHandle(tr("invalid_credential"), context);
+          } else if (e.code == 'invalid-email') {
+            _globalMethods.authErrorHandle(tr("invalid_email"), context);
+          } else if (e.code == 'wrong-password:') {
+            _globalMethods.authErrorHandle(tr("wrong_password"), context);
+          } else if (e.code == 'weak-password') {
+            _globalMethods.authErrorHandle(tr("weak_password"), context);
+          } else if (e.code == 'requires-recent-login') {
+            _globalMethods.authErrorHandle(
+                tr("requires_recent_login"), context);
+          }
         }
         // print('error occured ${error.message}');
       } finally {
         setState(() {
           _isLoading = false;
         });
-        Navigator.pop(context);
+        if (mounted) {
+          Navigator.pop(context);
+        }
       }
     }
   }

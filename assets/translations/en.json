@@ -272,7 +272,7 @@
     "requires_recent_login": "You have been signed with this account for too long, re-authenticate to change your password. Logout and Signin to change your password or email.",
     "delete_account": "Delete account",
     "delete_notice": "Note: deleting your account will also delete your synced movies and TV shows from the server.\nType \"CONFIRM\" (all caps) and press \"Delete account\" to delete your account.\nIf the process is stuck, you need to logout and login and then try again.",
-    "del_input_err": "Type: 'Confirm' or 'CONFIRM' to delete your account, if you are not deleting your account, you can go back.",
+    "del_input_err": "Type: 'CONFIRM' to delete your account, if you are not deleting your account, you can go back.",
     "type_confirm": "Type 'CONFIRM' to delete your account",
     "username_exists": "This username already exists, choose another one.",
     "edit_profile": "Edit profile",
@@ -450,5 +450,6 @@
     "no_episode_overview": "This episode doesn't have an overview",
     "episode_air_empty": "First episode air date: N/A",
     "episode_air": "First episode air date :",
-    "open_season": "Open season"
+    "open_season": "Open season",
+    "image_index": "Image {index}"
 }

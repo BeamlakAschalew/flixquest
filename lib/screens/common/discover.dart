@@ -43,8 +43,10 @@ class _DiscoverPageState extends State<DiscoverPage>
                     padding: EdgeInsets.only(right: 8.0),
                     child: Icon(Icons.movie_creation_rounded),
                   ),
-                  Text(
-                    tr("movies"),
+                  Expanded(
+                    child: Text(
+                      tr("movies"),
+                    ),
                   ),
                 ],
               )),
@@ -55,8 +57,11 @@ class _DiscoverPageState extends State<DiscoverPage>
                   const Padding(
                       padding: EdgeInsets.only(right: 8.0),
                       child: Icon(Icons.live_tv_rounded)),
-                  Text(
-                    tr("tv_series"),
+                  Expanded(
+                    child: Text(
+                      tr("tv_series"),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ))

@@ -158,7 +158,9 @@ class _ProfileEditState extends State<ProfileEdit> {
           });
         }
       } catch (e) {
-        _globalMethods.authErrorHandle(e.toString(), context);
+        if (mounted) {
+          _globalMethods.authErrorHandle(e.toString(), context);
+        }
       } finally {
         if (mounted) {
           setState(() {

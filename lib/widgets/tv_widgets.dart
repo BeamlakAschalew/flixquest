@@ -331,10 +331,10 @@ class ScrollingTVState extends State<ScrollingTV>
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                widget.title,
-                style: kTextHeaderStyle,
-              ),
+              child: Text(widget.title,
+                  style: kTextHeaderStyle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis),
             ),
             Padding(
                 padding: const EdgeInsets.all(8),
