@@ -64,6 +64,7 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
   @override
   Widget build(BuildContext context) {
     var rEpisodes = Provider.of<RecentProvider>(context).episodes;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return Container(
       child: ListView(
         children: [
@@ -72,7 +73,7 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: tr("popular"),
-            api: Endpoints.popularTVUrl(1),
+            api: Endpoints.popularTVUrl(1, lang),
             discoverType: 'popular',
             isTrending: false,
           ),
@@ -82,32 +83,32 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: tr("trending_this_week"),
-            api: Endpoints.trendingTVUrl(1),
+            api: Endpoints.trendingTVUrl(1, lang),
             discoverType: 'trending',
             isTrending: true,
           ),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: tr("top_rated"),
-            api: Endpoints.topRatedTVUrl(1),
+            api: Endpoints.topRatedTVUrl(1, lang),
             discoverType: 'top_rated',
             isTrending: false,
           ),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: tr("airing_today"),
-            api: Endpoints.airingTodayUrl(1),
+            api: Endpoints.airingTodayUrl(1, lang),
             discoverType: 'airing_today',
             isTrending: false,
           ),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
             title: tr("on_the_air"),
-            api: Endpoints.onTheAirUrl(1),
+            api: Endpoints.onTheAirUrl(1, lang),
             discoverType: 'on_the_air',
             isTrending: false,
           ),
-          TVGenreListGrid(api: Endpoints.tvGenresUrl()),
+          TVGenreListGrid(api: Endpoints.tvGenresUrl(lang)),
           const TVShowsFromWatchProviders(),
         ],
       ),
@@ -329,12 +330,14 @@ class ScrollingTVState extends State<ScrollingTV>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(widget.title,
-                  style: kTextHeaderStyle,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(widget.title,
+                    style: kTextHeaderStyle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis),
+              ),
             ),
             Padding(
                 padding: const EdgeInsets.all(8),
@@ -2380,11 +2383,11 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                                     color: Colors.black38,
                                     child: Text(tvImages!.still!.length == 1
                                         ? tr("still_singular", namedArgs: {
-                                            "poster": tvImages!.still!.length
+                                            "still": tvImages!.still!.length
                                                 .toString()
                                           })
                                         : tr("still_plural", namedArgs: {
-                                            "poster": tvImages!.still!.length
+                                            "still": tvImages!.still!.length
                                                 .toString()
                                           })),
                                   ),
@@ -3213,11 +3216,16 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  tr("tv_recommendations"),
-                  style: kTextHeaderStyle,
+              Expanded(
+
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    tr("tv_recommendations"),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ),
             ],
@@ -4147,6 +4155,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                               top: 0.0,
                               bottom: 8.0,
                               left: 10,
+                              right: 10,
                             ),
                             child: Column(
                               children: [
@@ -4269,10 +4278,10 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                 color: Colors.transparent,
                                 child: Padding(
                                   padding: const EdgeInsets.only(
-                                    top: 0.0,
-                                    bottom: 8.0,
-                                    left: 10,
-                                  ),
+                                      top: 0.0,
+                                      bottom: 8.0,
+                                      left: 10,
+                                      right: 10),
                                   child: Column(
                                     children: [
                                       Row(
@@ -4284,7 +4293,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                               .toString()),
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                right: 10.0, left: 5.0),
+                                                right: 10.0, left: 10.0),
                                             child: SizedBox(
                                               height: 56.4,
                                               width: 100,
@@ -5403,6 +5412,7 @@ class TVDetailQuickInfo extends StatelessWidget {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final appLang = Provider.of<SettingsProvider>(context).appLanguage;
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -5473,12 +5483,14 @@ class TVDetailQuickInfo extends StatelessWidget {
                             bottom: 0,
                             child: SafeArea(
                               child: Container(
-                                alignment: Alignment.topRight,
+                                alignment: appLang == 'ar'
+                                    ? Alignment.topLeft
+                                    : Alignment.topRight,
                                 child: GestureDetector(
                                   child: WatchProvidersButton(
                                     country: watchCountry,
                                     api: Endpoints.getMovieWatchProviders(
-                                        tvSeries.id!),
+                                        tvSeries.id!, appLang),
                                     onTap: () {
                                       showModalBottomSheet(
                                         context: context,
@@ -5486,7 +5498,7 @@ class TVDetailQuickInfo extends StatelessWidget {
                                           return WatchProvidersDetails(
                                             country: watchCountry,
                                             api: Endpoints.getTVWatchProviders(
-                                                tvSeries.id!),
+                                                tvSeries.id!, appLang),
                                           );
                                         },
                                       );
@@ -5626,69 +5638,83 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // user score circle percent indicator
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 18, 0),
-          child: Row(
-            children: [
-              CircularPercentIndicator(
-                radius: 30,
-                percent: (widget.tvSeries.voteAverage! / 10),
-                curve: Curves.ease,
-                animation: true,
-                animationDuration: 2500,
-                progressColor: Theme.of(context).colorScheme.primary,
-                center: Text(
-                  '${widget.tvSeries.voteAverage!.toStringAsFixed(1)}/10',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
+        Expanded(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 18, 0),
+            child: Row(
+              children: [
+                CircularPercentIndicator(
+                  radius: 30,
+                  percent: (widget.tvSeries.voteAverage! / 10),
+                  curve: Curves.ease,
+                  animation: true,
+                  animationDuration: 2500,
+                  progressColor: Theme.of(context).colorScheme.primary,
+                  center: Text(
+                    '${widget.tvSeries.voteAverage!.toStringAsFixed(1)}/10',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    tr("rating"),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        Expanded(
+          flex: 2,
+          child: Row(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              // height: 46,
+              // width: 46,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(width: 4),
-              Text(
-                tr("rating"),
+              child: Text(
+                widget.tvSeries.voteCount!.toString(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                tr("total_ratings"),
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-            ],
-          ),
+            ),
+          ]),
         ),
 
-        Row(children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            // height: 46,
-            // width: 46,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              widget.tvSeries.voteCount!.toString(),
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            tr("total_ratings"),
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ]),
-
         Padding(
-          padding: const EdgeInsets.only(left: 25),
+          padding: const EdgeInsets.only(left: 10, right: 8),
           child: Container(
             child: ElevatedButton(
                 onPressed: () {
@@ -5737,6 +5763,7 @@ class TVAbout extends StatefulWidget {
 class _TVAboutState extends State<TVAbout> {
   @override
   Widget build(BuildContext context) {
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       //  physics: const BouncingScrollPhysics(),
       child: Container(
@@ -5747,12 +5774,12 @@ class _TVAboutState extends State<TVAbout> {
         child: Column(
           children: <Widget>[
             TVGenreDisplay(
-              api: Endpoints.tvDetailsUrl(widget.tvSeries.id!),
+              api: Endpoints.tvDetailsUrl(widget.tvSeries.id!, lang),
             ),
             Row(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
                     tr("overview"),
                     style: kTextHeaderStyle,
@@ -5785,15 +5812,21 @@ class _TVAboutState extends State<TVAbout> {
             ),
             Row(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
-                  child: Text(
-                    widget.tvSeries.firstAirDate == null ||
-                            widget.tvSeries.firstAirDate!.isEmpty
-                        ? tr("first_episode_air_empty")
-                        : '${tr("first_episode_air")} ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
-                    style: const TextStyle(
-                      fontFamily: 'PoppinsSB',
+                Expanded(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 8.0, bottom: 4.0, right: 8.0),
+                    child: Text(
+
+                      widget.tvSeries.firstAirDate == null ||
+                              widget.tvSeries.firstAirDate!.isEmpty
+                          ? tr("first_episode_air_empty")
+                          : '${tr("first_episode_air")} ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
+                      style: const TextStyle(
+                        fontFamily: 'PoppinsSB',
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
@@ -5801,19 +5834,19 @@ class _TVAboutState extends State<TVAbout> {
             ),
             ScrollingTVArtists(
               passedFrom: 'tv_detail',
-              api: Endpoints.getTVCreditsUrl(widget.tvSeries.id!),
+              api: Endpoints.getTVCreditsUrl(widget.tvSeries.id!, lang),
               title: tr("cast"),
               id: widget.tvSeries.id!,
             ),
             ScrollingTVCreators(
-              api: Endpoints.tvDetailsUrl(widget.tvSeries.id!),
+              api: Endpoints.tvDetailsUrl(widget.tvSeries.id!, lang),
               title: tr("created_by"),
             ),
             SeasonsList(
               tvId: widget.tvSeries.id!,
               seriesName: widget.tvSeries.name!,
               title: tr("seasons"),
-              api: Endpoints.getTVSeasons(widget.tvSeries.id!),
+              api: Endpoints.getTVSeasons(widget.tvSeries.id!, lang),
             ),
             TVImagesDisplay(
               title: tr("images"),
@@ -5822,24 +5855,25 @@ class _TVAboutState extends State<TVAbout> {
             ),
             TVVideosDisplay(
               api: Endpoints.getTVVideos(widget.tvSeries.id!),
-              api2: Endpoints.tvDetailsUrl(widget.tvSeries.id!),
+              api2: Endpoints.tvDetailsUrl(widget.tvSeries.id!, lang),
               title: tr("videos"),
             ),
             TVSocialLinks(
-              api: Endpoints.getExternalLinksForTV(widget.tvSeries.id!),
+              api: Endpoints.getExternalLinksForTV(widget.tvSeries.id!, lang),
             ),
             TVInfoTable(
-              api: Endpoints.tvDetailsUrl(widget.tvSeries.id!),
+              api: Endpoints.tvDetailsUrl(widget.tvSeries.id!, lang),
             ),
             TVRecommendationsTab(
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 tvId: widget.tvSeries.id!,
-                api: Endpoints.getTVRecommendations(widget.tvSeries.id!, 1)),
+                api: Endpoints.getTVRecommendations(
+                    widget.tvSeries.id!, 1, lang)),
             SimilarTVTab(
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 tvId: widget.tvSeries.id!,
                 tvName: widget.tvSeries.name!,
-                api: Endpoints.getSimilarTV(widget.tvSeries.id!, 1)),
+                api: Endpoints.getSimilarTV(widget.tvSeries.id!, 1, lang)),
             // DidYouKnow(
             //   api: Endpoints.getExternalLinksForTV(
             //     widget.tvSeries.id!,
@@ -5879,6 +5913,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
   @override
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return Container(
       child: SingleChildScrollView(
         child: Column(
@@ -5886,7 +5921,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
             Row(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
                     tr("overview"),
                     style: kTextHeaderStyle,
@@ -5919,7 +5954,8 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
             Row(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
+                  padding:
+                      const EdgeInsets.only(left: 8.0, bottom: 4.0, right: 8.0),
                   child: Text(
                     widget.episodeList.airDate == null ||
                             widget.episodeList.airDate!.isEmpty
@@ -5954,7 +5990,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                     isVisible = true;
                     buttonWidth = 180;
                   });
-                  fetchTVDetails(Endpoints.tvDetailsUrl(widget.tvId!))
+                  fetchTVDetails(Endpoints.tvDetailsUrl(widget.tvId!, lang))
                       .then((value) {
                     if (mounted) {
                       setState(() {
@@ -5996,7 +6032,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                 child: Row(
                   children: [
                     const Padding(
-                      padding: EdgeInsets.only(right: 10),
+                      padding: EdgeInsets.only(right: 10, left: 10),
                       child: Icon(
                         Icons.play_circle,
                         color: Colors.white,
@@ -6009,9 +6045,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                     Visibility(
                       visible: isVisible!,
                       child: const Padding(
-                        padding: EdgeInsets.only(
-                          left: 10.0,
-                        ),
+                        padding: EdgeInsets.only(left: 10.0, right: 10.0),
                         child: SizedBox(
                           height: 16,
                           width: 16,
@@ -6033,7 +6067,8 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
               api: Endpoints.getEpisodeCredits(
                   widget.tvId!,
                   widget.episodeList.seasonNumber!,
-                  widget.episodeList.episodeNumber!),
+                  widget.episodeList.episodeNumber!,
+                  lang),
             ),
             TVEpisodeImagesDisplay(
               title: tr("images"),
@@ -6074,6 +6109,7 @@ class TVEpisodeQuickInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final appLang = Provider.of<SettingsProvider>(context).appLanguage;
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -6144,7 +6180,9 @@ class TVEpisodeQuickInfo extends StatelessWidget {
                             bottom: 0,
                             child: SafeArea(
                               child: Container(
-                                alignment: Alignment.topRight,
+                                alignment: appLang == 'ar'
+                                    ? Alignment.topLeft
+                                    : Alignment.topRight,
                                 child: TopButton(buttonText: tr("open_season")),
                               ),
                             ),
@@ -6235,66 +6273,78 @@ class TVEpisodeOptions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // user score circle percent indicator
-        Padding(
-          padding: const EdgeInsets.fromLTRB(10, 0, 18, 0),
-          child: Row(
-            children: [
-              CircularPercentIndicator(
-                radius: 30,
-                percent: (episodeList.voteAverage! / 10),
-                curve: Curves.ease,
-                animation: true,
-                animationDuration: 2500,
-                progressColor: Theme.of(context).colorScheme.primary,
-                center: Text(
-                  '${episodeList.voteAverage!.toStringAsFixed(1)}/10',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 0, 18, 0),
+            child: Row(
+              children: [
+                CircularPercentIndicator(
+                  radius: 30,
+                  percent: (episodeList.voteAverage! / 10),
+                  curve: Curves.ease,
+                  animation: true,
+                  animationDuration: 2500,
+                  progressColor: Theme.of(context).colorScheme.primary,
+                  center: Text(
+                    '${episodeList.voteAverage!.toStringAsFixed(1)}/10',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    tr("rating"),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        Expanded(
+          child: Row(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              // height: 46,
+              // width: 46,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(width: 4),
-              Text(
-                tr("rating"),
+              child: Text(
+                episodeList.voteCount!.toString(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                tr("total_ratings"),
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-            ],
-          ),
+            ),
+          ]),
         ),
-
-        Row(children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            // height: 46,
-            // width: 46,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              episodeList.voteCount!.toString(),
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            tr("total_ratings"),
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ]),
       ],
     );
   }

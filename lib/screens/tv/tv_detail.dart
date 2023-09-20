@@ -83,10 +83,7 @@ class TVDetailPageState extends State<TVDetailPage>
                 children: [
                   TVDetailQuickInfo(
                       tvSeries: widget.tvSeries, heroId: widget.heroId),
-
                   const SizedBox(height: 18),
-
-                  // // ratings / lists / bookmark options
                   TVDetailOptions(tvSeries: widget.tvSeries),
                 ],
               ),
@@ -115,11 +112,12 @@ class TVDetailPageState extends State<TVDetailPage>
   bool get wantKeepAlive => true;
 
   void modalBottomSheetMenu(String country) {
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     showModalBottomSheet(
       context: context,
       builder: (builder) {
         return TVWatchProvidersDetails(
-          api: Endpoints.getTVWatchProviders(widget.tvSeries.id!),
+          api: Endpoints.getTVWatchProviders(widget.tvSeries.id!, lang),
           country: country,
         );
       },

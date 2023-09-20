@@ -57,6 +57,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
   @override
   Widget build(BuildContext context) {
     bool includeAdult = Provider.of<SettingsProvider>(context).isAdult;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     var rMovies = Provider.of<RecentProvider>(context).movies;
     return Container(
       child: ListView(
@@ -66,7 +67,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
           ),
           ScrollingMovies(
             title: tr("popular"),
-            api: Endpoints.popularMoviesUrl(1),
+            api: Endpoints.popularMoviesUrl(1, lang),
             discoverType: 'popular',
             isTrending: false,
             includeAdult: includeAdult,
@@ -83,33 +84,33 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
               : ScrollingRecentMovies(moviesList: rMovies),
           ScrollingMovies(
             title: tr("trending_this_week"),
-            api: Endpoints.trendingMoviesUrl(1, includeAdult),
+            api: Endpoints.trendingMoviesUrl(1, includeAdult, lang),
             discoverType: 'Trending',
             isTrending: true,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
             title: tr("top_rated"),
-            api: Endpoints.topRatedUrl(1),
+            api: Endpoints.topRatedUrl(1, lang),
             discoverType: 'top_rated',
             isTrending: false,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
             title: tr("now_playing"),
-            api: Endpoints.nowPlayingMoviesUrl(1),
+            api: Endpoints.nowPlayingMoviesUrl(1, lang),
             discoverType: 'now_playing',
             isTrending: false,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
             title: tr("upcoming"),
-            api: Endpoints.upcomingMoviesUrl(1),
+            api: Endpoints.upcomingMoviesUrl(1, lang),
             discoverType: 'upcoming',
             isTrending: false,
             includeAdult: includeAdult,
           ),
-          GenreListGrid(api: Endpoints.movieGenresUrl()),
+          GenreListGrid(api: Endpoints.movieGenresUrl(lang)),
           const MoviesFromWatchProviders(),
         ],
       ),
@@ -340,12 +341,14 @@ class ScrollingMoviesState extends State<ScrollingMovies>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(widget.title,
-                  style: kTextHeaderStyle,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(widget.title,
+                    style: kTextHeaderStyle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis),
+              ),
             ),
             Padding(
                 padding: const EdgeInsets.all(8),
@@ -928,7 +931,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-
+    final appLang = Provider.of<SettingsProvider>(context).appLanguage;
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -999,11 +1002,13 @@ class MovieDetailQuickInfo extends StatelessWidget {
                             bottom: 0,
                             child: SafeArea(
                               child: Container(
-                                alignment: Alignment.topRight,
+                                alignment: appLang == 'ar'
+                                    ? Alignment.topLeft
+                                    : Alignment.topRight,
                                 child: GestureDetector(
                                   child: WatchProvidersButton(
                                     api: Endpoints.getMovieWatchProviders(
-                                        movie.id!),
+                                        movie.id!, appLang),
                                     country: watchCountry,
                                     onTap: () {
                                       showModalBottomSheet(
@@ -1012,7 +1017,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                                           return WatchProvidersDetails(
                                             api: Endpoints
                                                 .getMovieWatchProviders(
-                                                    movie.id!),
+                                                    movie.id!, appLang),
                                             country: watchCountry,
                                           );
                                         },
@@ -1281,6 +1286,7 @@ class _MovieAboutState extends State<MovieAbout> {
   double? buttonWidth = 150;
   @override
   Widget build(BuildContext context) {
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       // physics: const BouncingScrollPhysics(),
       child: Container(
@@ -1291,12 +1297,12 @@ class _MovieAboutState extends State<MovieAbout> {
         child: Column(
           children: <Widget>[
             GenreDisplay(
-              api: Endpoints.movieDetailsUrl(widget.movie.id!),
+              api: Endpoints.movieDetailsUrl(widget.movie.id!, lang),
             ),
             Row(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
                     tr("overview"),
                     style: kTextHeaderStyle,
@@ -1328,14 +1334,19 @@ class _MovieAboutState extends State<MovieAbout> {
             ),
             Row(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
-                  child: Text(
-                    widget.movie.releaseDate == null ||
-                            widget.movie.releaseDate!.isEmpty
-                        ? tr("no_release_date")
-                        : '${tr("release_date")} : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
-                    style: const TextStyle(fontFamily: 'PoppinsSB'),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 8.0, bottom: 4.0, right: 8.0),
+                    child: Text(
+                      widget.movie.releaseDate == null ||
+                              widget.movie.releaseDate!.isEmpty
+                          ? tr("no_release_date")
+                          : '${tr("release_date")} : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
+                      style: const TextStyle(fontFamily: 'PoppinsSB'),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],
@@ -1350,7 +1361,7 @@ class _MovieAboutState extends State<MovieAbout> {
                   adult: widget.movie.adult,
                   posterPath: widget.movie.posterPath,
                   backdropPath: widget.movie.backdropPath,
-                  api: Endpoints.movieDetailsUrl(widget.movie.id!),
+                  api: Endpoints.movieDetailsUrl(widget.movie.id!, lang),
                 ),
                 // const SizedBox(
                 //   width: 15,
@@ -1366,7 +1377,7 @@ class _MovieAboutState extends State<MovieAbout> {
               ],
             ),
             ScrollingArtists(
-              api: Endpoints.getCreditsUrl(widget.movie.id!),
+              api: Endpoints.getCreditsUrl(widget.movie.id!, lang),
               title: tr("cast"),
             ),
             MovieImagesDisplay(
@@ -1379,29 +1390,27 @@ class _MovieAboutState extends State<MovieAbout> {
               title: tr("videos"),
             ),
             MovieSocialLinks(
-              api: Endpoints.getExternalLinksForMovie(
-                widget.movie.id!,
-              ),
+              api: Endpoints.getExternalLinksForMovie(widget.movie.id!, lang),
             ),
             BelongsToCollectionWidget(
-              api: Endpoints.movieDetailsUrl(widget.movie.id!),
+              api: Endpoints.movieDetailsUrl(widget.movie.id!, lang),
             ),
             MovieInfoTable(
-              api: Endpoints.movieDetailsUrl(widget.movie.id!),
+              api: Endpoints.movieDetailsUrl(widget.movie.id!, lang),
             ),
             const SizedBox(
               height: 10,
             ),
             MovieRecommendationsTab(
               includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-              api: Endpoints.getMovieRecommendations(widget.movie.id!, 1),
+              api: Endpoints.getMovieRecommendations(widget.movie.id!, 1, lang),
               movieId: widget.movie.id!,
             ),
             SimilarMoviesTab(
                 movieName: widget.movie.title!,
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
                 movieId: widget.movie.id!,
-                api: Endpoints.getSimilarMovies(widget.movie.id!, 1)),
+                api: Endpoints.getSimilarMovies(widget.movie.id!, 1, lang)),
             // DidYouKnow(
             //   api: Endpoints.getExternalLinksForMovie(
             //     widget.movie.id!,
@@ -3012,7 +3021,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
         child: Row(
           children: [
             const Padding(
-              padding: EdgeInsets.only(right: 10),
+              padding: EdgeInsets.only(right: 10, left: 10),
               child: Icon(
                 Icons.play_circle,
                 color: Colors.white,
@@ -3025,9 +3034,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
             Visibility(
               visible: isVisible!,
               child: const Padding(
-                padding: EdgeInsets.only(
-                  left: 10.0,
-                ),
+                padding: EdgeInsets.only(left: 10.0, right: 10.0),
                 child: SizedBox(
                   height: 16,
                   width: 16,
@@ -3778,11 +3785,13 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  tr("movie_recommendations"),
-                  style: kTextHeaderStyle,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    tr("movie_recommendations"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ),
             ],
@@ -3913,6 +3922,8 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
                     tr("movies_similar_with",
                         namedArgs: {"movie": widget.movieName}),
                     style: kTextHeaderStyle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),

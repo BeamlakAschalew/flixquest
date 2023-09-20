@@ -32,6 +32,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
     super.build(context);
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return Scaffold(
         body: CustomScrollView(
       controller: scrollController,
@@ -241,14 +242,14 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                       padding: const EdgeInsets.all(8.0),
                       child: CollectionOverviewWidget(
                         api: Endpoints.getCollectionDetails(
-                            widget.belongsToCollection!.id!),
+                            widget.belongsToCollection!.id!, lang),
                       ),
                       // child: CollectionOverviewWidget(),
                     ),
                     PartsList(
                       title: tr("movies"),
                       api: Endpoints.getCollectionDetails(
-                          widget.belongsToCollection!.id!),
+                          widget.belongsToCollection!.id!, lang),
                     )
                   ],
                 ),

@@ -200,6 +200,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
   @override
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return Scaffold(
         key: _scaffoldKey,
         drawer: const Drawer(child: DrawerWidget()),
@@ -232,7 +233,8 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                           mixpanel: mixpanel,
                           includeAdult: Provider.of<SettingsProvider>(context,
                                   listen: false)
-                              .isAdult));
+                              .isAdult,
+                          lang: lang));
                 },
                 icon: const Icon(Icons.search)),
             // IconButton(
@@ -261,37 +263,32 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           child: SafeArea(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                  const EdgeInsets.symmetric(horizontal: 35.0, vertical: 7.5),
               child: GNav(
                 rippleColor: Colors.grey[300]!,
                 hoverColor: Colors.grey[100]!,
-                gap: 8,
                 activeColor: Colors.black,
-                iconSize: 24,
+                iconSize: 35,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                 duration: const Duration(milliseconds: 400),
                 tabBackgroundColor: Colors.grey[100]!,
                 color: Colors.black,
                 tabs: [
                   GButton(
                     icon: FontAwesomeIcons.clapperboard,
-                    text: tr("movies"),
                     iconColor: Theme.of(context).colorScheme.primaryContainer,
                   ),
                   GButton(
                     icon: FontAwesomeIcons.tv,
-                    text: tr("tv_shows"),
                     iconColor: Theme.of(context).colorScheme.primaryContainer,
                   ),
                   GButton(
                     icon: FontAwesomeIcons.compass,
-                    text: tr("discover"),
                     iconColor: Theme.of(context).colorScheme.primaryContainer,
                   ),
                   GButton(
                     icon: FontAwesomeIcons.user,
-                    text: tr("profile"),
                     iconColor: Theme.of(context).colorScheme.primaryContainer,
                   ),
                 ],

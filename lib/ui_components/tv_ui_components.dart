@@ -399,7 +399,7 @@ class TVGridView extends StatelessWidget {
                   Expanded(
                       flex: 2,
                       child: Text(
-                        tvList![index].originalName!,
+                        tvList![index].name!,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,

@@ -91,10 +91,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
                     heroId: widget.heroId,
                     movie: widget.movie,
                   ),
-
                   const SizedBox(height: 18),
-
-                  // ratings / lists / bookmark options
                   MovieDetailOptions(movie: widget.movie),
                 ],
               ),
@@ -128,11 +125,12 @@ class MovieDetailPageState extends State<MovieDetailPage>
   bool get wantKeepAlive => true;
 
   void modalBottomSheetMenu(String country) {
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     showModalBottomSheet(
       context: context,
       builder: (builder) {
         return WatchProvidersDetails(
-          api: Endpoints.getMovieWatchProviders(widget.movie.id!),
+          api: Endpoints.getMovieWatchProviders(widget.movie.id!, lang),
           country: country,
         );
       },

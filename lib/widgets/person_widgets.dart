@@ -965,6 +965,7 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
         decoration: const BoxDecoration(
@@ -1026,11 +1027,11 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                                       children: [
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
-                                                widget.cast!.id!)),
+                                                widget.cast!.id!, lang)),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
-                                                  widget.cast!.id!),
+                                                  widget.cast!.id!, lang),
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.cast!.name!,
@@ -1041,7 +1042,7 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
-                                              widget.cast!.id!),
+                                              widget.cast!.id!, lang),
                                         ),
                                       ],
                                     ),
@@ -1057,7 +1058,7 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                                   Provider.of<SettingsProvider>(context)
                                       .isAdult,
                               api: Endpoints.getMovieCreditsForPerson(
-                                  widget.cast!.id!),
+                                  widget.cast!.id!, lang),
                             ),
                           ),
                           Container(
@@ -1067,7 +1068,7 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                                     Provider.of<SettingsProvider>(context)
                                         .isAdult,
                                 api: Endpoints.getTVCreditsForPerson(
-                                    widget.cast!.id!)),
+                                    widget.cast!.id!, lang)),
                           ),
                         ],
                       ),
@@ -1291,6 +1292,7 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
         decoration: const BoxDecoration(
@@ -1352,11 +1354,11 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                                       children: [
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
-                                                widget.createdBy!.id!)),
+                                                widget.createdBy!.id!, lang)),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
-                                                  widget.createdBy!.id!),
+                                                  widget.createdBy!.id!, lang),
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.createdBy!.name!,
@@ -1367,7 +1369,7 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
-                                              widget.createdBy!.id!),
+                                              widget.createdBy!.id!, lang),
                                         ),
                                       ],
                                     ),
@@ -1382,7 +1384,7 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                                   Provider.of<SettingsProvider>(context)
                                       .isAdult,
                               api: Endpoints.getMovieCreditsForPerson(
-                                  widget.createdBy!.id!),
+                                  widget.createdBy!.id!, lang),
                             ),
                           ),
                           Container(
@@ -1391,7 +1393,7 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                                     Provider.of<SettingsProvider>(context)
                                         .isAdult,
                                 api: Endpoints.getTVCreditsForPerson(
-                                    widget.createdBy!.id!)),
+                                    widget.createdBy!.id!, lang)),
                           ),
                         ],
                       ),
@@ -1525,6 +1527,7 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
         decoration: const BoxDecoration(
@@ -1586,11 +1589,11 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                                       children: [
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
-                                                widget.crew!.id!)),
+                                                widget.crew!.id!, lang)),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
-                                                  widget.crew!.id!),
+                                                  widget.crew!.id!, lang),
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.crew!.name!,
@@ -1601,7 +1604,7 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
-                                              widget.crew!.id!),
+                                              widget.crew!.id!, lang),
                                         ),
                                       ],
                                     ),
@@ -1617,7 +1620,7 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                                   Provider.of<SettingsProvider>(context)
                                       .isAdult,
                               api: Endpoints.getMovieCreditsForPerson(
-                                  widget.crew!.id!),
+                                  widget.crew!.id!, lang),
                             ),
                           ),
                           Container(
@@ -1627,7 +1630,7 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                                     Provider.of<SettingsProvider>(context)
                                         .isAdult,
                                 api: Endpoints.getTVCreditsForPerson(
-                                    widget.crew!.id!)),
+                                    widget.crew!.id!, lang)),
                           ),
                         ],
                       ),
@@ -1760,6 +1763,7 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
         decoration: const BoxDecoration(
@@ -1821,11 +1825,11 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                                       children: [
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
-                                                widget.cast!.id!)),
+                                                widget.cast!.id!, lang)),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
-                                                  widget.cast!.id!),
+                                                  widget.cast!.id!, lang),
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.cast!.name!,
@@ -1836,7 +1840,7 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
-                                              widget.cast!.id!),
+                                              widget.cast!.id!, lang),
                                         ),
                                       ],
                                     ),
@@ -1852,7 +1856,7 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                                   Provider.of<SettingsProvider>(context)
                                       .isAdult,
                               api: Endpoints.getMovieCreditsForPerson(
-                                  widget.cast!.id!),
+                                  widget.cast!.id!, lang),
                             ),
                           ),
                           Container(
@@ -1862,7 +1866,7 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                                     Provider.of<SettingsProvider>(context)
                                         .isAdult,
                                 api: Endpoints.getTVCreditsForPerson(
-                                    widget.cast!.id!)),
+                                    widget.cast!.id!, lang)),
                           ),
                         ],
                       ),
@@ -1994,6 +1998,7 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
         decoration: const BoxDecoration(
@@ -2055,11 +2060,11 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                                       children: [
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
-                                                widget.person!.id!)),
+                                                widget.person!.id!, lang)),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
-                                                  widget.person!.id!),
+                                                  widget.person!.id!, lang),
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.person!.name!,
@@ -2070,7 +2075,7 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
-                                              widget.person!.id!),
+                                              widget.person!.id!, lang),
                                         ),
                                       ],
                                     ),
@@ -2086,7 +2091,7 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                                   Provider.of<SettingsProvider>(context)
                                       .isAdult,
                               api: Endpoints.getMovieCreditsForPerson(
-                                  widget.person!.id!),
+                                  widget.person!.id!, lang),
                             ),
                           ),
                           Container(
@@ -2096,7 +2101,7 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                                     Provider.of<SettingsProvider>(context)
                                         .isAdult,
                                 api: Endpoints.getTVCreditsForPerson(
-                                    widget.person!.id!)),
+                                    widget.person!.id!, lang)),
                           ),
                         ],
                       ),

@@ -132,6 +132,7 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final appLang = Provider.of<SettingsProvider>(context).appLanguage;
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -202,7 +203,9 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                             bottom: 0,
                             child: SafeArea(
                               child: Container(
-                                alignment: Alignment.topRight,
+                                alignment: appLang == 'ar'
+                                    ? Alignment.topLeft
+                                    : Alignment.topRight,
                                 child: TopButton(
                                   buttonText: tr("open_show"),
                                 ),
@@ -333,6 +336,7 @@ class TVSeasonAbout extends StatefulWidget {
 class _TVSeasonAboutState extends State<TVSeasonAbout> {
   @override
   Widget build(BuildContext context) {
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
         decoration: const BoxDecoration(
@@ -344,7 +348,7 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
             Row(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
                     tr("overview"),
                     style: kTextHeaderStyle,
@@ -377,7 +381,8 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
             Row(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0, bottom: 4.0),
+                  padding:
+                      const EdgeInsets.only(left: 8.0, bottom: 4.0, right: 8.0),
                   child: Text(
                     widget.season.airDate == null
                         ? tr("no_first_episode_air_date")
@@ -403,14 +408,14 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
               seasonNumber: widget.season.seasonNumber,
               passedFrom: 'seasons_detail',
               api: Endpoints.getTVSeasonCreditsUrl(
-                  widget.tvDetails.id!, widget.season.seasonNumber!),
+                  widget.tvDetails.id!, widget.season.seasonNumber!, lang),
               title: 'Cast',
             ),
             EpisodeListWidget(
               seriesName: widget.seriesName,
               tvId: widget.tvDetails.id,
               api: Endpoints.getSeasonDetails(
-                  widget.tvDetails.id!, widget.season.seasonNumber!),
+                  widget.tvDetails.id!, widget.season.seasonNumber!, lang),
               posterPath: widget.season.posterPath,
             ),
             TVSeasonImagesDisplay(

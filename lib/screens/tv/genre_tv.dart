@@ -16,6 +16,7 @@ class TVGenre extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return Scaffold(
       appBar: AppBar(
         title: Text(tr(
@@ -35,7 +36,7 @@ class TVGenre extends StatelessWidget {
         child: ParticularGenreTV(
           includeAdult: Provider.of<SettingsProvider>(context).isAdult,
           genreId: genres.genreID!,
-          api: Endpoints.getTVShowsForGenre(genres.genreID!, 1),
+          api: Endpoints.getTVShowsForGenre(genres.genreID!, 1, lang),
         ),
       ),
     );

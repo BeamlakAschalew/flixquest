@@ -33,6 +33,7 @@ class _TVDetailCastAndCrewState extends State<TVDetailCastAndCrew>
   @override
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -85,10 +86,10 @@ class _TVDetailCastAndCrewState extends State<TVDetailCastAndCrew>
                   controller: tabController,
                   children: [
                     TVCastTab(
-                      api: Endpoints.getFullTVCreditsUrl(widget.id),
+                      api: Endpoints.getFullTVCreditsUrl(widget.id, lang),
                     ),
                     TVCrewTab(
-                      api: Endpoints.getFullTVCreditsUrl(widget.id),
+                      api: Endpoints.getFullTVCreditsUrl(widget.id, lang),
                     )
                   ],
                 ),

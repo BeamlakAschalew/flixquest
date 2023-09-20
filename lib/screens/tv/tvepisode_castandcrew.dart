@@ -36,8 +36,7 @@ class _TVEpisodeCastAndCrewState extends State<TVEpisodeCastAndCrew>
 
   @override
   Widget build(BuildContext context) {
-    // print(widget.id);
-    // print(widget.seasonNumber);
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return DefaultTabController(
         length: 2,
@@ -94,15 +93,15 @@ class _TVEpisodeCastAndCrewState extends State<TVEpisodeCastAndCrew>
                   controller: tabController,
                   children: [
                     TVEpisodeCastTab(
-                      api: Endpoints.getEpisodeCredits(
-                          widget.id, widget.seasonNumber, widget.episodeNumber),
+                      api: Endpoints.getEpisodeCredits(widget.id,
+                          widget.seasonNumber, widget.episodeNumber, lang),
                     ),
                     TVEpisodeGuestStarsTab(
                         api: Endpoints.getEpisodeCredits(widget.id,
-                            widget.seasonNumber, widget.episodeNumber)),
+                            widget.seasonNumber, widget.episodeNumber, lang)),
                     TVCrewTab(
-                      api: Endpoints.getEpisodeCredits(
-                          widget.id, widget.seasonNumber, widget.episodeNumber),
+                      api: Endpoints.getEpisodeCredits(widget.id,
+                          widget.seasonNumber, widget.episodeNumber, lang),
                     )
                   ],
                 ),

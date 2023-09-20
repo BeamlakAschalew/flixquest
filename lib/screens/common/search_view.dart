@@ -20,7 +20,9 @@ import '/screens/tv/tv_detail.dart';
 class Search extends SearchDelegate<String> {
   final Mixpanel mixpanel;
   final bool includeAdult;
-  Search({required this.mixpanel, required this.includeAdult})
+  final String lang;
+  Search(
+      {required this.mixpanel, required this.includeAdult, required this.lang})
       : super(
           searchFieldLabel: tr("search_text"),
         );
@@ -104,7 +106,7 @@ class Search extends SearchDelegate<String> {
               FutureBuilder<List<Movie>>(
                 future: Future.delayed(const Duration(seconds: 1)).then(
                   (value) => fetchMovies(
-                      Endpoints.movieSearchUrl(query, includeAdult)),
+                      Endpoints.movieSearchUrl(query, includeAdult, lang)),
                 ),
                 builder: (context, snapshot) {
                   if (query.isEmpty) return searchATermWidget(isDark);
@@ -124,8 +126,8 @@ class Search extends SearchDelegate<String> {
               ),
               FutureBuilder<List<TV>>(
                 future: Future.delayed(const Duration(seconds: 1)).then(
-                    (value) =>
-                        fetchTV(Endpoints.tvSearchUrl(query, includeAdult))),
+                    (value) => fetchTV(
+                        Endpoints.tvSearchUrl(query, includeAdult, lang))),
                 builder: (context, snapshot) {
                   if (query.isEmpty) return searchATermWidget(isDark);
 
@@ -144,7 +146,7 @@ class Search extends SearchDelegate<String> {
               FutureBuilder<List<Person>>(
                 future: Future.delayed(const Duration(seconds: 1)).then(
                     (value) => fetchPerson(
-                        Endpoints.personSearchUrl(query, includeAdult))),
+                        Endpoints.personSearchUrl(query, includeAdult, lang))),
                 builder: (context, snapshot) {
                   if (query.isEmpty) return searchATermWidget(isDark);
                   switch (snapshot.connectionState) {

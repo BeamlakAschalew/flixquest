@@ -3,113 +3,112 @@
 import '/constants/api_constants.dart';
 
 class Endpoints {
-  static String discoverMoviesUrl(int page) {
+  static String discoverMoviesUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
         '/discover/movie?api_key='
         '$TMDB_API_KEY'
-        '&language=en-US&sort_by=popularity'
+        '&language=$l&sort_by=popularity'
         '.desc&include_video=false&page'
         '=$page';
   }
 
-  static String nowPlayingMoviesUrl(int page) {
+  static String nowPlayingMoviesUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
         '/movie/now_playing?api_key='
         '$TMDB_API_KEY'
-        '&page=$page';
+        '&page=$page&language=$l';
   }
 
-  static String getCreditsUrl(int id) {
-    return '$TMDB_API_BASE_URL/movie/$id/credits?api_key=$TMDB_API_KEY';
+  static String getCreditsUrl(int id, String l) {
+    return '$TMDB_API_BASE_URL/movie/$id/credits?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String topRatedUrl(int page) {
+  static String topRatedUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
         '/movie/top_rated?api_key='
         '$TMDB_API_KEY'
         '&page=$page'
-        '&region=US';
+        '&region=US&language=$l';
   }
 
-  static String popularMoviesUrl(int page) {
+  static String popularMoviesUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
         '/movie/popular?api_key='
         '$TMDB_API_KEY'
-        '&page=$page';
+        '&page=$page&language=$l';
   }
 
-  static String trendingMoviesUrl(int page, bool includeAdult) {
+  static String trendingMoviesUrl(int page, bool includeAdult, String l) {
     return '$TMDB_API_BASE_URL'
         '/trending/movie/week?api_key='
         '$TMDB_API_KEY'
         '&page=$page'
-        '&include_adult=$includeAdult';
+        '&include_adult=$includeAdult&language=$l';
   }
 
-  static String upcomingMoviesUrl(int page) {
+  static String upcomingMoviesUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
         '/movie/upcoming?api_key='
         '$TMDB_API_KEY'
-        '&page=$page';
+        '&page=$page&language=$l';
   }
 
-  static String movieDetailsUrl(int movieId) {
-    return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY';
+  static String movieDetailsUrl(int movieId, String l) {
+    return '$TMDB_API_BASE_URL/movie/$movieId?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String movieGenresUrl() {
-    return '$TMDB_API_BASE_URL/genre/movie/list?api_key=$TMDB_API_KEY&language=en-US';
+  static String movieGenresUrl(String l) {
+    return '$TMDB_API_BASE_URL/genre/movie/list?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String tvGenresUrl() {
-    return '$TMDB_API_BASE_URL/genre/tv/list?api_key=$TMDB_API_KEY&language=en-US';
+  static String tvGenresUrl(String l) {
+    return '$TMDB_API_BASE_URL/genre/tv/list?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getMoviesForGenre(int genreId, int page) {
+  static String getMoviesForGenre(int genreId, int page, String l) {
     return '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY'
-        '&language=en-US'
         '&sort_by=popularity.desc'
         '&include_video=false'
         '&page=$page'
-        '&with_genres=$genreId';
+        '&with_genres=$genreId&language=$l';
   }
 
-  static String movieReviewsUrl(int movieId, int page) {
+  static String movieReviewsUrl(int movieId, int page, String l) {
     return '$TMDB_API_BASE_URL/movie/$movieId/reviews?api_key=$TMDB_API_KEY'
-        '&language=en-US&page=$page';
+        '&language=$l&page=$page';
   }
 
-  static String movieSearchUrl(String query, bool includeAdult) {
-    return "$TMDB_API_BASE_URL/search/movie?query=$query&include_adult=$includeAdult&api_key=$TMDB_API_KEY";
+  static String movieSearchUrl(String query, bool includeAdult, String l) {
+    return "$TMDB_API_BASE_URL/search/movie?query=$query&include_adult=$includeAdult&language=$l&api_key=$TMDB_API_KEY";
   }
 
-  static String personSearchUrl(String query, bool includeAdult) {
-    return "$TMDB_API_BASE_URL/search/person?query=$query&include_adult=$includeAdult&api_key=$TMDB_API_KEY";
+  static String personSearchUrl(String query, bool includeAdult, String l) {
+    return "$TMDB_API_BASE_URL/search/person?query=$query&include_adult=$includeAdult&language=$l&api_key=$TMDB_API_KEY";
   }
 
-  static String tvSearchUrl(String query, bool includeAdult) {
-    return "$TMDB_API_BASE_URL/search/tv?query=$query&include_adult=$includeAdult&api_key=$TMDB_API_KEY";
+  static String tvSearchUrl(String query, bool includeAdult, String l) {
+    return "$TMDB_API_BASE_URL/search/tv?query=$query&include_adult=$includeAdult&language=$l&api_key=$TMDB_API_KEY";
   }
 
-  static getPerson(int personId) {
-    return "$TMDB_API_BASE_URL/person/$personId?api_key=$TMDB_API_KEY&append_to_response=movie_credits";
+  static getPerson(int personId, String l) {
+    return "$TMDB_API_BASE_URL/person/$personId?api_key=$TMDB_API_KEY&language=$l&append_to_response=movie_credits";
   }
 
-  static watchProvidersMovies(int providerId, int page) {
+  static watchProvidersMovies(int providerId, int page, String l) {
     return '$TMDB_API_BASE_URL'
         '/discover/movie?api_key='
         '$TMDB_API_KEY'
-        '&language=en-US&sort_by=popularity'
+        '&language=$l&sort_by=popularity'
         '.desc&include_video=false&page=$page'
         '&with_watch_providers=$providerId'
         '&watch_region=US';
   }
 
-  static watchProvidersTVShows(int providerId, int page) {
+  static watchProvidersTVShows(int providerId, int page, String l) {
     return '$TMDB_API_BASE_URL'
         '/discover/tv?api_key='
         '$TMDB_API_KEY'
-        '&language=en-US&sort_by=popularity'
+        '&language=$l&sort_by=popularity'
         '.desc&include_adult=false&include_video=false&page=$page'
         '&with_watch_providers=$providerId'
         '&watch_region=US';
@@ -123,88 +122,89 @@ class Endpoints {
     return '$TMDB_API_BASE_URL/movie/$id/videos?api_key=$TMDB_API_KEY';
   }
 
-  static String getMovieRecommendations(int id, int page) {
+  static String getMovieRecommendations(int id, int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/movie/$id/recommendations?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+        '/movie/$id/recommendations?api_key=$TMDB_API_KEY&language=$l&page=$page';
   }
 
-  static String getExternalLinksForMovie(int id) {
+  static String getExternalLinksForMovie(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/movie/$id/external_ids?api_key=$TMDB_API_KEY';
+        '/movie/$id/external_ids?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getSimilarMovies(int id, int page) {
+  static String getSimilarMovies(int id, int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/movie/$id/similar?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+        '/movie/$id/similar?api_key=$TMDB_API_KEY&language=$l&page=$page';
   }
 
-  static String getMovieCreditsForPerson(int id) {
+  static String getMovieCreditsForPerson(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/person/$id/movie_credits?api_key=$TMDB_API_KEY&language=en-US';
+        '/person/$id/movie_credits?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static getPersonDetails(int id) {
+  static getPersonDetails(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/person/$id?api_key=$TMDB_API_KEY&language=en-US';
+        '/person/$id?api_key=$TMDB_API_KEY&language=$l';
   }
 
   static getPersonImages(int id) {
-    return '$TMDB_API_BASE_URL' '/person/$id/images?api_key=$TMDB_API_KEY';
+    return '$TMDB_API_BASE_URL'
+        '/person/$id/images?api_key=$TMDB_API_KEY';
   }
 
-  static getMovieWatchProviders(int id) {
+  static getMovieWatchProviders(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/movie/$id/watch/providers?api_key=$TMDB_API_KEY';
+        '/movie/$id/watch/providers?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static discoverTVUrl(int page) {
+  static discoverTVUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/discover/tv?api_key=$TMDB_API_KEY&language=en-US&sort_by=popularity.desc&page=$page';
+        '/discover/tv?api_key=$TMDB_API_KEY&language=$l&sort_by=popularity.desc&page=$page';
   }
 
-  static popularTVUrl(int page) {
+  static popularTVUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/popular?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+        '/tv/popular?api_key=$TMDB_API_KEY&language=$l&page=$page';
   }
 
-  static trendingTVUrl(int page) {
+  static trendingTVUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/trending/tv/week?api_key=$TMDB_API_KEY&page=$page';
+        '/trending/tv/week?api_key=$TMDB_API_KEY&page=$page&language=$l';
   }
 
-  static topRatedTVUrl(int page) {
+  static topRatedTVUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/top_rated?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+        '/tv/top_rated?api_key=$TMDB_API_KEY&language=$l&page=$page';
   }
 
-  static airingTodayUrl(int page) {
+  static airingTodayUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/airing_today?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+        '/tv/airing_today?api_key=$TMDB_API_KEY&language=$l&page=$page';
   }
 
-  static onTheAirUrl(int page) {
+  static onTheAirUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/on_the_air?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+        '/tv/on_the_air?api_key=$TMDB_API_KEY&language=$l&page=$page';
   }
 
-  static getFullTVCreditsUrl(int id) {
+  static getFullTVCreditsUrl(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id/aggregate_credits?api_key=$TMDB_API_KEY&language=en-US';
+        '/tv/$id/aggregate_credits?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static getTVCreditsUrl(int id) {
+  static getTVCreditsUrl(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id/credits?api_key=$TMDB_API_KEY&language=en-US';
+        '/tv/$id/credits?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static getTVSeasonCreditsUrl(int id, int seasonNumber) {
+  static getTVSeasonCreditsUrl(int id, int seasonNumber, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id/season/$seasonNumber/credits?api_key=$TMDB_API_KEY&language=en-US';
+        '/tv/$id/season/$seasonNumber/credits?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static getFullTVSeasonCreditsUrl(int id, int seasonNumber) {
+  static getFullTVSeasonCreditsUrl(int id, int seasonNumber, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id/season/$seasonNumber/aggregate_credits?api_key=$TMDB_API_KEY&language=en-US';
+        '/tv/$id/season/$seasonNumber/aggregate_credits?api_key=$TMDB_API_KEY&language=$l';
   }
 
   static getTVSeasonImagesUrl(int id, int seasonNumber) {
@@ -227,8 +227,8 @@ class Endpoints {
         '/tv/$id/season/$seasonNumber/videos?api_key=$TMDB_API_KEY';
   }
 
-  static String tvDetailsUrl(int id) {
-    return '$TMDB_API_BASE_URL/tv/$id?api_key=$TMDB_API_KEY';
+  static String tvDetailsUrl(int id, String l) {
+    return '$TMDB_API_BASE_URL/tv/$id?api_key=$TMDB_API_KEY&language=$l';
   }
 
   static String getTVImages(int id) {
@@ -239,69 +239,71 @@ class Endpoints {
     return '$TMDB_API_BASE_URL/tv/$id/videos?api_key=$TMDB_API_KEY';
   }
 
-  static String getTVRecommendations(int id, int page) {
+  static String getTVRecommendations(int id, int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id/recommendations?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+        '/tv/$id/recommendations?api_key=$TMDB_API_KEY&language=$l&page=$page';
   }
 
-  static String getSimilarTV(int id, int page) {
+  static String getSimilarTV(int id, int page, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id/similar?api_key=$TMDB_API_KEY&language=en-US&page=$page';
+        '/tv/$id/similar?api_key=$TMDB_API_KEY&language=$l&page=$page';
   }
 
-  static String getTVShowsForGenre(int genreId, int page) {
+  static String getTVShowsForGenre(int genreId, int page, String l) {
     return '$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY'
-        '&language=en-US'
+        '&language=$l'
         '&sort_by=popularity.desc'
         '&page=$page'
         '&with_genres=$genreId';
   }
 
-  static String getTVCreditsForPerson(int id) {
+  static String getTVCreditsForPerson(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/person/$id/tv_credits?api_key=$TMDB_API_KEY&language=en-US';
+        '/person/$id/tv_credits?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getExternalLinksForPerson(int id) {
+  static String getExternalLinksForPerson(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/person/$id/external_ids?api_key=$TMDB_API_KEY';
+        '/person/$id/external_ids?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getExternalLinksForTV(int id) {
+  static String getExternalLinksForTV(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id/external_ids?api_key=$TMDB_API_KEY';
+        '/tv/$id/external_ids?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getTVSeasons(int id) {
+  static String getTVSeasons(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id?api_key=$TMDB_API_KEY&language=en-US';
+        '/tv/$id?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getSeasonDetails(int id, int seasonNum) {
+  static String getSeasonDetails(int id, int seasonNum, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id/season/$seasonNum?api_key=$TMDB_API_KEY&language=en-US';
+        '/tv/$id/season/$seasonNum?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getCollectionDetails(int id) {
+  static String getCollectionDetails(int id, String l) {
     return '$TMDB_API_BASE_URL'
-        '/collection/$id?api_key=$TMDB_API_KEY&language=en-US';
+        '/collection/$id?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getEpisodeCredits(int id, int seasonNumber, int episodeNumber) {
+  static String getEpisodeCredits(
+      int id, int seasonNumber, int episodeNumber, String l) {
     return '$TMDB_API_BASE_URL'
-        '/tv/$id/season/$seasonNumber/episode/$episodeNumber/credits?api_key=$TMDB_API_KEY&language=en-US';
+        '/tv/$id/season/$seasonNumber/episode/$episodeNumber/credits?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getTVWatchProviders(int id) {
-    return '$TMDB_API_BASE_URL' '/tv/$id/watch/providers?api_key=$TMDB_API_KEY';
+  static String getTVWatchProviders(int id, String l) {
+    return '$TMDB_API_BASE_URL'
+        '/tv/$id/watch/providers?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getMovieDetails(int id) {
-    return '$TMDB_API_BASE_URL' '/movie/$id?api_key=$TMDB_API_KEY';
+  static String getMovieDetails(int id, String l) {
+    return '$TMDB_API_BASE_URL' '/movie/$id?api_key=$TMDB_API_KEY&language=$l';
   }
 
-  static String getTVDetails(int id) {
-    return '$TMDB_API_BASE_URL' '/tv/$id?api_key=$TMDB_API_KEY';
+  static String getTVDetails(int id, String l) {
+    return '$TMDB_API_BASE_URL' '/tv/$id?api_key=$TMDB_API_KEY&language=$l';
   }
 
   static String searchMovieTVForStream(String titleName, String baseUrl) {

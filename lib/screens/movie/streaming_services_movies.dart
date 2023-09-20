@@ -17,6 +17,7 @@ class StreamingServicesMovies extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -35,7 +36,7 @@ class StreamingServicesMovies extends StatelessWidget {
         child: ParticularStreamingServiceMovies(
           includeAdult: Provider.of<SettingsProvider>(context).isAdult,
           providerID: providerId,
-          api: Endpoints.watchProvidersMovies(providerId, 1),
+          api: Endpoints.watchProvidersMovies(providerId, 1, lang),
           watchRegion: Provider.of<SettingsProvider>(context).defaultCountry,
         ),
       ),
