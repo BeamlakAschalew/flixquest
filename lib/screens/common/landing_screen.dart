@@ -1,11 +1,11 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../cinemax_main.dart';
 import '/provider/settings_provider.dart';
 import '/screens/user/login_screen.dart';
 import '/screens/user/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import '/main.dart';
 import 'package:flutter/material.dart';
 
 class LandingScreen extends StatefulWidget {

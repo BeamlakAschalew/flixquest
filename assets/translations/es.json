@@ -248,7 +248,7 @@
 	"first_air_year": "Primer año de emisión",
 	"total_ratings": "Calificaciones totales",
 	"genre_tv_title": "Programas de TV de {g}",
-	 "tv_404": "¡Vaya! Los programas de TV no existen :(",
+	"tv_404": "¡Vaya! Los programas de TV no existen :(",
 	"open_show": "Abrir programa",
 	"no_season_overview": "Esta temporada no tiene una descripción general",
 	"read_more": "leer más",
@@ -257,6 +257,7 @@
 	"first_episode_air_date": "Fecha de emisión del primer episodio: {day} {date}, {year}",
 	"images": "Imágenes",
 	"streaming_service_tv": "Programas de TV de {provider}",
+    "share_tv": "¡Mira el programa de televisión {title}!\nTiene una calificación de {rating} sobre 10\nhttps://themoviedb.org/tv/{id}",
 	"tv_vid_404": "El episodio de TV no se pudo encontrar en nuestros servidores :(",
 	"tv_vid_404_desc": "El episodio de TV no se pudo encontrar en nuestros servidores :( Error: {err}",
 	"guest_stars": "Estrellas invitadas",
@@ -450,5 +451,9 @@
 	"episode_air_empty": "Fecha de emisión del primer episodio: N/A",
 	"episode_air": "Fecha de emisión del primer episodio:",
 	"open_season": "Temporada abierta",
-    "image_index": "Imagen {index}"
+    "image_index": "Imagen {index}",
+    "app_language": "Idioma de la aplicación",
+    "choose_language": "Elige lengua",
+    "restart_language": "Los cambios de idioma entran en vigor después de reiniciar la aplicación.",
+    "restart": "Reanudar"
 }

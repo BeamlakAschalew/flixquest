@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cinemax/models/app_languages.dart';
+import 'package:cinemax/screens/common/language_choose.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '/models/watchprovider_countries.dart';
@@ -7,7 +9,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'player_settings.dart';
 
 class Settings extends StatefulWidget {
@@ -21,8 +22,11 @@ class _SettingsState extends State<Settings> {
   String initialDropdownValue = 'w500';
   int initialHomeScreenValue = 0;
   CountryData countryData = CountryData();
+  LanguageData languageData = LanguageData();
   String? countryFlag;
   String? countryName;
+  String? languageFlag;
+  String? languageName;
   String? release;
   bool isBelow33 = true;
 
@@ -51,6 +55,7 @@ class _SettingsState extends State<Settings> {
     final imagequalityChange = Provider.of<SettingsProvider>(context);
     final defaultHomeValue = Provider.of<SettingsProvider>(context);
     final country = Provider.of<SettingsProvider>(context).defaultCountry;
+    final appLang = Provider.of<SettingsProvider>(context).appLanguage;
     final viewType = Provider.of<SettingsProvider>(context);
     final m3 = Provider.of<SettingsProvider>(context);
 
@@ -59,6 +64,16 @@ class _SettingsState extends State<Settings> {
         setState(() {
           countryFlag = countryData.countries[i].flagPath;
           countryName = countryData.countries[i].countryName;
+        });
+        break;
+      }
+    }
+
+    for (int i = 0; i < languageData.langs.length; i++) {
+      if (languageData.langs[i].languageCode.contains(appLang)) {
+        setState(() {
+          languageFlag = languageData.langs[i].languageFlag;
+          languageName = languageData.langs[i].languageName;
         });
         break;
       }
@@ -253,6 +268,31 @@ class _SettingsState extends State<Settings> {
                     defaultHomeValue.defaultValue = value!;
                   });
                 }),
+          ),
+          ListTile(
+            onTap: (() {
+              Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                return const AppLanguageChoose();
+              })));
+            }),
+            leading: Icon(
+              FontAwesomeIcons.language,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            title: Text(
+              tr("app_language"),
+            ),
+            trailing: Wrap(
+                spacing: 10,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Image.asset(
+                    languageFlag!,
+                    height: 25,
+                    width: 25,
+                  ),
+                  Text(languageName!)
+                ]),
           ),
           ListTile(
             onTap: (() {

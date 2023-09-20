@@ -1,8 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
-
+import '../../cinemax_main.dart';
 import '/screens/user/forgot_password.dart';
-
-import '/main.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

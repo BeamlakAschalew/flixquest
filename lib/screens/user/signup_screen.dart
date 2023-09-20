@@ -1,9 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:easy_localization/easy_localization.dart';
-
+import '../../cinemax_main.dart';
 import '/constants/app_constants.dart';
-import '/main.dart';
 import '/models/profile_image_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -451,5 +451,9 @@
     "episode_air_empty": "First episode air date: N/A",
     "episode_air": "First episode air date :",
     "open_season": "Open season",
-    "image_index": "Image {index}"
+    "image_index": "Image {index}",
+    "app_language": "App language",
+    "choose_language": "Choose language",
+    "restart_language": "Language changes take effect after restarting the app.",
+    "restart": "Restart"
 }

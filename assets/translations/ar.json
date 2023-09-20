@@ -451,6 +451,10 @@
 	"episode_air_empty": "تاريخ بث الحلقة الأولى: غير متوفر",
 	"episode_air": "تاريخ بث الحلقة الأولى:",
 	"open_season": "موسم مفتوح",
-	"image_index": "الصورة {index}"
+	"image_index": "الصورة {index}",
+	"app_language": "لغة التطبيق",
+	"choose_language": "اختر اللغة",
+	"restart_language": "تسري تغييرات اللغة بعد إعادة تشغيل التطبيق.",
+	"restart": "Restart"
 }
 

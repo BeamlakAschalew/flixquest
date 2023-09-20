@@ -196,3 +196,17 @@ class VideoPlayerPreferences {
     return prefs.getInt(SUBTITLE_FONT_SIZE) ?? 17;
   }
 }
+
+class AppLanguagePreferences {
+  static const APP_LANGUAGE_CODE = 'en';
+
+  setAppLanguage(String lang) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(APP_LANGUAGE_CODE, lang);
+  }
+
+  Future<String> getAppLang() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(APP_LANGUAGE_CODE) ?? 'en';
+  }
+}
