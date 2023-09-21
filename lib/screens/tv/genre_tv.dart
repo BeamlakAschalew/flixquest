@@ -21,7 +21,7 @@ class TVGenre extends StatelessWidget {
       appBar: AppBar(
         title: Text(tr(
           "genre_tv_title",
-          namedArgs: {"g": genres.genreName!},
+          namedArgs: {"g": genres.genreName ?? "Null"},
         )),
         leading: IconButton(
           icon: const Icon(

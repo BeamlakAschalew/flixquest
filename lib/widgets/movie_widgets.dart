@@ -4297,7 +4297,7 @@ class GenreListGridState extends State<GenreListGrid>
                                         borderRadius:
                                             BorderRadius.circular(15)),
                                     child: Text(
-                                      genreList![index].genreName!,
+                                      genreList![index].genreName ?? "Null",
                                       style: TextStyle(
                                         color: Theme.of(context)
                                             .colorScheme
