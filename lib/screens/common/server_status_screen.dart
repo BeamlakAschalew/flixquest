@@ -29,21 +29,25 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
     await getMovieStreamLinksAndSubs(
             "${appDependencyProvider.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708")
         .then((value) {
-      setState(() {
-        movieVideoSources = value;
-        waitingMessage = tr("server_check_complete");
-        checking = false;
-      });
+      if (mounted) {
+        setState(() {
+          movieVideoSources = value;
+          waitingMessage = tr("server_check_complete");
+          checking = false;
+        });
+      }
       movieVideoLinks = movieVideoSources!.videoLinks;
 
-      if (movieVideoLinks == null || movieVideoLinks!.isEmpty) {
-        setState(() {
-          resultMessage = "${tr("server_down")} ${tr("admin_notified")}";
-        });
-      } else {
-        setState(() {
-          resultMessage = tr("server_working");
-        });
+      if (mounted) {
+        if (movieVideoLinks == null || movieVideoLinks!.isEmpty) {
+          setState(() {
+            resultMessage = "${tr("server_down")} ${tr("admin_notified")}";
+          });
+        } else {
+          setState(() {
+            resultMessage = tr("server_working");
+          });
+        }
       }
     });
   }
