@@ -455,5 +455,12 @@
     "app_language": "Idioma de la aplicación",
     "choose_language": "Elige lengua",
     "restart_language": "Los cambios de idioma entran en vigor después de reiniciar la aplicación.",
-    "restart": "Reanudar"
+    "restart": "Reanudar",
+    "check_server": "Comprobar estado del servidor",
+    "check": "Comprobar",
+    "server_working": "El servidor está funcionando",
+    "checking_server": "Comprobando el estado del servidor...",
+    "server_check_complete": "Verificación del servidor completada",
+    "server_down": "El servidor está caído.",
+    "admin_notified": "El administrador será notificado y se solucionará en unos minutos"
 }

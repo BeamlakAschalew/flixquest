@@ -455,5 +455,12 @@
     "app_language": "App language",
     "choose_language": "Choose language",
     "restart_language": "Language changes take effect after restarting the app.",
-    "restart": "Restart"
+    "restart": "Restart",
+    "check_server": "Check server status",
+    "check": "Check",
+    "server_working": "Server working",
+    "checking_server": "Checking server status...",
+    "server_check_complete": "Server check complete",
+    "server_down": "Server down.",
+    "admin_notified": "Admin will be notified and it'll be fixed after few minutes"
 }

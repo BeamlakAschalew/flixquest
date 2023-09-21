@@ -157,7 +157,6 @@ Future<List<Person>> fetchPerson(String api) async {
 
 Future<List<Genres>> fetchGenre(String api) async {
   GenreList newGenreList;
-  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),

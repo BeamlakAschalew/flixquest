@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/screens/common/live_tv_screen.dart';
+import 'package:cinemax/screens/common/server_status_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../constants/app_constants.dart';
 import '../models/function.dart';
@@ -124,6 +125,19 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return const AboutPage();
+                      }));
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      FontAwesomeIcons.server,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(tr("check_server")),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const ServerStatusScreen();
                       }));
                     },
                   ),

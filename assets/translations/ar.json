@@ -455,6 +455,13 @@
 	"app_language": "لغة التطبيق",
 	"choose_language": "اختر اللغة",
 	"restart_language": "تسري تغييرات اللغة بعد إعادة تشغيل التطبيق.",
-	"restart": "Restart"
+	"restart": "Restart",
+	"check_server": "تحقق من حالة الخادم",
+	"check": "تحقق",
+	"server_working": "الخادم يعمل",
+	"checking_server": "جاري التحقق من حالة الخادم...",
+	"server_check_complete": "اكتمل فحص الخادم",
+	"server_down": "الخادم متوقف",
+	"admin_notified": "سيتم إخطار المسؤول وسيتم إصلاحه بعد بضع دقائق"
 }
 
