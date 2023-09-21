@@ -201,6 +201,9 @@ class PersonMovieListWidget extends StatefulWidget {
 class PersonMovieListWidgetState extends State<PersonMovieListWidget>
     with AutomaticKeepAliveClientMixin<PersonMovieListWidget> {
   List<Movie>? personMoviesList;
+  List<Movie>? uniqueMov;
+  Set<int> seenIds = {};
+
   @override
   void initState() {
     super.initState();
@@ -209,6 +212,15 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
         setState(() {
           personMoviesList = value;
         });
+      }
+      if (personMoviesList != null) {
+        uniqueMov = [];
+        for (Movie mov in personMoviesList!) {
+          if (!seenIds.contains(mov.id)) {
+            uniqueMov!.add(mov);
+            seenIds.add(mov.id!);
+          }
+        }
       }
     });
   }
@@ -220,7 +232,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-    return personMoviesList == null
+    return uniqueMov == null
         ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
             ? Padding(
@@ -241,14 +253,14 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
                           tr("person_movie_count", namedArgs: {
-                            "count": personMoviesList!.length.toString()
+                            "count": uniqueMov!.length.toString()
                           }),
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     ],
                   ),
-                  personMoviesList!.isEmpty
+                  uniqueMov!.isEmpty
                       ? Container()
                       : Padding(
                           padding: const EdgeInsets.only(
@@ -267,7 +279,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                       crossAxisSpacing: 5,
                                       mainAxisSpacing: 5,
                                     ),
-                                    itemCount: personMoviesList!.length,
+                                    itemCount: uniqueMov!.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       return GestureDetector(
@@ -276,9 +288,9 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                               MaterialPageRoute(
                                                   builder: (context) {
                                             return MovieDetailPage(
-                                                movie: personMoviesList![index],
+                                                movie: uniqueMov![index],
                                                 heroId:
-                                                    '${personMoviesList![index].id}');
+                                                    '${uniqueMov![index].id}');
                                           }));
                                         },
                                         child: Padding(
@@ -289,7 +301,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                 flex: 6,
                                                 child: Hero(
                                                   tag:
-                                                      '${personMoviesList![index].id}',
+                                                      '${uniqueMov![index].id}',
                                                   child: Stack(
                                                     alignment: Alignment.center,
                                                     children: [
@@ -297,8 +309,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(8.0),
-                                                        child: personMoviesList![
-                                                                        index]
+                                                        child: uniqueMov![index]
                                                                     .posterPath ==
                                                                 null
                                                             ? Image.asset(
@@ -325,7 +336,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                         .easeIn,
                                                                 imageUrl: TMDB_BASE_IMAGE_URL +
                                                                     imageQuality +
-                                                                    personMoviesList![
+                                                                    uniqueMov![
                                                                             index]
                                                                         .posterPath!,
                                                                 imageBuilder:
@@ -383,7 +394,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                               const Icon(
                                                                 Icons.star,
                                                               ),
-                                                              Text(personMoviesList![
+                                                              Text(uniqueMov![
                                                                       index]
                                                                   .voteAverage!
                                                                   .toStringAsFixed(
@@ -402,8 +413,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                               Expanded(
                                                   flex: 2,
                                                   child: Text(
-                                                    personMoviesList![index]
-                                                        .title!,
+                                                    uniqueMov![index].title!,
                                                     textAlign: TextAlign.center,
                                                     maxLines: 2,
                                                     overflow:
@@ -441,6 +451,8 @@ class PersonTVListWidget extends StatefulWidget {
 class PersonTVListWidgetState extends State<PersonTVListWidget>
     with AutomaticKeepAliveClientMixin<PersonTVListWidget> {
   List<TV>? personTVList;
+  List<TV>? uniqueTV;
+  Set<int> seenIds = {};
   @override
   void initState() {
     super.initState();
@@ -449,6 +461,15 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
         setState(() {
           personTVList = value;
         });
+      }
+      if (personTVList != null) {
+        uniqueTV = [];
+        for (TV tv in personTVList!) {
+          if (!seenIds.contains(tv.id)) {
+            uniqueTV!.add(tv);
+            seenIds.add(tv.id!);
+          }
+        }
       }
     });
   }
@@ -460,7 +481,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-    return personTVList == null
+    return uniqueTV == null
         ? personMoviesAndTVShowShimmer(isDark)
         : widget.isPersonAdult == true && widget.includeAdult == false
             ? Padding(
@@ -481,14 +502,14 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
                           tr("person_tv_count", namedArgs: {
-                            "count": personTVList!.length.toString()
+                            "count": uniqueTV!.length.toString()
                           }),
                           style: const TextStyle(fontSize: 15),
                         ),
                       ),
                     ],
                   ),
-                  personTVList!.isEmpty
+                  uniqueTV!.isEmpty
                       ? Container()
                       : Padding(
                           padding: const EdgeInsets.only(
@@ -507,7 +528,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                       crossAxisSpacing: 5,
                                       mainAxisSpacing: 5,
                                     ),
-                                    itemCount: personTVList!.length,
+                                    itemCount: uniqueTV!.length,
                                     itemBuilder:
                                         (BuildContext context, int index) {
                                       return GestureDetector(
@@ -516,9 +537,9 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                               MaterialPageRoute(
                                                   builder: (context) {
                                             return TVDetailPage(
-                                                tvSeries: personTVList![index],
+                                                tvSeries: uniqueTV![index],
                                                 heroId:
-                                                    '${personTVList![index].id}');
+                                                    '${uniqueTV![index].id}');
                                           }));
                                         },
                                         child: Padding(
@@ -528,8 +549,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                               Expanded(
                                                 flex: 6,
                                                 child: Hero(
-                                                  tag:
-                                                      '${personTVList![index].id}',
+                                                  tag: '${uniqueTV![index].id}',
                                                   child: Stack(
                                                     alignment: Alignment.center,
                                                     children: [
@@ -537,8 +557,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(8.0),
-                                                        child: personTVList![
-                                                                        index]
+                                                        child: uniqueTV![index]
                                                                     .posterPath ==
                                                                 null
                                                             ? Image.asset(
@@ -565,7 +584,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                         .easeIn,
                                                                 imageUrl: TMDB_BASE_IMAGE_URL +
                                                                     imageQuality +
-                                                                    personTVList![
+                                                                    uniqueTV![
                                                                             index]
                                                                         .posterPath!,
                                                                 imageBuilder:
@@ -623,7 +642,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                               const Icon(
                                                                 Icons.star,
                                                               ),
-                                                              Text(personTVList![
+                                                              Text(uniqueTV![
                                                                       index]
                                                                   .voteAverage!
                                                                   .toStringAsFixed(
@@ -642,7 +661,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                               Expanded(
                                                   flex: 2,
                                                   child: Text(
-                                                    personTVList![index]
+                                                    uniqueTV![index]
                                                         .originalName!,
                                                     textAlign: TextAlign.center,
                                                     maxLines: 2,

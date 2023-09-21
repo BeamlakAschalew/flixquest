@@ -161,7 +161,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                     Container(
                                                                   margin:
                                                                       const EdgeInsets
-                                                                          .all(3),
+                                                                          .all(
+                                                                          3),
                                                                   alignment:
                                                                       Alignment
                                                                           .topLeft,
@@ -280,7 +281,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                        .only(
+                                                                    .only(
                                                                     right:
                                                                         10.0),
                                                             child: SizedBox(
@@ -289,58 +290,61 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                               child: Hero(
                                                                 tag:
                                                                     '${widget.movieList![index].id}',
-                                                                child:
-                                                                    ClipRRect(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(
-                                                                                10.0),
-                                                                        child: Stack(
-                                                                            children: [
-                                                                              widget.movieList![index].posterPath == null
-                                                                                  ? Image.asset(
-                                                                                      'assets/images/na_logo.png',
+                                                                child: Material(
+                                                                  type: MaterialType
+                                                                      .transparency,
+                                                                  child: ClipRRect(
+                                                                      borderRadius: BorderRadius.circular(10.0),
+                                                                      child: Stack(children: [
+                                                                        widget.movieList![index].posterPath ==
+                                                                                null
+                                                                            ? Image.asset(
+                                                                                'assets/images/na_logo.png',
+                                                                                fit: BoxFit.cover,
+                                                                              )
+                                                                            : CachedNetworkImage(
+                                                                                cacheManager: cacheProp(),
+                                                                                fadeOutDuration: const Duration(milliseconds: 300),
+                                                                                fadeOutCurve: Curves.easeOut,
+                                                                                fadeInDuration: const Duration(milliseconds: 700),
+                                                                                fadeInCurve: Curves.easeIn,
+                                                                                imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + widget.movieList![index].posterPath!,
+                                                                                imageBuilder: (context, imageProvider) => Container(
+                                                                                  decoration: BoxDecoration(
+                                                                                    image: DecorationImage(
+                                                                                      image: imageProvider,
                                                                                       fit: BoxFit.cover,
-                                                                                    )
-                                                                                  : CachedNetworkImage(
-                                                                                      cacheManager: cacheProp(),
-                                                                                      fadeOutDuration: const Duration(milliseconds: 300),
-                                                                                      fadeOutCurve: Curves.easeOut,
-                                                                                      fadeInDuration: const Duration(milliseconds: 700),
-                                                                                      fadeInCurve: Curves.easeIn,
-                                                                                      imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + widget.movieList![index].posterPath!,
-                                                                                      imageBuilder: (context, imageProvider) => Container(
-                                                                                        decoration: BoxDecoration(
-                                                                                          image: DecorationImage(
-                                                                                            image: imageProvider,
-                                                                                            fit: BoxFit.cover,
-                                                                                          ),
-                                                                                        ),
-                                                                                      ),
-                                                                                      placeholder: (context, url) => mainPageVerticalScrollImageShimmer(isDark),
-                                                                                      errorWidget: (context, url, error) => Image.asset(
-                                                                                        'assets/images/na_logo.png',
-                                                                                        fit: BoxFit.cover,
-                                                                                      ),
                                                                                     ),
-                                                                              Positioned(
-                                                                                left: -18,
-                                                                                top: -15,
-                                                                                child: Container(
-                                                                                    alignment: Alignment.topLeft,
-                                                                                    child: IconButton(
-                                                                                      onPressed: () async {
-                                                                                        movieDatabaseController.deleteMovie(widget.movieList![index].id!);
-                                                                                        //  movieList[index].favorite = false;
-                                                                                        if (mounted) {
-                                                                                          setState(() {
-                                                                                            widget.movieList!.removeAt(index);
-                                                                                          });
-                                                                                        }
-                                                                                      },
-                                                                                      icon: const Icon(Icons.bookmark_remove, size: 50),
-                                                                                    )),
+                                                                                  ),
+                                                                                ),
+                                                                                placeholder: (context, url) => mainPageVerticalScrollImageShimmer(isDark),
+                                                                                errorWidget: (context, url, error) => Image.asset(
+                                                                                  'assets/images/na_logo.png',
+                                                                                  fit: BoxFit.cover,
+                                                                                ),
                                                                               ),
-                                                                            ])),
+                                                                        Positioned(
+                                                                          left:
+                                                                              -18,
+                                                                          top:
+                                                                              -15,
+                                                                          child: Container(
+                                                                              alignment: Alignment.topLeft,
+                                                                              child: IconButton(
+                                                                                onPressed: () async {
+                                                                                  movieDatabaseController.deleteMovie(widget.movieList![index].id!);
+                                                                                  //  movieList[index].favorite = false;
+                                                                                  if (mounted) {
+                                                                                    setState(() {
+                                                                                      widget.movieList!.removeAt(index);
+                                                                                    });
+                                                                                  }
+                                                                                },
+                                                                                icon: const Icon(Icons.bookmark_remove, size: 50),
+                                                                              )),
+                                                                        ),
+                                                                      ])),
+                                                                ),
                                                               ),
                                                             ),
                                                           ),

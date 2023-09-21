@@ -35,7 +35,7 @@ class _LiveTVState extends State<LiveTV> {
         imagePath: 'assets/images/family.png',
         urlKey: 'family'),
     CatImage(
-        categoryName: tr("movie"),
+        categoryName: tr("movies"),
         imagePath: 'assets/images/movie.png',
         urlKey: 'movie'),
     CatImage(

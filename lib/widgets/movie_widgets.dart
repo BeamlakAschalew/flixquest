@@ -1,6 +1,10 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
+import 'dart:async';
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../controllers/recently_watched_database_controller.dart';
 import '../models/recently_watched.dart';
 import '../provider/recently_watched_provider.dart';
 import '../screens/movie/movie_castandcrew.dart';
@@ -1351,6 +1355,7 @@ class _MovieAboutState extends State<MovieAbout> {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -1376,6 +1381,7 @@ class _MovieAboutState extends State<MovieAbout> {
                 // )
               ],
             ),
+            const SizedBox(height: 15),
             ScrollingArtists(
               api: Endpoints.getCreditsUrl(widget.movie.id!, lang),
               title: tr("cast"),
@@ -2878,124 +2884,64 @@ class WatchNowButton extends StatefulWidget {
 
 class WatchNowButtonState extends State<WatchNowButton> {
   bool? isVisible = false;
-  double? buttonWidth = 150;
+  double? buttonWidth = 160;
+
+  Color _borderColor = Colors.red; // Initial border color
+  Timer? _timer;
+  Random random = Random();
 
   @override
   void initState() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        // Generate random RGB values between 0 and 255
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+
+        _borderColor = Color.fromRGBO(red, green, blue, 1.0);
+      });
+    });
     super.initState();
   }
 
-  void streamSelectBottomSheet(
-      {required String movieName,
-      required String thumbnail,
-      bool? adult,
-      required int releaseYear,
-      required int movieId,
-      required String backdropPath}) {
-    showModalBottomSheet(
-        context: context,
-        builder: (builder) {
-          final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
-          return Container(
-              child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Watch with:',
-                      style: kTextSmallHeaderStyle,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      mixpanel.track('Most viewed movies', properties: {
-                        'Movie name': movieName,
-                        'Movie id': movieId,
-                        'Is Movie adult?': adult ?? 'unknown',
-                      });
-
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: ((context) {
-                        return MovieVideoLoader(
-                          download: false,
-                          metadata: [
-                            widget.movieId,
-                            movieName,
-                            thumbnail,
-                            releaseYear
-                          ],
-                        );
-                      })));
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: const Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Text(
-                          'Cinemax player (recommended)',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      mixpanel.track('Most viewed movies', properties: {
-                        'Movie name': movieName,
-                        'Movie id': movieId,
-                        'Is Movie adult?': adult ?? 'unknown',
-                      });
-                      // Navigator.pushReplacement(context,
-                      //     MaterialPageRoute(builder: ((context) {
-                      //   return MovieStream(
-                      //       streamUrl:
-                      //           'https://2embed.to/embed/tmdb/movie?id=$movieId',
-                      //       movieName: movieName);
-                      // })));
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: const Padding(
-                        padding: EdgeInsets.all(20.0),
-                        child: Text(
-                          'Legacy (Webview)',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ));
-        });
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    RecentlyWatchedMoviesController recentlyWatchedMoviesController =
+        RecentlyWatchedMoviesController();
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          // Add an outer box shadow here
+          BoxShadow(
+            color: _borderColor,
+            spreadRadius: 2.5,
+            blurRadius: 4.25,
+            offset: const Offset(0, 0),
+          ),
+        ],
+      ),
       child: TextButton(
         style: ButtonStyle(
-          maximumSize: MaterialStateProperty.all(Size(buttonWidth!, 50)),
+          maximumSize: MaterialStateProperty.all(Size(buttonWidth!, 45)),
+          minimumSize: MaterialStateProperty.all(Size(buttonWidth!, 45)),
         ).copyWith(
             backgroundColor: MaterialStateProperty.all(
           Theme.of(context).colorScheme.primary,
         )),
         onPressed: () async {
+          setState(() {
+            isVisible = true;
+            buttonWidth = 200;
+          });
           final mixpanel =
               Provider.of<SettingsProvider>(context, listen: false).mixpanel;
           mixpanel.track('Most viewed movies', properties: {
@@ -3003,7 +2949,22 @@ class WatchNowButtonState extends State<WatchNowButton> {
             'Movie id': widget.movieId,
             'Is Movie adult?': widget.adult ?? 'unknown',
           });
-
+          var isBookmarked =
+              await recentlyWatchedMoviesController.contain(widget.movieId);
+          int elapsed = 0;
+          if (isBookmarked) {
+            var rMovies =
+                Provider.of<RecentProvider>(context, listen: false).movies;
+            int index =
+                rMovies.indexWhere((element) => element.id == widget.movieId);
+            setState(() {
+              elapsed = rMovies[index].elapsed!;
+            });
+          }
+          setState(() {
+            isVisible = false;
+            buttonWidth = 160;
+          });
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return MovieVideoLoader(
               download: false,
@@ -3013,7 +2974,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
                 widget.posterPath,
                 widget.releaseYear,
                 widget.backdropPath,
-                0
+                elapsed
               ],
             );
           })));
@@ -3027,9 +2988,12 @@ class WatchNowButtonState extends State<WatchNowButton> {
                 color: Colors.white,
               ),
             ),
-            Text(
-              tr("watch_now"),
-              style: const TextStyle(color: Colors.white),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Text(
+                tr("watch_now"),
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
             Visibility(
               visible: isVisible!,

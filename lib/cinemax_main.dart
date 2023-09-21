@@ -263,7 +263,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           child: SafeArea(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 35.0, vertical: 7.5),
+                  const EdgeInsets.symmetric(horizontal: 30.0, vertical: 7.5),
               child: GNav(
                 rippleColor: Colors.grey[300]!,
                 hoverColor: Colors.grey[100]!,

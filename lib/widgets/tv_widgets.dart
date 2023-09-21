@@ -1,9 +1,13 @@
 // ignore_for_file: avoid_unnecessary_containers
+import 'dart:async';
+import 'dart:math';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/bookmark_database_controller.dart';
+import '../controllers/recently_watched_database_controller.dart';
 import '../models/recently_watched.dart';
 import '../provider/recently_watched_provider.dart';
 import '../screens/tv/tv_video_loader.dart';
@@ -3217,7 +3221,6 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
-
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
@@ -5814,10 +5817,9 @@ class _TVAboutState extends State<TVAbout> {
               children: <Widget>[
                 Expanded(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 8.0, bottom: 4.0, right: 8.0),
+                    padding: const EdgeInsets.only(
+                        left: 8.0, bottom: 4.0, right: 8.0),
                     child: Text(
-
                       widget.tvSeries.firstAirDate == null ||
                               widget.tvSeries.firstAirDate!.isEmpty
                           ? tr("first_episode_air_empty")
@@ -5906,13 +5908,8 @@ class EpisodeAbout extends StatefulWidget {
 }
 
 class _EpisodeAboutState extends State<EpisodeAbout> {
-  bool? isVisible = false;
-  double? buttonWidth = 150;
-  TVDetails? tvDetails;
-
   @override
   Widget build(BuildContext context) {
-    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return Container(
       child: SingleChildScrollView(
@@ -5968,97 +5965,14 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                 ),
               ],
             ),
-            Container(
-              child: TextButton(
-                style: ButtonStyle(
-                    maximumSize:
-                        MaterialStateProperty.all(Size(buttonWidth!, 50)),
-                    backgroundColor: MaterialStateProperty.all(
-                      Theme.of(context).colorScheme.primary,
-                    )),
-                onPressed: () async {
-                  mixpanel.track('Most viewed TV series', properties: {
-                    'TV series name': '${widget.seriesName}',
-                    'TV series id': '${widget.tvId}',
-                    'TV series episode name': '${widget.episodeList.name}',
-                    'TV series season number':
-                        '${widget.episodeList.seasonNumber}',
-                    'TV series episode number':
-                        '${widget.episodeList.episodeNumber}'
-                  });
-                  setState(() {
-                    isVisible = true;
-                    buttonWidth = 180;
-                  });
-                  fetchTVDetails(Endpoints.tvDetailsUrl(widget.tvId!, lang))
-                      .then((value) {
-                    if (mounted) {
-                      setState(() {
-                        isVisible = false;
-                        buttonWidth = 150;
-                        tvDetails = value;
-                        mixpanel.track('Most viewed TV series', properties: {
-                          'TV series name': '${widget.seriesName}',
-                          'TV series id': '${widget.tvId}',
-                          'TV series episode name':
-                              '${widget.episodeList.name}',
-                          'TV series season number':
-                              '${widget.episodeList.seasonNumber}',
-                          'TV series episode number':
-                              '${widget.episodeList.episodeNumber}'
-                        });
-
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: ((context) {
-                          return TVVideoLoader(
-                            download: false,
-                            metadata: [
-                              widget.episodeList.episodeId,
-                              widget.seriesName!,
-                              widget.episodeList.name,
-                              widget.episodeList.episodeNumber!,
-                              widget.episodeList.seasonNumber!,
-                              value.numberOfSeasons!,
-                              value.backdropPath,
-                              widget.posterPath,
-                              0
-                            ],
-                          );
-                        })));
-                      });
-                    }
-                  });
-                },
-                child: Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(right: 10, left: 10),
-                      child: Icon(
-                        Icons.play_circle,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      tr("watch_now"),
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    Visibility(
-                      visible: isVisible!,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 10.0, right: 10.0),
-                        child: SizedBox(
-                          height: 16,
-                          width: 16,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            const SizedBox(height: 20),
+            WatchNowButton(
+              episodeList: widget.episodeList,
+              seriesName: widget.seriesName!,
+              tvId: widget.tvId!,
+              posterPath: widget.posterPath!,
             ),
+            const SizedBox(height: 15),
             ScrollingTVEpisodeCasts(
               passedFrom: 'episode_detail',
               seasonNumber: widget.episodeList.seasonNumber!,
@@ -6274,6 +6188,7 @@ class TVEpisodeOptions extends StatelessWidget {
       children: [
         // user score circle percent indicator
         Expanded(
+          flex: 2,
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 0, 18, 0),
             child: Row(
@@ -6311,6 +6226,7 @@ class TVEpisodeOptions extends StatelessWidget {
         ),
 
         Expanded(
+          flex: 2,
           child: Row(children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -6345,7 +6261,189 @@ class TVEpisodeOptions extends StatelessWidget {
             ),
           ]),
         ),
+        const Expanded(child: SizedBox())
       ],
+    );
+  }
+}
+
+class WatchNowButton extends StatefulWidget {
+  const WatchNowButton(
+      {Key? key,
+      required this.episodeList,
+      required this.seriesName,
+      required this.tvId,
+      required this.posterPath})
+      : super(key: key);
+
+  final String seriesName, posterPath;
+  final int tvId;
+  final EpisodeList episodeList;
+
+  @override
+  State<WatchNowButton> createState() => _WatchNowButtonState();
+}
+
+class _WatchNowButtonState extends State<WatchNowButton> {
+  bool? isVisible = false;
+  double? buttonWidth = 160;
+  TVDetails? tvDetails;
+
+  Color _borderColor = Colors.red; // Initial border color
+  Timer? _timer;
+  Random random = Random();
+
+  RecentlyWatchedEpisodeController recentlyWatchedEpisodeController =
+      RecentlyWatchedEpisodeController();
+
+  @override
+  void initState() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        // Generate random RGB values between 0 and 255
+        int red = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue = random.nextInt(256);
+
+        _borderColor = Color.fromRGBO(red, green, blue, 1.0);
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _timer!.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    final lang = Provider.of<SettingsProvider>(context).appLanguage;
+    return AnimatedContainer(
+      duration: const Duration(seconds: 1),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          // Add an outer box shadow here
+          BoxShadow(
+            color: _borderColor,
+            spreadRadius: 2.5,
+            blurRadius: 4.25,
+            offset: const Offset(0, 0),
+          ),
+        ],
+      ),
+      child: TextButton(
+        style: ButtonStyle(
+            maximumSize: MaterialStateProperty.all(Size(buttonWidth!, 100)),
+            minimumSize: MaterialStateProperty.all(Size(buttonWidth!, 50)),
+            backgroundColor: MaterialStateProperty.all(
+              Theme.of(context).colorScheme.primary,
+            )),
+        onPressed: () async {
+          mixpanel.track('Most viewed TV series', properties: {
+            'TV series name': widget.seriesName,
+            'TV series id': '${widget.tvId}',
+            'TV series episode name': '${widget.episodeList.name}',
+            'TV series season number': '${widget.episodeList.seasonNumber}',
+            'TV series episode number': '${widget.episodeList.episodeNumber}'
+          });
+          setState(() {
+            isVisible = true;
+            buttonWidth = 200;
+          });
+          fetchTVDetails(Endpoints.tvDetailsUrl(widget.tvId, lang))
+              .then((value) async {
+            if (mounted) {
+              setState(() {
+                tvDetails = value;
+                mixpanel.track('Most viewed TV series', properties: {
+                  'TV series name': widget.seriesName,
+                  'TV series id': '${widget.tvId}',
+                  'TV series episode name': '${widget.episodeList.name}',
+                  'TV series season number':
+                      '${widget.episodeList.seasonNumber}',
+                  'TV series episode number':
+                      '${widget.episodeList.episodeNumber}'
+                });
+              });
+              var isBookmarked = await recentlyWatchedEpisodeController
+                  .contain(widget.episodeList.episodeId!);
+              int elapsed = 0;
+              if (isBookmarked) {
+                if (mounted) {
+                  var rEpisodes =
+                      Provider.of<RecentProvider>(context, listen: false)
+                          .episodes;
+
+                  int index = rEpisodes.indexWhere(
+                      (element) => element.id == widget.episodeList.episodeId);
+                  setState(() {
+                    elapsed = rEpisodes[index].elapsed!;
+                  });
+                }
+              }
+              setState(() {
+                isVisible = false;
+                buttonWidth = 160;
+              });
+              if (mounted) {
+                Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                  return TVVideoLoader(
+                    download: false,
+                    metadata: [
+                      widget.episodeList.episodeId,
+                      widget.seriesName,
+                      widget.episodeList.name,
+                      widget.episodeList.episodeNumber!,
+                      widget.episodeList.seasonNumber!,
+                      value.numberOfSeasons!,
+                      value.backdropPath,
+                      widget.posterPath,
+                      elapsed
+                    ],
+                  );
+                })));
+              }
+            }
+          });
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(right: 10, left: 10),
+              child: Icon(
+                Icons.play_circle,
+                color: Colors.white,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Text(
+                tr("watch_now"),
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+            Visibility(
+              visible: isVisible!,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                child: SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

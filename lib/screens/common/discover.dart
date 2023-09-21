@@ -38,6 +38,7 @@ class _DiscoverPageState extends State<DiscoverPage>
               Tab(
                   child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(right: 8.0),
@@ -46,6 +47,7 @@ class _DiscoverPageState extends State<DiscoverPage>
                   Expanded(
                     child: Text(
                       tr("movies"),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

@@ -83,7 +83,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               epi = tvInfo!.episodes;
             });
           });
-          print('wtf');
           for (int k = 0; k < epi!.length; k++) {
             if (epi![k].episode == widget.metadata.elementAt(3) &&
                 epi![k].season == widget.metadata.elementAt(4)) {
@@ -113,7 +112,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               epi = tvInfo!.episodes;
             });
           });
-          print('wtf');
           for (int k = 0; k < epi!.length; k++) {
             if (epi![k].episode == widget.metadata.elementAt(3) &&
                 epi![k].season == widget.metadata.elementAt(4)) {
