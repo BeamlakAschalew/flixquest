@@ -24,5 +24,9 @@ class LanguageData {
         languageFlag: 'assets/images/country_flags/spain.png',
         languageName: tr("spanish"),
         languageCode: 'es'),
+    AppLanguages(
+        languageFlag: 'assets/images/country_flags/india.png',
+        languageName: tr("hindi"),
+        languageCode: 'hi')
   ];
 }
