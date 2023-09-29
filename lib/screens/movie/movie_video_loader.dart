@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:better_player/better_player.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:cinemax/models/movie_stream.dart';
@@ -7,6 +6,7 @@ import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
+import 'package:better_player/better_player.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';

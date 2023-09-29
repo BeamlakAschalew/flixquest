@@ -264,19 +264,12 @@ class _UserInfoState extends State<UserInfo> {
 
   Widget userListTile(
       String title, String subTitle, int index, BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        splashColor: Theme.of(context).splashColor,
-        child: ListTile(
-          onTap: () {},
-          title: Text(title),
-          subtitle: Text(subTitle),
-          leading: Icon(
-            _userTileIcons[index],
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
+    return ListTile(
+      title: Text(title),
+      subtitle: Text(subTitle),
+      leading: Icon(
+        _userTileIcons[index],
+        color: Theme.of(context).colorScheme.primary,
       ),
     );
   }

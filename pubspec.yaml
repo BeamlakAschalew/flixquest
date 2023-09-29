@@ -1,7 +1,7 @@
 name: cinemax
 description: A Flutter movie app.
 
-publish_to: 'none'
+publish_to: "none"
 
 version: 2.3.0+1
 
@@ -49,7 +49,8 @@ dependencies:
   retry: ^3.1.0
   device_info_plus: ^8.1.0
   native_device_orientation: ^1.1.4
-  better_player: ^0.0.83
+  better_player:
+    path: ../betterplayer
   flutter_cache_manager: ^3.3.0
   flutter_localization: ^0.1.13
   easy_localization: ^3.0.2
@@ -92,7 +93,7 @@ flutter:
     - family: IMdb
       fonts:
         - asset: assets/fonts/imdb.ttf
-  
+
 flutter_native_splash:
   color: "#FFFFFF"
   color_dark: "#161716"

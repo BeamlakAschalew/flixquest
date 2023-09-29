@@ -3670,7 +3670,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                               : tvDetails!.runtime![0] == 0
                                   ? tr("not_available")
                                   : tr("runtime_mins", namedArgs: {
-                                      "mins": tvDetails!.runtime![0]
+                                      "mins": tvDetails!.runtime![0].toString()
                                     }))),
                         ]),
                         DataRow(cells: [
@@ -3735,7 +3735,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("producation_companies"),
+                            tr("production_companies"),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(

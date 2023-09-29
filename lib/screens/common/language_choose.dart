@@ -39,6 +39,8 @@ class _AppLanguageChooseState extends State<AppLanguageChoose> {
                                   setState(() {
                                     languageChange.appLanguage = value!;
                                   });
+                                  EasyLocalization.of(context)!.setLocale(
+                                      Locale(languageChange.appLanguage));
 
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(

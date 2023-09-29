@@ -16,8 +16,6 @@ import '/models/movie.dart';
 import 'live_tv.dart';
 import 'tv_stream.dart';
 
-void initializeApp() {}
-
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
 

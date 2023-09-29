@@ -1,9 +1,9 @@
-import 'package:better_player/better_player.dart';
 import 'package:cinemax/constants/app_constants.dart';
 import 'package:cinemax/controllers/recently_watched_database_controller.dart';
 import 'package:cinemax/models/recently_watched.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:better_player/better_player.dart';
 import '../../provider/recently_watched_provider.dart';
 import '../../provider/settings_provider.dart';
 
@@ -60,11 +60,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
       enableFullscreen: true,
+      name: widget.mediaType == MediaType.movie
+          ? "${widget.movieMetadata!.elementAt(1)} (${widget.movieMetadata!.elementAt(3)})"
+          : "${widget.tvMetadata!.elementAt(1)} | E:${widget.tvMetadata!.elementAt(3)} | S:${widget.tvMetadata!.elementAt(4)}",
       backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
       progressBarBackgroundColor: Colors.white,
-      pauseIcon: Icons.pause_outlined,
-      pipMenuIcon: Icons.picture_in_picture_sharp,
-      playIcon: Icons.play_arrow_sharp,
+      controlBarColor: Colors.black.withOpacity(0.3),
+      muteIcon: Icons.volume_mute_rounded,
+      unMuteIcon: Icons.volume_off_rounded,
+      pauseIcon: Icons.pause_rounded,
+      pipMenuIcon: Icons.picture_in_picture_rounded,
+      playIcon: Icons.play_arrow_rounded,
       showControlsOnInitialize: false,
       loadingColor: widget.colors.first,
       iconsColor: widget.colors.first,
@@ -74,6 +80,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           Duration(seconds: widget.settings.defaultSeekDuration).inMilliseconds,
       progressBarPlayedColor: widget.colors.first,
       progressBarBufferedColor: Colors.black45,
+      skipForwardIcon: Icons.forward_10_rounded,
+      skipBackIcon: Icons.replay_10_rounded,
+      fullscreenEnableIcon: Icons.fullscreen_rounded,
+      fullscreenDisableIcon: Icons.fullscreen_exit_rounded,
+      overflowMenuIcon: Icons.menu_rounded,
+      subtitlesIcon: Icons.closed_caption_rounded,
+      qualitiesIcon: Icons.hd_rounded,
+      enableAudioTracks: false,
     );
 
     BetterPlayerConfiguration betterPlayerConfiguration =
@@ -219,12 +233,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         (state == AppLifecycleState.inactive);
     if (isInBackground) {
       if (_betterPlayerController.isVideoInitialized()!) {
-        await _betterPlayerController.videoPlayerController!.position
-            .then((value) {
-          _betterPlayerController.videoPlayerController!
-              .seekTo(Duration(seconds: value!.inSeconds - 2));
-        });
-
         widget.mediaType == MediaType.movie
             ? insertRecentMovieData()
             : insertRecentEpisodeData();

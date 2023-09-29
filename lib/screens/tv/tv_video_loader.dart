@@ -1,9 +1,9 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
-import 'package:better_player/better_player.dart';
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/models/function.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
+import 'package:better_player/better_player.dart';
 import '../../models/tv_stream.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';

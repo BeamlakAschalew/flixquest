@@ -44,11 +44,10 @@ packages:
   better_player:
     dependency: "direct main"
     description:
-      name: better_player
-      sha256: f2e5d57ea49fb7c4d93838d23846ca5ddf78af6f946e103aeacf2afdd01909b3
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.83"
+      path: "C:/flutter_dev/projects/betterplayer"
+      relative: false
+    source: path
+    version: "0.0.82"
   boolean_selector:
     dependency: transitive
     description:
@@ -1086,10 +1085,10 @@ packages:
     dependency: transitive
     description:
       name: visibility_detector
-      sha256: "15c54a459ec2c17b4705450483f3d5a2858e733aee893dcee9d75fd04814940d"
+      sha256: ec932527913f32f65aa01d3a393504240b9e9021ecc77123f017755605e48832
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.3"
+    version: "0.2.2"
   wakelock:
     dependency: transitive
     description:
