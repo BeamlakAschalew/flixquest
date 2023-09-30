@@ -2,7 +2,7 @@ import 'package:cinemax/main.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
-import '../../models/function.dart';
+import '../../functions/function.dart';
 import '../../models/movie_stream.dart';
 
 class ServerStatusScreen extends StatefulWidget {

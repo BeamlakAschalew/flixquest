@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/models/function.dart';
+import 'package:cinemax/functions/function.dart';
 import 'package:cinemax/models/movie_stream.dart';
 import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/provider/settings_provider.dart';

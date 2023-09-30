@@ -25,7 +25,7 @@ import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
 import '/models/credits.dart';
-import '/models/function.dart';
+import '../functions/function.dart';
 import '/models/genres.dart';
 import '/models/images.dart';
 import '/models/movie.dart';

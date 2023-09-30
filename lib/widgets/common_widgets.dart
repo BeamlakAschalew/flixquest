@@ -5,7 +5,7 @@ import 'package:cinemax/screens/common/live_tv_screen.dart';
 import 'package:cinemax/screens/common/server_status_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../constants/app_constants.dart';
-import '../models/function.dart';
+import '../functions/function.dart';
 import '../models/movie.dart';
 import '../models/watch_providers.dart';
 import '/screens/common/bookmark_screen.dart';

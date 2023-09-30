@@ -3,7 +3,7 @@ import '../../ui_components/tv_ui_components.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/function.dart';
+import '../../functions/function.dart';
 import '../../models/tv.dart';
 import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';

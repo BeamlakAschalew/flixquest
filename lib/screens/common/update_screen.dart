@@ -5,7 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 
 import '/constants/api_constants.dart';
 import '/constants/app_constants.dart';
-import '/models/function.dart';
+import '../../functions/function.dart';
 import '/models/update.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file_plus/open_file_plus.dart';

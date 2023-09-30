@@ -4,6 +4,7 @@ import 'package:cinemax/models/recently_watched.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
+import '../../functions/function.dart';
 import '../../provider/recently_watched_provider.dart';
 import '../../provider/settings_provider.dart';
 
@@ -62,7 +63,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       enableFullscreen: true,
       name: widget.mediaType == MediaType.movie
           ? "${widget.movieMetadata!.elementAt(1)} (${widget.movieMetadata!.elementAt(3)})"
-          : "${widget.tvMetadata!.elementAt(1)} | E:${widget.tvMetadata!.elementAt(3)} | S:${widget.tvMetadata!.elementAt(4)}",
+          : "${widget.tvMetadata!.elementAt(1)} | ${episodeSeasonFormatter(widget.tvMetadata!.elementAt(3), widget.tvMetadata!.elementAt(4))}",
       backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
       progressBarBackgroundColor: Colors.white,
       controlBarColor: Colors.black.withOpacity(0.3),

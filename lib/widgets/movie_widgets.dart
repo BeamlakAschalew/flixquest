@@ -26,7 +26,7 @@ import '/screens/person/cast_detail.dart';
 import '/screens/movie/streaming_services_movies.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import '/models/function.dart';
+import '../functions/function.dart';
 import '/models/movie.dart';
 import '/api/endpoints.dart';
 import '/models/genres.dart';

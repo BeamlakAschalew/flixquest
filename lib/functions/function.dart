@@ -13,8 +13,8 @@ import 'package:http/http.dart' as http;
 import '/models/credits.dart';
 import '/models/genres.dart';
 import '/models/movie.dart';
-import 'live_tv.dart';
-import 'tv_stream.dart';
+import '../models/live_tv.dart';
+import '../models/tv_stream.dart';
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
@@ -498,4 +498,12 @@ Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
   }
 
   return tvInfo;
+}
+
+String episodeSeasonFormatter(int episodeNumber, int seasonNumber) {
+  String formattedSeason =
+      seasonNumber <= 9 ? 'S0$seasonNumber' : 'S$seasonNumber';
+  String formattedEpisode =
+      episodeNumber <= 9 ? 'E0$episodeNumber' : 'E$episodeNumber';
+  return "$formattedSeason | $formattedEpisode";
 }
