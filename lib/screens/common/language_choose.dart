@@ -13,19 +13,35 @@ class AppLanguageChoose extends StatefulWidget {
 }
 
 class _AppLanguageChooseState extends State<AppLanguageChoose> {
-  LanguageData languageData = LanguageData();
-
   @override
   Widget build(BuildContext context) {
     final languageChange = Provider.of<SettingsProvider>(context);
-    List<AppLanguages> count = languageData.langs;
+
+    List<AppLanguages> langs = [
+      AppLanguages(
+          languageFlag: 'assets/images/country_flags/united-kingdom.png',
+          languageName: tr("english"),
+          languageCode: 'en'),
+      AppLanguages(
+          languageFlag: 'assets/images/country_flags/united-arab-emirates.png',
+          languageName: tr("arabic"),
+          languageCode: 'ar'),
+      AppLanguages(
+          languageFlag: 'assets/images/country_flags/spain.png',
+          languageName: tr("spanish"),
+          languageCode: 'es'),
+      AppLanguages(
+          languageFlag: 'assets/images/country_flags/india.png',
+          languageName: tr("hindi"),
+          languageCode: 'hi')
+    ];
 
     return Scaffold(
         appBar: AppBar(title: Text(tr("choose_language"))),
         body: SingleChildScrollView(
           child: Center(
               child: Column(
-                  children: count
+                  children: langs
                       .map(
                         (AppLanguages langs) => ListTile(
                           title: Text(langs.languageName),
@@ -42,22 +58,22 @@ class _AppLanguageChooseState extends State<AppLanguageChoose> {
                                   EasyLocalization.of(context)!.setLocale(
                                       Locale(languageChange.appLanguage));
 
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        tr("restart_language"),
-                                        maxLines: 5,
-                                        style: kTextSmallBodyStyle,
-                                      ),
-                                      // action: SnackBarAction(
-                                      //     label: tr("restart"),
-                                      //     onPressed: () {
-                                      //       Phoenix.rebirth(context);
-                                      //     }),
-                                      behavior: SnackBarBehavior.floating,
-                                      duration: const Duration(seconds: 4),
-                                    ),
-                                  );
+                                  // ScaffoldMessenger.of(context).showSnackBar(
+                                  //   SnackBar(
+                                  //     content: Text(
+                                  //       tr("restart_language"),
+                                  //       maxLines: 5,
+                                  //       style: kTextSmallBodyStyle,
+                                  //     ),
+                                  //     // action: SnackBarAction(
+                                  //     //     label: tr("restart"),
+                                  //     //     onPressed: () {
+                                  //     //       Phoenix.rebirth(context);
+                                  //     //     }),
+                                  //     behavior: SnackBarBehavior.floating,
+                                  //     duration: const Duration(seconds: 4),
+                                  //   ),
+                                  // );
                                 },
                               ),
                               Image.asset(

@@ -134,18 +134,39 @@ class DiscoverMoviesState extends State<DiscoverMovies>
   List<Movie>? moviesList;
   late double deviceHeight;
   YearDropdownData yearDropdownData = YearDropdownData();
-  MovieGenreFilterChipData movieGenreFilterChipData =
-      MovieGenreFilterChipData();
   @override
   void initState() {
     super.initState();
     getData();
   }
 
+  List<MovieGenreFilterChipWidget> movieGenreFilterdata =
+      <MovieGenreFilterChipWidget>[
+    MovieGenreFilterChipWidget(genreName: tr('action'), genreValue: '28'),
+    MovieGenreFilterChipWidget(genreName: tr('adventure'), genreValue: '12'),
+    MovieGenreFilterChipWidget(genreName: tr('animation'), genreValue: '16'),
+    MovieGenreFilterChipWidget(genreName: tr('comedy'), genreValue: '35'),
+    MovieGenreFilterChipWidget(genreName: tr('crime'), genreValue: '80'),
+    MovieGenreFilterChipWidget(genreName: tr('documentary'), genreValue: '99'),
+    MovieGenreFilterChipWidget(genreName: tr('drama'), genreValue: '18'),
+    MovieGenreFilterChipWidget(genreName: tr('family'), genreValue: '10751'),
+    MovieGenreFilterChipWidget(genreName: tr('fantasy'), genreValue: '14'),
+    MovieGenreFilterChipWidget(genreName: tr('history'), genreValue: '36'),
+    MovieGenreFilterChipWidget(genreName: tr('horror'), genreValue: '27'),
+    MovieGenreFilterChipWidget(genreName: tr('music'), genreValue: '10402'),
+    MovieGenreFilterChipWidget(genreName: tr('mystery'), genreValue: '9648'),
+    MovieGenreFilterChipWidget(genreName: tr('romance'), genreValue: '10749'),
+    MovieGenreFilterChipWidget(
+        genreName: tr('science_fiction'), genreValue: '878'),
+    MovieGenreFilterChipWidget(genreName: tr('tv_movie'), genreValue: '10770'),
+    MovieGenreFilterChipWidget(genreName: tr('thriller'), genreValue: '53'),
+    MovieGenreFilterChipWidget(genreName: tr('war'), genreValue: '10752'),
+    MovieGenreFilterChipWidget(genreName: tr('western'), genreValue: '37'),
+  ];
+
   void getData() {
     List<String> years = yearDropdownData.yearsList.getRange(1, 25).toList();
-    List<MovieGenreFilterChipWidget> genres =
-        movieGenreFilterChipData.movieGenreFilterdata;
+    List<MovieGenreFilterChipWidget> genres = movieGenreFilterdata;
     years.shuffle();
     genres.shuffle();
     fetchMovies(

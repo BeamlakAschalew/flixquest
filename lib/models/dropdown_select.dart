@@ -1,6 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-
 class YearDropdownData {
   List<String> yearsList = [
     '',
@@ -44,16 +41,5 @@ class YearDropdownData {
     '1986',
     '1985',
   ];
-  List<DropdownMenuItem<String>> getDropdownItems() {
-    List<DropdownMenuItem<String>> dropdownItems = [];
-    for (int i = 0; i < yearsList.length; i++) {
-      String years = yearsList[i];
-      var newItem = DropdownMenuItem(
-        value: years,
-        child: Text(years.isEmpty ? tr('any') : years),
-      );
-      dropdownItems.add(newItem);
-    }
-    return dropdownItems;
-  }
+  
 }

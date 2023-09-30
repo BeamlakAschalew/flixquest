@@ -1,4 +1,3 @@
-import 'package:cinemax/models/languages.dart';
 import 'package:cinemax/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,44 @@ class SubLangChoose extends StatefulWidget {
 }
 
 class _SubLangChooseState extends State<SubLangChoose> {
-  SubtitleLanguage languages = SubtitleLanguage();
+  List<String> supportedLanguages = [
+    '',
+    tr("arabic"),
+    tr("bulgarian"),
+    tr("chinese"),
+    tr("croaitian"),
+    tr("czech"),
+    tr("danish"),
+    tr("dutch"),
+    tr("english"),
+    tr("estonian"),
+    tr("finnish"),
+    tr("french"),
+    tr("german"),
+    tr("greek"),
+    tr("hebrew"),
+    tr("hindi"),
+    tr("hungarian"),
+    tr("indonesian"),
+    tr("italian"),
+    tr("japanese"),
+    tr("korean"),
+    tr("latvian"),
+    tr("lithuanian"),
+    tr("malay"),
+    tr("norwegian"),
+    tr("polish"),
+    tr("portuguese"),
+    tr("romanian"),
+    tr("russian"),
+    tr("slovak"),
+    tr("slovene"),
+    tr("spanish"),
+    tr("swedish"),
+    tr("thai"),
+    tr("turkish"),
+    tr("ukrainian")
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +58,7 @@ class _SubLangChooseState extends State<SubLangChoose> {
         body: SingleChildScrollView(
           child: Center(
               child: Column(
-                  children: languages.supportedLanguages
+                  children: supportedLanguages
                       .map(
                         (String languages) => ListTile(
                           title: Text(languages == '' ? tr("any") : languages),

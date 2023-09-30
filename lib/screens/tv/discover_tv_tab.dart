@@ -16,14 +16,7 @@ class DiscoverTVTab extends StatefulWidget {
 }
 
 class _DiscoverTVTabState extends State<DiscoverTVTab> {
-  SortChoiceChipData sortChoiceChipData = SortChoiceChipData();
   YearDropdownData yearDropdownData = YearDropdownData();
-  TVSeriesStatusData tvSeriesStatusData = TVSeriesStatusData();
-  TVGenreFilterChipData tvGenreFilterChipData = TVGenreFilterChipData();
-  MovieGenreFilterChipData movieGenreFilterChipData =
-      MovieGenreFilterChipData();
-  WatchProvidersFilterChipData watchProvidersFilterChipData =
-      WatchProvidersFilterChipData();
   int sortValue = 0;
   int tvStatusValue = 0;
   int adultValue = 1;
@@ -60,6 +53,90 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
 
   @override
   Widget build(BuildContext context) {
+    final List<SortChoiceChipWidget> sortChoiceChip = <SortChoiceChipWidget>[
+      SortChoiceChipWidget(
+          name: tr('popularity_descending'),
+          value: 'popularity.desc',
+          index: 0),
+      SortChoiceChipWidget(
+          name: tr('popularity_ascending'), value: 'popularity.asc', index: 1),
+      SortChoiceChipWidget(
+          name: tr('average_vote_descending'),
+          value: 'vote_average.desc',
+          index: 2),
+      SortChoiceChipWidget(
+          name: tr('average_vote_ascending'),
+          value: 'vote_average.asc',
+          index: 3)
+    ];
+
+    final List<TVSeriesStatus> tvSeriesStatusList = <TVSeriesStatus>[
+      TVSeriesStatus(statusId: '', statusName: tr('any'), index: 0),
+      TVSeriesStatus(
+          statusId: '0', statusName: tr('returning_series'), index: 1),
+      TVSeriesStatus(statusId: '1', statusName: tr('planned'), index: 2),
+      TVSeriesStatus(statusId: '2', statusName: tr('in_production'), index: 3),
+      TVSeriesStatus(statusId: '3', statusName: tr('ended'), index: 4),
+      TVSeriesStatus(statusId: '4', statusName: tr('cancelled'), index: 5),
+      TVSeriesStatus(statusId: '5', statusName: tr('pilot'), index: 6),
+    ];
+
+    List<DropdownMenuItem<String>> getDropdownItems() {
+      List<DropdownMenuItem<String>> dropdownItems = [];
+      for (int i = 0; i < yearDropdownData.yearsList.length; i++) {
+        String years = yearDropdownData.yearsList[i];
+        var newItem = DropdownMenuItem(
+          value: years,
+          child: Text(years.isEmpty ? tr('any') : years),
+        );
+        dropdownItems.add(newItem);
+      }
+      return dropdownItems;
+    }
+
+    List<TVGenreFilterChipWidget> tvGenreList = <TVGenreFilterChipWidget>[
+      TVGenreFilterChipWidget(
+          genreName: tr('action_and_adventure'), genreValue: '10759'),
+      TVGenreFilterChipWidget(genreName: tr('animation'), genreValue: '16'),
+      TVGenreFilterChipWidget(genreName: tr('comedy'), genreValue: '35'),
+      TVGenreFilterChipWidget(genreName: tr('crime'), genreValue: '80'),
+      TVGenreFilterChipWidget(genreName: tr('documentary'), genreValue: '99'),
+      TVGenreFilterChipWidget(genreName: tr('drama'), genreValue: '18'),
+      TVGenreFilterChipWidget(genreName: tr('family'), genreValue: '10751'),
+      TVGenreFilterChipWidget(genreName: tr('kids'), genreValue: '10762'),
+      TVGenreFilterChipWidget(genreName: tr('mystery'), genreValue: '9648'),
+      TVGenreFilterChipWidget(genreName: tr('news'), genreValue: '10763'),
+      TVGenreFilterChipWidget(genreName: tr('reality'), genreValue: '10764'),
+      TVGenreFilterChipWidget(
+          genreName: tr('scifi_and_fantasy'), genreValue: '10765'),
+      TVGenreFilterChipWidget(genreName: tr('soap'), genreValue: '10766'),
+      TVGenreFilterChipWidget(genreName: tr('talk'), genreValue: '10767'),
+      TVGenreFilterChipWidget(
+          genreName: tr('war_and_politics'), genreValue: '10768'),
+      TVGenreFilterChipWidget(genreName: tr('western'), genreValue: '37'),
+    ];
+
+    List<WatchProvidersFilterChipWidget> providerFilterData =
+        <WatchProvidersFilterChipWidget>[
+      WatchProvidersFilterChipWidget(networkName: 'Netflix', networkId: '8'),
+      WatchProvidersFilterChipWidget(
+          networkName: 'Amazon Prime', networkId: '9'),
+      WatchProvidersFilterChipWidget(
+          networkName: 'Disney Plus', networkId: '337'),
+      WatchProvidersFilterChipWidget(networkName: 'hulu', networkId: '15'),
+      WatchProvidersFilterChipWidget(networkName: 'HBO Max', networkId: '384'),
+      WatchProvidersFilterChipWidget(
+          networkName: 'Apple TV plus', networkId: '350'),
+      WatchProvidersFilterChipWidget(networkName: 'Peacock', networkId: '387'),
+      WatchProvidersFilterChipWidget(networkName: 'iTunes', networkId: '2'),
+      WatchProvidersFilterChipWidget(
+          networkName: 'YouTube Premium', networkId: '188'),
+      WatchProvidersFilterChipWidget(
+          networkName: 'Paramount Plus', networkId: '531'),
+      WatchProvidersFilterChipWidget(
+          networkName: 'Netflix Kids', networkId: '175'),
+    ];
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -72,7 +149,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
             ),
             Wrap(
               spacing: 3,
-              children: sortChoiceChipData.sortChoiceChip
+              children: sortChoiceChip
                   .map((SortChoiceChipWidget choiceChipWidget) => ChoiceChip(
                         selectedColor: Theme.of(context).colorScheme.primary,
                         label: Text(choiceChipWidget.name),
@@ -93,7 +170,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
             ),
             Wrap(
               spacing: 3,
-              children: tvSeriesStatusData.tvSeriesStatusList
+              children: tvSeriesStatusList
                   .map((TVSeriesStatus tvSeriesStatus) => ChoiceChip(
                         selectedColor: Theme.of(context).colorScheme.primary,
                         label: Text(tvSeriesStatus.statusName),
@@ -113,7 +190,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
               style: kTextHeaderStyle,
             ),
             DropdownButton<String>(
-              items: yearDropdownData.getDropdownItems(),
+              items: getDropdownItems(),
               onChanged: (value) {
                 setState(() {
                   defaultMovieReleaseYear = value!;
@@ -172,7 +249,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
             ),
             Wrap(
               spacing: 3,
-              children: tvGenreFilterChipData.tvGenreList
+              children: tvGenreList
                   .map((TVGenreFilterChipWidget tvGenreFilterChipWidget) =>
                       FilterChip(
                         selectedColor: Theme.of(context).colorScheme.primary,
@@ -206,7 +283,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
             ),
             Wrap(
               spacing: 3,
-              children: watchProvidersFilterChipData.providerFilterData
+              children: providerFilterData
                   .map((WatchProvidersFilterChipWidget
                           watchProvidersFilterChipWidget) =>
                       FilterChip(
