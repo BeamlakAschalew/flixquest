@@ -465,3 +465,37 @@ Future<List<Channel>> fetchChannels(String api) async {
   }
   return channelsList.channels ?? [];
 }
+
+/// Stream TMDB route
+
+Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
+  MovieInfoTMDBRoute movieInfo;
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    movieInfo = MovieInfoTMDBRoute.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+
+  return movieInfo;
+}
+
+Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
+  TVTMDBRoute tvInfo;
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    tvInfo = TVTMDBRoute.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+
+  return tvInfo;
+}

@@ -49,7 +49,11 @@ const retryOptions = RetryOptions(
     maxAttempts: 100000);
 const timeOut = Duration(seconds: 10);
 
-final List<String> appNames = ['cinemax-v2.2.0.apk', 'cinemax-v2.2.0-bv2.apk', 'cinemax-v2.3.0.apk'];
+final List<String> appNames = [
+  'cinemax-v2.2.0.apk',
+  'cinemax-v2.2.0-bv2.apk',
+  'cinemax-v2.3.0.apk'
+];
 
 CacheManager cacheProp() {
   return CacheManager(
@@ -57,3 +61,5 @@ CacheManager cacheProp() {
 }
 
 enum MediaType { movie, tvShow }
+
+enum StreamRoute { flixHQ, tmDB }

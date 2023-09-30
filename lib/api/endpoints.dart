@@ -319,4 +319,19 @@ class Endpoints {
     return '$baseUrl'
         'movies/flixhq/watch?episodeId=$episodeId&mediaId=$mediaId&server=vidcloud';
   }
+
+  /// Movie/TV TMDB route endpoints
+
+  static String getMovieTVStreamInfoTMDB(
+      String id, String media, String baseUrl) {
+    return '$baseUrl' 'meta/tmdb/info/' '$id' '?type=$media';
+  }
+
+  static String getMovieTVStreamLinksTMDB(
+      String baseUrl, String episodeId, String mediaId, String server) {
+    return '$baseUrl'
+        'meta/tmdb/watch/'
+        '$episodeId'
+        '?id=$mediaId&server=$server';
+  }
 }

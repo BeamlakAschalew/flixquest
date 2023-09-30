@@ -146,3 +146,49 @@ class TVVideoSubtitles {
     language = json['lang'];
   }
 }
+
+/// TV TMDB route
+
+class TVTMDBRoute {
+  TVTMDBRoute({required this.id, required this.seasons});
+
+  late String id;
+  late List<TVTMDBSeasons> seasons;
+
+  TVTMDBRoute.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    if (json['seasons'] != null) {
+      seasons = [];
+      json['seasons'].forEach((v) {
+        seasons.add(TVTMDBSeasons.fromJson(v));
+      });
+    }
+  }
+}
+
+class TVTMDBSeasons {
+  TVTMDBSeasons({required this.episodes, required this.seasonNumber});
+
+  late int seasonNumber;
+  late List<TVTMDBEpisodes> episodes;
+
+  TVTMDBSeasons.fromJson(Map<String, dynamic> json) {
+    seasonNumber = json['season'];
+    if (json['episodes'] != null) {
+      episodes = [];
+      json['episodes'].forEach((v) {
+        episodes.add(TVTMDBEpisodes.fromJson(v));
+      });
+    }
+  }
+}
+
+class TVTMDBEpisodes {
+  TVTMDBEpisodes({required this.id});
+
+  late String id;
+
+  TVTMDBEpisodes.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+  }
+}

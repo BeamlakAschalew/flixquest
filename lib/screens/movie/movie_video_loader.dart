@@ -13,11 +13,15 @@ import '../../screens/common/player.dart';
 
 class MovieVideoLoader extends StatefulWidget {
   const MovieVideoLoader(
-      {required this.download, required this.metadata, Key? key})
+      {required this.download,
+      required this.metadata,
+      required this.route,
+      Key? key})
       : super(key: key);
 
   final bool download;
   final List metadata;
+  final StreamRoute route;
 
   @override
   State<MovieVideoLoader> createState() => _MovieVideoLoaderState();
@@ -34,6 +38,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       Provider.of<SettingsProvider>(context, listen: false);
   late AppDependencyProvider appDep =
       Provider.of<AppDependencyProvider>(context, listen: false);
+
+  /// TMDB Route
+  MovieInfoTMDBRoute? episode;
 
   @override
   void initState() {
@@ -62,37 +69,67 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   void loadVideo() async {
     try {
-      await fetchMoviesForStream(Endpoints.searchMovieTVForStream(
-              widget.metadata.elementAt(1), appDep.consumetUrl))
-          .then((value) {
-        if (mounted) {
-          setState(() {
-            movies = value;
-          });
-        }
-      });
-      for (int i = 0; i < movies!.length; i++) {
-        if (movies![i].releaseDate == widget.metadata.elementAt(3).toString() &&
-            movies![i].type == 'Movie') {
-          await getMovieStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                  movies![i].id!, appDep.consumetUrl))
-              .then((value) {
+      if (widget.route == StreamRoute.flixHQ) {
+        await fetchMoviesForStream(Endpoints.searchMovieTVForStream(
+                widget.metadata.elementAt(1), appDep.consumetUrl))
+            .then((value) {
+          if (mounted) {
             setState(() {
-              epi = value;
+              movies = value;
             });
-          });
-          await getMovieStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                  epi![0].id!, movies![i].id!, appDep.consumetUrl))
-              .then((value) {
+          }
+        });
+        for (int i = 0; i < movies!.length; i++) {
+          if (movies![i].releaseDate ==
+                  widget.metadata.elementAt(3).toString() &&
+              movies![i].type == 'Movie') {
+            await getMovieStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                    movies![i].id!, appDep.consumetUrl))
+                .then((value) {
+              setState(() {
+                epi = value;
+              });
+            });
+            await getMovieStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
+                    epi![0].id!, movies![i].id!, appDep.consumetUrl))
+                .then((value) {
+              setState(() {
+                movieVideoSources = value;
+              });
+              movieVideoLinks = movieVideoSources!.videoLinks;
+              movieVideoSubs = movieVideoSources!.videoSubtitles;
+            });
+
+            break;
+          }
+        }
+      } else {
+        await getMovieStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
+                widget.metadata.elementAt(0).toString(),
+                "movie",
+                appDep.consumetUrl))
+            .then((value) {
+          if (mounted) {
+            setState(() {
+              episode = value;
+            });
+          }
+        });
+
+        await getMovieStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
+                appDep.consumetUrl,
+                episode!.episodeId,
+                episode!.id,
+                "vidcloud"))
+            .then((value) {
+          if (mounted) {
             setState(() {
               movieVideoSources = value;
             });
-            movieVideoLinks = movieVideoSources!.videoLinks;
-            movieVideoSubs = movieVideoSources!.videoSubtitles;
-          });
-
-          break;
-        }
+          }
+          movieVideoLinks = movieVideoSources!.videoLinks;
+          movieVideoSubs = movieVideoSources!.videoSubtitles;
+        });
       }
 
       Map<String, String> videos = {};

@@ -50,11 +50,10 @@ class RecentEpisode {
   int? episodeNum;
   int? seasonNum;
   String? posterPath;
-  String? backdropPath;
   String? dateTime;
   int? elapsed;
   int? remaining;
-  int? totalSeasons;
+  int? seriesId;
 
   RecentEpisode(
       {required this.dateTime,
@@ -64,15 +63,13 @@ class RecentEpisode {
       required this.id,
       required this.posterPath,
       required this.remaining,
-      required this.backdropPath,
       required this.seasonNum,
       required this.seriesName,
-      required this.totalSeasons});
+      required this.seriesId});
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{};
     map['id'] = id;
-    map['backdrop_path'] = backdropPath;
     map['series_name'] = seriesName;
     map['episode_name'] = episodeName;
     map['episode_num'] = episodeNum;
@@ -81,13 +78,12 @@ class RecentEpisode {
     map['elapsed'] = elapsed;
     map['remaining'] = remaining;
     map['date_added'] = dateTime;
-    map['total_seasons'] = totalSeasons;
+    map['series_id'] = seriesId;
     return map;
   }
 
   RecentEpisode.fromMapObject(Map<String, dynamic> map) {
     id = map['id'];
-    backdropPath = map['backdrop_path'];
     seriesName = map['series_name'];
     episodeName = map['episode_name'];
     episodeNum = map['episode_num'];
@@ -96,6 +92,6 @@ class RecentEpisode {
     elapsed = map['elapsed'];
     remaining = map['remaining'];
     dateTime = map['date_added'];
-    totalSeasons = map['total_seasons'];
+    seriesId = map['series_id'];
   }
 }

@@ -13,11 +13,15 @@ import '../../screens/common/player.dart';
 
 class TVVideoLoader extends StatefulWidget {
   const TVVideoLoader(
-      {required this.metadata, required this.download, Key? key})
+      {required this.metadata,
+      required this.download,
+      required this.route,
+      Key? key})
       : super(key: key);
 
   final List metadata;
   final bool download;
+  final StreamRoute route;
 
   @override
   State<TVVideoLoader> createState() => _TVVideoLoaderState();
@@ -35,6 +39,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       Provider.of<SettingsProvider>(context, listen: false);
   late AppDependencyProvider appDep =
       Provider.of<AppDependencyProvider>(context, listen: false);
+
+  /// TMDB Route
+  TVTMDBRoute? tvInfoTMDB;
 
   @override
   void initState() {
@@ -63,73 +70,99 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   void loadVideo() async {
     try {
-      await fetchTVForStream(Endpoints.searchMovieTVForStream(
-              widget.metadata.elementAt(1), appDep.consumetUrl))
-          .then((value) {
-        if (mounted) {
+      if (widget.route == StreamRoute.flixHQ) {
+        await fetchTVForStream(Endpoints.searchMovieTVForStream(
+                widget.metadata.elementAt(1), appDep.consumetUrl))
+            .then((value) {
+          if (mounted) {
+            setState(() {
+              tvShows = value;
+            });
+          }
+        });
+        for (int i = 0; i < tvShows!.length; i++) {
+          if (tvShows![i].seasons == widget.metadata.elementAt(5) &&
+              tvShows![i].type == 'TV Series') {
+            await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                    tvShows![i].id!, appDep.consumetUrl))
+                .then((value) {
+              setState(() {
+                tvInfo = value;
+                epi = tvInfo!.episodes;
+              });
+            });
+            for (int k = 0; k < epi!.length; k++) {
+              if (epi![k].episode == widget.metadata.elementAt(3) &&
+                  epi![k].season == widget.metadata.elementAt(4)) {
+                await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
+                        epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
+                    .then((value) {
+                  setState(() {
+                    tvVideoSources = value;
+                  });
+                  tvVideoLinks = tvVideoSources!.videoLinks;
+                  tvVideoSubs = tvVideoSources!.videoSubtitles;
+                });
+                break;
+              }
+            }
+
+            break;
+          }
+
+          if (tvShows![i].seasons == (widget.metadata.elementAt(5) - 1) &&
+              tvShows![i].type == 'TV Series') {
+            await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                    tvShows![i].id!, appDep.consumetUrl))
+                .then((value) {
+              setState(() {
+                tvInfo = value;
+                epi = tvInfo!.episodes;
+              });
+            });
+            for (int k = 0; k < epi!.length; k++) {
+              if (epi![k].episode == widget.metadata.elementAt(3) &&
+                  epi![k].season == widget.metadata.elementAt(4)) {
+                await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
+                        epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
+                    .then((value) {
+                  setState(() {
+                    tvVideoSources = value;
+                  });
+                  tvVideoLinks = tvVideoSources!.videoLinks;
+                  tvVideoSubs = tvVideoSources!.videoSubtitles;
+                });
+                break;
+              }
+            }
+
+            break;
+          }
+        }
+      } else {
+        await getTVStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
+                widget.metadata.elementAt(7).toString(),
+                "tv",
+                appDep.consumetUrl))
+            .then((value) {
           setState(() {
-            tvShows = value;
+            tvInfoTMDB = value;
           });
-        }
-      });
-      for (int i = 0; i < tvShows!.length; i++) {
-        if (tvShows![i].seasons == widget.metadata.elementAt(5) &&
-            tvShows![i].type == 'TV Series') {
-          await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                  tvShows![i].id!, appDep.consumetUrl))
-              .then((value) {
-            setState(() {
-              tvInfo = value;
-              epi = tvInfo!.episodes;
-            });
+        });
+
+        await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
+                appDep.consumetUrl,
+                tvInfoTMDB!.seasons[widget.metadata.elementAt(4) - 1]
+                    .episodes[widget.metadata.elementAt(3) - 1].id,
+                tvInfoTMDB!.id,
+                "vidcloud"))
+            .then((value) {
+          setState(() {
+            tvVideoSources = value;
           });
-          for (int k = 0; k < epi!.length; k++) {
-            if (epi![k].episode == widget.metadata.elementAt(3) &&
-                epi![k].season == widget.metadata.elementAt(4)) {
-              await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                      epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
-                  .then((value) {
-                setState(() {
-                  tvVideoSources = value;
-                });
-                tvVideoLinks = tvVideoSources!.videoLinks;
-                tvVideoSubs = tvVideoSources!.videoSubtitles;
-              });
-              break;
-            }
-          }
-
-          break;
-        }
-
-        if (tvShows![i].seasons == (widget.metadata.elementAt(5) - 1) &&
-            tvShows![i].type == 'TV Series') {
-          await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                  tvShows![i].id!, appDep.consumetUrl))
-              .then((value) {
-            setState(() {
-              tvInfo = value;
-              epi = tvInfo!.episodes;
-            });
-          });
-          for (int k = 0; k < epi!.length; k++) {
-            if (epi![k].episode == widget.metadata.elementAt(3) &&
-                epi![k].season == widget.metadata.elementAt(4)) {
-              await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                      epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
-                  .then((value) {
-                setState(() {
-                  tvVideoSources = value;
-                });
-                tvVideoLinks = tvVideoSources!.videoLinks;
-                tvVideoSubs = tvVideoSources!.videoSubtitles;
-              });
-              break;
-            }
-          }
-
-          break;
-        }
+          tvVideoLinks = tvVideoSources!.videoLinks;
+          tvVideoSubs = tvVideoSources!.videoSubtitles;
+        });
       }
 
       Map<String, String> videos = {};

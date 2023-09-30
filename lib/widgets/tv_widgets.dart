@@ -627,6 +627,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                               MaterialPageRoute(
                                   builder: (context) => TVVideoLoader(
                                         download: false,
+                                        route: StreamRoute.tmDB,
                                         metadata: [
                                           widget.episodesList[index].id,
                                           widget.episodesList[index].seriesName,
@@ -634,12 +635,9 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                               .episodesList[index].episodeName,
                                           widget.episodesList[index].episodeNum,
                                           widget.episodesList[index].seasonNum,
-                                          widget
-                                              .episodesList[index].totalSeasons,
-                                          widget
-                                              .episodesList[index].backdropPath,
                                           widget.episodesList[index].posterPath,
-                                          widget.episodesList[index].elapsed
+                                          widget.episodesList[index].elapsed,
+                                          widget.episodesList[index].seriesId,
                                         ],
                                       )));
                         },
@@ -6320,7 +6318,6 @@ class _WatchNowButtonState extends State<WatchNowButton> {
   @override
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
-    final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
       decoration: BoxDecoration(
@@ -6354,61 +6351,46 @@ class _WatchNowButtonState extends State<WatchNowButton> {
             isVisible = true;
             buttonWidth = 200;
           });
-          fetchTVDetails(Endpoints.tvDetailsUrl(widget.tvId, lang))
-              .then((value) async {
-            if (mounted) {
-              setState(() {
-                tvDetails = value;
-                mixpanel.track('Most viewed TV series', properties: {
-                  'TV series name': widget.seriesName,
-                  'TV series id': '${widget.tvId}',
-                  'TV series episode name': '${widget.episodeList.name}',
-                  'TV series season number':
-                      '${widget.episodeList.seasonNumber}',
-                  'TV series episode number':
-                      '${widget.episodeList.episodeNumber}'
-                });
-              });
-              var isBookmarked = await recentlyWatchedEpisodeController
-                  .contain(widget.episodeList.episodeId!);
-              int elapsed = 0;
-              if (isBookmarked) {
-                if (mounted) {
-                  var rEpisodes =
-                      Provider.of<RecentProvider>(context, listen: false)
-                          .episodes;
-
-                  int index = rEpisodes.indexWhere(
-                      (element) => element.id == widget.episodeList.episodeId);
-                  setState(() {
-                    elapsed = rEpisodes[index].elapsed!;
-                  });
-                }
-              }
-              setState(() {
-                isVisible = false;
-                buttonWidth = 160;
-              });
+          if (mounted) {
+            var isBookmarked = await recentlyWatchedEpisodeController
+                .contain(widget.episodeList.episodeId!);
+            int elapsed = 0;
+            if (isBookmarked) {
               if (mounted) {
-                Navigator.push(context, MaterialPageRoute(builder: ((context) {
-                  return TVVideoLoader(
-                    download: false,
-                    metadata: [
-                      widget.episodeList.episodeId,
-                      widget.seriesName,
-                      widget.episodeList.name,
-                      widget.episodeList.episodeNumber!,
-                      widget.episodeList.seasonNumber!,
-                      value.numberOfSeasons!,
-                      value.backdropPath,
-                      widget.posterPath,
-                      elapsed
-                    ],
-                  );
-                })));
+                var rEpisodes =
+                    Provider.of<RecentProvider>(context, listen: false)
+                        .episodes;
+
+                int index = rEpisodes.indexWhere(
+                    (element) => element.id == widget.episodeList.episodeId);
+                setState(() {
+                  elapsed = rEpisodes[index].elapsed!;
+                });
               }
             }
-          });
+            setState(() {
+              isVisible = false;
+              buttonWidth = 160;
+            });
+            if (mounted) {
+              Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                return TVVideoLoader(
+                  download: false,
+                  route: StreamRoute.tmDB,
+                  metadata: [
+                    widget.episodeList.episodeId,
+                    widget.seriesName,
+                    widget.episodeList.name,
+                    widget.episodeList.episodeNumber!,
+                    widget.episodeList.seasonNumber!,
+                    widget.posterPath,
+                    elapsed,
+                    widget.tvId,
+                  ],
+                );
+              })));
+            }
+          }
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
