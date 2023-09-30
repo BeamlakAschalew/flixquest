@@ -20,7 +20,6 @@ import '/models/filter_chip.dart';
 import '/provider/settings_provider.dart';
 import '/screens/person/guest_star_detail.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
@@ -4160,14 +4159,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                             ),
                             child: Column(
                               children: [
-                                Shimmer.fromColors(
-                                  baseColor: isDark
-                                      ? Colors.grey.shade800
-                                      : Colors.grey.shade300,
-                                  highlightColor: isDark
-                                      ? Colors.grey.shade700
-                                      : Colors.grey.shade100,
-                                  direction: ShimmerDirection.ltr,
+                                ShimmerBase(
+                                  isDark: isDark,
                                   child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -4349,22 +4342,10 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                             ),
                                                           ),
                                                         ),
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            Shimmer.fromColors(
-                                                          baseColor: isDark
-                                                              ? Colors
-                                                                  .grey.shade800
-                                                              : Colors.grey
-                                                                  .shade300,
-                                                          highlightColor: isDark
-                                                              ? Colors
-                                                                  .grey.shade700
-                                                              : Colors.grey
-                                                                  .shade100,
-                                                          direction:
-                                                              ShimmerDirection
-                                                                  .ltr,
+                                                        placeholder:
+                                                            (context, url) =>
+                                                                ShimmerBase(
+                                                          isDark: isDark,
                                                           child: Container(
                                                               color:
                                                                   Colors.white),
@@ -5349,11 +5330,8 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
           ),
           child: Column(
             children: [
-              Shimmer.fromColors(
-                baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-                highlightColor:
-                    isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-                direction: ShimmerDirection.ltr,
+              ShimmerBase(
+                isDark: isDark,
                 child: Row(
                   children: [
                     Padding(
@@ -6131,10 +6109,9 @@ class TVEpisodeQuickInfo extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text(
-                                  '${episodeList.seasonNumber! <= 9 ? 'S0${episodeList.seasonNumber}' : 'S${episodeList.seasonNumber}'} | '
-                                  '${episodeList.episodeNumber! <= 9 ? 'E0${episodeList.episodeNumber}' : 'E${episodeList.episodeNumber}'}'
-                                  ''),
+                              Text(episodeSeasonFormatter(
+                                  episodeList.episodeNumber!,
+                                  episodeList.seasonNumber!)),
                               Text(
                                 episodeList.airDate == null ||
                                         episodeList.airDate == ""

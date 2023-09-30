@@ -6,7 +6,6 @@ import '../../functions/function.dart';
 import '/widgets/common_widgets.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import '../../provider/settings_provider.dart';
 import '/constants/api_constants.dart';
 import '/models/person.dart';
@@ -186,14 +185,8 @@ class Search extends SearchDelegate<String> {
                       ),
                       child: Column(
                         children: [
-                          Shimmer.fromColors(
-                            baseColor: isDark
-                                ? Colors.grey.shade800
-                                : Colors.grey.shade300,
-                            highlightColor: isDark
-                                ? Colors.grey.shade700
-                                : Colors.grey.shade100,
-                            direction: ShimmerDirection.ltr,
+                          ShimmerBase(
+                            isDark: isDark,
                             child: Row(
                               children: [
                                 Padding(
@@ -272,11 +265,8 @@ class Search extends SearchDelegate<String> {
           ),
           child: Column(
             children: [
-              Shimmer.fromColors(
-                baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-                highlightColor:
-                    isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-                direction: ShimmerDirection.ltr,
+              ShimmerBase(
+                isDark: isDark,
                 child: Row(
                   children: [
                     Padding(

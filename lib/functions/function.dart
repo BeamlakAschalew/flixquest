@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import '../models/external_subtitles.dart';
 import '/models/movie_stream.dart';
 import '../constants/app_constants.dart';
 import '/models/update.dart';
@@ -506,4 +507,8 @@ String episodeSeasonFormatter(int episodeNumber, int seasonNumber) {
   String formattedEpisode =
       episodeNumber <= 9 ? 'E0$episodeNumber' : 'E$episodeNumber';
   return "$formattedSeason | $formattedEpisode";
+}
+
+Future<ExternalSubtitle>? getExternalMovieSubtitle(String api) async {
+  return ExternalSubtitle(data: []);
 }

@@ -15,7 +15,6 @@ import '/models/filter_chip.dart';
 import '/screens/common/photoview.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
-import 'package:shimmer/shimmer.dart';
 import '../controllers/bookmark_database_controller.dart';
 import '../provider/settings_provider.dart';
 import '/constants/app_constants.dart';
@@ -1855,11 +1854,8 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
   Widget build(BuildContext context) {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return belongsToCollection == null
-        ? Shimmer.fromColors(
-            baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-            highlightColor:
-                isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-            direction: ShimmerDirection.ltr,
+        ? ShimmerBase(
+            isDark: isDark,
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: Container(
@@ -2000,11 +1996,8 @@ class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Container(
       child: collectionDetails == null
-          ? Shimmer.fromColors(
-              baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
-              highlightColor:
-                  isDark ? Colors.grey.shade700 : Colors.grey.shade100,
-              direction: ShimmerDirection.ltr,
+          ? ShimmerBase(
+              isDark: isDark,
               child: Column(
                 children: [
                   Padding(
@@ -2072,14 +2065,8 @@ class PartsListState extends State<PartsList> {
               ? Row(
                   children: [
                     Expanded(
-                      child: Shimmer.fromColors(
-                        baseColor: isDark
-                            ? Colors.grey.shade800
-                            : Colors.grey.shade300,
-                        highlightColor: isDark
-                            ? Colors.grey.shade700
-                            : Colors.grey.shade100,
-                        direction: ShimmerDirection.ltr,
+                      child: ShimmerBase(
+                        isDark: isDark,
                         child: ListView.builder(
                           physics: const BouncingScrollPhysics(),
                           itemCount: 3,
