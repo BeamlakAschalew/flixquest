@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../constants/app_constants.dart';
 import '/api/endpoints.dart';
-import '../../functions/function.dart';
+import '../../functions/network.dart';
 import '/widgets/common_widgets.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';

@@ -4,6 +4,7 @@ import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'cinemax_main.dart';
 import 'provider/recently_watched_provider.dart';
@@ -19,6 +20,7 @@ final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await EasyLocalization.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);

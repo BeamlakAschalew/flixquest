@@ -5,7 +5,7 @@ import '../../ui_components/tv_ui_components.dart';
 import '/models/tv.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../functions/function.dart';
+import '../../functions/network.dart';
 import '../../widgets/common_widgets.dart';
 
 class MainTVList extends StatefulWidget {

@@ -56,6 +56,7 @@ dependencies:
   easy_localization: ^3.0.2
   flutter_colorpicker: ^1.0.3
   firebase_remote_config: ^4.2.5
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +71,7 @@ flutter:
     - assets/images/country_flags/
     - assets/images/profiles/
     - assets/translations/
+    - .env
 
   fonts:
     - family: Poppins

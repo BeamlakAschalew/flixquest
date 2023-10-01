@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../functions/function.dart';
+import '../../functions/network.dart';
 import '../../models/movie.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/movie_ui_components.dart';

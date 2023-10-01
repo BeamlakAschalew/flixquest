@@ -334,4 +334,19 @@ class Endpoints {
         '$episodeId'
         '?id=$mediaId&server=$server';
   }
+
+  static String searchExternalMovieSubtitles(String imdbId, String language) {
+    return '$opensubtitlesBaseUrl'
+        '/subtitles?imdb_id=$imdbId&languages=$language&ai_translated=exclude';
+  }
+
+  static String searchExternalEpisodeSubtitles(
+      String imdbId, int episodeNum, int seasonNum, String language) {
+    return '$opensubtitlesBaseUrl'
+        '/subtitles?imdb_id=$imdbId&languages=$language&ai_translated=exclude&season_number=$seasonNum&episode_number=$episodeNum';
+  }
+
+  static String externalSubtitleDownload() {
+    return '$opensubtitlesBaseUrl' '/download';
+  }
 }

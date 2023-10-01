@@ -1,3 +1,4 @@
+import 'package:cinemax/models/sub_languages.dart';
 import 'package:cinemax/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -11,43 +12,120 @@ class SubLangChoose extends StatefulWidget {
 }
 
 class _SubLangChooseState extends State<SubLangChoose> {
-  List<String> supportedLanguages = [
-    '',
-    tr("arabic"),
-    tr("bulgarian"),
-    tr("chinese"),
-    tr("croaitian"),
-    tr("czech"),
-    tr("danish"),
-    tr("dutch"),
-    tr("english"),
-    tr("estonian"),
-    tr("finnish"),
-    tr("french"),
-    tr("german"),
-    tr("greek"),
-    tr("hebrew"),
-    tr("hindi"),
-    tr("hungarian"),
-    tr("indonesian"),
-    tr("italian"),
-    tr("japanese"),
-    tr("korean"),
-    tr("latvian"),
-    tr("lithuanian"),
-    tr("malay"),
-    tr("norwegian"),
-    tr("polish"),
-    tr("portuguese"),
-    tr("romanian"),
-    tr("russian"),
-    tr("slovak"),
-    tr("slovene"),
-    tr("spanish"),
-    tr("swedish"),
-    tr("thai"),
-    tr("turkish"),
-    tr("ukrainian")
+  List<SubLanguages> supportedLanguages = [
+    SubLanguages(languageName: '', languageCode: '', englishName: 'any'),
+    SubLanguages(
+        languageName: tr("arabic"), languageCode: 'ar', englishName: 'Arabic'),
+    SubLanguages(
+        languageName: tr("bulgarian"),
+        languageCode: 'bg',
+        englishName: 'Bulgarian'),
+    SubLanguages(
+        languageName: tr("chinese"),
+        languageCode: 'zh',
+        englishName: 'Chinese'),
+    SubLanguages(
+        languageName: tr("croaitian"),
+        languageCode: 'hr',
+        englishName: 'Croaitian'),
+    SubLanguages(
+        languageName: tr("czech"), languageCode: 'cs', englishName: 'Czech'),
+    SubLanguages(
+        languageName: tr("danish"), languageCode: 'da', englishName: 'Danish'),
+    SubLanguages(
+        languageName: tr("dutch"), languageCode: 'nl', englishName: 'Dutch'),
+    SubLanguages(
+        languageName: tr("english"),
+        languageCode: 'en',
+        englishName: 'English'),
+    SubLanguages(
+        languageName: tr("estonian"),
+        languageCode: 'et',
+        englishName: 'Estonian'),
+    SubLanguages(
+        languageName: tr("finnish"),
+        languageCode: 'fi',
+        englishName: 'Finnish'),
+    SubLanguages(
+        languageName: tr("french"), languageCode: 'fr', englishName: 'French'),
+    SubLanguages(
+        languageName: tr("german"), languageCode: 'de', englishName: 'German'),
+    SubLanguages(
+        languageName: tr("greek"), languageCode: 'el', englishName: 'Greek'),
+    SubLanguages(
+        languageName: tr("hebrew"), languageCode: 'he', englishName: 'Hebrew'),
+    SubLanguages(
+        languageName: tr("hindi"), languageCode: 'hi', englishName: 'Hindi'),
+    SubLanguages(
+        languageName: tr("hungarian"),
+        languageCode: 'hu',
+        englishName: 'Hungarian'),
+    SubLanguages(
+        languageName: tr("indonesian"),
+        languageCode: 'id',
+        englishName: 'Indonesian'),
+    SubLanguages(
+        languageName: tr("italian"),
+        languageCode: 'it',
+        englishName: 'Italian'),
+    SubLanguages(
+        languageName: tr("japanese"),
+        languageCode: 'ja',
+        englishName: 'Japanese'),
+    SubLanguages(
+        languageName: tr("korean"), languageCode: 'ko', englishName: 'Korean'),
+    SubLanguages(
+        languageName: tr("latvian"),
+        languageCode: 'lv',
+        englishName: 'Latvian'),
+    SubLanguages(
+        languageName: tr("lithuanian"),
+        languageCode: 'lt',
+        englishName: 'Lithuanian'),
+    SubLanguages(
+        languageName: tr("malay"), languageCode: 'ms', englishName: 'Malay'),
+    SubLanguages(
+        languageName: tr("norwegian"),
+        languageCode: 'no',
+        englishName: 'Norwegian'),
+    SubLanguages(
+        languageName: tr("polish"), languageCode: 'pl', englishName: 'Polish'),
+    SubLanguages(
+        languageName: tr("portuguese"),
+        languageCode: 'pt',
+        englishName: 'Portuguese'),
+    SubLanguages(
+        languageName: tr("romanian"),
+        languageCode: 'ro',
+        englishName: 'Romanian'),
+    SubLanguages(
+        languageName: tr("russian"),
+        languageCode: 'ru',
+        englishName: 'Russian'),
+    SubLanguages(
+        languageName: tr("slovak"), languageCode: 'sk', englishName: 'Slovak'),
+    SubLanguages(
+        languageName: tr("slovene"),
+        languageCode: 'sl',
+        englishName: 'Slovene'),
+    SubLanguages(
+        languageName: tr("spanish"),
+        languageCode: 'es',
+        englishName: 'Spanish'),
+    SubLanguages(
+        languageName: tr("swedish"),
+        languageCode: 'sv',
+        englishName: 'Swedish'),
+    SubLanguages(
+        languageName: tr("thai"), languageCode: 'th', englishName: 'Thai'),
+    SubLanguages(
+        languageName: tr("turkish"),
+        languageCode: 'tr',
+        englishName: 'Turkish'),
+    SubLanguages(
+        languageName: tr("ukrainian"),
+        languageCode: 'uk',
+        englishName: 'Ukrainian'),
   ];
 
   @override
@@ -60,19 +138,21 @@ class _SubLangChooseState extends State<SubLangChoose> {
               child: Column(
                   children: supportedLanguages
                       .map(
-                        (String languages) => ListTile(
-                          title: Text(languages == '' ? tr("any") : languages),
+                        (SubLanguages languages) => ListTile(
+                          title: Text(languages.languageName == ''
+                              ? tr("any")
+                              : languages.languageName),
                           leading: Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Radio(
-                                value: languages,
-                                groupValue:
-                                    languageChange.defaultSubtitleLanguage,
+                                value: languages.languageCode,
+                                groupValue: languageChange
+                                    .defaultSubtitleLanguage.languageCode,
                                 onChanged: (String? value) {
                                   setState(() {
-                                    languageChange.defaultSubtitleLanguage =
-                                        value!;
+                                    languageChange.defaultSubtitleLanguage
+                                        .languageCode = value!;
                                   });
                                 },
                               ),

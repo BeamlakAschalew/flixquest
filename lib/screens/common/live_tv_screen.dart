@@ -5,7 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
-import '../../functions/function.dart';
+import '../../functions/network.dart';
 
 import '../../provider/settings_provider.dart';
 

@@ -1,12 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/functions/function.dart';
+import 'package:cinemax/functions/network.dart';
 import 'package:cinemax/models/movie_stream.dart';
 import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
+import '../../models/sub_languages.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
@@ -72,71 +73,83 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       if (widget.route == StreamRoute.flixHQ) {
         await fetchMoviesForStream(Endpoints.searchMovieTVForStream(
                 widget.metadata.elementAt(1), appDep.consumetUrl))
-            .then((value) {
+            .then((value) async {
           if (mounted) {
             setState(() {
               movies = value;
             });
           }
-        });
-        for (int i = 0; i < movies!.length; i++) {
-          if (movies![i].releaseDate ==
-                  widget.metadata.elementAt(3).toString() &&
-              movies![i].type == 'Movie') {
-            await getMovieStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                    movies![i].id!, appDep.consumetUrl))
-                .then((value) {
-              setState(() {
-                epi = value;
-              });
-            });
-            await getMovieStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                    epi![0].id!, movies![i].id!, appDep.consumetUrl))
-                .then((value) {
-              setState(() {
-                movieVideoSources = value;
-              });
-              movieVideoLinks = movieVideoSources!.videoLinks;
-              movieVideoSubs = movieVideoSources!.videoSubtitles;
-            });
 
-            break;
+          for (int i = 0; i < movies!.length; i++) {
+            if (movies![i].releaseDate ==
+                    widget.metadata.elementAt(3).toString() &&
+                movies![i].type == 'Movie') {
+              await getMovieStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                      movies![i].id!, appDep.consumetUrl))
+                  .then((value) async {
+                setState(() {
+                  epi = value;
+                });
+                await getMovieStreamLinksAndSubs(
+                        Endpoints.getMovieTVStreamLinks(
+                            epi![0].id!, movies![i].id!, appDep.consumetUrl))
+                    .then((value) {
+                  setState(() {
+                    movieVideoSources = value;
+                  });
+                  movieVideoLinks = movieVideoSources!.videoLinks;
+                  movieVideoSubs = movieVideoSources!.videoSubtitles;
+                });
+              });
+
+              break;
+            }
           }
-        }
+        });
       } else {
         await getMovieStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
                 widget.metadata.elementAt(0).toString(),
                 "movie",
                 appDep.consumetUrl))
-            .then((value) {
+            .then((value) async {
           if (mounted) {
             setState(() {
               episode = value;
             });
           }
-        });
 
-        await getMovieStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
-                appDep.consumetUrl,
-                episode!.episodeId,
-                episode!.id,
-                "vidcloud"))
-            .then((value) {
-          if (mounted) {
-            setState(() {
-              movieVideoSources = value;
-            });
-          }
-          movieVideoLinks = movieVideoSources!.videoLinks;
-          movieVideoSubs = movieVideoSources!.videoSubtitles;
+          await getMovieStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
+                  appDep.consumetUrl,
+                  episode!.episodeId,
+                  episode!.id,
+                  "vidcloud"))
+              .then((value) {
+            if (mounted) {
+              setState(() {
+                movieVideoSources = value;
+              });
+            }
+            movieVideoLinks = movieVideoSources!.videoLinks;
+            movieVideoSubs = movieVideoSources!.videoSubtitles;
+          });
         });
       }
 
       Map<String, String> videos = {};
       List<BetterPlayerSubtitlesSource> subs = [];
 
+      late int foundIndex;
+
+      for (int i = 0; i < supportedLanguages.length; i++) {
+        if (supportedLanguages[i].languageCode ==
+            settings.defaultSubtitleLanguage.languageCode) {
+          foundIndex = i;
+          break;
+        }
+      }
+
       if (movieVideoSubs != null) {
-        if (settings.defaultSubtitleLanguage == '') {
+        if (supportedLanguages[foundIndex].englishName == '') {
           for (int i = 0; i < movieVideoSubs!.length - 1; i++) {
             setState(() {
               loadProgress = (i / movieVideoSubs!.length) * 100;
@@ -154,23 +167,51 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         } else {
           if (movieVideoSubs!
               .where((element) => element.language!
-                  .startsWith(settings.defaultSubtitleLanguage))
+                  .startsWith(supportedLanguages[foundIndex].englishName))
               .isNotEmpty) {
-            await getVttFileAsString((movieVideoSubs!.where((element) => element
-                    .language!
-                    .startsWith(settings.defaultSubtitleLanguage))).first.url!)
+            await getVttFileAsString((movieVideoSubs!.where((element) =>
+                        element.language!.startsWith(
+                            supportedLanguages[foundIndex].englishName)))
+                    .first
+                    .url!)
                 .then((value) {
               subs.addAll({
                 BetterPlayerSubtitlesSource(
                     name: movieVideoSubs!
-                        .where((element) => element.language!
-                            .startsWith(settings.defaultSubtitleLanguage))
+                        .where((element) => element.language!.startsWith(
+                            supportedLanguages[foundIndex].englishName))
                         .first
                         .language,
                     //  urls: [movieVideoSubs![i].url],
                     selectedByDefault: true,
                     content: processVttFileTimestamps(value),
                     type: BetterPlayerSubtitlesSourceType.memory),
+              });
+            });
+          } else {
+            await fetchSocialLinks(
+              Endpoints.getExternalLinksForMovie(
+                  widget.metadata.elementAt(0), "en"),
+            ).then((value) async {
+              print(settings.defaultSubtitleLanguage);
+              await getExternalSubtitle(Endpoints.searchExternalMovieSubtitles(
+                      value.imdbId!,
+                      supportedLanguages[foundIndex].languageCode))
+                  .then((value) async {
+                if (value.isNotEmpty) {
+                  await downloadExternalSubtitle(
+                          Endpoints.externalSubtitleDownload(),
+                          value[0].attr!.files![0].fileId)
+                      .then((value) async {
+                    subs.addAll({
+                      BetterPlayerSubtitlesSource(
+                          name: settings.defaultSubtitleLanguage.languageName,
+                          urls: [value.link],
+                          selectedByDefault: true,
+                          type: BetterPlayerSubtitlesSourceType.network)
+                    });
+                  });
+                }
               });
             });
           }

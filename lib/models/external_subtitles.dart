@@ -3,7 +3,12 @@ class ExternalSubtitle {
   List<SubtitleData>? data;
 
   ExternalSubtitle.fromJson(Map<String, dynamic> json) {
-    data = json['data'];
+    if (json['data'] != null) {
+      data = [];
+      json['data'].forEach((v) {
+        data!.add(SubtitleData.fromJson(v));
+      });
+    }
   }
 }
 
@@ -13,7 +18,7 @@ class SubtitleData {
   SubtitleAttr? attr;
 
   SubtitleData.fromJson(Map<String, dynamic> json) {
-    attr = json['attributes'];
+    attr = SubtitleAttr.fromJson(json['attributes']);
   }
 }
 
@@ -37,5 +42,14 @@ class SubtitleFiles {
 
   SubtitleFiles.fromJson(Map<String, dynamic> json) {
     fileId = json['file_id'];
+  }
+}
+
+class SubtitleDownload {
+  SubtitleDownload({required this.link});
+  late String link;
+
+  SubtitleDownload.fromJson(Map<String, dynamic> json) {
+    link = json['link'];
   }
 }

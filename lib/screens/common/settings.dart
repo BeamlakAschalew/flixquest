@@ -327,7 +327,7 @@ class _SettingsState extends State<Settings> {
             inactiveTrackColor: const Color(0xFF9B9B9B),
             value: adultChange.isAdult,
             secondary: Icon(
-              Icons.explicit,
+              Icons.explicit_rounded,
               color: Theme.of(context).colorScheme.primary,
             ),
             title: Text(
@@ -344,7 +344,7 @@ class _SettingsState extends State<Settings> {
             inactiveTrackColor: const Color(0xFF9B9B9B),
             value: themeChange.darktheme,
             secondary: Icon(
-              Icons.dark_mode,
+              Icons.dark_mode_rounded,
               color: Theme.of(context).colorScheme.primary,
             ),
             title: Text(
@@ -358,7 +358,7 @@ class _SettingsState extends State<Settings> {
           ),
           ListTile(
             leading: Icon(
-              Icons.play_arrow,
+              Icons.play_arrow_rounded,
               color: Theme.of(context).colorScheme.primary,
             ),
             title: Text(
@@ -380,7 +380,7 @@ class _SettingsState extends State<Settings> {
               ),
               value: m3.isMaterial3Enabled,
               secondary: Icon(
-                Icons.color_lens,
+                Icons.color_lens_rounded,
                 color: Theme.of(context).colorScheme.primary,
               ),
               title: Text(
@@ -395,7 +395,7 @@ class _SettingsState extends State<Settings> {
           ),
           ListTile(
             leading: Icon(
-              Icons.image,
+              Icons.image_rounded,
               color: Theme.of(context).colorScheme.primary,
             ),
             title: Text(
@@ -428,7 +428,7 @@ class _SettingsState extends State<Settings> {
           ),
           ListTile(
             leading: Icon(
-              Icons.list,
+              Icons.view_list_rounded,
               color: Theme.of(context).colorScheme.primary,
             ),
             title: Text(
@@ -469,7 +469,7 @@ class _SettingsState extends State<Settings> {
           ),
           ListTile(
             leading: Icon(
-              Icons.phone_android_sharp,
+              Icons.phone_android_rounded,
               color: Theme.of(context).colorScheme.primary,
             ),
             title: Text(

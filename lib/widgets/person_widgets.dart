@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../provider/settings_provider.dart';
 import '/constants/api_constants.dart';
-import '../functions/function.dart';
+import '../functions/network.dart';
 import '/models/images.dart';
 import '/models/movie.dart';
 import '/models/person.dart';

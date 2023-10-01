@@ -8,6 +8,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/bookmark_database_controller.dart';
 import '../controllers/recently_watched_database_controller.dart';
+import '../functions/function.dart';
 import '../models/recently_watched.dart';
 import '../provider/recently_watched_provider.dart';
 import '../screens/tv/tv_video_loader.dart';
@@ -24,7 +25,7 @@ import '/api/endpoints.dart';
 import '/constants/api_constants.dart';
 import '../constants/app_constants.dart';
 import '/models/credits.dart';
-import '../functions/function.dart';
+import '../functions/network.dart';
 import '/models/genres.dart';
 import '/models/images.dart';
 import '/models/movie.dart';
@@ -647,7 +648,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                               MaterialPageRoute(
                                   builder: (context) => TVVideoLoader(
                                         download: false,
-                                        route: StreamRoute.tmDB,
+                                        route: StreamRoute.flixHQ,
                                         metadata: [
                                           widget.episodesList[index].id,
                                           widget.episodesList[index].seriesName,
@@ -6374,7 +6375,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
               Navigator.push(context, MaterialPageRoute(builder: ((context) {
                 return TVVideoLoader(
                   download: false,
-                  route: StreamRoute.tmDB,
+                  route: StreamRoute.flixHQ,
                   metadata: [
                     widget.episodeList.episodeId,
                     widget.seriesName,
