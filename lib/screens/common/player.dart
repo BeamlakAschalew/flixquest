@@ -41,6 +41,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       RecentlyWatchedEpisodeController();
   late int duration;
 
+  final GlobalKey _betterPlayerKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -147,6 +149,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       duration = _betterPlayerController
           .videoPlayerController!.value.duration!.inSeconds;
     });
+    _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
   }
 
   Future<void> insertRecentMovieData() async {
@@ -264,6 +267,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             width: double.infinity,
             child: BetterPlayer(
               controller: _betterPlayerController,
+              key: _betterPlayerKey,
             ),
           ),
         ),

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:cinemax/constants/api_constants.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
+import 'package:cinemax/main.dart';
 import '../models/external_subtitles.dart';
 import '/models/movie_stream.dart';
 import '../constants/app_constants.dart';
@@ -490,14 +488,12 @@ Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
 
 Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
   TVTMDBRoute tvInfo;
-  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
-    print(res.body);
     tvInfo = TVTMDBRoute.fromJson(decodeRes);
   } finally {
     client.close();
@@ -509,12 +505,11 @@ Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
 Future<List<SubtitleData>> getExternalSubtitle(String api) async {
   ExternalSubtitle subData;
 
-  print(api);
-
   try {
     var res = await retryOptions.retry(
-      () => http.get(Uri.parse(api),
-          headers: {"Api-Key": openSubtitlesKey}).timeout(timeOut),
+      () => http.get(Uri.parse(api), headers: {
+        "Api-Key": appDependencyProvider.opensubtitlesKey
+      }).timeout(timeOut),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
 
@@ -529,14 +524,12 @@ Future<List<SubtitleData>> getExternalSubtitle(String api) async {
 
 Future<SubtitleDownload> downloadExternalSubtitle(
     String api, int fileId) async {
-  print(api);
-  print("fucnction called");
   SubtitleDownload sub;
   final Map<String, String> headers = {
     'User-Agent': 'Cinemax v2.4.0',
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-    'Api-Key': openSubtitlesKey
+    'Api-Key': appDependencyProvider.opensubtitlesKey
   };
   var body = '{"file_id":$fileId}';
   try {
@@ -549,8 +542,6 @@ Future<SubtitleDownload> downloadExternalSubtitle(
   } finally {
     client.close();
   }
-
-  print("RESPONSEEEEEEEEEEEEEEEEEE ${sub.link}");
 
   return sub;
 }

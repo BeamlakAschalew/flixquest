@@ -152,15 +152,15 @@ class TVVideoSubtitles {
 class TVTMDBRoute {
   TVTMDBRoute({required this.id, required this.seasons});
 
-  late String id;
-  late List<TVTMDBSeasons> seasons;
+  String? id;
+  List<TVTMDBSeasons>? seasons;
 
   TVTMDBRoute.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     if (json['seasons'] != null) {
       seasons = [];
       json['seasons'].forEach((v) {
-        seasons.add(TVTMDBSeasons.fromJson(v));
+        seasons!.add(TVTMDBSeasons.fromJson(v));
       });
     }
   }
@@ -169,15 +169,15 @@ class TVTMDBRoute {
 class TVTMDBSeasons {
   TVTMDBSeasons({required this.episodes, required this.seasonNumber});
 
-  late int seasonNumber;
-  late List<TVTMDBEpisodes> episodes;
+  int? seasonNumber;
+  List<TVTMDBEpisodes>? episodes;
 
   TVTMDBSeasons.fromJson(Map<String, dynamic> json) {
     seasonNumber = json['season'];
     if (json['episodes'] != null) {
       episodes = [];
       json['episodes'].forEach((v) {
-        episodes.add(TVTMDBEpisodes.fromJson(v));
+        episodes!.add(TVTMDBEpisodes.fromJson(v));
       });
     }
   }
@@ -186,7 +186,7 @@ class TVTMDBSeasons {
 class TVTMDBEpisodes {
   TVTMDBEpisodes({required this.id});
 
-  late String id;
+  String? id;
 
   TVTMDBEpisodes.fromJson(Map<String, dynamic> json) {
     id = json['id'];

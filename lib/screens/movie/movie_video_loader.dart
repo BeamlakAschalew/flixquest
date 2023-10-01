@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/functions/network.dart';
+import 'package:cinemax/main.dart';
 import 'package:cinemax/models/movie_stream.dart';
 import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:cinemax/provider/settings_provider.dart';
@@ -92,7 +93,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 });
                 await getMovieStreamLinksAndSubs(
                         Endpoints.getMovieTVStreamLinks(
-                            epi![0].id!, movies![i].id!, appDep.consumetUrl))
+                            epi![0].id!,
+                            movies![i].id!,
+                            appDep.consumetUrl,
+                            appDep.streamingServer))
                     .then((value) {
                   setState(() {
                     movieVideoSources = value;
@@ -118,20 +122,23 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             });
           }
 
-          await getMovieStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
-                  appDep.consumetUrl,
-                  episode!.episodeId,
-                  episode!.id,
-                  "vidcloud"))
-              .then((value) {
-            if (mounted) {
-              setState(() {
-                movieVideoSources = value;
-              });
-            }
-            movieVideoLinks = movieVideoSources!.videoLinks;
-            movieVideoSubs = movieVideoSources!.videoSubtitles;
-          });
+          if (episode!.id != null && episode!.episodeId != null) {
+            await getMovieStreamLinksAndSubs(
+                    Endpoints.getMovieTVStreamLinksTMDB(
+                        appDep.consumetUrl,
+                        episode!.episodeId!,
+                        episode!.id!,
+                        appDependencyProvider.streamingServer))
+                .then((value) {
+              if (mounted) {
+                setState(() {
+                  movieVideoSources = value;
+                });
+              }
+              movieVideoLinks = movieVideoSources!.videoLinks;
+              movieVideoSubs = movieVideoSources!.videoSubtitles;
+            });
+          }
         });
       }
 
@@ -193,7 +200,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               Endpoints.getExternalLinksForMovie(
                   widget.metadata.elementAt(0), "en"),
             ).then((value) async {
-              print(settings.defaultSubtitleLanguage);
               await getExternalSubtitle(Endpoints.searchExternalMovieSubtitles(
                       value.imdbId!,
                       supportedLanguages[foundIndex].languageCode))
@@ -205,7 +211,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                       .then((value) async {
                     subs.addAll({
                       BetterPlayerSubtitlesSource(
-                          name: settings.defaultSubtitleLanguage.languageName,
+                          name: supportedLanguages[foundIndex].englishName,
                           urls: [value.link],
                           selectedByDefault: true,
                           type: BetterPlayerSubtitlesSourceType.network)
@@ -301,7 +307,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             ),
             const SizedBox(width: 160, child: LinearProgressIndicator()),
             Visibility(
-              visible: settings.defaultSubtitleLanguage != '' ? false : true,
+              visible: settings.defaultSubtitleLanguage.englishName != ''
+                  ? false
+                  : true,
               child: Text(
                 '${loadProgress.toStringAsFixed(0).toString()}%',
                 style:

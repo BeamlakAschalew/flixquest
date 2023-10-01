@@ -315,9 +315,9 @@ class Endpoints {
   }
 
   static String getMovieTVStreamLinks(
-      String episodeId, String mediaId, String baseUrl) {
+      String episodeId, String mediaId, String baseUrl, String server) {
     return '$baseUrl'
-        'movies/flixhq/watch?episodeId=$episodeId&mediaId=$mediaId&server=vidcloud';
+        'movies/flixhq/watch?episodeId=$episodeId&mediaId=$mediaId&server=$server';
   }
 
   /// Movie/TV TMDB route endpoints

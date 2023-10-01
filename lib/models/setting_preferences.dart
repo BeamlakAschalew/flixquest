@@ -141,7 +141,7 @@ class VideoPlayerPreferences {
     return prefs.getInt(DEFAULT_VIDEO_QUALITY) ?? 0;
   }
 
-  static const DEFAULT_SUBTITLE = 'default_subtitle';
+  static const DEFAULT_SUBTITLE = 'default_subtitle_v2';
   setDefaultSubtitle(String language) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(DEFAULT_SUBTITLE, language);

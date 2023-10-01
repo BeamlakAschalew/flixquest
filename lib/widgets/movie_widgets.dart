@@ -658,7 +658,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                               MaterialPageRoute(
                                   builder: (context) => MovieVideoLoader(
                                         download: false,
-                                        route: StreamRoute.tmDB,
+                                        route: StreamRoute.flixHQ,
                                         metadata: [
                                           widget.moviesList[index].id,
                                           widget.moviesList[index].title,
@@ -1486,7 +1486,7 @@ class DownloadMovie extends StatelessWidget {
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return MovieVideoLoader(
               download: true,
-              route: StreamRoute.tmDB,
+              route: StreamRoute.flixHQ,
               metadata: [movieId, movieName, thumbnail, releaseYear, 0.0],
             );
           })));
@@ -2977,7 +2977,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
           });
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return MovieVideoLoader(
-              route: StreamRoute.tmDB,
+              route: StreamRoute.flixHQ,
               download: false,
               metadata: [
                 widget.movieId,

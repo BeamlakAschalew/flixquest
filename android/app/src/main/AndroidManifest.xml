@@ -29,6 +29,7 @@
         android:usesCleartextTraffic="true">    
         <activity
             android:name=".MainActivity"
+            android:supportsPictureInPicture="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -54,6 +55,7 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" android:required="false" />
             </intent-filter>
         </activity>
+        
         <provider
             android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
             android:authorities="${applicationId}.flutter_downloader.provider"

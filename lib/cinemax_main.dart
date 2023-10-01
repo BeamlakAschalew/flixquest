@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'package:better_player/better_player.dart';
-import 'package:cinemax/screens/common/player_test.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -72,6 +70,10 @@ class _CinemaxState extends State<Cinemax>
           _remoteConfig.getString('consumet_url');
       appDependencyProvider.cinemaxLogo =
           _remoteConfig.getString('cinemax_logo');
+      appDependencyProvider.opensubtitlesKey =
+          _remoteConfig.getString('opensubtitles_key');
+      appDependencyProvider.streamingServer =
+          _remoteConfig.getString('streaming_server');
     }
   }
 
@@ -237,26 +239,26 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                           lang: lang));
                 },
                 icon: const Icon(Icons.search)),
-            IconButton(
-                color: Theme.of(context).primaryColor,
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) {
-                    return PlayerTest(
-                      sources: const {
-                        "360":
-                            "https://xex.stluserehtem.com/_v10/fa30abc4407274dca7128712e25a9f130ca2637f701bb593fa6d10dc0fe8c39f36abbffc57ebbc55d3a4dbb8e1eaaae014ba19c1aa3c63d442da66eec391ebe92a028a57aebad199903df23a666d5cd98fe3419057aae7fd688fb39b6e99aad17c474471927382f10f094e4effa9a609368d1ea135ae8a0006b27c2cfd66672b957411c500b30cfaba8130eb92f7d319/360/index.m3u8"
-                      },
-                      subs: [
-                        BetterPlayerSubtitlesSource(
-                            name: 'English',
-                            type: BetterPlayerSubtitlesSourceType.network,
-                            urls: ['http://cinemax.beamlak.dev/eng-3.srt'])
-                      ],
-                    );
-                  })));
-                },
-                icon: const Icon(Icons.play_arrow))
+            // IconButton(
+            //     color: Theme.of(context).primaryColor,
+            //     onPressed: () {
+            //       Navigator.push(context,
+            //           MaterialPageRoute(builder: ((context) {
+            //         return PlayerTest(
+            //           sources: const {
+            //             "360":
+            //                 "https://xex.stluserehtem.com/_v10/fa30abc4407274dca7128712e25a9f130ca2637f701bb593fa6d10dc0fe8c39f36abbffc57ebbc55d3a4dbb8e1eaaae014ba19c1aa3c63d442da66eec391ebe92a028a57aebad199903df23a666d5cd98fe3419057aae7fd688fb39b6e99aad17c474471927382f10f094e4effa9a609368d1ea135ae8a0006b27c2cfd66672b957411c500b30cfaba8130eb92f7d319/360/index.m3u8"
+            //           },
+            //           subs: [
+            //             BetterPlayerSubtitlesSource(
+            //                 name: 'English',
+            //                 type: BetterPlayerSubtitlesSourceType.network,
+            //                 urls: ['http://cinemax.beamlak.dev/eng-3.srt'])
+            //           ],
+            //         );
+            //       })));
+            //     },
+            //     icon: const Icon(Icons.play_arrow))
           ],
         ),
         bottomNavigationBar: Container(

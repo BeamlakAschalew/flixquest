@@ -1,3 +1,4 @@
+import 'package:cinemax/constants/api_constants.dart';
 import 'package:flutter/material.dart';
 import '../models/app_dependency_preferences.dart';
 
@@ -9,6 +10,12 @@ class AppDependencyProvider extends ChangeNotifier {
 
   String _cinemaxLogo = 'default';
   String get cinemaxLogo => _cinemaxLogo;
+
+  String _opensubtitlesKey = openSubtitlesKey;
+  String get opensubtitlesKey => _opensubtitlesKey;
+
+  String _streamingServer = STREAMING_SERVER;
+  String get streamingServer => _streamingServer;
 
   Future<void> getConsumetUrl() async {
     consumetUrl = await appDependencies.getConsumetUrl();
@@ -27,6 +34,26 @@ class AppDependencyProvider extends ChangeNotifier {
   set cinemaxLogo(String value) {
     _cinemaxLogo = value;
     appDependencies.setCinemaxUrl(value);
+    notifyListeners();
+  }
+
+  Future<void> getOpenSubKey() async {
+    opensubtitlesKey = await appDependencies.getOpenSubtitlesKey();
+  }
+
+  set opensubtitlesKey(String value) {
+    _opensubtitlesKey = value;
+    appDependencies.setOpenSubKey(value);
+    notifyListeners();
+  }
+
+  Future<void> getStreamingServer() async {
+    streamingServer = await appDependencies.getStreamServer();
+  }
+
+  set streamingServer(String value) {
+    _streamingServer = value;
+    appDependencies.setStreamServer(value);
     notifyListeners();
   }
 }

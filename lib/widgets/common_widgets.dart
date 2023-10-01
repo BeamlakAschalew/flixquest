@@ -104,7 +104,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   // ),
                   ListTile(
                     leading: Icon(
-                      Icons.settings,
+                      Icons.settings_rounded,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(tr("settings")),
@@ -143,7 +143,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   ),
                   ListTile(
                     leading: Icon(
-                      Icons.update,
+                      Icons.update_rounded,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(tr("check_for_update")),
@@ -156,7 +156,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   ),
                   ListTile(
                     leading: Icon(
-                      Icons.share_sharp,
+                      Icons.share_rounded,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(tr("shared_the_app")),

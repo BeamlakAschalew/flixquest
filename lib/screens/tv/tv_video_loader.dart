@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 import 'package:cinemax/api/endpoints.dart';
 import 'package:cinemax/functions/network.dart';
+import 'package:cinemax/main.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
@@ -106,7 +107,10 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 if (epi![k].episode == widget.metadata.elementAt(3) &&
                     epi![k].season == widget.metadata.elementAt(4)) {
                   await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                          epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
+                          epi![k].id!,
+                          tvShows![i].id!,
+                          appDep.consumetUrl,
+                          appDep.streamingServer))
                       .then((value) {
                     setState(() {
                       tvVideoSources = value;
@@ -136,7 +140,10 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 if (epi![k].episode == widget.metadata.elementAt(3) &&
                     epi![k].season == widget.metadata.elementAt(4)) {
                   await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                          epi![k].id!, tvShows![i].id!, appDep.consumetUrl))
+                          epi![k].id!,
+                          tvShows![i].id!,
+                          appDep.consumetUrl,
+                          appDep.streamingServer))
                       .then((value) {
                     setState(() {
                       tvVideoSources = value;
@@ -161,19 +168,21 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           setState(() {
             tvInfoTMDB = value;
           });
-          await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
-                  appDep.consumetUrl,
-                  tvInfoTMDB!.seasons[widget.metadata.elementAt(4) - 1]
-                      .episodes[widget.metadata.elementAt(3) - 1].id,
-                  tvInfoTMDB!.id,
-                  "vidcloud"))
-              .then((value) {
-            setState(() {
-              tvVideoSources = value;
+          if (tvInfoTMDB!.id != null && tvInfoTMDB!.seasons != null) {
+            await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
+                    appDep.consumetUrl,
+                    tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
+                        .episodes![widget.metadata.elementAt(3) - 1].id!,
+                    tvInfoTMDB!.id!,
+                    appDependencyProvider.streamingServer))
+                .then((value) {
+              setState(() {
+                tvVideoSources = value;
+              });
+              tvVideoLinks = tvVideoSources!.videoLinks;
+              tvVideoSubs = tvVideoSources!.videoSubtitles;
             });
-            tvVideoLinks = tvVideoSources!.videoLinks;
-            tvVideoSubs = tvVideoSources!.videoSubtitles;
-          });
+          }
         });
       }
 
@@ -235,7 +244,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               });
             });
           } else {
-            print("CALLEDDDDDDDDD");
+            print("EXTERNAL CALLED");
             await fetchSocialLinks(
               Endpoints.getExternalLinksForTV(
                   widget.metadata.elementAt(7), "en"),
@@ -278,7 +287,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
       if (tvVideoLinks != null && tvVideoSubs != null) {
-        print("LENGTHHHH: ${subs.length}");
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) {
             return PlayerOne(
@@ -347,7 +355,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             ),
             const SizedBox(width: 160, child: LinearProgressIndicator()),
             Visibility(
-              visible: settings.defaultSubtitleLanguage != '' ? false : true,
+              visible: settings.defaultSubtitleLanguage.englishName != ''
+                  ? false
+                  : true,
               child: Text(
                 '${loadProgress.toStringAsFixed(0).toString()}%',
                 style:
