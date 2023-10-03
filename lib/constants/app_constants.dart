@@ -47,7 +47,7 @@ const retryOptions = RetryOptions(
     maxDelay: Duration(milliseconds: 300),
     delayFactor: Duration(seconds: 0),
     maxAttempts: 100000);
-const timeOut = Duration(seconds: 20);
+const timeOut = Duration(seconds: 15);
 
 final List<String> appNames = [
   'cinemax-v2.2.0.apk',

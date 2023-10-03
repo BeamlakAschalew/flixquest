@@ -122,7 +122,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             });
           }
 
-          if (episode!.id != null && episode!.episodeId != null) {
+          if (episode != null &&
+              episode!.id != null &&
+              episode!.episodeId != null) {
             await getMovieStreamLinksAndSubs(
                     Endpoints.getMovieTVStreamLinksTMDB(
                         appDep.consumetUrl,
@@ -149,7 +151,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
       for (int i = 0; i < supportedLanguages.length; i++) {
         if (supportedLanguages[i].languageCode ==
-            settings.defaultSubtitleLanguage.languageCode) {
+            settings.defaultSubtitleLanguage) {
           foundIndex = i;
           break;
         }
@@ -158,14 +160,22 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       if (movieVideoSubs != null) {
         if (supportedLanguages[foundIndex].englishName == '') {
           for (int i = 0; i < movieVideoSubs!.length - 1; i++) {
-            setState(() {
-              loadProgress = (i / movieVideoSubs!.length) * 100;
-            });
+            if (mounted) {
+              setState(() {
+                loadProgress = (i / movieVideoSubs!.length) * 100;
+                print(loadProgress);
+              });
+            }
             await getVttFileAsString(movieVideoSubs![i].url!).then((value) {
               subs.addAll({
                 BetterPlayerSubtitlesSource(
                     name: movieVideoSubs![i].language!,
-                    //  urls: [movieVideoSubs![i].url],
+                    selectedByDefault: movieVideoSubs![i].language ==
+                            'English' ||
+                        movieVideoSubs![i].language == 'English - English' ||
+                        movieVideoSubs![i].language == 'English - SDH' ||
+                        movieVideoSubs![i].language == 'English 1' ||
+                        movieVideoSubs![i].language == 'English - English [CC]',
                     content: processVttFileTimestamps(value),
                     type: BetterPlayerSubtitlesSourceType.memory),
               });
@@ -196,6 +206,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               });
             });
           } else {
+            print("CALLEDDDDDDDDDDD");
             await fetchSocialLinks(
               Endpoints.getExternalLinksForMovie(
                   widget.metadata.elementAt(0), "en"),
@@ -236,7 +247,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           videos.entries.toList().reversed.toList();
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
-      if (movieVideoLinks != null && movieVideoSubs != null) {
+      if (movieVideoLinks != null && mounted) {
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) {
             return PlayerOne(
@@ -252,10 +263,29 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           },
         ));
       } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                tr("movie_vid_404"),
+                maxLines: 3,
+                style: kTextSmallBodyStyle,
+              ),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          Navigator.pop(context);
+        }
+      }
+    } on Exception catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              tr("movie_vid_404"),
+              tr(
+                "movie_vid_404_desc",
+                namedArgs: {"error": e.toString()},
+              ),
               maxLines: 3,
               style: kTextSmallBodyStyle,
             ),
@@ -264,21 +294,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         );
         Navigator.pop(context);
       }
-    } on Exception catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            tr(
-              "movie_vid_404_desc",
-              namedArgs: {"error": e.toString()},
-            ),
-            maxLines: 3,
-            style: kTextSmallBodyStyle,
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-      Navigator.pop(context);
     }
   }
 
@@ -307,9 +322,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             ),
             const SizedBox(width: 160, child: LinearProgressIndicator()),
             Visibility(
-              visible: settings.defaultSubtitleLanguage.englishName != ''
-                  ? false
-                  : true,
+              visible: settings.defaultSubtitleLanguage != '' ? false : true,
               child: Text(
                 '${loadProgress.toStringAsFixed(0).toString()}%',
                 style:

@@ -2,6 +2,8 @@
 
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '/constants/api_constants.dart';
 import '/constants/app_constants.dart';
@@ -307,6 +309,57 @@ class _ListItemState extends State<ListItem> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class UpdateBottom extends StatelessWidget {
+  const UpdateBottom({
+    Key? key,
+    required this.appVersion,
+    required this.prefs,
+  }) : super(key: key);
+
+  final FirebaseRemoteConfig appVersion;
+  final SharedPreferences prefs;
+
+  @override
+  Widget build(BuildContext context) {
+    bool disableCheck = false;
+
+    return Container(
+      width: double.infinity,
+      color: Theme.of(context).cardColor,
+      child: Column(children: [
+        Text(
+          tr("update_available"),
+          style: kTextHeaderStyle,
+        ),
+        Text(
+          tr("new_version",
+              namedArgs: {"v": appVersion.getString("latest_version")}),
+          style: kTextSmallBodyStyle,
+        ),
+        ElevatedButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                return const UpdateScreen();
+              })));
+            },
+            child: const Text('Go to update screen')),
+        ListTile(
+          title: Row(
+            children: [
+              Checkbox(
+                  value: disableCheck,
+                  onChanged: (value) {
+                    disableCheck = value ?? false;
+                  }),
+              const Text('Disable notification for this version')
+            ],
+          ),
+        )
+      ]),
     );
   }
 }

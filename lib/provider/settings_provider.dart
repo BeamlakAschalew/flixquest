@@ -1,9 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import '../constants/api_constants.dart';
 import '../models/setting_preferences.dart';
-import '../models/sub_languages.dart';
 
 class SettingsProvider with ChangeNotifier {
   ThemeModePreferences themeModePreferences = ThemeModePreferences();
@@ -49,9 +47,8 @@ class SettingsProvider with ChangeNotifier {
   int _defaultVideoResolution = 0;
   int get defaultVideoResolution => _defaultVideoResolution;
 
-  SubLanguages _defaultSubtitleLanguage = SubLanguages(
-      languageName: tr("english"), languageCode: "en", englishName: 'English');
-  SubLanguages get defaultSubtitleLanguage => _defaultSubtitleLanguage;
+  String _defaultSubtitleLanguage = 'en';
+  String get defaultSubtitleLanguage => _defaultSubtitleLanguage;
 
   bool _defaultViewMode = true;
   bool get defaultViewMode => _defaultViewMode;
@@ -206,13 +203,12 @@ class SettingsProvider with ChangeNotifier {
   }
 
   Future<void> getSubtitleLanguage() async {
-    defaultSubtitleLanguage.languageCode =
-        await videoPlayerPreferences.getSubLanguage();
+    defaultSubtitleLanguage = await videoPlayerPreferences.getSubLanguage();
   }
 
-  set defaultSubtitleLanguage(SubLanguages value) {
+  set defaultSubtitleLanguage(String value) {
     _defaultSubtitleLanguage = value;
-    videoPlayerPreferences.setDefaultSubtitle(value.languageCode);
+    videoPlayerPreferences.setDefaultSubtitle(value);
     notifyListeners();
   }
 

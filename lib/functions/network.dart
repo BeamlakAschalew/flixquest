@@ -345,6 +345,7 @@ Future<TV> getTV(String api) async {
 
 Future<List<MovieResults>> fetchMoviesForStream(String api) async {
   MovieStream movieStream;
+  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
@@ -360,6 +361,7 @@ Future<List<MovieResults>> fetchMoviesForStream(String api) async {
 
 Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
   MovieInfo movieInfo;
+  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
@@ -376,11 +378,13 @@ Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
 
 Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
   MovieVideoSources movieVideoSources;
+  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
+    print(res.body);
     var decodeRes = jsonDecode(res.body);
     movieVideoSources = MovieVideoSources.fromJson(decodeRes);
   } finally {
@@ -391,6 +395,7 @@ Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
 
 Future<List<TVResults>> fetchTVForStream(String api) async {
   TVStream tvStream;
+  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
@@ -406,6 +411,7 @@ Future<List<TVResults>> fetchTVForStream(String api) async {
 
 Future<TVInfo> getTVStreamEpisodes(String api) async {
   TVInfo tvInfo;
+  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
@@ -422,6 +428,7 @@ Future<TVInfo> getTVStreamEpisodes(String api) async {
 
 Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
   TVVideoSources tvVideoSources;
+  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
@@ -472,6 +479,7 @@ Future<List<Channel>> fetchChannels(String api) async {
 
 Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
   MovieInfoTMDBRoute movieInfo;
+  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
@@ -488,6 +496,7 @@ Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
 
 Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
   TVTMDBRoute tvInfo;
+  print(api);
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),

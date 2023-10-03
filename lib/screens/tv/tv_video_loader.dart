@@ -71,7 +71,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   }
 
   void loadVideo() async {
-    print(settings.defaultSubtitleLanguage.languageCode);
+    print(settings.defaultSubtitleLanguage);
     try {
       late int totalSeasons;
       if (widget.route == StreamRoute.flixHQ) {
@@ -80,6 +80,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             .then(
           (value) async {
             totalSeasons = value.numberOfSeasons!;
+            print(totalSeasons);
             await fetchTVForStream(Endpoints.searchMovieTVForStream(
                     widget.metadata.elementAt(1), appDep.consumetUrl))
                 .then((value) async {
@@ -88,77 +89,83 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   tvShows = value;
                 });
               }
+              print("point 1");
+              for (int i = 0; i < tvShows!.length; i++) {
+                if (tvShows![i].seasons == totalSeasons &&
+                    tvShows![i].type == 'TV Series') {
+                  print("point 2");
+                  await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                          tvShows![i].id!, appDep.consumetUrl))
+                      .then((value) async {
+                    setState(() {
+                      tvInfo = value;
+                      epi = tvInfo!.episodes;
+                    });
+
+                    for (int k = 0; k < epi!.length; k++) {
+                      if (epi![k].episode == widget.metadata.elementAt(3) &&
+                          epi![k].season == widget.metadata.elementAt(4)) {
+                        print("point 3");
+                        await getTVStreamLinksAndSubs(
+                                Endpoints.getMovieTVStreamLinks(
+                                    epi![k].id!,
+                                    tvShows![i].id!,
+                                    appDep.consumetUrl,
+                                    appDep.streamingServer))
+                            .then((value) {
+                          setState(() {
+                            tvVideoSources = value;
+                          });
+                          tvVideoLinks = tvVideoSources!.videoLinks;
+                          tvVideoSubs = tvVideoSources!.videoSubtitles;
+                        });
+                        break;
+                      }
+                    }
+                  });
+
+                  break;
+                }
+
+                if (tvShows![i].seasons == (totalSeasons - 1) &&
+                    tvShows![i].type == 'TV Series') {
+                  print("point 4");
+                  await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                          tvShows![i].id!, appDep.consumetUrl))
+                      .then((value) async {
+                    setState(() {
+                      tvInfo = value;
+                      epi = tvInfo!.episodes;
+                    });
+
+                    for (int k = 0; k < epi!.length; k++) {
+                      if (epi![k].episode == widget.metadata.elementAt(3) &&
+                          epi![k].season == widget.metadata.elementAt(4)) {
+                        print("point 5");
+                        await getTVStreamLinksAndSubs(
+                                Endpoints.getMovieTVStreamLinks(
+                                    epi![k].id!,
+                                    tvShows![i].id!,
+                                    appDep.consumetUrl,
+                                    appDep.streamingServer))
+                            .then((value) {
+                          setState(() {
+                            tvVideoSources = value;
+                          });
+                          tvVideoLinks = tvVideoSources!.videoLinks;
+                          tvVideoSubs = tvVideoSources!.videoSubtitles;
+                        });
+                        break;
+                      }
+                    }
+                  });
+
+                  break;
+                }
+              }
             });
           },
         );
-
-        for (int i = 0; i < tvShows!.length; i++) {
-          if (tvShows![i].seasons == totalSeasons &&
-              tvShows![i].type == 'TV Series') {
-            await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                    tvShows![i].id!, appDep.consumetUrl))
-                .then((value) async {
-              setState(() {
-                tvInfo = value;
-                epi = tvInfo!.episodes;
-              });
-
-              for (int k = 0; k < epi!.length; k++) {
-                if (epi![k].episode == widget.metadata.elementAt(3) &&
-                    epi![k].season == widget.metadata.elementAt(4)) {
-                  await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                          epi![k].id!,
-                          tvShows![i].id!,
-                          appDep.consumetUrl,
-                          appDep.streamingServer))
-                      .then((value) {
-                    setState(() {
-                      tvVideoSources = value;
-                    });
-                    tvVideoLinks = tvVideoSources!.videoLinks;
-                    tvVideoSubs = tvVideoSources!.videoSubtitles;
-                  });
-                  break;
-                }
-              }
-            });
-
-            break;
-          }
-
-          if (tvShows![i].seasons == (totalSeasons - 1) &&
-              tvShows![i].type == 'TV Series') {
-            await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                    tvShows![i].id!, appDep.consumetUrl))
-                .then((value) async {
-              setState(() {
-                tvInfo = value;
-                epi = tvInfo!.episodes;
-              });
-
-              for (int k = 0; k < epi!.length; k++) {
-                if (epi![k].episode == widget.metadata.elementAt(3) &&
-                    epi![k].season == widget.metadata.elementAt(4)) {
-                  await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinks(
-                          epi![k].id!,
-                          tvShows![i].id!,
-                          appDep.consumetUrl,
-                          appDep.streamingServer))
-                      .then((value) {
-                    setState(() {
-                      tvVideoSources = value;
-                    });
-                    tvVideoLinks = tvVideoSources!.videoLinks;
-                    tvVideoSubs = tvVideoSources!.videoSubtitles;
-                  });
-                  break;
-                }
-              }
-            });
-
-            break;
-          }
-        }
       } else {
         await getTVStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
                 widget.metadata.elementAt(7).toString(),
@@ -168,7 +175,11 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           setState(() {
             tvInfoTMDB = value;
           });
-          if (tvInfoTMDB!.id != null && tvInfoTMDB!.seasons != null) {
+          if (tvInfoTMDB!.id != null &&
+              tvInfoTMDB!.seasons != null &&
+              tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
+                      .episodes![widget.metadata.elementAt(3) - 1].id !=
+                  null) {
             await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
                     appDep.consumetUrl,
                     tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
@@ -193,7 +204,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
       for (int i = 0; i < supportedLanguages.length; i++) {
         if (supportedLanguages[i].languageCode ==
-            settings.defaultSubtitleLanguage.languageCode) {
+            settings.defaultSubtitleLanguage) {
           foundIndex = i;
           break;
         }
@@ -203,6 +214,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           for (int i = 0; i < tvVideoSubs!.length - 1; i++) {
             setState(() {
               loadProgress = (i / tvVideoSubs!.length) * 100;
+              print(loadProgress);
             });
             await getVttFileAsString(tvVideoSubs![i].url!).then((value) {
               subs.addAll({
@@ -212,7 +224,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     selectedByDefault: tvVideoSubs![i].language == 'English' ||
                             tvVideoSubs![i].language == 'English - English' ||
                             tvVideoSubs![i].language == 'English - SDH' ||
-                            tvVideoSubs![i].language == 'English 1'
+                            tvVideoSubs![i].language == 'English 1' ||
+                            tvVideoSubs![i].language == 'English - English [CC]'
                         ? true
                         : false,
                     type: BetterPlayerSubtitlesSourceType.memory)
@@ -286,7 +299,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           videos.entries.toList().reversed.toList();
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
-      if (tvVideoLinks != null && tvVideoSubs != null) {
+      if (tvVideoLinks != null && mounted) {
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) {
             return PlayerOne(
@@ -302,11 +315,26 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           },
         ));
       } else {
-        print('SUBSSSSSSS $tvVideoSubs');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                tr("tv_vid_404"),
+                maxLines: 3,
+                style: kTextSmallBodyStyle,
+              ),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          Navigator.pop(context);
+        }
+      }
+    } on Exception catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              tr("tv_vid_404"),
+              tr("tv_vid_404_desc", namedArgs: {"err": e.toString()}),
               maxLines: 3,
               style: kTextSmallBodyStyle,
             ),
@@ -315,18 +343,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         );
         Navigator.pop(context);
       }
-    } on Exception catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            tr("tv_vid_404_desc", namedArgs: {"err": e.toString()}),
-            maxLines: 3,
-            style: kTextSmallBodyStyle,
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-      // Navigator.pop(context);
     }
   }
 
@@ -355,9 +371,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             ),
             const SizedBox(width: 160, child: LinearProgressIndicator()),
             Visibility(
-              visible: settings.defaultSubtitleLanguage.englishName != ''
-                  ? false
-                  : true,
+              visible: settings.defaultSubtitleLanguage != '' ? false : true,
               child: Text(
                 '${loadProgress.toStringAsFixed(0).toString()}%',
                 style:

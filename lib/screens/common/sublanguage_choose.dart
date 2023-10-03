@@ -147,12 +147,12 @@ class _SubLangChooseState extends State<SubLangChoose> {
                             children: [
                               Radio(
                                 value: languages.languageCode,
-                                groupValue: languageChange
-                                    .defaultSubtitleLanguage.languageCode,
+                                groupValue:
+                                    languageChange.defaultSubtitleLanguage,
                                 onChanged: (String? value) {
                                   setState(() {
-                                    languageChange.defaultSubtitleLanguage
-                                        .languageCode = value!;
+                                    languageChange.defaultSubtitleLanguage =
+                                        value!;
                                   });
                                 },
                               ),

@@ -63,7 +63,7 @@ class _CinemaxState extends State<Cinemax>
     _fetchConfig();
   }
 
-  void _fetchConfig() async {
+  Future _fetchConfig() async {
     await _remoteConfig.fetchAndActivate();
     if (mounted) {
       appDependencyProvider.consumetUrl =
@@ -82,18 +82,10 @@ class _CinemaxState extends State<Cinemax>
     super.initState();
     _initConfig();
     fileDelete();
-
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {});
     FirebaseMessaging.onMessageOpenedApp.listen((message) {});
     // SystemChrome.setPreferredOrientations(
     //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-  }
-
-  @override
-  void dispose() {
-    settingsProvider.dispose();
-    recentProvider.dispose();
-    super.dispose();
   }
 
   @override
@@ -174,6 +166,7 @@ class CinemaxHomePage extends StatefulWidget {
 class _CinemaxHomePageState extends State<CinemaxHomePage>
     with SingleTickerProviderStateMixin {
   late int selectedIndex;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -188,16 +181,6 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
       selectedIndex = defaultHome;
     });
   }
-
-  @override
-  void dispose() {
-    settingsProvider.dispose();
-    recentProvider.dispose();
-    appDependencyProvider.dispose();
-    super.dispose();
-  }
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -326,3 +309,30 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
         ));
   }
 }
+
+/*
+
+String? appVersion = _remoteConfig.getString('latest_version');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? ignoreVersion = prefs.getString('ignore_version') ?? '';
+      if (mounted &&
+          appVersion != currentAppVersion &&
+          (ignoreVersion == '' || ignoreVersion != currentAppVersion)) {
+        showBottomSheet(
+          context: context,
+          builder: (context) {
+            return Builder(
+              builder: (BuildContext innerContext) {
+                return UpdateBottom(
+                  appVersion: appVersion,
+                  ignoreVersion: ignoreVersion,
+                  prefs: prefs,
+                );
+              },
+            );
+          },
+        );
+      }
+
+
+*/

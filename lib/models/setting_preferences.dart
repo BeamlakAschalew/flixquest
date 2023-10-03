@@ -149,7 +149,7 @@ class VideoPlayerPreferences {
 
   Future<String> getSubLanguage() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(DEFAULT_SUBTITLE) ?? '';
+    return prefs.getString(DEFAULT_SUBTITLE) ?? 'en';
   }
 
   static const DEFAULT_FULL_SCREEN = 'default_full_screen';

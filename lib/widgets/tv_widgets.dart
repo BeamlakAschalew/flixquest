@@ -648,7 +648,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                               MaterialPageRoute(
                                   builder: (context) => TVVideoLoader(
                                         download: false,
-                                        route: StreamRoute.flixHQ,
+                                        route: StreamRoute.tmDB,
                                         metadata: [
                                           widget.episodesList[index].id,
                                           widget.episodesList[index].seriesName,
@@ -6375,7 +6375,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
               Navigator.push(context, MaterialPageRoute(builder: ((context) {
                 return TVVideoLoader(
                   download: false,
-                  route: StreamRoute.flixHQ,
+                  route: StreamRoute.tmDB,
                   metadata: [
                     widget.episodeList.episodeId,
                     widget.seriesName,

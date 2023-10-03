@@ -27,7 +27,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
       checking = true;
     });
     await getMovieStreamLinksAndSubs(
-            "${appDependencyProvider.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=vidcloud")
+            "${appDependencyProvider.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependencyProvider.streamingServer}")
         .then((value) {
       if (mounted) {
         setState(() {
