@@ -246,6 +246,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
 
               Navigator.push(context, MaterialPageRoute(builder: ((context) {
                 return LivePlayer(
+                  channelName: widget.channel.channelName!,
                   sources: reversedVids,
                   autoFullScreen: autoFS,
                   colors: [

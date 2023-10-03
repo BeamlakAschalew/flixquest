@@ -7,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../controllers/recently_watched_database_controller.dart';
 import '../models/recently_watched.dart';
 import '../provider/recently_watched_provider.dart';
+import '../screens/common/update_screen.dart';
 import '../screens/movie/movie_castandcrew.dart';
 import '../screens/movie/movie_video_loader.dart';
 import '../ui_components/movie_ui_components.dart';
@@ -68,6 +69,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
           DiscoverMovies(
             includeAdult: includeAdult,
           ),
+          UpdateBottom(),
           ScrollingMovies(
             title: tr("popular"),
             api: Endpoints.popularMoviesUrl(1, lang),

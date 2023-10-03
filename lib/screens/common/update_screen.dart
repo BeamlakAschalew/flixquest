@@ -313,53 +313,108 @@ class _ListItemState extends State<ListItem> {
   }
 }
 
-class UpdateBottom extends StatelessWidget {
+class UpdateBottom extends StatefulWidget {
   const UpdateBottom({
     Key? key,
-    required this.appVersion,
-    required this.prefs,
   }) : super(key: key);
 
-  final FirebaseRemoteConfig appVersion;
-  final SharedPreferences prefs;
+  @override
+  State<UpdateBottom> createState() => _UpdateBottomState();
+}
+
+class _UpdateBottomState extends State<UpdateBottom> {
+  String? appVersion =
+      FirebaseRemoteConfig.instance.getString("latest_version");
+  bool visible = false;
+  bool disableCheck = false;
+
+  String? ignoreVersion;
+
+  Future getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      ignoreVersion = prefs.getString("ignore_version") ?? "";
+      visible = ignoreVersion != appVersion! &&
+          appVersion != null &&
+          appVersion != currentAppVersion;
+    });
+  }
+
+  Future checkAction(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (value && appVersion != null) {
+      prefs.setString("ignore_version", appVersion!);
+    } else {
+      prefs.setString("ignore_version", "");
+    }
+  }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    bool disableCheck = false;
-
-    return Container(
-      width: double.infinity,
-      color: Theme.of(context).cardColor,
-      child: Column(children: [
-        Text(
-          tr("update_available"),
-          style: kTextHeaderStyle,
-        ),
-        Text(
-          tr("new_version",
-              namedArgs: {"v": appVersion.getString("latest_version")}),
-          style: kTextSmallBodyStyle,
-        ),
-        ElevatedButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: ((context) {
-                return const UpdateScreen();
-              })));
-            },
-            child: const Text('Go to update screen')),
-        ListTile(
-          title: Row(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 8),
+      child: Visibility(
+        visible: visible,
+        child: Container(
+          decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(10)),
+          width: double.infinity,
+          child: Stack(
             children: [
-              Checkbox(
-                  value: disableCheck,
-                  onChanged: (value) {
-                    disableCheck = value ?? false;
-                  }),
-              const Text('Disable notification for this version')
+              Column(children: [
+                Text(
+                  tr("update_available"),
+                  style: kTextHeaderStyle,
+                ),
+                Text(
+                  tr("new_version", namedArgs: {"v": appVersion ?? ""}),
+                  style: kTextSmallBodyStyle,
+                ),
+                ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: ((context) {
+                        return const UpdateScreen();
+                      })));
+                    },
+                    child: const Text('Go to update screen')),
+                ListTile(
+                  title: Row(
+                    children: [
+                      Checkbox(
+                          value: disableCheck,
+                          onChanged: (value) {
+                            setState(() {
+                              disableCheck = value!;
+                            });
+                            checkAction(value!);
+                          }),
+                      const Text('Disable notification for this version')
+                    ],
+                  ),
+                )
+              ]),
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        visible = false;
+                      });
+                    },
+                    icon: Icon(Icons.close)),
+              ),
             ],
           ),
-        )
-      ]),
+        ),
+      ),
     );
   }
 }
