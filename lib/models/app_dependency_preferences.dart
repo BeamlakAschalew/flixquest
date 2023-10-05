@@ -48,4 +48,8 @@ class AppDependencies {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(STREAM_SERVER) ?? STREAMING_SERVER;
   }
+
+  Future<bool> enableAD(bool enable) async {
+    return enable;
+  }
 }

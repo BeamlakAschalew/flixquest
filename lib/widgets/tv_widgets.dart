@@ -2646,11 +2646,11 @@ class TVCastTabState extends State<TVCastTab>
     return credits == null
         ? Container(child: tvCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
-            ? Container(
-                color:
-                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: Center(
-                  child: Text(tr("no_cast_tv"), style: kTextSmallHeaderStyle),
+            ? Center(
+                child: Text(
+                  tr("no_cast_tv"),
+                  style: kTextSmallHeaderStyle,
+                  textAlign: TextAlign.center,
                 ),
               )
             : Container(
@@ -2847,11 +2847,11 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
     return tvDetails == null
         ? Container(child: tvDetailsSeasonsTabShimmer(isDark))
         : tvDetails!.seasons!.isEmpty
-            ? Container(
-                color:
-                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: Center(
-                  child: Text(tr("no_season_tv"), style: kTextSmallHeaderStyle),
+            ? Center(
+                child: Text(
+                  tr("no_season_tv"),
+                  style: kTextSmallHeaderStyle,
+                  textAlign: TextAlign.center,
                 ),
               )
             : Container(
@@ -3033,11 +3033,12 @@ class TVCrewTabState extends State<TVCrewTab>
             padding: const EdgeInsets.only(top: 8),
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.crew!.isEmpty
-            ? Container(
-                color:
-                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: Center(
-                  child: Text(tr("no_cast_tv"), style: kTextSmallHeaderStyle),
+            ? Center(
+                child: Text(
+                  tr("no_cast_tv"),
+                  style: kTextSmallHeaderStyle,
+                  textAlign: TextAlign.center,
+                  maxLines: 4,
                 ),
               )
             : Container(
@@ -3565,13 +3566,10 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
     return tvList == null && viewType == 'grid'
         ? moviesAndTVShowGridShimmer(isDark)
         : tvList == null && viewType == 'list'
-            ? Container(
-                color:
-                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: mainPageVerticalScrollShimmer(
-                    isDark: isDark,
-                    isLoading: isLoading,
-                    scrollController: _scrollController))
+            ? mainPageVerticalScrollShimmer(
+                isDark: isDark,
+                isLoading: isLoading,
+                scrollController: _scrollController)
             : tvList!.isEmpty
                 ? Container(
                     child: Center(
@@ -3991,12 +3989,9 @@ class SeasonsListState extends State<SeasonsList> {
           child: tvDetails == null
               ? horizontalScrollingSeasonsList(isDark)
               : tvDetails!.seasons!.isEmpty
-                  ? Container(
-                      color: const Color(0xFF000000),
-                      child: Center(
-                        child: Text(tr("no_season_tv"),
-                            textAlign: TextAlign.center),
-                      ),
+                  ? Center(
+                      child:
+                          Text(tr("no_season_tv"), textAlign: TextAlign.center),
                     )
                   : Row(
                       children: [
@@ -4936,13 +4931,10 @@ class ParticularStreamingServiceTVShowsState
     return tvList == null && viewType == 'grid'
         ? moviesAndTVShowGridShimmer(isDark)
         : tvList == null && viewType == 'list'
-            ? Container(
-                color:
-                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: mainPageVerticalScrollShimmer(
-                    isDark: isDark,
-                    isLoading: isLoading,
-                    scrollController: _scrollController))
+            ? mainPageVerticalScrollShimmer(
+                isDark: isDark,
+                isLoading: isLoading,
+                scrollController: _scrollController)
             : tvList!.isEmpty
                 ? Container(
                     child: Center(
@@ -5019,11 +5011,12 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
             padding: const EdgeInsets.only(top: 8),
             child: movieCastAndCrewTabShimmer(isDark))
         : credits!.cast!.isEmpty
-            ? Container(
-                color:
-                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: Center(
-                  child: Text(tr("no_cast"), style: kTextSmallHeaderStyle),
+            ? Center(
+                child: Text(
+                  tr("no_cast"),
+                  style: kTextSmallHeaderStyle,
+                  textAlign: TextAlign.center,
+                  maxLines: 4,
                 ),
               )
             : Container(
@@ -5202,12 +5195,12 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
             padding: const EdgeInsets.all(8),
             child: searchedPersonShimmer(isDark))
         : credits!.cast!.isEmpty
-            ? Container(
-                color:
-                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: Center(
-                  child: Text(tr("no_guest_episode"),
-                      style: kTextSmallHeaderStyle),
+            ? Center(
+                child: Text(
+                  tr("no_guest_episode"),
+                  style: kTextSmallHeaderStyle,
+                  textAlign: TextAlign.center,
+                  maxLines: 4,
                 ),
               )
             : Container(

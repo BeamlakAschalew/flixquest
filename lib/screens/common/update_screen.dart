@@ -357,10 +357,10 @@ class _UpdateBottomState extends State<UpdateBottom> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 8),
-      child: Visibility(
-        visible: visible,
+    return Visibility(
+      visible: visible,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 8),
         child: Container(
           decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
@@ -372,10 +372,20 @@ class _UpdateBottomState extends State<UpdateBottom> {
                 Text(
                   tr("update_available"),
                   style: kTextHeaderStyle,
+                  maxLines: 3,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 Text(
                   tr("new_version", namedArgs: {"v": appVersion ?? ""}),
                   style: kTextSmallBodyStyle,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 ElevatedButton(
                     onPressed: () {
@@ -384,7 +394,10 @@ class _UpdateBottomState extends State<UpdateBottom> {
                         return const UpdateScreen();
                       })));
                     },
-                    child: const Text('Go to update screen')),
+                    child: Text(tr("goto_update"))),
+                SizedBox(
+                  height: 10,
+                ),
                 ListTile(
                   title: Row(
                     children: [
@@ -396,7 +409,13 @@ class _UpdateBottomState extends State<UpdateBottom> {
                             });
                             checkAction(value!);
                           }),
-                      const Text('Disable notification for this version')
+                      Expanded(
+                        child: Text(
+                          tr("disable_notification_version"),
+                          maxLines: 3,
+                          textAlign: TextAlign.center,
+                        ),
+                      )
                     ],
                   ),
                 )

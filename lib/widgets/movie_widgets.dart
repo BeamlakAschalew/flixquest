@@ -3558,10 +3558,10 @@ class CrewTabState extends State<CrewTab>
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return widget.credits.crew!.isEmpty
-        ? Container(
-            color: const Color(0xFF000000),
-            child: Center(
-              child: Text(tr("no_crew_movie")),
+        ? Center(
+            child: Text(
+              tr("no_crew_movie"),
+              textAlign: TextAlign.center,
             ),
           )
         : Container(
@@ -4556,149 +4556,144 @@ class CollectionMoviesState extends State<CollectionMovies> {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
-    return Container(
-      color: const Color(0xFF000000),
-      child: moviesList == null
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : moviesList!.isEmpty
-              ? Center(
-                  child: Text(
-                    tr("no_watchprovider_movie"),
-                    style: const TextStyle(fontFamily: 'Poppins'),
-                  ),
-                )
-              : Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: moviesList!.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MovieDetailPage(
-                                          movie: moviesList![index],
-                                          heroId: '${moviesList![index].id}')));
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: 85,
-                                        height: 130,
-                                        child: Hero(
-                                          tag: '${moviesList![index].id}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            child: moviesList![index]
-                                                        .posterPath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_logo.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    cacheManager: cacheProp(),
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration:
-                                                        const Duration(
-                                                            milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        TMDB_BASE_IMAGE_URL +
-                                                            imageQuality +
-                                                            moviesList![index]
-                                                                .posterPath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
+    return moviesList == null
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : moviesList!.isEmpty
+            ? Center(
+                child: Text(
+                  tr("no_watchprovider_movie"),
+                  style: const TextStyle(fontFamily: 'Poppins'),
+                ),
+              )
+            : Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: moviesList!.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MovieDetailPage(
+                                        movie: moviesList![index],
+                                        heroId: '${moviesList![index].id}')));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    SizedBox(
+                                      width: 85,
+                                      height: 130,
+                                      child: Hero(
+                                        tag: '${moviesList![index].id}',
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          child: moviesList![index]
+                                                      .posterPath ==
+                                                  null
+                                              ? Image.asset(
+                                                  'assets/images/na_logo.png',
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : CachedNetworkImage(
+                                                  cacheManager: cacheProp(),
+                                                  fadeOutDuration:
+                                                      const Duration(
+                                                          milliseconds: 300),
+                                                  fadeOutCurve: Curves.easeOut,
+                                                  fadeInDuration:
+                                                      const Duration(
+                                                          milliseconds: 700),
+                                                  fadeInCurve: Curves.easeIn,
+                                                  imageUrl:
+                                                      TMDB_BASE_IMAGE_URL +
+                                                          imageQuality +
+                                                          moviesList![index]
+                                                              .posterPath!,
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
+                                                      Container(
+                                                    decoration: BoxDecoration(
+                                                      image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover,
                                                       ),
                                                     ),
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        scrollingImageShimmer(
-                                                            isDark),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_logo.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
                                                   ),
-                                          ),
+                                                  placeholder: (context, url) =>
+                                                      scrollingImageShimmer(
+                                                          isDark),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Image.asset(
+                                                    'assets/images/na_logo.png',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
                                         ),
                                       ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                moviesList![index].title!,
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                                style: const TextStyle(
-                                                    fontFamily: 'Poppins'),
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Text(
-                                                    moviesList![index]
-                                                        .voteAverage!
-                                                        .toStringAsFixed(1),
-                                                    style: const TextStyle(
-                                                        fontFamily: 'Poppins'),
-                                                  ),
-                                                  const Icon(
-                                                    Icons.star,
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 24.0),
-                                    child: Divider(
-                                      color: Colors.white,
                                     ),
-                                  )
-                                ],
-                              ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              moviesList![index].title!,
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                              style: const TextStyle(
+                                                  fontFamily: 'Poppins'),
+                                            ),
+                                            Row(
+                                              children: <Widget>[
+                                                Text(
+                                                  moviesList![index]
+                                                      .voteAverage!
+                                                      .toStringAsFixed(1),
+                                                  style: const TextStyle(
+                                                      fontFamily: 'Poppins'),
+                                                ),
+                                                const Icon(
+                                                  Icons.star,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 24.0),
+                                  child: Divider(
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
-                  ],
-                ),
-    );
+                  ),
+                ],
+              );
   }
 }

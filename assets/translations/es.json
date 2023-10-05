@@ -462,5 +462,8 @@
     "checking_server": "Comprobando el estado del servidor...",
     "server_check_complete": "Verificación del servidor completada",
     "server_down": "El servidor está caído.",
-    "admin_notified": "El administrador será notificado y se solucionará en unos minutos"
+    "admin_notified": "El administrador será notificado y se solucionará en unos minutos",
+    "goto_update": "Ir a la pantalla de actualización",
+    "disable_notification_version": "Desactivar notificación para esta versión",
+    "report_telegram": "Informar error al grupo de Telegram"
 }

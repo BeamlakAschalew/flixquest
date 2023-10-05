@@ -462,5 +462,8 @@
     "checking_server": "Checking server status...",
     "server_check_complete": "Server check complete",
     "server_down": "Server down.",
-    "admin_notified": "Admin will be notified and it'll be fixed after few minutes"
+    "admin_notified": "Admin will be notified and it'll be fixed after few minutes",
+    "goto_update": "Go to update screen",
+    "disable_notification_version": "Disable notification for this version",
+    "report_telegram": "Report error to telegram group"
 }

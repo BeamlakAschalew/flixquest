@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+//import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -74,6 +75,7 @@ class _CinemaxState extends State<Cinemax>
           _remoteConfig.getString('opensubtitles_key');
       appDependencyProvider.streamingServer =
           _remoteConfig.getString('streaming_server');
+      appDependencyProvider.enableADS = _remoteConfig.getBool('ads_enabled');
     }
   }
 
@@ -84,12 +86,15 @@ class _CinemaxState extends State<Cinemax>
     fileDelete();
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {});
     FirebaseMessaging.onMessageOpenedApp.listen((message) {});
-    // SystemChrome.setPreferredOrientations(
-    //     [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   }
 
   @override
   Widget build(BuildContext context) {
+    // SystemChrome.setPreferredOrientations([
+    //   isTablet(context)
+    //       ? DeviceOrientation.landscapeLeft
+    //       : DeviceOrientation.portraitUp,
+    // ]);
     return FutureBuilder(
         future: widget.init,
         builder: (

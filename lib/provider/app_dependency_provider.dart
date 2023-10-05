@@ -17,6 +17,9 @@ class AppDependencyProvider extends ChangeNotifier {
   String _streamingServer = STREAMING_SERVER;
   String get streamingServer => _streamingServer;
 
+  bool _enableADS = false;
+  bool get enableADS => _enableADS;
+
   Future<void> getConsumetUrl() async {
     consumetUrl = await appDependencies.getConsumetUrl();
   }
@@ -54,6 +57,11 @@ class AppDependencyProvider extends ChangeNotifier {
   set streamingServer(String value) {
     _streamingServer = value;
     appDependencies.setStreamServer(value);
+    notifyListeners();
+  }
+
+  set enableADS(bool value) {
+    _enableADS = value;
     notifyListeners();
   }
 }

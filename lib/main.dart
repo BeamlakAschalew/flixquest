@@ -14,6 +14,14 @@ import 'provider/settings_provider.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {}
 
+bool isTablet(BuildContext context) {
+  double screenWidth = MediaQuery.of(context).size.width;
+
+  double threshold = 1000.0;
+
+  return screenWidth > threshold;
+}
+
 SettingsProvider settingsProvider = SettingsProvider();
 RecentProvider recentProvider = RecentProvider();
 AppDependencyProvider appDependencyProvider = AppDependencyProvider();
@@ -54,6 +62,7 @@ Future<void> appInitialize() async {
 
 void main() async {
   await appInitialize();
+
   runApp(EasyLocalization(
     supportedLocales: Translation.all,
     path: 'assets/translations',

@@ -79,14 +79,10 @@ class MainTVListState extends State<MainTVList> {
       body: tvList == null && viewType == 'grid'
           ? moviesAndTVShowGridShimmer(isDark)
           : tvList == null && viewType == 'list'
-              ? Container(
-                  color: isDark
-                      ? const Color(0xFF000000)
-                      : const Color(0xFFFFFFFF),
-                  child: mainPageVerticalScrollShimmer(
-                      isDark: isDark,
-                      isLoading: isLoading,
-                      scrollController: _scrollController))
+              ? mainPageVerticalScrollShimmer(
+                  isDark: isDark,
+                  isLoading: isLoading,
+                  scrollController: _scrollController)
               : tvList!.isEmpty
                   ? Center(
                       child: Text(tr("tv_404")),

@@ -32,13 +32,10 @@ class _TVBookmarkState extends State<TVBookmark> {
     return widget.tvList == null && viewType == 'grid'
         ? moviesAndTVShowGridShimmer(isDark)
         : widget.tvList == null && viewType == 'list'
-            ? Container(
-                color:
-                    isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-                child: mainPageVerticalScrollShimmer(
-                    isDark: isDark,
-                    scrollController: _scrollController,
-                    isLoading: false))
+            ? mainPageVerticalScrollShimmer(
+                isDark: isDark,
+                scrollController: _scrollController,
+                isLoading: false)
             : widget.tvList!.isEmpty
                 ? Center(
                     child: Text(

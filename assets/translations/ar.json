@@ -462,6 +462,9 @@
 	"checking_server": "جاري التحقق من حالة الخادم...",
 	"server_check_complete": "اكتمل فحص الخادم",
 	"server_down": "الخادم متوقف",
-	"admin_notified": "سيتم إخطار المسؤول وسيتم إصلاحه بعد بضع دقائق"
+	"admin_notified": "سيتم إخطار المسؤول وسيتم إصلاحه بعد بضع دقائق",
+	"goto_update": "انتقل إلى شاشة التحديث",
+    "disable_notification_version": "تعطيل الإخطار لهذا الإصدار",
+	"report_telegram": "الإبلاغ عن الخطأ لمجموعة برقية"
 }
 

@@ -8,7 +8,9 @@ import 'package:cinemax/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
+import 'package:startapp_sdk/startapp.dart';
 import '../../models/sub_languages.dart';
+import '../../widgets/common_widgets.dart';
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
@@ -44,10 +46,30 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   /// TMDB Route
   MovieInfoTMDBRoute? episode;
 
+  var startAppSdk = StartAppSdk();
+  StartAppInterstitialAd? interstitialAd;
+
+  void loadInterstitialAd() {
+    startAppSdk.loadInterstitialAd().then((interstitialAd) {
+      setState(() {
+        this.interstitialAd = interstitialAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     loadVideo();
+    print(appDependencyProvider.enableADS);
+    if (appDependencyProvider.enableADS) {
+      startAppSdk.setTestAdsEnabled(false);
+      loadInterstitialAd();
+    }
   }
 
   String processVttFileTimestamps(String vttFile) {
@@ -248,51 +270,61 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
       if (movieVideoLinks != null && mounted) {
-        Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) {
-            return PlayerOne(
-                mediaType: MediaType.movie,
-                sources: reversedVids,
-                subs: subs,
-                colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).colorScheme.background
-                ],
-                settings: settings,
-                movieMetadata: widget.metadata);
-          },
-        ));
+        if (interstitialAd != null) {
+          interstitialAd!.show().then((value) {
+            Navigator.pushReplacement(context, MaterialPageRoute(
+              builder: (context) {
+                return PlayerOne(
+                    mediaType: MediaType.movie,
+                    sources: reversedVids,
+                    subs: subs,
+                    colors: [
+                      Theme.of(context).primaryColor,
+                      Theme.of(context).colorScheme.background
+                    ],
+                    settings: settings,
+                    movieMetadata: widget.metadata);
+              },
+            ));
+          });
+        } else {
+          Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context) {
+              return PlayerOne(
+                  mediaType: MediaType.movie,
+                  sources: reversedVids,
+                  subs: subs,
+                  colors: [
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).colorScheme.background
+                  ],
+                  settings: settings,
+                  movieMetadata: widget.metadata);
+            },
+          ));
+        }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                tr("movie_vid_404"),
-                maxLines: 3,
-                style: kTextSmallBodyStyle,
-              ),
-              duration: const Duration(seconds: 3),
-            ),
-          );
           Navigator.pop(context);
+          showModalBottomSheet(
+              builder: (context) {
+                return ReportErrorWidget(
+                  error: tr("tv_vid_404"),
+                );
+              },
+              context: context);
         }
       }
     } on Exception catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              tr(
-                "movie_vid_404_desc",
-                namedArgs: {"error": e.toString()},
-              ),
-              maxLines: 3,
-              style: kTextSmallBodyStyle,
-            ),
-            duration: const Duration(seconds: 3),
-          ),
-        );
         Navigator.pop(context);
+        showModalBottomSheet(
+            builder: (context) {
+              return ReportErrorWidget(
+                error: "${tr("tv_vid_404")}\n$e",
+              );
+            },
+            context: context);
       }
     }
   }
