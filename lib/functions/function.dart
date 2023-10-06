@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 String episodeSeasonFormatter(int episodeNumber, int seasonNumber) {
@@ -13,4 +16,18 @@ Future<void> requestNotificationPermissions() async {
   if (!status.isGranted && !status.isPermanentlyDenied) {
     Permission.notification.request();
   }
+}
+
+Future<bool> checkConnection() async {
+  bool isInternetWorking;
+  try {
+    final response = await InternetAddress.lookup('google.com');
+
+    isInternetWorking = response.isNotEmpty;
+  } on SocketException catch (e) {
+    debugPrint(e.toString());
+    isInternetWorking = false;
+  }
+
+  return isInternetWorking;
 }

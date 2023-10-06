@@ -4585,7 +4585,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                             BorderRadius.circular(8.0),
                                         child: const FadeInImage(
                                           image: AssetImage(
-                                              'assets/images/logo_shadow.png'),
+                                              'assets/images/logo.png'),
                                           fit: BoxFit.cover,
                                           placeholder: AssetImage(
                                               'assets/images/loading_5.gif'),
@@ -5194,7 +5194,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
         ? Container(
             padding: const EdgeInsets.all(8),
             child: searchedPersonShimmer(isDark))
-        : credits!.cast!.isEmpty
+        : credits!.episodeGuestStars!.isEmpty
             ? Center(
                 child: Text(
                   tr("no_guest_episode"),

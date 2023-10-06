@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:unity_ads_plugin/unity_ads_plugin.dart';
 import '../controllers/recently_watched_database_controller.dart';
 import '../models/recently_watched.dart';
 import '../provider/recently_watched_provider.dart';
@@ -56,6 +57,15 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
   @override
   void initState() {
     super.initState();
+    UnityAds.init(
+      gameId: "5280322",
+      testMode: false,
+      onComplete: () {
+        print('Initialization Complete');
+      },
+      onFailed: (error, message) =>
+          print('Initialization Failed: $error $message'),
+    );
   }
 
   @override
@@ -77,13 +87,13 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
             isTrending: false,
             includeAdult: includeAdult,
           ),
-          // UnityBannerAd(
-          //   placementId: 'Movies_one',
-          //   onLoad: (placementId) => print('Banner loaded: $placementId'),
-          //   onClick: (placementId) => print('Banner clicked: $placementId'),
-          //   onFailed: (placementId, error, message) =>
-          //       print('Banner Ad $placementId failed: $error $message'),
-          // ),
+          UnityBannerAd(
+            placementId: 'Movies_one',
+            onLoad: (placementId) => print('Banner loaded: $placementId'),
+            onClick: (placementId) => print('Banner clicked: $placementId'),
+            onFailed: (placementId, error, message) =>
+                print('Banner Ad $placementId failed: $error $message'),
+          ),
           rMovies.isEmpty
               ? Container()
               : ScrollingRecentMovies(moviesList: rMovies),

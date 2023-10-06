@@ -198,7 +198,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
           elevation: 0,
           leading: IconButton(
             icon: Icon(
-              Icons.menu,
+              FontAwesomeIcons.barsStaggered,
               color: Theme.of(context).primaryColor,
             ),
             onPressed: () {
@@ -226,7 +226,7 @@ class _CinemaxHomePageState extends State<CinemaxHomePage>
                               .isAdult,
                           lang: lang));
                 },
-                icon: const Icon(Icons.search)),
+                icon: const Icon(FontAwesomeIcons.magnifyingGlass)),
             // IconButton(
             //     color: Theme.of(context).primaryColor,
             //     onPressed: () {

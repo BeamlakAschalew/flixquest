@@ -465,5 +465,6 @@
     "admin_notified": "El administrador será notificado y se solucionará en unos minutos",
     "goto_update": "Ir a la pantalla de actualización",
     "disable_notification_version": "Desactivar notificación para esta versión",
-    "report_telegram": "Informar error al grupo de Telegram"
+    "report_telegram": "Informar error al grupo de Telegram",
+    "check_connection": "Conéctese a Internet para continuar."
 }

@@ -58,6 +58,7 @@ dependencies:
   firebase_remote_config: ^4.2.5
   flutter_dotenv: ^5.1.0
   startapp_sdk: ^0.4.2
+  unity_ads_plugin: ^0.3.8
   #modal_bottom_sheet: ^2.1.2
 
 dev_dependencies:

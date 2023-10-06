@@ -1,5 +1,7 @@
+import 'package:cinemax/functions/function.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../cinemax_main.dart';
+import '../../constants/app_constants.dart';
 import '/screens/user/forgot_password.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
@@ -33,48 +35,64 @@ class _LoginScreenState extends State<LoginScreen> {
   void submitForm() async {
     final isValid = formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-    if (isValid && mounted) {
-      setState(() {
-        isLoading = true;
-      });
-      formKey.currentState!.save();
-      try {
-        await auth
-            .signInWithEmailAndPassword(
-                email: emailAddress.toLowerCase().trim(),
-                password: password.trim())
-            .then((value) => Navigator.canPop(context)
-                ? Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: ((context) {
-                    final mixpanel =
-                        Provider.of<SettingsProvider>(context).mixpanel;
-                    mixpanel.track(
-                      'Users Login',
-                    );
-                    return const CinemaxHomePage();
-                  })))
-                : null);
-      } on FirebaseAuthException catch (error) {
-        if (mounted) {
-          if (error.code == 'wrong-password') {
-            globalMethods.authErrorHandle(tr("invalid_credential"), context);
-          } else if (error.code == 'invalid-email') {
-            globalMethods.authErrorHandle(tr("invalid_email"), context);
-          } else if (error.code == 'user-disabled') {
-            globalMethods.authErrorHandle(tr("banned_user"), context);
-          } else if (error.code == 'user-not-found') {
-            globalMethods.authErrorHandle(tr("user_not_found"), context);
+    checkConnection().then((value) async {
+      if (value) {
+        if (isValid && mounted) {
+          setState(() {
+            isLoading = true;
+          });
+          formKey.currentState!.save();
+          try {
+            await auth
+                .signInWithEmailAndPassword(
+                    email: emailAddress.toLowerCase().trim(),
+                    password: password.trim())
+                .then((value) => Navigator.canPop(context)
+                    ? Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: ((context) {
+                        final mixpanel =
+                            Provider.of<SettingsProvider>(context).mixpanel;
+                        mixpanel.track(
+                          'Users Login',
+                        );
+                        return const CinemaxHomePage();
+                      })))
+                    : null);
+          } on FirebaseAuthException catch (error) {
+            if (mounted) {
+              if (error.code == 'wrong-password') {
+                globalMethods.authErrorHandle(
+                    tr("invalid_credential"), context);
+              } else if (error.code == 'invalid-email') {
+                globalMethods.authErrorHandle(tr("invalid_email"), context);
+              } else if (error.code == 'user-disabled') {
+                globalMethods.authErrorHandle(tr("banned_user"), context);
+              } else if (error.code == 'user-not-found') {
+                globalMethods.authErrorHandle(tr("user_not_found"), context);
+              }
+            }
+            // print('error occured $error}');
+          } finally {
+            if (mounted) {
+              setState(() {
+                isLoading = false;
+              });
+            }
           }
         }
-        // print('error occured $error}');
-      } finally {
-        if (mounted) {
-          setState(() {
-            isLoading = false;
-          });
-        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              tr("check_connection"),
+              maxLines: 3,
+              style: kTextSmallBodyStyle,
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
       }
-    }
+    });
   }
 
   @override
@@ -97,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: SizedBox(
                           height: 150,
                           width: 150,
-                          child: Image.asset('assets/images/logo_shadow.png'))),
+                          child: Image.asset('assets/images/logo.png'))),
                   SingleChildScrollView(
                     child: Center(
                       child: Form(

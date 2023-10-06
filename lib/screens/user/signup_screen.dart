@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+import 'package:cinemax/functions/function.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../cinemax_main.dart';
 import '/constants/app_constants.dart';
@@ -60,116 +61,134 @@ class _SignupScreenState extends State<SignupScreen> {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
     var date = DateTime.now().toString();
-
-    if (isValid) {
-      _formKey.currentState!.save();
-      try {
-        setState(() {
-          _isLoading = true;
-        });
-
-        /// Check If Document Exists
-        Future<bool> checkIfDocExists(String docId) async {
+    checkConnection().then((value) async {
+      if (value) {
+        if (isValid && mounted) {
+          _formKey.currentState!.save();
           try {
-            // Get reference to Firestore collection
-            var collectionRef =
-                FirebaseFirestore.instance.collection('usernames');
+            setState(() {
+              _isLoading = true;
+            });
 
-            var doc = await collectionRef.doc(docId).get();
-            return doc.exists;
+            /// Check If Document Exists
+            Future<bool> checkIfDocExists(String docId) async {
+              try {
+                // Get reference to Firestore collection
+                var collectionRef =
+                    FirebaseFirestore.instance.collection('usernames');
+
+                var doc = await collectionRef.doc(docId).get();
+                return doc.exists;
+              } catch (e) {
+                rethrow;
+              }
+            }
+
+            if (await checkIfDocExists(_userName) == true) {
+              _globalMethods.authErrorHandle(
+                  tr("username_exists").toString(), context);
+              return;
+            } else {
+              await _auth.createUserWithEmailAndPassword(
+                  email: _emailAddress.toLowerCase().trim(),
+                  password: _password.trim());
+              final User? user = _auth.currentUser;
+              final uid = user!.uid;
+              user.reload();
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(uid)
+                  .set({
+                'id': uid,
+                'name': _fullName,
+                'email': _emailAddress,
+                'profileId': selectedProfile,
+                'username': _userName.trim().toLowerCase(),
+                'verified': _isUserVerified,
+                'joinedAt': date,
+                'createdAt': Timestamp.now(),
+              });
+              await FirebaseFirestore.instance
+                  .collection('usernames')
+                  .doc(_userName)
+                  .set({'uname': _userName.trim().toLowerCase(), 'uid': uid});
+
+              await FirebaseFirestore.instance
+                  .collection('bookmarks-v2.0')
+                  .doc(uid)
+                  .set({});
+
+              subscription = await FirebaseFirestore.instance
+                  .collection('bookmarks-v2.0')
+                  .doc(uid)
+                  .get();
+
+              final docData = subscription.data() as Map<String, dynamic>;
+
+              if (docData.containsKey('movies') == false) {
+                await FirebaseFirestore.instance
+                    .collection('bookmarks-v2.0')
+                    .doc(uid)
+                    .update(
+                  {'movies': []},
+                );
+              }
+
+              if (docData.containsKey('tvShows') == false) {
+                await FirebaseFirestore.instance
+                    .collection('bookmarks-v2.0')
+                    .doc(uid)
+                    .update(
+                  {'tvShows': []},
+                );
+              }
+
+              Navigator.canPop(context)
+                  ? Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: ((context) {
+                      final mixpanel =
+                          Provider.of<SettingsProvider>(context).mixpanel;
+                      mixpanel.track(
+                        'Users Signup',
+                      );
+                      return const CinemaxHomePage();
+                    })))
+                  : null;
+            }
+          } on FirebaseAuthException catch (error) {
+            if (error.code == 'weak-password') {
+              _globalMethods.authErrorHandle(tr("weak_password"), context);
+            } else if (error.code == 'email-already-in-use') {
+              _globalMethods.authErrorHandle(tr("email_exists"), context);
+            } else if (error.code == 'invalid-email') {
+              _globalMethods.authErrorHandle(tr("invalid_email"), context);
+            } else if (error.code == 'operation-not-allowed') {
+              _globalMethods.authErrorHandle(
+                  tr("operation_not_allowed"), context);
+            }
           } catch (e) {
-            rethrow;
+            _globalMethods.authErrorHandle(e.toString(), context);
+          } finally {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+              });
+            }
           }
         }
-
-        if (await checkIfDocExists(_userName) == true) {
-          _globalMethods.authErrorHandle(
-              tr("username_exists").toString(), context);
-          return;
-        } else {
-          await _auth.createUserWithEmailAndPassword(
-              email: _emailAddress.toLowerCase().trim(),
-              password: _password.trim());
-          final User? user = _auth.currentUser;
-          final uid = user!.uid;
-          user.reload();
-          await FirebaseFirestore.instance.collection('users').doc(uid).set({
-            'id': uid,
-            'name': _fullName,
-            'email': _emailAddress,
-            'profileId': selectedProfile,
-            'username': _userName.trim().toLowerCase(),
-            'verified': _isUserVerified,
-            'joinedAt': date,
-            'createdAt': Timestamp.now(),
-          });
-          await FirebaseFirestore.instance
-              .collection('usernames')
-              .doc(_userName)
-              .set({'uname': _userName.trim().toLowerCase(), 'uid': uid});
-
-          await FirebaseFirestore.instance
-              .collection('bookmarks-v2.0')
-              .doc(uid)
-              .set({});
-
-          subscription = await FirebaseFirestore.instance
-              .collection('bookmarks-v2.0')
-              .doc(uid)
-              .get();
-
-          final docData = subscription.data() as Map<String, dynamic>;
-
-          if (docData.containsKey('movies') == false) {
-            await FirebaseFirestore.instance
-                .collection('bookmarks-v2.0')
-                .doc(uid)
-                .update(
-              {'movies': []},
-            );
-          }
-
-          if (docData.containsKey('tvShows') == false) {
-            await FirebaseFirestore.instance
-                .collection('bookmarks-v2.0')
-                .doc(uid)
-                .update(
-              {'tvShows': []},
-            );
-          }
-
-          Navigator.canPop(context)
-              ? Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: ((context) {
-                  final mixpanel =
-                      Provider.of<SettingsProvider>(context).mixpanel;
-                  mixpanel.track(
-                    'Users Signup',
-                  );
-                  return const CinemaxHomePage();
-                })))
-              : null;
-        }
-      } on FirebaseAuthException catch (error) {
-        if (error.code == 'weak-password') {
-          _globalMethods.authErrorHandle(tr("weak_password"), context);
-        } else if (error.code == 'email-already-in-use') {
-          _globalMethods.authErrorHandle(tr("email_exists"), context);
-        } else if (error.code == 'invalid-email') {
-          _globalMethods.authErrorHandle(tr("invalid_email"), context);
-        } else if (error.code == 'operation-not-allowed') {
-          _globalMethods.authErrorHandle(tr("operation_not_allowed"), context);
-        }
-      } catch (e) {
-        _globalMethods.authErrorHandle(e.toString(), context);
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              tr("check_connection"),
+              maxLines: 3,
+              style: kTextSmallBodyStyle,
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
       }
-    }
+    });
   }
 
   @override
@@ -202,8 +221,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         child: SizedBox(
                             width: 90,
                             height: 90,
-                            child:
-                                Image.asset('assets/images/logo_shadow.png')),
+                            child: Image.asset('assets/images/logo.png')),
                       ),
                     ),
                     const SizedBox(

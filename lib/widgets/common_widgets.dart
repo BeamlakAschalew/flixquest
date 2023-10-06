@@ -58,7 +58,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       decoration: BoxDecoration(
                           color: isDark ? Colors.white : Colors.black),
                       child: cinemaxLogo == 'default'
-                          ? Image.asset('assets/images/logo_shadow.png')
+                          ? Image.asset('assets/images/logo.png')
                           : CachedNetworkImage(
                               imageUrl: cinemaxLogo,
                             ),

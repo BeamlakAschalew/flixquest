@@ -1,6 +1,8 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../cinemax_main.dart';
+import '../../constants/app_constants.dart';
+import '../../functions/function.dart';
 import '/provider/settings_provider.dart';
 import '/screens/user/login_screen.dart';
 import '/screens/user/signup_screen.dart';
@@ -29,6 +31,7 @@ class _LandingScreenState extends State<LandingScreen> {
 
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
+
     return Stack(
       children: [
         Container(
@@ -89,8 +92,8 @@ class _LandingScreenState extends State<LandingScreen> {
                                   tag: 'logo_shadow',
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Image.asset(
-                                        'assets/images/logo_shadow.png'),
+                                    child:
+                                        Image.asset('assets/images/logo.png'),
                                   ),
                                 ),
                               ),
@@ -245,17 +248,36 @@ class _LandingScreenState extends State<LandingScreen> {
                                           )),
                                       TextButton(
                                           onPressed: () async {
-                                            await auth
-                                                .signInAnonymously()
-                                                .then((value) {
-                                              mixpanel.track(
-                                                'Anonymous Login',
-                                              );
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) {
-                                                return const CinemaxHomePage();
-                                              }));
+                                            await checkConnection()
+                                                .then((value) async {
+                                              if (!value && mounted) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      tr("check_connection"),
+                                                      maxLines: 3,
+                                                      style:
+                                                          kTextSmallBodyStyle,
+                                                    ),
+                                                    duration: const Duration(
+                                                        seconds: 3),
+                                                  ),
+                                                );
+                                              } else {
+                                                await auth
+                                                    .signInAnonymously()
+                                                    .then((value) {
+                                                  mixpanel.track(
+                                                    'Anonymous Login',
+                                                  );
+                                                  Navigator.push(context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) {
+                                                    return const CinemaxHomePage();
+                                                  }));
+                                                });
+                                              }
                                             });
                                           },
                                           child: Text(

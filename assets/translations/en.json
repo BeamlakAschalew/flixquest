@@ -465,5 +465,6 @@
     "admin_notified": "Admin will be notified and it'll be fixed after few minutes",
     "goto_update": "Go to update screen",
     "disable_notification_version": "Disable notification for this version",
-    "report_telegram": "Report error to telegram group"
+    "report_telegram": "Report error to telegram group",
+    "check_connection": "Connect to the internet to continue."
 }

@@ -32,7 +32,7 @@ class AboutPage extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(40.0),
                         child: Image.asset(
-                          'assets/images/logo_shadow.png',
+                          'assets/images/logo.png',
                           height: 100,
                           width: 100,
                         ),
@@ -82,7 +82,7 @@ class AboutPage extends StatelessWidget {
                       ),
                     ),
                     onTap: () {
-                      launchUrl(Uri.parse('https://t.me/birrle'),
+                      launchUrl(Uri.parse('https://t.me/flixquestgroup'),
                           mode: LaunchMode.externalApplication);
                     },
                   ),
@@ -106,24 +106,12 @@ class AboutPage extends StatelessWidget {
                         runSpacing: 10,
                         children: [
                           SocialIconContainer(
-                            platformIcon: FontAwesomeIcons.twitter,
-                            uri: 'https://twitter.com/cinemaxapp',
-                          ),
-                          SocialIconContainer(
                             platformIcon: FontAwesomeIcons.instagram,
-                            uri: 'https://instagram.com/cinemaxhq',
+                            uri: 'https://instagram.com/flixquestapp',
                           ),
                           SocialIconContainer(
                             platformIcon: FontAwesomeIcons.telegram,
-                            uri: 'https://t.me/cinemaxapp',
-                          ),
-                          SocialIconContainer(
-                              platformIcon: FontAwesomeIcons.tiktok,
-                              uri: 'https://www.tiktok.com/@cinemaxapp'),
-                          SocialIconContainer(
-                            platformIcon: FontAwesomeIcons.facebook,
-                            uri:
-                                'https://m.facebook.com/profile.php?id=100086435380480',
+                            uri: 'https://t.me/flixquestapp',
                           ),
                           SocialIconContainer(
                             platformIcon: FontAwesomeIcons.github,
@@ -131,7 +119,7 @@ class AboutPage extends StatelessWidget {
                           ),
                           SocialIconContainer(
                               platformIcon: Icons.mail,
-                              uri: 'mailto:cinemaxappinfo@gmail.com'),
+                              uri: 'mailto:flixquestapp@gmail.com'),
                         ],
                       ),
                     )
