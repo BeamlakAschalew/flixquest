@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:cinemax/constants/app_constants.dart';
 import 'package:cinemax/controllers/recently_watched_database_controller.dart';
 import 'package:cinemax/models/recently_watched.dart';
+import 'package:cinemax/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
@@ -46,6 +48,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   final GlobalKey _betterPlayerKey = GlobalKey();
 
+  int totalMinutesWatched = 0;
+  late Timer _timer;
+  bool isVideoPaused = false;
+
   void updateTotalMinutesStreamed(int minutes, Mixpanel mixpanel) async {
     mixpanel.registerSuperProperties({"Total minutes streamed": minutes});
   }
@@ -71,10 +77,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       minBufferMs: 15000,
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
+      onFullScreenChange: () {
+        widget.mediaType == MediaType.movie
+            ? insertRecentMovieData()
+            : insertRecentEpisodeData();
+      },
       enableFullscreen: true,
       name: widget.mediaType == MediaType.movie
           ? "${widget.movieMetadata!.elementAt(1)} (${widget.movieMetadata!.elementAt(3)})"
-          : "${widget.tvMetadata!.elementAt(1)} | ${episodeSeasonFormatter(widget.tvMetadata!.elementAt(3), widget.tvMetadata!.elementAt(4))}",
+          : "${widget.tvMetadata!.elementAt(1)} | ${widget.tvMetadata!.elementAt(2)} | ${episodeSeasonFormatter(widget.tvMetadata!.elementAt(3), widget.tvMetadata!.elementAt(4))}",
       backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
       progressBarBackgroundColor: Colors.white,
       controlBarColor: Colors.black.withOpacity(0.3),
@@ -92,8 +103,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           Duration(seconds: widget.settings.defaultSeekDuration).inMilliseconds,
       progressBarPlayedColor: widget.colors.first,
       progressBarBufferedColor: Colors.black45,
-      skipForwardIcon: Icons.forward_10_rounded,
-      skipBackIcon: Icons.replay_10_rounded,
+      skipForwardIcon: FontAwesomeIcons.rotateRight,
+      skipBackIcon: FontAwesomeIcons.rotateLeft,
       fullscreenEnableIcon: Icons.fullscreen_rounded,
       fullscreenDisableIcon: Icons.fullscreen_exit_rounded,
       overflowMenuIcon: Icons.menu_rounded,
@@ -159,25 +170,26 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           .videoPlayerController!.value.duration!.inSeconds;
     });
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
-    late Timer timer;
-
-    _betterPlayerController.addEventsListener((BetterPlayerEvent event) {
-      if (event.betterPlayerEventType == BetterPlayerEventType.play) {
-        Duration currentTime = const Duration(seconds: 0);
-        timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-          currentTime += const Duration(minutes: 1);
-          updateTotalMinutesStreamed(currentTime.inMinutes, mixpanel);
-          // mixpanel.track("Video Playback", {
-          //   "Total Minutes Streamed": currentTime.inMinutes,
-          // });
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (!isVideoPaused) {
+        setState(() {
+          totalMinutesWatched++;
         });
-      } else if (event.betterPlayerEventType == BetterPlayerEventType.pause) {
-        timer.cancel();
+
+        mixpanel.registerSuperProperties(
+            {'Total Minutes Streamed': totalMinutesWatched});
+      }
+    });
+
+    _betterPlayerController.addEventsListener((event) {
+      if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
+        _timer.cancel();
       }
     });
   }
 
   Future<void> insertRecentMovieData() async {
+    print("INSERT CALLEDDDDDDDDDDD");
     int elapsed = await _betterPlayerController.videoPlayerController!.position
         .then((value) => value!.inSeconds);
 
@@ -295,6 +307,19 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             ),
           ),
         ),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              if (mounted) {
+                showModalBottomSheet(
+                    builder: (context) {
+                      return ExternalPlay(
+                        sources: widget.sources,
+                      );
+                    },
+                    context: context);
+              }
+            },
+            child: const Icon(FontAwesomeIcons.arrowUpRightFromSquare)),
       ),
     );
   }

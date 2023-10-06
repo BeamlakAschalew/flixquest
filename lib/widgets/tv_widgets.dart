@@ -4187,7 +4187,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                         CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                          color: Colors.white,
+                                          color: Colors.grey.shade600,
                                           width: 10,
                                           height: 15),
                                       Padding(
@@ -4199,7 +4199,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(6.0),
-                                            color: Colors.white,
+                                            color: Colors.grey.shade600,
                                           ),
                                         ),
                                       ),
@@ -4212,7 +4212,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                               padding: const EdgeInsets.only(
                                                   bottom: 2.0),
                                               child: Container(
-                                                  color: Colors.white,
+                                                  color: Colors.grey.shade600,
                                                   height: 19,
                                                   width: 150),
                                             ),
@@ -4220,7 +4220,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                               padding: const EdgeInsets.only(
                                                   bottom: 2.0),
                                               child: Container(
-                                                  color: Colors.white,
+                                                  color: Colors.grey.shade600,
                                                   height: 19,
                                                   width: 110),
                                             ),
@@ -4229,12 +4229,12 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                 padding: const EdgeInsets.only(
                                                     right: 3.0),
                                                 child: Container(
-                                                    color: Colors.white,
+                                                    color: Colors.grey.shade600,
                                                     height: 20,
                                                     width: 20),
                                               ),
                                               Container(
-                                                  color: Colors.white,
+                                                  color: Colors.grey.shade600,
                                                   height: 20,
                                                   width: 25),
                                             ]),
@@ -4368,8 +4368,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                                 ShimmerBase(
                                                           isDark: isDark,
                                                           child: Container(
-                                                              color:
-                                                                  Colors.white),
+                                                              color: Colors.grey
+                                                                  .shade600),
                                                         ),
                                                         errorWidget: (context,
                                                                 url, error) =>
@@ -5361,7 +5361,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                         child: Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(100.0),
-                              color: Colors.white),
+                              color: Colors.grey.shade600),
                         ),
                       ),
                     ),
@@ -5372,7 +5372,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                           Container(
                             height: 20,
                             width: 140,
-                            color: Colors.white,
+                            color: Colors.grey.shade600,
                           )
                         ],
                       ),

@@ -64,12 +64,12 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   @override
   void initState() {
     super.initState();
-    loadVideo();
     print(appDependencyProvider.enableADS);
     if (appDependencyProvider.enableADS) {
       startAppSdk.setTestAdsEnabled(false);
       loadInterstitialAd();
     }
+    loadVideo();
   }
 
   String processVttFileTimestamps(String vttFile) {
@@ -113,19 +113,23 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 setState(() {
                   epi = value;
                 });
-                await getMovieStreamLinksAndSubs(
-                        Endpoints.getMovieTVStreamLinks(
-                            epi![0].id!,
-                            movies![i].id!,
-                            appDep.consumetUrl,
-                            appDep.streamingServer))
-                    .then((value) {
-                  setState(() {
-                    movieVideoSources = value;
+                if (epi!.isNotEmpty) {
+                  await getMovieStreamLinksAndSubs(
+                          Endpoints.getMovieTVStreamLinks(
+                              epi![0].id!,
+                              movies![i].id!,
+                              appDep.consumetUrl,
+                              appDep.streamingServer))
+                      .then((value) {
+                    if (mounted) {
+                      setState(() {
+                        movieVideoSources = value;
+                      });
+                    }
+                    movieVideoLinks = movieVideoSources!.videoLinks;
+                    movieVideoSubs = movieVideoSources!.videoSubtitles;
                   });
-                  movieVideoLinks = movieVideoSources!.videoLinks;
-                  movieVideoSubs = movieVideoSources!.videoSubtitles;
-                });
+                }
               });
 
               break;
@@ -152,7 +156,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                         appDep.consumetUrl,
                         episode!.episodeId!,
                         episode!.id!,
-                        appDependencyProvider.streamingServer))
+                        appDep.streamingServer))
                 .then((value) {
               if (mounted) {
                 setState(() {
@@ -233,14 +237,16 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               Endpoints.getExternalLinksForMovie(
                   widget.metadata.elementAt(0), "en"),
             ).then((value) async {
-              await getExternalSubtitle(Endpoints.searchExternalMovieSubtitles(
-                      value.imdbId!,
-                      supportedLanguages[foundIndex].languageCode))
+              await getExternalSubtitle(
+                      Endpoints.searchExternalMovieSubtitles(value.imdbId!,
+                          supportedLanguages[foundIndex].languageCode),
+                      appDep.opensubtitlesKey)
                   .then((value) async {
                 if (value.isNotEmpty) {
                   await downloadExternalSubtitle(
                           Endpoints.externalSubtitleDownload(),
-                          value[0].attr!.files![0].fileId)
+                          value[0].attr!.files![0].fileId,
+                          appDep.opensubtitlesKey)
                       .then((value) async {
                     subs.addAll({
                       BetterPlayerSubtitlesSource(

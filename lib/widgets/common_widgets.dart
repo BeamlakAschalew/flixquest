@@ -198,7 +198,7 @@ Widget scrollingMoviesAndTVShimmer(isDark) => Column(
                           width: 100.0,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8.0),
-                              color: Colors.white),
+                              color: Colors.grey.shade600),
                         ),
                       ),
                       Expanded(
@@ -210,7 +210,7 @@ Widget scrollingMoviesAndTVShimmer(isDark) => Column(
                             width: 100.0,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5.0),
-                                color: Colors.white),
+                                color: Colors.grey.shade600),
                           ),
                         ),
                       ),
@@ -241,7 +241,7 @@ Widget discoverMoviesAndTVShimmer(isDark) => Column(
               itemBuilder: (context, index, pageViewIndex) => Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
-                    color: Colors.white),
+                    color: Colors.grey.shade600),
               ),
               itemCount: 10,
             ),
@@ -251,7 +251,8 @@ Widget discoverMoviesAndTVShimmer(isDark) => Column(
           isDark: isDark,
           child: Container(
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0), color: Colors.white),
+                borderRadius: BorderRadius.circular(8.0),
+                color: Colors.grey.shade600),
           ),
         )
       ],
@@ -262,14 +263,16 @@ Widget scrollingImageShimmer(isDark) => ShimmerBase(
     child: Container(
       width: 120.0,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0), color: Colors.white),
+          borderRadius: BorderRadius.circular(8.0),
+          color: Colors.grey.shade600),
     ));
 
 Widget discoverImageShimmer(isDark) => ShimmerBase(
       isDark: isDark,
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8.0), color: Colors.white),
+            borderRadius: BorderRadius.circular(8.0),
+            color: Colors.grey.shade600),
       ),
     );
 
@@ -286,7 +289,7 @@ Widget genreListGridShimmer(isDark) => ShimmerBase(
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.0),
-                    color: Colors.white),
+                    color: Colors.grey.shade600),
               ),
             );
           }),
@@ -312,7 +315,7 @@ Widget horizontalLoadMoreShimmer(isDark) => Padding(
                         width: 100.0,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8.0),
-                            color: Colors.white),
+                            color: Colors.grey.shade600),
                       ),
                     ),
                   ),
@@ -348,8 +351,10 @@ Widget detailGenreShimmer(isDark) => ShimmerBase(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: Chip(
             shape: RoundedRectangleBorder(
-              side: const BorderSide(
-                  width: 2, style: BorderStyle.solid, color: Colors.white),
+              side: BorderSide(
+                  width: 2,
+                  style: BorderStyle.solid,
+                  color: Colors.grey.shade600),
               borderRadius: BorderRadius.circular(20.0),
             ),
             label: Text(
@@ -382,7 +387,7 @@ Widget detailCastShimmer(isDark) => Column(
                           width: 75.0,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(100.0),
-                              color: Colors.white),
+                              color: Colors.grey.shade600),
                         ),
                       ),
                       Expanded(
@@ -393,7 +398,7 @@ Widget detailCastShimmer(isDark) => Column(
                             width: 75.0,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5.0),
-                                color: Colors.white),
+                                color: Colors.grey.shade600),
                           ),
                         ),
                       ),
@@ -431,7 +436,7 @@ Widget detailImageShimmer(isDark) => ShimmerBase(
                             child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8.0),
-                                  color: Colors.white),
+                                  color: Colors.grey.shade600),
                             ),
                           ),
                           Padding(
@@ -485,14 +490,16 @@ Widget detailCastImageShimmer(isDark) => ShimmerBase(
     child: Container(
       width: 75.0,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100.0), color: Colors.white),
+          borderRadius: BorderRadius.circular(100.0),
+          color: Colors.grey.shade600),
     ));
 
 Widget detailImageImageSimmer(isDark) => ShimmerBase(
     isDark: isDark,
     child: Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0), color: Colors.white),
+          borderRadius: BorderRadius.circular(8.0),
+          color: Colors.grey.shade600),
     ));
 
 Widget detailVideoShimmer(isDark) => SizedBox(
@@ -518,7 +525,7 @@ Widget detailVideoShimmer(isDark) => SizedBox(
                     child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.0),
-                          color: Colors.white),
+                          color: Colors.grey.shade600),
                       padding: const EdgeInsets.all(8),
                     ),
                   ),
@@ -529,7 +536,7 @@ Widget detailVideoShimmer(isDark) => SizedBox(
                         child: Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5.0),
-                              color: Colors.white),
+                              color: Colors.grey.shade600),
                         )),
                   )
                 ],
@@ -559,7 +566,7 @@ Widget socialMediaShimmer(isDark) => Container(
                   height: 50,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.white,
+                    color: Colors.grey.shade600,
                   ),
                 ),
               ),
@@ -570,7 +577,7 @@ Widget socialMediaShimmer(isDark) => Container(
 Widget detailInfoTableItemShimmer(isDark) => ShimmerBase(
       isDark: isDark,
       child: Container(
-        color: Colors.white,
+        color: Colors.grey.shade600,
         height: 15,
         width: 75,
       ),
@@ -680,7 +687,7 @@ Widget movieCastAndCrewTabShimmer(isDark) => Container(
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100.0),
-                                color: Colors.white,
+                                color: Colors.grey.shade600,
                               ),
                             ),
                           ),
@@ -694,13 +701,13 @@ Widget movieCastAndCrewTabShimmer(isDark) => Container(
                                 child: Container(
                                   width: 150,
                                   height: 25,
-                                  color: Colors.white,
+                                  color: Colors.grey.shade600,
                                 ),
                               ),
                               Container(
                                 width: 100,
                                 height: 20,
-                                color: Colors.white,
+                                color: Colors.grey.shade600,
                               ),
                             ],
                           ),
@@ -752,7 +759,7 @@ Widget detailsRecommendationsAndSimilarShimmer(
                               child: Container(
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10.0),
-                                    color: Colors.white),
+                                    color: Colors.grey.shade600),
                               ),
                             ),
                           ),
@@ -765,7 +772,7 @@ Widget detailsRecommendationsAndSimilarShimmer(
                                   child: Container(
                                       height: 20,
                                       width: 150,
-                                      color: Colors.white),
+                                      color: Colors.grey.shade600),
                                 ),
                                 Row(
                                   children: <Widget>[
@@ -775,13 +782,13 @@ Widget detailsRecommendationsAndSimilarShimmer(
                                       child: Container(
                                         height: 20,
                                         width: 20,
-                                        color: Colors.white,
+                                        color: Colors.grey.shade600,
                                       ),
                                     ),
                                     Container(
                                         height: 20,
                                         width: 30,
-                                        color: Colors.white),
+                                        color: Colors.grey.shade600),
                                   ],
                                 ),
                               ],
@@ -913,7 +920,7 @@ Widget watchProvidersShimmer(isDark) => Container(
                       child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8.0),
-                            color: Colors.white),
+                            color: Colors.grey.shade600),
                       ),
                     ),
                     const SizedBox(
@@ -924,7 +931,9 @@ Widget watchProvidersShimmer(isDark) => Container(
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 10.0),
                           child: Container(
-                              height: 10, width: 80, color: Colors.white),
+                              height: 10,
+                              width: 80,
+                              color: Colors.grey.shade600),
                         )),
                   ],
                 ),
@@ -939,7 +948,8 @@ Widget castAndCrewTabImageShimmer(isDark) => ShimmerBase(
       width: 80.0,
       height: 80.0,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100.0), color: Colors.white),
+          borderRadius: BorderRadius.circular(100.0),
+          color: Colors.grey.shade600),
     ));
 
 Widget recommendationAndSimilarTabImageShimmer(isDark) => ShimmerBase(
@@ -948,13 +958,14 @@ Widget recommendationAndSimilarTabImageShimmer(isDark) => ShimmerBase(
       width: 85.0,
       height: 130.0,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+          borderRadius: BorderRadius.circular(10.0),
+          color: Colors.grey.shade600),
     ));
 
 Widget watchProvidersImageShimmer(isDark) => ShimmerBase(
       isDark: isDark,
       child: Container(
-        color: Colors.white,
+        color: Colors.grey.shade600,
       ),
     );
 
@@ -994,7 +1005,7 @@ Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
                                             height: 130,
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                color: Colors.white,
+                                                color: Colors.grey.shade600,
                                                 borderRadius:
                                                     BorderRadius.circular(10.0),
                                               ),
@@ -1012,7 +1023,7 @@ Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
                                                 child: Container(
                                                   width: 150,
                                                   height: 20,
-                                                  color: Colors.white,
+                                                  color: Colors.grey.shade600,
                                                 ),
                                               ),
                                               Row(
@@ -1024,13 +1035,14 @@ Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
                                                     child: Container(
                                                       height: 20,
                                                       width: 20,
-                                                      color: Colors.white,
+                                                      color:
+                                                          Colors.grey.shade600,
                                                     ),
                                                   ),
                                                   Container(
                                                     width: 30,
                                                     height: 20,
-                                                    color: Colors.white,
+                                                    color: Colors.grey.shade600,
                                                   )
                                                 ],
                                               ),
@@ -1074,7 +1086,8 @@ Widget mainPageVerticalScrollImageShimmer(isDark) => ShimmerBase(
       width: 85.0,
       height: 130.0,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10.0), color: Colors.white),
+          borderRadius: BorderRadius.circular(10.0),
+          color: Colors.grey.shade600),
     ));
 
 Widget horizontalScrollingSeasonsList(isDark) => Column(
@@ -1097,7 +1110,7 @@ Widget horizontalScrollingSeasonsList(isDark) => Column(
                           width: 105.0,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8.0),
-                              color: Colors.white),
+                              color: Colors.grey.shade600),
                         ),
                       ),
                       Expanded(
@@ -1109,7 +1122,7 @@ Widget horizontalScrollingSeasonsList(isDark) => Column(
                             width: 105.0,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5.0),
-                                color: Colors.white),
+                                color: Colors.grey.shade600),
                           ),
                         ),
                       ),
@@ -1128,7 +1141,8 @@ Widget detailVideoImageShimmer(isDark) => ShimmerBase(
     isDark: isDark,
     child: Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8.0), color: Colors.white),
+          borderRadius: BorderRadius.circular(8.0),
+          color: Colors.grey.shade600),
     ));
 
 Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
@@ -1157,7 +1171,8 @@ Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
                                   height: 130,
                                   child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10.0),
-                                      child: Container(color: Colors.white)),
+                                      child: Container(
+                                          color: Colors.grey.shade600)),
                                 ),
                               ),
                               Expanded(
@@ -1165,7 +1180,7 @@ Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
-                                        color: Colors.white,
+                                        color: Colors.grey.shade600,
                                         height: 20,
                                         width: 115)
                                   ],
@@ -1215,7 +1230,7 @@ Widget tvCastAndCrewTabShimmer(isDark) => Container(
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(100.0),
-                                color: Colors.white,
+                                color: Colors.grey.shade600,
                               ),
                             ),
                           ),
@@ -1229,7 +1244,7 @@ Widget tvCastAndCrewTabShimmer(isDark) => Container(
                                 child: Container(
                                   width: 150,
                                   height: 25,
-                                  color: Colors.white,
+                                  color: Colors.grey.shade600,
                                 ),
                               ),
                               Padding(
@@ -1237,13 +1252,13 @@ Widget tvCastAndCrewTabShimmer(isDark) => Container(
                                 child: Container(
                                   width: 130,
                                   height: 20,
-                                  color: Colors.white,
+                                  color: Colors.grey.shade600,
                                 ),
                               ),
                               Container(
                                 width: 100,
                                 height: 20,
-                                color: Colors.white,
+                                color: Colors.grey.shade600,
                               ),
                             ],
                           ),
@@ -1275,7 +1290,7 @@ Widget personMoviesAndTVShowShimmer(isDark) => Column(
                   child: Container(
                     height: 20,
                     width: 100,
-                    color: Colors.white,
+                    color: Colors.grey.shade600,
                   )),
             ),
           ],
@@ -1309,7 +1324,7 @@ Widget personMoviesAndTVShowShimmer(isDark) => Column(
                                 child: Container(
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8.0),
-                                      color: Colors.white),
+                                      color: Colors.grey.shade600),
                                 ),
                               ),
                               const SizedBox(
@@ -1324,7 +1339,7 @@ Widget personMoviesAndTVShowShimmer(isDark) => Column(
                                       decoration: BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(8.0),
-                                          color: Colors.white),
+                                          color: Colors.grey.shade600),
                                     ),
                                   )),
                             ],
@@ -1366,7 +1381,7 @@ Widget moviesAndTVShowGridShimmer(isDark) => Container(
                             child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8.0),
-                                  color: Colors.white),
+                                  color: Colors.grey.shade600),
                             ),
                           ),
                           const SizedBox(
@@ -1380,7 +1395,7 @@ Widget moviesAndTVShowGridShimmer(isDark) => Container(
                                   height: 20,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8.0),
-                                      color: Colors.white),
+                                      color: Colors.grey.shade600),
                                 ),
                               )),
                         ],
@@ -1414,7 +1429,7 @@ Widget personImageShimmer(isDark) => Row(
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8.0),
-                                color: Colors.white),
+                                color: Colors.grey.shade600),
                           ),
                         ),
                       ],
@@ -1448,7 +1463,7 @@ Widget personAboutSimmer(isDark) => Column(
                 child: Container(
                   width: double.infinity,
                   height: 20,
-                  color: Colors.white,
+                  color: Colors.grey.shade600,
                 ),
               ),
               Padding(
@@ -1456,7 +1471,7 @@ Widget personAboutSimmer(isDark) => Column(
                 child: Container(
                   width: double.infinity,
                   height: 20,
-                  color: Colors.white,
+                  color: Colors.grey.shade600,
                 ),
               ),
               Padding(
@@ -1464,7 +1479,7 @@ Widget personAboutSimmer(isDark) => Column(
                 child: Container(
                   width: double.infinity,
                   height: 20,
-                  color: Colors.white,
+                  color: Colors.grey.shade600,
                 ),
               ),
               Padding(
@@ -1472,7 +1487,7 @@ Widget personAboutSimmer(isDark) => Column(
                 child: Container(
                   width: double.infinity,
                   height: 20,
-                  color: Colors.white,
+                  color: Colors.grey.shade600,
                 ),
               ),
             ],
@@ -1518,8 +1533,8 @@ Widget newsShimmer(isDark, scrollController, isLoading) {
                                             width: 100,
                                             height: 150,
                                             child: Container(
-                                              decoration: const BoxDecoration(
-                                                color: Colors.white,
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade600,
                                               ),
                                             ),
                                           ),
@@ -1535,13 +1550,13 @@ Widget newsShimmer(isDark, scrollController, isLoading) {
                                                 child: Container(
                                                   width: 260,
                                                   height: 20,
-                                                  color: Colors.white,
+                                                  color: Colors.grey.shade600,
                                                 ),
                                               ),
                                               Container(
                                                 width: 250,
                                                 height: 20,
-                                                color: Colors.white,
+                                                color: Colors.grey.shade600,
                                               ),
                                               const SizedBox(
                                                 height: 30,
@@ -1549,7 +1564,7 @@ Widget newsShimmer(isDark, scrollController, isLoading) {
                                               Container(
                                                 width: 80,
                                                 height: 20,
-                                                color: Colors.white,
+                                                color: Colors.grey.shade600,
                                               ),
                                             ],
                                           ),
@@ -1890,6 +1905,53 @@ class ReportErrorWidget extends StatelessWidget {
                       )
                     ],
                   )),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ExternalPlay extends StatelessWidget {
+  const ExternalPlay({Key? key, required this.sources}) : super(key: key);
+
+  final Map<String, String> sources;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> items = [];
+
+    for (int i = 0; i < sources.length; i++) {
+      final url = Uri.encodeFull(sources.entries.elementAt(i).value);
+      items.add(TextButton(
+          onPressed: () async {
+            if (await canLaunchUrl(Uri.parse(url))) {
+              await launchUrl(Uri.parse(sources.entries.elementAt(i).value),
+                  mode: LaunchMode.externalNonBrowserApplication);
+            }
+          },
+          child: Text(sources.entries.elementAt(i).key)));
+    }
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: SizedBox(
+        height: 200,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Open in external player',
+              style: Theme.of(context).textTheme.headlineSmall,
+              maxLines: 3,
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Wrap(
+              spacing: 10,
+              children: items,
             ),
           ],
         ),

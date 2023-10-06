@@ -1900,7 +1900,7 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                 width: double.infinity,
                 height: 200,
                 decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.grey.shade600,
                     borderRadius: BorderRadius.circular(8)),
               ),
             ),
@@ -2041,12 +2041,14 @@ class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Container(
-                        color: Colors.white,
+                        color: Colors.grey.shade600,
                         width: double.infinity,
                         height: 20),
                   ),
                   Container(
-                      color: Colors.white, width: double.infinity, height: 20)
+                      color: Colors.grey.shade600,
+                      width: double.infinity,
+                      height: 20)
                 ],
               ),
             )
@@ -2120,7 +2122,7 @@ class PartsListState extends State<PartsList> {
                                       flex: 6,
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: Colors.grey.shade600,
                                           borderRadius:
                                               BorderRadius.circular(8.0),
                                         ),
@@ -2136,7 +2138,7 @@ class PartsListState extends State<PartsList> {
                                           decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(5.0),
-                                              color: Colors.white),
+                                              color: Colors.grey.shade600),
                                         ),
                                       ),
                                     )

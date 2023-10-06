@@ -65,11 +65,11 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   @override
   void initState() {
     super.initState();
-    loadVideo();
     if (appDependencyProvider.enableADS) {
       startAppSdk.setTestAdsEnabled(false);
       loadInterstitialAd();
     }
+    loadVideo();
   }
 
   String processVttFileTimestamps(String vttFile) {
@@ -134,9 +134,11 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                                     appDep.consumetUrl,
                                     appDep.streamingServer))
                             .then((value) {
-                          setState(() {
-                            tvVideoSources = value;
-                          });
+                          if (mounted) {
+                            setState(() {
+                              tvVideoSources = value;
+                            });
+                          }
                           tvVideoLinks = tvVideoSources!.videoLinks;
                           tvVideoSubs = tvVideoSources!.videoSubtitles;
                         });
@@ -206,7 +208,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
                         .episodes![widget.metadata.elementAt(3) - 1].id!,
                     tvInfoTMDB!.id!,
-                    appDependencyProvider.streamingServer))
+                    appDep.streamingServer))
                 .then((value) {
               setState(() {
                 tvVideoSources = value;
@@ -288,12 +290,14 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                           value.imdbId!,
                           widget.metadata.elementAt(3),
                           widget.metadata.elementAt(4),
-                          supportedLanguages[foundIndex].languageCode))
+                          supportedLanguages[foundIndex].languageCode),
+                      appDep.opensubtitlesKey)
                   .then((value) async {
                 if (value.isNotEmpty) {
                   await downloadExternalSubtitle(
                           Endpoints.externalSubtitleDownload(),
-                          value[0].attr!.files![0].fileId)
+                          value[0].attr!.files![0].fileId,
+                          appDep.opensubtitlesKey)
                       .then((value) async {
                     subs.addAll({
                       BetterPlayerSubtitlesSource(

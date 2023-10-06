@@ -511,14 +511,13 @@ Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
   return tvInfo;
 }
 
-Future<List<SubtitleData>> getExternalSubtitle(String api) async {
+Future<List<SubtitleData>> getExternalSubtitle(String api, String key) async {
   ExternalSubtitle subData;
 
   try {
     var res = await retryOptions.retry(
-      () => http.get(Uri.parse(api), headers: {
-        "Api-Key": appDependencyProvider.opensubtitlesKey
-      }).timeout(timeOut),
+      () =>
+          http.get(Uri.parse(api), headers: {"Api-Key": key}).timeout(timeOut),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
 
@@ -532,13 +531,13 @@ Future<List<SubtitleData>> getExternalSubtitle(String api) async {
 }
 
 Future<SubtitleDownload> downloadExternalSubtitle(
-    String api, int fileId) async {
+    String api, int fileId, String key) async {
   SubtitleDownload sub;
   final Map<String, String> headers = {
     'User-Agent': 'Cinemax v2.4.0',
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-    'Api-Key': appDependencyProvider.opensubtitlesKey
+    'Api-Key': key
   };
   var body = '{"file_id":$fileId}';
   try {
