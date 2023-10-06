@@ -31,14 +31,14 @@ class _UpdateScreenState extends State<UpdateScreen> {
 
   @override
   void initState() {
-    checkForUpdate(CINEMAX_UPDATE_URL).then((value) {
+    checkForUpdate(FLIXQUEST_UPDATE_URL).then((value) {
       if (mounted) {
         setState(() {
           updateChecker = value;
         });
       }
     });
-    getApplicationSupportDirectory().then((value) {
+    getApplicationCacheDirectory().then((value) {
       if (mounted) {
         setState(() {
           savedDir = value.path;
@@ -198,7 +198,7 @@ class _ListItemState extends State<ListItem> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      'Cinemax v${widget.appVersion}',
+                      'FlixQuest v${widget.appVersion}',
                       overflow: TextOverflow.ellipsis,
                       style: kTextSmallBodyStyle,
                     ),
@@ -376,7 +376,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
                   maxLines: 3,
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 Text(
@@ -385,7 +385,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
                   textAlign: TextAlign.center,
                   maxLines: 2,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 ElevatedButton(
@@ -396,7 +396,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
                       })));
                     },
                     child: Text(tr("goto_update"))),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 ListTile(
@@ -429,7 +429,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
                         visible = false;
                       });
                     },
-                    icon: Icon(FontAwesomeIcons.xmark)),
+                    icon: const Icon(FontAwesomeIcons.xmark)),
               ),
             ],
           ),

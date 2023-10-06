@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/app_dependency_provider.dart';
-import 'package:cinemax/screens/common/live_tv_screen.dart';
-import 'package:cinemax/screens/common/server_status_screen.dart';
+import '/provider/app_dependency_provider.dart';
+import '/screens/common/live_tv_screen.dart';
+import '/screens/common/server_status_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../constants/app_constants.dart';
@@ -40,7 +40,8 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final cinemaxLogo = Provider.of<AppDependencyProvider>(context).cinemaxLogo;
+    final flixquestLogo =
+        Provider.of<AppDependencyProvider>(context).flixQuestLogo;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     return Drawer(
@@ -57,10 +58,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     child: DrawerHeader(
                       decoration: BoxDecoration(
                           color: isDark ? Colors.white : Colors.black),
-                      child: cinemaxLogo == 'default'
+                      child: flixquestLogo == 'default'
                           ? Image.asset('assets/images/logo.png')
                           : CachedNetworkImage(
-                              imageUrl: cinemaxLogo,
+                              imageUrl: flixquestLogo,
                             ),
                     ),
                   ),
@@ -1946,7 +1947,7 @@ class ExternalPlay extends StatelessWidget {
               maxLines: 3,
               textAlign: TextAlign.center,
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Wrap(

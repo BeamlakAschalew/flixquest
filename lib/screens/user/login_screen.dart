@@ -1,8 +1,8 @@
-import 'package:cinemax/functions/function.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../cinemax_main.dart';
+import '../../flixquest_main.dart';
 import '../../constants/app_constants.dart';
+import '../../functions/function.dart';
 import '/screens/user/forgot_password.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         mixpanel.track(
                           'Users Login',
                         );
-                        return const CinemaxHomePage();
+                        return const FlixQuestHomePage();
                       })))
                     : null);
           } on FirebaseAuthException catch (error) {

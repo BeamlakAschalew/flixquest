@@ -49,11 +49,7 @@ const retryOptions = RetryOptions(
     maxAttempts: 100000);
 const timeOut = Duration(seconds: 15);
 
-final List<String> appNames = [
-  'cinemax-v2.2.0.apk',
-  'cinemax-v2.2.0-bv2.apk',
-  'cinemax-v2.3.0.apk'
-];
+final List<String> appNames = ['flixquest-v2.4.0.apk'];
 
 CacheManager cacheProp() {
   return CacheManager(

@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:cinemax/constants/app_constants.dart';
-import 'package:cinemax/controllers/recently_watched_database_controller.dart';
-import 'package:cinemax/models/recently_watched.dart';
-import 'package:cinemax/widgets/common_widgets.dart';
+import '/constants/app_constants.dart';
+import '/controllers/recently_watched_database_controller.dart';
+import '/models/recently_watched.dart';
+import '/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';

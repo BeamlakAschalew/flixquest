@@ -1,4 +1,4 @@
-import 'package:cinemax/models/app_languages.dart';
+import '../../models/app_languages.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';

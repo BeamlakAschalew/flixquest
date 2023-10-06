@@ -1,12 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/models/live_tv.dart';
-import 'package:cinemax/screens/common/live_player.dart';
+import '/models/live_tv.dart';
+import '/screens/common/live_player.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
 import '../../functions/network.dart';
-
 import '../../provider/settings_provider.dart';
 
 class LiveTV extends StatefulWidget {

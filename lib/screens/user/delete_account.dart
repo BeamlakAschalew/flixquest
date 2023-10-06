@@ -1,4 +1,4 @@
-import 'package:cinemax/screens/common/landing_screen.dart';
+import '/screens/common/landing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

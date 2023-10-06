@@ -1,12 +1,11 @@
-// ignore_for_file: avoid_unnecessary_containers
-import 'package:cinemax/models/translation.dart';
-import 'package:cinemax/provider/app_dependency_provider.dart';
+import 'package:flixquest/flixquest_main.dart';
+import '../models/translation.dart';
+import '../provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'cinemax_main.dart';
 import 'functions/function.dart';
 import 'provider/recently_watched_provider.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +49,7 @@ Future<void> appInitialize() async {
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
   await appDependencyProvider.getConsumetUrl();
-  await appDependencyProvider.getCinemaxLogo();
+  await appDependencyProvider.getFlixQuestLogo();
   await appDependencyProvider.getOpenSubKey();
   await appDependencyProvider.getStreamingServer();
   await settingsProvider.getSubtitleSize();
@@ -68,7 +67,7 @@ void main() async {
     path: 'assets/translations',
     fallbackLocale: Translation.all[0],
     startLocale: Locale(settingsProvider.appLanguage),
-    child: Cinemax(
+    child: FlixQuest(
       settingsProvider: settingsProvider,
       recentProvider: recentProvider,
       appDependencyProvider: appDependencyProvider,

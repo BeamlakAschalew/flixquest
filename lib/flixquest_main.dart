@@ -24,8 +24,8 @@ import 'widgets/common_widgets.dart';
 import 'widgets/movie_widgets.dart';
 import 'widgets/tv_widgets.dart';
 
-class Cinemax extends StatefulWidget {
-  const Cinemax(
+class FlixQuest extends StatefulWidget {
+  const FlixQuest(
       {required this.settingsProvider,
       required this.recentProvider,
       required this.appDependencyProvider,
@@ -39,10 +39,10 @@ class Cinemax extends StatefulWidget {
   final Future<FirebaseApp> init;
 
   @override
-  State<Cinemax> createState() => _CinemaxState();
+  State<FlixQuest> createState() => _FlixQuestState();
 }
 
-class _CinemaxState extends State<Cinemax>
+class _FlixQuestState extends State<FlixQuest>
     with ChangeNotifier, WidgetsBindingObserver {
   void fileDelete() async {
     for (int i = 0; i < appNames.length; i++) {
@@ -69,7 +69,7 @@ class _CinemaxState extends State<Cinemax>
     if (mounted) {
       appDependencyProvider.consumetUrl =
           _remoteConfig.getString('consumet_url');
-      appDependencyProvider.cinemaxLogo =
+      appDependencyProvider.flixQuestLogo =
           _remoteConfig.getString('cinemax_logo');
       appDependencyProvider.opensubtitlesKey =
           _remoteConfig.getString('opensubtitles_key');
@@ -160,16 +160,16 @@ class _CinemaxState extends State<Cinemax>
   }
 }
 
-class CinemaxHomePage extends StatefulWidget {
-  const CinemaxHomePage({
+class FlixQuestHomePage extends StatefulWidget {
+  const FlixQuestHomePage({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<CinemaxHomePage> createState() => _CinemaxHomePageState();
+  State<FlixQuestHomePage> createState() => _FlixQuestHomePageState();
 }
 
-class _CinemaxHomePageState extends State<CinemaxHomePage>
+class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     with SingleTickerProviderStateMixin {
   late int selectedIndex;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();

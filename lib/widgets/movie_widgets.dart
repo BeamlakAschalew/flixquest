@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cinemax/provider/app_dependency_provider.dart';
+import '/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../controllers/recently_watched_database_controller.dart';
 import '../models/recently_watched.dart';

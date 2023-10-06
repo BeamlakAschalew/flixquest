@@ -1,4 +1,4 @@
-import 'package:cinemax/constants/api_constants.dart';
+import '../constants/api_constants.dart';
 import 'package:flutter/material.dart';
 import '../models/app_dependency_preferences.dart';
 
@@ -8,8 +8,8 @@ class AppDependencyProvider extends ChangeNotifier {
   String _consumetUrl = 'https://consumet.beamlak.dev';
   String get consumetUrl => _consumetUrl;
 
-  String _cinemaxLogo = 'default';
-  String get cinemaxLogo => _cinemaxLogo;
+  String _flixQuestLogo = 'default';
+  String get flixQuestLogo => _flixQuestLogo;
 
   String _opensubtitlesKey = openSubtitlesKey;
   String get opensubtitlesKey => _opensubtitlesKey;
@@ -33,13 +33,13 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getCinemaxLogo() async {
-    cinemaxLogo = await appDependencies.getCinemaxLogo();
+  Future<void> getFlixQuestLogo() async {
+    flixQuestLogo = await appDependencies.getFlixQuestLogo();
   }
 
-  set cinemaxLogo(String value) {
-    _cinemaxLogo = value;
-    appDependencies.setCinemaxUrl(value);
+  set flixQuestLogo(String value) {
+    _flixQuestLogo = value;
+    appDependencies.setFlixQuestUrl(value);
     notifyListeners();
   }
 

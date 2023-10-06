@@ -1,8 +1,7 @@
 name: 🐞 Application Issue Report
-description: Report a issue in Cinemax
+description: Report a issue in FlixQuest
 labels: [bug]
 body:
-
   - type: textarea
     id: reproduce-steps
     attributes:

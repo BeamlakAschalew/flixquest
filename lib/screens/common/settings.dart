@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:cinemax/models/app_languages.dart';
-import 'package:cinemax/screens/common/language_choose.dart';
+import '/models/app_languages.dart';
+import '/screens/common/language_choose.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '/models/watchprovider_countries.dart';

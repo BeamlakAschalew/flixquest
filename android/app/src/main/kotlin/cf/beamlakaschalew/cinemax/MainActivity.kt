@@ -1,4 +1,4 @@
-package dev.beamlak.cinemax
+package dev.beamlak.flixquest
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:cinemax/functions/function.dart';
+import '/flixquest_main.dart';
+import '/functions/function.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../cinemax_main.dart';
 import '/constants/app_constants.dart';
 import '/models/profile_image_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -152,7 +152,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       mixpanel.track(
                         'Users Signup',
                       );
-                      return const CinemaxHomePage();
+                      return const FlixQuestHomePage();
                     })))
                   : null;
             }

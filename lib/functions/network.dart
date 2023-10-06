@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:cinemax/main.dart';
 import '../models/external_subtitles.dart';
 import '/models/movie_stream.dart';
 import '../constants/app_constants.dart';
@@ -534,7 +533,7 @@ Future<SubtitleDownload> downloadExternalSubtitle(
     String api, int fileId, String key) async {
   SubtitleDownload sub;
   final Map<String, String> headers = {
-    'User-Agent': 'Cinemax v2.4.0',
+    'User-Agent': 'FlixQuest v2.4.0',
     'Accept': 'application/json',
     'Content-Type': 'application/json',
     'Api-Key': key

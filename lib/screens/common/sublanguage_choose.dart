@@ -1,5 +1,5 @@
-import 'package:cinemax/models/sub_languages.dart';
-import 'package:cinemax/provider/settings_provider.dart';
+import '/models/sub_languages.dart';
+import '/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

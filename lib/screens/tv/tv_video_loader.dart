@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
-import 'package:cinemax/api/endpoints.dart';
-import 'package:cinemax/functions/network.dart';
-import 'package:cinemax/main.dart';
-import 'package:cinemax/widgets/common_widgets.dart';
+import '/api/endpoints.dart';
+import '/functions/network.dart';
+import '/main.dart';
+import '/widgets/common_widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';

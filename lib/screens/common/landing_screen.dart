@@ -1,6 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../cinemax_main.dart';
+import '../../flixquest_main.dart';
 import '../../constants/app_constants.dart';
 import '../../functions/function.dart';
 import '/provider/settings_provider.dart';
@@ -262,7 +262,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                                     Navigator.push(context,
                                                         MaterialPageRoute(
                                                             builder: (context) {
-                                                      return const CinemaxHomePage();
+                                                      return const FlixQuestHomePage();
                                                     }));
                                                   });
                                                 },

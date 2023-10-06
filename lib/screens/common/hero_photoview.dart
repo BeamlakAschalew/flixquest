@@ -32,24 +32,25 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   final ReceivePort _port = ReceivePort();
 
   Future<String> createFolder(
-      String cinemaxFolderName,
+      String flixquestFolderName,
       String imageTypeFolderName,
       String posterFolder,
       String stillFolder,
       String personImageFolder) async {
-    final cinefolderName = cinemaxFolderName;
+    final cinefolderName = flixquestFolderName;
     final imagefolderName = imageTypeFolderName;
     final posterFolderName = posterFolder;
     final stillFolderName = stillFolder;
     final personImageFolderName = personImageFolder;
-    final cinemaxPath = Directory("storage/emulated/0/$cinefolderName");
+    final flixquestPath = Directory("storage/emulated/0/$cinefolderName");
     final imageTypePath =
-        Directory("storage/emulated/0/Cinemax/$imagefolderName");
+        Directory("storage/emulated/0/FlixQuest/$imagefolderName");
     final posterPath =
-        Directory("storage/emulated/0/Cinemax/$posterFolderName");
-    final stillPath = Directory("storage/emulated/0/Cinemax/$stillFolderName");
+        Directory("storage/emulated/0/FlixQuest/$posterFolderName");
+    final stillPath =
+        Directory("storage/emulated/0/FlixQuest/$stillFolderName");
     final personImagePath =
-        Directory("storage/emulated/0/Cinemax/$personImageFolderName");
+        Directory("storage/emulated/0/FlixQuest/$personImageFolderName");
     var storageStatus = await Permission.storage.status;
     var externalStatus = await Permission.manageExternalStorage.status;
     var mediaStatus = await Permission.accessMediaLocation.status;
@@ -62,19 +63,19 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     if (!mediaStatus.isGranted) {
       await Permission.accessMediaLocation.request();
     }
-    if ((await cinemaxPath.exists())) {
+    if ((await flixquestPath.exists())) {
       imageTypePath.create();
       posterPath.create();
       stillPath.create();
       personImagePath.create();
-      return cinemaxPath.path;
+      return flixquestPath.path;
     } else {
-      cinemaxPath.create();
+      flixquestPath.create();
       posterPath.create();
       imageTypePath.create();
       stillPath.create();
       personImagePath.create();
-      return cinemaxPath.path;
+      return flixquestPath.path;
     }
   }
 
@@ -113,12 +114,12 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
 
     if (status.isGranted) {
       await createFolder(
-          'Cinemax', 'Backdrops', 'Posters', 'Stills', 'Person Images');
+          'FlixQuest', 'Backdrops', 'Posters', 'Stills', 'Person Images');
       await FlutterDownloader.enqueue(
         url: url,
         fileName: '${widget.name}_$currentIndex.jpg',
         headers: {}, // optional: header send with url (auth token etc)
-        savedDir: '/storage/emulated/0/Cinemax/Person Images/',
+        savedDir: '/storage/emulated/0/FlixQuest/Person Images/',
         showNotification:
             true, // show download progress in status bar (for Android)
         openFileFromNotification:

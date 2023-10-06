@@ -1,4 +1,4 @@
-import 'package:cinemax/screens/common/sublanguage_choose.dart';
+import '../../screens/common/sublanguage_choose.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';

@@ -41,15 +41,13 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  tr("app_version", namedArgs: {
-                    "version": "2.3.0"
-                  }), // Translate "Cinemax v2.2.0"
+                  tr("app_version", namedArgs: {"version": "2.3.0"}),
                   style: const TextStyle(
                     fontSize: 27.0,
                   ),
                 ),
                 Text(
-                  tr("endorsment"), // Translate "This product uses the TMDB API but is not endorsed or certified by TMDB."
+                  tr("endorsment"),
                   maxLines: 5,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
@@ -90,7 +88,7 @@ class AboutPage extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      tr("follow_cinemax"), // Translate "Follow Cinemax on various platforms"
+                      tr("follow_cinemax"),
                       maxLines: 5,
                       textAlign: TextAlign.center,
                       style: kTextSmallHeaderStyle,
