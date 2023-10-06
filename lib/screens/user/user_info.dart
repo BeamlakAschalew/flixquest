@@ -31,21 +31,25 @@ class _UserInfoState extends State<UserInfo> {
 
   void getData() async {
     User? user = _auth.currentUser;
-    uid = user!.uid;
+    if (user != null) {
+      uid = user.uid;
+    }
 
-    if (user.isAnonymous) {
+    if (user != null && user.isAnonymous) {
       if (mounted) {
         setState(() {
           userAnonymous = true;
         });
       }
     } else {
-      userDoc =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      if (mounted) {
-        setState(() {
-          userAnonymous = false;
-        });
+      if (user != null) {
+        userDoc =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        if (mounted) {
+          setState(() {
+            userAnonymous = false;
+          });
+        }
       }
     }
   }

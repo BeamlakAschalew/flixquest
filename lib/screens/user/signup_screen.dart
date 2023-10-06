@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:cinemax/functions/function.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../cinemax_main.dart';
 import '/constants/app_constants.dart';
 import '/models/profile_image_list.dart';
@@ -321,7 +322,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             errorMaxLines: 3,
                             border: const UnderlineInputBorder(),
                             filled: true,
-                            prefixIcon: const Icon(Icons.person),
+                            prefixIcon: const Icon(FontAwesomeIcons.user),
                             labelText: tr("full_name"),
                             fillColor: Theme.of(context).colorScheme.background,
                           ),
@@ -352,7 +353,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
-                              prefixIcon: const Icon(Icons.email),
+                              prefixIcon: const Icon(FontAwesomeIcons.envelope),
                               labelText: tr("email_address"),
                               fillColor:
                                   Theme.of(context).colorScheme.background),
@@ -392,7 +393,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
-                              prefixIcon: const Icon(Icons.person),
+                              prefixIcon: const Icon(FontAwesomeIcons.at),
                               labelText: tr("username"),
                               fillColor:
                                   Theme.of(context).colorScheme.background),
@@ -427,7 +428,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
-                              prefixIcon: const Icon(Icons.lock),
+                              prefixIcon: const Icon(FontAwesomeIcons.lock),
                               suffixIcon: GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -466,7 +467,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               errorMaxLines: 3,
                               border: const UnderlineInputBorder(),
                               filled: true,
-                              prefixIcon: const Icon(Icons.lock),
+                              prefixIcon: const Icon(FontAwesomeIcons.lock),
                               suffixIcon: GestureDetector(
                                 onTap: () {
                                   setState(() {

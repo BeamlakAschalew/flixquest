@@ -1,10 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 import 'dart:async';
 import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cinemax/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:unity_ads_plugin/unity_ads_plugin.dart';
 import '../controllers/recently_watched_database_controller.dart';
 import '../models/recently_watched.dart';
 import '../provider/recently_watched_provider.dart';
@@ -57,15 +56,15 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
   @override
   void initState() {
     super.initState();
-    UnityAds.init(
-      gameId: "5280322",
-      testMode: false,
-      onComplete: () {
-        print('Initialization Complete');
-      },
-      onFailed: (error, message) =>
-          print('Initialization Failed: $error $message'),
-    );
+    // UnityAds.init(
+    //   gameId: "5280322",
+    //   testMode: false,
+    //   onComplete: () {
+    //     print('Initialization Complete');
+    //   },
+    //   onFailed: (error, message) =>
+    //       print('Initialization Failed: $error $message'),
+    // );
   }
 
   @override
@@ -79,7 +78,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
           DiscoverMovies(
             includeAdult: includeAdult,
           ),
-          UpdateBottom(),
+          const UpdateBottom(),
           ScrollingMovies(
             title: tr("popular"),
             api: Endpoints.popularMoviesUrl(1, lang),
@@ -87,13 +86,13 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
             isTrending: false,
             includeAdult: includeAdult,
           ),
-          UnityBannerAd(
-            placementId: 'Movies_one',
-            onLoad: (placementId) => print('Banner loaded: $placementId'),
-            onClick: (placementId) => print('Banner clicked: $placementId'),
-            onFailed: (placementId, error, message) =>
-                print('Banner Ad $placementId failed: $error $message'),
-          ),
+          // UnityBannerAd(
+          //   placementId: 'Movies_one',
+          //   onLoad: (placementId) => print('Banner loaded: $placementId'),
+          //   onClick: (placementId) => print('Banner clicked: $placementId'),
+          //   onFailed: (placementId, error, message) =>
+          //       print('Banner Ad $placementId failed: $error $message'),
+          // ),
           rMovies.isEmpty
               ? Container()
               : ScrollingRecentMovies(moviesList: rMovies),
@@ -608,6 +607,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return Column(
       children: <Widget>[
         Row(
@@ -670,7 +670,9 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                               MaterialPageRoute(
                                   builder: (context) => MovieVideoLoader(
                                         download: false,
-                                        route: StreamRoute.tmDB,
+                                        route: fetchRoute == "flixHQ"
+                                            ? StreamRoute.flixHQ
+                                            : StreamRoute.tmDB,
                                         metadata: [
                                           widget.moviesList[index].id,
                                           widget.moviesList[index].title,
@@ -1486,6 +1488,7 @@ class DownloadMovie extends StatelessWidget {
   Widget build(BuildContext context) {
     bool? isVisible = false;
     double? buttonWidth = 150;
+    final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return Container(
       child: TextButton(
         style: ButtonStyle(
@@ -1498,7 +1501,9 @@ class DownloadMovie extends StatelessWidget {
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return MovieVideoLoader(
               download: true,
-              route: StreamRoute.tmDB,
+              route: fetchRoute == "flixHQ"
+                  ? StreamRoute.flixHQ
+                  : StreamRoute.tmDB,
               metadata: [movieId, movieName, thumbnail, releaseYear, 0.0],
             );
           })));
@@ -2937,6 +2942,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
   Widget build(BuildContext context) {
     RecentlyWatchedMoviesController recentlyWatchedMoviesController =
         RecentlyWatchedMoviesController();
+    final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
       decoration: BoxDecoration(
@@ -2989,7 +2995,9 @@ class WatchNowButtonState extends State<WatchNowButton> {
           });
           Navigator.push(context, MaterialPageRoute(builder: ((context) {
             return MovieVideoLoader(
-              route: StreamRoute.tmDB,
+              route: fetchRoute == "flixHQ"
+                  ? StreamRoute.flixHQ
+                  : StreamRoute.tmDB,
               download: false,
               metadata: [
                 widget.movieId,

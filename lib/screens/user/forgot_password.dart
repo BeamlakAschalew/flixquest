@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/settings_provider.dart';
@@ -90,7 +91,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   decoration: InputDecoration(
                       border: const UnderlineInputBorder(),
                       filled: true,
-                      prefixIcon: const Icon(Icons.email),
+                      prefixIcon: const Icon(FontAwesomeIcons.envelope),
                       labelText: tr("email_address"),
                       fillColor: Theme.of(context).colorScheme.background),
                   onSaved: (value) {

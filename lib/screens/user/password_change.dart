@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/app_constants.dart';
@@ -161,7 +162,8 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                     errorMaxLines: 3,
                                     border: const UnderlineInputBorder(),
                                     filled: true,
-                                    prefixIcon: const Icon(Icons.lock),
+                                    prefixIcon:
+                                        const Icon(FontAwesomeIcons.lock),
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {
@@ -204,7 +206,8 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                     errorMaxLines: 3,
                                     border: const UnderlineInputBorder(),
                                     filled: true,
-                                    prefixIcon: const Icon(Icons.lock),
+                                    prefixIcon:
+                                        const Icon(FontAwesomeIcons.lock),
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {

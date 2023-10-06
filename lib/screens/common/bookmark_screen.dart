@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../constants/app_constants.dart';
 import '../../controllers/bookmark_database_controller.dart';
 import '../../models/movie.dart';
@@ -103,7 +104,7 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                     });
                   }
                 },
-                icon: const Icon(Icons.sync_sharp))
+                icon: const Icon(FontAwesomeIcons.rotate))
           ]),
       body: Column(
         children: [
@@ -117,7 +118,7 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                   children: [
                     const Padding(
                       padding: EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.movie_creation_rounded),
+                      child: Icon(FontAwesomeIcons.clapperboard),
                     ),
                     Text(
                       tr("movies"),

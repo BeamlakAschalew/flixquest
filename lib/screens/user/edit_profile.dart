@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '/provider/settings_provider.dart';
 import '/screens/user/delete_account.dart';
@@ -274,7 +275,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                                 errorMaxLines: 3,
                                 border: const UnderlineInputBorder(),
                                 filled: true,
-                                prefixIcon: const Icon(Icons.person),
+                                prefixIcon: const Icon(FontAwesomeIcons.user),
                                 labelText: tr("full_name"),
                                 fillColor:
                                     Theme.of(context).colorScheme.background,
@@ -314,7 +315,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                                   errorMaxLines: 3,
                                   border: const UnderlineInputBorder(),
                                   filled: true,
-                                  prefixIcon: const Icon(Icons.person),
+                                  prefixIcon: const Icon(FontAwesomeIcons.at),
                                   labelText: tr("username"),
                                   fillColor:
                                       Theme.of(context).colorScheme.background),

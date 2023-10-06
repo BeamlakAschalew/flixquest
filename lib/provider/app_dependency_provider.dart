@@ -20,6 +20,9 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _enableADS = false;
   bool get enableADS => _enableADS;
 
+  String _fetchRoute = "tmDB";
+  String get fetchRoute => _fetchRoute;
+
   Future<void> getConsumetUrl() async {
     consumetUrl = await appDependencies.getConsumetUrl();
   }
@@ -62,6 +65,11 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set enableADS(bool value) {
     _enableADS = value;
+    notifyListeners();
+  }
+
+  set fetchRoute(String value) {
+    _fetchRoute = value;
     notifyListeners();
   }
 }

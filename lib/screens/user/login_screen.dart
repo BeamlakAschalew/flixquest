@@ -1,5 +1,6 @@
 import 'package:cinemax/functions/function.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../cinemax_main.dart';
 import '../../constants/app_constants.dart';
 import '/screens/user/forgot_password.dart';
@@ -142,7 +143,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   decoration: InputDecoration(
                                       border: const UnderlineInputBorder(),
                                       filled: true,
-                                      prefixIcon: const Icon(Icons.email),
+                                      prefixIcon:
+                                          const Icon(FontAwesomeIcons.envelope),
                                       labelText: tr("email_address"),
                                       fillColor: Theme.of(context)
                                           .colorScheme
@@ -167,7 +169,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   decoration: InputDecoration(
                                       border: const UnderlineInputBorder(),
                                       filled: true,
-                                      prefixIcon: const Icon(Icons.lock),
+                                      prefixIcon:
+                                          const Icon(FontAwesomeIcons.lock),
                                       suffixIcon: GestureDetector(
                                         onTap: () {
                                           setState(() {

@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '/constants/api_constants.dart';
@@ -428,7 +429,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
                         visible = false;
                       });
                     },
-                    icon: Icon(Icons.close)),
+                    icon: Icon(FontAwesomeIcons.xmark)),
               ),
             ],
           ),

@@ -19,7 +19,7 @@ Future<void> requestNotificationPermissions() async {
 }
 
 Future<bool> checkConnection() async {
-  bool isInternetWorking;
+  bool? isInternetWorking;
   try {
     final response = await InternetAddress.lookup('google.com');
 

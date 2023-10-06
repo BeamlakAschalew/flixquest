@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -117,7 +118,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
               },
             ));
           },
-          child: const Icon(Icons.share)),
+          child: const Icon(FontAwesomeIcons.shareNodes)),
     );
   }
 

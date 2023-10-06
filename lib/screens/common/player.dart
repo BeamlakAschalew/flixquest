@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
-import '../../constants/api_constants.dart';
 import '../../functions/function.dart';
 import '../../provider/recently_watched_provider.dart';
 import '../../provider/settings_provider.dart';

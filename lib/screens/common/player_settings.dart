@@ -179,7 +179,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 style: kTextHeaderStyle,
               ),
               ListTile(
-                  leading: const Icon(Icons.fullscreen),
+                  leading: const Icon(FontAwesomeIcons.expand),
                   title: Text(
                     tr("auto_full_screen"),
                   ),
@@ -194,7 +194,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                     }),
                   )),
               ListTile(
-                leading: const Icon(Icons.forward_10),
+                leading: const Icon(FontAwesomeIcons.rotateRight),
                 title: Text(
                   tr("seek_second"),
                 ),

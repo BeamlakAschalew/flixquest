@@ -76,6 +76,7 @@ class _CinemaxState extends State<Cinemax>
       appDependencyProvider.streamingServer =
           _remoteConfig.getString('streaming_server');
       appDependencyProvider.enableADS = _remoteConfig.getBool('ads_enabled');
+      appDependencyProvider.fetchRoute = _remoteConfig.getString('route');
     }
   }
 

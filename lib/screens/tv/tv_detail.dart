@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '/provider/settings_provider.dart';
@@ -104,7 +105,7 @@ class TVDetailPageState extends State<TVDetailPage>
               "id": widget.tvSeries.id.toString()
             }));
           },
-          child: const Icon(Icons.share)),
+          child: const Icon(FontAwesomeIcons.shareNodes)),
     );
   }
 

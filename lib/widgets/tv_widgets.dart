@@ -10,6 +10,7 @@ import '../controllers/bookmark_database_controller.dart';
 import '../controllers/recently_watched_database_controller.dart';
 import '../functions/function.dart';
 import '../models/recently_watched.dart';
+import '../provider/app_dependency_provider.dart';
 import '../provider/recently_watched_provider.dart';
 import '../screens/tv/tv_video_loader.dart';
 import '../screens/tv/tvdetail_castandcrew.dart';
@@ -584,6 +585,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return Column(
       children: <Widget>[
         Row(
@@ -648,7 +650,9 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                               MaterialPageRoute(
                                   builder: (context) => TVVideoLoader(
                                         download: false,
-                                        route: StreamRoute.tmDB,
+                                        route: fetchRoute == "flixHQ"
+                                            ? StreamRoute.flixHQ
+                                            : StreamRoute.tmDB,
                                         metadata: [
                                           widget.episodesList[index].id,
                                           widget.episodesList[index].seriesName,
@@ -6310,6 +6314,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
   @override
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
       decoration: BoxDecoration(
@@ -6368,7 +6373,9 @@ class _WatchNowButtonState extends State<WatchNowButton> {
               Navigator.push(context, MaterialPageRoute(builder: ((context) {
                 return TVVideoLoader(
                   download: false,
-                  route: StreamRoute.tmDB,
+                  route: fetchRoute == "flixHQ"
+                      ? StreamRoute.flixHQ
+                      : StreamRoute.tmDB,
                   metadata: [
                     widget.episodeList.episodeId,
                     widget.seriesName,
