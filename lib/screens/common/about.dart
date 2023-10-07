@@ -41,7 +41,7 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  tr("app_version", namedArgs: {"version": "2.3.0"}),
+                  tr("app_version", namedArgs: {"version": "2.4.0"}),
                   style: const TextStyle(
                     fontSize: 27.0,
                   ),
@@ -80,7 +80,7 @@ class AboutPage extends StatelessWidget {
                       ),
                     ),
                     onTap: () {
-                      launchUrl(Uri.parse('https://t.me/flixquestgroup'),
+                      launchUrl(Uri.parse('https://t.me/flixquestcommunity'),
                           mode: LaunchMode.externalApplication);
                     },
                   ),

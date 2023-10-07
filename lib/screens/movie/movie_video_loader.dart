@@ -66,7 +66,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     super.initState();
     print(appDependencyProvider.enableADS);
     if (appDependencyProvider.enableADS) {
-      startAppSdk.setTestAdsEnabled(false);
       loadInterstitialAd();
     }
     loadVideo();
@@ -277,22 +276,32 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
       if (movieVideoLinks != null && mounted) {
         if (interstitialAd != null) {
-          interstitialAd!.show().then((value) {
-            Navigator.pushReplacement(context, MaterialPageRoute(
-              builder: (context) {
-                return PlayerOne(
-                    mediaType: MediaType.movie,
-                    sources: reversedVids,
-                    subs: subs,
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).colorScheme.background
-                    ],
-                    settings: settings,
-                    movieMetadata: widget.metadata);
-              },
-            ));
+          interstitialAd!.show().then((shown) {
+            if (shown) {
+              setState(() {
+                interstitialAd = null;
+                loadInterstitialAd();
+              });
+            }
+
+            return null;
+          }).onError((error, stackTrace) {
+            debugPrint("Error showing Interstitial ad: $error");
           });
+          Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context) {
+              return PlayerOne(
+                  mediaType: MediaType.movie,
+                  sources: reversedVids,
+                  subs: subs,
+                  colors: [
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).colorScheme.background
+                  ],
+                  settings: settings,
+                  movieMetadata: widget.metadata);
+            },
+          ));
         } else {
           Navigator.pushReplacement(context, MaterialPageRoute(
             builder: (context) {
