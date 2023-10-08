@@ -345,18 +345,25 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
                 bottomRight: Radius.circular(8.0))),
         child: Column(
           children: [
+            const SizedBox(
+              height: 5,
+            ),
             Row(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    children: [
-                      const LeadingDot(),
-                      Text(
-                        tr("overview"),
-                        style: kTextHeaderStyle,
-                      ),
-                    ],
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      children: [
+                        const LeadingDot(),
+                        Expanded(
+                          child: Text(
+                            tr("overview"),
+                            style: kTextHeaderStyle,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

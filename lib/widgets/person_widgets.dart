@@ -72,16 +72,20 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  children: [
-                    const LeadingDot(),
-                    Text(
-                      widget.title,
-                      style: kTextHeaderStyle,
-                    ),
-                  ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    children: [
+                      const LeadingDot(),
+                      Expanded(
+                        child: Text(
+                          widget.title,
+                          style: kTextHeaderStyle,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -726,17 +730,25 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-                    child: Row(
-                      children: [
-                        const LeadingDot(),
-                        Text(
-                          tr("biography"),
-                          style: kTextHeaderStyle,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+                          child: Row(
+                            children: [
+                              const LeadingDot(),
+                              Expanded(
+                                child: Text(
+                                  tr("biography"),
+                                  style: kTextHeaderStyle,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   ReadMoreText(
                     personDetails?.biography != ""
@@ -806,9 +818,11 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("social_media_links"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("social_media_links"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),

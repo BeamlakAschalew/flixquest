@@ -147,9 +147,11 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("sort_by"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("sort_by"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),
@@ -173,9 +175,11 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("tv_series_status"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("tv_series_status"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),
@@ -199,9 +203,11 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
             const Row(
               children: [
                 LeadingDot(),
-                Text(
-                  'First air year',
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    'First air year',
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),
@@ -220,14 +226,18 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        const LeadingDot(),
-                        Text(
-                          tr("total_ratings"),
-                          style: kTextHeaderStyle,
-                        ),
-                      ],
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const LeadingDot(),
+                          Expanded(
+                            child: Text(
+                              tr("total_ratings"),
+                              style: kTextHeaderStyle,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Checkbox(
                       activeColor: Theme.of(context).colorScheme.primary,
@@ -267,9 +277,11 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("with_genres"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("with_genres"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),
@@ -306,9 +318,11 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("with_streaming_services"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("with_streaming_services"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),

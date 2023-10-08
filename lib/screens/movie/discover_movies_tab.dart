@@ -143,9 +143,11 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("sort_by"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("sort_by"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),
@@ -169,9 +171,11 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("include_adult"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("include_adult"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),
@@ -197,9 +201,11 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("release_year"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("release_year"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),
@@ -218,14 +224,18 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        const LeadingDot(),
-                        Text(
-                          tr("total_ratings"),
-                          style: kTextHeaderStyle,
-                        ),
-                      ],
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const LeadingDot(),
+                          Expanded(
+                            child: Text(
+                              tr("total_ratings"),
+                              style: kTextHeaderStyle,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     Checkbox(
                       activeColor: Theme.of(context).colorScheme.primary,
@@ -265,9 +275,11 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("with_genres"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("with_genres"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),
@@ -307,9 +319,11 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
             Row(
               children: [
                 const LeadingDot(),
-                Text(
-                  tr("with_streaming_services"),
-                  style: kTextHeaderStyle,
+                Expanded(
+                  child: Text(
+                    tr("with_streaming_services"),
+                    style: kTextHeaderStyle,
+                  ),
                 ),
               ],
             ),

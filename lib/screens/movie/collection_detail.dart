@@ -227,6 +227,9 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                 physics: const BouncingScrollPhysics(),
                 child: Column(
                   children: <Widget>[
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       children: <Widget>[
                         Padding(

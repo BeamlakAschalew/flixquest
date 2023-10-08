@@ -86,7 +86,7 @@ class MovieEpisodes {
 }
 
 class MovieVideoSources {
-  MovieVideoSources();
+  MovieVideoSources({required this.videoLinks, required this.videoSubtitles});
 
   List<MovieVideoLinks>? videoLinks;
   List<MovieVideoSubtitles>? videoSubtitles;

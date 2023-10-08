@@ -1453,9 +1453,11 @@ Widget personAboutSimmer(isDark) => Column(
           child: Row(
             children: [
               const LeadingDot(),
-              Text(
-                tr("biography"),
-                style: kTextHeaderStyle,
+              Expanded(
+                child: Text(
+                  tr("biography"),
+                  style: kTextHeaderStyle,
+                ),
               ),
             ],
           ),
@@ -1974,8 +1976,8 @@ class LeadingDot extends StatelessWidget {
     String appLang = Provider.of<SettingsProvider>(context).appLanguage;
     return Container(
       color: Theme.of(context).primaryColor,
-      width: 15,
-      height: 15,
+      width: 13,
+      height: 13,
       margin: appLang == 'ar'
           ? const EdgeInsets.only(left: 8)
           : const EdgeInsets.only(right: 8),

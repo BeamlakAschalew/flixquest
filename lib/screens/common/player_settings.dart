@@ -92,9 +92,11 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               Row(
                 children: [
                   const LeadingDot(),
-                  Text(
-                    tr("subtitle"),
-                    style: kTextHeaderStyle,
+                  Expanded(
+                    child: Text(
+                      tr("subtitle"),
+                      style: kTextHeaderStyle,
+                    ),
                   ),
                 ],
               ),
@@ -183,9 +185,11 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               Row(
                 children: [
                   const LeadingDot(),
-                  Text(
-                    tr("general"),
-                    style: kTextHeaderStyle,
+                  Expanded(
+                    child: Text(
+                      tr("general"),
+                      style: kTextHeaderStyle,
+                    ),
                   ),
                 ],
               ),
@@ -236,7 +240,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                           value: const Duration(seconds: 15).inMilliseconds,
                           child: const Text('15s')),
                       DropdownMenuItem(
-                          value: const Duration(seconds: 15).inMilliseconds,
+                          value: const Duration(seconds: 30).inMilliseconds,
                           child: const Text('30s')),
                       DropdownMenuItem(
                           value: const Duration(seconds: 45).inMilliseconds,
