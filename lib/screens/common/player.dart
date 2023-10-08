@@ -1,12 +1,10 @@
 import 'dart:async';
-
 import '/constants/app_constants.dart';
 import '/controllers/recently_watched_database_controller.dart';
 import '/models/recently_watched.dart';
 import '/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
 import '../../functions/function.dart';
@@ -49,17 +47,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   final GlobalKey _betterPlayerKey = GlobalKey();
 
   int totalMinutesWatched = 0;
-  late Timer _timer;
   bool isVideoPaused = false;
-
-  void updateTotalMinutesStreamed(int minutes, Mixpanel mixpanel) async {
-    mixpanel.registerSuperProperties({"Total minutes streamed": minutes});
-  }
 
   @override
   void initState() {
-    final mixpanel =
-        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
     super.initState();
     String backgroundColorString = widget.settings.subtitleBackgroundColor;
     String foregroundColorString = widget.settings.subtitleForegroundColor;
@@ -170,26 +161,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           .videoPlayerController!.value.duration!.inSeconds;
     });
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
-    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
-      if (!isVideoPaused) {
-        setState(() {
-          totalMinutesWatched++;
-        });
-
-        mixpanel.registerSuperProperties(
-            {'Total Minutes Streamed': totalMinutesWatched});
-      }
-    });
-
-    _betterPlayerController.addEventsListener((event) {
-      if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
-        _timer.cancel();
-      }
-    });
   }
 
   Future<void> insertRecentMovieData() async {
-    print("INSERT CALLEDDDDDDDDDDD");
     int elapsed = await _betterPlayerController.videoPlayerController!.position
         .then((value) => value!.inSeconds);
 

@@ -1,14 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 import '/api/endpoints.dart';
 import '/functions/network.dart';
-import '/main.dart';
 import '/models/movie_stream.dart';
 import '/provider/app_dependency_provider.dart';
 import '/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../../models/sub_languages.dart';
 import '../../widgets/common_widgets.dart';
 import '/constants/app_constants.dart';
@@ -46,28 +44,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   /// TMDB Route
   MovieInfoTMDBRoute? episode;
 
-  var startAppSdk = StartAppSdk();
-  StartAppInterstitialAd? interstitialAd;
-
-  void loadInterstitialAd() {
-    startAppSdk.loadInterstitialAd().then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    print(appDependencyProvider.enableADS);
-    if (appDependencyProvider.enableADS) {
-      loadInterstitialAd();
-    }
     loadVideo();
   }
 
@@ -188,7 +167,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             if (mounted) {
               setState(() {
                 loadProgress = (i / movieVideoSubs!.length) * 100;
-                print(loadProgress);
               });
             }
             await getVttFileAsString(movieVideoSubs![i].url!).then((value) {
@@ -231,7 +209,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               });
             });
           } else {
-            print("CALLEDDDDDDDDDDD");
             await fetchSocialLinks(
               Endpoints.getExternalLinksForMovie(
                   widget.metadata.elementAt(0), "en"),
@@ -275,49 +252,20 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
       if (movieVideoLinks != null && mounted) {
-        if (interstitialAd != null) {
-          interstitialAd!.show().then((shown) {
-            if (shown) {
-              setState(() {
-                interstitialAd = null;
-                loadInterstitialAd();
-              });
-            }
-
-            return null;
-          }).onError((error, stackTrace) {
-            debugPrint("Error showing Interstitial ad: $error");
-          });
-          Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) {
-              return PlayerOne(
-                  mediaType: MediaType.movie,
-                  sources: reversedVids,
-                  subs: subs,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.background
-                  ],
-                  settings: settings,
-                  movieMetadata: widget.metadata);
-            },
-          ));
-        } else {
-          Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) {
-              return PlayerOne(
-                  mediaType: MediaType.movie,
-                  sources: reversedVids,
-                  subs: subs,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.background
-                  ],
-                  settings: settings,
-                  movieMetadata: widget.metadata);
-            },
-          ));
-        }
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) {
+            return PlayerOne(
+                mediaType: MediaType.movie,
+                sources: reversedVids,
+                subs: subs,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.background
+                ],
+                settings: settings,
+                movieMetadata: widget.metadata);
+          },
+        ));
       } else {
         if (mounted) {
           Navigator.pop(context);

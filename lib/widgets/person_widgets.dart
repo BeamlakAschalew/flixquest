@@ -74,9 +74,14 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text(
-                  widget.title,
-                  style: const TextStyle(fontSize: 20),
+                child: Row(
+                  children: [
+                    const LeadingDot(),
+                    Text(
+                      widget.title,
+                      style: kTextHeaderStyle,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -723,9 +728,14 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-                    child: Text(
-                      tr("biography"),
-                      style: const TextStyle(fontSize: 20),
+                    child: Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(
+                          tr("biography"),
+                          style: kTextHeaderStyle,
+                        ),
+                      ],
                     ),
                   ),
                   ReadMoreText(
@@ -793,9 +803,14 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              tr("social_media_links"),
-              style: const TextStyle(fontSize: 20),
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("social_media_links"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             SizedBox(
               height: 55,
@@ -1047,10 +1062,16 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
                                                 widget.cast!.id!, lang)),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
                                                   widget.cast!.id!, lang),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.cast!.name!,
@@ -1374,10 +1395,16 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
                                                 widget.createdBy!.id!, lang)),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
                                                   widget.createdBy!.id!, lang),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.createdBy!.name!,
@@ -1609,10 +1636,16 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
                                                 widget.crew!.id!, lang)),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
                                                   widget.crew!.id!, lang),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.crew!.name!,
@@ -1845,10 +1878,16 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
                                                 widget.cast!.id!, lang)),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
                                                   widget.cast!.id!, lang),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.cast!.name!,
@@ -2080,10 +2119,16 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                                         PersonAboutWidget(
                                             api: Endpoints.getPersonDetails(
                                                 widget.person!.id!, lang)),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
                                         PersonSocialLinks(
                                           api: Endpoints
                                               .getExternalLinksForPerson(
                                                   widget.person!.id!, lang),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
                                         ),
                                         PersonImagesDisplay(
                                           personName: widget.person!.name!,

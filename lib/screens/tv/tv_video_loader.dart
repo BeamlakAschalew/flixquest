@@ -1,12 +1,10 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 import '/api/endpoints.dart';
 import '/functions/network.dart';
-import '/main.dart';
 import '/widgets/common_widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../../models/sub_languages.dart';
 import '../../models/tv_stream.dart';
 import '../../provider/app_dependency_provider.dart';
@@ -47,28 +45,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   /// TMDB Route
   TVTMDBRoute? tvInfoTMDB;
 
-  var startAppSdk = StartAppSdk();
-  StartAppInterstitialAd? interstitialAd;
-
-  void loadInterstitialAd() {
-    startAppSdk.loadInterstitialAd().then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    if (appDependencyProvider.enableADS) {
-      startAppSdk.setTestAdsEnabled(false);
-      loadInterstitialAd();
-    }
     loadVideo();
   }
 
@@ -325,49 +304,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
       if (tvVideoLinks != null && mounted) {
-        if (interstitialAd != null) {
-          interstitialAd!.show().then((shown) {
-            if (shown) {
-              setState(() {
-                interstitialAd = null;
-                loadInterstitialAd();
-              });
-            }
-
-            return null;
-          }).onError((error, stackTrace) {
-            debugPrint("Error showing Interstitial ad: $error");
-          });
-          Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) {
-              return PlayerOne(
-                  mediaType: MediaType.tvShow,
-                  sources: reversedVids,
-                  subs: subs,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.background
-                  ],
-                  settings: settings,
-                  tvMetadata: widget.metadata);
-            },
-          ));
-        } else {
-          Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) {
-              return PlayerOne(
-                  mediaType: MediaType.tvShow,
-                  sources: reversedVids,
-                  subs: subs,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.background
-                  ],
-                  settings: settings,
-                  tvMetadata: widget.metadata);
-            },
-          ));
-        }
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) {
+            return PlayerOne(
+                mediaType: MediaType.tvShow,
+                sources: reversedVids,
+                subs: subs,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.background
+                ],
+                settings: settings,
+                tvMetadata: widget.metadata);
+          },
+        ));
       } else {
         if (mounted) {
           Navigator.pop(context);

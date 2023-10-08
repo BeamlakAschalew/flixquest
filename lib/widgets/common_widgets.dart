@@ -1450,9 +1450,14 @@ Widget personAboutSimmer(isDark) => Column(
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-          child: Text(
-            tr("biography"),
-            style: const TextStyle(fontSize: 20),
+          child: Row(
+            children: [
+              const LeadingDot(),
+              Text(
+                tr("biography"),
+                style: kTextHeaderStyle,
+              ),
+            ],
           ),
         ),
         ShimmerBase(
@@ -1957,6 +1962,23 @@ class ExternalPlay extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class LeadingDot extends StatelessWidget {
+  const LeadingDot({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    String appLang = Provider.of<SettingsProvider>(context).appLanguage;
+    return Container(
+      color: Theme.of(context).primaryColor,
+      width: 15,
+      height: 15,
+      margin: appLang == 'ar'
+          ? const EdgeInsets.only(left: 8)
+          : const EdgeInsets.only(right: 8),
     );
   }
 }

@@ -204,9 +204,14 @@ class DiscoverMoviesState extends State<DiscoverMovies>
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                tr('featured_movies'),
-                style: kTextHeaderStyle,
+              child: Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr('featured_movies'),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ),
           ],
@@ -379,10 +384,15 @@ class ScrollingMoviesState extends State<ScrollingMovies>
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(widget.title,
-                    style: kTextHeaderStyle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis),
+                child: Row(
+                  children: [
+                    const LeadingDot(),
+                    Text(widget.title,
+                        style: kTextHeaderStyle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
+                  ],
+                ),
               ),
             ),
             Padding(
@@ -615,9 +625,14 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                tr("recently_watched"),
-                style: kTextHeaderStyle,
+              child: Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr("recently_watched"),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ),
             // Padding(
@@ -1342,9 +1357,14 @@ class _MovieAboutState extends State<MovieAbout> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    tr("overview"),
-                    style: kTextHeaderStyle,
+                  child: Row(
+                    children: [
+                      const LeadingDot(),
+                      Text(
+                        tr("overview"),
+                        style: kTextHeaderStyle,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -1580,9 +1600,14 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      tr("cast"),
-                      style: kTextHeaderStyle,
+                    Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(
+                          tr("cast"),
+                          style: kTextHeaderStyle,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -1594,9 +1619,14 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          tr("cast"),
-                          style: kTextHeaderStyle,
+                        Row(
+                          children: [
+                            const LeadingDot(),
+                            Text(
+                              tr("cast"),
+                              style: kTextHeaderStyle,
+                            ),
+                          ],
                         ),
                         Center(
                             child: Text(tr("no_cast_movie"),
@@ -1609,9 +1639,14 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          tr("cast"),
-                          style: kTextHeaderStyle,
+                        child: Row(
+                          children: [
+                            const LeadingDot(),
+                            Text(
+                              tr("cast"),
+                              style: kTextHeaderStyle,
+                            ),
+                          ],
                         ),
                       ),
                       TextButton(
@@ -1779,9 +1814,14 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              tr("social_media_links"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("social_media_links"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             SizedBox(
               height: 55,
@@ -2091,9 +2131,14 @@ class PartsListState extends State<PartsList> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                widget.title!,
-                style: kTextHeaderStyle,
+              child: Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    widget.title!,
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ),
           ],
@@ -2373,10 +2418,15 @@ class MovieImagesState extends State<MovieImagesDisplay> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  widget.title!,
-                  style:
-                      kTextHeaderStyle, /*style: widget.themeData!.textTheme.bodyText1*/
+                child: Row(
+                  children: [
+                    const LeadingDot(),
+                    Text(
+                      widget.title!,
+                      style:
+                          kTextHeaderStyle, /*style: widget.themeData!.textTheme.bodyText1*/
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -2737,10 +2787,15 @@ class MovieVideosState extends State<MovieVideosDisplay> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      widget.title!,
-                      style:
-                          kTextHeaderStyle, /* style: widget.themeData!.textTheme.bodyText1*/
+                    Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(
+                          widget.title!,
+                          style:
+                              kTextHeaderStyle, /* style: widget.themeData!.textTheme.bodyText1*/
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -2750,10 +2805,15 @@ class MovieVideosState extends State<MovieVideosDisplay> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      widget.title!,
-                      style:
-                          kTextHeaderStyle, /*style: widget.themeData!.textTheme.bodyText1*/
+                    child: Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(
+                          widget.title!,
+                          style:
+                              kTextHeaderStyle, /*style: widget.themeData!.textTheme.bodyText1*/
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -3195,9 +3255,14 @@ class MovieInfoTableState extends State<MovieInfoTable> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            tr("movie_info"),
-            style: kTextHeaderStyle,
+          Row(
+            children: [
+              const LeadingDot(),
+              Text(
+                tr("movie_info"),
+                style: kTextHeaderStyle,
+              ),
+            ],
           ),
           Container(
             child: SingleChildScrollView(
@@ -3785,9 +3850,17 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    tr("movie_recommendations"),
-                    style: kTextHeaderStyle,
+                  child: Row(
+                    children: [
+                      const LeadingDot(),
+                      Expanded(
+                        child: Text(
+                          tr("movie_recommendations"),
+                          style: kTextHeaderStyle,
+                          maxLines: 2,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -3915,12 +3988,19 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    tr("movies_similar_with",
-                        namedArgs: {"movie": widget.movieName}),
-                    style: kTextHeaderStyle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  child: Row(
+                    children: [
+                      const LeadingDot(),
+                      Expanded(
+                        child: Text(
+                          tr("movies_similar_with",
+                              namedArgs: {"movie": widget.movieName}),
+                          style: kTextHeaderStyle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -4289,9 +4369,14 @@ class GenreListGridState extends State<GenreListGrid>
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                tr("genres"),
-                style: kTextHeaderStyle,
+              child: Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr("genres"),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ),
           ],
@@ -4470,9 +4555,14 @@ class MoviesFromWatchProvidersState extends State<MoviesFromWatchProviders> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              tr("streaming_services"),
-              style: kTextHeaderStyle,
+            child: Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("streaming_services"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
           ),
           SizedBox(

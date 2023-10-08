@@ -6,6 +6,7 @@ import '../../constants/app_constants.dart';
 import '../../models/choice_chip.dart';
 import '../../models/dropdown_select.dart';
 import '../../models/filter_chip.dart';
+import '../../widgets/common_widgets.dart';
 import 'discover_movie_result.dart';
 
 class DiscoverMoviesTab extends StatefulWidget {
@@ -139,9 +140,14 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              tr("sort_by"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("sort_by"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             Wrap(
               spacing: 3,
@@ -160,9 +166,14 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       ))
                   .toList(),
             ),
-            Text(
-              tr("include_adult"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("include_adult"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             Wrap(
               spacing: 3,
@@ -183,9 +194,14 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       ))
                   .toList(),
             ),
-            Text(
-              tr("release_year"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("release_year"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             DropdownButton<String>(
               items: getDropdownItems(),
@@ -202,9 +218,14 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      tr("total_results"),
-                      style: kTextHeaderStyle,
+                    Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(
+                          tr("total_ratings"),
+                          style: kTextHeaderStyle,
+                        ),
+                      ],
                     ),
                     Checkbox(
                       activeColor: Theme.of(context).colorScheme.primary,
@@ -241,9 +262,14 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 ),
               ],
             ),
-            Text(
-              tr("with_genres"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("with_genres"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             Wrap(
               spacing: 3,
@@ -278,9 +304,14 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                       ))
                   .toList(),
             ),
-            Text(
-              tr("with_streaming_services"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("with_streaming_services"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             Wrap(
               spacing: 3,

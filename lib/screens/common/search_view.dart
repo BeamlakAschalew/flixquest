@@ -103,10 +103,13 @@ class Search extends SearchDelegate<String> {
             Expanded(
                 child: TabBarView(children: [
               FutureBuilder<List<Movie>>(
-                future: Future.delayed(const Duration(seconds: 1)).then(
-                  (value) => fetchMovies(
-                      Endpoints.movieSearchUrl(query, includeAdult, lang)),
-                ),
+                future: Future.delayed(const Duration(seconds: 3))
+                    .then((value) async {
+                  mixpanel
+                      .track("Searched query", properties: {"query": query});
+                  return await fetchMovies(
+                      Endpoints.movieSearchUrl(query, includeAdult, lang));
+                }),
                 builder: (context, snapshot) {
                   if (query.isEmpty) return searchATermWidget(isDark);
 
@@ -124,8 +127,8 @@ class Search extends SearchDelegate<String> {
                 },
               ),
               FutureBuilder<List<TV>>(
-                future: Future.delayed(const Duration(seconds: 1)).then(
-                    (value) => fetchTV(
+                future: Future.delayed(const Duration(seconds: 3)).then(
+                    (value) async => await fetchTV(
                         Endpoints.tvSearchUrl(query, includeAdult, lang))),
                 builder: (context, snapshot) {
                   if (query.isEmpty) return searchATermWidget(isDark);
@@ -143,8 +146,8 @@ class Search extends SearchDelegate<String> {
                 },
               ),
               FutureBuilder<List<Person>>(
-                future: Future.delayed(const Duration(seconds: 1)).then(
-                    (value) => fetchPerson(
+                future: Future.delayed(const Duration(seconds: 3)).then(
+                    (value) async => await fetchPerson(
                         Endpoints.personSearchUrl(query, includeAdult, lang))),
                 builder: (context, snapshot) {
                   if (query.isEmpty) return searchATermWidget(isDark);
@@ -354,10 +357,6 @@ class Search extends SearchDelegate<String> {
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      mixpanel.track('Most viewed movie pages', properties: {
-                        'Movie name': '${moviesList[index].title}',
-                        'Movie id': '${moviesList[index].id}'
-                      });
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
                         return MovieDetailPage(

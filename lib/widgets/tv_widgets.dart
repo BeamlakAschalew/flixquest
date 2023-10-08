@@ -192,9 +192,14 @@ class DiscoverTVState extends State<DiscoverTV>
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                tr("featured_tv_shows"),
-                style: kTextHeaderStyle,
+              child: Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr("featured_tv_shows"),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ),
           ],
@@ -359,10 +364,15 @@ class ScrollingTVState extends State<ScrollingTV>
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(widget.title,
-                    style: kTextHeaderStyle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis),
+                child: Row(
+                  children: [
+                    const LeadingDot(),
+                    Text(widget.title,
+                        style: kTextHeaderStyle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
+                  ],
+                ),
               ),
             ),
             Padding(
@@ -593,9 +603,14 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                tr("recently_watched"),
-                style: kTextHeaderStyle,
+              child: Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr("recently_watched"),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ),
             // Padding(
@@ -871,9 +886,14 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                tr("cast"),
-                style: kTextHeaderStyle,
+              child: Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr("cast"),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ),
             TextButton(
@@ -1079,9 +1099,14 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      tr("cast"),
-                      style: kTextHeaderStyle,
+                    Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(
+                          tr("cast"),
+                          style: kTextHeaderStyle,
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -1098,9 +1123,14 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          tr("cast"),
-                          style: kTextHeaderStyle,
+                        child: Row(
+                          children: [
+                            const LeadingDot(),
+                            Text(
+                              tr("cast"),
+                              style: kTextHeaderStyle,
+                            ),
+                          ],
                         ),
                       ),
                       TextButton(
@@ -1636,9 +1666,14 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: <Widget>[
-              Text(
-                tr("created_by"),
-                style: kTextHeaderStyle,
+              Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr("created_by"),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ],
           ),
@@ -1799,9 +1834,14 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  widget.title!,
-                  style: kTextHeaderStyle,
+                child: Row(
+                  children: [
+                    const LeadingDot(),
+                    Text(
+                      widget.title!,
+                      style: kTextHeaderStyle,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -2149,10 +2189,15 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(widget.title!,
-                        style:
-                            kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
-                        ),
+                    Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(widget.title!,
+                            style:
+                                kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
+                            ),
+                      ],
+                    ),
                   ],
                 ),
               )
@@ -2161,10 +2206,15 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(widget.title!,
-                        style:
-                            kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
-                        ),
+                    child: Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(widget.title!,
+                            style:
+                                kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
+                            ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -2306,10 +2356,15 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(widget.title!,
-                        style:
-                            kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
-                        ),
+                    Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(widget.title!,
+                            style:
+                                kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
+                            ),
+                      ],
+                    ),
                   ],
                 ),
               )
@@ -2318,10 +2373,15 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(widget.title!,
-                        style:
-                            kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
-                        ),
+                    child: Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(widget.title!,
+                            style:
+                                kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
+                            ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -2466,10 +2526,15 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(widget.title!,
-                        style:
-                            kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
-                        ),
+                    Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(widget.title!,
+                            style:
+                                kTextHeaderStyle /* style: widget.themeData!.textTheme.bodyText1*/
+                            ),
+                      ],
+                    ),
                   ],
                 ),
               )
@@ -2478,10 +2543,15 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(widget.title!,
-                        style:
-                            kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
-                        ),
+                    child: Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(widget.title!,
+                            style:
+                                kTextHeaderStyle /*style: widget.themeData!.textTheme.bodyText1*/
+                            ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -3247,11 +3317,16 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    tr("tv_recommendations"),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: kTextHeaderStyle,
+                  child: Row(
+                    children: [
+                      const LeadingDot(),
+                      Text(
+                        tr("tv_recommendations"),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: kTextHeaderStyle,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -3376,11 +3451,17 @@ class SimilarTVTabState extends State<SimilarTVTab>
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    tr("tv_similar_with", namedArgs: {"show": widget.tvName}),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: kTextHeaderStyle,
+                  child: Row(
+                    children: [
+                      const LeadingDot(),
+                      Text(
+                        tr("tv_similar_with",
+                            namedArgs: {"show": widget.tvName}),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: kTextHeaderStyle,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -3648,9 +3729,14 @@ class TVInfoTableState extends State<TVInfoTable> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            tr("tv_series_info"),
-            style: kTextHeaderStyle,
+          Row(
+            children: [
+              const LeadingDot(),
+              Text(
+                tr("tv_series_info"),
+                style: kTextHeaderStyle,
+              ),
+            ],
           ),
           Container(
             child: SingleChildScrollView(
@@ -3854,9 +3940,14 @@ class TVSocialLinksState extends State<TVSocialLinks> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              tr("social_media_links"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("social_media_links"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             SizedBox(
               height: 55,
@@ -3980,9 +4071,14 @@ class SeasonsListState extends State<SeasonsList> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                widget.title!,
-                style: kTextHeaderStyle,
+              child: Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    widget.title!,
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ),
           ],
@@ -4160,9 +4256,14 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      tr("episodes"),
-                      style: kTextHeaderStyle,
+                    child: Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(
+                          tr("episodes"),
+                          style: kTextHeaderStyle,
+                        ),
+                      ],
                     ),
                   ),
                   ListView.builder(
@@ -4267,9 +4368,14 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          tr("episodes"),
-                          style: kTextHeaderStyle,
+                        child: Row(
+                          children: [
+                            const LeadingDot(),
+                            Text(
+                              tr("episodes"),
+                              style: kTextHeaderStyle,
+                            ),
+                          ],
                         ),
                       ),
                       ListView.builder(
@@ -4658,9 +4764,14 @@ class TVGenreListGridState extends State<TVGenreListGrid>
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                tr("genres"),
-                style: kTextHeaderStyle,
+              child: Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr("genres"),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
             ),
           ],
@@ -4736,9 +4847,14 @@ class TVShowsFromWatchProvidersState extends State<TVShowsFromWatchProviders> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(
-              tr("streaming_services"),
-              style: kTextHeaderStyle,
+            child: Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("streaming_services"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
           ),
           SizedBox(
@@ -5778,9 +5894,14 @@ class _TVAboutState extends State<TVAbout> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    tr("overview"),
-                    style: kTextHeaderStyle,
+                  child: Row(
+                    children: [
+                      const LeadingDot(),
+                      Text(
+                        tr("overview"),
+                        style: kTextHeaderStyle,
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -5914,9 +6035,14 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(
-                    tr("overview"),
-                    style: kTextHeaderStyle,
+                  child: Row(
+                    children: [
+                      const LeadingDot(),
+                      Text(
+                        tr("overview"),
+                        style: kTextHeaderStyle,
+                      ),
+                    ],
                   ),
                 ),
               ],

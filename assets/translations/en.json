@@ -467,5 +467,6 @@
     "disable_notification_version": "Disable notification for this version",
     "report_telegram": "Report error to telegram group",
     "check_connection": "Connect to the internet to continue.",
-    "open_external": "Open in external player"
+    "open_external": "Open in external player",
+    "no_channels": "No channels found :("
 }

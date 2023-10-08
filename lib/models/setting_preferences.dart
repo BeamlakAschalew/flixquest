@@ -127,7 +127,7 @@ class VideoPlayerPreferences {
 
   Future<int> getMaxBuffer() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getInt(MAX_BUFFER_PREFERENCE) ?? 240000;
+    return prefs.getInt(MAX_BUFFER_PREFERENCE) ?? 360000;
   }
 
   static const DEFAULT_VIDEO_QUALITY = 'video_quality';

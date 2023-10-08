@@ -38,6 +38,7 @@ class _LivePlayerState extends State<LivePlayer> {
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
       name: widget.channelName,
       enableFullscreen: true,
+      enableSubtitles: false,
       enablePip: true,
       backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
       controlBarColor: Colors.black.withOpacity(0.3),

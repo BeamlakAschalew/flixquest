@@ -41,7 +41,7 @@ class SettingsProvider with ChangeNotifier {
   // int _defaultMinBufferDuration = 120000;
   // int get defaultMinBufferDuration => _defaultMinBufferDuration;
 
-  int _defaultMaxBufferDuration = 240000;
+  int _defaultMaxBufferDuration = 360000;
   int get defaultMaxBufferDuration => _defaultMaxBufferDuration;
 
   int _defaultVideoResolution = 0;

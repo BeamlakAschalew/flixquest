@@ -6,6 +6,7 @@ import '../../constants/app_constants.dart';
 import '../../models/choice_chip.dart';
 import '../../models/dropdown_select.dart';
 import '../../models/filter_chip.dart';
+import '../../widgets/common_widgets.dart';
 import 'discover_tv_result.dart';
 
 class DiscoverTVTab extends StatefulWidget {
@@ -143,9 +144,14 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              tr("sort_by"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("sort_by"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             Wrap(
               spacing: 3,
@@ -164,9 +170,14 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                       ))
                   .toList(),
             ),
-            Text(
-              tr("tv_series_status"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("tv_series_status"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             Wrap(
               spacing: 3,
@@ -185,9 +196,14 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                       ))
                   .toList(),
             ),
-            const Text(
-              'First air year',
-              style: kTextHeaderStyle,
+            const Row(
+              children: [
+                LeadingDot(),
+                Text(
+                  'First air year',
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             DropdownButton<String>(
               items: getDropdownItems(),
@@ -204,9 +220,14 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      tr("total_ratings"),
-                      style: kTextHeaderStyle,
+                    Row(
+                      children: [
+                        const LeadingDot(),
+                        Text(
+                          tr("total_ratings"),
+                          style: kTextHeaderStyle,
+                        ),
+                      ],
                     ),
                     Checkbox(
                       activeColor: Theme.of(context).colorScheme.primary,
@@ -243,9 +264,14 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 ),
               ],
             ),
-            Text(
-              tr("with_genres"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("with_genres"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             Wrap(
               spacing: 3,
@@ -277,9 +303,14 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                       ))
                   .toList(),
             ),
-            Text(
-              tr("with_streaming_services"),
-              style: kTextHeaderStyle,
+            Row(
+              children: [
+                const LeadingDot(),
+                Text(
+                  tr("with_streaming_services"),
+                  style: kTextHeaderStyle,
+                ),
+              ],
             ),
             Wrap(
               spacing: 3,

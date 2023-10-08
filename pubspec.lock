@@ -969,14 +969,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.0"
-  startapp_sdk:
-    dependency: "direct main"
-    description:
-      name: startapp_sdk
-      sha256: "777a2d7b72f5d9b1f74f62a419c102b99ff60cd30bd5d1a5bf9c26c3598028ef"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.2"
   stream_channel:
     dependency: transitive
     description:

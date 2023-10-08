@@ -231,9 +231,14 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            tr("overview"),
-                            style: kTextHeaderStyle,
+                          child: Row(
+                            children: [
+                              const LeadingDot(),
+                              Text(
+                                tr("overview"),
+                                style: kTextHeaderStyle,
+                              ),
+                            ],
                           ),
                         ),
                       ],

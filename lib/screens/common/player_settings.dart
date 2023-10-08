@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../constants/app_constants.dart';
+import '../../widgets/common_widgets.dart';
 import '/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -88,9 +89,14 @@ class _PlayerSettingsState extends State<PlayerSettings> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                tr("subtitle"),
-                style: kTextHeaderStyle,
+              Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr("subtitle"),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
               Container(
                 margin: const EdgeInsets.only(left: 10, right: 10, bottom: 15),
@@ -174,9 +180,14 @@ class _PlayerSettingsState extends State<PlayerSettings> {
               const SizedBox(
                 height: 25,
               ),
-              Text(
-                tr("general"),
-                style: kTextHeaderStyle,
+              Row(
+                children: [
+                  const LeadingDot(),
+                  Text(
+                    tr("general"),
+                    style: kTextHeaderStyle,
+                  ),
+                ],
               ),
               ListTile(
                   leading: const Icon(FontAwesomeIcons.expand),
@@ -248,6 +259,21 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       DropdownMenuItem(
                           value: const Duration(seconds: 240).inMilliseconds,
                           child: const Text('240s')),
+                      DropdownMenuItem(
+                          value: const Duration(seconds: 300).inMilliseconds,
+                          child: const Text('300s')),
+                      DropdownMenuItem(
+                          value: const Duration(seconds: 360).inMilliseconds,
+                          child: const Text('360s')),
+                      DropdownMenuItem(
+                          value: const Duration(seconds: 420).inMilliseconds,
+                          child: const Text('420s')),
+                      DropdownMenuItem(
+                          value: const Duration(seconds: 500).inMilliseconds,
+                          child: const Text('500s')),
+                      DropdownMenuItem(
+                          value: const Duration(seconds: 600).inMilliseconds,
+                          child: const Text('600s')),
                     ],
                     onChanged: (int? value) {
                       setState(() {

@@ -467,6 +467,7 @@
     "disable_notification_version": "تعطيل الإخطار لهذا الإصدار",
 	"report_telegram": "الإبلاغ عن الخطأ لمجموعة برقية",
 	"check_connection": "اتصل بالإنترنت للمتابعة.",
-	"open_external": "فتح في مشغل خارجي"
+	"open_external": "فتح في مشغل خارجي",
+	"no_channels": "لم يتم العثور على القنوات :("
 }
 

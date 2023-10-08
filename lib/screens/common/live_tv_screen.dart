@@ -171,21 +171,30 @@ class _ChannelListState extends State<ChannelList> {
         padding: const EdgeInsets.all(8.0),
         child: channels == null
             ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: channels!.length,
-                      itemBuilder: (context, index) {
-                        return ChannelWidget(
-                          channel: channels![index],
-                          catName: widget.catName,
-                        );
-                      },
+            : channels!.isEmpty
+                ? Center(
+                    child: Text(
+                      tr("no_channels"),
+                      style: kTextHeaderStyle,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
                     ),
+                  )
+                : Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: channels!.length,
+                          itemBuilder: (context, index) {
+                            return ChannelWidget(
+                              channel: channels![index],
+                              catName: widget.catName,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
       ),
     );
   }

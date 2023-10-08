@@ -472,4 +472,5 @@ abstract class LocaleKeys {
   static const report_telegram = 'report_telegram';
   static const check_connection = 'check_connection';
   static const open_external = 'open_external';
+  static const no_channels = 'no_channels';
 }
