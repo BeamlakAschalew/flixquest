@@ -36,11 +36,20 @@ Some UI and API functionality from: [Here](https://github.com/bimsina/Matinee-Fl
 
 ### 🔐 Replacing API keys
 
-You need to use your own TMDB and Mixpanel API keys. Just replace the TMDB_API_KEY and mixpanelKey found in /main/lib/constants/api_constants.dart, with your own keys.
+You need to use your own TMDB, Opensubtitles and Mixpanel API keys. Create a .env file in the root directory of the project and create fields TMDB_API_KEY, MIXPANEL_API_KEY and OPENSUBTITLES_API_KEY and assign a value to them with your own keys.
+
+API keys can be found at:
+https://developer.themoviedb.org/v3/reference/intro/authentication#api-key-quick-start
+
+https://mixpanel.com
+
+https://www.opensubtitles.com/consumers
 
 ### ▶️ Adding custom better_player package
 
 This repo uses customized better_player package which can be found at github.com/beamlakaschalew/flixquest-betterplayer
+
+Clone the repo to your machine and edit the location of the better_player package that is found in FlixQuest
 
 ### 😇 Contributing
 
@@ -54,7 +63,7 @@ If opening an issue without following the issue template, we will ignore the iss
 
 The developers of this application does not have any affiliation with the content providers like TMDB or third party websites.
 
-Cinemax does not host any content on the app, and has no control over what media is put up or taken down.
+FlixQuest does not host any content on the app, and has no control over what media is put up or taken down.
 
 In case of copyright infringement, please directly contact the responsible parties or the streaming websites.
 
@@ -65,5 +74,3 @@ It merely scrapes 3rd-party websites that are publicly accessable via any regula
 <i>GNU, but for Entertainment</i>
 
 <h4 align='center'>© 2023 ツ BeamlakAschalew</h4>
-
-<!-- DO NOT REMOVE THIS CREDIT 🤬 -->
