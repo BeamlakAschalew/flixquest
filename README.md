@@ -38,6 +38,10 @@ Some UI and API functionality from: [Here](https://github.com/bimsina/Matinee-Fl
 
 You need to use your own TMDB and Mixpanel API keys. Just replace the TMDB_API_KEY and mixpanelKey found in /main/lib/constants/api_constants.dart, with your own keys.
 
+### ▶️ Adding custom better_player package
+
+This repo uses customized better_player package which can be found at github.com/beamlakaschalew/flixquest-betterplayer
+
 ### 😇 Contributing
 
 Whether you have ideas, translations, design changes, code cleaning, or real heavy code changes, help is always welcome. The more is done the better it gets!
