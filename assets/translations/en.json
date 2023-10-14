@@ -238,8 +238,9 @@
     "watch_movie": "Watch: {movie}",
     "download_movie": "Download: \"{name}\"",
     "choose_resolution": "Choose resolution:",
-    "movie_vid_404": "The movie couldn't be found on our servers :(",
-    "movie_vid_404_desc": "The movie couldn't be found on our servers :( Error: {error}",
+    "movie_vid_404": "This movie couldn't be found on our servers, try another movie :(",
+    "movie_vid_404_desc": "The movie couldn't be loaded because of unexpected error :( Error: {error}",
+    "movie_vid_server_error": "The movie couldn't be loaded because the server is down, try again a couple of minutes later :(",
     "streaming_service_movie": "Movies from {provider}",
     "no_tv_bookmarked": "You don't have any TV shows bookmarked :)",
     "discover_tv_series": "Discover TV series",
@@ -258,8 +259,9 @@
     "images": "Images",
     "streaming_service_tv": "TV Shows from {provider}",
     "share_tv": "Checkout the TV Show {title}!\nIt is rated {rating} out of 10\nhttps://themoviedb.org/tv/{id}",
-    "tv_vid_404": "The TV episode couldn't be found on our servers :(",
-    "tv_vid_404_desc": "The TV episode couldn't be found on our servers :( Error: {err}",
+    "tv_vid_404": "This TV episode couldn't be found on our servers, try another one :(",
+    "tv_vid_404_desc": "The TV episode couldn't be loaded because of unexpected error :( Error: {err}",
+    "tv_vid_server_error": "This TV episode couldn't be loaded because the server is down, try again a couple of minutes later :(",
     "guest_stars": "Guest stars",
     "account_deleted_successfully": "Your account was deleted successfully. We are sad to see you go :(, or are we? ;)",
     "user_mismatch": "The given email and password doesn't correspond to this user.",
@@ -468,5 +470,8 @@
     "report_telegram": "Report error to telegram group",
     "check_connection": "Connect to the internet to continue.",
     "open_external": "Open in external player",
-    "no_channels": "No channels found :("
+    "no_channels": "No channels found :(",
+    "cleared_cache": "Cache cleared successfully.",
+    "cache_doesnt_exist": "Cache directory does not exist.",
+    "error_cache": "Error clearing cache: {e}"
 }

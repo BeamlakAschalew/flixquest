@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'package:flixquest/functions/function.dart';
+
 import '/api/endpoints.dart';
 import '/functions/network.dart';
 import '/models/movie_stream.dart';
@@ -73,12 +75,24 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     try {
       if (widget.route == StreamRoute.flixHQ) {
         await fetchMoviesForStream(Endpoints.searchMovieTVForStream(
-                widget.metadata.elementAt(1), appDep.consumetUrl))
+                removeCharacters(widget.metadata.elementAt(1)),
+                appDep.consumetUrl))
             .then((value) async {
           if (mounted) {
             setState(() {
               movies = value;
             });
+            if (movies == null || movies!.isEmpty) {
+              Navigator.pop(context);
+              showModalBottomSheet(
+                  builder: (context) {
+                    return ReportErrorWidget(
+                      error: tr("movie_vid_404"),
+                      hideButton: true,
+                    );
+                  },
+                  context: context);
+            }
           }
 
           for (int i = 0; i < movies!.length; i++) {
@@ -91,7 +105,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 setState(() {
                   epi = value;
                 });
-                if (epi!.isNotEmpty) {
+                if (epi != null && epi!.isNotEmpty) {
                   await getMovieStreamLinksAndSubs(
                           Endpoints.getMovieTVStreamLinks(
                               epi![0].id!,
@@ -100,9 +114,23 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                               appDep.streamingServer))
                       .then((value) {
                     if (mounted) {
-                      setState(() {
-                        movieVideoSources = value;
-                      });
+                      if (value.message == null &&
+                          value.videoLinks != null &&
+                          value.videoLinks!.isNotEmpty) {
+                        setState(() {
+                          movieVideoSources = value;
+                        });
+                      } else if (value.message != null) {
+                        Navigator.pop(context);
+                        showModalBottomSheet(
+                            builder: (context) {
+                              return ReportErrorWidget(
+                                error: tr("movie_vid_server_error"),
+                                hideButton: false,
+                              );
+                            },
+                            context: context);
+                      }
                     }
                     movieVideoLinks = movieVideoSources!.videoLinks;
                     movieVideoSubs = movieVideoSources!.videoSubtitles;
@@ -112,6 +140,17 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
               break;
             }
+          }
+          if (movieVideoLinks == null || movieVideoLinks!.isEmpty) {
+            Navigator.pop(context);
+            showModalBottomSheet(
+                builder: (context) {
+                  return ReportErrorWidget(
+                    error: tr("movie_vid_404"),
+                    hideButton: true,
+                  );
+                },
+                context: context);
           }
         });
       } else {
@@ -128,7 +167,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
           if (episode != null &&
               episode!.id != null &&
-              episode!.episodeId != null) {
+              episode!.id!.isNotEmpty &&
+              episode!.episodeId != null &&
+              episode!.episodeId!.isNotEmpty) {
             await getMovieStreamLinksAndSubs(
                     Endpoints.getMovieTVStreamLinksTMDB(
                         appDep.consumetUrl,
@@ -137,13 +178,37 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                         appDep.streamingServer))
                 .then((value) {
               if (mounted) {
-                setState(() {
-                  movieVideoSources = value;
-                });
+                if (value.message == null &&
+                    value.videoLinks != null &&
+                    value.videoLinks!.isNotEmpty) {
+                  setState(() {
+                    movieVideoSources = value;
+                  });
+                } else if (value.message != null) {
+                  Navigator.pop(context);
+                  showModalBottomSheet(
+                      builder: (context) {
+                        return ReportErrorWidget(
+                          error: tr("movie_vid_server_error"),
+                          hideButton: false,
+                        );
+                      },
+                      context: context);
+                }
               }
               movieVideoLinks = movieVideoSources!.videoLinks;
               movieVideoSubs = movieVideoSources!.videoSubtitles;
             });
+          } else {
+            Navigator.pop(context);
+            showModalBottomSheet(
+                builder: (context) {
+                  return ReportErrorWidget(
+                    error: tr("movie_vid_404"),
+                    hideButton: true,
+                  );
+                },
+                context: context);
           }
         });
       }
@@ -272,7 +337,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           showModalBottomSheet(
               builder: (context) {
                 return ReportErrorWidget(
-                  error: tr("tv_vid_404"),
+                  error: tr("movie_vid_404"),
+                  hideButton: true,
                 );
               },
               context: context);
@@ -284,7 +350,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         showModalBottomSheet(
             builder: (context) {
               return ReportErrorWidget(
-                error: "${tr("tv_vid_404")}\n$e",
+                error: "${tr("movie_vid_404")}\n$e",
+                hideButton: false,
               );
             },
             context: context);

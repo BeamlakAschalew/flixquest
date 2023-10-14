@@ -1862,13 +1862,12 @@ class ShimmerBase extends StatelessWidget {
 }
 
 class ReportErrorWidget extends StatelessWidget {
-  const ReportErrorWidget({
-    Key? key,
-    required this.error,
-  }) : super(key: key);
+  const ReportErrorWidget(
+      {Key? key, required this.error, required this.hideButton})
+      : super(key: key);
 
   final String error;
-  //final List metadata;
+  final bool hideButton;
 
   @override
   Widget build(BuildContext context) {
@@ -1880,42 +1879,54 @@ class ReportErrorWidget extends StatelessWidget {
     //     "https://t.me/share/url?url=FlixQuest error&text=${error}\n${meta}";
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: SizedBox(
-        height: 200,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              error,
-              maxLines: 6,
-              textAlign: TextAlign.center,
+      child: Stack(
+        children: [
+          SizedBox(
+            height: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  error,
+                  maxLines: 6,
+                  textAlign: TextAlign.center,
+                ),
+                Visibility(
+                  visible: !hideButton,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          await launchUrl(
+                              Uri.parse("https://t.me/flixquestgroup"),
+                              mode: LaunchMode.externalApplication);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const Icon(FontAwesomeIcons.telegram),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              tr("report_telegram"),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          ],
+                        )),
+                  ),
+                ),
+              ],
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: ElevatedButton(
-                  onPressed: () async {
-                    await launchUrl(Uri.parse("https://t.me/flixquestgroup"),
-                        mode: LaunchMode.externalApplication);
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Icon(FontAwesomeIcons.telegram),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        tr("report_telegram"),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    ],
-                  )),
-            ),
-          ],
-        ),
+          ),
+          const Align(
+            alignment: Alignment.bottomLeft,
+            child: Text(currentAppVersion),
+          )
+        ],
       ),
     );
   }

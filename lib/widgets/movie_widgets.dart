@@ -695,9 +695,10 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                               MaterialPageRoute(
                                   builder: (context) => MovieVideoLoader(
                                         download: false,
-                                        route: fetchRoute == "flixHQ"
-                                            ? StreamRoute.flixHQ
-                                            : StreamRoute.tmDB,
+                                        /* return to fetchRoute instead of hard text*/ route:
+                                            fetchRoute == "flixHQ"
+                                                ? StreamRoute.flixHQ
+                                                : StreamRoute.tmDB,
                                         metadata: [
                                           widget.moviesList[index].id,
                                           widget.moviesList[index].title,

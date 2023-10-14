@@ -471,12 +471,24 @@ Future<List<Channel>> fetchChannels(String api) async {
 
 Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
   MovieInfoTMDBRoute movieInfo;
+  int tries = 5;
+  dynamic decodeRes;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    var decodeRes = jsonDecode(res.body);
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+
+      decodeRes = jsonDecode(res.body);
+
+      if (decodeRes.containsKey('error')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
     movieInfo = MovieInfoTMDBRoute.fromJson(decodeRes);
   } finally {
     client.close();

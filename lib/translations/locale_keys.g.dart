@@ -244,6 +244,7 @@ abstract class LocaleKeys {
   static const choose_resolution = 'choose_resolution';
   static const movie_vid_404 = 'movie_vid_404';
   static const movie_vid_404_desc = 'movie_vid_404_desc';
+  static const movie_vid_server_error = 'movie_vid_server_error';
   static const streaming_service_movie = 'streaming_service_movie';
   static const no_tv_bookmarked = 'no_tv_bookmarked';
   static const discover_tv_series = 'discover_tv_series';

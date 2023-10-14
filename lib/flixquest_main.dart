@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,10 +7,9 @@ import 'package:flutter/material.dart';
 //import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'constants/app_constants.dart';
 import 'constants/theme_data.dart';
+import 'functions/function.dart';
 import 'main.dart';
 import 'provider/app_dependency_provider.dart';
 import 'provider/recently_watched_provider.dart';
@@ -44,16 +42,6 @@ class FlixQuest extends StatefulWidget {
 
 class _FlixQuestState extends State<FlixQuest>
     with ChangeNotifier, WidgetsBindingObserver {
-  void fileDelete() async {
-    for (int i = 0; i < appNames.length; i++) {
-      File file = File(
-          "${(await getApplicationSupportDirectory()).path}${appNames[i]}");
-      if (file.existsSync()) {
-        file.delete();
-      }
-    }
-  }
-
   final FirebaseRemoteConfig _remoteConfig = FirebaseRemoteConfig.instance;
   Future<void> _initConfig() async {
     await _remoteConfig.setConfigSettings(RemoteConfigSettings(
@@ -76,7 +64,7 @@ class _FlixQuestState extends State<FlixQuest>
       appDependencyProvider.streamingServer =
           _remoteConfig.getString('streaming_server');
       appDependencyProvider.enableADS = _remoteConfig.getBool('ads_enabled');
-      appDependencyProvider.fetchRoute = _remoteConfig.getString('route');
+      appDependencyProvider.fetchRoute = _remoteConfig.getString('route_v241');
     }
   }
 

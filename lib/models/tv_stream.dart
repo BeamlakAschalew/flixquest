@@ -101,10 +101,14 @@ class TVEpisodes {
 }
 
 class TVVideoSources {
-  TVVideoSources({required this.videoLinks, required this.videoSubtitles});
+  TVVideoSources(
+      {required this.videoLinks,
+      required this.videoSubtitles,
+      required this.message});
 
   List<TVVideoLinks>? videoLinks;
   List<TVVideoSubtitles>? videoSubtitles;
+  String? message;
 
   TVVideoSources.fromJson(Map<String, dynamic> json) {
     if (json['sources'] != null) {
@@ -118,6 +122,9 @@ class TVVideoSources {
       json['subtitles'].forEach((v) {
         videoSubtitles!.add(TVVideoSubtitles.fromJson(v));
       });
+    }
+    if (json.containsKey('message')) {
+      message = json['message'];
     }
   }
 }

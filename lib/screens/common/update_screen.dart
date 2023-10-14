@@ -38,7 +38,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
         });
       }
     });
-    getApplicationCacheDirectory().then((value) {
+    getTemporaryDirectory().then((value) {
       if (mounted) {
         setState(() {
           savedDir = value.path;

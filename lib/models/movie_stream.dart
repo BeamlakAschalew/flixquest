@@ -54,6 +54,7 @@ class MovieInfo {
   String? url;
   String? type;
   String? releaseDate;
+  String? message;
   List<MovieEpisodes>? episodes;
 
   MovieInfo.fromJson(Map<String, dynamic> json) {
@@ -62,6 +63,9 @@ class MovieInfo {
     url = json['url'];
     type = json['type'];
     releaseDate = json['releaseDate'];
+    if (json.containsKey('message')) {
+      message = json['message'];
+    }
     if (json['episodes'] != null) {
       episodes = [];
       json['episodes'].forEach((v) {
@@ -86,23 +90,31 @@ class MovieEpisodes {
 }
 
 class MovieVideoSources {
-  MovieVideoSources({required this.videoLinks, required this.videoSubtitles});
+  MovieVideoSources(
+      {required this.videoLinks,
+      required this.videoSubtitles,
+      required this.message});
 
   List<MovieVideoLinks>? videoLinks;
   List<MovieVideoSubtitles>? videoSubtitles;
 
+  String? message;
+
   MovieVideoSources.fromJson(Map<String, dynamic> json) {
-    if (json['sources'] != null) {
+    if (json.containsKey('sources') && json['sources'] != null) {
       videoLinks = [];
       json['sources'].forEach((v) {
         videoLinks!.add(MovieVideoLinks.fromJson(v));
       });
     }
-    if (json['subtitles'] != null) {
+    if (json.containsKey('subtitles') && json['subtitles'] != null) {
       videoSubtitles = [];
       json['subtitles'].forEach((v) {
         videoSubtitles!.add(MovieVideoSubtitles.fromJson(v));
       });
+    }
+    if (json.containsKey('message')) {
+      message = json['message'];
     }
   }
 }
@@ -143,7 +155,9 @@ class MovieInfoTMDBRoute {
 
   MovieInfoTMDBRoute.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    episodeId = json['episodeId'];
+    if (json.containsKey('episodeId')) {
+      episodeId = json['episodeId'];
+    }
     type = json['type'];
   }
 }

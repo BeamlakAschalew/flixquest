@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
+import 'package:flixquest/functions/function.dart';
+
 import '/api/endpoints.dart';
 import '/functions/network.dart';
 import '/widgets/common_widgets.dart';
@@ -80,20 +82,29 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             .then(
           (value) async {
             totalSeasons = value.numberOfSeasons!;
-            print(totalSeasons);
             await fetchTVForStream(Endpoints.searchMovieTVForStream(
-                    widget.metadata.elementAt(1), appDep.consumetUrl))
+                    removeCharacters(widget.metadata.elementAt(1)),
+                    appDep.consumetUrl))
                 .then((value) async {
               if (mounted) {
                 setState(() {
                   tvShows = value;
                 });
               }
-              print("point 1");
+              if (tvShows == null || tvShows!.isEmpty) {
+                Navigator.pop(context);
+                showModalBottomSheet(
+                    builder: (context) {
+                      return ReportErrorWidget(
+                        error: tr("tv_vid_404"),
+                        hideButton: true,
+                      );
+                    },
+                    context: context);
+              }
               for (int i = 0; i < tvShows!.length; i++) {
                 if (tvShows![i].seasons == totalSeasons &&
                     tvShows![i].type == 'TV Series') {
-                  print("point 2");
                   await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
                           tvShows![i].id!, appDep.consumetUrl))
                       .then((value) async {
@@ -105,7 +116,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     for (int k = 0; k < epi!.length; k++) {
                       if (epi![k].episode == widget.metadata.elementAt(3) &&
                           epi![k].season == widget.metadata.elementAt(4)) {
-                        print("point 3");
                         await getTVStreamLinksAndSubs(
                                 Endpoints.getMovieTVStreamLinks(
                                     epi![k].id!,
@@ -131,7 +141,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
                 if (tvShows![i].seasons == (totalSeasons - 1) &&
                     tvShows![i].type == 'TV Series') {
-                  print("point 4");
                   await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
                           tvShows![i].id!, appDep.consumetUrl))
                       .then((value) async {
@@ -143,7 +152,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     for (int k = 0; k < epi!.length; k++) {
                       if (epi![k].episode == widget.metadata.elementAt(3) &&
                           epi![k].season == widget.metadata.elementAt(4)) {
-                        print("point 5");
                         await getTVStreamLinksAndSubs(
                                 Endpoints.getMovieTVStreamLinks(
                                     epi![k].id!,
@@ -164,6 +172,17 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
                   break;
                 }
+              }
+              if (tvVideoLinks == null || tvVideoLinks!.isEmpty) {
+                Navigator.pop(context);
+                showModalBottomSheet(
+                    builder: (context) {
+                      return ReportErrorWidget(
+                        error: tr("tv_vid_404"),
+                        hideButton: true,
+                      );
+                    },
+                    context: context);
               }
             });
           },
@@ -189,12 +208,36 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     tvInfoTMDB!.id!,
                     appDep.streamingServer))
                 .then((value) {
-              setState(() {
-                tvVideoSources = value;
-              });
+              if (value.message == null &&
+                  value.videoLinks != null &&
+                  value.videoLinks!.isNotEmpty) {
+                setState(() {
+                  tvVideoSources = value;
+                });
+              } else if (value.message != null) {
+                Navigator.pop(context);
+                showModalBottomSheet(
+                    builder: (context) {
+                      return ReportErrorWidget(
+                        error: tr("tv_vid_server_error"),
+                        hideButton: false,
+                      );
+                    },
+                    context: context);
+              }
               tvVideoLinks = tvVideoSources!.videoLinks;
               tvVideoSubs = tvVideoSources!.videoSubtitles;
             });
+          } else {
+            Navigator.pop(context);
+            showModalBottomSheet(
+                builder: (context) {
+                  return ReportErrorWidget(
+                    error: tr("tv_vid_404"),
+                    hideButton: true,
+                  );
+                },
+                context: context);
           }
         });
       }
@@ -325,6 +368,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               builder: (context) {
                 return ReportErrorWidget(
                   error: tr("tv_vid_404"),
+                  hideButton: true,
                 );
               },
               context: context);
@@ -347,6 +391,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             builder: (context) {
               return ReportErrorWidget(
                 error: "${tr("tv_vid_404")}\n$e",
+                hideButton: false,
               );
             },
             context: context);
