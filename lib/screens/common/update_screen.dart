@@ -127,13 +127,17 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                 var fileName =
                                     "$savedDir/${downloadManager.getFileNameFromUrl(url)}";
                                 var file = File(fileName);
-                                OpenFile.open(file.path);
+                                if (file.existsSync()) {
+                                  OpenFile.open(file.path);
+                                }
                               },
                               onDelete: (url) async {
                                 var fileName =
                                     "$savedDir/${downloadManager.getFileNameFromUrl(url)}";
                                 var file = File(fileName);
-                                file.delete();
+                                if (file.existsSync()) {
+                                  file.delete();
+                                }
                               },
                               url: updateChecker!.downloadLink!,
                               downloadTask: downloadManager

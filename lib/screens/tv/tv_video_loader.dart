@@ -1,8 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 import 'package:flixquest/functions/function.dart';
 import 'package:startapp_sdk/startapp.dart';
-
-import '../common/update_screen.dart';
 import '/api/endpoints.dart';
 import '/functions/network.dart';
 import '/widgets/common_widgets.dart';
@@ -352,10 +350,11 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                             supportedLanguages[foundIndex].languageCode),
                         appDep.opensubtitlesKey)
                     .then((value) async {
-                  if (value.isNotEmpty) {
+                  if (value.isNotEmpty &&
+                      value[0].attr!.files![0].fileId != null) {
                     await downloadExternalSubtitle(
                             Endpoints.externalSubtitleDownload(),
-                            value[0].attr!.files![0].fileId,
+                            value[0].attr!.files![0].fileId!,
                             appDep.opensubtitlesKey)
                         .then((value) async {
                       if (value.link != null) {

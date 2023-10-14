@@ -38,7 +38,7 @@ class SubtitleAttr {
 
 class SubtitleFiles {
   SubtitleFiles({required this.fileId});
-  late int fileId;
+  int? fileId;
 
   SubtitleFiles.fromJson(Map<String, dynamic> json) {
     fileId = json['file_id'];

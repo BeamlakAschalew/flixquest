@@ -375,12 +375,22 @@ Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
 
 Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
   MovieVideoSources movieVideoSources;
+  int tries = 5;
+  dynamic decodeRes;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    var decodeRes = jsonDecode(res.body);
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
     movieVideoSources = MovieVideoSources.fromJson(decodeRes);
   } finally {
     client.close();
@@ -421,13 +431,23 @@ Future<TVInfo> getTVStreamEpisodes(String api) async {
 
 Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
   TVVideoSources tvVideoSources;
+  int tries = 5;
+  dynamic decodeRes;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    var decodeRes = jsonDecode(res.body);
-    print(res.body);
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+
     tvVideoSources = TVVideoSources.fromJson(decodeRes);
   } finally {
     client.close();
@@ -500,12 +520,24 @@ Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
 
 Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
   TVTMDBRoute tvInfo;
+  int tries = 5;
+  dynamic decodeRes;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    var decodeRes = jsonDecode(res.body);
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+
+      decodeRes = jsonDecode(res.body);
+
+      if (decodeRes.containsKey('error')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
     tvInfo = TVTMDBRoute.fromJson(decodeRes);
   } finally {
     client.close();
@@ -550,7 +582,6 @@ Future<SubtitleDownload> downloadExternalSubtitle(
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(response.body);
-    print(response.body);
     sub = SubtitleDownload.fromJson(decodeRes);
   } finally {
     client.close();
