@@ -1879,11 +1879,11 @@ class ReportErrorWidget extends StatelessWidget {
     //     "https://t.me/share/url?url=FlixQuest error&text=${error}\n${meta}";
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: Stack(
-        children: [
-          SizedBox(
-            height: 200,
-            child: Column(
+      child: SizedBox(
+        height: 200,
+        child: Stack(
+          children: [
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -1919,14 +1919,17 @@ class ReportErrorWidget extends StatelessWidget {
                         )),
                   ),
                 ),
+                const Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Text(
+                    currentAppVersion,
+                    style: TextStyle(fontSize: 10),
+                  ),
+                )
               ],
             ),
-          ),
-          const Align(
-            alignment: Alignment.bottomLeft,
-            child: Text(currentAppVersion),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

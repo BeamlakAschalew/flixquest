@@ -23,6 +23,9 @@ class AppDependencyProvider extends ChangeNotifier {
   String _fetchRoute = "tmDB";
   String get fetchRoute => _fetchRoute;
 
+  bool _useExternalSubtitles = false;
+  bool get useExternalSubtitles => _useExternalSubtitles;
+
   Future<void> getConsumetUrl() async {
     consumetUrl = await appDependencies.getConsumetUrl();
   }
@@ -70,6 +73,11 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set fetchRoute(String value) {
     _fetchRoute = value;
+    notifyListeners();
+  }
+
+  set useExternalSubtitles(bool value) {
+    _useExternalSubtitles = value;
     notifyListeners();
   }
 }

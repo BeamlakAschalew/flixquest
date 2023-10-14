@@ -93,12 +93,12 @@ class MovieVideoSources {
   MovieVideoSources(
       {required this.videoLinks,
       required this.videoSubtitles,
-      required this.message});
+      required this.messageExists});
 
   List<MovieVideoLinks>? videoLinks;
   List<MovieVideoSubtitles>? videoSubtitles;
 
-  String? message;
+  bool? messageExists;
 
   MovieVideoSources.fromJson(Map<String, dynamic> json) {
     if (json.containsKey('sources') && json['sources'] != null) {
@@ -114,7 +114,7 @@ class MovieVideoSources {
       });
     }
     if (json.containsKey('message')) {
-      message = json['message'];
+      messageExists = true;
     }
   }
 }

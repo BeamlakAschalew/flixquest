@@ -427,6 +427,7 @@ Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
+    print(res.body);
     tvVideoSources = TVVideoSources.fromJson(decodeRes);
   } finally {
     client.close();
@@ -524,6 +525,7 @@ Future<List<SubtitleData>> getExternalSubtitle(String api, String key) async {
     );
 
     var decodeRes = jsonDecode(res.body);
+
     subData = ExternalSubtitle.fromJson(decodeRes);
   } finally {
     client.close();
@@ -548,6 +550,7 @@ Future<SubtitleDownload> downloadExternalSubtitle(
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(response.body);
+    print(response.body);
     sub = SubtitleDownload.fromJson(decodeRes);
   } finally {
     client.close();

@@ -1,6 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flixquest/functions/function.dart';
+import 'package:startapp_sdk/startapp.dart';
 
+import '../common/update_screen.dart';
 import '/api/endpoints.dart';
 import '/functions/network.dart';
 import '/models/movie_stream.dart';
@@ -46,10 +48,28 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   /// TMDB Route
   MovieInfoTMDBRoute? episode;
 
+  var startAppSdk = StartAppSdk();
+  StartAppInterstitialAd? interstitialAd;
+
   @override
   void initState() {
     super.initState();
+    if (appDep.enableADS) {
+      loadInterstitialAd();
+    }
     loadVideo();
+  }
+
+  void loadInterstitialAd() {
+    startAppSdk.loadInterstitialAd().then((interstitialAd) {
+      setState(() {
+        this.interstitialAd = interstitialAd;
+      });
+    }).onError<StartAppException>((ex, stackTrace) {
+      debugPrint("Error loading Interstitial ad: ${ex.message}");
+    }).onError((error, stackTrace) {
+      debugPrint("Error loading Interstitial ad: $error");
+    });
   }
 
   String processVttFileTimestamps(String vttFile) {
@@ -114,13 +134,13 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                               appDep.streamingServer))
                       .then((value) {
                     if (mounted) {
-                      if (value.message == null &&
+                      if (value.messageExists == null &&
                           value.videoLinks != null &&
                           value.videoLinks!.isNotEmpty) {
                         setState(() {
                           movieVideoSources = value;
                         });
-                      } else if (value.message != null) {
+                      } else if (value.messageExists != null) {
                         Navigator.pop(context);
                         showModalBottomSheet(
                             builder: (context) {
@@ -178,13 +198,13 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                         appDep.streamingServer))
                 .then((value) {
               if (mounted) {
-                if (value.message == null &&
+                if (value.messageExists == null &&
                     value.videoLinks != null &&
                     value.videoLinks!.isNotEmpty) {
                   setState(() {
                     movieVideoSources = value;
                   });
-                } else if (value.message != null) {
+                } else if (value.messageExists != null) {
                   Navigator.pop(context);
                   showModalBottomSheet(
                       builder: (context) {
@@ -274,32 +294,36 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               });
             });
           } else {
-            await fetchSocialLinks(
-              Endpoints.getExternalLinksForMovie(
-                  widget.metadata.elementAt(0), "en"),
-            ).then((value) async {
-              await getExternalSubtitle(
-                      Endpoints.searchExternalMovieSubtitles(value.imdbId!,
-                          supportedLanguages[foundIndex].languageCode),
-                      appDep.opensubtitlesKey)
-                  .then((value) async {
-                if (value.isNotEmpty) {
-                  await downloadExternalSubtitle(
-                          Endpoints.externalSubtitleDownload(),
-                          value[0].attr!.files![0].fileId,
-                          appDep.opensubtitlesKey)
-                      .then((value) async {
-                    subs.addAll({
-                      BetterPlayerSubtitlesSource(
-                          name: supportedLanguages[foundIndex].englishName,
-                          urls: [value.link],
-                          selectedByDefault: true,
-                          type: BetterPlayerSubtitlesSourceType.network)
+            if (appDep.useExternalSubtitles) {
+              await fetchSocialLinks(
+                Endpoints.getExternalLinksForMovie(
+                    widget.metadata.elementAt(0), "en"),
+              ).then((value) async {
+                await getExternalSubtitle(
+                        Endpoints.searchExternalMovieSubtitles(value.imdbId!,
+                            supportedLanguages[foundIndex].languageCode),
+                        appDep.opensubtitlesKey)
+                    .then((value) async {
+                  if (value.isNotEmpty) {
+                    await downloadExternalSubtitle(
+                            Endpoints.externalSubtitleDownload(),
+                            value[0].attr!.files![0].fileId,
+                            appDep.opensubtitlesKey)
+                        .then((value) async {
+                      if (value.link != null) {
+                        subs.addAll({
+                          BetterPlayerSubtitlesSource(
+                              name: supportedLanguages[foundIndex].englishName,
+                              urls: [value.link],
+                              selectedByDefault: true,
+                              type: BetterPlayerSubtitlesSourceType.network)
+                        });
+                      }
                     });
-                  });
-                }
+                  }
+                });
               });
-            });
+            }
           }
         }
       }
@@ -317,20 +341,23 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
       if (movieVideoLinks != null && mounted) {
-        Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) {
-            return PlayerOne(
-                mediaType: MediaType.movie,
-                sources: reversedVids,
-                subs: subs,
-                colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).colorScheme.background
-                ],
-                settings: settings,
-                movieMetadata: widget.metadata);
-          },
-        ));
+        if (interstitialAd != null) {
+          interstitialAd!.show();
+          Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context) {
+              return PlayerOne(
+                  mediaType: MediaType.movie,
+                  sources: reversedVids,
+                  subs: subs,
+                  colors: [
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).colorScheme.background
+                  ],
+                  settings: settings,
+                  movieMetadata: widget.metadata);
+            },
+          ));
+        }
       } else {
         if (mounted) {
           Navigator.pop(context);
@@ -363,36 +390,43 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).colorScheme.onBackground,
-        ),
-        height: 120,
-        width: 180,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/logo.png',
-              height: 65,
-              width: 65,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Theme.of(context).colorScheme.onBackground,
             ),
-            const SizedBox(
-              height: 15,
+            height: 120,
+            width: 180,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/logo.png',
+                  height: 65,
+                  width: 65,
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                const SizedBox(width: 160, child: LinearProgressIndicator()),
+                Visibility(
+                  visible:
+                      settings.defaultSubtitleLanguage != '' ? false : true,
+                  child: Text(
+                    '${loadProgress.toStringAsFixed(0).toString()}%',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.background),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 160, child: LinearProgressIndicator()),
-            Visibility(
-              visible: settings.defaultSubtitleLanguage != '' ? false : true,
-              child: Text(
-                '${loadProgress.toStringAsFixed(0).toString()}%',
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.background),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     ));
   }

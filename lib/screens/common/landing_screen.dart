@@ -35,6 +35,8 @@ class _LandingScreenState extends State<LandingScreen> {
     double deviceHeight = MediaQuery.of(context).size.height;
     double deviceWidth = MediaQuery.of(context).size.width;
 
+    bool anonButtonVisible = true;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -215,83 +217,60 @@ class _LandingScreenState extends State<LandingScreen> {
                         const SizedBox(
                           height: 40,
                         ),
-                        ElevatedButton(
-                            style: ButtonStyle(
-                                minimumSize: MaterialStateProperty.all(
-                                    const Size(150, 50)),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                ),
-                                backgroundColor: MaterialStateProperty.all(
-                                    const Color(0xFFfad2aa))),
-                            onPressed: () async {
-                              await checkConnection().then((value) {
-                                if (value && mounted) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext ctx) {
-                                        return AlertDialog(
-                                          title: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              tr("login_anonymously"),
-                                            ),
-                                          ),
-                                          content: Text(
-                                            tr("login_anon_question"),
-                                          ),
-                                          actions: [
-                                            ElevatedButton(
-                                                onPressed: () async {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text(
-                                                  tr("go_back"),
-                                                )),
-                                            TextButton(
-                                                onPressed: () async {
-                                                  await auth
-                                                      .signInAnonymously()
-                                                      .then((value) {
-                                                    mixpanel.track(
-                                                      'Anonymous Login',
-                                                    );
-                                                    Navigator.push(context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) {
-                                                      return const FlixQuestHomePage();
-                                                    }));
-                                                  });
-                                                },
-                                                child: Text(
-                                                  tr("proceed_anon"),
-                                                  style: const TextStyle(
-                                                      color: Colors.red),
-                                                ))
-                                          ],
-                                        );
-                                      });
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        tr("check_connection"),
-                                        maxLines: 3,
-                                        style: kTextSmallBodyStyle,
-                                      ),
-                                      duration: const Duration(seconds: 3),
+                        Visibility(
+                          visible: anonButtonVisible,
+                          child: ElevatedButton(
+                              style: ButtonStyle(
+                                  minimumSize: MaterialStateProperty.all(
+                                      const Size(150, 50)),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
                                     ),
-                                  );
-                                }
-                              });
-                            },
-                            child: Text(
-                              tr("continue_anonymously"),
-                              style: const TextStyle(color: Colors.black),
-                            )),
+                                  ),
+                                  backgroundColor: MaterialStateProperty.all(
+                                      const Color(0xFFfad2aa))),
+                              onPressed: () async {
+                                await checkConnection().then((value) async {
+                                  if (value && mounted) {
+                                    setState(() {
+                                      anonButtonVisible = false;
+                                    });
+                                    await auth
+                                        .signInAnonymously()
+                                        .then((value) {
+                                      setState(() {
+                                        anonButtonVisible = true;
+                                      });
+                                      mixpanel.track(
+                                        'Anonymous Login',
+                                      );
+
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return const FlixQuestHomePage();
+                                      }));
+                                    });
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          tr("check_connection"),
+                                          maxLines: 3,
+                                          style: kTextSmallBodyStyle,
+                                        ),
+                                        duration: const Duration(seconds: 3),
+                                      ),
+                                    );
+                                  }
+                                });
+                              },
+                              child: Text(
+                                tr("continue_anonymously"),
+                                style: const TextStyle(color: Colors.black),
+                              )),
+                        ),
                       ],
                     ),
                   ),

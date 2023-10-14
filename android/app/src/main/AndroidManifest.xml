@@ -59,16 +59,11 @@
         <provider
             android:name="vn.hunghd.flutterdownloader.DownloadedFileProvider"
             android:authorities="${applicationId}.flutter_downloader.provider"
-            android:authorities="com.startapp.flutter.sdk.${applicationId}"
-            android:name="com.startapp.flutter.sdk.StartAppFlutterHelper"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
-            <meta-data
-                android:name="com.startapp.sdk.SPLASH_ADS_ENABLED"
-                android:value="false" />
         </provider>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
@@ -81,6 +76,14 @@
             <meta-data
             android:name="com.startapp.sdk.RETURN_ADS_ENABLED"
             android:value="false" />
+            <provider
+            android:authorities="com.startapp.flutter.sdk.${applicationId}"
+            android:name="com.startapp.flutter.sdk.StartAppFlutterHelper"
+            android:exported="false">
+            <meta-data
+                android:name="com.startapp.sdk.SPLASH_ADS_ENABLED"
+                android:value="false" />
+    </provider>
         <service
         android:name=".BetterPlayerService"
         android:stopWithTask="false" />
