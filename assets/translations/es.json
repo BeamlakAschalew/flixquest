@@ -234,7 +234,7 @@
     "cast_and_crew": "Reparto y equipo",
     "cast": "Reparto",
     "crew": "Equipo",
-    "share_movie": "¡Mira la película {title}! Tiene una calificación de {rating} sobre 10 https://themoviedb.org/movie/${id}",
+    "share_movie": "¡Mira la película {title}! Tiene una calificación de {rating} sobre 10 https://themoviedb.org/movie/{id}",
     "watch_movie": "Mirar: {movie}",
     "download_movie": "Descargar: {name}",
     "choose_resolution": "Elija resolución:",
@@ -475,5 +475,6 @@
     "cache_doesnt_exist": "El directorio de caché no existe.",
     "error_cache": "Error al borrar la caché: {e}",
     "clear_cache": "Borrar caché",
-    "clear": "Claro"
+    "clear": "Claro",
+    "fetch_all_subs": "Obtener todos los subtítulos que pertenecen a un idioma específico"
 }

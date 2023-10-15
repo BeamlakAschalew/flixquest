@@ -193,21 +193,20 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   ),
                 ],
               ),
-              ListTile(
-                  leading: const Icon(FontAwesomeIcons.expand),
-                  title: Text(
-                    tr("auto_full_screen"),
-                  ),
-                  trailing: Switch(
-                    inactiveThumbColor: Colors.white,
-                    inactiveTrackColor: const Color(0xFF9B9B9B),
-                    value: videoOrientation.defaultViewMode,
-                    onChanged: ((value) {
-                      setState(() {
-                        videoOrientation.defaultViewMode = value;
-                      });
-                    }),
-                  )),
+              SwitchListTile(
+                value: videoOrientation.defaultViewMode,
+                inactiveThumbColor: Colors.white,
+                inactiveTrackColor: const Color(0xFF9B9B9B),
+                secondary: const Icon(FontAwesomeIcons.expand),
+                title: Text(
+                  tr("auto_full_screen"),
+                ),
+                onChanged: ((value) {
+                  setState(() {
+                    videoOrientation.defaultViewMode = value;
+                  });
+                }),
+              ),
               ListTile(
                 leading: const Icon(FontAwesomeIcons.rotateRight),
                 title: Text(
@@ -317,6 +316,18 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 title: Text(
                   tr("subtitle_language"),
                 ),
+              ),
+              SwitchListTile(
+                inactiveThumbColor: Colors.white,
+                inactiveTrackColor: const Color(0xFF9B9B9B),
+                secondary: const Icon(FontAwesomeIcons.language),
+                value: videoOrientation.fetchSpecificLangSubs,
+                title: Text(tr("fetch_all_subs")),
+                onChanged: ((value) {
+                  setState(() {
+                    videoOrientation.fetchSpecificLangSubs = value;
+                  });
+                }),
               )
             ],
           ),

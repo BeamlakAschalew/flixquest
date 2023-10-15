@@ -67,6 +67,9 @@ class SettingsProvider with ChangeNotifier {
   String _appLanguage = 'en';
   String get appLanguage => _appLanguage;
 
+  bool _fetchSpecificLangSubs = false;
+  bool get fetchSpecificLangSubs => _fetchSpecificLangSubs;
+
   // theme change
   Future<void> getCurrentThemeMode() async {
     darktheme = await themeModePreferences.getThemeMode();
@@ -249,6 +252,16 @@ class SettingsProvider with ChangeNotifier {
   set appLanguage(String value) {
     _appLanguage = value;
     appLanguagePreferences.setAppLanguage(value);
+    notifyListeners();
+  }
+
+  Future<void> getSubtitleMode() async {
+    fetchSpecificLangSubs = await videoPlayerPreferences.getSubtitleMode();
+  }
+
+  set fetchSpecificLangSubs(bool value) {
+    _fetchSpecificLangSubs = value;
+    videoPlayerPreferences.setSubtitleMode(value);
     notifyListeners();
   }
 }

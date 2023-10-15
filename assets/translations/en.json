@@ -234,7 +234,7 @@
     "cast_and_crew": "Cast And Crew",
     "cast": "Cast",
     "crew": "Crew",
-    "share_movie": "Checkout the movie {title}!\nIt is rated {rating} out of 10\nhttps://themoviedb.org/movie/${id}",
+    "share_movie": "Checkout the movie {title}!\nIt is rated {rating} out of 10\nhttps://themoviedb.org/movie/{id}",
     "watch_movie": "Watch: {movie}",
     "download_movie": "Download: \"{name}\"",
     "choose_resolution": "Choose resolution:",
@@ -475,5 +475,6 @@
     "cache_doesnt_exist": "Cache directory does not exist.",
     "error_cache": "Error clearing cache: {e}",
     "clear_cache": "Clear cache",
-    "clear": "Clear"
+    "clear": "Clear",
+    "fetch_all_subs": "Fetch all subtitles that belong to a specific language"
 }

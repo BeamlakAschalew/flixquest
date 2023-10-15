@@ -6,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'functions/function.dart';
 import 'provider/recently_watched_provider.dart';
 import 'package:flutter/material.dart';
 import 'provider/settings_provider.dart';
@@ -26,7 +25,6 @@ final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await requestNotificationPermissions();
   await dotenv.load(fileName: ".env");
   await EasyLocalization.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
@@ -43,6 +41,7 @@ Future<void> appInitialize() async {
   await settingsProvider.getMaxBufferDuration();
   await settingsProvider.getVideoResolution();
   await settingsProvider.getSubtitleLanguage();
+  await settingsProvider.getSubtitleMode();
   await settingsProvider.getViewMode();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();

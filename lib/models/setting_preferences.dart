@@ -195,6 +195,17 @@ class VideoPlayerPreferences {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getInt(SUBTITLE_FONT_SIZE) ?? 17;
   }
+
+  static const SUBTITLE_MODE = 'subtitle_mode';
+  setSubtitleMode(bool mode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(SUBTITLE_MODE, mode);
+  }
+
+  Future<bool> getSubtitleMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(SUBTITLE_MODE) ?? false;
+  }
 }
 
 class AppLanguagePreferences {

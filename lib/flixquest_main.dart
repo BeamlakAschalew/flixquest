@@ -68,6 +68,7 @@ class _FlixQuestState extends State<FlixQuest>
       appDependencyProvider.useExternalSubtitles =
           _remoteConfig.getBool('use_external_subtitles');
     }
+    await requestNotificationPermissions();
   }
 
   @override

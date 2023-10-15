@@ -288,7 +288,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           break;
         }
       }
-      if (tvVideoSubs != null) {
+      if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
         if (supportedLanguages[foundIndex].englishName == '') {
           for (int i = 0; i < tvVideoSubs!.length - 1; i++) {
             setState(() {
@@ -316,25 +316,44 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               .where((element) => element.language!
                   .startsWith(supportedLanguages[foundIndex].englishName))
               .isNotEmpty) {
-            await getVttFileAsString(tvVideoSubs!
-                    .where((element) => element.language!
-                        .startsWith(supportedLanguages[foundIndex].englishName))
-                    .first
-                    .url!)
-                .then((value) {
-              print(processVttFileTimestamps(value));
-              subs.addAll({
-                BetterPlayerSubtitlesSource(
-                    name: tvVideoSubs!
-                        .where((element) => element.language!.startsWith(
-                            supportedLanguages[foundIndex].englishName))
-                        .first
-                        .language,
-                    content: processVttFileTimestamps(value),
-                    selectedByDefault: true,
-                    type: BetterPlayerSubtitlesSourceType.memory)
+            if (settings.fetchSpecificLangSubs) {
+              print('THIS CALEDDDDDDDDDDDDDDDDDDDDDDDDDDDDD');
+              for (int i = 0; i < tvVideoSubs!.length; i++) {
+                if (tvVideoSubs![i]
+                    .language!
+                    .startsWith(supportedLanguages[foundIndex].englishName)) {
+                  await getVttFileAsString(tvVideoSubs![i].url!).then((value) {
+                    subs.add(
+                      BetterPlayerSubtitlesSource(
+                          name: tvVideoSubs![i].language,
+                          selectedByDefault: true,
+                          content: processVttFileTimestamps(value),
+                          type: BetterPlayerSubtitlesSourceType.memory),
+                    );
+                  });
+                }
+              }
+            } else {
+              await getVttFileAsString(tvVideoSubs!
+                      .where((element) => element.language!.startsWith(
+                          supportedLanguages[foundIndex].englishName))
+                      .first
+                      .url!)
+                  .then((value) {
+                print(processVttFileTimestamps(value));
+                subs.addAll({
+                  BetterPlayerSubtitlesSource(
+                      name: tvVideoSubs!
+                          .where((element) => element.language!.startsWith(
+                              supportedLanguages[foundIndex].englishName))
+                          .first
+                          .language,
+                      content: processVttFileTimestamps(value),
+                      selectedByDefault: true,
+                      type: BetterPlayerSubtitlesSourceType.memory)
+                });
               });
-            });
+            }
           } else {
             if (appDep.useExternalSubtitles) {
               print("EXTERNAL CALLED");

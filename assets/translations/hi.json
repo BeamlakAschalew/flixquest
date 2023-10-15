@@ -234,7 +234,7 @@
     "cast_and_crew": "कास्ट और क्रू",
     "cast": "कास्ट",
     "crew": "क्रू",
-    "share_movie": "फ़िल्म का {title} देखें!\nइसे 10 में से {rating} दी गई है\nhttps://themoviedb.org/movie/${id}",
+    "share_movie": "फ़िल्म का {title} देखें!\nइसे 10 में से {rating} दी गई है\nhttps://themoviedb.org/movie/{id}",
     "watch_movie": "देखें: {movie}",
     "download_movie": "डाउनलोड करें: \"{name}\"",
     "choose_resolution": "रिज़ॉल्यूशन चुनें:",
@@ -475,5 +475,6 @@
     "cache_doesnt_exist": "कैश निर्देशिका मौजूद नहीं है।",
     "error_cache": "कैश साफ़ करने में त्रुटि: {e}",
     "clear_cache": "कैश साफ़ करें",
-    "clear": "स्पष्ट"
+    "clear": "स्पष्ट",
+    "fetch_all_subs": "किसी विशिष्ट भाषा से संबंधित सभी उपशीर्षक प्राप्त करें"
 }

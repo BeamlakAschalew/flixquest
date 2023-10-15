@@ -234,7 +234,7 @@
 	"cast_and_crew": "طاقم العمل والممثلين",
 	"cast": "طاقم التمثيل",
 	"crew": "طاقم العمل",
-	"share_movie": "شاهد الفيلم {title}!\nتم تقييمه بـ {rated} من أصل 10\nhttps://themoviedb.org/movie/${id}",
+	"share_movie": "شاهد الفيلم {title}!\nتم تقييمه بـ {rated} من أصل 10\nhttps://themoviedb.org/movie/{id}",
 	"watch_movie": "شاهد: {movie}",
 	"download_movie": "name: \"{الاسم}\"",
 	"choose_resolution": "اختر القرار:",
@@ -475,6 +475,7 @@
 	"cache_doesnt_exist": "دليل ذاكرة التخزين المؤقت غير موجود.",
 	"error_cache": "خطأ عند مسح ذاكرة التخزين المؤقت: {e}",
 	"clear_cache": "مسح ذاكرة التخزين المؤقت",
-	"clear": "واضح"
+	"clear": "واضح",
+	"fetch_all_subs": "جلب كافة الترجمات التي تنتمي إلى لغة معينة"
 }
 

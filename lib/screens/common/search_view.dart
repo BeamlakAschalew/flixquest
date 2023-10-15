@@ -105,8 +105,10 @@ class Search extends SearchDelegate<String> {
               FutureBuilder<List<Movie>>(
                 future: Future.delayed(const Duration(seconds: 3))
                     .then((value) async {
-                  mixpanel
-                      .track("Searched query", properties: {"query": query});
+                  if (query.isNotEmpty) {
+                    mixpanel
+                        .track("Searched query", properties: {"query": query});
+                  }
                   return await fetchMovies(
                       Endpoints.movieSearchUrl(query, includeAdult, lang));
                 }),
