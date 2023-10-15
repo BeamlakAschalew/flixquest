@@ -344,12 +344,23 @@ Future<TV> getTV(String api) async {
 
 Future<List<MovieResults>> fetchMoviesForStream(String api) async {
   MovieStream movieStream;
+  int tries = 5;
+  dynamic decodeRes;
+  print(api);
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    var decodeRes = jsonDecode(res.body);
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (!decodeRes['id'].startsWith("http")) {
+        break;
+      } else {
+        --tries;
+      }
+    }
     movieStream = MovieStream.fromJson(decodeRes);
   } finally {
     client.close();
@@ -377,6 +388,7 @@ Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
   MovieVideoSources movieVideoSources;
   int tries = 5;
   dynamic decodeRes;
+  print(api);
   try {
     dynamic res;
     while (tries > 0) {
@@ -400,12 +412,23 @@ Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
 
 Future<List<TVResults>> fetchTVForStream(String api) async {
   TVStream tvStream;
+  int tries = 5;
+  dynamic decodeRes;
+  print(api);
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    var decodeRes = jsonDecode(res.body);
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (!decodeRes['id'].startsWith("http")) {
+        break;
+      } else {
+        --tries;
+      }
+    }
     tvStream = TVStream.fromJson(decodeRes);
   } finally {
     client.close();
@@ -433,6 +456,7 @@ Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
   TVVideoSources tvVideoSources;
   int tries = 5;
   dynamic decodeRes;
+  print(api);
   try {
     dynamic res;
     while (tries > 0) {
@@ -494,6 +518,7 @@ Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
   MovieInfoTMDBRoute movieInfo;
   int tries = 5;
   dynamic decodeRes;
+  print(api);
   try {
     dynamic res;
     while (tries > 0) {
@@ -522,6 +547,7 @@ Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
   TVTMDBRoute tvInfo;
   int tries = 5;
   dynamic decodeRes;
+  print(api);
   try {
     dynamic res;
     while (tries > 0) {

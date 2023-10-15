@@ -59,7 +59,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     loadVideo();
   }
 
-  void loadInterstitialAd() {
+  Future<void> loadInterstitialAd() async {
     startAppSdk.loadInterstitialAd().then((interstitialAd) {
       setState(() {
         this.interstitialAd = interstitialAd;
@@ -342,33 +342,36 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 Endpoints.getExternalLinksForTV(
                     widget.metadata.elementAt(7), "en"),
               ).then((value) async {
-                await getExternalSubtitle(
-                        Endpoints.searchExternalEpisodeSubtitles(
-                            value.imdbId!,
-                            widget.metadata.elementAt(3),
-                            widget.metadata.elementAt(4),
-                            supportedLanguages[foundIndex].languageCode),
-                        appDep.opensubtitlesKey)
-                    .then((value) async {
-                  if (value.isNotEmpty &&
-                      value[0].attr!.files![0].fileId != null) {
-                    await downloadExternalSubtitle(
-                            Endpoints.externalSubtitleDownload(),
-                            value[0].attr!.files![0].fileId!,
-                            appDep.opensubtitlesKey)
-                        .then((value) async {
-                      if (value.link != null) {
-                        subs.addAll({
-                          BetterPlayerSubtitlesSource(
-                              name: supportedLanguages[foundIndex].englishName,
-                              urls: [value.link],
-                              selectedByDefault: true,
-                              type: BetterPlayerSubtitlesSourceType.network)
-                        });
-                      }
-                    });
-                  }
-                });
+                if (value.imdbId != null) {
+                  await getExternalSubtitle(
+                          Endpoints.searchExternalEpisodeSubtitles(
+                              value.imdbId!,
+                              widget.metadata.elementAt(3),
+                              widget.metadata.elementAt(4),
+                              supportedLanguages[foundIndex].languageCode),
+                          appDep.opensubtitlesKey)
+                      .then((value) async {
+                    if (value.isNotEmpty &&
+                        value[0].attr!.files![0].fileId != null) {
+                      await downloadExternalSubtitle(
+                              Endpoints.externalSubtitleDownload(),
+                              value[0].attr!.files![0].fileId!,
+                              appDep.opensubtitlesKey)
+                          .then((value) async {
+                        if (value.link != null) {
+                          subs.addAll({
+                            BetterPlayerSubtitlesSource(
+                                name:
+                                    supportedLanguages[foundIndex].englishName,
+                                urls: [value.link],
+                                selectedByDefault: true,
+                                type: BetterPlayerSubtitlesSourceType.network)
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
               });
             }
           }
@@ -388,20 +391,21 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       if (tvVideoLinks != null && mounted) {
         if (interstitialAd != null) {
           interstitialAd!.show();
-          Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) {
-              return PlayerOne(
-                  mediaType: MediaType.tvShow,
-                  sources: reversedVids,
-                  subs: subs,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.background
-                  ],
-                  settings: settings,
-                  tvMetadata: widget.metadata);
-            },
-          ));
+          loadInterstitialAd().whenComplete(
+              () => Navigator.pushReplacement(context, MaterialPageRoute(
+                    builder: (context) {
+                      return PlayerOne(
+                          mediaType: MediaType.tvShow,
+                          sources: reversedVids,
+                          subs: subs,
+                          colors: [
+                            Theme.of(context).primaryColor,
+                            Theme.of(context).colorScheme.background
+                          ],
+                          settings: settings,
+                          tvMetadata: widget.metadata);
+                    },
+                  )));
         }
       } else {
         if (mounted) {

@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flixquest/functions/function.dart';
 import '/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../controllers/recently_watched_database_controller.dart';
@@ -87,7 +88,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
             includeAdult: includeAdult,
           ),
           // UnityBannerAd(
-          //   placementId: 'Movies_one',
+          //   placementId: 'Banner1',
           //   onLoad: (placementId) => print('Banner loaded: $placementId'),
           //   onClick: (placementId) => print('Banner clicked: $placementId'),
           //   onFailed: (placementId, error, message) =>
@@ -689,25 +690,41 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                         onLongPress: () {
                           prv.deleteMovie(widget.moviesList[index].id!);
                         },
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MovieVideoLoader(
-                                        download: false,
-                                        /* return to fetchRoute instead of hard text*/ route:
-                                            fetchRoute == "flixHQ"
-                                                ? StreamRoute.flixHQ
-                                                : StreamRoute.tmDB,
-                                        metadata: [
-                                          widget.moviesList[index].id,
-                                          widget.moviesList[index].title,
-                                          widget.moviesList[index].posterPath,
-                                          widget.moviesList[index].releaseYear,
-                                          widget.moviesList[index].backdropPath,
-                                          widget.moviesList[index].elapsed
-                                        ],
-                                      )));
+                        onTap: () async {
+                          await checkConnection().then((value) {
+                            value
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MovieVideoLoader(
+                                              download: false,
+                                              /* return to fetchRoute instead of hard text*/ route:
+                                                  fetchRoute == "flixHQ"
+                                                      ? StreamRoute.flixHQ
+                                                      : StreamRoute.tmDB,
+                                              metadata: [
+                                                widget.moviesList[index].id,
+                                                widget.moviesList[index].title,
+                                                widget.moviesList[index]
+                                                    .posterPath,
+                                                widget.moviesList[index]
+                                                    .releaseYear,
+                                                widget.moviesList[index]
+                                                    .backdropPath,
+                                                widget.moviesList[index].elapsed
+                                              ],
+                                            )))
+                                : ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        tr("check_connection"),
+                                        maxLines: 3,
+                                        style: kTextSmallBodyStyle,
+                                      ),
+                                      duration: const Duration(seconds: 3),
+                                    ),
+                                  );
+                          });
                         },
                         child: SizedBox(
                           width: 100,
@@ -1227,28 +1244,79 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
         // user score circle percent indicator
         Expanded(
           flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-            child: Row(
-              children: [
-                CircularPercentIndicator(
-                  radius: 30,
-                  percent: (widget.movie.voteAverage! / 10),
-                  curve: Curves.ease,
-                  animation: true,
-                  animationDuration: 2500,
-                  progressColor: Theme.of(context).colorScheme.primary,
-                  center: Text(
-                    '${widget.movie.voteAverage!.toStringAsFixed(1)}/10',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                // crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircularPercentIndicator(
+                    radius: 30,
+                    percent: (widget.movie.voteAverage! / 10),
+                    curve: Curves.ease,
+                    animation: true,
+                    animationDuration: 2500,
+                    progressColor: Theme.of(context).colorScheme.primary,
+                    center: Text(
+                      '${widget.movie.voteAverage!.toStringAsFixed(1)}/10',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        tr("rating"),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
+        Expanded(
+          flex: 2,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Row(children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                // height: 46,
+                // width: 46,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(width: 4),
-                Expanded(
+                child: Text(
+                  widget.movie.voteCount!.toString(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
-                    tr("rating"),
+                    tr("total_ratings"),
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -1258,79 +1326,45 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ]),
           ),
         ),
 
-        Expanded(
-          flex: 2,
-          child: Row(children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              // height: 46,
-              // width: 46,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                widget.movie.voteCount!.toString(),
-                style: const TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SizedBox(width: 4),
-            Expanded(
-              child: Text(
-                tr("total_ratings"),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ]),
-        ),
-
-        Padding(
-          padding: const EdgeInsets.only(left: 10, right: 8),
-          child: Container(
-            child: ElevatedButton(
-                onPressed: () {
-                  if (isBookmarked == false) {
-                    movieDatabaseController.insertMovie(widget.movie);
-                    if (mounted) {
-                      setState(() {
-                        isBookmarked = true;
-                      });
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10, right: 8),
+            child: Container(
+              child: ElevatedButton(
+                  onPressed: () {
+                    if (isBookmarked == false) {
+                      movieDatabaseController.insertMovie(widget.movie);
+                      if (mounted) {
+                        setState(() {
+                          isBookmarked = true;
+                        });
+                      }
+                    } else if (isBookmarked == true) {
+                      movieDatabaseController.deleteMovie(widget.movie.id!);
+                      if (mounted) {
+                        setState(() {
+                          isBookmarked = false;
+                        });
+                      }
                     }
-                  } else if (isBookmarked == true) {
-                    movieDatabaseController.deleteMovie(widget.movie.id!);
-                    if (mounted) {
-                      setState(() {
-                        isBookmarked = false;
-                      });
-                    }
-                  }
-                },
-                child: Row(
-                  children: [
-                    isBookmarked == false
-                        ? const Icon(Icons.bookmark_add)
-                        : const Icon(Icons.bookmark_remove),
-                    Visibility(
-                        visible: visible,
-                        child: const CircularProgressIndicator())
-                  ],
-                )),
+                  },
+                  child: Row(
+                    children: [
+                      isBookmarked == false
+                          ? const Icon(Icons.bookmark_add)
+                          : const Icon(Icons.bookmark_remove),
+                      Visibility(
+                          visible: visible,
+                          child: const CircularProgressIndicator())
+                    ],
+                  )),
+            ),
           ),
         ),
       ],
@@ -1429,15 +1463,18 @@ class _MovieAboutState extends State<MovieAbout> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                WatchNowButton(
-                  releaseYear: DateTime.parse(widget.movie.releaseDate!).year,
-                  movieId: widget.movie.id!,
-                  movieName: widget.movie.title,
-                  adult: widget.movie.adult,
-                  posterPath: widget.movie.posterPath,
-                  backdropPath: widget.movie.backdropPath,
-                  api: Endpoints.movieDetailsUrl(widget.movie.id!, lang),
-                ),
+                widget.movie.releaseDate!.isNotEmpty
+                    ? WatchNowButton(
+                        releaseYear:
+                            DateTime.parse(widget.movie.releaseDate!).year,
+                        movieId: widget.movie.id!,
+                        movieName: widget.movie.title,
+                        adult: widget.movie.adult,
+                        posterPath: widget.movie.posterPath,
+                        backdropPath: widget.movie.backdropPath,
+                        api: Endpoints.movieDetailsUrl(widget.movie.id!, lang),
+                      )
+                    : Container()
                 // const SizedBox(
                 //   width: 15,
                 // ),
@@ -1539,15 +1576,35 @@ class DownloadMovie extends StatelessWidget {
           Theme.of(context).colorScheme.primary,
         )),
         onPressed: () async {
-          Navigator.push(context, MaterialPageRoute(builder: ((context) {
-            return MovieVideoLoader(
-              download: true,
-              route: fetchRoute == "flixHQ"
-                  ? StreamRoute.flixHQ
-                  : StreamRoute.tmDB,
-              metadata: [movieId, movieName, thumbnail, releaseYear, 0.0],
-            );
-          })));
+          await checkConnection().then((value) {
+            value
+                ? Navigator.push(context,
+                    MaterialPageRoute(builder: ((context) {
+                    return MovieVideoLoader(
+                      download: true,
+                      route: fetchRoute == "flixHQ"
+                          ? StreamRoute.flixHQ
+                          : StreamRoute.tmDB,
+                      metadata: [
+                        movieId,
+                        movieName,
+                        thumbnail,
+                        releaseYear,
+                        0.0
+                      ],
+                    );
+                  })))
+                : ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        tr("check_connection"),
+                        maxLines: 3,
+                        style: kTextSmallBodyStyle,
+                      ),
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+          });
         },
         child: Row(
           children: [
@@ -3104,22 +3161,36 @@ class WatchNowButtonState extends State<WatchNowButton> {
             isVisible = false;
             buttonWidth = 160;
           });
-          Navigator.push(context, MaterialPageRoute(builder: ((context) {
-            return MovieVideoLoader(
-              route: fetchRoute == "flixHQ"
-                  ? StreamRoute.flixHQ
-                  : StreamRoute.tmDB,
-              download: false,
-              metadata: [
-                widget.movieId,
-                widget.movieName,
-                widget.posterPath,
-                widget.releaseYear,
-                widget.backdropPath,
-                elapsed
-              ],
-            );
-          })));
+          await checkConnection().then((value) {
+            value
+                ? Navigator.push(context,
+                    MaterialPageRoute(builder: ((context) {
+                    return MovieVideoLoader(
+                      route: fetchRoute == "flixHQ"
+                          ? StreamRoute.flixHQ
+                          : StreamRoute.tmDB,
+                      download: false,
+                      metadata: [
+                        widget.movieId,
+                        widget.movieName,
+                        widget.posterPath,
+                        widget.releaseYear,
+                        widget.backdropPath,
+                        elapsed
+                      ],
+                    );
+                  })))
+                : ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        tr("check_connection"),
+                        maxLines: 3,
+                        style: kTextSmallBodyStyle,
+                      ),
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+          });
         },
         child: Row(
           children: [

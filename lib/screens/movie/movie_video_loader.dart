@@ -52,13 +52,14 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   @override
   void initState() {
     super.initState();
+
     if (appDep.enableADS) {
       loadInterstitialAd();
     }
     loadVideo();
   }
 
-  void loadInterstitialAd() {
+  Future<void> loadInterstitialAd() async {
     startAppSdk.loadInterstitialAd().then((interstitialAd) {
       setState(() {
         this.interstitialAd = interstitialAd;
@@ -297,30 +298,33 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 Endpoints.getExternalLinksForMovie(
                     widget.metadata.elementAt(0), "en"),
               ).then((value) async {
-                await getExternalSubtitle(
-                        Endpoints.searchExternalMovieSubtitles(value.imdbId!,
-                            supportedLanguages[foundIndex].languageCode),
-                        appDep.opensubtitlesKey)
-                    .then((value) async {
-                  if (value.isNotEmpty &&
-                      value[0].attr!.files![0].fileId != null) {
-                    await downloadExternalSubtitle(
-                            Endpoints.externalSubtitleDownload(),
-                            value[0].attr!.files![0].fileId!,
-                            appDep.opensubtitlesKey)
-                        .then((value) async {
-                      if (value.link != null) {
-                        subs.addAll({
-                          BetterPlayerSubtitlesSource(
-                              name: supportedLanguages[foundIndex].englishName,
-                              urls: [value.link],
-                              selectedByDefault: true,
-                              type: BetterPlayerSubtitlesSourceType.network)
-                        });
-                      }
-                    });
-                  }
-                });
+                if (value.imdbId != null) {
+                  await getExternalSubtitle(
+                          Endpoints.searchExternalMovieSubtitles(value.imdbId!,
+                              supportedLanguages[foundIndex].languageCode),
+                          appDep.opensubtitlesKey)
+                      .then((value) async {
+                    if (value.isNotEmpty &&
+                        value[0].attr!.files![0].fileId != null) {
+                      await downloadExternalSubtitle(
+                              Endpoints.externalSubtitleDownload(),
+                              value[0].attr!.files![0].fileId!,
+                              appDep.opensubtitlesKey)
+                          .then((value) async {
+                        if (value.link != null) {
+                          subs.addAll({
+                            BetterPlayerSubtitlesSource(
+                                name:
+                                    supportedLanguages[foundIndex].englishName,
+                                urls: [value.link],
+                                selectedByDefault: true,
+                                type: BetterPlayerSubtitlesSourceType.network)
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
               });
             }
           }
@@ -342,20 +346,21 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       if (movieVideoLinks != null && mounted) {
         if (interstitialAd != null) {
           interstitialAd!.show();
-          Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) {
-              return PlayerOne(
-                  mediaType: MediaType.movie,
-                  sources: reversedVids,
-                  subs: subs,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.background
-                  ],
-                  settings: settings,
-                  movieMetadata: widget.metadata);
-            },
-          ));
+          loadInterstitialAd().whenComplete(
+              () => Navigator.pushReplacement(context, MaterialPageRoute(
+                    builder: (context) {
+                      return PlayerOne(
+                          mediaType: MediaType.movie,
+                          sources: reversedVids,
+                          subs: subs,
+                          colors: [
+                            Theme.of(context).primaryColor,
+                            Theme.of(context).colorScheme.background
+                          ],
+                          settings: settings,
+                          movieMetadata: widget.metadata);
+                    },
+                  )));
         }
       } else {
         if (mounted) {

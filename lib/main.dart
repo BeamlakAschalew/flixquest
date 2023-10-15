@@ -26,7 +26,7 @@ final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
   WidgetsFlutterBinding.ensureInitialized();
-  requestNotificationPermissions();
+  await requestNotificationPermissions();
   await dotenv.load(fileName: ".env");
   await EasyLocalization.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
@@ -59,7 +59,6 @@ Future<void> appInitialize() async {
 
 void main() async {
   await appInitialize();
-
   runApp(EasyLocalization(
     supportedLocales: Translation.all,
     path: 'assets/translations',

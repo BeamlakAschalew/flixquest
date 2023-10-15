@@ -470,5 +470,10 @@
     "report_telegram": "Informar error al grupo de Telegram",
     "check_connection": "Conéctese a Internet para continuar.",
     "open_external": "Abierta en reproductor externo",
-    "no_channels": "No se encontraron canales :("
+    "no_channels": "No se encontraron canales :(",
+    "cleared_cache": "Caché borrada con éxito.",
+    "cache_doesnt_exist": "El directorio de caché no existe.",
+    "error_cache": "Error al borrar la caché: {e}",
+    "clear_cache": "Borrar caché",
+    "clear": "Claro"
 }

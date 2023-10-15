@@ -473,5 +473,7 @@
     "no_channels": "No channels found :(",
     "cleared_cache": "Cache cleared successfully.",
     "cache_doesnt_exist": "Cache directory does not exist.",
-    "error_cache": "Error clearing cache: {e}"
+    "error_cache": "Error clearing cache: {e}",
+    "clear_cache": "Clear cache",
+    "clear": "Clear"
 }

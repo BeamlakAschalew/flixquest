@@ -32,7 +32,7 @@ dependencies:
   google_nav_bar: ^5.0.6
   firebase_messaging: ^14.6.4
   provider: ^6.0.3
-  permission_handler: ^8.2.6
+  permission_handler: ^11.0.1
   flutter_downloader: ^1.8.3+2
   dio: ^4.0.6
   #web_scraper: ^0.1.4
@@ -60,6 +60,7 @@ dependencies:
   startapp_sdk: ^0.4.2
   #unity_ads_plugin: ^0.3.8
   #modal_bottom_sheet: ^2.1.2
+  flutter_local_notifications: ^13.0.0
 
 dev_dependencies:
   flutter_test:

@@ -25,6 +25,9 @@ class Styles {
           : ThemeData.light().textTheme.apply(
                 fontFamily: 'Poppins',
               ),
+      bottomSheetTheme: BottomSheetThemeData(
+          backgroundColor:
+              isDarkTheme ? Colors.grey.shade900 : Colors.grey.shade400),
       appBarTheme: AppBarTheme(
         backgroundColor: isM3Enabled
             ? isDarkTheme

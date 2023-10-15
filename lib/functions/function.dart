@@ -15,7 +15,7 @@ String episodeSeasonFormatter(int episodeNumber, int seasonNumber) {
 }
 
 Future<void> requestNotificationPermissions() async {
-  final PermissionStatus status = await Permission.notification.request();
+  final PermissionStatus status = await Permission.notification.status;
   if (!status.isGranted && !status.isPermanentlyDenied) {
     Permission.notification.request();
   }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../functions/function.dart';
 import '/models/app_languages.dart';
 import '/screens/common/language_choose.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -555,6 +556,27 @@ class _SettingsState extends State<Settings> {
                   Text(countryName!)
                 ]),
           ),
+          ListTile(
+            leading: Icon(
+              FontAwesomeIcons.eraser,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            title: Text(tr("clear_cache")),
+            trailing: ElevatedButton(
+                onPressed: () async {
+                  await clearCache().then((value) =>
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(value
+                              ? tr("cleared_cache")
+                              : tr("cache_doesnt_exist")))));
+                  await clearTempCache().then((value) =>
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(value
+                              ? tr("cleared_cache")
+                              : tr("cache_doesnt_exist")))));
+                },
+                child: Text(tr("clear"))),
+          )
         ],
       ),
     );

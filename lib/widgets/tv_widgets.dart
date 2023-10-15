@@ -669,27 +669,46 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                               widget.episodesList[index].episodeNum!,
                               widget.episodesList[index].seasonNum!);
                         },
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => TVVideoLoader(
-                                        download: false,
-                                        route: fetchRoute == "flixHQ"
-                                            ? StreamRoute.flixHQ
-                                            : StreamRoute.tmDB,
-                                        metadata: [
-                                          widget.episodesList[index].id,
-                                          widget.episodesList[index].seriesName,
-                                          widget
-                                              .episodesList[index].episodeName,
-                                          widget.episodesList[index].episodeNum,
-                                          widget.episodesList[index].seasonNum,
-                                          widget.episodesList[index].posterPath,
-                                          widget.episodesList[index].elapsed,
-                                          widget.episodesList[index].seriesId,
-                                        ],
-                                      )));
+                        onTap: () async {
+                          await checkConnection().then((value) {
+                            value
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => TVVideoLoader(
+                                              download: false,
+                                              route: fetchRoute == "flixHQ"
+                                                  ? StreamRoute.flixHQ
+                                                  : StreamRoute.tmDB,
+                                              metadata: [
+                                                widget.episodesList[index].id,
+                                                widget.episodesList[index]
+                                                    .seriesName,
+                                                widget.episodesList[index]
+                                                    .episodeName,
+                                                widget.episodesList[index]
+                                                    .episodeNum,
+                                                widget.episodesList[index]
+                                                    .seasonNum,
+                                                widget.episodesList[index]
+                                                    .posterPath,
+                                                widget.episodesList[index]
+                                                    .elapsed,
+                                                widget.episodesList[index]
+                                                    .seriesId,
+                                              ],
+                                            )))
+                                : ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        tr("check_connection"),
+                                        maxLines: 3,
+                                        style: kTextSmallBodyStyle,
+                                      ),
+                                      duration: const Duration(seconds: 3),
+                                    ),
+                                  );
+                          });
                         },
                         child: SizedBox(
                           width: 100,
@@ -5883,16 +5902,19 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    tr("rating"),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      tr("rating"),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -5922,16 +5944,19 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                 ),
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                tr("total_ratings"),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  tr("total_ratings"),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -6452,16 +6477,19 @@ class TVEpisodeOptions extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 4),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    tr("rating"),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      tr("rating"),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),
@@ -6491,16 +6519,19 @@ class TVEpisodeOptions extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                tr("total_ratings"),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  tr("total_ratings"),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -6621,24 +6652,38 @@ class _WatchNowButtonState extends State<WatchNowButton> {
               buttonWidth = 160;
             });
             if (mounted) {
-              Navigator.push(context, MaterialPageRoute(builder: ((context) {
-                return TVVideoLoader(
-                  download: false,
-                  route: fetchRoute == "flixHQ"
-                      ? StreamRoute.flixHQ
-                      : StreamRoute.tmDB,
-                  metadata: [
-                    widget.episodeList.episodeId,
-                    widget.seriesName,
-                    widget.episodeList.name,
-                    widget.episodeList.episodeNumber!,
-                    widget.episodeList.seasonNumber!,
-                    widget.posterPath,
-                    elapsed,
-                    widget.tvId,
-                  ],
-                );
-              })));
+              await checkConnection().then((value) {
+                value
+                    ? Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                        return TVVideoLoader(
+                          download: false,
+                          route: fetchRoute == "flixHQ"
+                              ? StreamRoute.flixHQ
+                              : StreamRoute.tmDB,
+                          metadata: [
+                            widget.episodeList.episodeId,
+                            widget.seriesName,
+                            widget.episodeList.name,
+                            widget.episodeList.episodeNumber!,
+                            widget.episodeList.seasonNumber!,
+                            widget.posterPath,
+                            elapsed,
+                            widget.tvId,
+                          ],
+                        );
+                      })))
+                    : ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            tr("check_connection"),
+                            maxLines: 3,
+                            style: kTextSmallBodyStyle,
+                          ),
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+              });
             }
           }
         },
