@@ -481,4 +481,5 @@ abstract class LocaleKeys {
   static const clear_cache = 'clear_cache';
   static const clear = 'clear';
   static const fetch_all_subs = 'fetch_all_subs';
+  static const video_link_copied = 'video_link_copied';
 }

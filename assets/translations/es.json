@@ -476,5 +476,6 @@
     "error_cache": "Error al borrar la caché: {e}",
     "clear_cache": "Borrar caché",
     "clear": "Claro",
-    "fetch_all_subs": "Obtener todos los subtítulos que pertenecen a un idioma específico"
+    "fetch_all_subs": "Obtener todos los subtítulos que pertenecen a un idioma específico",
+    "video_link_copied": "Enlace del vídeo copiado al portapapeles"
 }

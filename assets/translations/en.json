@@ -476,5 +476,6 @@
     "error_cache": "Error clearing cache: {e}",
     "clear_cache": "Clear cache",
     "clear": "Clear",
-    "fetch_all_subs": "Fetch all subtitles that belong to a specific language"
+    "fetch_all_subs": "Fetch all subtitles that belong to a specific language",
+    "video_link_copied": "Video link copied to clipboard"
 }

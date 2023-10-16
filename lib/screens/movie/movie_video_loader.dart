@@ -373,9 +373,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       if (movieVideoLinks != null && mounted) {
         if (interstitialAd != null) {
           interstitialAd!.show();
-          setState(() {
-            interstitialAd = null;
-          });
           loadInterstitialAd().whenComplete(
               () => Navigator.pushReplacement(context, MaterialPageRoute(
                     builder: (context) {

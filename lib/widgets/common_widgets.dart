@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:clipboard/clipboard.dart';
 import '/provider/app_dependency_provider.dart';
 import '/screens/common/live_tv_screen.dart';
 import '/screens/common/server_status_screen.dart';
@@ -1952,6 +1953,11 @@ class ExternalPlay extends StatelessWidget {
               await launchUrl(Uri.parse(sources.entries.elementAt(i).value),
                   mode: LaunchMode.externalNonBrowserApplication);
             }
+          },
+          onLongPress: () async {
+            FlutterClipboard.copy(sources.entries.elementAt(i).value).then(
+                (value) => ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(tr("video_link_copied")))));
           },
           child: Text(sources.entries.elementAt(i).key)));
     }
