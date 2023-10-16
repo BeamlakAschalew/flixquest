@@ -17,7 +17,7 @@ class AppDependencyProvider extends ChangeNotifier {
   String _streamingServer = STREAMING_SERVER;
   String get streamingServer => _streamingServer;
 
-  bool _enableADS = false;
+  bool _enableADS = true;
   bool get enableADS => _enableADS;
 
   String _fetchRoute = "tmDB";
@@ -25,6 +25,9 @@ class AppDependencyProvider extends ChangeNotifier {
 
   bool _useExternalSubtitles = false;
   bool get useExternalSubtitles => _useExternalSubtitles;
+
+  bool _enableOTTADS = true;
+  bool get enableOTTADS => _enableOTTADS;
 
   Future<void> getConsumetUrl() async {
     consumetUrl = await appDependencies.getConsumetUrl();
@@ -78,6 +81,11 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set useExternalSubtitles(bool value) {
     _useExternalSubtitles = value;
+    notifyListeners();
+  }
+
+  set enableOTTADS(bool value) {
+    _enableOTTADS = value;
     notifyListeners();
   }
 }

@@ -344,22 +344,13 @@ Future<TV> getTV(String api) async {
 
 Future<List<MovieResults>> fetchMoviesForStream(String api) async {
   MovieStream movieStream;
-  int tries = 5;
-  dynamic decodeRes;
   try {
-    dynamic res;
-    while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
-        retryIf: (e) => e is SocketException || e is TimeoutException,
-      );
-      decodeRes = jsonDecode(res.body);
-      if (!decodeRes['id'].startsWith("http")) {
-        break;
-      } else {
-        --tries;
-      }
-    }
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+
     movieStream = MovieStream.fromJson(decodeRes);
   } finally {
     client.close();
@@ -410,22 +401,12 @@ Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
 
 Future<List<TVResults>> fetchTVForStream(String api) async {
   TVStream tvStream;
-  int tries = 5;
-  dynamic decodeRes;
   try {
-    dynamic res;
-    while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
-        retryIf: (e) => e is SocketException || e is TimeoutException,
-      );
-      decodeRes = jsonDecode(res.body);
-      if (!decodeRes['id'].startsWith("http")) {
-        break;
-      } else {
-        --tries;
-      }
-    }
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
     tvStream = TVStream.fromJson(decodeRes);
   } finally {
     client.close();

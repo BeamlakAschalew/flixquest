@@ -67,6 +67,8 @@ class _FlixQuestState extends State<FlixQuest>
       appDependencyProvider.fetchRoute = _remoteConfig.getString('route_v241');
       appDependencyProvider.useExternalSubtitles =
           _remoteConfig.getBool('use_external_subtitles');
+      appDependencyProvider.enableOTTADS =
+          _remoteConfig.getBool('ott_ads_enabled');
     }
     await requestNotificationPermissions();
   }

@@ -221,6 +221,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
 
   late AppDependencyProvider appDep =
       Provider.of<AppDependencyProvider>(context, listen: false);
+  late bool showAD;
 
   void sett() {
     for (int k = 0; k < widget.channel.channelStream!.length; k++) {
@@ -238,7 +239,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
   @override
   void initState() {
     sett();
-    if (appDep.enableADS && shouldShowADS()) {
+    if (appDep.enableADS) {
       loadInterstitialAd();
     }
     super.initState();
@@ -272,6 +273,9 @@ class _ChannelWidgetState extends State<ChannelWidget> {
         InkWell(
           child: GestureDetector(
             onTap: () {
+              setState(() {
+                showAD = shouldShowADS();
+              });
               final mixpanel =
                   Provider.of<SettingsProvider>(context, listen: false)
                       .mixpanel;
@@ -282,7 +286,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
                 'TV Channel name': widget.channel.channelName,
                 'Category': widget.catName,
               });
-              if (interstitialAd != null) {
+              if (interstitialAd != null && showAD) {
                 interstitialAd!.show();
                 loadInterstitialAd().whenComplete(() => Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
@@ -296,6 +300,18 @@ class _ChannelWidgetState extends State<ChannelWidget> {
                         ],
                       );
                     }))));
+              } else {
+                Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                  return LivePlayer(
+                    channelName: widget.channel.channelName!,
+                    sources: reversedVids,
+                    autoFullScreen: autoFS,
+                    colors: [
+                      Theme.of(context).primaryColor,
+                      Theme.of(context).colorScheme.background
+                    ],
+                  );
+                })));
               }
             },
             child: Container(
