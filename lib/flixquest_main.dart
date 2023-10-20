@@ -69,6 +69,10 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getBool('use_external_subtitles');
       appDependencyProvider.enableOTTADS =
           _remoteConfig.getBool('ott_ads_enabled');
+      appDependencyProvider.displayWatchNowButton =
+          _remoteConfig.getBool('enable_stream');
+      appDependencyProvider.displayOTTDrawer =
+          _remoteConfig.getBool('enable_ott');
     }
     await requestNotificationPermissions();
   }

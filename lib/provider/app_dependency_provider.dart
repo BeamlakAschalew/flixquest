@@ -29,6 +29,12 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _enableOTTADS = true;
   bool get enableOTTADS => _enableOTTADS;
 
+  bool _displayWatchNowButton = false;
+  bool get displayWatchNowButton => _displayWatchNowButton;
+
+  bool _displayOTTDrawer = false;
+  bool get displayOTTDrawer => _displayOTTDrawer;
+
   Future<void> getConsumetUrl() async {
     consumetUrl = await appDependencies.getConsumetUrl();
   }
@@ -86,6 +92,16 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set enableOTTADS(bool value) {
     _enableOTTADS = value;
+    notifyListeners();
+  }
+
+  set displayWatchNowButton(bool value) {
+    _displayWatchNowButton = value;
+    notifyListeners();
+  }
+
+  set displayOTTDrawer(bool value) {
+    _displayOTTDrawer = value;
     notifyListeners();
   }
 }
