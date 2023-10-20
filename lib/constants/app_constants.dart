@@ -59,3 +59,11 @@ CacheManager cacheProp() {
 enum MediaType { movie, tvShow }
 
 enum StreamRoute { flixHQ, tmDB }
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
+}
