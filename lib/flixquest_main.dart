@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 //import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
@@ -203,12 +204,22 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
               _scaffoldKey.currentState?.openDrawer();
             },
           ),
-          title: Text(
-            tr("cinemax"),
-            style: TextStyle(
-              fontFamily: 'PoppinsSB',
-              color: Theme.of(context).primaryColor,
-            ),
+          title: Row(
+            children: [
+              SvgPicture.asset(
+                'assets/images/fq_svg.svg',
+                width: 20,
+                height: 20,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              Text(
+                tr("flixquest_appbar"),
+                style: TextStyle(
+                  fontFamily: 'PoppinsSB',
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ],
           ),
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           actions: [

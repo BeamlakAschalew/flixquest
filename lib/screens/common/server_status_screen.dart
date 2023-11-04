@@ -1,4 +1,5 @@
-import '/main.dart';
+import 'package:provider/provider.dart';
+import '../../provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
@@ -18,19 +19,31 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
   bool checking = false;
   String resultMessage = "";
   String waitingMessage = "";
+  String ping = "";
+  DateTime? start;
+  DateTime? end;
+
+  late AppDependencyProvider appDependency =
+      Provider.of<AppDependencyProvider>(context, listen: false);
 
   void checkServer() async {
     setState(() {
       waitingMessage = tr("checking_server");
       resultMessage = "";
+      ping = "";
       movieVideoLinks = null;
       checking = true;
     });
+    setState(() {
+      start = DateTime.now();
+    });
     await getMovieStreamLinksAndSubs(
-            "${appDependencyProvider.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependencyProvider.streamingServer}")
+            "${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServer}")
         .then((value) {
       if (mounted) {
         setState(() {
+          end = DateTime.now();
+          ping = end!.difference(start!).inMilliseconds.toString();
           movieVideoSources = value;
           waitingMessage = tr("server_check_complete");
           checking = false;
@@ -89,11 +102,26 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
                   ),
                   Visibility(
                     visible: !checking,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          checkServer();
-                        },
-                        child: Text(tr("check"))),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          tr("latency", namedArgs: {"l": ping}),
+                          style: const TextStyle(
+                            color: Colors.yellow,
+                            fontSize: 18,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              checkServer();
+                            },
+                            child: Text(tr("check"))),
+                      ],
+                    ),
                   )
                 ],
               ),

@@ -1383,9 +1383,12 @@ class MovieAbout extends StatefulWidget {
 class _MovieAboutState extends State<MovieAbout> {
   bool? isVisible = false;
   double? buttonWidth = 150;
-  AppDependencyProvider appDependencyProvider = AppDependencyProvider();
+  late AppDependencyProvider appDependency =
+      Provider.of<AppDependencyProvider>(context, listen: false);
+
   @override
   Widget build(BuildContext context) {
+    print(appDependency.displayWatchNowButton);
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       // physics: const BouncingScrollPhysics(),
@@ -1464,7 +1467,8 @@ class _MovieAboutState extends State<MovieAbout> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                widget.movie.releaseDate!.isNotEmpty && appDependencyProvider.displayWatchNowButton
+                widget.movie.releaseDate!.isNotEmpty &&
+                        appDependency.displayWatchNowButton
                     ? WatchNowButton(
                         releaseYear:
                             DateTime.parse(widget.movie.releaseDate!).year,
@@ -2321,93 +2325,96 @@ class PartsListState extends State<PartsList> {
                                       child: Hero(
                                         tag:
                                             '${collectionMovieList![index].id}',
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              child: collectionMovieList![index]
-                                                          .posterPath ==
-                                                      null
-                                                  ? Image.asset(
-                                                      'assets/images/na_rect.png',
-                                                      fit: BoxFit.cover,
-                                                    )
-                                                  : CachedNetworkImage(
-                                                      cacheManager: cacheProp(),
-                                                      fadeOutDuration:
-                                                          const Duration(
-                                                              milliseconds:
-                                                                  300),
-                                                      fadeOutCurve:
-                                                          Curves.easeOut,
-                                                      fadeInDuration:
-                                                          const Duration(
-                                                              milliseconds:
-                                                                  700),
-                                                      fadeInCurve:
-                                                          Curves.easeIn,
-                                                      imageUrl:
-                                                          TMDB_BASE_IMAGE_URL +
-                                                              imageQuality +
-                                                              collectionMovieList![
-                                                                      index]
-                                                                  .posterPath!,
-                                                      imageBuilder: (context,
-                                                              imageProvider) =>
-                                                          Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          image:
-                                                              DecorationImage(
-                                                            image:
-                                                                imageProvider,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      placeholder: (context,
-                                                              url) =>
-                                                          scrollingImageShimmer(
-                                                              isDark),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          Image.asset(
+                                        child: Material(
+                                          type: MaterialType.transparency,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                child: collectionMovieList![index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? Image.asset(
                                                         'assets/images/na_rect.png',
                                                         fit: BoxFit.cover,
+                                                      )
+                                                    : CachedNetworkImage(
+                                                        cacheManager: cacheProp(),
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
+                                                                imageQuality +
+                                                                collectionMovieList![
+                                                                        index]
+                                                                    .posterPath!,
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            scrollingImageShimmer(
+                                                                isDark),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                          'assets/images/na_rect.png',
+                                                          fit: BoxFit.cover,
+                                                        ),
                                                       ),
-                                                    ),
-                                            ),
-                                            Positioned(
-                                              top: 0,
-                                              left: 0,
-                                              child: Container(
-                                                margin: const EdgeInsets.all(3),
-                                                alignment: Alignment.topLeft,
-                                                width: 50,
-                                                height: 25,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                    color: isDark
-                                                        ? Colors.black45
-                                                        : Colors.white60),
-                                                child: Row(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons.star,
-                                                    ),
-                                                    Text(collectionMovieList![
-                                                            index]
-                                                        .voteAverage!
-                                                        .toStringAsFixed(1))
-                                                  ],
+                                              ),
+                                              Positioned(
+                                                top: 0,
+                                                left: 0,
+                                                child: Container(
+                                                  margin: const EdgeInsets.all(3),
+                                                  alignment: Alignment.topLeft,
+                                                  width: 50,
+                                                  height: 25,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8),
+                                                      color: isDark
+                                                          ? Colors.black45
+                                                          : Colors.white60),
+                                                  child: Row(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons.star,
+                                                      ),
+                                                      Text(collectionMovieList![
+                                                              index]
+                                                          .voteAverage!
+                                                          .toStringAsFixed(1))
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),

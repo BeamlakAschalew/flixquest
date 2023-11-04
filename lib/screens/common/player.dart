@@ -77,7 +77,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       name: widget.mediaType == MediaType.movie
           ? "${widget.movieMetadata!.elementAt(1)} (${widget.movieMetadata!.elementAt(3)})"
           : "${widget.tvMetadata!.elementAt(1)} | ${widget.tvMetadata!.elementAt(2)} | ${episodeSeasonFormatter(widget.tvMetadata!.elementAt(3), widget.tvMetadata!.elementAt(4))}",
-      backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
+      backgroundColor: Colors.black,
       progressBarBackgroundColor: Colors.white,
       controlBarColor: Colors.black.withOpacity(0.3),
       muteIcon: Icons.volume_off_rounded,

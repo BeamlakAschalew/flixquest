@@ -477,5 +477,7 @@
     "clear_cache": "Borrar caché",
     "clear": "Claro",
     "fetch_all_subs": "Obtener todos los subtítulos que pertenecen a un idioma específico",
-    "video_link_copied": "Enlace del vídeo copiado al portapapeles"
+    "video_link_copied": "Enlace del vídeo copiado al portapapeles",
+    "latency": "Latencia en milisegundos (ms): {l}",
+    "flixquest_appbar": "lixQuest"
 }
