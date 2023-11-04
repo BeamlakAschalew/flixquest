@@ -45,6 +45,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
         Provider.of<AppDependencyProvider>(context).flixQuestLogo;
     final isDark = Provider.of<SettingsProvider>(context).darktheme;
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    AppDependencyProvider appDependencyProvider = AppDependencyProvider();
     return Drawer(
       child: Container(
         color: isDark ? Colors.black : Colors.white,
@@ -79,19 +80,21 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       })));
                     },
                   ),
-                  ListTile(
-                    leading: Icon(
-                      FontAwesomeIcons.tv,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(tr("live_tv")),
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: ((context) {
-                        return const LiveTV();
-                      })));
-                    },
-                  ),
+                  appDependencyProvider.displayOTTDrawer
+                      ? ListTile(
+                          leading: Icon(
+                            FontAwesomeIcons.tv,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          title: Text(tr("live_tv")),
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: ((context) {
+                              return const LiveTV();
+                            })));
+                          },
+                        )
+                      : Container(),
                   // ListTile(
                   //   leading: Icon(
                   //     FontAwesomeIcons.newspaper,

@@ -40,7 +40,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '2.4.2';
+const String currentAppVersion = '2.4.1';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(
@@ -49,7 +49,7 @@ const retryOptions = RetryOptions(
     maxAttempts: 100000);
 const timeOut = Duration(seconds: 15);
 
-final List<String> appNames = ['flixquest-v2.4.0.apk', 'flixquest-v2.4.1.apk', 'flixquest-v2.4.2.apk'];
+final List<String> appNames = ['flixquest-v2.4.0.apk', 'flixquest-v2.4.1.apk'];
 
 CacheManager cacheProp() {
   return CacheManager(
@@ -60,10 +60,11 @@ enum MediaType { movie, tvShow }
 
 enum StreamRoute { flixHQ, tmDB }
 
-class MyHttpOverrides extends HttpOverrides{
+class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext? context){
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

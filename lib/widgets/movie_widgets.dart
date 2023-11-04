@@ -1383,6 +1383,7 @@ class MovieAbout extends StatefulWidget {
 class _MovieAboutState extends State<MovieAbout> {
   bool? isVisible = false;
   double? buttonWidth = 150;
+  AppDependencyProvider appDependencyProvider = AppDependencyProvider();
   @override
   Widget build(BuildContext context) {
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
@@ -1463,7 +1464,7 @@ class _MovieAboutState extends State<MovieAbout> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                widget.movie.releaseDate!.isNotEmpty
+                widget.movie.releaseDate!.isNotEmpty && appDependencyProvider.displayWatchNowButton
                     ? WatchNowButton(
                         releaseYear:
                             DateTime.parse(widget.movie.releaseDate!).year,

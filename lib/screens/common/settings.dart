@@ -566,11 +566,15 @@ class _SettingsState extends State<Settings> {
                 onPressed: () async {
                   await clearCache().then((value) =>
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          duration:
+                              const Duration(seconds: 1, milliseconds: 500),
                           content: Text(value
                               ? tr("cleared_cache")
                               : tr("cache_doesnt_exist")))));
                   await clearTempCache().then((value) =>
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          duration:
+                              const Duration(seconds: 1, milliseconds: 500),
                           content: Text(value
                               ? tr("cleared_cache")
                               : tr("cache_doesnt_exist")))));

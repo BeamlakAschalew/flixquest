@@ -6170,6 +6170,7 @@ class EpisodeAbout extends StatefulWidget {
 }
 
 class _EpisodeAboutState extends State<EpisodeAbout> {
+  AppDependencyProvider appDependencyProvider = AppDependencyProvider();
   @override
   Widget build(BuildContext context) {
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
@@ -6237,12 +6238,14 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
               ],
             ),
             const SizedBox(height: 20),
-            WatchNowButton(
-              episodeList: widget.episodeList,
-              seriesName: widget.seriesName!,
-              tvId: widget.tvId!,
-              posterPath: widget.posterPath!,
-            ),
+            appDependencyProvider.displayWatchNowButton
+                ? WatchNowButton(
+                    episodeList: widget.episodeList,
+                    seriesName: widget.seriesName!,
+                    tvId: widget.tvId!,
+                    posterPath: widget.posterPath!,
+                  )
+                : Container(),
             const SizedBox(height: 15),
             ScrollingTVEpisodeCasts(
               passedFrom: 'episode_detail',
