@@ -26,14 +26,14 @@ class _TVBookmarkState extends State<TVBookmark> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return widget.tvList == null && viewType == 'grid'
-        ? moviesAndTVShowGridShimmer(isDark)
+        ? moviesAndTVShowGridShimmer(themeMode)
         : widget.tvList == null && viewType == 'list'
             ? mainPageVerticalScrollShimmer(
-                isDark: isDark,
+                themeMode: themeMode,
                 scrollController: _scrollController,
                 isLoading: false)
             : widget.tvList!.isEmpty
@@ -139,7 +139,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                         ),
                                                                         placeholder:
                                                                             (context, url) =>
-                                                                                scrollingImageShimmer(isDark),
+                                                                                scrollingImageShimmer(themeMode),
                                                                         errorWidget: (context,
                                                                                 url,
                                                                                 error) =>
@@ -168,7 +168,9 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               8),
-                                                                      color: isDark
+                                                                      color: themeMode == "dark" ||
+                                                                              themeMode ==
+                                                                                  "amoled"
                                                                           ? Colors
                                                                               .black45
                                                                           : Colors
@@ -312,7 +314,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                     ),
                                                                                   ),
                                                                                 ),
-                                                                                placeholder: (context, url) => mainPageVerticalScrollImageShimmer(isDark),
+                                                                                placeholder: (context, url) => mainPageVerticalScrollImageShimmer(themeMode),
                                                                                 errorWidget: (context, url, error) => Image.asset(
                                                                                   'assets/images/na_logo.png',
                                                                                   fit: BoxFit.cover,
@@ -388,7 +390,8 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                         ],
                                                       ),
                                                       Divider(
-                                                        color: !isDark
+                                                        color: themeMode ==
+                                                                "light"
                                                             ? Colors.black54
                                                             : Colors.white54,
                                                         thickness: 1,

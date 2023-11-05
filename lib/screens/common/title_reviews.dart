@@ -61,7 +61,7 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+//     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
 //     return Scaffold(
 //       appBar: AppBar(
 //         title: const Text('Reviews'),
@@ -86,11 +86,11 @@
 //                     itemCount: totalItems!.length,
 //                     itemBuilder: ((context, index) {
 //                       return Container(
-//                         color: !isDark
+//                         color: themeMode == "light"
 //                             ? index.isEven
 //                                 ? Colors.grey.shade300
 //                                 : Colors.grey.shade100
-//                             : isDark
+//                             : themeMode
 //                                 ? index.isEven
 //                                     ? Colors.grey.shade900
 //                                     : Colors.grey.shade800

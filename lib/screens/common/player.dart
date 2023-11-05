@@ -49,6 +49,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   int totalMinutesWatched = 0;
   bool isVideoPaused = false;
 
+  int playbackDurationInSeconds = 0;
+  Timer? _durationTimer;
+  // ignore: unused_field
+  Timer? _resetTimer;
+
   @override
   void initState() {
     super.initState();
@@ -161,6 +166,46 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           .videoPlayerController!.value.duration!.inSeconds;
     });
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
+
+    // _betterPlayerController.addEventsListener((BetterPlayerEvent event) {
+    //   if (event.betterPlayerEventType == BetterPlayerEventType.play ||
+    //       event.betterPlayerEventType == BetterPlayerEventType.bufferingEnd) {
+    //     startDurationTimer();
+    //   } else if (event.betterPlayerEventType == BetterPlayerEventType.pause ||
+    //       event.betterPlayerEventType == BetterPlayerEventType.bufferingStart) {
+    //     pauseDurationTimer();
+    //   } else if (event.betterPlayerEventType ==
+    //       BetterPlayerEventType.finished) {
+    //     resetDurationTimer();
+    //   }
+    // });
+  }
+
+  void startDurationTimer() {
+    if (_durationTimer == null) {
+      _durationTimer =
+          Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+        setState(() {
+          playbackDurationInSeconds++;
+        });
+      });
+
+      _resetTimer = Timer.periodic(const Duration(seconds: 60), (Timer timer) {
+        resetDurationTimer();
+      });
+    }
+  }
+
+  void pauseDurationTimer() {
+    updateAndLogTotalStreamingDuration(playbackDurationInSeconds);
+    _durationTimer?.cancel();
+    _durationTimer = null;
+  }
+
+  void resetDurationTimer() {
+    setState(() {
+      playbackDurationInSeconds = 0;
+    });
   }
 
   Future<void> insertRecentMovieData() async {
@@ -256,6 +301,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    // _resetTimer?.cancel();
     super.dispose();
   }
 

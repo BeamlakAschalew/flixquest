@@ -27,7 +27,7 @@ class _DiscoverPageState extends State<DiscoverPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Column(
       children: [
         Container(
@@ -68,7 +68,9 @@ class _DiscoverPageState extends State<DiscoverPage>
                 ],
               ))
             ],
-            indicatorColor: isDark ? Colors.white : Colors.black,
+            indicatorColor: themeMode == "dark" || themeMode == "amoled"
+                ? Colors.white
+                : Colors.black,
             indicatorWeight: 3,
             //isScrollable: true,
             labelStyle: const TextStyle(

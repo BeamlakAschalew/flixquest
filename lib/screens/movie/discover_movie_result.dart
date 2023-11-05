@@ -71,7 +71,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
@@ -90,11 +90,11 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
         ),
         body: Container(
             child: moviesList == null && viewType == 'grid'
-                ? moviesAndTVShowGridShimmer(isDark)
+                ? moviesAndTVShowGridShimmer(themeMode)
                 : moviesList == null && viewType == 'list'
                     ? Container(
                         child: mainPageVerticalScrollShimmer(
-                            isDark: isDark,
+                            themeMode: themeMode,
                             isLoading: isLoading,
                             scrollController: _scrollController))
                     : moviesList!.isEmpty
@@ -122,12 +122,12 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                                                       _scrollController,
                                                   moviesList: moviesList,
                                                   imageQuality: imageQuality,
-                                                  isDark: isDark)
+                                                  themeMode: themeMode)
                                               : MovieListView(
                                                   scrollController:
                                                       _scrollController,
                                                   moviesList: moviesList,
-                                                  isDark: isDark,
+                                                  themeMode: themeMode,
                                                   imageQuality: imageQuality)),
                                     ],
                                   ),

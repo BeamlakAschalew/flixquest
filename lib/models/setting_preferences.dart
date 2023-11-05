@@ -70,16 +70,16 @@ class Material3Preferences {
 }
 
 class ThemeModePreferences {
-  static const THEME_MODE_STATUS = "themeStatus";
+  static const THEME_MODE_STATUS = "themeStatusV2";
 
-  setThemeMode(bool value) async {
+  setThemeMode(String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool(THEME_MODE_STATUS, value);
+    prefs.setString(THEME_MODE_STATUS, value);
   }
 
-  Future<bool> getThemeMode() async {
+  Future<String> getThemeMode() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(THEME_MODE_STATUS) ?? true;
+    return prefs.getString(THEME_MODE_STATUS) ?? "dark";
   }
 }
 

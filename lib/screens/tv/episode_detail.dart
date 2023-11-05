@@ -1,6 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 
+import 'package:easy_localization/easy_localization.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../models/movie.dart';
 import '../../provider/settings_provider.dart';
 import '/models/tv.dart';
@@ -55,7 +58,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Scaffold(
       body: CustomScrollView(
         controller: scrollController,
@@ -64,8 +67,12 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
             pinned: true,
             elevation: 1,
             forceElevated: true,
-            backgroundColor: isDark ? Colors.black : Colors.white,
-            shadowColor: isDark ? Colors.white : Colors.black,
+            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+                ? Colors.black
+                : Colors.white,
+            shadowColor: themeMode == "dark" || themeMode == "amoled"
+                ? Colors.white
+                : Colors.black,
             leading: SABTN(
               onBack: () {
                 Navigator.pop(context);
@@ -104,6 +111,18 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
           ]))
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            await Share.share(tr("share_episode", namedArgs: {
+              "title": widget.seriesName!,
+              "rating": widget.episodeList.voteAverage!.toStringAsFixed(1),
+              "id": widget.tvId!.toString(),
+              "et": widget.episodeList.name ?? "N/A",
+              "season": widget.episodeList.seasonNumber.toString(),
+              "episode": widget.episodeList.episodeNumber.toString()
+            }));
+          },
+          child: const Icon(FontAwesomeIcons.shareNodes)),
     );
   }
 

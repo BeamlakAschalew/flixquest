@@ -194,10 +194,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
-      backgroundColor:
-          isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
       appBar: AppBar(
         title: Text(tr("signup")),
       ),

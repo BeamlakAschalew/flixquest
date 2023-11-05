@@ -175,7 +175,7 @@
     "enter_word": "Enter a word to search",
     "settings": "Settings",
     "include_adult": "Include explicit results",
-    "dark_mode": "Dark mode",
+    "theme_mode": "Theme mode",
     "android_12": "Works on Android 12+",
     "material_theming": "Material 3 color theming",
     "image_quality": "Image quality",
@@ -367,8 +367,8 @@
     "view_collection": "View the collection",
     "poster_singular": "{poster} Poster",
     "poster_plural": "{poster} Posters",
-    "backdrop_singular": "{backdrop} Poster",
-    "backdrop_plural": "{backdrop} Posters",
+    "backdrop_singular": "{backdrop} Backdrop",
+    "backdrop_plural": "{backdrop} Backdrops",
     "no_video_movie": "This movie doesn't have a video provided",
     "watch_now": "WATCH NOW",
     "movie_info": "Movie info",
@@ -479,5 +479,9 @@
     "fetch_all_subs": "Fetch all subtitles that belong to a specific language",
     "video_link_copied": "Video link copied to clipboard",
     "latency": "Latency in miliseconds (ms): {l}",
-    "flixquest_appbar": "lixQuest"
+    "flixquest_appbar": "lixQuest",
+    "share_episode": "Checkout the TV episode {et} from {title}!\nIt is rated {rating} out of 10\nhttps://themoviedb.org/tv/{id}/season/{season}/episode/{episode}",
+    "dark": "Dark",
+    "light": "Light",
+    "amoled": "AMOLED"
 }

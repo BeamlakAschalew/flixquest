@@ -71,7 +71,7 @@ class MainMoviesListState extends State<MainMoviesList> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
@@ -79,10 +79,10 @@ class MainMoviesListState extends State<MainMoviesList> {
         title: Text(tr("movie_type", namedArgs: {"t": widget.title})),
       ),
       body: moviesList == null && viewType == 'grid'
-          ? moviesAndTVShowGridShimmer(isDark)
+          ? moviesAndTVShowGridShimmer(themeMode)
           : moviesList == null && viewType == 'list'
               ? mainPageVerticalScrollShimmer(
-                  isDark: isDark,
+                  themeMode: themeMode,
                   isLoading: isLoading,
                   scrollController: _scrollController)
               : moviesList!.isEmpty
@@ -102,11 +102,11 @@ class MainMoviesListState extends State<MainMoviesList> {
                                             scrollController: _scrollController,
                                             moviesList: moviesList,
                                             imageQuality: imageQuality,
-                                            isDark: isDark)
+                                            themeMode: themeMode)
                                         : MovieListView(
                                             scrollController: _scrollController,
                                             moviesList: moviesList,
-                                            isDark: isDark,
+                                            themeMode: themeMode,
                                             imageQuality: imageQuality)),
                               ],
                             ),

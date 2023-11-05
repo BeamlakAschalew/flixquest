@@ -1,6 +1,8 @@
 // DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
 
-abstract class  LocaleKeys {
+// ignore_for_file: constant_identifier_names
+
+abstract class LocaleKeys {
   static const popularity_descending = 'popularity_descending';
   static const popularity_ascending = 'popularity_ascending';
   static const average_vote_descending = 'average_vote_descending';
@@ -177,7 +179,7 @@ abstract class  LocaleKeys {
   static const enter_word = 'enter_word';
   static const settings = 'settings';
   static const include_adult = 'include_adult';
-  static const dark_mode = 'dark_mode';
+  static const theme_mode = 'theme_mode';
   static const android_12 = 'android_12';
   static const material_theming = 'material_theming';
   static const image_quality = 'image_quality';
@@ -482,5 +484,8 @@ abstract class  LocaleKeys {
   static const video_link_copied = 'video_link_copied';
   static const latency = 'latency';
   static const flixquest_appbar = 'flixquest_appbar';
-
+  static const share_episode = 'share_episode';
+  static const dark = 'dark';
+  static const light = 'light';
+  static const amoled = 'amoled';
 }

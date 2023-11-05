@@ -401,7 +401,7 @@ class _SyncScreenState extends State<SyncScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
 
     return Scaffold(
@@ -445,7 +445,9 @@ class _SyncScreenState extends State<SyncScreen>
                         ],
                       ))
                     ],
-                    indicatorColor: isDark ? Colors.white : Colors.black,
+                    indicatorColor: themeMode == "dark" || themeMode == "amoled"
+                        ? Colors.white
+                        : Colors.black,
                     indicatorWeight: 3,
                     //isScrollable: true,
                     labelStyle: const TextStyle(
@@ -530,7 +532,7 @@ class _SyncScreenState extends State<SyncScreen>
                                         width: double.infinity,
                                         height: 250,
                                         child: horizontalSyncedMovies(
-                                            imageQuality, isDark)),
+                                            imageQuality, themeMode)),
                                     SizedBox(
                                       width: 220,
                                       child: ElevatedButton(
@@ -678,7 +680,7 @@ class _SyncScreenState extends State<SyncScreen>
                                         width: double.infinity,
                                         height: 250,
                                         child: horizontalSyncedTV(
-                                            imageQuality, isDark)),
+                                            imageQuality, themeMode)),
                                     SizedBox(
                                       width: 270,
                                       child: ElevatedButton(
@@ -767,7 +769,7 @@ class _SyncScreenState extends State<SyncScreen>
     );
   }
 
-  Widget horizontalSyncedTV(String imageQuality, bool isDark) {
+  Widget horizontalSyncedTV(String imageQuality, String themeMode) {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       itemCount: firebaseTvShows.length,
@@ -827,7 +829,7 @@ class _SyncScreenState extends State<SyncScreen>
                                       ),
                                     ),
                                     placeholder: (context, url) =>
-                                        scrollingImageShimmer(isDark),
+                                        scrollingImageShimmer(themeMode),
                                     errorWidget: (context, url, error) =>
                                         Image.asset(
                                       'assets/images/na_rect.png',
@@ -875,7 +877,7 @@ class _SyncScreenState extends State<SyncScreen>
     );
   }
 
-  Widget horizontalSyncedMovies(String imageQuality, bool isDark) {
+  Widget horizontalSyncedMovies(String imageQuality, String themeMode) {
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       itemCount: firebaseMovies.length,
@@ -935,7 +937,7 @@ class _SyncScreenState extends State<SyncScreen>
                                       ),
                                     ),
                                     placeholder: (context, url) =>
-                                        scrollingImageShimmer(isDark),
+                                        scrollingImageShimmer(themeMode),
                                     errorWidget: (context, url, error) =>
                                         Image.asset(
                                       'assets/images/na_rect.png',
@@ -953,7 +955,7 @@ class _SyncScreenState extends State<SyncScreen>
                                 // decoration: BoxDecoration(
                                 //     borderRadius: BorderRadius.circular(8),
                                 //     color:
-                                //         isDark ? Colors.black45 : Colors.white60),
+                                //         themeMode ? Colors.black45 : Colors.white60),
                                 child: IconButton(
                                   onPressed: () {
                                     deleteMovieFromFirebase(index);

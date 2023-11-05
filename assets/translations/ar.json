@@ -175,7 +175,7 @@
 	"enter_word": "أدخل كلمة للبحث",
 	"settings": "الإعدادات",
 	"include_adult": "تضمين نتائج صريحة",
-	"dark_mode": "الوضع الداكن",
+	"theme_mode": "وضع الموضوع",
 	"android_12": "يعمل على Android 12+",
 	"material_theming": "السمات الملونة لـ Material 3",
 	"image_quality": "جودة الصورة",
@@ -367,8 +367,8 @@
 	"view_collection": "عرض المجموعة",
 	"poster_singular": "ملصق {poster}",
 	"poster_plural": "ملصقات {poster}",
-	"backdrop_singular": "ملصق {backdrop}",
-	"backdrop_plural": "ملصقات {backdrop}",
+	"backdrop_singular": "خلفية {backdrop}",
+	"backdrop_plural": "الخلفيات {backdrop}",
 	"no_video_movie": "هذا الفيلم لا يحتوي على مقطع فيديو مُقدم",
 	"watch_now": "اشاهد الآن",
 	"movie_info": "معلومات الفيلم",
@@ -479,6 +479,10 @@
 	"fetch_all_subs": "جلب كافة الترجمات التي تنتمي إلى لغة معينة",
 	"video_link_copied": "تم نسخ رابط الفيديو إلى الحافظة",
 	"latency": "الكمون بالمللي ثانية (مللي ثانية): {l}",
-	"flixquest_appbar": "lixQuest"
+	"flixquest_appbar": "lixQuest",
+	"share_episode": "اطلع على الحلقة التلفزيونية {et} من {title}!\nوحصلت على تقييم {rated} من أصل 10\nhttps://themoviedb.org/tv/{id}/season/{season}/episode/{episode}",
+	"dark": "مظلم",
+    "light": "ضوء",
+    "amoled": "AMOLED"
 }
 

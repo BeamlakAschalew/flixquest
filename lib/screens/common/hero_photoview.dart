@@ -108,7 +108,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     super.dispose();
   }
 
-  void _download(String url, String currentIndex, bool isDark) async {
+  void _download(String url, String currentIndex, String themeMode) async {
     final status = await Permission.storage.request();
     // final status2 = await Permission.accessMediaLocation.request();
 
@@ -131,7 +131,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
             content: Text(
           tr("no_file_premission"),
           style: TextStyle(
-              color: isDark ? Colors.white : Colors.black,
+              color: themeMode == "dark" || themeMode == "amoled"
+                  ? Colors.white
+                  : Colors.black,
               fontFamily: 'PoppinsSB'),
         )),
       );
@@ -140,7 +142,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
@@ -163,7 +165,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                 child: ElevatedButton(
                   onPressed: () async {
                     _download(
-                        widget.heroId, '${widget.currentIndex + 1}', isDark);
+                        widget.heroId, '${widget.currentIndex + 1}', themeMode);
                   },
                   style: ButtonStyle(
                     minimumSize: MaterialStateProperty.all(

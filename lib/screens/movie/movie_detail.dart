@@ -54,7 +54,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
 
     super.build(context);
     return Scaffold(
@@ -64,9 +64,13 @@ class MovieDetailPageState extends State<MovieDetailPage>
           SliverAppBar(
             pinned: true,
             elevation: 1,
-            shadowColor: isDark ? Colors.white : Colors.black,
+            shadowColor: themeMode == "dark" || themeMode == "amoled"
+                ? Colors.white
+                : Colors.black,
             forceElevated: true,
-            backgroundColor: isDark ? Colors.black : Colors.white,
+            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+                ? Colors.black
+                : Colors.white,
             leading: SABTN(
               onBack: () {
                 Navigator.pop(context);

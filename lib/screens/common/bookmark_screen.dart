@@ -70,7 +70,7 @@ class _BookmarkScreenState extends State<BookmarkScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     // print(movieList!.length);
     return Scaffold(
       appBar: AppBar(
@@ -138,7 +138,9 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                   ],
                 ))
               ],
-              indicatorColor: isDark ? Colors.white : Colors.black,
+              indicatorColor: themeMode == "dark" || themeMode == "amoled"
+                  ? Colors.white
+                  : Colors.black,
               indicatorWeight: 3,
               //isScrollable: true,
               labelStyle: const TextStyle(

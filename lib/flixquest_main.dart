@@ -144,7 +144,7 @@ class _FlixQuestState extends State<FlixQuest>
                       debugShowCheckedModeBanner: true,
                       title: tr("cinemax"),
                       theme: Styles.themeData(
-                          isDarkTheme: settingsProvider.darktheme,
+                          appThemeMode: settingsProvider.appTheme,
                           isM3Enabled: settingsProvider.isMaterial3Enabled,
                           lightDynamicColor: lightDynamic,
                           darkDynamicColor: darkDynamic,

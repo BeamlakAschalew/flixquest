@@ -12,14 +12,14 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
     required ScrollController scrollController,
     required this.movieList,
     required this.imageQuality,
-    required this.isDark,
+    required this.themeMode,
   })  : _scrollController = scrollController,
         super(key: key);
 
   final ScrollController _scrollController;
   final List<Movie>? movieList;
   final String imageQuality;
-  final bool isDark;
+  final String themeMode;
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +84,7 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                         ),
                                       ),
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_rect.png',
@@ -102,7 +102,8 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
-                                    color: isDark
+                                    color: themeMode == "dark" ||
+                                            themeMode == "amoled"
                                         ? Colors.black45
                                         : Colors.white60),
                                 child: Row(
@@ -149,14 +150,14 @@ class MovieListView extends StatelessWidget {
     Key? key,
     required ScrollController scrollController,
     required this.moviesList,
-    required this.isDark,
+    required this.themeMode,
     required this.imageQuality,
   })  : _scrollController = scrollController,
         super(key: key);
 
   final ScrollController _scrollController;
   final List<Movie>? moviesList;
-  final bool isDark;
+  final String themeMode;
   final String imageQuality;
 
   @override
@@ -224,7 +225,7 @@ class MovieListView extends StatelessWidget {
                                         ),
                                         placeholder: (context, url) =>
                                             mainPageVerticalScrollImageShimmer(
-                                                isDark),
+                                                themeMode),
                                         errorWidget: (context, url, error) =>
                                             Image.asset(
                                           'assets/images/na_logo.png',
@@ -266,7 +267,9 @@ class MovieListView extends StatelessWidget {
                       ],
                     ),
                     Divider(
-                      color: !isDark ? Colors.black54 : Colors.white54,
+                      color: themeMode == "light"
+                          ? Colors.black54
+                          : Colors.white54,
                       thickness: 1,
                       endIndent: 20,
                       indent: 10,
@@ -286,14 +289,14 @@ class MovieGridView extends StatelessWidget {
     required ScrollController scrollController,
     required this.moviesList,
     required this.imageQuality,
-    required this.isDark,
+    required this.themeMode,
   })  : _scrollController = scrollController,
         super(key: key);
 
   final ScrollController _scrollController;
   final List<Movie>? moviesList;
   final String imageQuality;
-  final bool isDark;
+  final String themeMode;
 
   @override
   Widget build(BuildContext context) {
@@ -356,7 +359,7 @@ class MovieGridView extends StatelessWidget {
                                         ),
                                       ),
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_rect.png',
@@ -374,7 +377,8 @@ class MovieGridView extends StatelessWidget {
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
-                                    color: isDark
+                                    color: themeMode == "dark" ||
+                                            themeMode == "amoled"
                                         ? Colors.black45
                                         : Colors.white60),
                                 child: Row(
@@ -419,14 +423,14 @@ class BookmarkMovieGridView extends StatelessWidget {
     required ScrollController scrollController,
     required this.moviesList,
     required this.imageQuality,
-    required this.isDark,
+    required this.themeMode,
   })  : _scrollController = scrollController,
         super(key: key);
 
   final ScrollController _scrollController;
   final List<Movie>? moviesList;
   final String imageQuality;
-  final bool isDark;
+  final String themeMode;
 
   @override
   Widget build(BuildContext context) {
@@ -489,7 +493,7 @@ class BookmarkMovieGridView extends StatelessWidget {
                                         ),
                                       ),
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_rect.png',
@@ -507,7 +511,8 @@ class BookmarkMovieGridView extends StatelessWidget {
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
-                                    color: isDark
+                                    color: themeMode == "dark" ||
+                                            themeMode == "amoled"
                                         ? Colors.black45
                                         : Colors.white60),
                                 child: Row(

@@ -13,14 +13,14 @@ class HorizontalScrollingTVList extends StatelessWidget {
     required ScrollController scrollController,
     required this.tvList,
     required this.imageQuality,
-    required this.isDark,
+    required this.themeMode,
   })  : _scrollController = scrollController,
         super(key: key);
 
   final ScrollController _scrollController;
   final List<TV>? tvList;
   final String imageQuality;
-  final bool isDark;
+  final String themeMode;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +85,7 @@ class HorizontalScrollingTVList extends StatelessWidget {
                                         ),
                                       ),
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_rect.png',
@@ -103,7 +103,8 @@ class HorizontalScrollingTVList extends StatelessWidget {
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
-                                    color: isDark
+                                    color: themeMode == "dark" ||
+                                            themeMode == "amoled"
                                         ? Colors.black45
                                         : Colors.white60),
                                 child: Row(
@@ -150,14 +151,14 @@ class TVListView extends StatelessWidget {
     Key? key,
     required ScrollController scrollController,
     required this.tvList,
-    required this.isDark,
+    required this.themeMode,
     required this.imageQuality,
   })  : _scrollController = scrollController,
         super(key: key);
 
   final ScrollController _scrollController;
   final List<TV>? tvList;
-  final bool isDark;
+  final String themeMode;
   final String imageQuality;
 
   @override
@@ -225,7 +226,7 @@ class TVListView extends StatelessWidget {
                                         ),
                                         placeholder: (context, url) =>
                                             mainPageVerticalScrollImageShimmer(
-                                                isDark),
+                                                themeMode),
                                         errorWidget: (context, url, error) =>
                                             Image.asset(
                                           'assets/images/na_logo.png',
@@ -267,7 +268,9 @@ class TVListView extends StatelessWidget {
                       ],
                     ),
                     Divider(
-                      color: !isDark ? Colors.black54 : Colors.white54,
+                      color: themeMode == "light"
+                          ? Colors.black54
+                          : Colors.white54,
                       thickness: 1,
                       endIndent: 20,
                       indent: 10,
@@ -286,13 +289,13 @@ class TVGridView extends StatelessWidget {
     Key? key,
     required this.tvList,
     required this.imageQuality,
-    required this.isDark,
+    required this.themeMode,
     required this.scrollController,
   }) : super(key: key);
 
   final List<TV>? tvList;
   final String imageQuality;
-  final bool isDark;
+  final String themeMode;
   final ScrollController scrollController;
 
   @override
@@ -355,7 +358,7 @@ class TVGridView extends StatelessWidget {
                                         ),
                                       ),
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_rect.png',
@@ -373,7 +376,8 @@ class TVGridView extends StatelessWidget {
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
-                                    color: isDark
+                                    color: themeMode == "dark" ||
+                                            themeMode == "amoled"
                                         ? Colors.black45
                                         : Colors.white60),
                                 child: Row(

@@ -175,7 +175,7 @@
     "enter_word": "खोज करने के लिए एक शब्द दर्ज करें",
     "settings": "सेटिंग्स",
     "include_adult": "स्पष्ट परिणाम शामिल करें",
-    "dark_mode": "डार्क मोड",
+    "theme_mode": "थीम मोड",
     "android_12": "Android 12+ पर काम करता है",
     "material_theming": "मटेरियल 3 रंग थीमिंग",
     "image_quality": "छवि की गुणवत्ता",
@@ -367,8 +367,8 @@
     "view_collection": "संग्रह देखें",
     "poster_singular": "{poster} पोस्टर",
     "poster_plural": "{poster} पोस्टर",
-    "backdrop_singular": "{backdrop} पोस्टर",
-    "backdrop_plural": "{backdrop} पोस्टर",
+    "backdrop_singular": "{backdrop} पृष्ठभूमि",
+    "backdrop_plural": "{backdrop} पृष्ठभूमि",
     "no_video_movie": "इस फिल्म में कोई वीडियो उपलब्ध नहीं है",
     "watch_now": "अभी देखें",
     "movie_info": "मूवी जानकारी",
@@ -479,5 +479,9 @@
     "fetch_all_subs": "किसी विशिष्ट भाषा से संबंधित सभी उपशीर्षक प्राप्त करें",
     "video_link_copied": "वीडियो लिंक क्लिपबोर्ड पर कॉपी किया गया",
     "latency": "मिलीसेकंड में विलंबता (एमएस): {एल}",
-    "flixquest_appbar": "lixQuest"
+    "flixquest_appbar": "lixQuest",
+    "share_episode": "{title} से टीवी एपिसोड {et} चेकआउट करें!\nइसे 10 में से {rating} रेटिंग दी गई है\nhttps://themoviedb.org/tv/{id}/season/{season}/episode/{episode}",
+    "dark": "अँधेरा",
+    "light": "रोशनी",
+    "amoled": "AMOLED"
 }

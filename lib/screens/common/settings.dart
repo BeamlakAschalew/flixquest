@@ -340,22 +340,38 @@ class _SettingsState extends State<Settings> {
               });
             },
           ),
-          SwitchListTile(
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: const Color(0xFF9B9B9B),
-            value: themeChange.darktheme,
-            secondary: Icon(
+          ListTile(
+            leading: Icon(
               Icons.dark_mode_rounded,
               color: Theme.of(context).colorScheme.primary,
             ),
             title: Text(
-              tr("dark_mode"),
+              tr("theme_mode"),
             ),
-            onChanged: (bool value) {
-              setState(() {
-                themeChange.darktheme = value;
-              });
-            },
+            trailing: DropdownButton(
+                value: themeChange.appTheme,
+                items: [
+                  DropdownMenuItem(
+                      value: 'dark',
+                      child: Text(
+                        tr("dark"),
+                      )),
+                  DropdownMenuItem(
+                      value: 'light',
+                      child: Text(
+                        tr("light"),
+                      )),
+                  DropdownMenuItem(
+                      value: 'amoled',
+                      child: Text(
+                        tr("amoled"),
+                      ))
+                ],
+                onChanged: (String? value) {
+                  setState(() {
+                    themeChange.appTheme = value!;
+                  });
+                }),
           ),
           ListTile(
             leading: Icon(

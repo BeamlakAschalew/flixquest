@@ -175,7 +175,7 @@
     "enter_word": "Ingresa una palabra para buscar",
     "settings": "Ajustes",
     "include_adult": "Incluir resultados explícitos",
-    "dark_mode": "Modo oscuro",
+    "theme_mode": "Modo temático",
     "android_12": "Funciona en Android 12+",
     "material_theming": "Tematización de color de Material 3",
     "image_quality": "Calidad de la imagen",
@@ -367,8 +367,8 @@
 	"view_collection": "Ver la colección",
 	"poster_singular": "{poster} Póster",
 	"poster_plural": "{poster} Pósters",
-	"backdrop_singular": "{backdrop} Póster",
-	"backdrop_plural": "{backdrop} Pósters",
+	"backdrop_singular": "{backdrop} Fondo",
+	"backdrop_plural": "{backdrop} Fondos",
 	"no_video_movie": "Esta película no tiene un vídeo proporcionado",
 	"watch_now": "VER AHORA",
 	"movie_info": "Información de la película",
@@ -479,5 +479,9 @@
     "fetch_all_subs": "Obtener todos los subtítulos que pertenecen a un idioma específico",
     "video_link_copied": "Enlace del vídeo copiado al portapapeles",
     "latency": "Latencia en milisegundos (ms): {l}",
-    "flixquest_appbar": "lixQuest"
+    "flixquest_appbar": "lixQuest",
+    "share_episode": "¡Mira el episodio de televisión {et} de {title}!\nTiene una calificación de {rating} sobre 10\nhttps://themoviedb.org/tv/{id}/season/{season}/episode/{episode}",
+    "dark": "Oscuro",
+    "light": "Ligero",
+    "amoled": "AMOLED"
 }

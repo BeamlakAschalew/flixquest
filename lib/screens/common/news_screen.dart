@@ -30,7 +30,7 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+//     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
 //     return DefaultTabController(
 //       length: 2,
 //       child: Scaffold(
@@ -123,7 +123,7 @@
 //                     ],
 //                   )),
 //                 ],
-//                 indicatorColor: isDark ? Colors.white : Colors.black,
+//                 indicatorColor: themeMode ? Colors.white : Colors.black,
 //                 indicatorWeight: 3,
 //                 //isScrollable: true,
 //                 labelStyle: const TextStyle(
@@ -243,9 +243,9 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     super.build(context);
-//     final isDark = Provider.of<SettingsProvider>(context).darktheme;
+//     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
 //     return articleNames == null
-//         ? newsShimmer(isDark, scrollController, isLoading)
+//         ? newsShimmer(themeMode, scrollController, isLoading)
 //         : Column(
 //             children: [
 //               Expanded(
@@ -309,7 +309,7 @@
 //                                                 ),
 //                                               ),
 //                                               // placeholder: (context, url) =>
-//                                               //     scrollingImageShimmer(isDark),
+//                                               //     scrollingImageShimmer(themeMode),
 //                                               errorWidget:
 //                                                   (context, url, error) =>
 //                                                       Image.asset(
@@ -342,7 +342,7 @@
 //                               ),
 //                               Divider(
 //                                 color:
-//                                     !isDark ? Colors.black54 : Colors.white54,
+//                                     themeMode == "light" ? Colors.black54 : Colors.white54,
 //                                 thickness: 1,
 //                                 endIndent: 20,
 //                                 indent: 10,

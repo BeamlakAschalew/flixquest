@@ -1,9 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
-
 import '../../constants/app_constants.dart';
-import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -98,10 +95,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
     return Scaffold(
-      backgroundColor:
-          isDark ? const Color(0xFF171717) : const Color(0xFFdedede),
       appBar: AppBar(title: Text(tr('change_password'))),
       body: _emailAddress == null
           ? const Center(

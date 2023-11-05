@@ -20,8 +20,8 @@ class SettingsProvider with ChangeNotifier {
   bool _isMaterial3Enabled = false;
   bool get isMaterial3Enabled => _isMaterial3Enabled;
 
-  bool _darktheme = false;
-  bool get darktheme => _darktheme;
+  String _appTheme = "dark";
+  String get appTheme => _appTheme;
 
   int _defaultValue = 0;
   int get defaultValue => _defaultValue;
@@ -72,11 +72,11 @@ class SettingsProvider with ChangeNotifier {
 
   // theme change
   Future<void> getCurrentThemeMode() async {
-    darktheme = await themeModePreferences.getThemeMode();
+    appTheme = await themeModePreferences.getThemeMode();
   }
 
-  set darktheme(bool value) {
-    _darktheme = value;
+  set appTheme(String value) {
+    _appTheme = value;
     themeModePreferences.setThemeMode(value);
     notifyListeners();
   }

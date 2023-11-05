@@ -69,7 +69,7 @@ class MainTVListState extends State<MainTVList> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
@@ -77,10 +77,10 @@ class MainTVListState extends State<MainTVList> {
         title: Text(tr("genre_tv_title", namedArgs: {"g": widget.title})),
       ),
       body: tvList == null && viewType == 'grid'
-          ? moviesAndTVShowGridShimmer(isDark)
+          ? moviesAndTVShowGridShimmer(themeMode)
           : tvList == null && viewType == 'list'
               ? mainPageVerticalScrollShimmer(
-                  isDark: isDark,
+                  themeMode: themeMode,
                   isLoading: isLoading,
                   scrollController: _scrollController)
               : tvList!.isEmpty
@@ -99,13 +99,13 @@ class MainTVListState extends State<MainTVList> {
                                       ? TVGridView(
                                           tvList: tvList,
                                           imageQuality: imageQuality,
-                                          isDark: isDark,
+                                          themeMode: themeMode,
                                           scrollController: _scrollController,
                                         )
                                       : TVListView(
                                           scrollController: _scrollController,
                                           tvList: tvList,
-                                          isDark: isDark,
+                                          themeMode: themeMode,
                                           imageQuality: imageQuality),
                                 ),
                               ],

@@ -159,7 +159,7 @@ class StreamListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return GestureDetector(
       onTap: () {
         // Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -192,7 +192,9 @@ class StreamListWidget extends StatelessWidget {
             ],
           ),
           Divider(
-            color: isDark ? Colors.white54 : Colors.black54,
+            color: themeMode == "dark" || themeMode == "amoled"
+                ? Colors.white54
+                : Colors.black54,
           )
         ],
       ),

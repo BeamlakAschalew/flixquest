@@ -64,7 +64,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
   Widget build(BuildContext context) {
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
@@ -94,7 +94,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
             width: double.infinity,
             height: 150,
             child: personImages == null
-                ? personImageShimmer(isDark)
+                ? personImageShimmer(themeMode)
                 : personImages!.profile!.isEmpty
                     ? Center(
                         child: Text(tr("no_images_person")),
@@ -163,7 +163,8 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                                 ),
                                               ),
                                               placeholder: (context, url) =>
-                                                  scrollingImageShimmer(isDark),
+                                                  scrollingImageShimmer(
+                                                      themeMode),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
@@ -240,9 +241,9 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
   Widget build(BuildContext context) {
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return uniqueMov == null
-        ? personMoviesAndTVShowShimmer(isDark)
+        ? personMoviesAndTVShowShimmer(themeMode)
         : widget.isPersonAdult == true && widget.includeAdult == false
             ? Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -372,7 +373,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                   placeholder: (context,
                                                                           url) =>
                                                                       scrollingImageShimmer(
-                                                                          isDark),
+                                                                          themeMode),
                                                                   errorWidget: (context,
                                                                           url,
                                                                           error) =>
@@ -400,7 +401,10 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                     BorderRadius
                                                                         .circular(
                                                                             8),
-                                                                color: isDark
+                                                                color: themeMode ==
+                                                                            "dark" ||
+                                                                        themeMode ==
+                                                                            "amoled"
                                                                     ? Colors
                                                                         .black45
                                                                     : Colors
@@ -497,9 +501,9 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
   Widget build(BuildContext context) {
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return uniqueTV == null
-        ? personMoviesAndTVShowShimmer(isDark)
+        ? personMoviesAndTVShowShimmer(themeMode)
         : widget.isPersonAdult == true && widget.includeAdult == false
             ? Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -571,13 +575,16 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                     type: MaterialType
                                                         .transparency,
                                                     child: Stack(
-                                                      alignment: Alignment.center,
+                                                      alignment:
+                                                          Alignment.center,
                                                       children: [
                                                         ClipRRect(
                                                           borderRadius:
                                                               BorderRadius
-                                                                  .circular(8.0),
-                                                          child: uniqueTV![index]
+                                                                  .circular(
+                                                                      8.0),
+                                                          child: uniqueTV![
+                                                                          index]
                                                                       .posterPath ==
                                                                   null
                                                               ? Image.asset(
@@ -625,11 +632,12 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                   placeholder: (context,
                                                                           url) =>
                                                                       scrollingImageShimmer(
-                                                                          isDark),
+                                                                          themeMode),
                                                                   errorWidget: (context,
                                                                           url,
                                                                           error) =>
-                                                                      Image.asset(
+                                                                      Image
+                                                                          .asset(
                                                                     'assets/images/na_rect.png',
                                                                     fit: BoxFit
                                                                         .cover,
@@ -643,8 +651,8 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                             margin:
                                                                 const EdgeInsets
                                                                     .all(3),
-                                                            alignment:
-                                                                Alignment.topLeft,
+                                                            alignment: Alignment
+                                                                .topLeft,
                                                             width: 50,
                                                             height: 25,
                                                             decoration: BoxDecoration(
@@ -652,7 +660,10 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                     BorderRadius
                                                                         .circular(
                                                                             8),
-                                                                color: isDark
+                                                                color: themeMode ==
+                                                                            "dark" ||
+                                                                        themeMode ==
+                                                                            "amoled"
                                                                     ? Colors
                                                                         .black45
                                                                     : Colors
@@ -733,9 +744,9 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return personDetails == null
-        ? personAboutSimmer(isDark)
+        ? personAboutSimmer(themeMode)
         : Column(
             children: [
               Column(
@@ -819,7 +830,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Padding(
       padding: const EdgeInsets.only(top: 10.0),
       child: Container(
@@ -842,7 +853,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
               height: 55,
               width: double.infinity,
               child: externalLinks == null
-                  ? socialMediaShimmer(isDark)
+                  ? socialMediaShimmer(themeMode)
                   : externalLinks?.facebookUsername == null &&
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
@@ -857,7 +868,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                       : Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: isDark
+                            color: themeMode == "dark" || themeMode == "amoled"
                                 ? Colors.transparent
                                 : const Color(0xFFDFDEDE),
                           ),
@@ -942,14 +953,14 @@ class _PersonDataTableState extends State<PersonDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Container(
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: personDetails == null
-              ? personDetailInfoTableShimmer(isDark)
+              ? personDetailInfoTableShimmer(themeMode)
               : DataTable(dataRowMinHeight: 40, columns: [
                   DataColumn(
                       label: personDetails!.deathday != null &&
@@ -1024,7 +1035,7 @@ class CastDetailAbout extends StatefulWidget {
 class _CastDetailAboutState extends State<CastDetailAbout> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
@@ -1051,19 +1062,28 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                       child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                   ],
                   controller: widget.tabController,
@@ -1163,7 +1183,7 @@ class CastDetailQuickInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1200,7 +1220,7 @@ class CastDetailQuickInfo extends StatelessWidget {
                                       cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_rect.png',
@@ -1260,7 +1280,7 @@ class CreatedByQuickInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1297,7 +1317,7 @@ class CreatedByQuickInfo extends StatelessWidget {
                                       cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -1357,7 +1377,7 @@ class CreatedByAbout extends StatefulWidget {
 class _CreatedByAboutState extends State<CreatedByAbout> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
@@ -1384,19 +1404,28 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                       child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                   ],
                   controller: widget.tabController,
@@ -1493,7 +1522,7 @@ class CrewDetailQuickInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1530,7 +1559,7 @@ class CrewDetailQuickInfo extends StatelessWidget {
                                       cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -1598,7 +1627,7 @@ class CrewDetailAbout extends StatefulWidget {
 class _CrewDetailAboutState extends State<CrewDetailAbout> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
@@ -1625,19 +1654,28 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                       child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                   ],
                   controller: widget.tabController,
@@ -1736,7 +1774,7 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1773,7 +1811,7 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
                                       cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -1840,7 +1878,7 @@ class GuestStarDetailAbout extends StatefulWidget {
 class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
@@ -1867,19 +1905,28 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                       child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                   ],
                   controller: widget.tabController,
@@ -1977,7 +2024,7 @@ class SearchedPersonQuickInfo extends StatelessWidget {
   final String imageQuality;
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -2014,7 +2061,7 @@ class SearchedPersonQuickInfo extends StatelessWidget {
                                       cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          scrollingImageShimmer(isDark),
+                                          scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -2081,7 +2128,7 @@ class SearchedPersonAbout extends StatefulWidget {
 class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       child: Container(
@@ -2108,19 +2155,28 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                       child: Text(tr("about"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("movies"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                     Tab(
                       child: Text(tr("tv_shows"),
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isDark ? Colors.white : Colors.black)),
+                              color:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? Colors.white
+                                      : Colors.black)),
                     ),
                   ],
                   controller: widget.tabController,

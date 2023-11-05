@@ -43,12 +43,14 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   Widget build(BuildContext context) {
     final flixquestLogo =
         Provider.of<AppDependencyProvider>(context).flixQuestLogo;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     AppDependencyProvider appDependencyProvider = AppDependencyProvider();
     return Drawer(
       child: Container(
-        color: isDark ? Colors.black : Colors.white,
+        color: themeMode == "dark" || themeMode == "amoled"
+            ? Colors.black
+            : Colors.white,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -59,7 +61,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     width: double.infinity,
                     child: DrawerHeader(
                       decoration: BoxDecoration(
-                          color: isDark ? Colors.white : Colors.black),
+                          color: themeMode == "dark" || themeMode == "amoled"
+                              ? Colors.white
+                              : Colors.black),
                       child: flixquestLogo == 'default'
                           ? Image.asset('assets/images/logo.png')
                           : CachedNetworkImage(
@@ -183,12 +187,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
 }
 
-Widget scrollingMoviesAndTVShimmer(isDark) => Column(
+Widget scrollingMoviesAndTVShimmer(String themeMode) => Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Expanded(
           child: ShimmerBase(
-            isDark: isDark,
+            themeMode: themeMode,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => Padding(
@@ -230,12 +234,12 @@ Widget scrollingMoviesAndTVShimmer(isDark) => Column(
       ],
     );
 
-Widget discoverMoviesAndTVShimmer(isDark) => Column(
+Widget discoverMoviesAndTVShimmer(String themeMode) => Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Expanded(
           child: ShimmerBase(
-            isDark: isDark,
+            themeMode: themeMode,
             child: CarouselSlider.builder(
               options: CarouselOptions(
                 disableCenter: true,
@@ -253,7 +257,7 @@ Widget discoverMoviesAndTVShimmer(isDark) => Column(
           ),
         ),
         ShimmerBase(
-          isDark: isDark,
+          themeMode: themeMode,
           child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.0),
@@ -263,8 +267,8 @@ Widget discoverMoviesAndTVShimmer(isDark) => Column(
       ],
     );
 
-Widget scrollingImageShimmer(isDark) => ShimmerBase(
-    isDark: isDark,
+Widget scrollingImageShimmer(String themeMode) => ShimmerBase(
+    themeMode: themeMode,
     child: Container(
       width: 120.0,
       decoration: BoxDecoration(
@@ -272,8 +276,8 @@ Widget scrollingImageShimmer(isDark) => ShimmerBase(
           color: Colors.grey.shade600),
     ));
 
-Widget discoverImageShimmer(isDark) => ShimmerBase(
-      isDark: isDark,
+Widget discoverImageShimmer(String themeMode) => ShimmerBase(
+      themeMode: themeMode,
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8.0),
@@ -281,8 +285,8 @@ Widget discoverImageShimmer(isDark) => ShimmerBase(
       ),
     );
 
-Widget genreListGridShimmer(isDark) => ShimmerBase(
-      isDark: isDark,
+Widget genreListGridShimmer(String themeMode) => ShimmerBase(
+      themeMode: themeMode,
       child: ListView.builder(
           itemCount: 10,
           scrollDirection: Axis.horizontal,
@@ -300,10 +304,10 @@ Widget genreListGridShimmer(isDark) => ShimmerBase(
           }),
     );
 
-Widget horizontalLoadMoreShimmer(isDark) => Padding(
+Widget horizontalLoadMoreShimmer(String themeMode) => Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: ShimmerBase(
-        isDark: isDark,
+        themeMode: themeMode,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) => Padding(
@@ -345,8 +349,8 @@ Widget horizontalLoadMoreShimmer(isDark) => Padding(
       ),
     );
 
-Widget detailGenreShimmer(isDark) => ShimmerBase(
-      isDark: isDark,
+Widget detailGenreShimmer(String themeMode) => ShimmerBase(
+      themeMode: themeMode,
       child: ListView.builder(
         shrinkWrap: true,
         physics: const BouncingScrollPhysics(),
@@ -365,19 +369,20 @@ Widget detailGenreShimmer(isDark) => ShimmerBase(
             label: Text(
               tr("placeholder"),
             ),
-            backgroundColor:
-                isDark ? const Color(0xFF2b2c30) : const Color(0xFFDFDEDE),
+            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+                ? const Color(0xFF2b2c30)
+                : const Color(0xFFDFDEDE),
           ),
         ),
       ),
     );
 
-Widget detailCastShimmer(isDark) => Column(
+Widget detailCastShimmer(String themeMode) => Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Expanded(
           child: ShimmerBase(
-            isDark: isDark,
+            themeMode: themeMode,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => Padding(
@@ -418,8 +423,8 @@ Widget detailCastShimmer(isDark) => Column(
       ],
     );
 
-Widget detailImageShimmer(isDark) => ShimmerBase(
-      isDark: isDark,
+Widget detailImageShimmer(String themeMode) => ShimmerBase(
+      themeMode: themeMode,
       child: CarouselSlider(
         options: CarouselOptions(
           enableInfiniteScroll: false,
@@ -490,8 +495,8 @@ Widget detailImageShimmer(isDark) => ShimmerBase(
       ),
     );
 
-Widget detailCastImageShimmer(isDark) => ShimmerBase(
-    isDark: isDark,
+Widget detailCastImageShimmer(String themeMode) => ShimmerBase(
+    themeMode: themeMode,
     child: Container(
       width: 75.0,
       decoration: BoxDecoration(
@@ -499,18 +504,18 @@ Widget detailCastImageShimmer(isDark) => ShimmerBase(
           color: Colors.grey.shade600),
     ));
 
-Widget detailImageImageSimmer(isDark) => ShimmerBase(
-    isDark: isDark,
+Widget detailImageImageSimmer(String themeMode) => ShimmerBase(
+    themeMode: themeMode,
     child: Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0),
           color: Colors.grey.shade600),
     ));
 
-Widget detailVideoShimmer(isDark) => SizedBox(
+Widget detailVideoShimmer(String themeMode) => SizedBox(
       width: double.infinity,
       child: ShimmerBase(
-        isDark: isDark,
+        themeMode: themeMode,
         child: CarouselSlider.builder(
           options: CarouselOptions(
             disableCenter: true,
@@ -553,17 +558,19 @@ Widget detailVideoShimmer(isDark) => SizedBox(
       ),
     );
 
-Widget socialMediaShimmer(isDark) => Container(
+Widget socialMediaShimmer(String themeMode) => Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: isDark ? Colors.transparent : const Color(0xFFDFDEDE),
+        color: themeMode == "dark" || themeMode == "amoled"
+            ? Colors.transparent
+            : const Color(0xFFDFDEDE),
       ),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: 3,
           itemBuilder: (BuildContext context, int index) {
             return ShimmerBase(
-              isDark: isDark,
+              themeMode: themeMode,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -579,8 +586,8 @@ Widget socialMediaShimmer(isDark) => Container(
           }),
     );
 
-Widget detailInfoTableItemShimmer(isDark) => ShimmerBase(
-      isDark: isDark,
+Widget detailInfoTableItemShimmer(String themeMode) => ShimmerBase(
+      themeMode: themeMode,
       child: Container(
         color: Colors.grey.shade600,
         height: 15,
@@ -588,47 +595,49 @@ Widget detailInfoTableItemShimmer(isDark) => ShimmerBase(
       ),
     );
 
-Widget detailInfoTableShimmer(isDark) =>
+Widget detailInfoTableShimmer(String themeMode) =>
     DataTable(dataRowMinHeight: 40, columns: [
       // const DataColumn(
       //     label: Text(
       //   'Original Title',
       //   style: TextStyle(overflow: TextOverflow.ellipsis),
       // )),
-      DataColumn(label: detailInfoTableItemShimmer(isDark)),
-      DataColumn(label: detailInfoTableItemShimmer(isDark)),
+      DataColumn(label: detailInfoTableItemShimmer(themeMode)),
+      DataColumn(label: detailInfoTableItemShimmer(themeMode)),
     ], rows: [
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
       ]),
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
       ]),
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
         DataCell(SizedBox(
-            height: 20, width: 200, child: detailInfoTableItemShimmer(isDark))),
+            height: 20,
+            width: 200,
+            child: detailInfoTableItemShimmer(themeMode))),
       ]),
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
       ]),
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
       ]),
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
       ]),
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
         DataCell(SizedBox(
                 height: 20,
                 width: 200,
-                child: detailInfoTableItemShimmer(isDark))
+                child: detailInfoTableItemShimmer(themeMode))
             // movieDetails!.productionCompanies!.isEmpty
             //     ? const Text('-')
             //     : Text(
@@ -636,11 +645,11 @@ Widget detailInfoTableShimmer(isDark) =>
             ),
       ]),
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
         DataCell(SizedBox(
                 height: 20,
                 width: 200,
-                child: detailInfoTableItemShimmer(isDark))
+                child: detailInfoTableItemShimmer(themeMode))
             // movieDetails!.productionCompanies!.isEmpty
             //     ? const Text('-')
             //     : Text(
@@ -649,22 +658,22 @@ Widget detailInfoTableShimmer(isDark) =>
       ]),
     ]);
 
-Widget personDetailInfoTableShimmer(isDark) =>
+Widget personDetailInfoTableShimmer(String themeMode) =>
     DataTable(dataRowMinHeight: 40, columns: [
-      DataColumn(label: detailInfoTableItemShimmer(isDark)),
-      DataColumn(label: detailInfoTableItemShimmer(isDark)),
+      DataColumn(label: detailInfoTableItemShimmer(themeMode)),
+      DataColumn(label: detailInfoTableItemShimmer(themeMode)),
     ], rows: [
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
       ]),
       DataRow(cells: [
-        DataCell(detailInfoTableItemShimmer(isDark)),
-        DataCell(detailInfoTableItemShimmer(isDark)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
+        DataCell(detailInfoTableItemShimmer(themeMode)),
       ]),
     ]);
 
-Widget movieCastAndCrewTabShimmer(isDark) => Container(
+Widget movieCastAndCrewTabShimmer(String themeMode) => Container(
     child: ListView.builder(
         itemCount: 20,
         shrinkWrap: true,
@@ -673,7 +682,7 @@ Widget movieCastAndCrewTabShimmer(isDark) => Container(
         itemBuilder: (BuildContext context, int index) {
           return Container(
             child: ShimmerBase(
-              isDark: isDark,
+              themeMode: themeMode,
               child: Padding(
                 padding: const EdgeInsets.only(
                   top: 0.0,
@@ -720,7 +729,9 @@ Widget movieCastAndCrewTabShimmer(isDark) => Container(
                       ],
                     ),
                     Divider(
-                      color: !isDark ? Colors.black54 : Colors.white54,
+                      color: themeMode == "light"
+                          ? Colors.black54
+                          : Colors.white54,
                       thickness: 1,
                       endIndent: 20,
                       indent: 10,
@@ -733,7 +744,7 @@ Widget movieCastAndCrewTabShimmer(isDark) => Container(
         }));
 
 Widget detailsRecommendationsAndSimilarShimmer(
-        isDark, scrollController, isLoading) =>
+        String themeMode, scrollController, isLoading) =>
     Column(
       children: [
         ListView.builder(
@@ -743,7 +754,7 @@ Widget detailsRecommendationsAndSimilarShimmer(
             itemCount: 10,
             itemBuilder: (BuildContext context, int index) {
               return ShimmerBase(
-                isDark: isDark,
+                themeMode: themeMode,
                 child: Padding(
                   padding: const EdgeInsets.only(
                     top: 0.0,
@@ -802,7 +813,9 @@ Widget detailsRecommendationsAndSimilarShimmer(
                         ],
                       ),
                       Divider(
-                        color: !isDark ? Colors.black54 : Colors.white54,
+                        color: themeMode == "light"
+                            ? Colors.black54
+                            : Colors.white54,
                         thickness: 1,
                         endIndent: 20,
                         indent: 10,
@@ -822,7 +835,7 @@ Widget detailsRecommendationsAndSimilarShimmer(
     );
 
 Widget watchProvidersTabData(
-        {required bool isDark,
+        {required String themeMode,
         required String imageQuality,
         required String noOptionMessage,
         required List? watchOptions}) =>
@@ -877,7 +890,7 @@ Widget watchProvidersTabData(
                                     ),
                                   ),
                                   placeholder: (context, url) =>
-                                      watchProvidersImageShimmer(isDark),
+                                      watchProvidersImageShimmer(themeMode),
                                   errorWidget: (context, url, error) =>
                                       Image.asset(
                                     'assets/images/na_logo.png',
@@ -903,7 +916,7 @@ Widget watchProvidersTabData(
               }),
     );
 
-Widget watchProvidersShimmer(isDark) => Container(
+Widget watchProvidersShimmer(String themeMode) => Container(
       padding: const EdgeInsets.all(8.0),
       child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -915,7 +928,7 @@ Widget watchProvidersShimmer(isDark) => Container(
           itemCount: 6,
           itemBuilder: (BuildContext context, int index) {
             return ShimmerBase(
-              isDark: isDark,
+              themeMode: themeMode,
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
                 child: Column(
@@ -947,8 +960,8 @@ Widget watchProvidersShimmer(isDark) => Container(
           }),
     );
 
-Widget castAndCrewTabImageShimmer(isDark) => ShimmerBase(
-    isDark: isDark,
+Widget castAndCrewTabImageShimmer(String themeMode) => ShimmerBase(
+    themeMode: themeMode,
     child: Container(
       width: 80.0,
       height: 80.0,
@@ -957,8 +970,8 @@ Widget castAndCrewTabImageShimmer(isDark) => ShimmerBase(
           color: Colors.grey.shade600),
     ));
 
-Widget recommendationAndSimilarTabImageShimmer(isDark) => ShimmerBase(
-    isDark: isDark,
+Widget recommendationAndSimilarTabImageShimmer(String themeMode) => ShimmerBase(
+    themeMode: themeMode,
     child: Container(
       width: 85.0,
       height: 130.0,
@@ -967,14 +980,15 @@ Widget recommendationAndSimilarTabImageShimmer(isDark) => ShimmerBase(
           color: Colors.grey.shade600),
     ));
 
-Widget watchProvidersImageShimmer(isDark) => ShimmerBase(
-      isDark: isDark,
+Widget watchProvidersImageShimmer(String themeMode) => ShimmerBase(
+      themeMode: themeMode,
       child: Container(
         color: Colors.grey.shade600,
       ),
     );
 
-Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
+Widget mainPageVerticalScrollShimmer(
+        {required String themeMode, isLoading, scrollController}) =>
     Container(
       child: Column(
         children: [
@@ -991,7 +1005,7 @@ Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
                         itemBuilder: (BuildContext context, int index) {
                           return Container(
                             child: ShimmerBase(
-                              isDark: isDark,
+                              themeMode: themeMode,
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   top: 0.0,
@@ -1057,7 +1071,7 @@ Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
                                       ],
                                     ),
                                     Divider(
-                                      color: !isDark
+                                      color: themeMode == "light"
                                           ? Colors.black54
                                           : Colors.white54,
                                       thickness: 1,
@@ -1085,8 +1099,8 @@ Widget mainPageVerticalScrollShimmer({isDark, isLoading, scrollController}) =>
       ),
     );
 
-Widget mainPageVerticalScrollImageShimmer(isDark) => ShimmerBase(
-    isDark: isDark,
+Widget mainPageVerticalScrollImageShimmer(String themeMode) => ShimmerBase(
+    themeMode: themeMode,
     child: Container(
       width: 85.0,
       height: 130.0,
@@ -1095,12 +1109,12 @@ Widget mainPageVerticalScrollImageShimmer(isDark) => ShimmerBase(
           color: Colors.grey.shade600),
     ));
 
-Widget horizontalScrollingSeasonsList(isDark) => Column(
+Widget horizontalScrollingSeasonsList(themeMode) => Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
         Expanded(
           child: ShimmerBase(
-            isDark: isDark,
+            themeMode: themeMode,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemBuilder: (context, index) => Padding(
@@ -1142,15 +1156,15 @@ Widget horizontalScrollingSeasonsList(isDark) => Column(
       ],
     );
 
-Widget detailVideoImageShimmer(isDark) => ShimmerBase(
-    isDark: isDark,
+Widget detailVideoImageShimmer(String themeMode) => ShimmerBase(
+    themeMode: themeMode,
     child: Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0),
           color: Colors.grey.shade600),
     ));
 
-Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
+Widget tvDetailsSeasonsTabShimmer(String themeMode) => Column(
       children: [
         Expanded(
           child: ListView.builder(
@@ -1158,7 +1172,7 @@ Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
               itemBuilder: (BuildContext context, int index) {
                 return Container(
                   child: ShimmerBase(
-                    isDark: isDark,
+                    themeMode: themeMode,
                     child: Padding(
                       padding: const EdgeInsets.only(
                         top: 0.0,
@@ -1194,7 +1208,9 @@ Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
                             ],
                           ),
                           Divider(
-                            color: !isDark ? Colors.black54 : Colors.white54,
+                            color: themeMode == "light"
+                                ? Colors.black54
+                                : Colors.white54,
                             thickness: 1,
                             endIndent: 20,
                             indent: 10,
@@ -1209,14 +1225,14 @@ Widget tvDetailsSeasonsTabShimmer(isDark) => Column(
       ],
     );
 
-Widget tvCastAndCrewTabShimmer(isDark) => Container(
+Widget tvCastAndCrewTabShimmer(String themeMode) => Container(
     child: ListView.builder(
         itemCount: 10,
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
           return Container(
             child: ShimmerBase(
-              isDark: isDark,
+              themeMode: themeMode,
               child: Padding(
                 padding: const EdgeInsets.only(
                   top: 8.0,
@@ -1271,7 +1287,9 @@ Widget tvCastAndCrewTabShimmer(isDark) => Container(
                       ],
                     ),
                     Divider(
-                      color: !isDark ? Colors.black54 : Colors.white54,
+                      color: themeMode == "light"
+                          ? Colors.black54
+                          : Colors.white54,
                       thickness: 1,
                       endIndent: 20,
                       indent: 10,
@@ -1283,13 +1301,13 @@ Widget tvCastAndCrewTabShimmer(isDark) => Container(
           );
         }));
 
-Widget personMoviesAndTVShowShimmer(isDark) => Column(
+Widget personMoviesAndTVShowShimmer(String themeMode) => Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             ShimmerBase(
-              isDark: isDark,
+              themeMode: themeMode,
               child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Container(
@@ -1307,7 +1325,7 @@ Widget personMoviesAndTVShowShimmer(isDark) => Column(
             children: [
               Expanded(
                 child: ShimmerBase(
-                  isDark: isDark,
+                  themeMode: themeMode,
                   child: GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -1359,13 +1377,13 @@ Widget personMoviesAndTVShowShimmer(isDark) => Column(
       ],
     );
 
-Widget moviesAndTVShowGridShimmer(isDark) => Container(
+Widget moviesAndTVShowGridShimmer(String themeMode) => Container(
       padding: const EdgeInsets.only(top: 8),
       child: Row(
         children: [
           Expanded(
             child: ShimmerBase(
-              isDark: isDark,
+              themeMode: themeMode,
               child: GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -1413,11 +1431,11 @@ Widget moviesAndTVShowGridShimmer(isDark) => Container(
       ),
     );
 
-Widget personImageShimmer(isDark) => Row(
+Widget personImageShimmer(String themeMode) => Row(
       children: [
         Expanded(
           child: ShimmerBase(
-            isDark: isDark,
+            themeMode: themeMode,
             child: ListView.builder(
               physics: const BouncingScrollPhysics(),
               itemCount: 5,
@@ -1448,7 +1466,7 @@ Widget personImageShimmer(isDark) => Row(
       ],
     );
 
-Widget personAboutSimmer(isDark) => Column(
+Widget personAboutSimmer(themeMode) => Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1467,7 +1485,7 @@ Widget personAboutSimmer(isDark) => Column(
           ),
         ),
         ShimmerBase(
-          isDark: isDark,
+          themeMode: themeMode,
           child: Column(
             children: [
               Padding(
@@ -1508,7 +1526,7 @@ Widget personAboutSimmer(isDark) => Column(
       ],
     );
 
-Widget newsShimmer(isDark, scrollController, isLoading) {
+Widget newsShimmer(String themeMode, scrollController, isLoading) {
   return Container(
     child: Column(
       children: [
@@ -1525,7 +1543,7 @@ Widget newsShimmer(isDark, scrollController, isLoading) {
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
                           child: ShimmerBase(
-                            isDark: isDark,
+                            themeMode: themeMode,
                             child: Padding(
                               padding: const EdgeInsets.only(
                                 top: 0.0,
@@ -1585,7 +1603,7 @@ Widget newsShimmer(isDark, scrollController, isLoading) {
                                     ),
                                   ),
                                   Divider(
-                                    color: !isDark
+                                    color: themeMode == "light"
                                         ? Colors.black54
                                         : Colors.white54,
                                     thickness: 1,
@@ -1771,7 +1789,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
       child: Column(
@@ -1791,19 +1809,25 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                     child: Text(tr("buy"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: isDark ? Colors.white : Colors.black)),
+                            color: themeMode == "dark" || themeMode == "amoled"
+                                ? Colors.white
+                                : Colors.black)),
                   ),
                   Tab(
                     child: Text(tr("stream"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: isDark ? Colors.white : Colors.black)),
+                            color: themeMode == "dark" || themeMode == "amoled"
+                                ? Colors.white
+                                : Colors.black)),
                   ),
                   Tab(
                     child: Text(tr("rent"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: isDark ? Colors.white : Colors.black)),
+                            color: themeMode == "dark" || themeMode == "amoled"
+                                ? Colors.white
+                                : Colors.black)),
                   ),
                 ],
               ),
@@ -1811,29 +1835,31 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
           ),
           Expanded(
             child: Container(
-              color: isDark ? Colors.black : Colors.white,
+              color: themeMode == "dark" || themeMode == "amoled"
+                  ? Colors.black
+                  : Colors.white,
               child: TabBarView(
                 controller: tabController,
                 children: watchProviders == null
                     ? [
-                        watchProvidersShimmer(isDark),
-                        watchProvidersShimmer(isDark),
-                        watchProvidersShimmer(isDark),
-                        watchProvidersShimmer(isDark),
+                        watchProvidersShimmer(themeMode),
+                        watchProvidersShimmer(themeMode),
+                        watchProvidersShimmer(themeMode),
+                        watchProvidersShimmer(themeMode),
                       ]
                     : [
                         watchProvidersTabData(
-                            isDark: isDark,
+                            themeMode: themeMode,
                             imageQuality: imageQuality,
                             noOptionMessage: tr("no_buy"),
                             watchOptions: watchProviders!.buy),
                         watchProvidersTabData(
-                            isDark: isDark,
+                            themeMode: themeMode,
                             imageQuality: imageQuality,
                             noOptionMessage: tr("no_stream"),
                             watchOptions: watchProviders!.flatRate),
                         watchProvidersTabData(
-                            isDark: isDark,
+                            themeMode: themeMode,
                             imageQuality: imageQuality,
                             noOptionMessage: tr("no_rent"),
                             watchOptions: watchProviders!.rent),
@@ -1848,18 +1874,21 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
 }
 
 class ShimmerBase extends StatelessWidget {
-  const ShimmerBase({Key? key, required this.child, required this.isDark})
+  const ShimmerBase({Key? key, required this.child, required this.themeMode})
       : super(key: key);
 
   final Widget child;
-  final bool isDark;
+  final String themeMode;
 
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: isDark ? Colors.grey.shade900 : Colors.grey.shade300,
-      highlightColor:
-          isDark ? Colors.grey.shade800.withOpacity(0.1) : Colors.grey.shade200,
+      baseColor: themeMode == "dark" || themeMode == "amoled"
+          ? Colors.grey.shade900
+          : Colors.grey.shade300,
+      highlightColor: themeMode == "dark" || themeMode == "amoled"
+          ? Colors.grey.shade800.withOpacity(0.1)
+          : Colors.grey.shade200,
       child: child,
     );
   }

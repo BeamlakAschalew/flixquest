@@ -86,7 +86,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     }
   }
 
-  void _download(String url, String currentIndex, bool isDark) async {
+  void _download(String url, String currentIndex, String themeMode) async {
     final status = await Permission.storage.request();
     // final status2 = await Permission.accessMediaLocation.request();
 
@@ -112,7 +112,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
             content: Text(
           'File permission isn\'t given to FlixQuest, therefore image couldn\'t be downloaded.',
           style: TextStyle(
-              color: isDark ? Colors.white : Colors.black,
+              color: themeMode == "dark" || themeMode == "amoled"
+                  ? Colors.white
+                  : Colors.black,
               fontFamily: 'PoppinsSB'),
         )),
       );
@@ -146,7 +148,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Scaffold(
       appBar: AppBar(
           title: Text(widget.imageType == 'backdrop'
@@ -170,7 +172,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                                 imageQuality +
                                 widget.stills![currentIndex].stillPath!,
                     '${currentIndex + 1}',
-                    isDark);
+                    themeMode);
               },
               icon: const Icon(FontAwesomeIcons.download),
             )
@@ -227,7 +229,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
             tr("image_index",
                 namedArgs: {"index": (currentIndex + 1).toString()}),
             style: TextStyle(
-              color: isDark ? Colors.white : Colors.black,
+              color: themeMode == "dark" || themeMode == "amoled"
+                  ? Colors.white
+                  : Colors.black,
               fontSize: 17.0,
               decoration: null,
             ),

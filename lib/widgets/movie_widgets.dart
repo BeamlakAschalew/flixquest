@@ -197,7 +197,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     super.build(context);
     deviceHeight = MediaQuery.of(context).size.height;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Column(
       children: <Widget>[
         Row(
@@ -226,7 +226,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
           height: 350,
           // height: deviceHeight * 0.417,
           child: moviesList == null
-              ? discoverMoviesAndTVShimmer(isDark)
+              ? discoverMoviesAndTVShimmer(themeMode)
               : moviesList!.isEmpty
                   ? Center(
                       child: Text(
@@ -282,7 +282,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                     ),
                                   ),
                                   placeholder: (context, url) =>
-                                      discoverImageShimmer(isDark),
+                                      discoverImageShimmer(themeMode),
                                   errorWidget: (context, url, error) =>
                                       Image.asset(
                                     'assets/images/na_logo.png',
@@ -380,7 +380,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
   Widget build(BuildContext context) {
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Column(
       children: <Widget>[
         Row(
@@ -435,7 +435,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
           width: double.infinity,
           height: 250,
           child: moviesList == null || widget.includeAdult == null
-              ? scrollingMoviesAndTVShimmer(isDark)
+              ? scrollingMoviesAndTVShimmer(themeMode)
               : Row(
                   children: [
                     Expanded(
@@ -522,7 +522,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                         placeholder: (context,
                                                                 url) =>
                                                             scrollingImageShimmer(
-                                                                isDark),
+                                                                themeMode),
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
@@ -544,9 +544,12 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8),
-                                                      color: isDark
-                                                          ? Colors.black45
-                                                          : Colors.white60),
+                                                      color:
+                                                          themeMode == "dark" ||
+                                                                  themeMode ==
+                                                                      "amoled"
+                                                              ? Colors.black45
+                                                              : Colors.white60),
                                                   child: Row(
                                                     children: [
                                                       const Icon(
@@ -588,14 +591,14 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                       visible: isLoading,
                       child: SizedBox(
                         width: 110,
-                        child: horizontalLoadMoreShimmer(isDark),
+                        child: horizontalLoadMoreShimmer(themeMode),
                       ),
                     ),
                   ],
                 ),
         ),
         Divider(
-          color: !isDark ? Colors.black54 : Colors.white54,
+          color: themeMode == "light" ? Colors.black54 : Colors.white54,
           thickness: 1,
           endIndent: 20,
           indent: 10,
@@ -623,7 +626,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return Column(
       children: <Widget>[
@@ -776,7 +779,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                 ),
                                                 placeholder: (context, url) =>
                                                     scrollingImageShimmer(
-                                                        isDark),
+                                                        themeMode),
                                                 errorWidget:
                                                     (context, url, error) =>
                                                         Image.asset(
@@ -845,7 +848,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
           ),
         ),
         Divider(
-          color: !isDark ? Colors.black54 : Colors.white54,
+          color: themeMode == "light" ? Colors.black54 : Colors.white54,
           thickness: 1,
           endIndent: 20,
           indent: 10,
@@ -906,7 +909,7 @@ class _SABTNState extends State<SABTN> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 300),
       opacity: 1,
@@ -916,7 +919,9 @@ class _SABTNState extends State<SABTN> {
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50.0),
-              color: isDark ? Colors.black12 : Colors.white38),
+              color: themeMode == "dark" || themeMode == "amoled"
+                  ? Colors.black12
+                  : Colors.white38),
           child: IconButton(
             icon: Icon(
               Icons.arrow_back,
@@ -1012,7 +1017,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final appLang = Provider.of<SettingsProvider>(context).appLanguage;
     return SizedBox(
       height: 310,
@@ -1151,7 +1156,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                                         cacheManager: cacheProp(),
                                         fit: BoxFit.fill,
                                         placeholder: (context, url) =>
-                                            scrollingImageShimmer(isDark),
+                                            scrollingImageShimmer(themeMode),
                                         errorWidget: (context, url, error) =>
                                             Image.asset(
                                           'assets/images/na_logo.png',
@@ -1388,7 +1393,6 @@ class _MovieAboutState extends State<MovieAbout> {
 
   @override
   Widget build(BuildContext context) {
-    print(appDependency.displayWatchNowButton);
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return SingleChildScrollView(
       // physics: const BouncingScrollPhysics(),
@@ -1675,7 +1679,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Column(
       children: <Widget>[
         credits == null
@@ -1771,7 +1775,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
           width: double.infinity,
           height: 160,
           child: credits == null
-              ? detailCastShimmer(isDark)
+              ? detailCastShimmer(themeMode)
               : ListView.builder(
                   physics: const BouncingScrollPhysics(),
                   itemCount: credits!.cast!.length,
@@ -1834,7 +1838,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                                               ),
                                               placeholder: (context, url) =>
                                                   detailCastImageShimmer(
-                                                      isDark),
+                                                      themeMode),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       Image.asset(
@@ -1899,7 +1903,7 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -1922,7 +1926,7 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
               height: 55,
               width: double.infinity,
               child: externalLinks == null
-                  ? socialMediaShimmer(isDark)
+                  ? socialMediaShimmer(themeMode)
                   : externalLinks?.facebookUsername == null &&
                           externalLinks?.instagramUsername == null &&
                           externalLinks?.twitterUsername == null &&
@@ -1936,7 +1940,7 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
                       : Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: isDark
+                            color: themeMode == "dark" || themeMode == "amoled"
                                 ? Colors.transparent
                                 : const Color(0xFFDFDEDE),
                           ),
@@ -2025,10 +2029,10 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return belongsToCollection == null
         ? ShimmerBase(
-            isDark: isDark,
+            themeMode: themeMode,
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: Container(
@@ -2166,11 +2170,11 @@ class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Container(
       child: collectionDetails == null
           ? ShimmerBase(
-              isDark: isDark,
+              themeMode: themeMode,
               child: Column(
                 children: [
                   Padding(
@@ -2218,7 +2222,7 @@ class PartsListState extends State<PartsList> {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Column(
       children: <Widget>[
         Row(
@@ -2250,7 +2254,7 @@ class PartsListState extends State<PartsList> {
                   children: [
                     Expanded(
                       child: ShimmerBase(
-                        isDark: isDark,
+                        themeMode: themeMode,
                         child: ListView.builder(
                           physics: const BouncingScrollPhysics(),
                           itemCount: 3,
@@ -2333,63 +2337,67 @@ class PartsListState extends State<PartsList> {
                                               ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(8.0),
-                                                child: collectionMovieList![index]
-                                                            .posterPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_rect.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        cacheManager: cacheProp(),
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
+                                                child:
+                                                    collectionMovieList![index]
+                                                                .posterPath ==
+                                                            null
+                                                        ? Image.asset(
+                                                            'assets/images/na_rect.png',
+                                                            fit: BoxFit.cover,
+                                                          )
+                                                        : CachedNetworkImage(
+                                                            cacheManager:
+                                                                cacheProp(),
+                                                            fadeOutDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                            fadeOutCurve:
+                                                                Curves.easeOut,
+                                                            fadeInDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        700),
+                                                            fadeInCurve:
+                                                                Curves.easeIn,
+                                                            imageUrl: TMDB_BASE_IMAGE_URL +
                                                                 imageQuality +
                                                                 collectionMovieList![
                                                                         index]
                                                                     .posterPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
+                                                            imageBuilder: (context,
+                                                                    imageProvider) =>
+                                                                Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image:
+                                                                      imageProvider,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            placeholder: (context,
+                                                                    url) =>
+                                                                scrollingImageShimmer(
+                                                                    themeMode),
+                                                            errorWidget:
+                                                                (context, url,
+                                                                        error) =>
+                                                                    Image.asset(
+                                                              'assets/images/na_rect.png',
                                                               fit: BoxFit.cover,
                                                             ),
                                                           ),
-                                                        ),
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            scrollingImageShimmer(
-                                                                isDark),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_rect.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
                                               ),
                                               Positioned(
                                                 top: 0,
                                                 left: 0,
                                                 child: Container(
-                                                  margin: const EdgeInsets.all(3),
+                                                  margin:
+                                                      const EdgeInsets.all(3),
                                                   alignment: Alignment.topLeft,
                                                   width: 50,
                                                   height: 25,
@@ -2397,9 +2405,12 @@ class PartsListState extends State<PartsList> {
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8),
-                                                      color: isDark
-                                                          ? Colors.black45
-                                                          : Colors.white60),
+                                                      color:
+                                                          themeMode == "dark" ||
+                                                                  themeMode ==
+                                                                      "amoled"
+                                                              ? Colors.black45
+                                                              : Colors.white60),
                                                   child: Row(
                                                     children: [
                                                       const Icon(
@@ -2509,7 +2520,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return SizedBox(
       height: 260,
       width: double.infinity,
@@ -2542,7 +2553,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
               width: double.infinity,
               height: 220,
               child: movieImages == null
-                  ? detailImageShimmer(isDark)
+                  ? detailImageShimmer(themeMode)
                   : Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: CarouselSlider(
@@ -2655,7 +2666,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                               placeholder: (context,
                                                                       url) =>
                                                                   detailImageImageSimmer(
-                                                                      isDark),
+                                                                      themeMode),
                                                               errorWidget: (context,
                                                                       url,
                                                                       error) =>
@@ -2801,7 +2812,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                               placeholder: (context,
                                                                       url) =>
                                                                   detailImageImageSimmer(
-                                                                      isDark),
+                                                                      themeMode),
                                                               errorWidget: (context,
                                                                       url,
                                                                       error) =>
@@ -2885,7 +2896,7 @@ class MovieVideosState extends State<MovieVideosDisplay> {
   @override
   Widget build(BuildContext context) {
     bool playButtonVisibility = true;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Column(
       children: [
         movieVideos == null
@@ -2937,7 +2948,7 @@ class MovieVideosState extends State<MovieVideosDisplay> {
             width: double.infinity,
             height: 230,
             child: movieVideos == null
-                ? detailVideoShimmer(isDark)
+                ? detailVideoShimmer(themeMode)
                 : movieVideos!.result!.isEmpty
                     ? SizedBox(
                         width: double.infinity,
@@ -3010,7 +3021,7 @@ class MovieVideosState extends State<MovieVideosDisplay> {
                                                     placeholder: (context,
                                                             url) =>
                                                         detailVideoImageShimmer(
-                                                            isDark),
+                                                            themeMode),
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Image.asset(
@@ -3293,13 +3304,13 @@ class GenreDisplayState extends State<GenreDisplay>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     super.build(context);
     return Container(
         child: genreList == null
             ? SizedBox(
                 height: 80,
-                child: detailGenreShimmer(isDark),
+                child: detailGenreShimmer(themeMode),
               )
             : genreList!.isEmpty
                 ? Container()
@@ -3336,9 +3347,10 @@ class GenreDisplayState extends State<GenreDisplay>
                                 style: const TextStyle(fontFamily: 'Poppins'),
                                 // style: widget.themeData.textTheme.bodyText1,
                               ),
-                              backgroundColor: isDark
-                                  ? const Color(0xFF2b2c30)
-                                  : const Color(0xFFDFDEDE),
+                              backgroundColor:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? const Color(0xFF2b2c30)
+                                      : const Color(0xFFDFDEDE),
                             ),
                           ),
                         );
@@ -3377,7 +3389,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -3400,7 +3412,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: movieDetails == null
-                    ? detailInfoTableShimmer(isDark)
+                    ? detailInfoTableShimmer(themeMode)
                     : DataTable(dataRowMinHeight: 40, columns: [
                         DataColumn(
                             label: Text(
@@ -3585,7 +3597,7 @@ class CastTabState extends State<CastTab>
     with AutomaticKeepAliveClientMixin<CastTab> {
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return widget.credits.cast!.isEmpty
@@ -3667,7 +3679,7 @@ class CastTabState extends State<CastTab>
                                                 ),
                                                 placeholder: (context, url) =>
                                                     castAndCrewTabImageShimmer(
-                                                        isDark),
+                                                        themeMode),
                                                 errorWidget:
                                                     (context, url, error) =>
                                                         Image.asset(
@@ -3739,7 +3751,9 @@ class CastTabState extends State<CastTab>
                               ],
                             ),
                             Divider(
-                              color: !isDark ? Colors.black54 : Colors.white54,
+                              color: themeMode == "light"
+                                  ? Colors.black54
+                                  : Colors.white54,
                               thickness: 1,
                               endIndent: 20,
                               indent: 10,
@@ -3770,7 +3784,7 @@ class CrewTabState extends State<CrewTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return widget.credits.crew!.isEmpty
         ? Center(
@@ -3851,7 +3865,7 @@ class CrewTabState extends State<CrewTab>
                                                 ),
                                                 placeholder: (context, url) =>
                                                     castAndCrewTabImageShimmer(
-                                                        isDark),
+                                                        themeMode),
                                                 errorWidget:
                                                     (context, url, error) =>
                                                         Image.asset(
@@ -3888,7 +3902,9 @@ class CrewTabState extends State<CrewTab>
                               ],
                             ),
                             Divider(
-                              color: !isDark ? Colors.black54 : Colors.white54,
+                              color: themeMode == "light"
+                                  ? Colors.black54
+                                  : Colors.white54,
                               thickness: 1,
                               endIndent: 20,
                               indent: 10,
@@ -3969,7 +3985,7 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
       child: Column(
@@ -4000,7 +4016,7 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
             width: double.infinity,
             height: 250,
             child: movieList == null || widget.includeAdult == null
-                ? scrollingMoviesAndTVShimmer(isDark)
+                ? scrollingMoviesAndTVShimmer(themeMode)
                 : movieList!.isEmpty
                     ? Center(
                         child: Text(
@@ -4015,20 +4031,20 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                                 scrollController: _scrollController,
                                 movieList: movieList,
                                 imageQuality: imageQuality,
-                                isDark: isDark),
+                                themeMode: themeMode),
                           ),
                           Visibility(
                             visible: isLoading,
                             child: SizedBox(
                               width: 110,
-                              child: horizontalLoadMoreShimmer(isDark),
+                              child: horizontalLoadMoreShimmer(themeMode),
                             ),
                           ),
                         ],
                       ),
           ),
           Divider(
-            color: !isDark ? Colors.black54 : Colors.white54,
+            color: themeMode == "light" ? Colors.black54 : Colors.white54,
             thickness: 1,
             endIndent: 20,
             indent: 10,
@@ -4107,7 +4123,7 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     return Container(
       child: Column(
@@ -4140,7 +4156,7 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
             width: double.infinity,
             height: 250,
             child: movieList == null || widget.includeAdult == null
-                ? scrollingMoviesAndTVShimmer(isDark)
+                ? scrollingMoviesAndTVShimmer(themeMode)
                 : movieList!.isEmpty
                     ? Center(
                         child: Text(
@@ -4153,7 +4169,7 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
                           Expanded(
                               child: HorizontalScrollingMoviesList(
                             imageQuality: imageQuality,
-                            isDark: isDark,
+                            themeMode: themeMode,
                             movieList: movieList,
                             scrollController: _scrollController,
                           )),
@@ -4161,7 +4177,7 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
                             visible: isLoading,
                             child: SizedBox(
                               width: 110,
-                              child: horizontalLoadMoreShimmer(isDark),
+                              child: horizontalLoadMoreShimmer(themeMode),
                             ),
                           ),
                         ],
@@ -4238,14 +4254,14 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return moviesList == null && viewType == 'grid'
-        ? moviesAndTVShowGridShimmer(isDark)
+        ? moviesAndTVShowGridShimmer(themeMode)
         : moviesList == null && viewType == 'list'
             ? mainPageVerticalScrollShimmer(
-                isDark: isDark,
+                themeMode: themeMode,
                 isLoading: isLoading,
                 scrollController: _scrollController)
             : moviesList!.isEmpty
@@ -4268,11 +4284,11 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
                                         scrollController: _scrollController,
                                         moviesList: moviesList,
                                         imageQuality: imageQuality,
-                                        isDark: isDark)
+                                        themeMode: themeMode)
                                     : MovieListView(
                                         scrollController: _scrollController,
                                         moviesList: moviesList,
-                                        isDark: isDark,
+                                        themeMode: themeMode,
                                         imageQuality: imageQuality),
                               ),
                             ],
@@ -4354,14 +4370,14 @@ class ParticularStreamingServiceMoviesState
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return moviesList == null && viewType == 'grid'
-        ? moviesAndTVShowGridShimmer(isDark)
+        ? moviesAndTVShowGridShimmer(themeMode)
         : moviesList == null && viewType == 'list'
             ? mainPageVerticalScrollShimmer(
-                isDark: isDark,
+                themeMode: themeMode,
                 isLoading: isLoading,
                 scrollController: _scrollController)
             : moviesList!.isEmpty
@@ -4384,11 +4400,11 @@ class ParticularStreamingServiceMoviesState
                                           scrollController: _scrollController,
                                           moviesList: moviesList,
                                           imageQuality: imageQuality,
-                                          isDark: isDark)
+                                          themeMode: themeMode)
                                       : MovieListView(
                                           scrollController: _scrollController,
                                           moviesList: moviesList,
-                                          isDark: isDark,
+                                          themeMode: themeMode,
                                           imageQuality: imageQuality)),
                             ],
                           ),
@@ -4491,7 +4507,7 @@ class GenreListGridState extends State<GenreListGrid>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Column(
       children: [
         Row(
@@ -4521,7 +4537,7 @@ class GenreListGridState extends State<GenreListGrid>
             width: double.infinity,
             height: 80,
             child: genreList == null
-                ? genreListGridShimmer(isDark)
+                ? genreListGridShimmer(themeMode)
                 : Row(
                     children: [
                       Expanded(
@@ -4807,7 +4823,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
   @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isDark = Provider.of<SettingsProvider>(context).darktheme;
+    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return moviesList == null
         ? const Center(
             child: CircularProgressIndicator(),
@@ -4884,7 +4900,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                                   ),
                                                   placeholder: (context, url) =>
                                                       scrollingImageShimmer(
-                                                          isDark),
+                                                          themeMode),
                                                   errorWidget:
                                                       (context, url, error) =>
                                                           Image.asset(
