@@ -8,6 +8,7 @@ class AppDependencies {
   static const FLIXQUEST_LOGO_URL = "flixquestLogoUrl";
   static const OPENSUBTITLES_KEY = "opensubtitlesKey";
   static const STREAM_SERVER = "vidcloud";
+  static const SHOWBOX_URL = "showbox_url";
 
   setConsumetUrl(String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -51,5 +52,15 @@ class AppDependencies {
 
   Future<bool> enableAD(bool enable) async {
     return enable;
+  }
+
+  Future<String> getShowboxUrl() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(SHOWBOX_URL) ?? "";
+  }
+
+  setShowboxUrl(String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(SHOWBOX_URL, value);
   }
 }

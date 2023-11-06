@@ -59,6 +59,7 @@ Future<void> appInitialize() async {
   await settingsProvider.getForegroundSubtitleColor();
   await settingsProvider.getBackgroundSubtitleColor();
   await settingsProvider.getAppLanguage();
+  await settingsProvider.getVideoSource();
   await _initialization;
 }
 

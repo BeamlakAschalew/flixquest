@@ -18,13 +18,10 @@ class PlayerSettings extends StatefulWidget {
 class _PlayerSettingsState extends State<PlayerSettings> {
   @override
   Widget build(BuildContext context) {
-    final seekSecond = Provider.of<SettingsProvider>(context);
-    final bufferAmount = Provider.of<SettingsProvider>(context);
-    final videoResolution = Provider.of<SettingsProvider>(context);
-    final videoOrientation = Provider.of<SettingsProvider>(context);
+    final settingValues = Provider.of<SettingsProvider>(context);
     // final subtitleLanguage = Provider.of<SettingsProvider>(context);
-    String backgroundColorString = videoOrientation.subtitleBackgroundColor;
-    String foregroundColorString = videoOrientation.subtitleForegroundColor;
+    String backgroundColorString = settingValues.subtitleBackgroundColor;
+    String foregroundColorString = settingValues.subtitleForegroundColor;
     String hexColorBackground =
         backgroundColorString.replaceAll("Color(0x", "").replaceAll(")", "");
     String hexColorForeground =
@@ -64,9 +61,9 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 onPressed: () {
                   setState(() => currentColor = pickerColor);
                   type == 1
-                      ? videoOrientation.subtitleForegroundColor =
+                      ? settingValues.subtitleForegroundColor =
                           currentColor.toString()
-                      : videoOrientation.subtitleBackgroundColor =
+                      : settingValues.subtitleBackgroundColor =
                           currentColor.toString();
                   Navigator.of(context).pop();
                 },
@@ -114,8 +111,8 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                           style: TextStyle(
                               backgroundColor: backgroundColor,
                               color: foregroundColor,
-                              fontSize: videoOrientation.subtitleFontSize
-                                  .toDouble())),
+                              fontSize:
+                                  settingValues.subtitleFontSize.toDouble())),
                     ),
                   ],
                 ),
@@ -128,19 +125,19 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                     style: kTextSmallBodyStyle,
                   ),
                   Text(
-                    videoOrientation.subtitleFontSize.toString(),
+                    settingValues.subtitleFontSize.toString(),
                     style: kTextSmallBodyStyle,
                   )
                 ],
               ),
               Slider(
-                value: videoOrientation.subtitleFontSize.toDouble(),
+                value: settingValues.subtitleFontSize.toDouble(),
                 onChanged: (value) {
-                  videoOrientation.subtitleFontSize = value.toInt();
+                  settingValues.subtitleFontSize = value.toInt();
                 },
                 min: 5,
                 max: 30,
-                label: '${videoOrientation.subtitleFontSize.toInt()}',
+                label: '${settingValues.subtitleFontSize.toInt()}',
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,7 +191,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 ],
               ),
               SwitchListTile(
-                value: videoOrientation.defaultViewMode,
+                value: settingValues.defaultViewMode,
                 inactiveThumbColor: Colors.white,
                 inactiveTrackColor: const Color(0xFF9B9B9B),
                 secondary: const Icon(FontAwesomeIcons.expand),
@@ -203,7 +200,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 ),
                 onChanged: ((value) {
                   setState(() {
-                    videoOrientation.defaultViewMode = value;
+                    settingValues.defaultViewMode = value;
                   });
                 }),
               ),
@@ -213,7 +210,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   tr("seek_second"),
                 ),
                 trailing: DropdownButton(
-                    value: seekSecond.defaultSeekDuration,
+                    value: settingValues.defaultSeekDuration,
                     items: const [
                       DropdownMenuItem(value: 5, child: Text('5s')),
                       DropdownMenuItem(value: 10, child: Text('10s')),
@@ -223,7 +220,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                     ],
                     onChanged: (int? value) {
                       setState(() {
-                        seekSecond.defaultSeekDuration = value!;
+                        settingValues.defaultSeekDuration = value!;
                       });
                     }),
               ),
@@ -233,7 +230,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   tr("buffer_amount"),
                 ),
                 trailing: DropdownButton(
-                    value: bufferAmount.defaultMaxBufferDuration,
+                    value: settingValues.defaultMaxBufferDuration,
                     items: [
                       DropdownMenuItem(
                           value: const Duration(seconds: 15).inMilliseconds,
@@ -280,7 +277,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                     ],
                     onChanged: (int? value) {
                       setState(() {
-                        bufferAmount.defaultMaxBufferDuration = value!;
+                        settingValues.defaultMaxBufferDuration = value!;
                       });
                     }),
               ),
@@ -290,7 +287,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   tr("video_resolution"),
                 ),
                 trailing: DropdownButton(
-                    value: videoResolution.defaultVideoResolution,
+                    value: settingValues.defaultVideoResolution,
                     items: [
                       DropdownMenuItem(
                           value: 0,
@@ -302,7 +299,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       const DropdownMenuItem(value: 1080, child: Text('1080p')),
                     ],
                     onChanged: (int? value) {
-                      videoResolution.defaultVideoResolution = value!;
+                      settingValues.defaultVideoResolution = value!;
                     }),
               ),
               ListTile(
@@ -321,14 +318,32 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 inactiveThumbColor: Colors.white,
                 inactiveTrackColor: const Color(0xFF9B9B9B),
                 secondary: const Icon(FontAwesomeIcons.language),
-                value: videoOrientation.fetchSpecificLangSubs,
+                value: settingValues.fetchSpecificLangSubs,
                 title: Text(tr("fetch_all_subs")),
                 onChanged: ((value) {
                   setState(() {
-                    videoOrientation.fetchSpecificLangSubs = value;
+                    settingValues.fetchSpecificLangSubs = value;
                   });
                 }),
-              )
+              ),
+              ListTile(
+                leading: const Icon(FontAwesomeIcons.fileVideo),
+                title: Text(
+                  tr("video_source"),
+                ),
+                trailing: DropdownButton(
+                    value: settingValues.videoSource,
+                    items: const [
+                      DropdownMenuItem(value: 'flixHQ', child: Text('FlixHQ')),
+                      DropdownMenuItem(
+                          value: 'Showbox', child: Text('Showbox')),
+                    ],
+                    onChanged: (String? value) {
+                      setState(() {
+                        settingValues.videoSource = value!;
+                      });
+                    }),
+              ),
             ],
           ),
         ),

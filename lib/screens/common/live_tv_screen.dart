@@ -249,15 +249,15 @@ class _ChannelWidgetState extends State<ChannelWidget> {
   StartAppInterstitialAd? interstitialAd;
 
   Future<void> loadInterstitialAd() async {
-    startAppSdk.loadInterstitialAd().then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
+    startAppSdk
+        .loadInterstitialAd()
+        .then((interstitialAd) {
+          setState(() {
+            this.interstitialAd = interstitialAd;
+          });
+        })
+        .onError<StartAppException>((ex, stackTrace) {})
+        .onError((error, stackTrace) {});
   }
 
   bool shouldShowADS() {

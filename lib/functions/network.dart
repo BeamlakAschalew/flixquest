@@ -590,3 +590,19 @@ Future<SubtitleDownload> downloadExternalSubtitle(
 
   return sub;
 }
+
+Future<TMA> fetchTMA(String uri) async {
+  TMA tma;
+  try {
+    var response = await retryOptions.retry(
+      () => http.get(Uri.parse(uri)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(response.body);
+    tma = TMA.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+
+  return tma;
+}

@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flixquest/functions/function.dart';
+import 'package:flixquest/main.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '/api/endpoints.dart';
 import '/functions/network.dart';
@@ -92,17 +93,79 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   void loadVideo() async {
     try {
-      if (widget.route == StreamRoute.flixHQ) {
-        debugPrint("USED FLIXHQ ROUTE");
-        await fetchMoviesForStream(Endpoints.searchMovieTVForStream(
-                removeCharacters(widget.metadata.elementAt(1)),
-                appDep.consumetUrl))
-            .then((value) async {
-          if (mounted) {
-            setState(() {
-              movies = value;
-            });
-            if (movies == null || movies!.isEmpty) {
+      if (settingsProvider.videoSource == 'flixHQ') {
+        if (widget.route == StreamRoute.flixHQ) {
+          debugPrint("USED FLIXHQ ROUTE");
+          await fetchMoviesForStream(Endpoints.searchMovieTVForStream(
+                  removeCharacters(widget.metadata.elementAt(1)),
+                  appDep.consumetUrl))
+              .then((value) async {
+            if (mounted) {
+              setState(() {
+                movies = value;
+              });
+              if (movies == null || movies!.isEmpty) {
+                Navigator.pop(context);
+                showModalBottomSheet(
+                    builder: (context) {
+                      return ReportErrorWidget(
+                        error: tr("movie_vid_404"),
+                        hideButton: true,
+                      );
+                    },
+                    context: context);
+              }
+            }
+
+            for (int i = 0; i < movies!.length; i++) {
+              if (movies![i].releaseDate ==
+                      widget.metadata.elementAt(3).toString() &&
+                  movies![i].type == 'Movie') {
+                await getMovieStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                        movies![i].id!, appDep.consumetUrl))
+                    .then((value) async {
+                  setState(() {
+                    epi = value;
+                  });
+                  if (epi != null && epi!.isNotEmpty) {
+                    await getMovieStreamLinksAndSubs(
+                            Endpoints.getMovieTVStreamLinks(
+                                epi![0].id!,
+                                movies![i].id!,
+                                appDep.consumetUrl,
+                                appDep.streamingServer))
+                        .then((value) {
+                      if (mounted) {
+                        if (value.messageExists == null &&
+                            value.videoLinks != null &&
+                            value.videoLinks!.isNotEmpty) {
+                          setState(() {
+                            movieVideoSources = value;
+                          });
+                        } else if (value.messageExists != null) {
+                          Navigator.pop(context);
+                          showModalBottomSheet(
+                              builder: (context) {
+                                return ReportErrorWidget(
+                                  error: tr("movie_vid_server_error"),
+                                  hideButton: false,
+                                );
+                              },
+                              context: context);
+                        }
+                      }
+                      if (mounted) {
+                        movieVideoLinks = movieVideoSources!.videoLinks;
+                        movieVideoSubs = movieVideoSources!.videoSubtitles;
+                      }
+                    });
+                  }
+                });
+
+                break;
+              }
+            }
+            if (movieVideoLinks == null || movieVideoLinks!.isEmpty) {
               Navigator.pop(context);
               showModalBottomSheet(
                   builder: (context) {
@@ -113,132 +176,72 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                   },
                   context: context);
             }
-          }
+          });
+        } else {
+          debugPrint("USED TMDB ROUTE");
+          await getMovieStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
+                  widget.metadata.elementAt(0).toString(),
+                  "movie",
+                  appDep.consumetUrl))
+              .then((value) async {
+            if (mounted) {
+              setState(() {
+                episode = value;
+              });
+            }
 
-          for (int i = 0; i < movies!.length; i++) {
-            if (movies![i].releaseDate ==
-                    widget.metadata.elementAt(3).toString() &&
-                movies![i].type == 'Movie') {
-              await getMovieStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                      movies![i].id!, appDep.consumetUrl))
-                  .then((value) async {
-                setState(() {
-                  epi = value;
-                });
-                if (epi != null && epi!.isNotEmpty) {
-                  await getMovieStreamLinksAndSubs(
-                          Endpoints.getMovieTVStreamLinks(
-                              epi![0].id!,
-                              movies![i].id!,
-                              appDep.consumetUrl,
-                              appDep.streamingServer))
-                      .then((value) {
-                    if (mounted) {
-                      if (value.messageExists == null &&
-                          value.videoLinks != null &&
-                          value.videoLinks!.isNotEmpty) {
-                        setState(() {
-                          movieVideoSources = value;
-                        });
-                      } else if (value.messageExists != null) {
-                        Navigator.pop(context);
-                        showModalBottomSheet(
-                            builder: (context) {
-                              return ReportErrorWidget(
-                                error: tr("movie_vid_server_error"),
-                                hideButton: false,
-                              );
-                            },
-                            context: context);
-                      }
-                    }
-                    if (mounted) {
-                      movieVideoLinks = movieVideoSources!.videoLinks;
-                      movieVideoSubs = movieVideoSources!.videoSubtitles;
-                    }
-                  });
+            if (episode != null &&
+                episode!.id != null &&
+                episode!.id!.isNotEmpty &&
+                episode!.episodeId != null &&
+                episode!.episodeId!.isNotEmpty) {
+              await getMovieStreamLinksAndSubs(
+                      Endpoints.getMovieTVStreamLinksTMDB(
+                          appDep.consumetUrl,
+                          episode!.episodeId!,
+                          episode!.id!,
+                          appDep.streamingServer))
+                  .then((value) {
+                if (mounted) {
+                  if (value.messageExists == null &&
+                      value.videoLinks != null &&
+                      value.videoLinks!.isNotEmpty) {
+                    setState(() {
+                      movieVideoSources = value;
+                    });
+                  } else if (value.messageExists != null) {
+                    Navigator.pop(context);
+                    showModalBottomSheet(
+                        builder: (context) {
+                          return ReportErrorWidget(
+                            error: tr("movie_vid_server_error"),
+                            hideButton: false,
+                          );
+                        },
+                        context: context);
+                  }
+                }
+                if (mounted) {
+                  movieVideoLinks = movieVideoSources!.videoLinks;
+                  movieVideoSubs = movieVideoSources!.videoSubtitles;
                 }
               });
-
-              break;
-            }
-          }
-          if (movieVideoLinks == null || movieVideoLinks!.isEmpty) {
-            Navigator.pop(context);
-            showModalBottomSheet(
-                builder: (context) {
-                  return ReportErrorWidget(
-                    error: tr("movie_vid_404"),
-                    hideButton: true,
-                  );
-                },
-                context: context);
-          }
-        });
-      } else {
-        debugPrint("USED TMDB ROUTE");
-        await getMovieStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
-                widget.metadata.elementAt(0).toString(),
-                "movie",
-                appDep.consumetUrl))
-            .then((value) async {
-          if (mounted) {
-            setState(() {
-              episode = value;
-            });
-          }
-
-          if (episode != null &&
-              episode!.id != null &&
-              episode!.id!.isNotEmpty &&
-              episode!.episodeId != null &&
-              episode!.episodeId!.isNotEmpty) {
-            await getMovieStreamLinksAndSubs(
-                    Endpoints.getMovieTVStreamLinksTMDB(
-                        appDep.consumetUrl,
-                        episode!.episodeId!,
-                        episode!.id!,
-                        appDep.streamingServer))
-                .then((value) {
+            } else {
               if (mounted) {
-                if (value.messageExists == null &&
-                    value.videoLinks != null &&
-                    value.videoLinks!.isNotEmpty) {
-                  setState(() {
-                    movieVideoSources = value;
-                  });
-                } else if (value.messageExists != null) {
-                  Navigator.pop(context);
-                  showModalBottomSheet(
-                      builder: (context) {
-                        return ReportErrorWidget(
-                          error: tr("movie_vid_server_error"),
-                          hideButton: false,
-                        );
-                      },
-                      context: context);
-                }
+                Navigator.pop(context);
+                showModalBottomSheet(
+                    builder: (context) {
+                      return ReportErrorWidget(
+                        error: tr("movie_vid_404"),
+                        hideButton: true,
+                      );
+                    },
+                    context: context);
               }
-              if (mounted) {
-                movieVideoLinks = movieVideoSources!.videoLinks;
-                movieVideoSubs = movieVideoSources!.videoSubtitles;
-              }
-            });
-          } else {
-            if (mounted) {
-              Navigator.pop(context);
-              showModalBottomSheet(
-                  builder: (context) {
-                    return ReportErrorWidget(
-                      error: tr("movie_vid_404"),
-                      hideButton: true,
-                    );
-                  },
-                  context: context);
             }
-          }
-        });
-      }
+          });
+        }
+      } else {}
 
       Map<String, String> videos = {};
       List<BetterPlayerSubtitlesSource> subs = [];

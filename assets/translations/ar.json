@@ -483,6 +483,7 @@
 	"share_episode": "اطلع على الحلقة التلفزيونية {et} من {title}!\nوحصلت على تقييم {rated} من أصل 10\nhttps://themoviedb.org/tv/{id}/season/{season}/episode/{episode}",
 	"dark": "مظلم",
     "light": "ضوء",
-    "amoled": "AMOLED"
+    "amoled": "AMOLED",
+	"video_source": "مصدر الفيديو"
 }
 

@@ -221,3 +221,17 @@ class AppLanguagePreferences {
     return prefs.getString(APP_LANGUAGE_CODE) ?? 'en';
   }
 }
+
+class VideoSourcePreferences {
+  static const VIDEO_SOURCE = "video_source";
+
+  setVideoSource(String source) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(VIDEO_SOURCE, source);
+  }
+
+  Future<String> getVideoSource() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(VIDEO_SOURCE) ?? 'flixHQ';
+  }
+}

@@ -161,3 +161,49 @@ class MovieInfoTMDBRoute {
     type = json['type'];
   }
 }
+
+class TMA {
+  String? label;
+  List<TMAVideoSources>? sources;
+  List<TMASubtitleSources>? subSources;
+
+  TMA({required this.label, required this.sources});
+
+  TMA.fromJson(Map<String, dynamic> json) {
+    label = json['label'];
+    if (json['sources'][0]['sources'] != null) {
+      sources = [];
+      json['sources'][0]['sources'].forEach((element) {
+        sources!.add(TMAVideoSources.fromJson(element));
+      });
+    }
+    if (json['subtitles'] != null) {
+      subSources = [];
+      json['sources'].forEach((element) {
+        subSources!.add(TMASubtitleSources.fromJson(element));
+      });
+    }
+  }
+}
+
+class TMAVideoSources {
+  String? quality, url;
+  TMAVideoSources({required this.quality, required this.url});
+
+  TMAVideoSources.fromJson(Map<String, dynamic> json) {
+    quality = json['quality'];
+    url = json['url'];
+  }
+}
+
+class TMASubtitleSources {
+  String? language, url, type;
+  TMASubtitleSources(
+      {required this.language, required this.type, required this.url});
+
+  TMASubtitleSources.fromJson(Map<String, dynamic> json) {
+    language = json['language'];
+    url = json['url'];
+    type = json['type'];
+  }
+}

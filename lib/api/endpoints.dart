@@ -349,4 +349,13 @@ class Endpoints {
   static String externalSubtitleDownload() {
     return '$opensubtitlesBaseUrl' '/download';
   }
+
+  static String tmaGetMovieSource(String baseUrl, int id) {
+    return '$baseUrl' 'v3/movie/sources/' '$id';
+  }
+
+  static String tmaGetEpisodeSource(
+      String baseUrl, int id, int episodeNum, int seasonNum) {
+    return '$baseUrl' 'v3/tv/sources/' '$seasonNum/' '$episodeNum';
+  }
 }

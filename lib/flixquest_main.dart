@@ -74,6 +74,7 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getBool('enable_stream');
       appDependencyProvider.displayOTTDrawer =
           _remoteConfig.getBool('enable_ott');
+      appDependencyProvider.showboxUrl = _remoteConfig.getString('showbox_url');
     }
     await requestNotificationPermissions();
   }

@@ -488,4 +488,5 @@ abstract class LocaleKeys {
   static const dark = 'dark';
   static const light = 'light';
   static const amoled = 'amoled';
+  static const video_source = 'video_source';
 }

@@ -483,5 +483,6 @@
     "share_episode": "{title} से टीवी एपिसोड {et} चेकआउट करें!\nइसे 10 में से {rating} रेटिंग दी गई है\nhttps://themoviedb.org/tv/{id}/season/{season}/episode/{episode}",
     "dark": "अँधेरा",
     "light": "रोशनी",
-    "amoled": "AMOLED"
+    "amoled": "AMOLED",
+    "video_source": "वीडियो स्रोत"
 }
