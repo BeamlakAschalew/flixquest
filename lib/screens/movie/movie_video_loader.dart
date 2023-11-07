@@ -38,6 +38,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   MovieVideoSources? movieVideoSources;
   List<MovieVideoLinks>? movieVideoLinks;
   List<MovieVideoSubtitles>? movieVideoSubs;
+  List<TMAVideoSources>? tmaVideoSources;
+  List<TMASubtitleSources>? tmaSubtitleSources;
+
   double loadProgress = 0.00;
   late SettingsProvider settings =
       Provider.of<SettingsProvider>(context, listen: false);
@@ -241,7 +244,19 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             }
           });
         }
-      } else {}
+      } else {
+        await fetchTMA(Endpoints.tmaGetMovieSource(
+                appDep.showboxUrl, widget.metadata.elementAt(0)))
+            .then((value) {
+          if (value.sources != null && value.sources!.isNotEmpty) {
+            tmaVideoSources = value.sources;
+          }
+
+          if (value.subSources != null && value.subSources!.isNotEmpty) {
+            tmaSubtitleSources = value.subSources;
+          }
+        });
+      }
 
       Map<String, String> videos = {};
       List<BetterPlayerSubtitlesSource> subs = [];
@@ -360,12 +375,33 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           }
         }
       }
+      if (settings.videoSource == 'flixHQ') {
+        if (movieVideoLinks != null) {
+          for (int k = 0; k < movieVideoLinks!.length; k++) {
+            videos.addAll({
+              movieVideoLinks![k].quality!: movieVideoLinks![k].url!,
+            });
+          }
+        }
+      } else {
+        if (tmaVideoSources != null) {
+          for (int l = 0; l < tmaVideoSources!.length; l++) {
+            videos.addAll({
+              tmaVideoSources![l].quality!: tmaVideoSources![l].url!,
+            });
+          }
+        }
 
-      if (movieVideoLinks != null) {
-        for (int k = 0; k < movieVideoLinks!.length; k++) {
-          videos.addAll({
-            movieVideoLinks![k].quality!: movieVideoLinks![k].url!,
-          });
+        if (tmaSubtitleSources != null && tmaSubtitleSources!.isNotEmpty) {
+          for (int i = 0; i < tmaSubtitleSources!.length; i++) {
+            subs.addAll({
+              BetterPlayerSubtitlesSource(
+                  name: tmaSubtitleSources![i].language,
+                  urls: [tmaSubtitleSources![i].url],
+                  selectedByDefault: true,
+                  type: BetterPlayerSubtitlesSourceType.network)
+            });
+          }
         }
       }
 
@@ -373,7 +409,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           videos.entries.toList().reversed.toList();
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
-      if (movieVideoLinks != null && mounted) {
+      if ((movieVideoLinks != null || tmaVideoSources != null) && mounted) {
         if (interstitialAd != null) {
           interstitialAd!.show();
           loadInterstitialAd().whenComplete(

@@ -120,8 +120,6 @@ class MovieVideoSources {
 }
 
 class MovieVideoLinks {
-  MovieVideoLinks();
-
   String? url;
   String? quality;
   bool? isM3U8;
