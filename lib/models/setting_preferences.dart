@@ -232,6 +232,6 @@ class VideoSourcePreferences {
 
   Future<String> getVideoSource() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(VIDEO_SOURCE) ?? 'flixHQ';
+    return prefs.getString(VIDEO_SOURCE) ?? 'Showbox';
   }
 }

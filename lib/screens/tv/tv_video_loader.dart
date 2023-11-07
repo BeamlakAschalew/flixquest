@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flixquest/functions/function.dart';
 import 'package:startapp_sdk/startapp.dart';
+import '../../models/movie_stream.dart';
 import '/api/endpoints.dart';
 import '/functions/network.dart';
 import '/widgets/common_widgets.dart';
@@ -43,6 +44,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       Provider.of<SettingsProvider>(context, listen: false);
   late AppDependencyProvider appDep =
       Provider.of<AppDependencyProvider>(context, listen: false);
+
+  List<TMAVideoSources>? tmaVideoSources;
+  List<TMASubtitleSources>? tmaSubtitleSources;
 
   /// TMDB Route
   TVTMDBRoute? tvInfoTMDB;
@@ -93,194 +97,226 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   void loadVideo() async {
     try {
       late int totalSeasons;
-      if (widget.route == StreamRoute.flixHQ) {
-        debugPrint("USED FLIXHQ ROUTE");
-        await fetchTVDetails(
-                Endpoints.tvDetailsUrl(widget.metadata.elementAt(7), "en"))
-            .then(
-          (value) async {
-            totalSeasons = value.numberOfSeasons!;
-            await fetchTVForStream(Endpoints.searchMovieTVForStream(
-                    removeCharacters(widget.metadata.elementAt(1)),
-                    appDep.consumetUrl))
-                .then((value) async {
-              if (mounted) {
-                setState(() {
-                  tvShows = value;
-                });
-              }
-              if (tvShows == null || tvShows!.isEmpty) {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                    builder: (context) {
-                      return ReportErrorWidget(
-                        error: tr("tv_vid_404"),
-                        hideButton: true,
-                      );
-                    },
-                    context: context);
-              }
-              for (int i = 0; i < tvShows!.length; i++) {
-                if (tvShows![i].seasons == totalSeasons &&
-                    tvShows![i].type == 'TV Series') {
-                  await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                          tvShows![i].id!, appDep.consumetUrl))
-                      .then((value) async {
-                    setState(() {
-                      tvInfo = value;
-                      epi = tvInfo!.episodes;
-                    });
-
-                    for (int k = 0; k < epi!.length; k++) {
-                      if (epi![k].episode == widget.metadata.elementAt(3) &&
-                          epi![k].season == widget.metadata.elementAt(4)) {
-                        await getTVStreamLinksAndSubs(
-                                Endpoints.getMovieTVStreamLinks(
-                                    epi![k].id!,
-                                    tvShows![i].id!,
-                                    appDep.consumetUrl,
-                                    appDep.streamingServer))
-                            .then((value) {
-                          if (value.messageExists == null &&
-                              value.videoLinks != null &&
-                              value.videoLinks!.isNotEmpty) {
-                            if (mounted) {
-                              setState(() {
-                                tvVideoSources = value;
-                              });
-                            }
-                          } else if (value.messageExists != null) {
-                            Navigator.pop(context);
-                            showModalBottomSheet(
-                                builder: (context) {
-                                  return ReportErrorWidget(
-                                    error: tr("tv_vid_server_error"),
-                                    hideButton: false,
-                                  );
-                                },
-                                context: context);
-                          }
-                          tvVideoLinks = tvVideoSources!.videoLinks;
-                          tvVideoSubs = tvVideoSources!.videoSubtitles;
-                        });
-                        break;
-                      }
-                    }
-                  });
-
-                  break;
-                }
-
-                if (tvShows![i].seasons == (totalSeasons - 1) &&
-                    tvShows![i].type == 'TV Series') {
-                  await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                          tvShows![i].id!, appDep.consumetUrl))
-                      .then((value) async {
-                    setState(() {
-                      tvInfo = value;
-                      epi = tvInfo!.episodes;
-                    });
-
-                    for (int k = 0; k < epi!.length; k++) {
-                      if (epi![k].episode == widget.metadata.elementAt(3) &&
-                          epi![k].season == widget.metadata.elementAt(4)) {
-                        await getTVStreamLinksAndSubs(
-                                Endpoints.getMovieTVStreamLinks(
-                                    epi![k].id!,
-                                    tvShows![i].id!,
-                                    appDep.consumetUrl,
-                                    appDep.streamingServer))
-                            .then((value) {
-                          setState(() {
-                            tvVideoSources = value;
-                          });
-                          if (mounted) {
-                            tvVideoLinks = tvVideoSources!.videoLinks;
-                            tvVideoSubs = tvVideoSources!.videoSubtitles;
-                          }
-                        });
-                        break;
-                      }
-                    }
-                  });
-
-                  break;
-                }
-              }
-              if (tvVideoLinks == null || tvVideoLinks!.isEmpty) {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                    builder: (context) {
-                      return ReportErrorWidget(
-                        error: tr("tv_vid_404"),
-                        hideButton: true,
-                      );
-                    },
-                    context: context);
-              }
-            });
-          },
-        );
-      } else {
-        debugPrint("USED TMDB ROUTE");
-        await getTVStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
-                widget.metadata.elementAt(7).toString(),
-                "tv",
-                appDep.consumetUrl))
-            .then((value) async {
-          setState(() {
-            tvInfoTMDB = value;
-          });
-          if (widget.metadata.elementAt(4) != 0) {
-            if (tvInfoTMDB!.id != null &&
-                tvInfoTMDB!.seasons != null &&
-                tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
-                        .episodes![widget.metadata.elementAt(3) - 1].id !=
-                    null) {
-              await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
-                      appDep.consumetUrl,
-                      tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
-                          .episodes![widget.metadata.elementAt(3) - 1].id!,
-                      tvInfoTMDB!.id!,
-                      appDep.streamingServer))
-                  .then((value) {
-                if (value.messageExists == null &&
-                    value.videoLinks != null &&
-                    value.videoLinks!.isNotEmpty) {
+      if (settings.videoSource == 'flixHQ') {
+        if (widget.route == StreamRoute.flixHQ) {
+          debugPrint("USED FLIXHQ ROUTE");
+          await fetchTVDetails(
+                  Endpoints.tvDetailsUrl(widget.metadata.elementAt(7), "en"))
+              .then(
+            (value) async {
+              totalSeasons = value.numberOfSeasons!;
+              await fetchTVForStream(Endpoints.searchMovieTVForStream(
+                      removeCharacters(widget.metadata.elementAt(1)),
+                      appDep.consumetUrl))
+                  .then((value) async {
+                if (mounted) {
                   setState(() {
-                    tvVideoSources = value;
+                    tvShows = value;
                   });
-                } else if (value.messageExists != null) {
+                }
+                if (tvShows == null || tvShows!.isEmpty) {
                   Navigator.pop(context);
                   showModalBottomSheet(
                       builder: (context) {
                         return ReportErrorWidget(
-                          error: tr("tv_vid_server_error"),
-                          hideButton: false,
+                          error: tr("tv_vid_404"),
+                          hideButton: true,
                         );
                       },
                       context: context);
                 }
-                if (mounted) {
-                  tvVideoLinks = tvVideoSources!.videoLinks;
-                  tvVideoSubs = tvVideoSources!.videoSubtitles;
+                for (int i = 0; i < tvShows!.length; i++) {
+                  if (tvShows![i].seasons == totalSeasons &&
+                      tvShows![i].type == 'TV Series') {
+                    await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                            tvShows![i].id!, appDep.consumetUrl))
+                        .then((value) async {
+                      setState(() {
+                        tvInfo = value;
+                        epi = tvInfo!.episodes;
+                      });
+
+                      for (int k = 0; k < epi!.length; k++) {
+                        if (epi![k].episode == widget.metadata.elementAt(3) &&
+                            epi![k].season == widget.metadata.elementAt(4)) {
+                          await getTVStreamLinksAndSubs(
+                                  Endpoints.getMovieTVStreamLinks(
+                                      epi![k].id!,
+                                      tvShows![i].id!,
+                                      appDep.consumetUrl,
+                                      appDep.streamingServer))
+                              .then((value) {
+                            if (value.messageExists == null &&
+                                value.videoLinks != null &&
+                                value.videoLinks!.isNotEmpty) {
+                              if (mounted) {
+                                setState(() {
+                                  tvVideoSources = value;
+                                });
+                              }
+                            } else if (value.messageExists != null) {
+                              Navigator.pop(context);
+                              showModalBottomSheet(
+                                  builder: (context) {
+                                    return ReportErrorWidget(
+                                      error: tr("tv_vid_server_error"),
+                                      hideButton: false,
+                                    );
+                                  },
+                                  context: context);
+                            }
+                            tvVideoLinks = tvVideoSources!.videoLinks;
+                            tvVideoSubs = tvVideoSources!.videoSubtitles;
+                          });
+                          break;
+                        }
+                      }
+                    });
+
+                    break;
+                  }
+
+                  if (tvShows![i].seasons == (totalSeasons - 1) &&
+                      tvShows![i].type == 'TV Series') {
+                    await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
+                            tvShows![i].id!, appDep.consumetUrl))
+                        .then((value) async {
+                      setState(() {
+                        tvInfo = value;
+                        epi = tvInfo!.episodes;
+                      });
+
+                      for (int k = 0; k < epi!.length; k++) {
+                        if (epi![k].episode == widget.metadata.elementAt(3) &&
+                            epi![k].season == widget.metadata.elementAt(4)) {
+                          await getTVStreamLinksAndSubs(
+                                  Endpoints.getMovieTVStreamLinks(
+                                      epi![k].id!,
+                                      tvShows![i].id!,
+                                      appDep.consumetUrl,
+                                      appDep.streamingServer))
+                              .then((value) {
+                            setState(() {
+                              tvVideoSources = value;
+                            });
+                            if (mounted) {
+                              tvVideoLinks = tvVideoSources!.videoLinks;
+                              tvVideoSubs = tvVideoSources!.videoSubtitles;
+                            }
+                          });
+                          break;
+                        }
+                      }
+                    });
+
+                    break;
+                  }
+                }
+                if (tvVideoLinks == null || tvVideoLinks!.isEmpty) {
+                  Navigator.pop(context);
+                  showModalBottomSheet(
+                      builder: (context) {
+                        return ReportErrorWidget(
+                          error: tr("tv_vid_404"),
+                          hideButton: true,
+                        );
+                      },
+                      context: context);
                 }
               });
-            } else {
-              if (mounted) {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                    builder: (context) {
-                      return ReportErrorWidget(
-                        error: tr("tv_vid_404"),
-                        hideButton: true,
-                      );
-                    },
-                    context: context);
+            },
+          );
+        } else {
+          debugPrint("USED TMDB ROUTE");
+          await getTVStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
+                  widget.metadata.elementAt(7).toString(),
+                  "tv",
+                  appDep.consumetUrl))
+              .then((value) async {
+            setState(() {
+              tvInfoTMDB = value;
+            });
+            if (widget.metadata.elementAt(4) != 0) {
+              if (tvInfoTMDB!.id != null &&
+                  tvInfoTMDB!.seasons != null &&
+                  tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
+                          .episodes![widget.metadata.elementAt(3) - 1].id !=
+                      null) {
+                await getTVStreamLinksAndSubs(
+                        Endpoints.getMovieTVStreamLinksTMDB(
+                            appDep.consumetUrl,
+                            tvInfoTMDB!
+                                .seasons![widget.metadata.elementAt(4) - 1]
+                                .episodes![widget.metadata.elementAt(3) - 1]
+                                .id!,
+                            tvInfoTMDB!.id!,
+                            appDep.streamingServer))
+                    .then((value) {
+                  if (value.messageExists == null &&
+                      value.videoLinks != null &&
+                      value.videoLinks!.isNotEmpty) {
+                    setState(() {
+                      tvVideoSources = value;
+                    });
+                  } else if (value.messageExists != null) {
+                    Navigator.pop(context);
+                    showModalBottomSheet(
+                        builder: (context) {
+                          return ReportErrorWidget(
+                            error: tr("tv_vid_server_error"),
+                            hideButton: false,
+                          );
+                        },
+                        context: context);
+                  }
+                  if (mounted) {
+                    tvVideoLinks = tvVideoSources!.videoLinks;
+                    tvVideoSubs = tvVideoSources!.videoSubtitles;
+                  }
+                });
+              } else {
+                if (mounted) {
+                  Navigator.pop(context);
+                  showModalBottomSheet(
+                      builder: (context) {
+                        return ReportErrorWidget(
+                          error: tr("tv_vid_404"),
+                          hideButton: true,
+                        );
+                      },
+                      context: context);
+                }
               }
             }
-          }
-        });
+          });
+        }
+      } else {
+        if (appDep.showboxUrl.isEmpty) {
+          Navigator.pop(context);
+          showModalBottomSheet(
+              builder: (context) {
+                return const ReportErrorWidget(
+                  error: "Reopen the app with internet connection",
+                  hideButton: true,
+                );
+              },
+              context: context);
+        } else {
+          await fetchTMA(Endpoints.tmaGetEpisodeSource(
+                  appDep.showboxUrl,
+                  widget.metadata.elementAt(7),
+                  widget.metadata.elementAt(3),
+                  widget.metadata.elementAt(4)))
+              .then((value) {
+            if (value.sources != null && value.sources!.isNotEmpty) {
+              tmaVideoSources = value.sources;
+            }
+
+            if (value.subSources != null && value.subSources!.isNotEmpty) {
+              tmaSubtitleSources = value.subSources;
+            }
+          });
+        }
       }
 
       Map<String, String> videos = {};
@@ -400,9 +436,80 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         }
       }
 
-      if (tvVideoLinks != null) {
-        for (int k = 0; k < tvVideoLinks!.length; k++) {
-          videos.addAll({tvVideoLinks![k].quality!: tvVideoLinks![k].url!});
+      if (settings.videoSource == 'flixHQ') {
+        if (tvVideoLinks != null) {
+          for (int k = 0; k < tvVideoLinks!.length; k++) {
+            videos.addAll({tvVideoLinks![k].quality!: tvVideoLinks![k].url!});
+          }
+        }
+      } else {
+        if (tmaVideoSources != null) {
+          for (int l = 0; l < tmaVideoSources!.length; l++) {
+            videos.addAll({
+              tmaVideoSources![l].quality!: tmaVideoSources![l].url!,
+            });
+          }
+        }
+
+        if (tmaSubtitleSources != null && tmaSubtitleSources!.isNotEmpty) {
+          if (supportedLanguages[foundIndex].englishName == '') {
+            for (int i = 0; i < tmaSubtitleSources!.length; i++) {
+              await getVttFileAsString(tmaSubtitleSources![i].url!)
+                  .then((value) {
+                subs.addAll({
+                  BetterPlayerSubtitlesSource(
+                      name: tmaSubtitleSources![i].language,
+                      content: processVttFileTimestamps(value),
+                      selectedByDefault: true,
+                      type: BetterPlayerSubtitlesSourceType.memory)
+                });
+              });
+            }
+          } else {
+            if (tmaSubtitleSources!
+                .where((element) => element.language!
+                    .startsWith(supportedLanguages[foundIndex].englishName))
+                .isNotEmpty) {
+              if (settings.fetchSpecificLangSubs) {
+                for (int i = 0; i < tmaSubtitleSources!.length; i++) {
+                  if (tmaSubtitleSources![i]
+                      .language!
+                      .startsWith(supportedLanguages[foundIndex].englishName)) {
+                    await getVttFileAsString(tmaSubtitleSources![i].url!)
+                        .then((value) {
+                      subs.add(
+                        BetterPlayerSubtitlesSource(
+                            name: tmaSubtitleSources![i].language,
+                            selectedByDefault: true,
+                            content: processVttFileTimestamps(value),
+                            type: BetterPlayerSubtitlesSourceType.memory),
+                      );
+                    });
+                  }
+                }
+              } else {
+                await getVttFileAsString((tmaSubtitleSources!.where((element) =>
+                            element.language!.startsWith(
+                                supportedLanguages[foundIndex].englishName)))
+                        .first
+                        .url!)
+                    .then((value) {
+                  subs.addAll({
+                    BetterPlayerSubtitlesSource(
+                        name: tmaSubtitleSources!
+                            .where((element) => element.language!.startsWith(
+                                supportedLanguages[foundIndex].englishName))
+                            .first
+                            .language,
+                        //  urls: [movieVideoSubs![i].url],
+                        selectedByDefault: true,
+                        content: processVttFileTimestamps(value),
+                        type: BetterPlayerSubtitlesSourceType.memory),
+                  });
+                });
+              }
+            }
+          }
         }
       }
 
@@ -410,7 +517,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           videos.entries.toList().reversed.toList();
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
-      if (tvVideoLinks != null && mounted) {
+      if ((tvVideoLinks != null || tmaVideoSources != null) && mounted) {
         if (interstitialAd != null) {
           interstitialAd!.show();
           loadInterstitialAd().whenComplete(

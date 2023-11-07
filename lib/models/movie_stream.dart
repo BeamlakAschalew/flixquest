@@ -169,15 +169,18 @@ class TMA {
 
   TMA.fromJson(Map<String, dynamic> json) {
     label = json['label'];
-    if (json['sources'][0]['sources'] != null) {
+    if (json.containsKey("sources") &&
+        json["sources"].isNotEmpty &&
+        json["sources"][0] is Map<String, dynamic> &&
+        json["sources"][0].containsKey("sources")) {
       sources = [];
       json['sources'][0]['sources'].forEach((element) {
         sources!.add(TMAVideoSources.fromJson(element));
       });
-    }
+    } else {}
     if (json['subtitles'] != null) {
       subSources = [];
-      json['sources'].forEach((element) {
+      json['subtitles'].forEach((element) {
         subSources!.add(TMASubtitleSources.fromJson(element));
       });
     }

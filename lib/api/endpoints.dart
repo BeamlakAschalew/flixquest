@@ -356,6 +356,6 @@ class Endpoints {
 
   static String tmaGetEpisodeSource(
       String baseUrl, int id, int episodeNum, int seasonNum) {
-    return '$baseUrl' 'v3/tv/sources/' '$seasonNum/' '$episodeNum';
+    return '$baseUrl' 'v3/tv/sources/' '$id/' '$seasonNum/' '$episodeNum';
   }
 }

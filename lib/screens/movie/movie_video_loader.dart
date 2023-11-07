@@ -245,17 +245,29 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           });
         }
       } else {
-        await fetchTMA(Endpoints.tmaGetMovieSource(
-                appDep.showboxUrl, widget.metadata.elementAt(0)))
-            .then((value) {
-          if (value.sources != null && value.sources!.isNotEmpty) {
-            tmaVideoSources = value.sources;
-          }
+        if (appDep.showboxUrl.isEmpty) {
+          Navigator.pop(context);
+          showModalBottomSheet(
+              builder: (context) {
+                return const ReportErrorWidget(
+                  error: "Reopen the app with internet connection",
+                  hideButton: true,
+                );
+              },
+              context: context);
+        } else {
+          await fetchTMA(Endpoints.tmaGetMovieSource(
+                  appDep.showboxUrl, widget.metadata.elementAt(0)))
+              .then((value) {
+            if (value.sources != null && value.sources!.isNotEmpty) {
+              tmaVideoSources = value.sources;
+            }
 
-          if (value.subSources != null && value.subSources!.isNotEmpty) {
-            tmaSubtitleSources = value.subSources;
-          }
-        });
+            if (value.subSources != null && value.subSources!.isNotEmpty) {
+              tmaSubtitleSources = value.subSources;
+            }
+          });
+        }
       }
 
       Map<String, String> videos = {};
@@ -393,14 +405,63 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         }
 
         if (tmaSubtitleSources != null && tmaSubtitleSources!.isNotEmpty) {
-          for (int i = 0; i < tmaSubtitleSources!.length; i++) {
-            subs.addAll({
-              BetterPlayerSubtitlesSource(
-                  name: tmaSubtitleSources![i].language,
-                  urls: [tmaSubtitleSources![i].url],
-                  selectedByDefault: true,
-                  type: BetterPlayerSubtitlesSourceType.network)
-            });
+          if (supportedLanguages[foundIndex].englishName == '') {
+            for (int i = 0; i < tmaSubtitleSources!.length; i++) {
+              await getVttFileAsString(tmaSubtitleSources![i].url!)
+                  .then((value) {
+                subs.addAll({
+                  BetterPlayerSubtitlesSource(
+                      name: tmaSubtitleSources![i].language,
+                      content: processVttFileTimestamps(value),
+                      selectedByDefault: true,
+                      type: BetterPlayerSubtitlesSourceType.memory)
+                });
+              });
+            }
+          } else {
+            if (tmaSubtitleSources!
+                .where((element) => element.language!
+                    .startsWith(supportedLanguages[foundIndex].englishName))
+                .isNotEmpty) {
+              if (settings.fetchSpecificLangSubs) {
+                for (int i = 0; i < tmaSubtitleSources!.length; i++) {
+                  if (tmaSubtitleSources![i]
+                      .language!
+                      .startsWith(supportedLanguages[foundIndex].englishName)) {
+                    await getVttFileAsString(tmaSubtitleSources![i].url!)
+                        .then((value) {
+                      subs.add(
+                        BetterPlayerSubtitlesSource(
+                            name: tmaSubtitleSources![i].language,
+                            selectedByDefault: true,
+                            content: processVttFileTimestamps(value),
+                            type: BetterPlayerSubtitlesSourceType.memory),
+                      );
+                    });
+                  }
+                }
+              } else {
+                await getVttFileAsString((tmaSubtitleSources!.where((element) =>
+                            element.language!.startsWith(
+                                supportedLanguages[foundIndex].englishName)))
+                        .first
+                        .url!)
+                    .then((value) {
+                  subs.addAll({
+                    BetterPlayerSubtitlesSource(
+                        name: tmaSubtitleSources!
+                            .where((element) => element.language!.startsWith(
+                                supportedLanguages[foundIndex].englishName))
+                            .first
+                            .language,
+                        //  urls: [movieVideoSubs![i].url],
+                        selectedByDefault: true,
+                        content: processVttFileTimestamps(value),
+                        type: BetterPlayerSubtitlesSourceType.memory),
+                  });
+                });
+              }
+            }
           }
         }
       }
