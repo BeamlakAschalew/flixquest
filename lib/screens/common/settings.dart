@@ -320,23 +320,6 @@ class _SettingsState extends State<Settings> {
       ),
       body: Column(
         children: [
-          SwitchListTile(
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: const Color(0xFF9B9B9B),
-            value: settingsValues.isAdult,
-            secondary: Icon(
-              Icons.explicit_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr("include_adult"),
-            ),
-            onChanged: (bool value) {
-              setState(() {
-                settingsValues.isAdult = value;
-              });
-            },
-          ),
           ListTile(
             leading: Icon(
               Icons.dark_mode_rounded,
@@ -569,6 +552,23 @@ class _SettingsState extends State<Settings> {
                   Text(countryName!)
                 ]),
           ),
+          SwitchListTile(
+            inactiveThumbColor: Colors.white,
+            inactiveTrackColor: const Color(0xFF9B9B9B),
+            value: settingsValues.isAdult,
+            secondary: Icon(
+              Icons.explicit_rounded,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            title: Text(
+              tr("include_adult"),
+            ),
+            onChanged: (bool value) {
+              setState(() {
+                settingsValues.isAdult = value;
+              });
+            },
+          ),
           ListTile(
             leading: Icon(
               FontAwesomeIcons.eraser,
@@ -595,7 +595,10 @@ class _SettingsState extends State<Settings> {
                 child: Text(tr("clear"))),
           ),
           ListTile(
-            leading: const Icon(Icons.format_color_fill_rounded),
+            leading: Icon(
+              Icons.format_color_fill_rounded,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             title: Text(tr("custom_color")),
           ),
           SizedBox(
@@ -617,10 +620,10 @@ class _SettingsState extends State<Settings> {
                               .colorScheme
                               .primary
                               .withOpacity(0.35),
+                          showCheckmark: true,
                           label: ClipRRect(
                             borderRadius: BorderRadius.circular(200),
                             child: Container(
-                              // margin: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 color: appColor.cs.primary,
