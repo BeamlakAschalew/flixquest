@@ -484,5 +484,6 @@
     "dark": "Oscuro",
     "light": "Ligero",
     "amoled": "AMOLED",
-    "video_source": "Fuente de vídeo"
+    "video_source": "Fuente de vídeo",
+    "custom_color": "Color de tema personalizado"
 }

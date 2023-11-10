@@ -484,5 +484,6 @@
     "dark": "Dark",
     "light": "Light",
     "amoled": "AMOLED",
-    "video_source": "Video source"
+    "video_source": "Video source",
+    "custom_color": "Custom theme color"
 }

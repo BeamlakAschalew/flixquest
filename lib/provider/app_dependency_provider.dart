@@ -8,9 +8,6 @@ class AppDependencyProvider extends ChangeNotifier {
   String _consumetUrl = 'https://consumet.beamlak.dev';
   String get consumetUrl => _consumetUrl;
 
-  String _showboxUrl = "";
-  String get showboxUrl => _showboxUrl;
-
   String _flixQuestLogo = 'default';
   String get flixQuestLogo => _flixQuestLogo;
 
@@ -32,10 +29,10 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _enableOTTADS = true;
   bool get enableOTTADS => _enableOTTADS;
 
-  bool _displayWatchNowButton = false;
+  bool _displayWatchNowButton = true;
   bool get displayWatchNowButton => _displayWatchNowButton;
 
-  bool _displayOTTDrawer = false;
+  bool _displayOTTDrawer = true;
   bool get displayOTTDrawer => _displayOTTDrawer;
 
   Future<void> getConsumetUrl() async {
@@ -105,15 +102,6 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set displayOTTDrawer(bool value) {
     _displayOTTDrawer = value;
-    notifyListeners();
-  }
-
-  Future<void> getShowboxUrl() async {
-    showboxUrl = await appDependencies.getShowboxUrl();
-  }
-
-  set showboxUrl(String value) {
-    _showboxUrl = value;
     notifyListeners();
   }
 }

@@ -326,24 +326,6 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   });
                 }),
               ),
-              ListTile(
-                leading: const Icon(FontAwesomeIcons.fileVideo),
-                title: Text(
-                  tr("video_source"),
-                ),
-                trailing: DropdownButton(
-                    value: settingValues.videoSource,
-                    items: const [
-                      DropdownMenuItem(value: 'flixHQ', child: Text('FlixHQ')),
-                      DropdownMenuItem(
-                          value: 'Showbox', child: Text('Showbox')),
-                    ],
-                    onChanged: (String? value) {
-                      setState(() {
-                        settingValues.videoSource = value!;
-                      });
-                    }),
-              ),
             ],
           ),
         ),

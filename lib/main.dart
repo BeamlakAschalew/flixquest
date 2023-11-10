@@ -49,17 +49,18 @@ Future<void> appInitialize() async {
   await settingsProvider.getSubtitleLanguage();
   await settingsProvider.getSubtitleMode();
   await settingsProvider.getViewMode();
+  await settingsProvider.getSubtitleSize();
+  await settingsProvider.getForegroundSubtitleColor();
+  await settingsProvider.getBackgroundSubtitleColor();
+  await settingsProvider.getAppLanguage();
+  await settingsProvider.getAppColorIndex();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
   await appDependencyProvider.getConsumetUrl();
   await appDependencyProvider.getFlixQuestLogo();
   await appDependencyProvider.getOpenSubKey();
   await appDependencyProvider.getStreamingServer();
-  await settingsProvider.getSubtitleSize();
-  await settingsProvider.getForegroundSubtitleColor();
-  await settingsProvider.getBackgroundSubtitleColor();
-  await settingsProvider.getAppLanguage();
-  await settingsProvider.getVideoSource();
+
   await _initialization;
 }
 

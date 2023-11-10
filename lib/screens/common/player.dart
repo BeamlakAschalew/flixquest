@@ -147,13 +147,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             resolutions: widget.sources,
             subtitles: widget.subs,
             cacheConfiguration: const BetterPlayerCacheConfiguration(
-              useCache: false,
+              useCache: true,
               preCacheSize: 471859200 * 471859200,
               maxCacheSize: 1073741824 * 1073741824,
               maxCacheFileSize: 471859200 * 471859200,
 
               ///Android only option to use cached video between app sessions
-              key: "testCacheKey",
+              key: "playerCache",
             ),
             bufferingConfiguration: betterPlayerBufferingConfiguration);
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);

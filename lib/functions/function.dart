@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -93,4 +94,36 @@ void updateAndLogTotalStreamingDuration(int durationInSeconds) {
       'duration_seconds': totalStreamingDuration,
     },
   );
+}
+
+String generateCacheKey() {
+  Random random = Random();
+
+  List<String> characters = [];
+  String generatedChars = "";
+
+  for (var i = 0; i < 26; i++) {
+    characters.add(String.fromCharCode(97 + i)); // Lowercase letters a-z
+  }
+
+  for (var i = 0; i < 26; i++) {
+    characters.add(String.fromCharCode(65 + i)); // Uppercase letters A-Z
+  }
+
+  for (var i = 0; i < 10; i++) {
+    characters.add(i.toString()); // Numbers 0-9
+  }
+
+  characters.add('-');
+
+  int min = 0;
+  int max = characters.length - 1;
+  int randomInt;
+
+  for (int i = 0; i < 50; i++) {
+    randomInt = min + random.nextInt(max - min + 1);
+    generatedChars += characters[randomInt];
+  }
+
+  return generatedChars;
 }

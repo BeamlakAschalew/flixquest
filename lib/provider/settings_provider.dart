@@ -13,7 +13,7 @@ class SettingsProvider with ChangeNotifier {
   Material3Preferences material3preferences = Material3Preferences();
   VideoPlayerPreferences videoPlayerPreferences = VideoPlayerPreferences();
   AppLanguagePreferences appLanguagePreferences = AppLanguagePreferences();
-  VideoSourcePreferences videoSourcePreferences = VideoSourcePreferences();
+  AppColorPreferences appColorPreferences = AppColorPreferences();
 
   bool _isAdult = false;
   bool get isAdult => _isAdult;
@@ -71,8 +71,8 @@ class SettingsProvider with ChangeNotifier {
   bool _fetchSpecificLangSubs = false;
   bool get fetchSpecificLangSubs => _fetchSpecificLangSubs;
 
-  String _videoSource = "flixHQ";
-  String get videoSource => _videoSource;
+  int _appColorIndex = -1;
+  int get appColorIndex => _appColorIndex;
 
   // theme change
   Future<void> getCurrentThemeMode() async {
@@ -269,13 +269,13 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getVideoSource() async {
-    videoSource = await videoSourcePreferences.getVideoSource();
+  Future<void> getAppColorIndex() async {
+    appColorIndex = await appColorPreferences.getAppColorIndex();
   }
 
-  set videoSource(String value) {
-    _videoSource = value;
-    videoSourcePreferences.setVideoSource(value);
+  set appColorIndex(int value) {
+    _appColorIndex = value;
+    appColorPreferences.setAppColorIndex(value);
     notifyListeners();
   }
 }

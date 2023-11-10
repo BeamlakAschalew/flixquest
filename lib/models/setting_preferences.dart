@@ -222,16 +222,16 @@ class AppLanguagePreferences {
   }
 }
 
-class VideoSourcePreferences {
-  static const VIDEO_SOURCE = "video_source";
+class AppColorPreferences {
+  static const APP_COLOR_INDEX = "appColorIndex";
 
-  setVideoSource(String source) async {
+  setAppColorIndex(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(VIDEO_SOURCE, source);
+    prefs.setInt(APP_COLOR_INDEX, index);
   }
 
-  Future<String> getVideoSource() async {
+  Future<int> getAppColorIndex() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(VIDEO_SOURCE) ?? 'Showbox';
+    return prefs.getInt(APP_COLOR_INDEX) ?? -1;
   }
 }

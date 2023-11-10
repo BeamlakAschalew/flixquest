@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:flixquest/models/app_colors.dart';
+
 import '../../functions/function.dart';
 import '/models/app_languages.dart';
 import '/screens/common/language_choose.dart';
@@ -30,6 +32,8 @@ class _SettingsState extends State<Settings> {
   String? release;
   bool isBelow33 = true;
 
+  final AppColorsList appColors = AppColorsList();
+
   void androidVersionCheck() async {
     if (Platform.isAndroid) {
       var androidInfo = await DeviceInfoPlugin().androidInfo;
@@ -50,14 +54,7 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    final adultChange = Provider.of<SettingsProvider>(context);
-    final themeChange = Provider.of<SettingsProvider>(context);
-    final imagequalityChange = Provider.of<SettingsProvider>(context);
-    final defaultHomeValue = Provider.of<SettingsProvider>(context);
-    final country = Provider.of<SettingsProvider>(context).defaultCountry;
-    final appLang = Provider.of<SettingsProvider>(context).appLanguage;
-    final viewType = Provider.of<SettingsProvider>(context);
-    final m3 = Provider.of<SettingsProvider>(context);
+    final settingsValues = Provider.of<SettingsProvider>(context);
 
     List<AppLanguages> langs = [
       AppLanguages(
@@ -297,7 +294,7 @@ class _SettingsState extends State<Settings> {
     ];
 
     for (int i = 0; i < countries.length; i++) {
-      if (countries[i].isoCode.contains(country)) {
+      if (countries[i].isoCode.contains(settingsValues.defaultCountry)) {
         setState(() {
           countryFlag = countries[i].flagPath;
           countryName = countries[i].countryName;
@@ -307,7 +304,7 @@ class _SettingsState extends State<Settings> {
     }
 
     for (int i = 0; i < langs.length; i++) {
-      if (langs[i].languageCode.contains(appLang)) {
+      if (langs[i].languageCode.contains(settingsValues.appLanguage)) {
         setState(() {
           languageFlag = langs[i].languageFlag;
           languageName = langs[i].languageName;
@@ -326,7 +323,7 @@ class _SettingsState extends State<Settings> {
           SwitchListTile(
             inactiveThumbColor: Colors.white,
             inactiveTrackColor: const Color(0xFF9B9B9B),
-            value: adultChange.isAdult,
+            value: settingsValues.isAdult,
             secondary: Icon(
               Icons.explicit_rounded,
               color: Theme.of(context).colorScheme.primary,
@@ -336,7 +333,7 @@ class _SettingsState extends State<Settings> {
             ),
             onChanged: (bool value) {
               setState(() {
-                adultChange.isAdult = value;
+                settingsValues.isAdult = value;
               });
             },
           ),
@@ -349,7 +346,7 @@ class _SettingsState extends State<Settings> {
               tr("theme_mode"),
             ),
             trailing: DropdownButton(
-                value: themeChange.appTheme,
+                value: settingsValues.appTheme,
                 items: [
                   DropdownMenuItem(
                       value: 'dark',
@@ -369,7 +366,7 @@ class _SettingsState extends State<Settings> {
                 ],
                 onChanged: (String? value) {
                   setState(() {
-                    themeChange.appTheme = value!;
+                    settingsValues.appTheme = value!;
                   });
                 }),
           ),
@@ -395,7 +392,7 @@ class _SettingsState extends State<Settings> {
               subtitle: Text(
                 tr("android_12"),
               ),
-              value: m3.isMaterial3Enabled,
+              value: settingsValues.isMaterial3Enabled,
               secondary: Icon(
                 Icons.color_lens_rounded,
                 color: Theme.of(context).colorScheme.primary,
@@ -405,7 +402,7 @@ class _SettingsState extends State<Settings> {
               ),
               onChanged: (bool value) {
                 setState(() {
-                  m3.isMaterial3Enabled = value;
+                  settingsValues.isMaterial3Enabled = value;
                 });
               },
             ),
@@ -419,7 +416,7 @@ class _SettingsState extends State<Settings> {
               tr("image_quality"),
             ),
             trailing: DropdownButton(
-                value: imagequalityChange.imageQuality,
+                value: settingsValues.imageQuality,
                 items: [
                   DropdownMenuItem(
                       value: 'original/',
@@ -439,7 +436,7 @@ class _SettingsState extends State<Settings> {
                 ],
                 onChanged: (String? value) {
                   setState(() {
-                    imagequalityChange.imageQuality = value!;
+                    settingsValues.imageQuality = value!;
                   });
                 }),
           ),
@@ -452,7 +449,7 @@ class _SettingsState extends State<Settings> {
               tr("list_view_type"),
             ),
             trailing: DropdownButton(
-                value: viewType.defaultView,
+                value: settingsValues.defaultView,
                 items: [
                   DropdownMenuItem(
                       value: 'list',
@@ -480,7 +477,7 @@ class _SettingsState extends State<Settings> {
                 ],
                 onChanged: (String? value) {
                   setState(() {
-                    viewType.defaultView = value!;
+                    settingsValues.defaultView = value!;
                   });
                 }),
           ),
@@ -493,7 +490,7 @@ class _SettingsState extends State<Settings> {
               tr("default_home_screen"),
             ),
             trailing: DropdownButton(
-                value: defaultHomeValue.defaultValue,
+                value: settingsValues.defaultValue,
                 items: [
                   DropdownMenuItem(
                       value: 0,
@@ -518,7 +515,7 @@ class _SettingsState extends State<Settings> {
                 ],
                 onChanged: (int? value) {
                   setState(() {
-                    defaultHomeValue.defaultValue = value!;
+                    settingsValues.defaultValue = value!;
                   });
                 }),
           ),
@@ -596,6 +593,54 @@ class _SettingsState extends State<Settings> {
                               : tr("cache_doesnt_exist")))));
                 },
                 child: Text(tr("clear"))),
+          ),
+          ListTile(
+            leading: const Icon(Icons.format_color_fill_rounded),
+            title: Text(tr("custom_color")),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: appColors
+                    .appColors(settingsValues.appTheme == 'dark' ||
+                            settingsValues.appTheme == 'amoled'
+                        ? true
+                        : false)
+                    .map((AppColor appColor) => ChoiceChip(
+                          backgroundColor: Colors.transparent,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(150))),
+                          selectedColor: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.35),
+                          label: ClipRRect(
+                            borderRadius: BorderRadius.circular(200),
+                            child: Container(
+                              // margin: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: appColor.cs.primary,
+                              ),
+                              height: 45,
+                              width: 45,
+                            ),
+                          ),
+                          selected:
+                              settingsValues.appColorIndex == appColor.index,
+                          onSelected: (bool? selected) {
+                            setState(() {
+                              settingsValues.appColorIndex =
+                                  (selected != null || selected!
+                                      ? appColor.index
+                                      : null)!;
+                            });
+                          },
+                        ))
+                    .toList()),
           )
         ],
       ),

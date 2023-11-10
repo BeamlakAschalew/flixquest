@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flixquest/models/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 //import 'package:flutter/services.dart';
@@ -74,7 +75,6 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getBool('enable_stream');
       appDependencyProvider.displayOTTDrawer =
           _remoteConfig.getBool('enable_ott');
-      appDependencyProvider.showboxUrl = _remoteConfig.getString('showbox_url');
     }
     await requestNotificationPermissions();
   }
@@ -149,7 +149,19 @@ class _FlixQuestState extends State<FlixQuest>
                           isM3Enabled: settingsProvider.isMaterial3Enabled,
                           lightDynamicColor: lightDynamic,
                           darkDynamicColor: darkDynamic,
-                          context: context),
+                          context: context,
+                          appColor: AppColor(
+                              cs: AppColorsList()
+                                  .appColors(settingsProvider.appTheme ==
+                                              'dark' ||
+                                          settingsProvider.appTheme == 'amoled'
+                                      ? true
+                                      : false)
+                                  .firstWhere((element) =>
+                                      element.index ==
+                                      settingsProvider.appColorIndex)
+                                  .cs,
+                              index: settingsProvider.appColorIndex)),
                       home: const UserState(),
                     );
                   },
