@@ -9,6 +9,7 @@ class AppDependencies {
   static const OPENSUBTITLES_KEY = "opensubtitlesKey";
   static const STREAM_SERVER = "vidcloud";
   static const SHOWBOX_URL = "showbox_url";
+  static const STREAM_ROUTE = "streamRoute";
 
   setConsumetUrl(String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -62,5 +63,15 @@ class AppDependencies {
   setShowboxUrl(String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(SHOWBOX_URL, value);
+  }
+
+  Future<String> getStreamRoute() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(STREAM_ROUTE) ?? 'flixHQ';
+  }
+
+  setStreamRoute(String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(STREAM_ROUTE, value);
   }
 }

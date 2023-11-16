@@ -20,7 +20,7 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _enableADS = true;
   bool get enableADS => _enableADS;
 
-  String _fetchRoute = "tmDB";
+  String _fetchRoute = "flixHQ";
   String get fetchRoute => _fetchRoute;
 
   bool _useExternalSubtitles = false;
@@ -80,8 +80,13 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> getStreamRoute() async {
+    fetchRoute = await appDependencies.getStreamRoute();
+  }
+
   set fetchRoute(String value) {
     _fetchRoute = value;
+    appDependencies.setStreamRoute(value);
     notifyListeners();
   }
 
