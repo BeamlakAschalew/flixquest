@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flixquest/functions/function.dart';
 import 'package:startapp_sdk/startapp.dart';
-import '../../models/movie_stream.dart';
+import '../../video_providers/flixhq.dart';
 import '/api/endpoints.dart';
 import '/functions/network.dart';
 import '/widgets/common_widgets.dart';
@@ -9,7 +9,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player/better_player.dart';
 import '../../models/sub_languages.dart';
-import '../../models/tv_stream.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '/constants/app_constants.dart';
@@ -33,23 +32,20 @@ class TVVideoLoader extends StatefulWidget {
 }
 
 class _TVVideoLoaderState extends State<TVVideoLoader> {
-  List<TVResults>? tvShows;
-  List<TVEpisodes>? epi;
-  TVVideoSources? tvVideoSources;
-  List<TVVideoLinks>? tvVideoLinks;
-  List<TVVideoSubtitles>? tvVideoSubs;
-  TVInfo? tvInfo;
+  List<FlixHQTVSearchEntry>? tvShows;
+  List<FlixHQTVInfoEntries>? epi;
+  FlixHQStreamSources? tvVideoSources;
+  List<FlixHQVideoLinks>? tvVideoLinks;
+  List<FlixHQSubLinks>? tvVideoSubs;
+  FlixHQTVInfo? tvInfo;
   double loadProgress = 0.00;
   late SettingsProvider settings =
       Provider.of<SettingsProvider>(context, listen: false);
   late AppDependencyProvider appDep =
       Provider.of<AppDependencyProvider>(context, listen: false);
 
-  List<TMAVideoSources>? tmaVideoSources;
-  List<TMASubtitleSources>? tmaSubtitleSources;
-
   /// TMDB Route
-  TVTMDBRoute? tvInfoTMDB;
+  FlixHQTVInfoTMDBRoute? tvInfoTMDB;
 
   var startAppSdk = StartAppSdk();
   StartAppInterstitialAd? interstitialAd;
@@ -104,7 +100,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             .then(
           (value) async {
             totalSeasons = value.numberOfSeasons!;
-            await fetchTVForStream(Endpoints.searchMovieTVForStream(
+            await fetchTVForStreamFlixHQ(Endpoints.searchMovieTVForStream(
                     removeCharacters(widget.metadata.elementAt(1)),
                     appDep.consumetUrl))
                 .then((value) async {
@@ -127,8 +123,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               for (int i = 0; i < tvShows!.length; i++) {
                 if (tvShows![i].seasons == totalSeasons &&
                     tvShows![i].type == 'TV Series') {
-                  await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                          tvShows![i].id!, appDep.consumetUrl))
+                  await getTVStreamEpisodesFlixHQ(
+                          Endpoints.getMovieTVStreamInfo(
+                              tvShows![i].id!, appDep.consumetUrl))
                       .then((value) async {
                     setState(() {
                       tvInfo = value;
@@ -138,7 +135,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     for (int k = 0; k < epi!.length; k++) {
                       if (epi![k].episode == widget.metadata.elementAt(3) &&
                           epi![k].season == widget.metadata.elementAt(4)) {
-                        await getTVStreamLinksAndSubs(
+                        await getTVStreamLinksAndSubsFlixHQ(
                                 Endpoints.getMovieTVStreamLinks(
                                     epi![k].id!,
                                     tvShows![i].id!,
@@ -177,8 +174,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
                 if (tvShows![i].seasons == (totalSeasons - 1) &&
                     tvShows![i].type == 'TV Series') {
-                  await getTVStreamEpisodes(Endpoints.getMovieTVStreamInfo(
-                          tvShows![i].id!, appDep.consumetUrl))
+                  await getTVStreamEpisodesFlixHQ(
+                          Endpoints.getMovieTVStreamInfo(
+                              tvShows![i].id!, appDep.consumetUrl))
                       .then((value) async {
                     setState(() {
                       tvInfo = value;
@@ -188,7 +186,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     for (int k = 0; k < epi!.length; k++) {
                       if (epi![k].episode == widget.metadata.elementAt(3) &&
                           epi![k].season == widget.metadata.elementAt(4)) {
-                        await getTVStreamLinksAndSubs(
+                        await getTVStreamLinksAndSubsFlixHQ(
                                 Endpoints.getMovieTVStreamLinks(
                                     epi![k].id!,
                                     tvShows![i].id!,
@@ -241,12 +239,13 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
                         .episodes![widget.metadata.elementAt(3) - 1].id !=
                     null) {
-              await getTVStreamLinksAndSubs(Endpoints.getMovieTVStreamLinksTMDB(
-                      appDep.consumetUrl,
-                      tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
-                          .episodes![widget.metadata.elementAt(3) - 1].id!,
-                      tvInfoTMDB!.id!,
-                      appDep.streamingServer))
+              await getTVStreamLinksAndSubsFlixHQ(
+                      Endpoints.getMovieTVStreamLinksTMDB(
+                          appDep.consumetUrl,
+                          tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
+                              .episodes![widget.metadata.elementAt(3) - 1].id!,
+                          tvInfoTMDB!.id!,
+                          appDep.streamingServer))
                   .then((value) {
                 if (value.messageExists == null &&
                     value.videoLinks != null &&

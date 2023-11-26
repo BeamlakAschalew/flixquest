@@ -66,7 +66,7 @@ ThemeData darkThemeData(
         ),
         foregroundColor: MaterialStatePropertyAll(
           isM3Enabled
-              ? darkDynamicColor?.onPrimary ?? Color(0xFFF57C00)
+              ? darkDynamicColor?.onPrimary ?? Colors.white
               : useUserColor
                   ? color.cs.onPrimary
                   : Colors.white,
@@ -335,7 +335,7 @@ ThemeData lightThemeData(
         ),
         foregroundColor: MaterialStatePropertyAll(
           isM3Enabled
-              ? lightDynamicColor?.onPrimary ?? Color(0xFFF57C00)
+              ? lightDynamicColor?.onPrimary ?? Colors.white
               : useUserColor
                   ? color.cs.onPrimary
                   : Colors.white,
@@ -604,10 +604,10 @@ ThemeData amoledThemeData(
         ),
         foregroundColor: MaterialStatePropertyAll(
           isM3Enabled
-              ? darkDynamicColor?.onPrimary ?? Color(0xFFF57C00)
+              ? darkDynamicColor?.onPrimary ?? Colors.white
               : useUserColor
                   ? color.cs.onPrimary
-                  : Color(0xFFF57C00),
+                  : Colors.white,
         ),
       ),
     ),

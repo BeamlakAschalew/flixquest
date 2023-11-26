@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../constants/app_constants.dart';
 import '../../functions/network.dart';
-import '../../models/movie_stream.dart';
+import '../../video_providers/flixhq.dart';
 
 class ServerStatusScreen extends StatefulWidget {
   const ServerStatusScreen({Key? key}) : super(key: key);
@@ -14,8 +14,8 @@ class ServerStatusScreen extends StatefulWidget {
 }
 
 class _ServerStatusScreenState extends State<ServerStatusScreen> {
-  List<MovieVideoLinks>? movieVideoLinks;
-  MovieVideoSources? movieVideoSources;
+  List<FlixHQVideoLinks>? movieVideoLinks;
+  FlixHQStreamSources? movieVideoSources;
   bool checking = false;
   String resultMessage = "";
   String waitingMessage = "";

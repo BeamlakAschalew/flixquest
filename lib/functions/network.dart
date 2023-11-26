@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flixquest/video_providers/flixhq.dart';
+
 import '../models/external_subtitles.dart';
-import '/models/movie_stream.dart';
 import '../constants/app_constants.dart';
 import '/models/update.dart';
 import '/models/images.dart';
@@ -15,7 +16,6 @@ import '/models/credits.dart';
 import '/models/genres.dart';
 import '/models/movie.dart';
 import '../models/live_tv.dart';
-import '../models/tv_stream.dart';
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
@@ -342,8 +342,8 @@ Future<TV> getTV(String api) async {
   return tv;
 }
 
-Future<List<MovieResults>> fetchMoviesForStream(String api) async {
-  MovieStream movieStream;
+Future<List<FlixHQMovieSearchEntry>> fetchMoviesForStream(String api) async {
+  FlixHQMovieSearch movieStream;
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
@@ -351,22 +351,22 @@ Future<List<MovieResults>> fetchMoviesForStream(String api) async {
     );
     var decodeRes = jsonDecode(res.body);
 
-    movieStream = MovieStream.fromJson(decodeRes);
+    movieStream = FlixHQMovieSearch.fromJson(decodeRes);
   } finally {
     client.close();
   }
   return movieStream.results ?? [];
 }
 
-Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
-  MovieInfo movieInfo;
+Future<List<FlixHQMovieInfoEntries>> getMovieStreamEpisodes(String api) async {
+  FlixHQMovieInfo movieInfo;
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
-    movieInfo = MovieInfo.fromJson(decodeRes);
+    movieInfo = FlixHQMovieInfo.fromJson(decodeRes);
   } finally {
     client.close();
   }
@@ -374,8 +374,8 @@ Future<List<MovieEpisodes>> getMovieStreamEpisodes(String api) async {
   return movieInfo.episodes ?? [];
 }
 
-Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
-  MovieVideoSources movieVideoSources;
+Future<FlixHQStreamSources> getMovieStreamLinksAndSubs(String api) async {
+  FlixHQStreamSources movieVideoSources;
   int tries = 5;
   dynamic decodeRes;
   try {
@@ -392,37 +392,37 @@ Future<MovieVideoSources> getMovieStreamLinksAndSubs(String api) async {
         break;
       }
     }
-    movieVideoSources = MovieVideoSources.fromJson(decodeRes);
+    movieVideoSources = FlixHQStreamSources.fromJson(decodeRes);
   } finally {
     client.close();
   }
   return movieVideoSources;
 }
 
-Future<List<TVResults>> fetchTVForStream(String api) async {
-  TVStream tvStream;
+Future<List<FlixHQTVSearchEntry>> fetchTVForStreamFlixHQ(String api) async {
+  FlixHQTVSearch tvStream;
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
-    tvStream = TVStream.fromJson(decodeRes);
+    tvStream = FlixHQTVSearch.fromJson(decodeRes);
   } finally {
     client.close();
   }
   return tvStream.results ?? [];
 }
 
-Future<TVInfo> getTVStreamEpisodes(String api) async {
-  TVInfo tvInfo;
+Future<FlixHQTVInfo> getTVStreamEpisodesFlixHQ(String api) async {
+  FlixHQTVInfo tvInfo;
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
-    tvInfo = TVInfo.fromJson(decodeRes);
+    tvInfo = FlixHQTVInfo.fromJson(decodeRes);
   } finally {
     client.close();
   }
@@ -430,8 +430,8 @@ Future<TVInfo> getTVStreamEpisodes(String api) async {
   return tvInfo;
 }
 
-Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
-  TVVideoSources tvVideoSources;
+Future<FlixHQStreamSources> getTVStreamLinksAndSubsFlixHQ(String api) async {
+  FlixHQStreamSources tvVideoSources;
   int tries = 5;
   dynamic decodeRes;
   try {
@@ -449,7 +449,7 @@ Future<TVVideoSources> getTVStreamLinksAndSubs(String api) async {
       }
     }
 
-    tvVideoSources = TVVideoSources.fromJson(decodeRes);
+    tvVideoSources = FlixHQStreamSources.fromJson(decodeRes);
   } finally {
     client.close();
   }
@@ -491,8 +491,8 @@ Future<List<Channel>> fetchChannels(String api) async {
 
 /// Stream TMDB route
 
-Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
-  MovieInfoTMDBRoute movieInfo;
+Future<FlixHQMovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
+  FlixHQMovieInfoTMDBRoute movieInfo;
   int tries = 5;
   dynamic decodeRes;
   try {
@@ -511,7 +511,7 @@ Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
         break;
       }
     }
-    movieInfo = MovieInfoTMDBRoute.fromJson(decodeRes);
+    movieInfo = FlixHQMovieInfoTMDBRoute.fromJson(decodeRes);
   } finally {
     client.close();
   }
@@ -519,8 +519,8 @@ Future<MovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
   return movieInfo;
 }
 
-Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
-  TVTMDBRoute tvInfo;
+Future<FlixHQTVInfoTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
+  FlixHQTVInfoTMDBRoute tvInfo;
   int tries = 5;
   dynamic decodeRes;
   try {
@@ -539,7 +539,7 @@ Future<TVTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
         break;
       }
     }
-    tvInfo = TVTMDBRoute.fromJson(decodeRes);
+    tvInfo = FlixHQTVInfoTMDBRoute.fromJson(decodeRes);
   } finally {
     client.close();
   }
@@ -589,20 +589,4 @@ Future<SubtitleDownload> downloadExternalSubtitle(
   }
 
   return sub;
-}
-
-Future<TMA> fetchTMA(String uri) async {
-  TMA tma;
-  try {
-    var response = await retryOptions.retry(
-      () => http.get(Uri.parse(uri)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    var decodeRes = jsonDecode(response.body);
-    tma = TMA.fromJson(decodeRes);
-  } finally {
-    client.close();
-  }
-
-  return tma;
 }

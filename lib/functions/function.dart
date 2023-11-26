@@ -36,7 +36,7 @@ Future<bool> checkConnection() async {
 }
 
 String removeCharacters(String input) {
-  String charactersToRemove = ",.?\"'";
+  String charactersToRemove = ",.?\"'&#^*%@!-()%\$";
   String pattern = '[$charactersToRemove]';
   String result = input.replaceAll(RegExp(pattern), '');
   return result;

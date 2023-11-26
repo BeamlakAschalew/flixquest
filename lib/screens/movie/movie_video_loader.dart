@@ -1,9 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flixquest/functions/function.dart';
+import 'package:flixquest/video_providers/flixhq.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '/api/endpoints.dart';
 import '/functions/network.dart';
-import '/models/movie_stream.dart';
 import '/provider/app_dependency_provider.dart';
 import '/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -32,13 +32,11 @@ class MovieVideoLoader extends StatefulWidget {
 }
 
 class _MovieVideoLoaderState extends State<MovieVideoLoader> {
-  List<MovieResults>? movies;
-  List<MovieEpisodes>? epi;
-  MovieVideoSources? movieVideoSources;
-  List<MovieVideoLinks>? movieVideoLinks;
-  List<MovieVideoSubtitles>? movieVideoSubs;
-  List<TMAVideoSources>? tmaVideoSources;
-  List<TMASubtitleSources>? tmaSubtitleSources;
+  List<FlixHQMovieSearchEntry>? movies;
+  List<FlixHQMovieInfoEntries>? epi;
+  FlixHQStreamSources? movieVideoSources;
+  List<FlixHQVideoLinks>? movieVideoLinks;
+  List<FlixHQSubLinks>? movieVideoSubs;
 
   double loadProgress = 0.00;
   late SettingsProvider settings =
@@ -47,7 +45,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       Provider.of<AppDependencyProvider>(context, listen: false);
 
   /// TMDB Route
-  MovieInfoTMDBRoute? episode;
+  FlixHQMovieInfoTMDBRoute? episode;
 
   var startAppSdk = StartAppSdk();
   StartAppInterstitialAd? interstitialAd;

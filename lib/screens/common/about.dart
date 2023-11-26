@@ -41,7 +41,7 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  tr("app_version", namedArgs: {"version": "2.4.3"}),
+                  tr("app_version", namedArgs: {"version": currentAppVersion}),
                   style: const TextStyle(
                     fontSize: 27.0,
                   ),

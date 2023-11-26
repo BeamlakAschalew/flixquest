@@ -33,7 +33,8 @@ class AppColorsList {
     ];
 
     List<AppColor> appColors = [
-      AppColor(cs: AppColor.colorGetter(Color(0xFFF57C00), isDark), index: -1),
+      AppColor(
+          cs: AppColor.colorGetter(const Color(0xFFF57C00), isDark), index: -1),
       AppColor(cs: AppColor.colorGetter(baseColors[0], isDark), index: 1),
       AppColor(cs: AppColor.colorGetter(baseColors[1], isDark), index: 2),
       AppColor(cs: AppColor.colorGetter(baseColors[2], isDark), index: 3),
