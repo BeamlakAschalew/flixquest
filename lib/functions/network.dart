@@ -5,6 +5,7 @@ import 'package:flixquest/video_providers/flixhq.dart';
 
 import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
+import '../video_providers/superstream.dart';
 import '/models/update.dart';
 import '/models/images.dart';
 import '/models/person.dart';
@@ -374,7 +375,7 @@ Future<List<FlixHQMovieInfoEntries>> getMovieStreamEpisodes(String api) async {
   return movieInfo.episodes ?? [];
 }
 
-Future<FlixHQStreamSources> getMovieStreamLinksAndSubs(String api) async {
+Future<FlixHQStreamSources> getMovieStreamLinksAndSubsFlixHQ(String api) async {
   FlixHQStreamSources movieVideoSources;
   int tries = 5;
   dynamic decodeRes;
@@ -589,4 +590,32 @@ Future<SubtitleDownload> downloadExternalSubtitle(
   }
 
   return sub;
+}
+
+/// Superstream function(s)
+Future<SuperstreamStreamSources> getSuperstreamStreamingLinks(
+    String api) async {
+  SuperstreamStreamSources superstreamSources;
+  int tries = 5;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+
+    superstreamSources = SuperstreamStreamSources.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return superstreamSources;
 }

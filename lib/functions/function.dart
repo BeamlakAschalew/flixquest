@@ -127,3 +127,22 @@ String generateCacheKey() {
 
   return generatedChars;
 }
+
+String processVttFileTimestamps(String vttFile) {
+  final lines = vttFile.split('\n');
+  final processedLines = <String>[];
+
+  for (var i = 0; i < lines.length; i++) {
+    final line = lines[i];
+    if (line.contains('-->') && line.trim().length == 23) {
+      String endTimeModifiedString =
+          '${line.trim().substring(0, line.trim().length - 9)}00:${line.trim().substring(line.trim().length - 9)}';
+      String finalStr = '00:$endTimeModifiedString';
+      processedLines.add(finalStr);
+    } else {
+      processedLines.add(line);
+    }
+  }
+
+  return processedLines.join('\n');
+}
