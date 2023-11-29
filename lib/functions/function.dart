@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../constants/app_constants.dart';
+import '../video_providers/names.dart';
 
 String episodeSeasonFormatter(int episodeNumber, int seasonNumber) {
   String formattedSeason =
@@ -145,4 +146,15 @@ String processVttFileTimestamps(String vttFile) {
   }
 
   return processedLines.join('\n');
+}
+
+List<VideoProvider?> parseProviderPrecedenceString(String raw) {
+  List<VideoProvider?> videoProviders = raw.split(' ').map((providerString) {
+    List<String> parts = providerString.split('-');
+    if (parts.length == 2) {
+      return VideoProvider(fullName: parts[1], codeName: parts[0]);
+    } else {}
+  }).toList();
+
+  return videoProviders;
 }

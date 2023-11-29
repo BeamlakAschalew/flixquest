@@ -119,6 +119,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             controlsConfiguration: betterPlayerControlsConfiguration,
             showPlaceholderUntilPlay: true,
             allowedScreenSleep: false,
+            autoDetectFullscreenAspectRatio: true,
             subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
                 backgroundColor: backgroundColor,
                 fontFamily: 'Poppins',
@@ -146,14 +147,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         BetterPlayerDataSource(BetterPlayerDataSourceType.network, link,
             resolutions: widget.sources,
             subtitles: widget.subs,
-            cacheConfiguration: const BetterPlayerCacheConfiguration(
+            cacheConfiguration: BetterPlayerCacheConfiguration(
               useCache: true,
               preCacheSize: 471859200 * 471859200,
               maxCacheSize: 1073741824 * 1073741824,
               maxCacheFileSize: 471859200 * 471859200,
 
               ///Android only option to use cached video between app sessions
-              key: "playerCache",
+              key: generateCacheKey(),
             ),
             bufferingConfiguration: betterPlayerBufferingConfiguration);
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);

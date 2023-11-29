@@ -1,15 +1,15 @@
 class ProviderNames {
-  static List<Provider> providers = [
-    Provider(fullName: 'FlixHQ', codeName: 'flixhq'),
-    Provider(fullName: 'Superstream', codeName: 'superstream'),
-    Provider(fullName: 'Dramacool', codeName: 'dramacool'),
-    Provider(fullName: 'ViewAsian', codeName: 'viewasian')
+  static List<VideoProvider> providers = [
+    VideoProvider(fullName: 'FlixHQ', codeName: 'flixhq'),
+    VideoProvider(fullName: 'Superstream', codeName: 'superstream'),
+    VideoProvider(fullName: 'Dramacool', codeName: 'dramacool'),
+    VideoProvider(fullName: 'ViewAsian', codeName: 'viewasian')
   ];
 }
 
-class Provider {
+class VideoProvider {
   String fullName;
   String codeName;
 
-  Provider({required this.fullName, required this.codeName});
+  VideoProvider({required this.fullName, required this.codeName});
 }

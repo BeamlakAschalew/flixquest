@@ -490,4 +490,7 @@ abstract class LocaleKeys {
   static const amoled = 'amoled';
   static const video_source = 'video_source';
   static const custom_color = 'custom_color';
+  static const provider_precedence = 'provider_precedence';
+  static const choose_provider_order = 'choose_provider_order';
+  static const provider_precedence_help = 'provider_precedence_help';
 }

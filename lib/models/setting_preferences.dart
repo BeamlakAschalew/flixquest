@@ -1,4 +1,5 @@
 // ignore_for_file: constant_identifier_names
+import 'package:flixquest/constants/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdultModePreferences {
@@ -233,5 +234,19 @@ class AppColorPreferences {
   Future<int> getAppColorIndex() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getInt(APP_COLOR_INDEX) ?? -1;
+  }
+}
+
+class ProviderPrecedencePreference {
+  static const PROVIDER_PRECEDENCE = "providerPrecedence";
+
+  setProviderPrecedence(String pre) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(PROVIDER_PRECEDENCE, pre);
+  }
+
+  Future<String> getProviderPrecedence() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(PROVIDER_PRECEDENCE) ?? providerPreference;
   }
 }

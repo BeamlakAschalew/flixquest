@@ -75,3 +75,6 @@ class MyHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
+
+const providerPreference =
+    'superstream-Superstream flixhq-FlixHQ viewasian-ViewAsian dramacool-Dramacool ';

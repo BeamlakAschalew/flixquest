@@ -8,6 +8,9 @@ class AppDependencyProvider extends ChangeNotifier {
   String _consumetUrl = 'https://consumet.beamlak.dev';
   String get consumetUrl => _consumetUrl;
 
+  String _flixquestAPIUrl = 'https://flixquest-api.vercel.app/';
+  String get flixquestAPIURL => _flixquestAPIUrl;
+
   String _flixQuestLogo = 'default';
   String get flixQuestLogo => _flixQuestLogo;
 
@@ -45,6 +48,16 @@ class AppDependencyProvider extends ChangeNotifier {
   set consumetUrl(String value) {
     _consumetUrl = value;
     appDependencies.setConsumetUrl(value);
+    notifyListeners();
+  }
+
+  Future<void> getFQUrl() async {
+    flixquestAPIURL = await appDependencies.getFQURL();
+  }
+
+  set flixquestAPIURL(String value) {
+    _flixquestAPIUrl = value;
+    appDependencies.setFlixquestAPIUrl(value);
     notifyListeners();
   }
 

@@ -4,6 +4,7 @@ import 'package:flixquest/video_providers/superstream.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../../video_providers/common.dart';
 import '../../video_providers/flixhq.dart';
+import '../../video_providers/names.dart';
 import '/api/endpoints.dart';
 import '/functions/network.dart';
 import '/widgets/common_widgets.dart';
@@ -57,6 +58,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       Provider.of<SettingsProvider>(context, listen: false);
   late AppDependencyProvider appDep =
       Provider.of<AppDependencyProvider>(context, listen: false);
+  List<VideoProvider> videoProviders = [];
+  late SettingsProvider prefString =
+      Provider.of<SettingsProvider>(context, listen: false);
 
   /// TMDB Route
   FlixHQTVInfoTMDBRoute? tvInfoTMDB;
@@ -72,6 +76,10 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   @override
   void initState() {
     super.initState();
+    videoProviders.addAll(
+        parseProviderPrecedenceString(prefString.proPreference)
+            .where((provider) => provider != null)
+            .cast<VideoProvider>());
     if (appDep.enableADS) {
       loadInterstitialAd();
     }
@@ -92,8 +100,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   void loadVideo() async {
     try {
-      for (int i = 0; i < providers.length; i++) {
-        if (providers[i] == 'flixhq') {
+      for (int i = 0; i < videoProviders.length; i++) {
+        if (videoProviders[i].codeName == 'flixhq') {
           if (widget.route == StreamRoute.flixHQ) {
             await loadFlixHQNormalRoute();
             if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
@@ -114,7 +122,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               break;
             }
           }
-        } else if (providers[i] == 'superstream') {
+        } else if (videoProviders[i].codeName == 'superstream') {
           await loadSuperstream();
           if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
             await subtitleParserFetcher(tvVideoSubs!);
@@ -123,12 +131,12 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
             break;
           }
-        } else if (providers[i] == 'dramacool') {
+        } else if (videoProviders[i].codeName == 'dramacool') {
           await loadDramacool();
           if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
             break;
           }
-        } else if (providers[i] == 'viewasian') {
+        } else if (videoProviders[i].codeName == 'viewasian') {
           await loadViewasian();
           if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
             break;

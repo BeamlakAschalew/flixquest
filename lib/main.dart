@@ -54,6 +54,7 @@ Future<void> appInitialize() async {
   await settingsProvider.getBackgroundSubtitleColor();
   await settingsProvider.getAppLanguage();
   await settingsProvider.getAppColorIndex();
+  await settingsProvider.getProviderPrecedence();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
   await appDependencyProvider.getConsumetUrl();
@@ -62,6 +63,7 @@ Future<void> appInitialize() async {
   await appDependencyProvider.getStreamingServerFlixHQ();
   await appDependencyProvider.getStreamingServerDCVA();
   await appDependencyProvider.getStreamRoute();
+  await appDependencyProvider.getFQUrl();
 
   await _initialization;
 }

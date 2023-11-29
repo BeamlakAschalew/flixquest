@@ -361,13 +361,13 @@ class Endpoints {
   }
 
   static String getSuperstreamStreamMovie(String baseUrl, int tmdbId) {
-    return '$baseUrl' 'superstream/watch-movie?tmdbId=$tmdbId';
+    return '$baseUrl' '/superstream/watch-movie?tmdbId=$tmdbId';
   }
 
   static String getSuperstreamStreamTV(
       String baseUrl, int tmdbId, int seasonNumber, int episodeNumber) {
     return '$baseUrl'
-        'superstream/watch-tv?tmdbId=$tmdbId&episode=$episodeNumber&season=$seasonNumber';
+        '/superstream/watch-tv?tmdbId=$tmdbId&episode=$episodeNumber&season=$seasonNumber';
   }
 
   static String searchMovieTVForStreamDramacool(

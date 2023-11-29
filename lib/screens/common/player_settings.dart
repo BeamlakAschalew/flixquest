@@ -1,3 +1,5 @@
+import 'package:flixquest/screens/common/provider_choose.dart';
+
 import '../../screens/common/sublanguage_choose.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -343,6 +345,21 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                     settingValues.fetchSpecificLangSubs = value;
                   });
                 }),
+              ),
+              ListTile(
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) {
+                    return const ProviderChooseScreen();
+                  })));
+                },
+                leading: Icon(
+                  FontAwesomeIcons.server,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                title: Text(
+                  tr("provider_precedence"),
+                ),
               ),
             ],
           ),

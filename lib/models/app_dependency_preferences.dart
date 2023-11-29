@@ -11,6 +11,7 @@ class AppDependencies {
   static const STREAM_SERVER_DCVA = "asianload";
   static const SHOWBOX_URL = "showbox_url";
   static const STREAM_ROUTE = "streamRoute";
+  static const FLIXQUEST_API_URL = "flixquestAPIURL";
 
   setConsumetUrl(String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -25,6 +26,17 @@ class AppDependencies {
   setFlixQuestUrl(String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString(FLIXQUEST_LOGO_URL, value);
+  }
+
+  Future<String> getFQURL() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(FLIXQUEST_API_URL) ??
+        'https://flixquest-api.beamlak.dev';
+  }
+
+  setFlixquestAPIUrl(String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(FLIXQUEST_API_URL, value);
   }
 
   Future<String> getFlixQuestLogo() async {
