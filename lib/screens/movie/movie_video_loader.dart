@@ -4,6 +4,7 @@ import 'package:flixquest/video_providers/flixhq.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../../video_providers/common.dart';
 import '../../video_providers/names.dart';
+import '../../video_providers/zoro.dart';
 import '/api/endpoints.dart';
 import '/functions/network.dart';
 import '/provider/app_dependency_provider.dart';
@@ -41,11 +42,14 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   List<DCVAInfoEntries>? dcEpi;
   List<DCVASearchEntry>? vaMovies;
   List<DCVAInfoEntries>? vaEpi;
+  List<ZoroSearchEntry>? zoroMovies;
+  List<ZoroInfoEntries>? zoroEpi;
 
   FlixHQStreamSources? fqMovieVideoSources;
   SuperstreamStreamSources? superstreamVideoSources;
   DCVAStreamSources? dramacoolVideoSources;
   DCVAStreamSources? viewasianVideoSources;
+  ZoroStreamSources? zoroVideoSources;
   List<RegularVideoLinks>? movieVideoLinks;
   List<RegularSubtitleLinks>? movieVideoSubs;
 
@@ -100,6 +104,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   void loadVideo() async {
     try {
       for (int i = 0; i < videoProviders.length; i++) {
+        print(videoProviders[i].codeName);
         if (videoProviders[i].codeName == 'flixhq') {
           if (widget.route == StreamRoute.flixHQ) {
             await loadFlixHQNormalRoute();
@@ -137,6 +142,11 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           }
         } else if (videoProviders[i].codeName == 'viewasian') {
           await loadViewasian();
+          if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
+            break;
+          }
+        } else if (videoProviders[i].codeName == 'zoro') {
+          await loadZoro();
           if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
             break;
           }
@@ -473,10 +483,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       }
 
       for (int i = 0; i < dcMovies!.length; i++) {
-        if (dcMovies![i]
-            .title!
-            .toLowerCase()
-            .contains(widget.metadata.elementAt(1).toString().toLowerCase())) {
+        if (removeCharacters(dcMovies![i].title!).toLowerCase().contains(
+            removeCharacters(widget.metadata.elementAt(1).toString())
+                .toLowerCase())) {
           await getMovieTVStreamEpisodesDCVA(
                   Endpoints.getMovieTVStreamInfoDramacool(
                       dcMovies![i].id!, appDep.consumetUrl))
@@ -538,10 +547,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       }
 
       for (int i = 0; i < vaMovies!.length; i++) {
-        if (vaMovies![i]
-            .title!
-            .toLowerCase()
-            .contains(widget.metadata.elementAt(1).toString().toLowerCase())) {
+        if (removeCharacters(vaMovies![i].title!).toLowerCase().contains(
+            removeCharacters(widget.metadata.elementAt(1).toString())
+                .toLowerCase())) {
           await getMovieTVStreamEpisodesDCVA(
                   Endpoints.getMovieTVStreamInfoViewasian(
                       vaMovies![i].id!, appDep.consumetUrl))
@@ -606,8 +614,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         if (fqMovies![i].releaseDate ==
                 widget.metadata.elementAt(3).toString() &&
             fqMovies![i].type == 'Movie' &&
-            fqMovies![i].title!.toLowerCase().contains(
-                widget.metadata.elementAt(1).toString().toLowerCase())) {
+            removeCharacters(fqMovies![i].title!).toLowerCase().contains(
+                removeCharacters(widget.metadata.elementAt(1).toString())
+                    .toLowerCase())) {
           await getMovieStreamEpisodesFlixHQ(
                   Endpoints.getMovieTVStreamInfoFlixHQ(
                       fqMovies![i].id!, appDep.consumetUrl))
@@ -655,7 +664,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   Future<void> loadSuperstream() async {
     await getSuperstreamStreamingLinks(Endpoints.getSuperstreamStreamMovie(
-            'https://flixquest-api.vercel.app/', widget.metadata.elementAt(0)))
+            appDep.flixquestAPIURL, widget.metadata.elementAt(0)))
         .then((value) {
       if (mounted) {
         if (value.messageExists == null &&
@@ -675,6 +684,68 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         movieVideoSubs = superstreamVideoSources!.videoSubtitles;
         if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
           convertVideoLinks(movieVideoLinks!);
+        }
+      }
+    });
+  }
+
+  Future<void> loadZoro() async {
+    await fetchMovieTVForStreamZoro(Endpoints.searchZoroMoviesTV(
+      appDep.consumetUrl,
+      removeCharacters(widget.metadata.elementAt(1)).toLowerCase(),
+    )).then((value) async {
+      if (mounted) {
+        setState(() {
+          zoroMovies = value;
+        });
+      }
+
+      if (zoroMovies == null || zoroMovies!.isEmpty) {
+        print('RETURNEDDDDDDDDDDDD');
+        return;
+      }
+
+      for (int i = 0; i < zoroMovies!.length; i++) {
+        print(removeCharacters(zoroMovies![0].title!));
+        if (removeCharacters(zoroMovies![i].title!)
+            .toLowerCase()
+            .contains(widget.metadata.elementAt(1).toString().toLowerCase())) {
+          await getMovieTVStreamEpisodesZoro(Endpoints.getMovieTVInfoZoro(
+                  appDep.consumetUrl, zoroMovies![i].id!))
+              .then((value) async {
+            setState(() {
+              zoroEpi = value;
+            });
+            if (zoroMovies != null && zoroMovies!.isNotEmpty) {
+              await getMovieTVStreamLinksAndSubsZoro(
+                      Endpoints.getMovieTVStreamLinksZoro(appDep.consumetUrl,
+                          zoroEpi![0].id!, appDep.streamingServerFlixHQ))
+                  .then((value) {
+                if (mounted) {
+                  if (value.messageExists == null &&
+                      value.videoLinks != null &&
+                      value.videoLinks!.isNotEmpty) {
+                    setState(() {
+                      zoroVideoSources = value;
+                    });
+                  } else if (value.messageExists != null ||
+                      value.videoLinks == null ||
+                      value.videoLinks!.isEmpty) {
+                    return;
+                  }
+                }
+                if (mounted) {
+                  movieVideoLinks = zoroVideoSources!.videoLinks;
+                  movieVideoSubs = zoroVideoSources!.videoSubtitles;
+                  if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
+                    convertVideoLinks(movieVideoLinks!);
+                  }
+                }
+              });
+            }
+          });
+
+          break;
         }
       }
     });

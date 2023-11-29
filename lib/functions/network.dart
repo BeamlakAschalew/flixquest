@@ -8,6 +8,7 @@ import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
 import '../video_providers/dramacool.dart';
 import '../video_providers/superstream.dart';
+import '../video_providers/zoro.dart';
 import '/models/update.dart';
 import '/models/images.dart';
 import '/models/person.dart';
@@ -679,4 +680,64 @@ Future<DCVAStreamSources> getMovieTVStreamLinksAndSubsDCVA(String api) async {
     client.close();
   }
   return dcvaVideoSources;
+}
+
+Future<List<ZoroSearchEntry>> fetchMovieTVForStreamZoro(String api) async {
+  print('REQUESTTTTTTTTTTTT: ${api}');
+  ZoroSearch zoroStream;
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+
+    zoroStream = ZoroSearch.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return zoroStream.results ?? [];
+}
+
+Future<List<ZoroInfoEntries>> getMovieTVStreamEpisodesZoro(String api) async {
+  print('REQUESTTTTTTTTTTTT2: ${api}');
+  ZoroInfo zoroInfo;
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    zoroInfo = ZoroInfo.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+
+  return zoroInfo.episodes ?? [];
+}
+
+Future<ZoroStreamSources> getMovieTVStreamLinksAndSubsZoro(String api) async {
+  print('REQUESTTTTTTTTTTTT3: ${api}');
+  ZoroStreamSources zoroVideoSources;
+  int tries = 5;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    zoroVideoSources = ZoroStreamSources.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return zoroVideoSources;
 }

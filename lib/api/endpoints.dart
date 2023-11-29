@@ -401,4 +401,17 @@ class Endpoints {
     return '$baseUrl'
         'movies/viewasian/watch?episodeId=$episodeId&mediaId=$mediaId';
   }
+
+  static String searchZoroMoviesTV(String baseUrl, String title) {
+    return '$baseUrl' 'anime/zoro/$title';
+  }
+
+  static String getMovieTVInfoZoro(String baseUrl, String titleStreamId) {
+    return '$baseUrl' 'anime/zoro/info?id=$titleStreamId';
+  }
+
+  static String getMovieTVStreamLinksZoro(
+      String baseUrl, String episodeId, String server) {
+    return '$baseUrl' 'anime/zoro/watch?episodeId=$episodeId&server=$server';
+  }
 }

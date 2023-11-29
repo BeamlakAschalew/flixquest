@@ -238,7 +238,7 @@ class AppColorPreferences {
 }
 
 class ProviderPrecedencePreference {
-  static const PROVIDER_PRECEDENCE = "providerPrecedence";
+  static const PROVIDER_PRECEDENCE = "providerPrecedence-v2";
 
   setProviderPrecedence(String pre) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

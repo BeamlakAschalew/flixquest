@@ -282,10 +282,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       }
 
       for (int i = 0; i < dcShows!.length; i++) {
-        if (dcShows![i]
-            .title!
-            .toLowerCase()
-            .contains(widget.metadata.elementAt(1).toString().toLowerCase())) {
+        if (removeCharacters(dcShows![i].title!).toLowerCase().contains(
+            removeCharacters(widget.metadata.elementAt(1).toString())
+                .toLowerCase())) {
           await getMovieTVStreamEpisodesDCVA(
                   Endpoints.getMovieTVStreamInfoDramacool(
                       dcShows![i].id!, appDep.consumetUrl))
@@ -338,7 +337,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   Future<void> loadSuperstream() async {
     await getSuperstreamStreamingLinks(Endpoints.getSuperstreamStreamTV(
-            'https://flixquest-api.vercel.app/',
+            appDep.flixquestAPIURL,
             widget.metadata.elementAt(7),
             widget.metadata.elementAt(4),
             widget.metadata.elementAt(3)))
@@ -388,8 +387,10 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           for (int i = 0; i < fqShows!.length; i++) {
             if (fqShows![i].seasons == totalSeasons &&
                 fqShows![i].type == 'TV Series' &&
-                fqShows![i].title!.toLowerCase().contains(
-                    widget.metadata.elementAt(1).toString().toLowerCase())) {
+                removeCharacters(fqShows![i].title!).toLowerCase().contains(
+                    removeCharacters(widget.metadata.elementAt(1))
+                        .toString()
+                        .toLowerCase())) {
               await getTVStreamEpisodesFlixHQ(
                       Endpoints.getMovieTVStreamInfoFlixHQ(
                           fqShows![i].id!, appDep.consumetUrl))
@@ -689,10 +690,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       }
 
       for (int i = 0; i < vaShows!.length; i++) {
-        if (vaShows![i]
-            .title!
-            .toLowerCase()
-            .contains(widget.metadata.elementAt(1).toString().toLowerCase())) {
+        if (removeCharacters(vaShows![i].title!).toLowerCase().contains(
+            removeCharacters(widget.metadata.elementAt(1).toString())
+                .toLowerCase())) {
           await getMovieTVStreamEpisodesDCVA(
                   Endpoints.getMovieTVStreamInfoViewasian(
                       vaShows![i].id!, appDep.consumetUrl))

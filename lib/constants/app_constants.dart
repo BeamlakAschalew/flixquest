@@ -77,4 +77,4 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 const providerPreference =
-    'superstream-Superstream flixhq-FlixHQ viewasian-ViewAsian dramacool-Dramacool ';
+    'superstream-Superstream flixhq-FlixHQ viewasian-ViewAsian dramacool-Dramacool zoro-Zoro ';
