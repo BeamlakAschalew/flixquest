@@ -7,7 +7,8 @@ class AppDependencies {
   static const CONSUMET_URL_KEY = "consumetUrlKey";
   static const FLIXQUEST_LOGO_URL = "flixquestLogoUrl";
   static const OPENSUBTITLES_KEY = "opensubtitlesKey";
-  static const STREAM_SERVER = "vidcloud";
+  static const STREAM_SERVER_FLIXHQ = "vidcloud";
+  static const STREAM_SERVER_DCVA = "asianload";
   static const SHOWBOX_URL = "showbox_url";
   static const STREAM_ROUTE = "streamRoute";
 
@@ -41,14 +42,24 @@ class AppDependencies {
     return prefs.getString(OPENSUBTITLES_KEY) ?? openSubtitlesKey;
   }
 
-  setStreamServer(String value) async {
+  setStreamServerFlixHQ(String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(STREAM_SERVER, value);
+    prefs.setString(STREAM_SERVER_FLIXHQ, value);
   }
 
-  Future<String> getStreamServer() async {
+  Future<String> getStreamServerFlixHQ() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(STREAM_SERVER) ?? STREAMING_SERVER;
+    return prefs.getString(STREAM_SERVER_FLIXHQ) ?? STREAMING_SERVER_FLIXHQ;
+  }
+
+  setStreamServerDCVA(String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(STREAM_SERVER_DCVA, value);
+  }
+
+  Future<String> getStreamServerDCVA() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(STREAM_SERVER_DCVA) ?? STREAMING_SERVER_DCVA;
   }
 
   Future<bool> enableAD(bool enable) async {

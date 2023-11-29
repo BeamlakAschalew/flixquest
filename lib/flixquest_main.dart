@@ -63,8 +63,10 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getString('cinemax_logo');
       appDependencyProvider.opensubtitlesKey =
           _remoteConfig.getString('opensubtitles_key');
-      appDependencyProvider.streamingServer =
-          _remoteConfig.getString('streaming_server');
+      appDependencyProvider.streamingServerFlixHQ =
+          _remoteConfig.getString('streaming_server_flixhq');
+      appDependencyProvider.streamingServerDCVA =
+          _remoteConfig.getString('streaming_server_dcva');
       appDependencyProvider.enableADS = _remoteConfig.getBool('ads_enabled');
       appDependencyProvider.fetchRoute = _remoteConfig.getString('route_v241');
       appDependencyProvider.useExternalSubtitles =

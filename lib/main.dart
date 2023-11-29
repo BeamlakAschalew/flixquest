@@ -59,7 +59,8 @@ Future<void> appInitialize() async {
   await appDependencyProvider.getConsumetUrl();
   await appDependencyProvider.getFlixQuestLogo();
   await appDependencyProvider.getOpenSubKey();
-  await appDependencyProvider.getStreamingServer();
+  await appDependencyProvider.getStreamingServerFlixHQ();
+  await appDependencyProvider.getStreamingServerDCVA();
   await appDependencyProvider.getStreamRoute();
 
   await _initialization;

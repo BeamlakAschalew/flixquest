@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flixquest/video_providers/common.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
 
 import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
+import '../video_providers/dramacool.dart';
 import '../video_providers/superstream.dart';
 import '/models/update.dart';
 import '/models/images.dart';
@@ -343,7 +345,8 @@ Future<TV> getTV(String api) async {
   return tv;
 }
 
-Future<List<FlixHQMovieSearchEntry>> fetchMoviesForStream(String api) async {
+Future<List<FlixHQMovieSearchEntry>> fetchMoviesForStreamFlixHQ(
+    String api) async {
   FlixHQMovieSearch movieStream;
   try {
     var res = await retryOptions.retry(
@@ -359,7 +362,8 @@ Future<List<FlixHQMovieSearchEntry>> fetchMoviesForStream(String api) async {
   return movieStream.results ?? [];
 }
 
-Future<List<FlixHQMovieInfoEntries>> getMovieStreamEpisodes(String api) async {
+Future<List<FlixHQMovieInfoEntries>> getMovieStreamEpisodesFlixHQ(
+    String api) async {
   FlixHQMovieInfo movieInfo;
   try {
     var res = await retryOptions.retry(
@@ -618,4 +622,61 @@ Future<SuperstreamStreamSources> getSuperstreamStreamingLinks(
     client.close();
   }
   return superstreamSources;
+}
+
+Future<List<DCVASearchEntry>> fetchMovieTVForStreamDCVA(String api) async {
+  DCVASearch dcvaStream;
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+
+    dcvaStream = DCVASearch.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return dcvaStream.results ?? [];
+}
+
+Future<List<DCVAInfoEntries>> getMovieTVStreamEpisodesDCVA(String api) async {
+  DCVAInfo dcvaInfo;
+  try {
+    var res = await retryOptions.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    dcvaInfo = DCVAInfo.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+
+  return dcvaInfo.episodes ?? [];
+}
+
+Future<DCVAStreamSources> getMovieTVStreamLinksAndSubsDCVA(String api) async {
+  DCVAStreamSources dcvaVideoSources;
+  int tries = 5;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    dcvaVideoSources = DramacoolStreamSources.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return dcvaVideoSources;
 }

@@ -22,4 +22,5 @@ const String FLIXQUEST_UPDATE_URL =
     'https://beamlakaschalew.github.io/cinemax/res/update.json';
 const String CONSUMET_API = 'https://consumet.beamlak.dev/';
 const String CONSUMET_INFO_API = 'https://consumet.beamlak.dev/';
-const String STREAMING_SERVER = "vidcloud";
+const String STREAMING_SERVER_FLIXHQ = "vidcloud";
+const String STREAMING_SERVER_DCVA = "asianload";

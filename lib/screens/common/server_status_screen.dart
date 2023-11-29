@@ -38,7 +38,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
       start = DateTime.now();
     });
     await getMovieStreamLinksAndSubsFlixHQ(
-            "${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServer}")
+            "${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServerFlixHQ}")
         .then((value) {
       if (mounted) {
         setState(() {
