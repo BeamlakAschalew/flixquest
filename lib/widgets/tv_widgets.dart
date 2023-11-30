@@ -10,6 +10,7 @@ import '../controllers/bookmark_database_controller.dart';
 import '../controllers/recently_watched_database_controller.dart';
 import '../functions/function.dart';
 import '../models/recently_watched.dart';
+import '../models/tv_stream_metadata.dart';
 import '../provider/app_dependency_provider.dart';
 import '../provider/recently_watched_provider.dart';
 import '../screens/tv/tv_video_loader.dart';
@@ -520,11 +521,12 @@ class ScrollingTVState extends State<ScrollingTV>
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               8),
-                                                      color: themeMode == "dark" ||
+                                                      color:
+                                                          themeMode == "dark" ||
                                                                   themeMode ==
                                                                       "amoled"
-                                                          ? Colors.black45
-                                                          : Colors.white60),
+                                                              ? Colors.black45
+                                                              : Colors.white60),
                                                   child: Row(
                                                     children: [
                                                       const Icon(
@@ -678,28 +680,33 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => TVVideoLoader(
-                                              download: false,
-                                              route: fetchRoute == "flixHQ"
-                                                  ? StreamRoute.flixHQ
-                                                  : StreamRoute.tmDB,
-                                              metadata: [
-                                                widget.episodesList[index].id,
-                                                widget.episodesList[index]
-                                                    .seriesName,
-                                                widget.episodesList[index]
-                                                    .episodeName,
-                                                widget.episodesList[index]
-                                                    .episodeNum,
-                                                widget.episodesList[index]
-                                                    .seasonNum,
-                                                widget.episodesList[index]
-                                                    .posterPath,
-                                                widget.episodesList[index]
-                                                    .elapsed,
-                                                widget.episodesList[index]
-                                                    .seriesId,
-                                              ],
-                                            )))
+                                            download: false,
+                                            route: fetchRoute == "flixHQ"
+                                                ? StreamRoute.flixHQ
+                                                : StreamRoute.tmDB,
+                                            metadata: TVStreamMetadata(
+                                              elapsed: widget
+                                                  .episodesList[index].elapsed,
+                                              episodeId:
+                                                  widget.episodesList[index].id,
+                                              episodeName: widget
+                                                  .episodesList[index]
+                                                  .episodeName,
+                                              episodeNumber: widget
+                                                  .episodesList[index]
+                                                  .episodeNum,
+                                              posterPath: widget
+                                                  .episodesList[index]
+                                                  .posterPath,
+                                              seasonNumber: widget
+                                                  .episodesList[index]
+                                                  .seasonNum,
+                                              seriesName: widget
+                                                  .episodesList[index]
+                                                  .seriesName,
+                                              tvId: widget
+                                                  .episodesList[index].seriesId,
+                                            ))))
                                 : ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -3673,9 +3680,10 @@ class TVGenreDisplayState extends State<TVGenreDisplay>
                                 style: const TextStyle(fontFamily: 'Poppins'),
                                 // style: widget.themeData.textTheme.bodyText1,
                               ),
-                              backgroundColor: themeMode == "dark" || themeMode == "amoled"
-                                  ? const Color(0xFF2b2c30)
-                                  : const Color(0xFFDFDEDE),
+                              backgroundColor:
+                                  themeMode == "dark" || themeMode == "amoled"
+                                      ? const Color(0xFF2b2c30)
+                                      : const Color(0xFFDFDEDE),
                             ),
                           ),
                         );
@@ -4633,9 +4641,12 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                       ? tr("air_date_unknown")
                                                       : '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
                                                   style: TextStyle(
-                                                    color: themeMode == "dark" || themeMode == "amoled"
-                                                        ? Colors.white54
-                                                        : Colors.black54,
+                                                    color:
+                                                        themeMode == "dark" ||
+                                                                themeMode ==
+                                                                    "amoled"
+                                                            ? Colors.white54
+                                                            : Colors.black54,
                                                   ),
                                                 ),
                                                 Row(children: [
@@ -4719,8 +4730,9 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color:
-                  themeMode == "dark" || themeMode == "amoled" ? const Color(0xFF2b2c30) : const Color(0xFFDFDEDE),
+              color: themeMode == "dark" || themeMode == "amoled"
+                  ? const Color(0xFF2b2c30)
+                  : const Color(0xFFDFDEDE),
             ),
             child: Center(
               child: TabBar(
@@ -4735,31 +4747,41 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                     child: Text(tr("buy"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled" ? Colors.white : Colors.black)),
+                            color: themeMode == "dark" || themeMode == "amoled"
+                                ? Colors.white
+                                : Colors.black)),
                   ),
                   Tab(
                     child: Text(tr("stream"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled" ? Colors.white : Colors.black)),
+                            color: themeMode == "dark" || themeMode == "amoled"
+                                ? Colors.white
+                                : Colors.black)),
                   ),
                   Tab(
                     child: Text(tr("ads"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled" ? Colors.white : Colors.black)),
+                            color: themeMode == "dark" || themeMode == "amoled"
+                                ? Colors.white
+                                : Colors.black)),
                   ),
                   Tab(
                     child: Text(tr("rent"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled" ? Colors.white : Colors.black)),
+                            color: themeMode == "dark" || themeMode == "amoled"
+                                ? Colors.white
+                                : Colors.black)),
                   ),
                   Tab(
                     child: Text(tr("free"),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled" ? Colors.white : Colors.black)),
+                            color: themeMode == "dark" || themeMode == "amoled"
+                                ? Colors.white
+                                : Colors.black)),
                   ),
                 ],
               ),
@@ -6670,21 +6692,20 @@ class _WatchNowButtonState extends State<WatchNowButton> {
                     ? Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
                         return TVVideoLoader(
-                          download: false,
-                          route: fetchRoute == "flixHQ"
-                              ? StreamRoute.flixHQ
-                              : StreamRoute.tmDB,
-                          metadata: [
-                            widget.episodeList.episodeId,
-                            widget.seriesName,
-                            widget.episodeList.name,
-                            widget.episodeList.episodeNumber!,
-                            widget.episodeList.seasonNumber!,
-                            widget.posterPath,
-                            elapsed,
-                            widget.tvId,
-                          ],
-                        );
+                            download: false,
+                            route: fetchRoute == "flixHQ"
+                                ? StreamRoute.flixHQ
+                                : StreamRoute.tmDB,
+                            metadata: TVStreamMetadata(
+                              elapsed: elapsed,
+                              episodeId: widget.episodeList.episodeId,
+                              episodeName: widget.episodeList.name,
+                              episodeNumber: widget.episodeList.episodeNumber!,
+                              posterPath: widget.posterPath,
+                              seasonNumber: widget.episodeList.seasonNumber!,
+                              seriesName: widget.seriesName,
+                              tvId: widget.tvId,
+                            ));
                       })))
                     : ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

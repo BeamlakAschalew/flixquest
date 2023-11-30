@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flixquest/functions/function.dart';
+import '../models/movie_stream_metadata.dart';
 import '/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../controllers/recently_watched_database_controller.dart';
@@ -700,23 +701,27 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => MovieVideoLoader(
-                                              download: false,
-                                              /* return to fetchRoute instead of hard text*/ route:
-                                                  fetchRoute == "flixHQ"
-                                                      ? StreamRoute.flixHQ
-                                                      : StreamRoute.tmDB,
-                                              metadata: [
-                                                widget.moviesList[index].id,
-                                                widget.moviesList[index].title,
-                                                widget.moviesList[index]
-                                                    .posterPath,
-                                                widget.moviesList[index]
-                                                    .releaseYear,
-                                                widget.moviesList[index]
-                                                    .backdropPath,
-                                                widget.moviesList[index].elapsed
-                                              ],
-                                            )))
+                                            download: false,
+                                            /* return to fetchRoute instead of hard text*/ route:
+                                                fetchRoute == "flixHQ"
+                                                    ? StreamRoute.flixHQ
+                                                    : StreamRoute.tmDB,
+                                            metadata: MovieStreamMetadata(
+                                              backdropPath: widget
+                                                  .moviesList[index]
+                                                  .backdropPath,
+                                              elapsed: widget
+                                                  .moviesList[index].elapsed,
+                                              movieId:
+                                                  widget.moviesList[index].id,
+                                              movieName: widget
+                                                  .moviesList[index].title,
+                                              posterPath: widget
+                                                  .moviesList[index].posterPath,
+                                              releaseYear: widget
+                                                  .moviesList[index]
+                                                  .releaseYear,
+                                            ))))
                                 : ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -1575,7 +1580,6 @@ class DownloadMovie extends StatelessWidget {
   Widget build(BuildContext context) {
     bool? isVisible = false;
     double? buttonWidth = 150;
-    final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return Container(
       child: TextButton(
         style: ButtonStyle(
@@ -1585,35 +1589,35 @@ class DownloadMovie extends StatelessWidget {
           Theme.of(context).colorScheme.primary,
         )),
         onPressed: () async {
-          await checkConnection().then((value) {
-            value
-                ? Navigator.push(context,
-                    MaterialPageRoute(builder: ((context) {
-                    return MovieVideoLoader(
-                      download: true,
-                      route: fetchRoute == "flixHQ"
-                          ? StreamRoute.flixHQ
-                          : StreamRoute.tmDB,
-                      metadata: [
-                        movieId,
-                        movieName,
-                        thumbnail,
-                        releaseYear,
-                        0.0
-                      ],
-                    );
-                  })))
-                : ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        tr("check_connection"),
-                        maxLines: 3,
-                        style: kTextSmallBodyStyle,
-                      ),
-                      duration: const Duration(seconds: 3),
-                    ),
-                  );
-          });
+          // await checkConnection().then((value) {
+          //   value
+          //       ? Navigator.push(context,
+          //           MaterialPageRoute(builder: ((context) {
+          //           return MovieVideoLoader(
+          //             download: true,
+          //             route: fetchRoute == "flixHQ"
+          //                 ? StreamRoute.flixHQ
+          //                 : StreamRoute.tmDB,
+          //             metadata: [
+          //               movieId,
+          //               movieName,
+          //               thumbnail,
+          //               releaseYear,
+          //               0.0
+          //             ],
+          //           );
+          //         })))
+          //       : ScaffoldMessenger.of(context).showSnackBar(
+          //           SnackBar(
+          //             content: Text(
+          //               tr("check_connection"),
+          //               maxLines: 3,
+          //               style: kTextSmallBodyStyle,
+          //             ),
+          //             duration: const Duration(seconds: 3),
+          //           ),
+          //         );
+          // });
         },
         child: Row(
           children: [
@@ -3189,14 +3193,24 @@ class WatchNowButtonState extends State<WatchNowButton> {
                           ? StreamRoute.flixHQ
                           : StreamRoute.tmDB,
                       download: false,
-                      metadata: [
+                      metadata: MovieStreamMetadata(
+                          backdropPath: widget.backdropPath,
+                          elapsed: elapsed,
+                          movieId: widget.movieId,
+                          movieName: widget.movieName,
+                          posterPath: widget.posterPath,
+                          releaseYear: widget.releaseYear),
+                      /*
+                      
+                      [
                         widget.movieId,
                         widget.movieName,
                         widget.posterPath,
                         widget.releaseYear,
-                        widget.backdropPath,
+                        
                         elapsed
                       ],
+                      */
                     );
                   })))
                 : ScaffoldMessenger.of(context).showSnackBar(

@@ -1,10 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flixquest/functions/function.dart';
+import 'package:flixquest/models/tv_stream_metadata.dart';
 import 'package:flixquest/video_providers/superstream.dart';
 import 'package:startapp_sdk/startapp.dart';
 import '../../video_providers/common.dart';
 import '../../video_providers/flixhq.dart';
 import '../../video_providers/names.dart';
+import '../../video_providers/zoro.dart';
 import '/api/endpoints.dart';
 import '/functions/network.dart';
 import '/widgets/common_widgets.dart';
@@ -26,7 +28,7 @@ class TVVideoLoader extends StatefulWidget {
       Key? key})
       : super(key: key);
 
-  final List metadata;
+  final TVStreamMetadata metadata;
   final bool download;
   final StreamRoute route;
 
@@ -43,11 +45,14 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   List<DCVAInfoEntries>? dcEpi;
   List<DCVASearchEntry>? vaShows;
   List<DCVAInfoEntries>? vaEpi;
+  List<ZoroSearchEntry>? zoroShows;
+  List<ZoroInfoEntries>? zoroEpi;
 
   FlixHQStreamSources? fqTVVideoSources;
   SuperstreamStreamSources? superstreamVideoSources;
   DCVAStreamSources? dramacoolVideoSources;
   DCVAStreamSources? viewasianVideoSources;
+  ZoroStreamSources? zoroVideoSources;
 
   List<RegularVideoLinks>? tvVideoLinks;
   List<RegularSubtitleLinks>? tvVideoSubs;
@@ -72,6 +77,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
+
+  late String currentProvider;
 
   @override
   void initState() {
@@ -101,6 +108,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   void loadVideo() async {
     try {
       for (int i = 0; i < videoProviders.length; i++) {
+        setState(() {
+          currentProvider = videoProviders[i].fullName;
+        });
         if (videoProviders[i].codeName == 'flixhq') {
           if (widget.route == StreamRoute.flixHQ) {
             await loadFlixHQNormalRoute();
@@ -133,11 +143,28 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           }
         } else if (videoProviders[i].codeName == 'dramacool') {
           await loadDramacool();
+          if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
+            await subtitleParserFetcher(tvVideoSubs!);
+            break;
+          }
           if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
             break;
           }
         } else if (videoProviders[i].codeName == 'viewasian') {
           await loadViewasian();
+          if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
+            await subtitleParserFetcher(tvVideoSubs!);
+            break;
+          }
+          if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
+            break;
+          }
+        } else if (videoProviders[i].codeName == 'zoro') {
+          await loadZoro();
+          if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
+            await subtitleParserFetcher(tvVideoSubs!);
+            break;
+          }
           if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
             break;
           }
@@ -245,8 +272,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               borderRadius: BorderRadius.circular(10),
               color: Theme.of(context).colorScheme.onBackground,
             ),
-            height: 120,
-            width: 180,
+            height: 150,
+            width: 190,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -260,11 +287,28 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   height: 15,
                 ),
                 const SizedBox(width: 160, child: LinearProgressIndicator()),
+                const SizedBox(
+                  height: 4,
+                ),
+                RichText(
+                    text: TextSpan(style: TextStyle(fontSize: 15), children: [
+                  TextSpan(
+                      text: 'Fetching: ',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.background,
+                          fontFamily: 'Poppins')),
+                  TextSpan(
+                      text: currentProvider,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.background,
+                        fontFamily: 'PoppinsBold',
+                      ))
+                ])),
                 Visibility(
                   visible:
                       settings.defaultSubtitleLanguage != '' ? false : true,
                   child: Text(
-                    '${loadProgress.toStringAsFixed(0).toString()}%',
+                    'Subtitle load progress: ${loadProgress.toStringAsFixed(0).toString()}%',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.background),
                   ),
@@ -280,7 +324,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   Future<void> loadDramacool() async {
     if (mounted) {
       await fetchMovieTVForStreamDCVA(Endpoints.searchMovieTVForStreamDramacool(
-                  removeCharacters(widget.metadata.elementAt(1)),
+                  removeCharacters(widget.metadata.seriesName!),
                   appDep.consumetUrl)
               .toLowerCase())
           .then((value) async {
@@ -296,8 +340,11 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
         for (int i = 0; i < dcShows!.length; i++) {
           if (removeCharacters(dcShows![i].title!).toLowerCase().contains(
-              removeCharacters(widget.metadata.elementAt(1).toString())
-                  .toLowerCase())) {
+                  removeCharacters(widget.metadata.seriesName!.toString())
+                      .toLowerCase()) ||
+              dcShows![i]
+                  .title!
+                  .contains(widget.metadata.seriesName!.toString())) {
             await getMovieTVStreamEpisodesDCVA(
                     Endpoints.getMovieTVStreamInfoDramacool(
                         dcShows![i].id!, appDep.consumetUrl))
@@ -306,12 +353,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 dcEpi = value;
               });
               if (dcShows != null && dcShows!.isNotEmpty) {
+                bool doesntExist = dcEpi!
+                    .where((element) =>
+                        element.episode ==
+                        widget.metadata.episodeNumber!.toString())
+                    .isEmpty;
+                if (doesntExist) {
+                  return;
+                }
                 await getMovieTVStreamLinksAndSubsDCVA(
                         Endpoints.getMovieTVStreamLinksDramacool(
                             dcEpi!
                                 .where((element) =>
                                     element.episode ==
-                                    widget.metadata.elementAt(3).toString())
+                                    widget.metadata.episodeNumber!.toString())
                                 .first
                                 .id!,
                             dcShows![i].id!,
@@ -353,9 +408,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     if (mounted) {
       await getSuperstreamStreamingLinks(Endpoints.getSuperstreamStreamTV(
               appDep.flixquestAPIURL,
-              widget.metadata.elementAt(7),
-              widget.metadata.elementAt(4),
-              widget.metadata.elementAt(3)))
+              widget.metadata.tvId!,
+              widget.metadata.seasonNumber!,
+              widget.metadata.episodeNumber!))
           .then((value) {
         if (mounted) {
           if (value.messageExists == null &&
@@ -384,13 +439,12 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   Future<void> loadFlixHQNormalRoute() async {
     late int totalSeasons;
     if (mounted) {
-      await fetchTVDetails(
-              Endpoints.tvDetailsUrl(widget.metadata.elementAt(7), "en"))
+      await fetchTVDetails(Endpoints.tvDetailsUrl(widget.metadata.tvId!, "en"))
           .then(
         (value) async {
           totalSeasons = value.numberOfSeasons!;
           await fetchTVForStreamFlixHQ(Endpoints.searchMovieTVForStreamFlixHQ(
-                  removeCharacters(widget.metadata.elementAt(1)).toLowerCase(),
+                  removeCharacters(widget.metadata.seriesName!).toLowerCase(),
                   appDep.consumetUrl))
               .then((value) async {
             if (mounted) {
@@ -404,10 +458,13 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             for (int i = 0; i < fqShows!.length; i++) {
               if (fqShows![i].seasons == totalSeasons &&
                   fqShows![i].type == 'TV Series' &&
-                  removeCharacters(fqShows![i].title!).toLowerCase().contains(
-                      removeCharacters(widget.metadata.elementAt(1))
-                          .toString()
-                          .toLowerCase())) {
+                  (removeCharacters(fqShows![i].title!).toLowerCase().contains(
+                          removeCharacters(widget.metadata.seriesName!)
+                              .toString()
+                              .toLowerCase()) ||
+                      fqShows![i]
+                          .title!
+                          .contains(widget.metadata.seriesName!.toString()))) {
                 await getTVStreamEpisodesFlixHQ(
                         Endpoints.getMovieTVStreamInfoFlixHQ(
                             fqShows![i].id!, appDep.consumetUrl))
@@ -418,8 +475,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   });
 
                   for (int k = 0; k < fqEpi!.length; k++) {
-                    if (fqEpi![k].episode == widget.metadata.elementAt(3) &&
-                        fqEpi![k].season == widget.metadata.elementAt(4)) {
+                    if (fqEpi![k].episode == widget.metadata.episodeNumber! &&
+                        fqEpi![k].season == widget.metadata.seasonNumber!) {
                       await getTVStreamLinksAndSubsFlixHQ(
                               Endpoints.getMovieTVStreamLinksFlixHQ(
                                   fqEpi![k].id!,
@@ -469,8 +526,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   });
 
                   for (int k = 0; k < fqEpi!.length; k++) {
-                    if (fqEpi![k].episode == widget.metadata.elementAt(3) &&
-                        fqEpi![k].season == widget.metadata.elementAt(4)) {
+                    if (fqEpi![k].episode == widget.metadata.episodeNumber! &&
+                        fqEpi![k].season == widget.metadata.seasonNumber!) {
                       await getTVStreamLinksAndSubsFlixHQ(
                               Endpoints.getMovieTVStreamLinksFlixHQ(
                                   fqEpi![k].id!,
@@ -507,24 +564,22 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   Future<void> loadFlixHQTMDBRoute() async {
     if (mounted) {
       await getTVStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
-              widget.metadata.elementAt(7).toString(),
-              "tv",
-              appDep.consumetUrl))
+              widget.metadata.tvId!.toString(), "tv", appDep.consumetUrl))
           .then((value) async {
         setState(() {
           tvInfoTMDB = value;
         });
-        if (widget.metadata.elementAt(4) != 0) {
+        if (widget.metadata.seasonNumber! != 0) {
           if (tvInfoTMDB!.id != null &&
               tvInfoTMDB!.seasons != null &&
-              tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
-                      .episodes![widget.metadata.elementAt(3) - 1].id !=
+              tvInfoTMDB!.seasons![widget.metadata.seasonNumber! - 1]
+                      .episodes![widget.metadata.episodeNumber! - 1].id !=
                   null) {
             await getTVStreamLinksAndSubsFlixHQ(
                     Endpoints.getMovieTVStreamLinksTMDB(
                         appDep.consumetUrl,
-                        tvInfoTMDB!.seasons![widget.metadata.elementAt(4) - 1]
-                            .episodes![widget.metadata.elementAt(3) - 1].id!,
+                        tvInfoTMDB!.seasons![widget.metadata.seasonNumber! - 1]
+                            .episodes![widget.metadata.episodeNumber! - 1].id!,
                         tvInfoTMDB!.id!,
                         appDep.streamingServerFlixHQ))
                 .then((value) {
@@ -645,15 +700,14 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         } else {
           if (appDep.useExternalSubtitles) {
             await fetchSocialLinks(
-              Endpoints.getExternalLinksForTV(
-                  widget.metadata.elementAt(7), "en"),
+              Endpoints.getExternalLinksForTV(widget.metadata.tvId!, "en"),
             ).then((value) async {
               if (value.imdbId != null) {
                 await getExternalSubtitle(
                         Endpoints.searchExternalEpisodeSubtitles(
                             value.imdbId!,
-                            widget.metadata.elementAt(3),
-                            widget.metadata.elementAt(4),
+                            widget.metadata.episodeNumber!,
+                            widget.metadata.seasonNumber!,
                             supportedLanguages[foundIndex].languageCode),
                         appDep.opensubtitlesKey)
                     .then((value) async {
@@ -701,7 +755,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   Future<void> loadViewasian() async {
     if (mounted) {
       await fetchMovieTVForStreamDCVA(Endpoints.searchMovieTVForStreamViewasian(
-              removeCharacters(widget.metadata.elementAt(1)).toLowerCase(),
+              removeCharacters(widget.metadata.seriesName!).toLowerCase(),
               appDep.consumetUrl))
           .then((value) async {
         if (mounted) {
@@ -716,8 +770,11 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
         for (int i = 0; i < vaShows!.length; i++) {
           if (removeCharacters(vaShows![i].title!).toLowerCase().contains(
-              removeCharacters(widget.metadata.elementAt(1).toString())
-                  .toLowerCase())) {
+                  removeCharacters(widget.metadata.seriesName!.toString())
+                      .toLowerCase()) ||
+              vaShows![i]
+                  .title!
+                  .contains(widget.metadata.seriesName!.toString())) {
             await getMovieTVStreamEpisodesDCVA(
                     Endpoints.getMovieTVStreamInfoViewasian(
                         vaShows![i].id!, appDep.consumetUrl))
@@ -726,12 +783,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 vaEpi = value;
               });
               if (vaShows != null && vaShows!.isNotEmpty) {
+                bool doesntExist = vaEpi!
+                    .where((element) =>
+                        element.episode ==
+                        widget.metadata.episodeNumber!.toString())
+                    .isEmpty;
+                if (doesntExist) {
+                  return;
+                }
                 await getMovieTVStreamLinksAndSubsDCVA(
                         Endpoints.getMovieTVStreamLinksViewasian(
                             vaEpi!
                                 .where((element) =>
                                     element.episode ==
-                                    widget.metadata.elementAt(3).toString())
+                                    widget.metadata.episodeNumber!.toString())
                                 .first
                                 .id!,
                             vaShows![i].id!,
@@ -754,6 +819,86 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   if (mounted) {
                     tvVideoLinks = viewasianVideoSources!.videoLinks;
                     tvVideoSubs = viewasianVideoSources!.videoSubtitles;
+                    if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
+                      convertVideoLinks(tvVideoLinks!);
+                    }
+                  }
+                });
+              }
+            });
+
+            break;
+          }
+        }
+      });
+    }
+  }
+
+  Future<void> loadZoro() async {
+    if (mounted) {
+      await fetchMovieTVForStreamZoro(Endpoints.searchZoroMoviesTV(
+        appDep.consumetUrl,
+        removeCharacters(widget.metadata.seriesName!).toLowerCase(),
+      )).then((value) async {
+        if (mounted) {
+          setState(() {
+            zoroShows = value;
+          });
+        }
+
+        if (zoroShows == null || zoroShows!.isEmpty) {
+          return;
+        }
+
+        for (int i = 0; i < zoroShows!.length; i++) {
+          if ((removeCharacters(zoroShows![i].title!).toLowerCase().contains(
+                      widget.metadata.seriesName!.toString().toLowerCase()) ||
+                  zoroShows![i]
+                      .title!
+                      .contains(widget.metadata.seriesName!.toString())) &&
+              zoroShows![i].type == 'TV') {
+            await getMovieTVStreamEpisodesZoro(Endpoints.getMovieTVInfoZoro(
+                    appDep.consumetUrl, zoroShows![i].id!))
+                .then((value) async {
+              setState(() {
+                zoroEpi = value;
+              });
+              if (zoroShows != null && zoroShows!.isNotEmpty) {
+                bool doesntExist = zoroEpi!
+                    .where((element) =>
+                        element.episode ==
+                        widget.metadata.episodeNumber!.toString())
+                    .isEmpty;
+                if (doesntExist) {
+                  return;
+                }
+                await getMovieTVStreamLinksAndSubsZoro(
+                        Endpoints.getMovieTVStreamLinksZoro(
+                            appDep.consumetUrl,
+                            zoroEpi!
+                                .where((element) =>
+                                    element.episode ==
+                                    widget.metadata.episodeNumber!.toString())
+                                .first
+                                .id!,
+                            appDep.streamingServerFlixHQ))
+                    .then((value) {
+                  if (mounted) {
+                    if (value.messageExists == null &&
+                        value.videoLinks != null &&
+                        value.videoLinks!.isNotEmpty) {
+                      setState(() {
+                        zoroVideoSources = value;
+                      });
+                    } else if (value.messageExists != null ||
+                        value.videoLinks == null ||
+                        value.videoLinks!.isEmpty) {
+                      return;
+                    }
+                  }
+                  if (mounted) {
+                    tvVideoLinks = zoroVideoSources!.videoLinks;
+                    tvVideoSubs = zoroVideoSources!.videoSubtitles;
                     if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
                       convertVideoLinks(tvVideoLinks!);
                     }

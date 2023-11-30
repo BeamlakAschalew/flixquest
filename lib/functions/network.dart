@@ -683,7 +683,6 @@ Future<DCVAStreamSources> getMovieTVStreamLinksAndSubsDCVA(String api) async {
 }
 
 Future<List<ZoroSearchEntry>> fetchMovieTVForStreamZoro(String api) async {
-  print('REQUESTTTTTTTTTTTT: ${api}');
   ZoroSearch zoroStream;
   try {
     var res = await retryOptions.retry(
@@ -700,7 +699,6 @@ Future<List<ZoroSearchEntry>> fetchMovieTVForStreamZoro(String api) async {
 }
 
 Future<List<ZoroInfoEntries>> getMovieTVStreamEpisodesZoro(String api) async {
-  print('REQUESTTTTTTTTTTTT2: ${api}');
   ZoroInfo zoroInfo;
   try {
     var res = await retryOptions.retry(
@@ -717,7 +715,6 @@ Future<List<ZoroInfoEntries>> getMovieTVStreamEpisodesZoro(String api) async {
 }
 
 Future<ZoroStreamSources> getMovieTVStreamLinksAndSubsZoro(String api) async {
-  print('REQUESTTTTTTTTTTTT3: ${api}');
   ZoroStreamSources zoroVideoSources;
   int tries = 5;
   dynamic decodeRes;
