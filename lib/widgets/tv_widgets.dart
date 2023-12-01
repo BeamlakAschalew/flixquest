@@ -7,7 +7,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/bookmark_database_controller.dart';
-import '../controllers/recently_watched_database_controller.dart';
 import '../functions/function.dart';
 import '../models/recently_watched.dart';
 import '../models/tv_stream_metadata.dart';
@@ -6604,9 +6603,6 @@ class _WatchNowButtonState extends State<WatchNowButton> {
   Timer? _timer;
   Random random = Random();
 
-  RecentlyWatchedEpisodeController recentlyWatchedEpisodeController =
-      RecentlyWatchedEpisodeController();
-
   @override
   void initState() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -6630,7 +6626,6 @@ class _WatchNowButtonState extends State<WatchNowButton> {
 
   @override
   Widget build(BuildContext context) {
-    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
@@ -6654,38 +6649,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
               Theme.of(context).colorScheme.primary,
             )),
         onPressed: () async {
-          mixpanel.track('Most viewed TV series', properties: {
-            'TV series name': widget.seriesName,
-            'TV series id': '${widget.tvId}',
-            'TV series episode name': '${widget.episodeList.name}',
-            'TV series season number': '${widget.episodeList.seasonNumber}',
-            'TV series episode number': '${widget.episodeList.episodeNumber}'
-          });
-          setState(() {
-            isVisible = true;
-            buttonWidth = 200;
-          });
           if (mounted) {
-            var isBookmarked = await recentlyWatchedEpisodeController
-                .contain(widget.episodeList.episodeId!);
-            int elapsed = 0;
-            if (isBookmarked) {
-              if (mounted) {
-                var rEpisodes =
-                    Provider.of<RecentProvider>(context, listen: false)
-                        .episodes;
-
-                int index = rEpisodes.indexWhere(
-                    (element) => element.id == widget.episodeList.episodeId);
-                setState(() {
-                  elapsed = rEpisodes[index].elapsed!;
-                });
-              }
-            }
-            setState(() {
-              isVisible = false;
-              buttonWidth = 160;
-            });
             if (mounted) {
               await checkConnection().then((value) {
                 value
@@ -6697,7 +6661,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
                                 ? StreamRoute.flixHQ
                                 : StreamRoute.tmDB,
                             metadata: TVStreamMetadata(
-                              elapsed: elapsed,
+                              elapsed: null,
                               episodeId: widget.episodeList.episodeId,
                               episodeName: widget.episodeList.name,
                               episodeNumber: widget.episodeList.episodeNumber!,

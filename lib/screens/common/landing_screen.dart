@@ -28,8 +28,8 @@ class _LandingScreenState extends State<LandingScreen> {
     final FirebaseAuth auth = FirebaseAuth.instance;
 
     // void updateFirstRunData() async {
-    //   final prefs = await SharedPreferences.getInstance();
-    //   await prefs.setBool('isFirstRun', false);
+    //   final sharedPrefsSingleton = await SharedPreferences.getInstance();
+    //   await sharedPrefsSingleton.setBool('isFirstRun', false);
     // }
 
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;

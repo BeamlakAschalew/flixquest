@@ -3,6 +3,8 @@ import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
 import 'package:flixquest/video_providers/superstream.dart';
 import 'package:startapp_sdk/startapp.dart';
+import '../../controllers/recently_watched_database_controller.dart';
+import '../../provider/recently_watched_provider.dart';
 import '../../video_providers/common.dart';
 import '../../video_providers/flixhq.dart';
 import '../../video_providers/names.dart';
@@ -37,8 +39,9 @@ class TVVideoLoader extends StatefulWidget {
 }
 
 class _TVVideoLoaderState extends State<TVVideoLoader> {
-  String route = 'viewasian';
-  List<String> providers = ['dramacool', 'superstream', 'viewasian', 'flixhq'];
+  RecentlyWatchedEpisodeController recentlyWatchedEpisodeController =
+      RecentlyWatchedEpisodeController();
+
   List<FlixHQTVSearchEntry>? fqShows;
   List<FlixHQTVInfoEntries>? fqEpi;
   List<DCVASearchEntry>? dcShows;
@@ -78,7 +81,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
 
-  late String currentProvider;
+  late String currentProvider = "";
 
   @override
   void initState() {
@@ -107,6 +110,24 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   void loadVideo() async {
     try {
+      var isBookmarked = await recentlyWatchedEpisodeController
+          .contain(widget.metadata.episodeId!);
+      int elapsed = 0;
+      if (isBookmarked) {
+        if (mounted) {
+          var rEpisodes =
+              Provider.of<RecentProvider>(context, listen: false).episodes;
+
+          int index = rEpisodes
+              .indexWhere((element) => element.id == widget.metadata.episodeId);
+          setState(() {
+            elapsed = rEpisodes[index].elapsed!;
+          });
+          widget.metadata.elapsed = elapsed;
+        }
+      } else {
+        widget.metadata.elapsed = 0;
+      }
       for (int i = 0; i < videoProviders.length; i++) {
         setState(() {
           currentProvider = videoProviders[i].fullName;
@@ -188,6 +209,14 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
       if (tvVideoLinks != null && mounted) {
+        final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+        mixpanel.track('Most viewed TV series', properties: {
+          'TV series name': widget.metadata.seriesName,
+          'TV series id': '${widget.metadata.tvId}',
+          'TV series episode name': '${widget.metadata.episodeName}',
+          'TV series season number': '${widget.metadata.seasonNumber}',
+          'TV series episode number': '${widget.metadata.episodeNumber}'
+        });
         if (interstitialAd != null) {
           interstitialAd!.show();
           loadInterstitialAd().whenComplete(
@@ -291,19 +320,21 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   height: 4,
                 ),
                 RichText(
-                    text: TextSpan(style: TextStyle(fontSize: 15), children: [
-                  TextSpan(
-                      text: 'Fetching: ',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.background,
-                          fontFamily: 'Poppins')),
-                  TextSpan(
-                      text: currentProvider,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.background,
-                        fontFamily: 'PoppinsBold',
-                      ))
-                ])),
+                    text: TextSpan(
+                        style: const TextStyle(fontSize: 15),
+                        children: [
+                      TextSpan(
+                          text: 'Fetching: ',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.background,
+                              fontFamily: 'Poppins')),
+                      TextSpan(
+                          text: currentProvider,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.background,
+                            fontFamily: 'PoppinsBold',
+                          ))
+                    ])),
                 Visibility(
                   visible:
                       settings.defaultSubtitleLanguage != '' ? false : true,
@@ -881,7 +912,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                                     widget.metadata.episodeNumber!.toString())
                                 .first
                                 .id!,
-                            appDep.streamingServerFlixHQ))
+                            appDep.streamingServerZoro))
                     .then((value) {
                   if (mounted) {
                     if (value.messageExists == null &&

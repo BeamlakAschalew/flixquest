@@ -3,6 +3,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:retry/retry.dart';
 import 'dart:io';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 const kTextHeaderStyle = TextStyle(
   fontFamily: 'PoppinsSB',
   fontSize: 22,
@@ -78,3 +80,5 @@ class MyHttpOverrides extends HttpOverrides {
 
 const providerPreference =
     'superstream-Superstream flixhq-FlixHQ viewasian-ViewAsian dramacool-Dramacool zoro-Zoro ';
+
+late SharedPreferences sharedPrefsSingleton;

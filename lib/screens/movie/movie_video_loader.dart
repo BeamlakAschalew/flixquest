@@ -3,6 +3,8 @@ import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/models/movie_stream_metadata.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
 import 'package:startapp_sdk/startapp.dart';
+import '../../controllers/recently_watched_database_controller.dart';
+import '../../provider/recently_watched_provider.dart';
 import '../../video_providers/common.dart';
 import '../../video_providers/names.dart';
 import '../../video_providers/zoro.dart';
@@ -37,6 +39,9 @@ class MovieVideoLoader extends StatefulWidget {
 }
 
 class _MovieVideoLoaderState extends State<MovieVideoLoader> {
+  RecentlyWatchedMoviesController recentlyWatchedMoviesController =
+      RecentlyWatchedMoviesController();
+
   List<FlixHQMovieSearchEntry>? fqMovies;
   List<FlixHQMovieInfoEntries>? fqEpi;
   List<DCVASearchEntry>? dcMovies;
@@ -73,7 +78,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   List<BetterPlayerSubtitlesSource> subs = [];
 
   late int foundIndex;
-  late String currentProvider;
+  late String currentProvider = "";
 
   @override
   void initState() {
@@ -102,6 +107,21 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   void loadVideo() async {
     try {
+      var isBookmarked = await recentlyWatchedMoviesController
+          .contain(widget.metadata.movieId!);
+      int elapsed = 0;
+      if (isBookmarked) {
+        var rMovies =
+            Provider.of<RecentProvider>(context, listen: false).movies;
+        int index = rMovies
+            .indexWhere((element) => element.id == widget.metadata.movieId);
+        setState(() {
+          elapsed = rMovies[index].elapsed!;
+        });
+        widget.metadata.elapsed = elapsed;
+      } else {
+        widget.metadata.elapsed = 0;
+      }
       for (int i = 0; i < videoProviders.length; i++) {
         if (mounted) {
           setState(() {
@@ -184,6 +204,13 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       Map<String, String> reversedVids = Map.fromEntries(reversedVideoList);
 
       if (movieVideoLinks != null && mounted) {
+        final mixpanel =
+            Provider.of<SettingsProvider>(context, listen: false).mixpanel;
+        mixpanel.track('Most viewed movies', properties: {
+          'Movie name': widget.metadata.movieName,
+          'Movie id': widget.metadata.movieId,
+          'Is Movie adult?': widget.metadata.isAdult ?? 'unknown',
+        });
         if (interstitialAd != null) {
           interstitialAd!.show();
           loadInterstitialAd().whenComplete(
@@ -774,7 +801,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               if (zoroMovies != null && zoroMovies!.isNotEmpty) {
                 await getMovieTVStreamLinksAndSubsZoro(
                         Endpoints.getMovieTVStreamLinksZoro(appDep.consumetUrl,
-                            zoroEpi![0].id!, appDep.streamingServerFlixHQ))
+                            zoroEpi![0].id!, appDep.streamingServerZoro))
                     .then((value) {
                   if (mounted) {
                     if (value.messageExists == null &&

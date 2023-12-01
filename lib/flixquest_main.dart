@@ -79,6 +79,8 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getBool('enable_ott');
       appDependencyProvider.flixquestAPIURL =
           _remoteConfig.getString('flixquest_api_url');
+      appDependencyProvider.streamingServerZoro =
+          _remoteConfig.getString('streaming_server_zoro');
     }
     await requestNotificationPermissions();
   }
@@ -324,8 +326,8 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
 /*
 
 String? appVersion = _remoteConfig.getString('latest_version');
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? ignoreVersion = prefs.getString('ignore_version') ?? '';
+      SharedPreferences sharedPrefsSingleton = await SharedPreferences.getInstance();
+      String? ignoreVersion = sharedPrefsSingleton.getString('ignore_version') ?? '';
       if (mounted &&
           appVersion != currentAppVersion &&
           (ignoreVersion == '' || ignoreVersion != currentAppVersion)) {
@@ -337,7 +339,7 @@ String? appVersion = _remoteConfig.getString('latest_version');
                 return UpdateBottom(
                   appVersion: appVersion,
                   ignoreVersion: ignoreVersion,
-                  prefs: prefs,
+                  sharedPrefsSingleton: sharedPrefsSingleton,
                 );
               },
             );

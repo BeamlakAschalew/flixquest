@@ -11,6 +11,7 @@ import 'constants/app_constants.dart';
 import 'provider/recently_watched_provider.dart';
 import 'package:flutter/material.dart';
 import 'provider/settings_provider.dart';
+import 'singleton/sharedpreferences_singleton.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {}
 
@@ -33,8 +34,10 @@ Future<void> appInitialize() async {
   //     .setTrustedCertificatesBytes(data.buffer.asUint8List());
   await dotenv.load(fileName: ".env");
   await EasyLocalization.ensureInitialized();
+  sharedPrefsSingleton = await SharedPreferencesSingleton.getInstance();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
+
   await settingsProvider.getCurrentThemeMode();
   await settingsProvider.getCurrentMaterial3Mode();
   await settingsProvider.initMixpanel();
@@ -62,6 +65,7 @@ Future<void> appInitialize() async {
   await appDependencyProvider.getOpenSubKey();
   await appDependencyProvider.getStreamingServerFlixHQ();
   await appDependencyProvider.getStreamingServerDCVA();
+  await appDependencyProvider.getStreamingServerZoro();
   await appDependencyProvider.getStreamRoute();
   await appDependencyProvider.getFQUrl();
 

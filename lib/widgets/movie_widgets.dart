@@ -6,7 +6,6 @@ import 'package:flixquest/functions/function.dart';
 import '../models/movie_stream_metadata.dart';
 import '/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../controllers/recently_watched_database_controller.dart';
 import '../models/recently_watched.dart';
 import '../provider/recently_watched_provider.dart';
 import '../screens/common/update_screen.dart';
@@ -712,6 +711,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                   .backdropPath,
                                               elapsed: widget
                                                   .moviesList[index].elapsed,
+                                              isAdult: null,
                                               movieId:
                                                   widget.moviesList[index].id,
                                               movieName: widget
@@ -3131,8 +3131,6 @@ class WatchNowButtonState extends State<WatchNowButton> {
 
   @override
   Widget build(BuildContext context) {
-    RecentlyWatchedMoviesController recentlyWatchedMoviesController =
-        RecentlyWatchedMoviesController();
     final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
@@ -3157,33 +3155,6 @@ class WatchNowButtonState extends State<WatchNowButton> {
           Theme.of(context).colorScheme.primary,
         )),
         onPressed: () async {
-          setState(() {
-            isVisible = true;
-            buttonWidth = 200;
-          });
-          final mixpanel =
-              Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-          mixpanel.track('Most viewed movies', properties: {
-            'Movie name': widget.movieName,
-            'Movie id': widget.movieId,
-            'Is Movie adult?': widget.adult ?? 'unknown',
-          });
-          var isBookmarked =
-              await recentlyWatchedMoviesController.contain(widget.movieId);
-          int elapsed = 0;
-          if (isBookmarked) {
-            var rMovies =
-                Provider.of<RecentProvider>(context, listen: false).movies;
-            int index =
-                rMovies.indexWhere((element) => element.id == widget.movieId);
-            setState(() {
-              elapsed = rMovies[index].elapsed!;
-            });
-          }
-          setState(() {
-            isVisible = false;
-            buttonWidth = 160;
-          });
           await checkConnection().then((value) {
             value
                 ? Navigator.push(context,
@@ -3195,7 +3166,8 @@ class WatchNowButtonState extends State<WatchNowButton> {
                       download: false,
                       metadata: MovieStreamMetadata(
                           backdropPath: widget.backdropPath,
-                          elapsed: elapsed,
+                          elapsed: null,
+                          isAdult: widget.adult,
                           movieId: widget.movieId,
                           movieName: widget.movieName,
                           posterPath: widget.posterPath,

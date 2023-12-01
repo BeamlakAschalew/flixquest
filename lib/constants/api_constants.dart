@@ -24,3 +24,4 @@ const String CONSUMET_API = 'https://consumet.beamlak.dev/';
 const String CONSUMET_INFO_API = 'https://consumet.beamlak.dev/';
 const String STREAMING_SERVER_FLIXHQ = "vidcloud";
 const String STREAMING_SERVER_DCVA = "asianload";
+const String STREAMING_SERVER_ZORO = "vidcloud";
