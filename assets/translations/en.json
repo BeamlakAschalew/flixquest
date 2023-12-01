@@ -462,6 +462,7 @@
     "check": "Check",
     "server_working": "Server working",
     "checking_server": "Checking server status...",
+    "waiting_queue": "Waiting to check {server} server",
     "server_check_complete": "Server check complete",
     "server_down": "Server down.",
     "admin_notified": "Admin will be notified and it'll be fixed after few minutes",

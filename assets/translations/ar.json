@@ -463,6 +463,7 @@
 	"server_working": "الخادم يعمل",
 	"checking_server": "جاري التحقق من حالة الخادم...",
 	"server_check_complete": "اكتمل فحص الخادم",
+	"waiting_queue": "في انتظار التحقق من خادم {server}.",
 	"server_down": "الخادم متوقف",
 	"admin_notified": "سيتم إخطار المسؤول وسيتم إصلاحه بعد بضع دقائق",
 	"goto_update": "انتقل إلى شاشة التحديث",

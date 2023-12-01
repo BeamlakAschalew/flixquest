@@ -20,7 +20,7 @@ class AppDependencies {
 
   Future<String> getConsumetUrl() async {
     return sharedPrefsSingleton.getString(CONSUMET_URL_KEY) ??
-        'https://consumet.beamlak.dev';
+        'https://consumet.beamlak.dev/';
   }
 
   setFlixQuestUrl(String value) async {
@@ -29,7 +29,7 @@ class AppDependencies {
 
   Future<String> getFQURL() async {
     return sharedPrefsSingleton.getString(FLIXQUEST_API_URL) ??
-        'https://flixquest-api.beamlak.dev';
+        'https://flixquest-api.beamlak.dev/';
   }
 
   setFlixquestAPIUrl(String value) async {

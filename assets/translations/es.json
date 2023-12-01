@@ -463,6 +463,7 @@
     "server_working": "El servidor está funcionando",
     "checking_server": "Comprobando el estado del servidor...",
     "server_check_complete": "Verificación del servidor completada",
+    "waiting_queue": "Esperando comprobar el servidor {server}",
     "server_down": "El servidor está caído.",
     "admin_notified": "El administrador será notificado y se solucionará en unos minutos",
     "goto_update": "Ir a la pantalla de actualización",

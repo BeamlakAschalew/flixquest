@@ -467,6 +467,7 @@ abstract class LocaleKeys {
   static const server_working = 'server_working';
   static const checking_server = 'checking_server';
   static const server_check_complete = 'server_check_complete';
+  static const waiting_queue = 'waiting_queue';
   static const server_down = 'server_down';
   static const admin_notified = 'admin_notified';
   static const goto_update = 'goto_update';
