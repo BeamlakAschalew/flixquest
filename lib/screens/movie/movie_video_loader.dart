@@ -417,27 +417,24 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               }
             }
           } else {
-            await getVttFileAsString((subtitles.where((element) =>
-                        element.language!.startsWith(
-                            supportedLanguages[foundIndex].englishName) ||
-                        element.language! ==
-                            supportedLanguages[foundIndex].languageCode))
-                    .first
-                    .url!)
-                .then((value) {
-              subs.addAll({
-                BetterPlayerSubtitlesSource(
-                    name: subtitles
-                        .where((element) => element.language!.startsWith(
-                            supportedLanguages[foundIndex].englishName))
-                        .first
-                        .language,
-                    //  urls: [movieVideoSubs![i].url],
-                    selectedByDefault: true,
-                    content: processVttFileTimestamps(value),
-                    type: BetterPlayerSubtitlesSourceType.memory),
-              });
-            });
+            for (int i = 0; i < subtitles.length; i++) {
+              if (subtitles[i]
+                      .language!
+                      .startsWith(supportedLanguages[foundIndex].englishName) ||
+                  subtitles[i].language! ==
+                      supportedLanguages[foundIndex].languageCode) {
+                await getVttFileAsString(subtitles[i].url!).then((value) {
+                  subs.add(
+                    BetterPlayerSubtitlesSource(
+                        name: subtitles[i].language,
+                        selectedByDefault: true,
+                        content: processVttFileTimestamps(value),
+                        type: BetterPlayerSubtitlesSourceType.memory),
+                  );
+                });
+                break;
+              }
+            }
           }
         } else {
           if (appDep.useExternalSubtitles) {
