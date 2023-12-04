@@ -7,6 +7,7 @@ import '../../controllers/recently_watched_database_controller.dart';
 import '../../provider/recently_watched_provider.dart';
 import '../../video_providers/common.dart';
 import '../../video_providers/flixhq.dart';
+import '../../video_providers/flixhq_flixquest.dart';
 import '../../video_providers/names.dart';
 import '../../video_providers/zoro.dart';
 import '/api/endpoints.dart';
@@ -53,6 +54,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   FlixHQStreamSources? fqTVVideoSources;
   SuperstreamStreamSources? superstreamVideoSources;
+  FlixHQFlixQuestSources? flixHQFlixQuestStreamSources;
   DCVAStreamSources? dramacoolVideoSources;
   DCVAStreamSources? viewasianVideoSources;
   ZoroStreamSources? zoroVideoSources;
@@ -182,6 +184,15 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           }
         } else if (videoProviders[i].codeName == 'zoro') {
           await loadZoro();
+          if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
+            await subtitleParserFetcher(tvVideoSubs!);
+            break;
+          }
+          if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
+            break;
+          }
+        } else if (videoProviders[i].codeName == 'flixhqS2') {
+          await loadFlixHQFlixQuestApi();
           if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
             await subtitleParserFetcher(tvVideoSubs!);
             break;
@@ -636,6 +647,38 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 }
               }
             });
+          }
+        }
+      });
+    }
+  }
+
+  Future<void> loadFlixHQFlixQuestApi() async {
+    if (mounted) {
+      await getFlixHQFlixQuestLinks(Endpoints.getTVLinksFlixHQFQ(
+              appDep.flixquestAPIURL,
+              widget.metadata.episodeNumber!,
+              widget.metadata.seasonNumber!,
+              widget.metadata.tvId!))
+          .then((value) {
+        if (mounted) {
+          if (value.messageExists == null &&
+              value.videoLinks != null &&
+              value.videoLinks!.isNotEmpty) {
+            setState(() {
+              flixHQFlixQuestStreamSources = value;
+            });
+          } else if (value.messageExists != null ||
+              value.videoLinks == null ||
+              value.videoLinks!.isEmpty) {
+            return;
+          }
+        }
+        if (mounted) {
+          tvVideoLinks = flixHQFlixQuestStreamSources!.videoLinks;
+          tvVideoSubs = flixHQFlixQuestStreamSources!.videoSubtitles;
+          if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
+            convertVideoLinks(tvVideoLinks!);
           }
         }
       });

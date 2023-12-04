@@ -120,6 +120,16 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
             videoLinks = zoroStreamSources!.videoLinks;
           }
         });
+      } else if (videoProviders[i].codeName == 'flixhqS2') {
+        start = DateTime.now();
+        await getSuperstreamStreamingLinks(
+                "${appDependency.flixquestAPIURL}flixhq/watch-movie?tmdbId=455980")
+            .then((value) {
+          if (mounted) {
+            superstreamVideoSources = value;
+            videoLinks = superstreamVideoSources!.videoLinks;
+          }
+        });
       }
 
       end = DateTime.now();

@@ -42,7 +42,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '2.5.0-2';
+const String currentAppVersion = '2.5.0-3';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(
@@ -58,7 +58,8 @@ final List<String> appNames = [
   'flixquest-v2.4.3.apk',
   'flixquest-v2.4.4.apk',
   'flixquest-v2.5.0.apk',
-  'flixquest-v2.5.0-2.apk'
+  'flixquest-v2.5.0-2.apk',
+  'flixquest-v2.5.0-3.apk'
 ];
 
 CacheManager cacheProp() {
@@ -80,6 +81,6 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 const providerPreference =
-    'superstream-Superstream flixhq-FlixHQ viewasian-ViewAsian dramacool-Dramacool zoro-Zoro ';
+    'flixhqS2-FlixHQ_S2 superstream-Superstream flixhq-FlixHQ viewasian-ViewAsian dramacool-Dramacool zoro-Zoro ';
 
 late SharedPreferences sharedPrefsSingleton;

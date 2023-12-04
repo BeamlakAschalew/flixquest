@@ -7,6 +7,7 @@ import 'package:flixquest/video_providers/flixhq.dart';
 import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
 import '../video_providers/dramacool.dart';
+import '../video_providers/flixhq_flixquest.dart';
 import '../video_providers/superstream.dart';
 import '../video_providers/zoro.dart';
 import '/models/update.dart';
@@ -737,4 +738,30 @@ Future<ZoroStreamSources> getMovieTVStreamLinksAndSubsZoro(String api) async {
     client.close();
   }
   return zoroVideoSources;
+}
+
+Future<FlixHQFlixQuestSources> getFlixHQFlixQuestLinks(String api) async {
+  FlixHQFlixQuestSources fqstreamSources;
+  int tries = 5;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptions.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+
+    fqstreamSources = FlixHQFlixQuestSources.fromJson(decodeRes);
+  } finally {
+    client.close();
+  }
+  return fqstreamSources;
 }
