@@ -474,7 +474,7 @@ Future<String> getVttFileAsString(String url) async {
       final decoded = utf8.decode(bytes);
       return decoded;
     } else {
-      throw Exception('Failed to load VTT file');
+      return "";
     }
   } finally {
     client.close();
