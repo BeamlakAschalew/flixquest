@@ -395,7 +395,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               setState(() {
                 dcEpi = value;
               });
-              if (dcShows != null && dcShows!.isNotEmpty) {
+              if (dcEpi != null && dcEpi!.isNotEmpty) {
                 bool doesntExist = dcEpi!
                     .where((element) =>
                         element.episode ==
@@ -516,40 +516,41 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     tvInfo = value;
                     fqEpi = tvInfo!.episodes;
                   });
-
-                  for (int k = 0; k < fqEpi!.length; k++) {
-                    if (fqEpi![k].episode == widget.metadata.episodeNumber! &&
-                        fqEpi![k].season == widget.metadata.seasonNumber!) {
-                      await getTVStreamLinksAndSubsFlixHQ(
-                              Endpoints.getMovieTVStreamLinksFlixHQ(
-                                  fqEpi![k].id!,
-                                  fqShows![i].id!,
-                                  appDep.consumetUrl,
-                                  appDep.streamingServerFlixHQ))
-                          .then((value) {
-                        if (value.messageExists == null &&
-                            value.videoLinks != null &&
-                            value.videoLinks!.isNotEmpty) {
+                  if (fqEpi != null && fqEpi!.isNotEmpty) {
+                    for (int k = 0; k < fqEpi!.length; k++) {
+                      if (fqEpi![k].episode == widget.metadata.episodeNumber! &&
+                          fqEpi![k].season == widget.metadata.seasonNumber!) {
+                        await getTVStreamLinksAndSubsFlixHQ(
+                                Endpoints.getMovieTVStreamLinksFlixHQ(
+                                    fqEpi![k].id!,
+                                    fqShows![i].id!,
+                                    appDep.consumetUrl,
+                                    appDep.streamingServerFlixHQ))
+                            .then((value) {
+                          if (value.messageExists == null &&
+                              value.videoLinks != null &&
+                              value.videoLinks!.isNotEmpty) {
+                            if (mounted) {
+                              setState(() {
+                                fqTVVideoSources = value;
+                              });
+                            }
+                          } else if (value.messageExists != null ||
+                              value.videoLinks == null ||
+                              value.videoLinks!.isEmpty) {
+                            return;
+                          }
                           if (mounted) {
-                            setState(() {
-                              fqTVVideoSources = value;
-                            });
+                            tvVideoLinks = fqTVVideoSources!.videoLinks;
+                            tvVideoSubs = fqTVVideoSources!.videoSubtitles;
+                            if (tvVideoLinks != null &&
+                                tvVideoLinks!.isNotEmpty) {
+                              convertVideoLinks(tvVideoLinks!);
+                            }
                           }
-                        } else if (value.messageExists != null ||
-                            value.videoLinks == null ||
-                            value.videoLinks!.isEmpty) {
-                          return;
-                        }
-                        if (mounted) {
-                          tvVideoLinks = fqTVVideoSources!.videoLinks;
-                          tvVideoSubs = fqTVVideoSources!.videoSubtitles;
-                          if (tvVideoLinks != null &&
-                              tvVideoLinks!.isNotEmpty) {
-                            convertVideoLinks(tvVideoLinks!);
-                          }
-                        }
-                      });
-                      break;
+                        });
+                        break;
+                      }
                     }
                   }
                 });
@@ -567,30 +568,31 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     tvInfo = value;
                     fqEpi = tvInfo!.episodes;
                   });
-
-                  for (int k = 0; k < fqEpi!.length; k++) {
-                    if (fqEpi![k].episode == widget.metadata.episodeNumber! &&
-                        fqEpi![k].season == widget.metadata.seasonNumber!) {
-                      await getTVStreamLinksAndSubsFlixHQ(
-                              Endpoints.getMovieTVStreamLinksFlixHQ(
-                                  fqEpi![k].id!,
-                                  fqShows![i].id!,
-                                  appDep.consumetUrl,
-                                  appDep.streamingServerFlixHQ))
-                          .then((value) {
-                        setState(() {
-                          fqTVVideoSources = value;
-                        });
-                        if (mounted) {
-                          tvVideoLinks = fqTVVideoSources!.videoLinks;
-                          tvVideoSubs = fqTVVideoSources!.videoSubtitles;
-                          if (tvVideoLinks != null &&
-                              tvVideoLinks!.isNotEmpty) {
-                            convertVideoLinks(tvVideoLinks!);
+                  if (fqEpi != null && fqEpi!.isNotEmpty) {
+                    for (int k = 0; k < fqEpi!.length; k++) {
+                      if (fqEpi![k].episode == widget.metadata.episodeNumber! &&
+                          fqEpi![k].season == widget.metadata.seasonNumber!) {
+                        await getTVStreamLinksAndSubsFlixHQ(
+                                Endpoints.getMovieTVStreamLinksFlixHQ(
+                                    fqEpi![k].id!,
+                                    fqShows![i].id!,
+                                    appDep.consumetUrl,
+                                    appDep.streamingServerFlixHQ))
+                            .then((value) {
+                          setState(() {
+                            fqTVVideoSources = value;
+                          });
+                          if (mounted) {
+                            tvVideoLinks = fqTVVideoSources!.videoLinks;
+                            tvVideoSubs = fqTVVideoSources!.videoSubtitles;
+                            if (tvVideoLinks != null &&
+                                tvVideoLinks!.isNotEmpty) {
+                              convertVideoLinks(tvVideoLinks!);
+                            }
                           }
-                        }
-                      });
-                      break;
+                        });
+                        break;
+                      }
                     }
                   }
                 });
@@ -854,7 +856,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               setState(() {
                 vaEpi = value;
               });
-              if (vaShows != null && vaShows!.isNotEmpty) {
+              if (vaEpi != null && vaEpi!.isNotEmpty) {
                 bool doesntExist = vaEpi!
                     .where((element) =>
                         element.episode ==
@@ -935,7 +937,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               setState(() {
                 zoroEpi = value;
               });
-              if (zoroShows != null && zoroShows!.isNotEmpty) {
+              if (zoroEpi != null && zoroEpi!.isNotEmpty) {
                 bool doesntExist = zoroEpi!
                     .where((element) =>
                         element.episode ==

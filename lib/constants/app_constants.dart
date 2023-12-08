@@ -42,7 +42,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '2.5.0-4';
+const String currentAppVersion = '2.5.0-5';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(

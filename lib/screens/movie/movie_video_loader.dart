@@ -565,7 +565,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               setState(() {
                 dcEpi = value;
               });
-              if (dcMovies != null && dcMovies!.isNotEmpty) {
+              if (dcEpi != null && dcEpi!.isNotEmpty) {
                 await getMovieTVStreamLinksAndSubsDCVA(
                         Endpoints.getMovieTVStreamLinksDramacool(
                             dcEpi![0].id!,
@@ -635,7 +635,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               setState(() {
                 vaEpi = value;
               });
-              if (vaMovies != null && vaMovies!.isNotEmpty) {
+              if (vaEpi != null && vaEpi!.isNotEmpty) {
                 await getMovieTVStreamLinksAndSubsDCVA(
                         Endpoints.getMovieTVStreamLinksViewasian(
                             vaEpi![0].id!,
@@ -806,7 +806,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               setState(() {
                 zoroEpi = value;
               });
-              if (zoroMovies != null && zoroMovies!.isNotEmpty) {
+              if (zoroEpi != null && zoroEpi!.isNotEmpty) {
                 await getMovieTVStreamLinksAndSubsZoro(
                         Endpoints.getMovieTVStreamLinksZoro(appDep.consumetUrl,
                             zoroEpi![0].id!, appDep.streamingServerZoro))

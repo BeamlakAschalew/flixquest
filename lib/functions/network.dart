@@ -472,7 +472,11 @@ Future<String> getVttFileAsString(String url) async {
     if (response.statusCode == 200) {
       final bytes = response.bodyBytes;
       final decoded = utf8.decode(bytes);
-      return decoded;
+      if (decoded.startsWith('<')) {
+        return '';
+      } else {
+        return decoded;
+      }
     } else {
       return "";
     }
