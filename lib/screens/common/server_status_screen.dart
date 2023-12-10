@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flixquest/main.dart';
 import 'package:flixquest/video_providers/common.dart';
 import 'package:flixquest/video_providers/zoro.dart';
@@ -12,6 +14,7 @@ import '../../provider/settings_provider.dart';
 import '../../video_providers/flixhq.dart';
 import '../../video_providers/names.dart';
 import '../../video_providers/superstream.dart';
+import '../../services/globle_method.dart';
 
 class ServerStatusScreen extends StatefulWidget {
   const ServerStatusScreen({Key? key}) : super(key: key);
@@ -72,64 +75,89 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
       });
       if (videoProviders[i].codeName == 'flixhq') {
         start = DateTime.now();
-        await getMovieStreamLinksAndSubsFlixHQ(
-                "${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServerFlixHQ}")
-            .then((value) {
-          if (mounted) {
-            fqVideoSources = value;
-            videoLinks = fqVideoSources!.videoLinks;
-          }
-        });
+        try {
+          await getMovieStreamLinksAndSubsFlixHQ(
+                  "${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServerFlixHQ}")
+              .then((value) {
+            if (mounted) {
+              fqVideoSources = value;
+              videoLinks = fqVideoSources!.videoLinks;
+            }
+          });
+        } on Exception catch (e) {
+          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+        }
       } else if (videoProviders[i].codeName == 'superstream') {
         start = DateTime.now();
-        await getSuperstreamStreamingLinks(
-                "${appDependency.flixquestAPIURL}superstream/watch-movie?tmdbId=455980")
-            .then((value) {
-          if (mounted) {
-            superstreamVideoSources = value;
-            videoLinks = superstreamVideoSources!.videoLinks;
-          }
-        });
+
+        try {
+          await getSuperstreamStreamingLinks(
+                  "${appDependency.flixquestAPIURL}superstream/watch-movie?tmdbId=455980")
+              .then((value) {
+            if (mounted) {
+              superstreamVideoSources = value;
+              videoLinks = superstreamVideoSources!.videoLinks;
+            }
+          });
+        } on Exception catch (e) {
+          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+        }
       } else if (videoProviders[i].codeName == 'dramacool') {
         start = DateTime.now();
-        await getMovieTVStreamLinksAndSubsDCVA(
-                "${appDependency.consumetUrl}movies/dramacool/watch?id=drama-detail/a-different-girl&episodeId=a-different-girl-2021-episode-1&server=${appDependency.streamingServerDCVA}")
-            .then((value) {
-          if (mounted) {
-            dramacoolStreamSources = value;
-            videoLinks = dramacoolStreamSources!.videoLinks;
-          }
-        });
+        try {
+          await getMovieTVStreamLinksAndSubsDCVA(
+                  "${appDependency.consumetUrl}movies/dramacool/watch?id=drama-detail/a-different-girl&episodeId=a-different-girl-2021-episode-1&server=${appDependency.streamingServerDCVA}")
+              .then((value) {
+            if (mounted) {
+              dramacoolStreamSources = value;
+              videoLinks = dramacoolStreamSources!.videoLinks;
+            }
+          });
+        } on Exception catch (e) {
+          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+        }
       } else if (videoProviders[i].codeName == 'viewasian') {
         start = DateTime.now();
-        await getMovieTVStreamLinksAndSubsDCVA(
-                "${appDependencyProvider.consumetUrl}movies/viewasian/watch?id=drama/tell-me-you-love-me&episodeId=/watch/tell-me-you-love-me/watching.html\$episode\$1&server=${appDependencyProvider.streamingServerDCVA}")
-            .then((value) {
-          if (mounted) {
-            viewasianStreamSources = value;
-            videoLinks = viewasianStreamSources!.videoLinks;
-          }
-        });
+        try {
+          await getMovieTVStreamLinksAndSubsDCVA(
+                  "${appDependencyProvider.consumetUrl}movies/viewasian/watch?id=drama/tell-me-you-love-me&episodeId=/watch/tell-me-you-love-me/watching.html\$episode\$1&server=${appDependencyProvider.streamingServerDCVA}")
+              .then((value) {
+            if (mounted) {
+              viewasianStreamSources = value;
+              videoLinks = viewasianStreamSources!.videoLinks;
+            }
+          });
+        } on Exception catch (e) {
+          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+        }
       } else if (videoProviders[i].codeName == 'zoro') {
         start = DateTime.now();
-        await getMovieTVStreamLinksAndSubsZoro(
-                "${appDependencyProvider.consumetUrl}anime/zoro/watch?episodeId=one-piece-movie-1-3096\$episode\$58122\$sub&server=${appDependencyProvider.streamingServerZoro}")
-            .then((value) {
-          if (mounted) {
-            zoroStreamSources = value;
-            videoLinks = zoroStreamSources!.videoLinks;
-          }
-        });
+        try {
+          await getMovieTVStreamLinksAndSubsZoro(
+                  "${appDependencyProvider.consumetUrl}anime/zoro/watch?episodeId=one-piece-movie-1-3096\$episode\$58122\$sub&server=${appDependencyProvider.streamingServerZoro}")
+              .then((value) {
+            if (mounted) {
+              zoroStreamSources = value;
+              videoLinks = zoroStreamSources!.videoLinks;
+            }
+          });
+        } on Exception catch (e) {
+          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+        }
       } else if (videoProviders[i].codeName == 'flixhqS2') {
         start = DateTime.now();
-        await getSuperstreamStreamingLinks(
-                "${appDependency.flixquestAPIURL}flixhq/watch-movie?tmdbId=455980")
-            .then((value) {
-          if (mounted) {
-            superstreamVideoSources = value;
-            videoLinks = superstreamVideoSources!.videoLinks;
-          }
-        });
+        try {
+          await getSuperstreamStreamingLinks(
+                  "${appDependency.flixquestAPIURL}flixhq/watch-movie?tmdbId=455980")
+              .then((value) {
+            if (mounted) {
+              superstreamVideoSources = value;
+              videoLinks = superstreamVideoSources!.videoLinks;
+            }
+          });
+        } on Exception catch (e) {
+          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+        }
       }
 
       end = DateTime.now();

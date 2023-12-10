@@ -42,7 +42,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '2.5.0-5';
+const String currentAppVersion = '2.5.0-6';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(
@@ -50,6 +50,12 @@ const retryOptions = RetryOptions(
     delayFactor: Duration(seconds: 0),
     maxAttempts: 100000);
 const timeOut = Duration(seconds: 60);
+
+const retryOptionsStream = RetryOptions(
+    maxDelay: Duration(milliseconds: 300),
+    delayFactor: Duration(seconds: 0),
+    maxAttempts: 1);
+const timeOutStream = Duration(seconds: 15);
 
 final List<String> appNames = [
   'flixquest-v2.4.0.apk',
@@ -60,7 +66,9 @@ final List<String> appNames = [
   'flixquest-v2.5.0.apk',
   'flixquest-v2.5.0-2.apk',
   'flixquest-v2.5.0-3.apk',
-  'flixquest-v2.5.0-4.apk'
+  'flixquest-v2.5.0-4.apk',
+  'flixquest-v2.5.0-5.apk',
+  'flixquest-v2.5.0-6.apk'
 ];
 
 CacheManager cacheProp() {

@@ -351,15 +351,15 @@ Future<List<FlixHQMovieSearchEntry>> fetchMoviesForStreamFlixHQ(
     String api) async {
   FlixHQMovieSearch movieStream;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
 
     movieStream = FlixHQMovieSearch.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
   return movieStream.results ?? [];
 }
@@ -368,14 +368,14 @@ Future<List<FlixHQMovieInfoEntries>> getMovieStreamEpisodesFlixHQ(
     String api) async {
   FlixHQMovieInfo movieInfo;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
     movieInfo = FlixHQMovieInfo.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
 
   return movieInfo.episodes ?? [];
@@ -383,13 +383,13 @@ Future<List<FlixHQMovieInfoEntries>> getMovieStreamEpisodesFlixHQ(
 
 Future<FlixHQStreamSources> getMovieStreamLinksAndSubsFlixHQ(String api) async {
   FlixHQStreamSources movieVideoSources;
-  int tries = 5;
+  int tries = 3;
   dynamic decodeRes;
   try {
     dynamic res;
     while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
       decodeRes = jsonDecode(res.body);
@@ -400,23 +400,24 @@ Future<FlixHQStreamSources> getMovieStreamLinksAndSubsFlixHQ(String api) async {
       }
     }
     movieVideoSources = FlixHQStreamSources.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
+
   return movieVideoSources;
 }
 
 Future<List<FlixHQTVSearchEntry>> fetchTVForStreamFlixHQ(String api) async {
   FlixHQTVSearch tvStream;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
     tvStream = FlixHQTVSearch.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
   return tvStream.results ?? [];
 }
@@ -424,14 +425,14 @@ Future<List<FlixHQTVSearchEntry>> fetchTVForStreamFlixHQ(String api) async {
 Future<FlixHQTVInfo> getTVStreamEpisodesFlixHQ(String api) async {
   FlixHQTVInfo tvInfo;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
     tvInfo = FlixHQTVInfo.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
 
   return tvInfo;
@@ -439,13 +440,13 @@ Future<FlixHQTVInfo> getTVStreamEpisodesFlixHQ(String api) async {
 
 Future<FlixHQStreamSources> getTVStreamLinksAndSubsFlixHQ(String api) async {
   FlixHQStreamSources tvVideoSources;
-  int tries = 5;
+  int tries = 3;
   dynamic decodeRes;
   try {
     dynamic res;
     while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
       decodeRes = jsonDecode(res.body);
@@ -457,8 +458,8 @@ Future<FlixHQStreamSources> getTVStreamLinksAndSubsFlixHQ(String api) async {
     }
 
     tvVideoSources = FlixHQStreamSources.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
   return tvVideoSources;
 }
@@ -480,8 +481,8 @@ Future<String> getVttFileAsString(String url) async {
     } else {
       return "";
     }
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
 }
 
@@ -504,13 +505,13 @@ Future<List<Channel>> fetchChannels(String api) async {
 
 Future<FlixHQMovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
   FlixHQMovieInfoTMDBRoute movieInfo;
-  int tries = 5;
+  int tries = 3;
   dynamic decodeRes;
   try {
     dynamic res;
     while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
 
@@ -523,8 +524,8 @@ Future<FlixHQMovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
       }
     }
     movieInfo = FlixHQMovieInfoTMDBRoute.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
 
   return movieInfo;
@@ -532,13 +533,13 @@ Future<FlixHQMovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
 
 Future<FlixHQTVInfoTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
   FlixHQTVInfoTMDBRoute tvInfo;
-  int tries = 5;
+  int tries = 3;
   dynamic decodeRes;
   try {
     dynamic res;
     while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
 
@@ -551,8 +552,8 @@ Future<FlixHQTVInfoTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
       }
     }
     tvInfo = FlixHQTVInfoTMDBRoute.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
 
   return tvInfo;
@@ -571,8 +572,8 @@ Future<List<SubtitleData>> getExternalSubtitle(String api, String key) async {
     var decodeRes = jsonDecode(res.body);
 
     subData = ExternalSubtitle.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
 
   return subData.data ?? [];
@@ -606,13 +607,13 @@ Future<SubtitleDownload> downloadExternalSubtitle(
 Future<SuperstreamStreamSources> getSuperstreamStreamingLinks(
     String api) async {
   SuperstreamStreamSources superstreamSources;
-  int tries = 5;
+  int tries = 3;
   dynamic decodeRes;
   try {
     dynamic res;
     while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
       decodeRes = jsonDecode(res.body);
@@ -624,8 +625,8 @@ Future<SuperstreamStreamSources> getSuperstreamStreamingLinks(
     }
 
     superstreamSources = SuperstreamStreamSources.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
   return superstreamSources;
 }
@@ -633,15 +634,15 @@ Future<SuperstreamStreamSources> getSuperstreamStreamingLinks(
 Future<List<DCVASearchEntry>> fetchMovieTVForStreamDCVA(String api) async {
   DCVASearch dcvaStream;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
 
     dcvaStream = DCVASearch.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
   return dcvaStream.results ?? [];
 }
@@ -649,14 +650,14 @@ Future<List<DCVASearchEntry>> fetchMovieTVForStreamDCVA(String api) async {
 Future<List<DCVAInfoEntries>> getMovieTVStreamEpisodesDCVA(String api) async {
   DCVAInfo dcvaInfo;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
     dcvaInfo = DCVAInfo.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
 
   return dcvaInfo.episodes ?? [];
@@ -664,13 +665,13 @@ Future<List<DCVAInfoEntries>> getMovieTVStreamEpisodesDCVA(String api) async {
 
 Future<DCVAStreamSources> getMovieTVStreamLinksAndSubsDCVA(String api) async {
   DCVAStreamSources dcvaVideoSources;
-  int tries = 5;
+  int tries = 3;
   dynamic decodeRes;
   try {
     dynamic res;
     while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
       decodeRes = jsonDecode(res.body);
@@ -681,8 +682,8 @@ Future<DCVAStreamSources> getMovieTVStreamLinksAndSubsDCVA(String api) async {
       }
     }
     dcvaVideoSources = DramacoolStreamSources.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
   return dcvaVideoSources;
 }
@@ -690,15 +691,15 @@ Future<DCVAStreamSources> getMovieTVStreamLinksAndSubsDCVA(String api) async {
 Future<List<ZoroSearchEntry>> fetchMovieTVForStreamZoro(String api) async {
   ZoroSearch zoroStream;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
 
     zoroStream = ZoroSearch.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
   return zoroStream.results ?? [];
 }
@@ -706,14 +707,14 @@ Future<List<ZoroSearchEntry>> fetchMovieTVForStreamZoro(String api) async {
 Future<List<ZoroInfoEntries>> getMovieTVStreamEpisodesZoro(String api) async {
   ZoroInfo zoroInfo;
   try {
-    var res = await retryOptions.retry(
-      (() => http.get(Uri.parse(api)).timeout(timeOut)),
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
     zoroInfo = ZoroInfo.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
 
   return zoroInfo.episodes ?? [];
@@ -721,13 +722,13 @@ Future<List<ZoroInfoEntries>> getMovieTVStreamEpisodesZoro(String api) async {
 
 Future<ZoroStreamSources> getMovieTVStreamLinksAndSubsZoro(String api) async {
   ZoroStreamSources zoroVideoSources;
-  int tries = 5;
+  int tries = 3;
   dynamic decodeRes;
   try {
     dynamic res;
     while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
       decodeRes = jsonDecode(res.body);
@@ -738,21 +739,21 @@ Future<ZoroStreamSources> getMovieTVStreamLinksAndSubsZoro(String api) async {
       }
     }
     zoroVideoSources = ZoroStreamSources.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
   return zoroVideoSources;
 }
 
 Future<FlixHQFlixQuestSources> getFlixHQFlixQuestLinks(String api) async {
   FlixHQFlixQuestSources fqstreamSources;
-  int tries = 5;
+  int tries = 3;
   dynamic decodeRes;
   try {
     dynamic res;
     while (tries > 0) {
-      res = await retryOptions.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOut)),
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
       decodeRes = jsonDecode(res.body);
@@ -764,8 +765,8 @@ Future<FlixHQFlixQuestSources> getFlixHQFlixQuestLinks(String api) async {
     }
 
     fqstreamSources = FlixHQFlixQuestSources.fromJson(decodeRes);
-  } finally {
-    client.close();
+  } catch (e) {
+    throw Exception(e);
   }
   return fqstreamSources;
 }

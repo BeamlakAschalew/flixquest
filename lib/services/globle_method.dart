@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class GlobalMethods {
-  Future<void> showDialogg(
+  Future<void> showCustomDialog(
       String title, String subtitle, Function fct, BuildContext context) async {
     showDialog(
         context: context,
@@ -108,5 +108,14 @@ class GlobalMethods {
             ],
           );
         });
+  }
+
+  static void showErrorScaffoldMessenger(
+      String error, BuildContext context) async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+      'Error $error',
+      style: const TextStyle(fontFamily: 'Poppins'),
+    )));
   }
 }
