@@ -89,6 +89,8 @@ List<SubLanguages> supportedLanguages = [
   SubLanguages(
       languageName: tr("russian"), languageCode: 'ru', englishName: 'Russian'),
   SubLanguages(
+      languageName: tr("serbian"), languageCode: 'sr', englishName: 'Serbian'),
+  SubLanguages(
       languageName: tr("slovak"), languageCode: 'sk', englishName: 'Slovak'),
   SubLanguages(
       languageName: tr("slovene"), languageCode: 'sl', englishName: 'Slovene'),

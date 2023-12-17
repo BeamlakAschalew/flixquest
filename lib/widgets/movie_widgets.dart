@@ -177,7 +177,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
   ];
 
   void getData() {
-    List<String> years = yearDropdownData.yearsList.getRange(1, 25).toList();
+    List<String> years = yearDropdownData.yearsList.getRange(1, 26).toList();
     List<MovieGenreFilterChipWidget> genres = movieGenreFilterdata;
     years.shuffle();
     genres.shuffle();

@@ -1,8 +1,6 @@
 // DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
 
-// ignore_for_file: constant_identifier_names
-
-abstract class LocaleKeys {
+abstract class  LocaleKeys {
   static const popularity_descending = 'popularity_descending';
   static const popularity_ascending = 'popularity_ascending';
   static const average_vote_descending = 'average_vote_descending';
@@ -71,6 +69,7 @@ abstract class LocaleKeys {
   static const portuguese = 'portuguese';
   static const romanian = 'romanian';
   static const russian = 'russian';
+  static const serbian = 'serbian';
   static const slovak = 'slovak';
   static const slovene = 'slovene';
   static const spanish = 'spanish';
@@ -494,4 +493,5 @@ abstract class LocaleKeys {
   static const provider_precedence = 'provider_precedence';
   static const choose_provider_order = 'choose_provider_order';
   static const provider_precedence_help = 'provider_precedence_help';
+
 }
