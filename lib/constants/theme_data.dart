@@ -47,7 +47,9 @@ ThemeData darkThemeData(
     ),
     bannerTheme: MaterialBannerThemeData(),
     chipTheme: ChipThemeData(),
-    snackBarTheme: SnackBarThemeData(),
+    snackBarTheme: SnackBarThemeData(
+        backgroundColor: Colors.black87,
+        contentTextStyle: TextStyle(color: Colors.white)),
     scaffoldBackgroundColor: Color(0xFF161716),
     radioTheme: RadioThemeData(
         fillColor: MaterialStatePropertyAll(isM3Enabled
@@ -316,7 +318,9 @@ ThemeData lightThemeData(
     ),
     bannerTheme: MaterialBannerThemeData(),
     chipTheme: ChipThemeData(),
-    snackBarTheme: SnackBarThemeData(),
+    snackBarTheme: SnackBarThemeData(
+        backgroundColor: Colors.grey,
+        contentTextStyle: TextStyle(color: Colors.black)),
     scaffoldBackgroundColor: Color(0xFFf5f5f5),
     radioTheme: RadioThemeData(
         fillColor: MaterialStatePropertyAll(isM3Enabled
@@ -585,7 +589,9 @@ ThemeData amoledThemeData(
     ),
     bannerTheme: MaterialBannerThemeData(),
     chipTheme: ChipThemeData(),
-    snackBarTheme: SnackBarThemeData(),
+    snackBarTheme: SnackBarThemeData(
+        backgroundColor: Color(0xFF161716),
+        contentTextStyle: TextStyle(color: Colors.white)),
     scaffoldBackgroundColor: Colors.black,
     radioTheme: RadioThemeData(
         fillColor: MaterialStatePropertyAll(isM3Enabled

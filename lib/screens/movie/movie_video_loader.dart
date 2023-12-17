@@ -486,7 +486,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         }
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerGeneral(e, context);
     }
   }
 
@@ -541,7 +541,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'FlixHQ');
     }
   }
 
@@ -616,7 +616,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+          e, context, 'Dramacool');
     }
   }
 
@@ -691,7 +692,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+          e, context, 'ViewAsian');
     }
   }
 
@@ -717,7 +719,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                     widget.metadata.releaseYear!.toString() &&
                 fqMovies![i].type == 'Movie' &&
                 (removeCharacters(fqMovies![i].title!).toLowerCase().contains(
-                        removeCharacters(widget.metadata.movieName.toString())
+                        removeCharacters(widget.metadata.movieName!)
                             .toLowerCase()) ||
                     fqMovies![i]
                         .title!
@@ -769,7 +771,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'FlixHQ');
     }
   }
 
@@ -802,7 +804,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+          e, context, 'Superstream');
     }
   }
 
@@ -874,7 +877,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Zoro');
     }
   }
 
@@ -907,7 +910,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+          e, context, 'FlixHQ_S2');
     }
   }
 }

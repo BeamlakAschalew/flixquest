@@ -449,7 +449,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+          e, context, 'Dramacool');
     }
   }
 
@@ -485,7 +486,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+          e, context, 'Superstream');
     }
   }
 
@@ -620,7 +622,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         );
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'FlixHQ');
     }
   }
 
@@ -675,7 +677,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'FlixHQ');
     }
   }
 
@@ -711,7 +713,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+          e, context, 'FlixHQ_S2');
     }
   }
 
@@ -840,7 +843,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         }
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerGeneral(e, context);
     }
   }
 
@@ -941,7 +944,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+          e, context, 'ViewAsian');
     }
   }
 
@@ -1025,7 +1029,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Zoro');
     }
   }
 }

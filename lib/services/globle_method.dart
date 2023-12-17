@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flixquest/models/custom_exceptions.dart';
 import 'package:flutter/material.dart';
 
 class GlobalMethods {
@@ -110,11 +114,33 @@ class GlobalMethods {
         });
   }
 
-  static void showErrorScaffoldMessenger(
-      String error, BuildContext context) async {
+  //TODO: translate Server is down or media is not found
+  static void showErrorScaffoldMessengerMediaLoad(
+      Exception error, BuildContext context, String server) async {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-      'Error $error',
+      error is TimeoutException
+          ? 'Error: Fetch timed out'
+          : error is SocketException
+              ? 'Error: Connection problem'
+              : error is NotFoundException
+                  ? 'Error: media is not found on $server Server'
+                  : error is ServerDownException
+                      ? 'Error: $server Server is down ${error.toString()}'
+                      : 'Error: ${error.toString()}',
+      style: const TextStyle(fontFamily: 'Poppins'),
+    )));
+  }
+
+  static void showErrorScaffoldMessengerGeneral(
+      Exception error, BuildContext context) async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+      error is TimeoutException
+          ? 'Error: Fetch timed out'
+          : error is SocketException
+              ? 'Error: Connection problem'
+              : 'Error: ${error.toString()}',
       style: const TextStyle(fontFamily: 'Poppins'),
     )));
   }

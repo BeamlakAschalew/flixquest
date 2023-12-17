@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flixquest/models/custom_exceptions.dart';
 import 'package:flixquest/video_providers/common.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
 
@@ -356,10 +357,16 @@ Future<List<FlixHQMovieSearchEntry>> fetchMoviesForStreamFlixHQ(
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
-
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     movieStream = FlixHQMovieSearch.fromJson(decodeRes);
+
+    if (movieStream.results == null || movieStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
   return movieStream.results ?? [];
 }
@@ -373,9 +380,16 @@ Future<List<FlixHQMovieInfoEntries>> getMovieStreamEpisodesFlixHQ(
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     movieInfo = FlixHQMovieInfo.fromJson(decodeRes);
+
+    if (movieInfo.episodes == null || movieInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
 
   return movieInfo.episodes ?? [];
@@ -399,9 +413,17 @@ Future<FlixHQStreamSources> getMovieStreamLinksAndSubsFlixHQ(String api) async {
         break;
       }
     }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     movieVideoSources = FlixHQStreamSources.fromJson(decodeRes);
+
+    if (movieVideoSources.videoLinks == null ||
+        movieVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
 
   return movieVideoSources;
@@ -415,9 +437,16 @@ Future<List<FlixHQTVSearchEntry>> fetchTVForStreamFlixHQ(String api) async {
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     tvStream = FlixHQTVSearch.fromJson(decodeRes);
+
+    if (tvStream.results == null || tvStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
   return tvStream.results ?? [];
 }
@@ -430,9 +459,16 @@ Future<FlixHQTVInfo> getTVStreamEpisodesFlixHQ(String api) async {
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     tvInfo = FlixHQTVInfo.fromJson(decodeRes);
+
+    if (tvInfo.episodes == null || tvInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
 
   return tvInfo;
@@ -456,10 +492,17 @@ Future<FlixHQStreamSources> getTVStreamLinksAndSubsFlixHQ(String api) async {
         break;
       }
     }
-
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     tvVideoSources = FlixHQStreamSources.fromJson(decodeRes);
+
+    if (tvVideoSources.videoLinks == null ||
+        tvVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
   return tvVideoSources;
 }
@@ -482,7 +525,7 @@ Future<String> getVttFileAsString(String url) async {
       return "";
     }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
 }
 
@@ -523,9 +566,12 @@ Future<FlixHQMovieInfoTMDBRoute> getMovieStreamEpisodesTMDB(String api) async {
         break;
       }
     }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     movieInfo = FlixHQMovieInfoTMDBRoute.fromJson(decodeRes);
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
 
   return movieInfo;
@@ -551,9 +597,16 @@ Future<FlixHQTVInfoTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
         break;
       }
     }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     tvInfo = FlixHQTVInfoTMDBRoute.fromJson(decodeRes);
+
+    if (tvInfo.seasons == null || tvInfo.seasons!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
 
   return tvInfo;
@@ -570,10 +623,12 @@ Future<List<SubtitleData>> getExternalSubtitle(String api, String key) async {
     );
 
     var decodeRes = jsonDecode(res.body);
-
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     subData = ExternalSubtitle.fromJson(decodeRes);
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
 
   return subData.data ?? [];
@@ -624,9 +679,18 @@ Future<SuperstreamStreamSources> getSuperstreamStreamingLinks(
       }
     }
 
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+
     superstreamSources = SuperstreamStreamSources.fromJson(decodeRes);
+
+    if (superstreamSources.videoLinks == null ||
+        superstreamSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
   return superstreamSources;
 }
@@ -639,10 +703,16 @@ Future<List<DCVASearchEntry>> fetchMovieTVForStreamDCVA(String api) async {
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
-
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     dcvaStream = DCVASearch.fromJson(decodeRes);
+
+    if (dcvaStream.results == null || dcvaStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
   return dcvaStream.results ?? [];
 }
@@ -655,9 +725,16 @@ Future<List<DCVAInfoEntries>> getMovieTVStreamEpisodesDCVA(String api) async {
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     dcvaInfo = DCVAInfo.fromJson(decodeRes);
+
+    if (dcvaInfo.episodes == null || dcvaInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
 
   return dcvaInfo.episodes ?? [];
@@ -681,9 +758,17 @@ Future<DCVAStreamSources> getMovieTVStreamLinksAndSubsDCVA(String api) async {
         break;
       }
     }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     dcvaVideoSources = DramacoolStreamSources.fromJson(decodeRes);
+
+    if (dcvaVideoSources.videoLinks == null ||
+        dcvaVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
   return dcvaVideoSources;
 }
@@ -697,9 +782,16 @@ Future<List<ZoroSearchEntry>> fetchMovieTVForStreamZoro(String api) async {
     );
     var decodeRes = jsonDecode(res.body);
 
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+
     zoroStream = ZoroSearch.fromJson(decodeRes);
+    if (zoroStream.results == null || zoroStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
   return zoroStream.results ?? [];
 }
@@ -712,9 +804,17 @@ Future<List<ZoroInfoEntries>> getMovieTVStreamEpisodesZoro(String api) async {
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
+
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     zoroInfo = ZoroInfo.fromJson(decodeRes);
+
+    if (zoroInfo.episodes == null || zoroInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
 
   return zoroInfo.episodes ?? [];
@@ -738,9 +838,17 @@ Future<ZoroStreamSources> getMovieTVStreamLinksAndSubsZoro(String api) async {
         break;
       }
     }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     zoroVideoSources = ZoroStreamSources.fromJson(decodeRes);
+
+    if (zoroVideoSources.videoLinks == null ||
+        zoroVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
   return zoroVideoSources;
 }
@@ -763,10 +871,17 @@ Future<FlixHQFlixQuestSources> getFlixHQFlixQuestLinks(String api) async {
         break;
       }
     }
-
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
     fqstreamSources = FlixHQFlixQuestSources.fromJson(decodeRes);
+
+    if (fqstreamSources.videoLinks == null ||
+        fqstreamSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
   } catch (e) {
-    throw Exception(e);
+    rethrow;
   }
   return fqstreamSources;
 }

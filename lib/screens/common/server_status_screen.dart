@@ -85,7 +85,8 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
             }
           });
         } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+              e, context, 'FlixHQ');
         }
       } else if (videoProviders[i].codeName == 'superstream') {
         start = DateTime.now();
@@ -100,7 +101,8 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
             }
           });
         } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+              e, context, 'Superstream');
         }
       } else if (videoProviders[i].codeName == 'dramacool') {
         start = DateTime.now();
@@ -114,7 +116,8 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
             }
           });
         } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+              e, context, 'Dramacool');
         }
       } else if (videoProviders[i].codeName == 'viewasian') {
         start = DateTime.now();
@@ -128,7 +131,8 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
             }
           });
         } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+              e, context, 'ViewAsian');
         }
       } else if (videoProviders[i].codeName == 'zoro') {
         start = DateTime.now();
@@ -142,7 +146,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
             }
           });
         } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+          GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Zoro');
         }
       } else if (videoProviders[i].codeName == 'flixhqS2') {
         start = DateTime.now();
@@ -156,7 +160,8 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
             }
           });
         } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessenger(e.toString(), context);
+          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+              e, context, 'FlixHQ_S2');
         }
       }
 
