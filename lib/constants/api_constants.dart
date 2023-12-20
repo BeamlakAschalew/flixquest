@@ -20,8 +20,8 @@ const String IMDB_BASE_URL = 'https://imdb.com/title/';
 const String TWOEMBED_BASE_URL = 'https://2embed.biz';
 const String FLIXQUEST_UPDATE_URL =
     'https://beamlakaschalew.github.io/cinemax/res/update.json';
-const String CONSUMET_API = 'https://consumet.beamlak.dev/';
-const String CONSUMET_INFO_API = 'https://consumet.beamlak.dev/';
+String CONSUMET_API = dotenv.env['CONSUMET_URL']!;
+String CONSUMET_INFO_API = dotenv.env['CONSUMET_URL']!;
 const String STREAMING_SERVER_FLIXHQ = "vidcloud";
 const String STREAMING_SERVER_DCVA = "asianload";
 const String STREAMING_SERVER_ZORO = "vidcloud";
