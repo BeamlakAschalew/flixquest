@@ -22,6 +22,7 @@ const String FLIXQUEST_UPDATE_URL =
     'https://beamlakaschalew.github.io/cinemax/res/update.json';
 String CONSUMET_API = dotenv.env['CONSUMET_URL']!;
 String CONSUMET_INFO_API = dotenv.env['CONSUMET_URL']!;
+String flixquestApiUrl = dotenv.env['FLIXQUEST_API_URL']!;
 const String STREAMING_SERVER_FLIXHQ = "vidcloud";
 const String STREAMING_SERVER_DCVA = "asianload";
 const String STREAMING_SERVER_ZORO = "vidcloud";
