@@ -5,10 +5,10 @@ import '../models/app_dependency_preferences.dart';
 class AppDependencyProvider extends ChangeNotifier {
   AppDependencies appDependencies = AppDependencies();
 
-  String _consumetUrl = 'https://consumet.beamlak.dev/';
+  String _consumetUrl = CONSUMET_API;
   String get consumetUrl => _consumetUrl;
 
-  String _flixquestAPIUrl = 'https://flixquest-api.vercel.app/';
+  String _flixquestAPIUrl = flixquestApiUrl;
   String get flixquestAPIURL => _flixquestAPIUrl;
 
   String _flixQuestLogo = 'default';
