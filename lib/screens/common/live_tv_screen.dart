@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../../provider/app_dependency_provider.dart';
 import '/models/live_tv.dart';
 import '/screens/common/live_player.dart';
@@ -239,31 +236,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
   @override
   void initState() {
     sett();
-    if (appDep.enableADS) {
-      loadInterstitialAd();
-    }
     super.initState();
-  }
-
-  var startAppSdk = StartAppSdk();
-  StartAppInterstitialAd? interstitialAd;
-
-  Future<void> loadInterstitialAd() async {
-    startAppSdk
-        .loadInterstitialAd()
-        .then((interstitialAd) {
-          setState(() {
-            this.interstitialAd = interstitialAd;
-          });
-        })
-        .onError<StartAppException>((ex, stackTrace) {})
-        .onError((error, stackTrace) {});
-  }
-
-  bool shouldShowADS() {
-    Random random = Random();
-    int randomNumber = random.nextInt(4);
-    return randomNumber == 0;
   }
 
   @override
@@ -273,9 +246,6 @@ class _ChannelWidgetState extends State<ChannelWidget> {
         InkWell(
           child: GestureDetector(
             onTap: () {
-              setState(() {
-                showAD = shouldShowADS();
-              });
               final mixpanel =
                   Provider.of<SettingsProvider>(context, listen: false)
                       .mixpanel;
@@ -286,33 +256,17 @@ class _ChannelWidgetState extends State<ChannelWidget> {
                 'TV Channel name': widget.channel.channelName,
                 'Category': widget.catName,
               });
-              if (interstitialAd != null && showAD) {
-                interstitialAd!.show();
-                loadInterstitialAd().whenComplete(() => Navigator.push(context,
-                        MaterialPageRoute(builder: ((context) {
-                      return LivePlayer(
-                        channelName: widget.channel.channelName!,
-                        sources: reversedVids,
-                        autoFullScreen: autoFS,
-                        colors: [
-                          Theme.of(context).primaryColor,
-                          Theme.of(context).colorScheme.background
-                        ],
-                      );
-                    }))));
-              } else {
-                Navigator.push(context, MaterialPageRoute(builder: ((context) {
-                  return LivePlayer(
-                    channelName: widget.channel.channelName!,
-                    sources: reversedVids,
-                    autoFullScreen: autoFS,
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).colorScheme.background
-                    ],
-                  );
-                })));
-              }
+              Navigator.push(context, MaterialPageRoute(builder: ((context) {
+                return LivePlayer(
+                  channelName: widget.channel.channelName!,
+                  sources: reversedVids,
+                  autoFullScreen: autoFS,
+                  colors: [
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).colorScheme.background
+                  ],
+                );
+              })));
             },
             child: Container(
               height: 60,

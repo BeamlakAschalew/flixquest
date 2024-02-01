@@ -3,7 +3,6 @@ import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/models/movie_stream_metadata.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../../controllers/recently_watched_database_controller.dart';
 import '../../provider/recently_watched_provider.dart';
 import '../../video_providers/common.dart';
@@ -74,9 +73,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   /// TMDB Route
   FlixHQMovieInfoTMDBRoute? episode;
 
-  var startAppSdk = StartAppSdk();
-  StartAppInterstitialAd? interstitialAd;
-
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
 
@@ -90,22 +86,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         parseProviderPrecedenceString(prefString.proPreference)
             .where((provider) => provider != null)
             .cast<VideoProvider>());
-    if (appDep.enableADS) {
-      loadInterstitialAd();
-    }
     loadVideo();
-  }
-
-  Future<void> loadInterstitialAd() async {
-    startAppSdk.loadInterstitialAd().then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
   }
 
   void loadVideo() async {
@@ -223,39 +204,20 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           'Movie id': widget.metadata.movieId,
           'Is Movie adult?': widget.metadata.isAdult ?? 'unknown',
         });
-        if (interstitialAd != null) {
-          interstitialAd!.show();
-          loadInterstitialAd().whenComplete(
-              () => Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) {
-                      return PlayerOne(
-                          mediaType: MediaType.movie,
-                          sources: reversedVids,
-                          subs: subs,
-                          colors: [
-                            Theme.of(context).primaryColor,
-                            Theme.of(context).colorScheme.background
-                          ],
-                          settings: settings,
-                          movieMetadata: widget.metadata);
-                    },
-                  )));
-        } else {
-          Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) {
-              return PlayerOne(
-                  mediaType: MediaType.movie,
-                  sources: reversedVids,
-                  subs: subs,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.background
-                  ],
-                  settings: settings,
-                  movieMetadata: widget.metadata);
-            },
-          ));
-        }
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) {
+            return PlayerOne(
+                mediaType: MediaType.movie,
+                sources: reversedVids,
+                subs: subs,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.background
+                ],
+                settings: settings,
+                movieMetadata: widget.metadata);
+          },
+        ));
       } else {
         if (mounted) {
           Navigator.pop(context);

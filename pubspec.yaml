@@ -3,7 +3,7 @@ description: A Flutter movie app.
 
 publish_to: "none"
 
-version: 2.5.1+1
+version: 2.6.0+7
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -50,14 +50,13 @@ dependencies:
   device_info_plus: ^8.1.0
   native_device_orientation: ^1.1.4
   better_player:
-    path: ../betterplayer
+    path: ../flixquest-betterplayer
   flutter_cache_manager: ^3.3.0
   flutter_localization: ^0.1.13
   easy_localization: ^3.0.2
   flutter_colorpicker: ^1.0.3
   firebase_remote_config: ^4.2.5
   flutter_dotenv: ^5.1.0
-  startapp_sdk: ^0.4.2
   #unity_ads_plugin: ^0.3.8
   #modal_bottom_sheet: ^2.1.2
   flutter_local_notifications: ^13.0.0

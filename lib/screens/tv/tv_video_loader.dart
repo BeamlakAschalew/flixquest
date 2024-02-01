@@ -2,7 +2,6 @@
 import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
 import 'package:flixquest/video_providers/superstream.dart';
-import 'package:startapp_sdk/startapp.dart';
 import '../../controllers/recently_watched_database_controller.dart';
 import '../../provider/recently_watched_provider.dart';
 import '../../services/globle_method.dart';
@@ -76,9 +75,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   /// TMDB Route
   FlixHQTVInfoTMDBRoute? tvInfoTMDB;
 
-  var startAppSdk = StartAppSdk();
-  StartAppInterstitialAd? interstitialAd;
-
   late int foundIndex;
 
   Map<String, String> videos = {};
@@ -93,22 +89,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         parseProviderPrecedenceString(prefString.proPreference)
             .where((provider) => provider != null)
             .cast<VideoProvider>());
-    if (appDep.enableADS) {
-      loadInterstitialAd();
-    }
     loadVideo();
-  }
-
-  Future<void> loadInterstitialAd() async {
-    startAppSdk.loadInterstitialAd().then((interstitialAd) {
-      setState(() {
-        this.interstitialAd = interstitialAd;
-      });
-    }).onError<StartAppException>((ex, stackTrace) {
-      debugPrint("Error loading Interstitial ad: ${ex.message}");
-    }).onError((error, stackTrace) {
-      debugPrint("Error loading Interstitial ad: $error");
-    });
   }
 
   void loadVideo() async {
@@ -230,39 +211,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           'TV series season number': '${widget.metadata.seasonNumber}',
           'TV series episode number': '${widget.metadata.episodeNumber}'
         });
-        if (interstitialAd != null) {
-          interstitialAd!.show();
-          loadInterstitialAd().whenComplete(
-              () => Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) {
-                      return PlayerOne(
-                          mediaType: MediaType.tvShow,
-                          sources: reversedVids,
-                          subs: subs,
-                          colors: [
-                            Theme.of(context).primaryColor,
-                            Theme.of(context).colorScheme.background
-                          ],
-                          settings: settings,
-                          tvMetadata: widget.metadata);
-                    },
-                  )));
-        } else {
-          Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) {
-              return PlayerOne(
-                  mediaType: MediaType.tvShow,
-                  sources: reversedVids,
-                  subs: subs,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.background
-                  ],
-                  settings: settings,
-                  tvMetadata: widget.metadata);
-            },
-          ));
-        }
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) {
+            return PlayerOne(
+                mediaType: MediaType.tvShow,
+                sources: reversedVids,
+                subs: subs,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.background
+                ],
+                settings: settings,
+                tvMetadata: widget.metadata);
+          },
+        ));
       } else {
         if (mounted) {
           Navigator.pop(context);
