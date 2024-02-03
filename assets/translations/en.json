@@ -490,5 +490,6 @@
     "custom_color": "Custom theme color",
     "provider_precedence": "Video providers order",
     "choose_provider_order": "Modify providers order",
-    "provider_precedence_help": "Press and drag on a video provider's name to give it a priority when a video is loaded, the app will stop fetching for video links if a specific provider has the video otherwise it will continue looking for the next provider until there is no more left"
+    "provider_precedence_help": "Press and drag on a video provider's name to give it a priority when a video is loaded, the app will stop fetching for video links if a specific provider has the video otherwise it will continue looking for the next provider until there is no more left",
+    "watching_text": "YOU'RE WATCHING"
 }

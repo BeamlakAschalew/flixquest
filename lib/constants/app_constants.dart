@@ -94,3 +94,7 @@ const providerPreference =
     'flixhqS2-FlixHQ_S2 flixhq-FlixHQ showbox-ShowBox zoe-Zoechip gomovies-GoMovies zoro-Zoro vidsrc-VidSrc dramacool-Dramacool viewasian-ViewAsian';
 
 late SharedPreferences sharedPrefsSingleton;
+
+
+/// easy localization run command
+// flutter pub run easy_localization:generate -S assets/translations -f keys -O lib/translations -o locale_keys.g.dart
