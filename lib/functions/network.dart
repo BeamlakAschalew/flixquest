@@ -8,8 +8,7 @@ import 'package:flixquest/video_providers/flixhq.dart';
 import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
 import '../video_providers/dramacool.dart';
-import '../video_providers/flixhq_flixquest.dart';
-import '../video_providers/superstream.dart';
+import '../video_providers/flixquest_api_source.dart';
 import '../video_providers/zoro.dart';
 import '/models/update.dart';
 import '/models/images.dart';
@@ -658,43 +657,6 @@ Future<SubtitleDownload> downloadExternalSubtitle(
   return sub;
 }
 
-/// Superstream function(s)
-Future<SuperstreamStreamSources> getSuperstreamStreamingLinks(
-    String api) async {
-  SuperstreamStreamSources superstreamSources;
-  int tries = 3;
-  dynamic decodeRes;
-  try {
-    dynamic res;
-    while (tries > 0) {
-      res = await retryOptionsStream.retry(
-        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
-        retryIf: (e) => e is SocketException || e is TimeoutException,
-      );
-      decodeRes = jsonDecode(res.body);
-      if (decodeRes.containsKey('message')) {
-        --tries;
-      } else {
-        break;
-      }
-    }
-
-    if (decodeRes.containsKey('message') || res.statusCode != 200) {
-      throw ServerDownException();
-    }
-
-    superstreamSources = SuperstreamStreamSources.fromJson(decodeRes);
-
-    if (superstreamSources.videoLinks == null ||
-        superstreamSources.videoLinks!.isEmpty) {
-      throw NotFoundException();
-    }
-  } catch (e) {
-    rethrow;
-  }
-  return superstreamSources;
-}
-
 Future<List<DCVASearchEntry>> fetchMovieTVForStreamDCVA(String api) async {
   DCVASearch dcvaStream;
   try {
@@ -853,9 +815,9 @@ Future<ZoroStreamSources> getMovieTVStreamLinksAndSubsZoro(String api) async {
   return zoroVideoSources;
 }
 
-Future<FlixHQFlixQuestSources> getFlixHQFlixQuestLinks(String api) async {
-  FlixHQFlixQuestSources fqstreamSources;
-  int tries = 3;
+Future<FlixQuestAPIStreamSources> getFlixQuestAPILinks(String api) async {
+  FlixQuestAPIStreamSources fqAPIStreamSources;
+  int tries = 2;
   dynamic decodeRes;
   try {
     dynamic res;
@@ -874,14 +836,14 @@ Future<FlixHQFlixQuestSources> getFlixHQFlixQuestLinks(String api) async {
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
       throw ServerDownException();
     }
-    fqstreamSources = FlixHQFlixQuestSources.fromJson(decodeRes);
+    fqAPIStreamSources = FlixQuestAPIStreamSources.fromJson(decodeRes);
 
-    if (fqstreamSources.videoLinks == null ||
-        fqstreamSources.videoLinks!.isEmpty) {
+    if (fqAPIStreamSources.videoLinks == null ||
+        fqAPIStreamSources.videoLinks!.isEmpty) {
       throw NotFoundException();
     }
   } catch (e) {
     rethrow;
   }
-  return fqstreamSources;
+  return fqAPIStreamSources;
 }

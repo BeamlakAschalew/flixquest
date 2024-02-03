@@ -415,13 +415,14 @@ class Endpoints {
     return '$baseUrl' 'anime/zoro/watch?episodeId=$episodeId&server=$server';
   }
 
-  static String getMovieLinksFlixHQFQ(String baseUrl, int tmdbId) {
-    return '$baseUrl' 'flixhq/watch-movie?tmdbId=$tmdbId';
+  static String getMovieEndpointFlixQuestAPI(
+      String baseUrl, int tmdbId, String provider) {
+    return '$baseUrl' '$provider/watch-movie?tmdbId=$tmdbId';
   }
 
-  static String getTVLinksFlixHQFQ(
-      String baseUrl, int episode, int season, int tmdbId) {
+  static String getTVEndpointFlixQuestAPI(
+      String baseUrl, int episode, int season, int tmdbId, String provider) {
     return '$baseUrl'
-        'flixhq/watch-tv?tmdbId=$tmdbId&season=$season&episode=$episode';
+        '$provider/watch-tv?tmdbId=$tmdbId&season=$season&episode=$episode';
   }
 }

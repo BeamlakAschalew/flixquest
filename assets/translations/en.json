@@ -480,7 +480,7 @@
     "clear": "Clear",
     "fetch_all_subs": "Fetch all subtitles that belong to a specific language",
     "video_link_copied": "Video link copied to clipboard",
-    "latency": "Latency in milliseconds (ms): {l}",
+    "latency": "Latency in miliseconds (ms): {l}",
     "flixquest_appbar": "lixQuest",
     "share_episode": "Checkout the TV episode {et} from {title}!\nIt is rated {rating} out of 10\nhttps://themoviedb.org/tv/{id}/season/{season}/episode/{episode}",
     "dark": "Dark",

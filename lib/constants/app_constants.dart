@@ -69,7 +69,7 @@ final List<String> appNames = [
   'flixquest-v2.5.0-4.apk',
   'flixquest-v2.5.0-5.apk',
   'flixquest-v2.5.0-6.apk',
-  'flixquest-v2.5.1.apk'
+  'flixquest-v2.6.0.apk'
 ];
 
 CacheManager cacheProp() {
@@ -91,6 +91,6 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 const providerPreference =
-    'flixhqS2-FlixHQ_S2 superstream-Superstream flixhq-FlixHQ viewasian-ViewAsian dramacool-Dramacool zoro-Zoro ';
+    'flixhqS2-FlixHQ_S2 flixhq-FlixHQ showbox-ShowBox zoe-Zoechip gomovies-GoMovies zoro-Zoro vidsrc-VidSrc dramacool-Dramacool viewasian-ViewAsian';
 
 late SharedPreferences sharedPrefsSingleton;

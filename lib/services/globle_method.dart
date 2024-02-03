@@ -120,7 +120,7 @@ class GlobalMethods {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
       error is TimeoutException
-          ? 'Error: Fetch timed out'
+          ? 'Error: Connection timed out'
           : error is SocketException
               ? 'Error: Connection problem'
               : error is NotFoundException

@@ -48,8 +48,17 @@ ThemeData darkThemeData(
     bannerTheme: MaterialBannerThemeData(),
     chipTheme: ChipThemeData(),
     snackBarTheme: SnackBarThemeData(
-        backgroundColor: Colors.black87,
-        contentTextStyle: TextStyle(color: Colors.white)),
+        backgroundColor: isM3Enabled
+            ? darkDynamicColor?.onBackground ?? Color(0xFFece0da)
+            : useUserColor
+                ? color.cs.onBackground
+                : Color(0xFFece0da),
+        contentTextStyle: TextStyle(
+            color: isM3Enabled
+                ? darkDynamicColor?.background ?? Color(0xFF201a17)
+                : useUserColor
+                    ? color.cs.background
+                    : Color(0xFF201a17))),
     scaffoldBackgroundColor: Color(0xFF161716),
     radioTheme: RadioThemeData(
         fillColor: MaterialStatePropertyAll(isM3Enabled
@@ -266,10 +275,10 @@ ThemeData darkThemeData(
       brightness: Brightness.dark,
     ).copyWith(
         background: isM3Enabled
-            ? darkDynamicColor?.background ?? Colors.black
+            ? darkDynamicColor?.background ?? Color(0xFF201a17)
             : useUserColor
                 ? color.cs.background
-                : Colors.black),
+                : Color(0xFF201a17)),
   );
 }
 
@@ -319,8 +328,17 @@ ThemeData lightThemeData(
     bannerTheme: MaterialBannerThemeData(),
     chipTheme: ChipThemeData(),
     snackBarTheme: SnackBarThemeData(
-        backgroundColor: Colors.grey,
-        contentTextStyle: TextStyle(color: Colors.black)),
+        backgroundColor: isM3Enabled
+            ? lightDynamicColor?.onBackground ?? Color(0xFF201a17)
+            : useUserColor
+                ? color.cs.onBackground
+                : Color(0xFF201a17),
+        contentTextStyle: TextStyle(
+            color: isM3Enabled
+                ? lightDynamicColor?.background ?? Color(0xFFfffbff)
+                : useUserColor
+                    ? color.cs.background
+                    : Color(0xFFfffbff))),
     scaffoldBackgroundColor: Color(0xFFf5f5f5),
     radioTheme: RadioThemeData(
         fillColor: MaterialStatePropertyAll(isM3Enabled
@@ -537,14 +555,14 @@ ThemeData lightThemeData(
       brightness: Brightness.light,
     ).copyWith(
         background: isM3Enabled
-            ? lightDynamicColor?.background ?? Colors.white
+            ? lightDynamicColor?.background ?? Color(0xFFfffbff)
             : useUserColor
                 ? color.cs.background
-                : Colors.white),
+                : Color(0xFFfffbff)),
   );
 }
 
-ThemeData amoledThemeData(
+ThemeData lightsOutThemeData(
     bool isM3Enabled, ColorScheme? darkDynamicColor, AppColor color) {
   bool useUserColor = color.index != -1;
   return ThemeData(
@@ -590,8 +608,18 @@ ThemeData amoledThemeData(
     bannerTheme: MaterialBannerThemeData(),
     chipTheme: ChipThemeData(),
     snackBarTheme: SnackBarThemeData(
-        backgroundColor: Color(0xFF161716),
-        contentTextStyle: TextStyle(color: Colors.white)),
+        backgroundColor: isM3Enabled
+            ? darkDynamicColor?.onBackground ?? Color(0xFFece0da)
+            : useUserColor
+                ? color.cs.onBackground
+                : Color(0xFFece0da),
+        contentTextStyle: TextStyle(
+          color: isM3Enabled
+              ? darkDynamicColor?.background ?? Color(0xFF201a17)
+              : useUserColor
+                  ? color.cs.background
+                  : Color(0xFF201a17),
+        )),
     scaffoldBackgroundColor: Colors.black,
     radioTheme: RadioThemeData(
         fillColor: MaterialStatePropertyAll(isM3Enabled
@@ -806,10 +834,10 @@ ThemeData amoledThemeData(
       brightness: Brightness.dark,
     ).copyWith(
         background: isM3Enabled
-            ? darkDynamicColor?.background ?? Colors.black
+            ? darkDynamicColor?.background ?? Color(0xFF201a17)
             : useUserColor
                 ? color.cs.background
-                : Colors.black),
+                : Color(0xFF201a17)),
   );
 }
 
@@ -826,7 +854,7 @@ class Styles {
         : appThemeMode == "light"
             ? lightThemeData(isM3Enabled, lightDynamicColor, appColor)
             : appThemeMode == "amoled"
-                ? amoledThemeData(isM3Enabled, darkDynamicColor, appColor)
+                ? lightsOutThemeData(isM3Enabled, darkDynamicColor, appColor)
                 : darkThemeData(isM3Enabled, darkDynamicColor, appColor);
   }
 }

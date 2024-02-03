@@ -2,7 +2,7 @@ import 'package:flixquest/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import '../constants/api_constants.dart';
-import '../models/setting_preferences.dart';
+import '../preferences/setting_preferences.dart';
 
 class SettingsProvider with ChangeNotifier {
   ThemeModePreferences themeModePreferences = ThemeModePreferences();

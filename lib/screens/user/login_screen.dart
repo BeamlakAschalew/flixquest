@@ -98,14 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-
     return Scaffold(
-      backgroundColor: themeMode == "black"
-          ? const Color(0xFF171717)
-          : themeMode == "amoled"
-              ? Colors.black
-              : const Color(0xFFdedede),
       appBar: AppBar(title: Text(tr("login"))),
       body: Container(
           padding: const EdgeInsets.all(8),

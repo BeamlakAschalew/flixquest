@@ -1314,9 +1314,9 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                 ),
                 child: Text(
                   widget.movie.voteCount!.toString(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -3199,19 +3199,19 @@ class WatchNowButtonState extends State<WatchNowButton> {
         },
         child: Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.only(right: 10, left: 10),
+            Padding(
+              padding: const EdgeInsets.only(right: 10, left: 10),
               child: Icon(
                 Icons.play_circle,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 10),
-              child: Text(
-                tr("watch_now"),
-                style: const TextStyle(color: Colors.white),
-              ),
+              child: Text(tr("watch_now"),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  )),
             ),
             Visibility(
               visible: isVisible!,

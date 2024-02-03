@@ -5966,9 +5966,9 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
               ),
               child: Text(
                 widget.tvSeries.voteCount!.toString(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -6546,9 +6546,9 @@ class TVEpisodeOptions extends StatelessWidget {
               ),
               child: Text(
                 episodeList.voteCount!.toString(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -6595,7 +6595,6 @@ class WatchNowButton extends StatefulWidget {
 }
 
 class _WatchNowButtonState extends State<WatchNowButton> {
-  bool? isVisible = false;
   double? buttonWidth = 160;
   TVDetails? tvDetails;
 
@@ -6689,30 +6688,19 @@ class _WatchNowButtonState extends State<WatchNowButton> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Padding(
-              padding: EdgeInsets.only(right: 10, left: 10),
+            Padding(
+              padding: const EdgeInsets.only(right: 10, left: 10),
               child: Icon(
                 Icons.play_circle,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Text(
                 tr("watch_now"),
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-            Visibility(
-              visible: isVisible!,
-              child: const Padding(
-                padding: EdgeInsets.only(left: 10.0, right: 10.0),
-                child: SizedBox(
-                  height: 16,
-                  width: 16,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
             ),
