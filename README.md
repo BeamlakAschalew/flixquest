@@ -67,7 +67,13 @@ This repo also uses Firebase Database to store data of registered users and to s
 
 This repo uses customized better_player package which can be found at github.com/beamlakaschalew/flixquest-betterplayer
 
-Clone the repo to your machine and edit the location of the better_player package that is found in FlixQuest
+Clone the repo to your machine and edit the location of the better_player package that is found in the project's pubspec.yaml to wherever the package is located.<br>
+Also alternatively you can just use the git url like so:
+```yaml
+better_player:
+    git:
+        url: https://github.com/BeamlakAschalew/flixquest-betterplayer.git
+```
 
 ### 😇 Contributing
 
