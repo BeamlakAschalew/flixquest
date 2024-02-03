@@ -322,11 +322,16 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     return WillPopScope(
       onWillPop: () async {
         if (_betterPlayerController.isVideoInitialized()!) {
-          widget.mediaType == MediaType.movie
-              ? insertRecentMovieData()
-              : insertRecentEpisodeData();
+          Navigator.pop(
+              context,
+              widget.mediaType == MediaType.movie
+                  ? [insertRecentMovieData]
+                  : [insertRecentEpisodeData]);
+        } else {
+          Navigator.pop(context);
         }
-        return true;
+
+        return false;
       },
       child: Scaffold(
         body: Center(

@@ -55,20 +55,6 @@ class MainMoviesDisplay extends StatefulWidget {
 
 class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
   @override
-  void initState() {
-    super.initState();
-    // UnityAds.init(
-    //   gameId: "5280322",
-    //   testMode: false,
-    //   onComplete: () {
-    //     print('Initialization Complete');
-    //   },
-    //   onFailed: (error, message) =>
-    //       print('Initialization Failed: $error $message'),
-    // );
-  }
-
-  @override
   Widget build(BuildContext context) {
     bool includeAdult = Provider.of<SettingsProvider>(context).isAdult;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
@@ -87,13 +73,6 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
             isTrending: false,
             includeAdult: includeAdult,
           ),
-          // UnityBannerAd(
-          //   placementId: 'Banner1',
-          //   onLoad: (placementId) => print('Banner loaded: $placementId'),
-          //   onClick: (placementId) => print('Banner clicked: $placementId'),
-          //   onFailed: (placementId, error, message) =>
-          //       print('Banner Ad $placementId failed: $error $message'),
-          // ),
           rMovies.isEmpty
               ? Container()
               : ScrollingRecentMovies(moviesList: rMovies),
@@ -1270,7 +1249,7 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                     animationDuration: 2500,
                     progressColor: Theme.of(context).colorScheme.primary,
                     center: Text(
-                      '${widget.movie.voteAverage!.toStringAsFixed(1)}/10',
+                      '${widget.movie.voteAverage!.toStringAsFixed(1).endsWith('0') ? widget.movie.voteAverage!.toStringAsFixed(0) : widget.movie.voteAverage!.toStringAsFixed(1)}/10',
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                       ),
@@ -3198,32 +3177,26 @@ class WatchNowButtonState extends State<WatchNowButton> {
           });
         },
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 10, left: 10),
-              child: Icon(
-                Icons.play_circle,
-                color: Theme.of(context).colorScheme.onPrimary,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10, left: 10),
+                child: Icon(
+                  Icons.play_circle,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: Text(tr("watch_now"),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  )),
-            ),
-            Visibility(
-              visible: isVisible!,
-              child: const Padding(
-                padding: EdgeInsets.only(left: 10.0, right: 10.0),
-                child: SizedBox(
-                  height: 16,
-                  width: 16,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
-                ),
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 5, right: 10),
+                child: Text(tr("watch_now"),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    )),
               ),
             ),
           ],

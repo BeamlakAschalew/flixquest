@@ -262,7 +262,13 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 settings: settings,
                 tvMetadata: widget.metadata);
           },
-        ));
+        )).then((value) async {
+          print('CALLBACK VALUE $value');
+          if (value != null) {
+            Function callback = value;
+            await callback.call();
+          }
+        });
       } else {
         if (mounted) {
           Navigator.pop(context);

@@ -552,23 +552,6 @@ class _SettingsState extends State<Settings> {
                   Text(countryName!)
                 ]),
           ),
-          SwitchListTile(
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: const Color(0xFF9B9B9B),
-            value: settingsValues.isAdult,
-            secondary: Icon(
-              Icons.explicit_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr("include_adult"),
-            ),
-            onChanged: (bool value) {
-              setState(() {
-                settingsValues.isAdult = value;
-              });
-            },
-          ),
           ListTile(
             leading: Icon(
               FontAwesomeIcons.eraser,

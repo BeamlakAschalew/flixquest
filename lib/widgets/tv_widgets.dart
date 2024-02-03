@@ -5925,7 +5925,7 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                   animationDuration: 2500,
                   progressColor: Theme.of(context).colorScheme.primary,
                   center: Text(
-                    '${widget.tvSeries.voteAverage!.toStringAsFixed(1)}/10',
+                    '${widget.tvSeries.voteAverage!.toStringAsFixed(1).endsWith('0') ? widget.tvSeries.voteAverage!.toStringAsFixed(0) : widget.tvSeries.voteAverage!.toStringAsFixed(1)}/10',
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                     ),
@@ -6505,7 +6505,7 @@ class TVEpisodeOptions extends StatelessWidget {
                   animationDuration: 2500,
                   progressColor: Theme.of(context).colorScheme.primary,
                   center: Text(
-                    '${episodeList.voteAverage!.toStringAsFixed(1)}/10',
+                    '${episodeList.voteAverage!.toStringAsFixed(1).endsWith('0') ? episodeList.voteAverage!.toStringAsFixed(0) : episodeList.voteAverage!.toStringAsFixed(1)}/10',
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                     ),
@@ -6688,19 +6688,24 @@ class _WatchNowButtonState extends State<WatchNowButton> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 10, left: 10),
-              child: Icon(
-                Icons.play_circle,
-                color: Theme.of(context).colorScheme.onPrimary,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10, left: 10),
+                child: Icon(
+                  Icons.play_circle,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: Text(
-                tr("watch_now"),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 5, right: 10),
+                child: Text(
+                  tr("watch_now"),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),

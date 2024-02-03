@@ -2,7 +2,7 @@
 import 'package:flixquest/constants/app_constants.dart';
 
 class AdultModePreferences {
-  static const ADULT_MODE_STATUS = "adultStatus";
+  static const ADULT_MODE_STATUS = "adultStatus-v2";
 
   setAdultMode(bool value) async {
     sharedPrefsSingleton.setBool(ADULT_MODE_STATUS, value);

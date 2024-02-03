@@ -2028,8 +2028,8 @@ class LeadingDot extends StatelessWidget {
     String appLang = Provider.of<SettingsProvider>(context).appLanguage;
     return Container(
       color: Theme.of(context).primaryColor,
-      width: 13,
-      height: 13,
+      width: 10,
+      height: 25,
       margin: appLang == 'ar'
           ? const EdgeInsets.only(left: 8)
           : const EdgeInsets.only(right: 8),

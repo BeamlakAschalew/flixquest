@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:async';
+
 import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/models/movie_stream_metadata.dart';
 import 'package:flixquest/services/globle_method.dart';
@@ -246,7 +248,12 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 settings: settings,
                 movieMetadata: widget.metadata);
           },
-        ));
+        )).then((value) async {
+          if (value != null) {
+            Function callback = value;
+            await callback.call();
+          }
+        });
       } else {
         if (mounted) {
           Navigator.pop(context);
