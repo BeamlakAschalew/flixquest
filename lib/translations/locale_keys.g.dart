@@ -1,6 +1,8 @@
 // DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
 
-abstract class  LocaleKeys {
+// ignore_for_file: constant_identifier_names
+
+abstract class LocaleKeys {
   static const popularity_descending = 'popularity_descending';
   static const popularity_ascending = 'popularity_ascending';
   static const average_vote_descending = 'average_vote_descending';
@@ -494,5 +496,11 @@ abstract class  LocaleKeys {
   static const choose_provider_order = 'choose_provider_order';
   static const provider_precedence_help = 'provider_precedence_help';
   static const watching_text = 'watching_text';
-
+  static const internal_error = 'internal_error';
+  static const timed_out = 'timed_out';
+  static const internet_problem = 'internet_problem';
+  static const media_not_found = 'media_not_found';
+  static const server_is_down = 'server_is_down';
+  static const general_error = 'general_error';
+  static const enter_full_screen = 'enter_full_screen';
 }

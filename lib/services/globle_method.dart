@@ -114,34 +114,38 @@ class GlobalMethods {
         });
   }
 
-  //TODO: translate Server is down or media is not found
   static void showErrorScaffoldMessengerMediaLoad(
       Exception error, BuildContext context, String server) async {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(milliseconds: 1500),
         content: Text(
-      error is TimeoutException
-          ? 'Error: Connection timed out'
-          : error is SocketException
-              ? 'Error: Connection problem'
-              : error is NotFoundException
-                  ? 'Error: media is not found on $server Server'
-                  : error is ServerDownException
-                      ? 'Error: $server Server is down ${error.toString()}'
-                      : 'Error: ${error.toString()}',
-      style: const TextStyle(fontFamily: 'Poppins'),
-    )));
+          error is FormatException
+              ? tr("internal_error")
+              : error is TimeoutException
+                  ? tr("timed_out")
+                  : error is SocketException
+                      ? tr("internet_problem")
+                      : error is NotFoundException
+                          ? tr("media_not_found", namedArgs: {"s": server})
+                          : error is ServerDownException
+                              ? tr("server_is_down", namedArgs: {"s": server})
+                              : tr("general_error",
+                                  namedArgs: {"e": error.toString()}),
+          style: const TextStyle(fontFamily: 'Poppins'),
+        )));
   }
 
   static void showErrorScaffoldMessengerGeneral(
       Exception error, BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(milliseconds: 1500),
         content: Text(
-      error is TimeoutException
-          ? 'Error: Fetch timed out'
-          : error is SocketException
-              ? 'Error: Connection problem'
-              : 'Error: ${error.toString()}',
-      style: const TextStyle(fontFamily: 'Poppins'),
-    )));
+          error is TimeoutException
+              ? tr("timed_out")
+              : error is SocketException
+                  ? tr("internet_problem")
+                  : tr("general_error", namedArgs: {"e": error.toString()}),
+          style: const TextStyle(fontFamily: 'Poppins'),
+        )));
   }
 }

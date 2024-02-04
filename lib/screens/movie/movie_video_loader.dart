@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flixquest/functions/function.dart';
+import 'package:flixquest/models/custom_exceptions.dart';
 import 'package:flixquest/models/movie_stream_metadata.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
@@ -711,7 +712,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           if (fqMovies == null || fqMovies!.isEmpty) {
             return;
           }
-
+          bool entryFound = false;
           for (int i = 0; i < fqMovies!.length; i++) {
             if (fqMovies![i].releaseDate ==
                     widget.metadata.releaseYear!.toString() &&
@@ -722,6 +723,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                     fqMovies![i]
                         .title!
                         .contains(widget.metadata.movieName!.toString()))) {
+              entryFound = true;
               await getMovieStreamEpisodesFlixHQ(
                       Endpoints.getMovieTVStreamInfoFlixHQ(
                           fqMovies![i].id!, appDep.consumetUrl))
@@ -766,6 +768,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               break;
             }
           }
+          if (!entryFound) {
+            throw NotFoundException();
+          }
         });
       }
     } on Exception catch (e) {
@@ -776,8 +781,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   Future<void> loadShowbox() async {
     try {
       if (mounted) {
-        await getFlixQuestAPILinks(Endpoints.getSuperstreamStreamMovie(
-                appDep.flixquestAPIURL, widget.metadata.movieId!))
+        await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
+                appDep.flixquestAPIURL, widget.metadata.movieId!, 'showbox'))
             .then((value) {
           if (mounted) {
             if (value.messageExists == null &&
@@ -802,8 +807,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-          e, context, 'Superstream');
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'ShowBox');
     }
   }
 

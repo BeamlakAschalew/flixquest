@@ -480,7 +480,7 @@
     "clear": "Clear",
     "fetch_all_subs": "Fetch all subtitles that belong to a specific language",
     "video_link_copied": "Video link copied to clipboard",
-    "latency": "Latency in miliseconds (ms): {l}",
+    "latency": "Latency in milliseconds (ms): {l}",
     "flixquest_appbar": "lixQuest",
     "share_episode": "Checkout the TV episode {et} from {title}!\nIt is rated {rating} out of 10\nhttps://themoviedb.org/tv/{id}/season/{season}/episode/{episode}",
     "dark": "Dark",
@@ -491,5 +491,12 @@
     "provider_precedence": "Video providers order",
     "choose_provider_order": "Modify providers order",
     "provider_precedence_help": "Press and drag on a video provider's name to give it a priority when a video is loaded, the app will stop fetching for video links if a specific provider has the video otherwise it will continue looking for the next provider until there is no more left",
-    "watching_text": "YOU'RE WATCHING"
+    "watching_text": "YOU'RE WATCHING",
+    "internal_error": "Error: Internal app error occured",
+    "timed_out": "Error: Connection timed out",
+    "internet_problem": "Error: Internet connection problem",
+    "media_not_found": "Error: media is not found on {s} Server",
+    "server_is_down": "Error: {s} Server is down",
+    "general_error": "Error: {e}",
+    "enter_full_screen": "Enter full screen"
 }

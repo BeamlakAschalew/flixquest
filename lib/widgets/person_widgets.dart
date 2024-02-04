@@ -412,7 +412,8 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                             child: Row(
                                                               children: [
                                                                 const Icon(
-                                                                  Icons.star,
+                                                                  Icons
+                                                                      .star_rounded,
                                                                 ),
                                                                 Text(uniqueMov![
                                                                         index]
@@ -671,7 +672,8 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                             child: Row(
                                                               children: [
                                                                 const Icon(
-                                                                  Icons.star,
+                                                                  Icons
+                                                                      .star_rounded,
                                                                 ),
                                                                 Text(uniqueTV![
                                                                         index]

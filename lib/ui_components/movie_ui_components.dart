@@ -109,7 +109,7 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     const Icon(
-                                      Icons.star,
+                                      Icons.star_rounded,
                                     ),
                                     Text(movieList![index]
                                         .voteAverage!
@@ -250,7 +250,7 @@ class MovieListView extends StatelessWidget {
                               Row(
                                 children: <Widget>[
                                   const Icon(
-                                    Icons.star,
+                                    Icons.star_rounded,
                                   ),
                                   Text(
                                     moviesList![index]
@@ -384,7 +384,7 @@ class MovieGridView extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     const Icon(
-                                      Icons.star,
+                                      Icons.star_rounded,
                                     ),
                                     Text(moviesList![index]
                                         .voteAverage!
@@ -518,7 +518,7 @@ class BookmarkMovieGridView extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     const Icon(
-                                      Icons.star,
+                                      Icons.star_rounded,
                                     ),
                                     Text(moviesList![index]
                                         .voteAverage!

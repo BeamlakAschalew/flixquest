@@ -491,5 +491,12 @@
     "provider_precedence": "Orden de proveedores de video",
     "choose_provider_order": "Modificar orden de proveedores",
     "provider_precedence_help": "Presione y arrastre el nombre de un proveedor de video para darle prioridad cuando se carga un video; la aplicación dejará de buscar enlaces de video si un proveedor específico tiene el video; de lo contrario, continuará buscando el siguiente proveedor hasta que no quede más.",
-    "watching_text": "ESTAS MIRANDO"
+    "watching_text": "ESTAS MIRANDO",
+    "internal_error": "Error: se produjo un error interno de la aplicación",
+    "timed_out": "Error: Se agotó el tiempo de conexión",
+    "internet_problem": "Error: problema de conexión a Internet",
+    "media_not_found": "Error: no se encuentran medios en el servidor {s}",
+    "server_is_down": "Error: {s} El servidor no funciona",
+    "general_error": "Error: {e}",
+    "enter_full_screen": "Ingrese a pantalla completa"
 }

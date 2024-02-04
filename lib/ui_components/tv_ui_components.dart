@@ -110,7 +110,7 @@ class HorizontalScrollingTVList extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     const Icon(
-                                      Icons.star,
+                                      Icons.star_rounded,
                                     ),
                                     Text(tvList![index]
                                         .voteAverage!
@@ -251,7 +251,7 @@ class TVListView extends StatelessWidget {
                               Row(
                                 children: <Widget>[
                                   const Icon(
-                                    Icons.star,
+                                    Icons.star_rounded,
                                   ),
                                   Text(
                                     tvList![index]
@@ -383,7 +383,7 @@ class TVGridView extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     const Icon(
-                                      Icons.star,
+                                      Icons.star_rounded,
                                     ),
                                     Text(tvList![index]
                                         .voteAverage!

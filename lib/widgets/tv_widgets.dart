@@ -529,7 +529,7 @@ class ScrollingTVState extends State<ScrollingTV>
                                                   child: Row(
                                                     children: [
                                                       const Icon(
-                                                        Icons.star,
+                                                        Icons.star_rounded,
                                                       ),
                                                       Text(tvList![index]
                                                           .voteAverage!
@@ -4653,7 +4653,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                     padding: EdgeInsets.only(
                                                         right: 3.0),
                                                     child: Icon(
-                                                      Icons.star,
+                                                      Icons.star_rounded,
                                                       size: 20,
                                                     ),
                                                   ),

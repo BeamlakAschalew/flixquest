@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flixquest/functions/function.dart';
+import 'package:flixquest/models/custom_exceptions.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
 import '../../controllers/recently_watched_database_controller.dart';
 import '../../provider/recently_watched_provider.dart';
@@ -139,8 +140,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               break;
             }
           }
-        } else if (videoProviders[i].codeName == 'superstream') {
-          await loadSuperstream();
+        } else if (videoProviders[i].codeName == 'showbox') {
+          await loadShowbox();
           if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
             await subtitleParserFetcher(tvVideoSubs!);
             break;
@@ -168,15 +169,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           }
         } else if (videoProviders[i].codeName == 'zoro') {
           await loadZoro();
-          if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
-            await subtitleParserFetcher(tvVideoSubs!);
-            break;
-          }
-          if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
-            break;
-          }
-        } else if (videoProviders[i].codeName == 'flixhqS2') {
-          await loadFlixHQFlixQuestApi();
           if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
             await subtitleParserFetcher(tvVideoSubs!);
             break;
@@ -459,14 +451,15 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     }
   }
 
-  Future<void> loadSuperstream() async {
+  Future<void> loadShowbox() async {
     try {
       if (mounted) {
-        await getFlixQuestAPILinks(Endpoints.getSuperstreamStreamTV(
+        await getFlixQuestAPILinks(Endpoints.getTVEndpointFlixQuestAPI(
                 appDep.flixquestAPIURL,
-                widget.metadata.tvId!,
+                widget.metadata.episodeNumber!,
                 widget.metadata.seasonNumber!,
-                widget.metadata.episodeNumber!))
+                widget.metadata.tvId!,
+                'showbox'))
             .then((value) {
           if (mounted) {
             if (value.messageExists == null &&
@@ -491,8 +484,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         });
       }
     } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-          e, context, 'Superstream');
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'ShowBox');
     }
   }
 
@@ -517,6 +509,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               if (fqShows == null || fqShows!.isEmpty) {
                 return;
               }
+              bool entryFound = false;
               for (int i = 0; i < fqShows!.length; i++) {
                 if (fqShows![i].seasons == totalSeasons &&
                     fqShows![i].type == 'TV Series' &&
@@ -528,6 +521,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                                     .toLowerCase()) ||
                         fqShows![i].title!.contains(
                             widget.metadata.seriesName!.toString()))) {
+                  entryFound = true;
                   await getTVStreamEpisodesFlixHQ(
                           Endpoints.getMovieTVStreamInfoFlixHQ(
                               fqShows![i].id!, appDep.consumetUrl))
@@ -581,6 +575,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
                 if (fqShows![i].seasons == (totalSeasons - 1) &&
                     fqShows![i].type == 'TV Series') {
+                  entryFound = true;
                   await getTVStreamEpisodesFlixHQ(
                           Endpoints.getMovieTVStreamInfoFlixHQ(
                               fqShows![i].id!, appDep.consumetUrl))
@@ -621,6 +616,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
                   break;
                 }
+              }
+              if (!entryFound) {
+                throw NotFoundException();
               }
             });
           },

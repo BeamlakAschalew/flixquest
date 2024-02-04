@@ -349,14 +349,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   controller: _betterPlayerController,
                   key: _betterPlayerKey,
                 ),
-                // TODO: translate this
                 Visibility(
                   visible: !_betterPlayerController.isFullScreen,
                   child: ElevatedButton(
                       onPressed: () {
                         _betterPlayerController.enterFullScreen();
                       },
-                      child: Text('Enter full screen')),
+                      child: Text(tr("enter_full_screen"))),
                 )
               ],
             ),

@@ -459,7 +459,7 @@ class Search extends SearchDelegate<String> {
                                       Row(
                                         children: <Widget>[
                                           const Icon(
-                                            Icons.star,
+                                            Icons.star_rounded,
                                           ),
                                           Text(
                                             moviesList[index].voteAverage ==
@@ -604,7 +604,7 @@ class Search extends SearchDelegate<String> {
                                       Row(
                                         children: <Widget>[
                                           const Icon(
-                                            Icons.star,
+                                            Icons.star_rounded,
                                           ),
                                           Text(
                                             tvList[index].voteAverage == null

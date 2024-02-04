@@ -591,6 +591,12 @@ ThemeData lightsOutThemeData(
                   : Colors.black,
           fontFamily: 'PoppinsSB',
           fontSize: 21),
+      // shape: ContinuousRectangleBorder(
+      //   borderRadius: BorderRadius.only(
+      //     bottomLeft: Radius.circular(20.0),
+      //     bottomRight: Radius.circular(20.0),
+      //   ),
+      // ),
     ),
     dialogTheme: DialogTheme(backgroundColor: Color(0xFF171717)),
     primaryColor: isM3Enabled

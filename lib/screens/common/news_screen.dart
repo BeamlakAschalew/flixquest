@@ -116,7 +116,7 @@
 //                     children: [
 //                       Padding(
 //                           padding: EdgeInsets.only(right: 8.0),
-//                           child: Icon(FontAwesomeIcons.starOfLife)),
+//                           child: Icon(FontAwesomeIcons.star_roundedOfLife)),
 //                       Text(
 //                         'Indie news',
 //                       ),

@@ -532,7 +532,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                   child: Row(
                                                     children: [
                                                       const Icon(
-                                                        Icons.star,
+                                                        Icons.star_rounded,
                                                       ),
                                                       Text(moviesList![index]
                                                           .voteAverage!
@@ -2397,7 +2397,7 @@ class PartsListState extends State<PartsList> {
                                                   child: Row(
                                                     children: [
                                                       const Icon(
-                                                        Icons.star,
+                                                        Icons.star_rounded,
                                                       ),
                                                       Text(collectionMovieList![
                                                               index]
@@ -4896,7 +4896,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                                       fontFamily: 'Poppins'),
                                                 ),
                                                 const Icon(
-                                                  Icons.star,
+                                                  Icons.star_rounded,
                                                 ),
                                               ],
                                             ),
