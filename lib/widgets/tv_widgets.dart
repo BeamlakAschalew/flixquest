@@ -4373,7 +4373,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                     children: [
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.only(
+                              top: 8.0, left: 8.0, right: 8.0),
                           child: Row(
                             children: [
                               const LeadingDot(),
@@ -4395,87 +4396,75 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (BuildContext context, int index) {
                         return Container(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 0.0,
-                              bottom: 8.0,
-                              left: 10,
-                              right: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                ShimmerBase(
-                                  themeMode: themeMode,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Column(
+                            children: [
+                              ShimmerBase(
+                                themeMode: themeMode,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          right: 10.0, left: 5.0),
+                                      child: Container(
+                                        height: 90.0,
+                                        width: 160,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(3.0),
                                           color: Colors.grey.shade600,
-                                          width: 10,
-                                          height: 15),
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 10.0, left: 5.0),
-                                        child: Container(
-                                          height: 56.4,
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(6.0),
-                                            color: Colors.grey.shade600,
-                                          ),
                                         ),
                                       ),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 2.0),
+                                            child: Container(
+                                                color: Colors.grey.shade600,
+                                                height: 19,
+                                                width: 150),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 2.0),
+                                            child: Container(
+                                                color: Colors.grey.shade600,
+                                                height: 19,
+                                                width: 110),
+                                          ),
+                                          Row(children: [
                                             Padding(
                                               padding: const EdgeInsets.only(
-                                                  bottom: 2.0),
+                                                  right: 3.0),
                                               child: Container(
-                                                  color: Colors.grey.shade600,
-                                                  height: 19,
-                                                  width: 150),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 2.0),
-                                              child: Container(
-                                                  color: Colors.grey.shade600,
-                                                  height: 19,
-                                                  width: 110),
-                                            ),
-                                            Row(children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 3.0),
-                                                child: Container(
-                                                    color: Colors.grey.shade600,
-                                                    height: 20,
-                                                    width: 20),
-                                              ),
-                                              Container(
                                                   color: Colors.grey.shade600,
                                                   height: 20,
-                                                  width: 25),
-                                            ]),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
+                                                  width: 20),
+                                            ),
+                                            Container(
+                                                color: Colors.grey.shade600,
+                                                height: 20,
+                                                width: 25),
+                                          ]),
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                Divider(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  thickness: 1.5,
-                                  endIndent: 30,
-                                  indent: 5,
-                                ),
-                              ],
-                            ),
+                              ),
+                              Divider(
+                                color: Theme.of(context).colorScheme.primary,
+                                thickness: 0.5,
+                                endIndent: 5,
+                                indent: 5,
+                              ),
+                            ],
                           ),
                         );
                       }),
@@ -4493,7 +4482,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                         children: [
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.only(
+                                  top: 8.0, left: 8.0, right: 8.0),
                               child: Row(
                                 children: [
                                   const LeadingDot(),
@@ -4529,92 +4519,118 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                               child: Container(
                                 color: Colors.transparent,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 0.0,
-                                      bottom: 8.0,
-                                      left: 10,
-                                      right: 10),
+                                  padding: const EdgeInsets.only(right: 10),
                                   child: Column(
                                     children: [
                                       Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(tvDetails!
-                                              .episodes![index].episodeNumber!
-                                              .toString()),
                                           Padding(
                                             padding: const EdgeInsets.only(
-                                                right: 10.0, left: 10.0),
+                                                right: 10.0, left: 5.0),
                                             child: SizedBox(
-                                              height: 56.4,
-                                              width: 100,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(6.0),
-                                                child: tvDetails!
+                                              height: 90,
+                                              width: 160,
+                                              child: Stack(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            3.0),
+                                                    child: tvDetails!
+                                                                    .episodes![
+                                                                        index]
+                                                                    .stillPath ==
+                                                                null ||
+                                                            tvDetails!
                                                                 .episodes![
                                                                     index]
-                                                                .stillPath ==
-                                                            null ||
-                                                        tvDetails!
-                                                            .episodes![index]
-                                                            .stillPath!
-                                                            .isEmpty
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        cacheManager:
-                                                            cacheProp(),
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
+                                                                .stillPath!
+                                                                .isEmpty
+                                                        ? Image.asset(
+                                                            'assets/images/na_logo.png',
+                                                            fit: BoxFit.cover,
+                                                          )
+                                                        : CachedNetworkImage(
+                                                            cacheManager:
+                                                                cacheProp(),
+                                                            fadeOutDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                            fadeOutCurve:
+                                                                Curves.easeOut,
+                                                            fadeInDuration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        700),
+                                                            fadeInCurve:
+                                                                Curves.easeIn,
+                                                            imageUrl: TMDB_BASE_IMAGE_URL +
                                                                 imageQuality +
                                                                 tvDetails!
                                                                     .episodes![
                                                                         index]
                                                                     .stillPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
+                                                            imageBuilder: (context,
+                                                                    imageProvider) =>
+                                                                Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                image:
+                                                                    DecorationImage(
+                                                                  image:
+                                                                      imageProvider,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            placeholder:
+                                                                (context,
+                                                                        url) =>
+                                                                    ShimmerBase(
+                                                              themeMode:
+                                                                  themeMode,
+                                                              child: Container(
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade600),
+                                                            ),
+                                                            errorWidget:
+                                                                (context, url,
+                                                                        error) =>
+                                                                    Image.asset(
+                                                              'assets/images/na_logo.png',
                                                               fit: BoxFit.cover,
                                                             ),
                                                           ),
-                                                        ),
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                ShimmerBase(
-                                                          themeMode: themeMode,
-                                                          child: Container(
-                                                              color: Colors.grey
-                                                                  .shade600),
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_logo.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
+                                                  ),
+                                                  Positioned(
+                                                      bottom: 0,
+                                                      left: 0,
+                                                      child: Container(
+                                                        color: Colors.black54,
+                                                        margin: const EdgeInsets
+                                                                .only(
+                                                            left: 4, bottom: 4),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                vertical: 0.7,
+                                                                horizontal: 6),
+                                                        child: Text(
+                                                            '${tvDetails!.episodes![index].episodeNumber! <= 9 ? tvDetails!.episodes![index].episodeNumber.toString().padLeft(2, '0') : tvDetails!.episodes![index].episodeNumber!}',
+                                                            style: const TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                fontSize: 17)),
+                                                      ))
+                                                ],
                                               ),
                                             ),
                                           ),
@@ -4624,11 +4640,13 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                    tvDetails!
-                                                        .episodes![index].name!,
-                                                    style: const TextStyle(
-                                                        overflow: TextOverflow
-                                                            .ellipsis)),
+                                                  tvDetails!
+                                                      .episodes![index].name!,
+                                                  style: const TextStyle(
+                                                      overflow: TextOverflow
+                                                          .ellipsis),
+                                                  maxLines: 2,
+                                                ),
                                                 Text(
                                                   tvDetails!.episodes![index]
                                                                   .airDate ==
@@ -4671,8 +4689,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                         color: Theme.of(context)
                                             .colorScheme
                                             .primary,
-                                        thickness: 1.5,
-                                        endIndent: 30,
+                                        thickness: 0.5,
+                                        endIndent: 5,
                                         indent: 5,
                                       ),
                                     ],

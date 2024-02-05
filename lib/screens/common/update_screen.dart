@@ -3,7 +3,6 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/constants/api_constants.dart';
 import '/constants/app_constants.dart';
 import '../../functions/network.dart';
@@ -367,72 +366,38 @@ class _UpdateBottomState extends State<UpdateBottom> {
               color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(10)),
           width: double.infinity,
-          child: Stack(
-            children: [
-              Column(children: [
-                Text(
-                  tr("update_available"),
-                  style: kTextHeaderStyle,
-                  maxLines: 3,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  tr("new_version", namedArgs: {"v": appVersion ?? ""}),
-                  style: kTextSmallBodyStyle,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: ((context) {
-                        return const UpdateScreen();
-                      })));
-                    },
-                    child: Text(tr("goto_update"))),
-                const SizedBox(
-                  height: 10,
-                ),
-                ListTile(
-                  title: Row(
-                    children: [
-                      Checkbox(
-                          value: disableCheck,
-                          onChanged: (value) {
-                            setState(() {
-                              disableCheck = value!;
-                            });
-                            checkAction(value!);
-                          }),
-                      Expanded(
-                        child: Text(
-                          tr("disable_notification_version"),
-                          maxLines: 3,
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    ],
-                  ),
-                )
-              ]),
-              Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        visible = false;
-                      });
-                    },
-                    icon: const Icon(FontAwesomeIcons.xmark)),
-              ),
-            ],
-          ),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(children: [
+            Text(
+              tr("update_available"),
+              style: kTextHeaderStyle,
+              maxLines: 3,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              tr("new_version", namedArgs: {"v": appVersion ?? ""}),
+              style: kTextSmallBodyStyle,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) {
+                    return const UpdateScreen();
+                  })));
+                },
+                child: Text(tr("goto_update"))),
+            const SizedBox(
+              height: 10,
+            ),
+          ]),
         ),
       ),
     );

@@ -85,7 +85,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         enableFullscreen: true,
         name: widget.mediaType == MediaType.movie
             ? "${widget.movieMetadata!.movieName!} (${widget.movieMetadata!.releaseYear!})"
-            : "${widget.tvMetadata!.seriesName!} | ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}",
+            : "${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}",
         backgroundColor: Colors.black,
         progressBarBackgroundColor: Colors.white,
         controlBarColor: Colors.black.withOpacity(0.3),
@@ -342,22 +342,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                BetterPlayer(
-                  controller: _betterPlayerController,
-                  key: _betterPlayerKey,
-                ),
-                Visibility(
-                  visible: !_betterPlayerController.isFullScreen,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        _betterPlayerController.enterFullScreen();
-                      },
-                      child: Text(tr("enter_full_screen"))),
-                )
-              ],
+            child: BetterPlayer(
+              controller: _betterPlayerController,
+              key: _betterPlayerKey,
             ),
           ),
         ),
