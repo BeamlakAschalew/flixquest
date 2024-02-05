@@ -148,4 +148,18 @@ class GlobalMethods {
           style: const TextStyle(fontFamily: 'Poppins'),
         )));
   }
+
+  static void showScaffoldMessage(String message, BuildContext context) async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        duration: const Duration(milliseconds: 4000),
+        content: Text(
+          message,
+          style: const TextStyle(fontFamily: 'Poppins'),
+        )));
+  }
+
+  static void showCustomScaffoldMessage(
+      SnackBar message, BuildContext context) async {
+    ScaffoldMessenger.of(context).showSnackBar(message);
+  }
 }

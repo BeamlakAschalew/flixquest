@@ -5,6 +5,7 @@ import '../../constants/app_constants.dart';
 import '../../controllers/bookmark_database_controller.dart';
 import '../../models/movie.dart';
 import '../../models/tv.dart';
+import '../../services/globle_method.dart';
 import '/screens/common/sync_screen.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
@@ -78,22 +79,20 @@ class _BookmarkScreenState extends State<BookmarkScreen>
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: const Icon(Icons.arrow_back)),
+              icon: const Icon(Icons.arrow_back_rounded)),
           title: Text(tr("bookmarks")),
           actions: [
             IconButton(
                 onPressed: () {
                   if (user!.isAnonymous) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          tr("bookmark_feature_notice"),
-                          style: kTextVerySmallBodyStyle,
-                          maxLines: 6,
-                        ),
-                        duration: const Duration(seconds: 10),
+                    GlobalMethods.showCustomScaffoldMessage(SnackBar(
+                      content: Text(
+                        tr("bookmark_feature_notice"),
+                        style: kTextVerySmallBodyStyle,
+                        maxLines: 6,
                       ),
-                    );
+                      duration: const Duration(seconds: 10),
+                    ), context);
                   } else {
                     Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {

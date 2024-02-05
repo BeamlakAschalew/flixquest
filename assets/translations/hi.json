@@ -498,5 +498,6 @@
     "media_not_found": "त्रुटि: मीडिया {s} सर्वर पर नहीं मिला",
     "server_is_down": "त्रुटि: {s} सर्वर डाउन है",
     "general_error": "त्रुटि: {e}",
-    "enter_full_screen": "पूर्ण स्क्रीन दर्ज करें"
+    "enter_full_screen": "पूर्ण स्क्रीन दर्ज करें",
+    "fetching": "ला रहा है: "
 }

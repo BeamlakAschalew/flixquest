@@ -7,6 +7,7 @@ class TVStreamMetadata {
   String? posterPath;
   int? elapsed;
   int? tvId;
+  String? airDate;
 
   TVStreamMetadata(
       {required this.elapsed,
@@ -16,5 +17,6 @@ class TVStreamMetadata {
       required this.posterPath,
       required this.seasonNumber,
       required this.seriesName,
-      required this.tvId});
+      required this.tvId,
+      required this.airDate});
 }

@@ -5,6 +5,7 @@ import 'dart:isolate';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flixquest/services/globle_method.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -13,6 +14,7 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants/api_constants.dart';
+import '../../functions/function.dart';
 import '../../models/images.dart';
 import '../../provider/settings_provider.dart';
 
@@ -44,7 +46,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     });
   }
 
-  Future<String> createFolder(
+  Future<void> createFolder(
       String flixquestFolderName,
       String imageTypeFolderName,
       String posterFolder,
@@ -60,63 +62,50 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
         Directory("storage/emulated/0/FlixQuest/$posterFolderName");
     final stillPath =
         Directory("storage/emulated/0/FlixQuest/$stillFolderName");
-    var storageStatus = await Permission.storage.status;
-    var externalStatus = await Permission.manageExternalStorage.status;
-    var mediaStatus = await Permission.accessMediaLocation.status;
-    if (!storageStatus.isGranted) {
-      await Permission.storage.request();
-    }
-    if (!externalStatus.isGranted) {
-      await Permission.manageExternalStorage.request();
-    }
-    if (!mediaStatus.isGranted) {
-      await Permission.accessMediaLocation.request();
-    }
+
     if ((await flixquestPath.exists())) {
       imageTypePath.create();
       posterPath.create();
       stillPath.create();
-      return flixquestPath.path;
     } else {
       flixquestPath.create();
       posterPath.create();
       imageTypePath.create();
       stillPath.create();
-      return flixquestPath.path;
     }
   }
 
   void _download(String url, String currentIndex, String themeMode) async {
-    final status = await Permission.storage.request();
-    // final status2 = await Permission.accessMediaLocation.request();
-
-    if (status.isGranted) {
+    var externalStatus = await Permission.manageExternalStorage.status;
+    if (externalStatus.isPermanentlyDenied) {
+      //TODO translate
+      GlobalMethods.showScaffoldMessage(
+          'File permission is not given to FlixQuest, goto app settings and enable File permission',
+          context);
+      return;
+    } else if (!externalStatus.isGranted) {
+      await Permission.manageExternalStorage.request().then((value) {
+        if (value.isDenied) {
+          //TODO translate
+          GlobalMethods.showScaffoldMessage(
+              'Give File permission to FlixQuest to download the photo',
+              context);
+          return;
+        }
+      });
+    }
+    if (externalStatus.isGranted) {
       await createFolder('FlixQuest', 'Backdrops', 'Posters', 'Stills');
       await FlutterDownloader.enqueue(
         url: url,
-        fileName: '${widget.name}_${widget.imageType}_$currentIndex.jpg',
-        headers: {}, // optional: header send with url (auth token etc)
+        fileName: '${widget.name}_${widget.imageType}_$createUniqueId.jpg',
         savedDir: widget.imageType == 'backdrop'
             ? '/storage/emulated/0/FlixQuest/Backdrops/'
             : widget.imageType == 'poster'
                 ? '/storage/emulated/0/FlixQuest/Posters/'
                 : '/storage/emulated/0/FlixQuest/Stills/',
-        showNotification:
-            true, // show download progress in status bar (for Android)
-        openFileFromNotification:
-            true, // click on notification to open downloaded file (for Android)
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-          'File permission isn\'t given to FlixQuest, therefore image couldn\'t be downloaded.',
-          style: TextStyle(
-              color: themeMode == "dark" || themeMode == "amoled"
-                  ? Colors.white
-                  : Colors.black,
-              fontFamily: 'PoppinsSB'),
-        )),
+        showNotification: true,
+        openFileFromNotification: true,
       );
     }
   }

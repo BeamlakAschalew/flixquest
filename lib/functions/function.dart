@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../constants/app_constants.dart';
@@ -36,11 +37,12 @@ Future<bool> checkConnection() async {
   return isInternetWorking;
 }
 
-String removeCharacters(String input) {
-  String charactersToRemove = "|^_/,.?\"'&#^*%@!-[]()\$";
-  String pattern = '[$charactersToRemove]';
-  String result = input.replaceAll(RegExp(pattern), '');
-  return result;
+String normalizeTitle(String title) {
+  return title
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp('[":\']'), '')
+      .replaceAll(RegExp('[^a-zA-Z0-9]+'), '_');
 }
 
 Future<bool> clearTempCache() async {
@@ -157,4 +159,15 @@ List<VideoProvider?> parseProviderPrecedenceString(String raw) {
   }).toList();
 
   return videoProviders;
+}
+
+bool isReleased(String target) {
+  DateTime currentDate = DateTime.now();
+  DateTime mediaDate = DateFormat('yyyy-MM-dd').parse(target);
+  return mediaDate.isBefore(currentDate) ||
+      mediaDate.isAtSameMomentAs(currentDate);
+}
+
+int createUniqueId() {
+  return DateTime.now().millisecondsSinceEpoch.remainder(100000);
 }

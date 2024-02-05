@@ -50,16 +50,16 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
         user = _auth.currentUser;
 
         await user!.updatePassword(newPassword).then((value) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                tr("password_changed"),
-                maxLines: 3,
-                style: kTextSmallBodyStyle,
+          GlobalMethods.showCustomScaffoldMessage(
+              SnackBar(
+                content: Text(
+                  tr("password_changed"),
+                  maxLines: 3,
+                  style: kTextSmallBodyStyle,
+                ),
+                duration: const Duration(seconds: 4),
               ),
-              duration: const Duration(seconds: 4),
-            ),
-          );
+              context);
         });
       } on FirebaseAuthException catch (e) {
         if (mounted) {

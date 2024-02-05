@@ -274,7 +274,7 @@ class _ChannelWidgetState extends State<ChannelWidget> {
               child: Row(
                 children: [
                   SizedBox(
-                    height: 40,
+                    height: 60,
                     width: 70,
                     child: CachedNetworkImage(
                       cacheManager: cacheProp(),

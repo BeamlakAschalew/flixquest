@@ -498,6 +498,7 @@
     "media_not_found": "خطأ: لم يتم العثور على الوسائط على خادم {s}.",
     "server_is_down": "خطأ: خادم {s} معطل",
     "general_error": "خطأ: {s}",
-	"enter_full_screen": "أدخل ملء الشاشة"
+	"enter_full_screen": "أدخل ملء الشاشة",
+	"fetching": "جلب: "
 }
 

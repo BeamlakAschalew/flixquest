@@ -89,16 +89,16 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
             'username': username!.trim().toLowerCase(),
             'verified': isVerified
           }).then((value) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  tr("email_successful"),
-                  maxLines: 3,
-                  style: kTextSmallBodyStyle,
+            GlobalMethods.showCustomScaffoldMessage(
+                SnackBar(
+                  content: Text(
+                    tr("email_successful"),
+                    maxLines: 3,
+                    style: kTextSmallBodyStyle,
+                  ),
+                  duration: const Duration(seconds: 4),
                 ),
-                duration: const Duration(seconds: 4),
-              ),
-            );
+                context);
           });
         });
       } on FirebaseAuthException catch (e) {

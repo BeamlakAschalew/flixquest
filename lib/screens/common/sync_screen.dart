@@ -154,16 +154,16 @@ class _SyncScreenState extends State<SyncScreen>
         isOfflineMovieSyncFinished = true;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              tr("finished_sync_local"),
-              maxLines: 3,
-              style: kTextSmallBodyStyle,
+        GlobalMethods.showCustomScaffoldMessage(
+            SnackBar(
+              content: Text(
+                tr("finished_sync_local"),
+                maxLines: 3,
+                style: kTextSmallBodyStyle,
+              ),
+              duration: const Duration(seconds: 2),
             ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+            context);
       }
       //  print(isOfflineMovieSyncFinished);
     }
@@ -195,16 +195,16 @@ class _SyncScreenState extends State<SyncScreen>
         isOfflineTVSyncFinished = true;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              tr("finished_sync_local"),
-              style: kTextSmallBodyStyle,
-              maxLines: 3,
+        GlobalMethods.showCustomScaffoldMessage(
+            SnackBar(
+              content: Text(
+                tr("finished_sync_local"),
+                style: kTextSmallBodyStyle,
+                maxLines: 3,
+              ),
+              duration: const Duration(seconds: 2),
             ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+            context);
       }
     }
   }
@@ -277,16 +277,16 @@ class _SyncScreenState extends State<SyncScreen>
         isOnlineMovieSyncFinished = true;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              tr("finished_sync_online"),
-              maxLines: 3,
-              style: kTextSmallBodyStyle,
+        GlobalMethods.showCustomScaffoldMessage(
+            SnackBar(
+              content: Text(
+                tr("finished_sync_online"),
+                maxLines: 3,
+                style: kTextSmallBodyStyle,
+              ),
+              duration: const Duration(seconds: 2),
             ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+            context);
       }
       getSavedMoviesAndTV();
     }
@@ -353,16 +353,16 @@ class _SyncScreenState extends State<SyncScreen>
         isOnlineTVSyncFinished = true;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              tr("finished_sync_online"),
-              maxLines: 3,
-              style: kTextSmallBodyStyle,
+        GlobalMethods.showCustomScaffoldMessage(
+            SnackBar(
+              content: Text(
+                tr("finished_sync_online"),
+                maxLines: 3,
+                style: kTextSmallBodyStyle,
+              ),
+              duration: const Duration(seconds: 2),
             ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
+            context);
       }
       getSavedMoviesAndTV();
     }
@@ -800,10 +800,8 @@ class _SyncScreenState extends State<SyncScreen>
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: firebaseTvShows[index].posterPath == null
-                                ? Image.asset(
-                                    'assets/images/na_rect.png',
-                                    fit: BoxFit.cover,
-                                  )
+                                ? Image.asset('assets/images/na_logo.png',
+                                    fit: BoxFit.cover, height: double.infinity)
                                 : CachedNetworkImage(
                                     cacheManager: cacheProp(),
                                     fadeOutDuration:
@@ -831,10 +829,9 @@ class _SyncScreenState extends State<SyncScreen>
                                     placeholder: (context, url) =>
                                         scrollingImageShimmer(themeMode),
                                     errorWidget: (context, url, error) =>
-                                        Image.asset(
-                                      'assets/images/na_rect.png',
-                                      fit: BoxFit.cover,
-                                    ),
+                                        Image.asset('assets/images/na_logo.png',
+                                            fit: BoxFit.cover,
+                                            height: double.infinity),
                                   ),
                           ),
                           Positioned(
@@ -908,10 +905,8 @@ class _SyncScreenState extends State<SyncScreen>
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: firebaseMovies[index].posterPath == null
-                                ? Image.asset(
-                                    'assets/images/na_rect.png',
-                                    fit: BoxFit.cover,
-                                  )
+                                ? Image.asset('assets/images/na_logo.png',
+                                    fit: BoxFit.cover, height: double.infinity)
                                 : CachedNetworkImage(
                                     cacheManager: cacheProp(),
                                     fadeOutDuration:
@@ -939,10 +934,9 @@ class _SyncScreenState extends State<SyncScreen>
                                     placeholder: (context, url) =>
                                         scrollingImageShimmer(themeMode),
                                     errorWidget: (context, url, error) =>
-                                        Image.asset(
-                                      'assets/images/na_rect.png',
-                                      fit: BoxFit.cover,
-                                    ),
+                                        Image.asset('assets/images/na_logo.png',
+                                            fit: BoxFit.cover,
+                                            height: double.infinity),
                                   ),
                           ),
                           Positioned(

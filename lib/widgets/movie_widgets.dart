@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flixquest/functions/function.dart';
+import 'package:flixquest/services/globle_method.dart';
 import '../models/movie_stream_metadata.dart';
 import '/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -162,7 +163,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     genres.shuffle();
     fetchMovies(
             '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&include_adult=${widget.includeAdult}&primary_release_year=${years.first}&with_genres=${genres.first.genreValue}')
-        .then((value) {
+        .then((value) async {
       if (mounted) {
         setState(() {
           moviesList = value;
@@ -457,9 +458,10 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                             .posterPath ==
                                                         null
                                                     ? Image.asset(
-                                                        'assets/images/na_rect.png',
+                                                        'assets/images/na_logo.png',
                                                         fit: BoxFit.cover,
-                                                      )
+                                                        width: double.infinity,
+                                                        height: double.infinity)
                                                     : CachedNetworkImage(
                                                         cacheManager:
                                                             cacheProp(),
@@ -505,9 +507,13 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
-                                                          'assets/images/na_rect.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                                                'assets/images/na_logo.png',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                width: double
+                                                                    .infinity,
+                                                                height: double
+                                                                    .infinity),
                                                       ),
                                               ),
                                               Positioned(
@@ -685,32 +691,31 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                     ? StreamRoute.flixHQ
                                                     : StreamRoute.tmDB,
                                             metadata: MovieStreamMetadata(
-                                              backdropPath: widget
-                                                  .moviesList[index]
-                                                  .backdropPath,
-                                              elapsed: widget
-                                                  .moviesList[index].elapsed,
-                                              isAdult: null,
-                                              movieId:
-                                                  widget.moviesList[index].id,
-                                              movieName: widget
-                                                  .moviesList[index].title,
-                                              posterPath: widget
-                                                  .moviesList[index].posterPath,
-                                              releaseYear: widget
-                                                  .moviesList[index]
-                                                  .releaseYear,
-                                            ))))
-                                : ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
+                                                backdropPath: widget
+                                                    .moviesList[index]
+                                                    .backdropPath,
+                                                elapsed: widget
+                                                    .moviesList[index].elapsed,
+                                                isAdult: null,
+                                                movieId:
+                                                    widget.moviesList[index].id,
+                                                movieName: widget
+                                                    .moviesList[index].title,
+                                                posterPath: widget
+                                                    .moviesList[index]
+                                                    .posterPath,
+                                                releaseYear: widget
+                                                    .moviesList[index]
+                                                    .releaseYear,
+                                                releaseDate: null))))
+                                : GlobalMethods.showCustomScaffoldMessage(SnackBar(
                                       content: Text(
                                         tr("check_connection"),
                                         maxLines: 3,
                                         style: kTextSmallBodyStyle,
                                       ),
                                       duration: const Duration(seconds: 3),
-                                    ),
-                                  );
+                                    ), context);
                           });
                         },
                         child: SizedBox(
@@ -731,9 +736,10 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                     .posterPath ==
                                                 null
                                             ? Image.asset(
-                                                'assets/images/na_rect.png',
+                                                'assets/images/na_logo.png',
                                                 fit: BoxFit.cover,
-                                              )
+                                                width: double.infinity,
+                                                height: double.infinity)
                                             : CachedNetworkImage(
                                                 cacheManager: cacheProp(),
                                                 fadeOutDuration: const Duration(
@@ -764,12 +770,14 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                 placeholder: (context, url) =>
                                                     scrollingImageShimmer(
                                                         themeMode),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Image.asset(
-                                                  'assets/images/na_rect.png',
-                                                  fit: BoxFit.cover,
-                                                ),
+                                                errorWidget: (context, url,
+                                                        error) =>
+                                                    Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                        width: double.infinity,
+                                                        height:
+                                                            double.infinity),
                                               ),
                                       ),
                                       SizedBox(
@@ -1412,7 +1420,8 @@ class _MovieAboutState extends State<MovieAbout> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: widget.movie.overview!.isEmpty
+              child: widget.movie.overview == null ||
+                      widget.movie.overview!.isEmpty
                   ? Text(tr("no_overview_movie"))
                   : ReadMoreText(
                       widget.movie.overview!,
@@ -1466,6 +1475,7 @@ class _MovieAboutState extends State<MovieAbout> {
                         posterPath: widget.movie.posterPath,
                         backdropPath: widget.movie.backdropPath,
                         api: Endpoints.movieDetailsUrl(widget.movie.id!, lang),
+                        releaseDate: widget.movie.releaseDate,
                       )
                     : Container()
                 // const SizedBox(
@@ -2320,60 +2330,64 @@ class PartsListState extends State<PartsList> {
                                               ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(8.0),
-                                                child:
-                                                    collectionMovieList![index]
-                                                                .posterPath ==
-                                                            null
-                                                        ? Image.asset(
-                                                            'assets/images/na_rect.png',
-                                                            fit: BoxFit.cover,
-                                                          )
-                                                        : CachedNetworkImage(
-                                                            cacheManager:
-                                                                cacheProp(),
-                                                            fadeOutDuration:
-                                                                const Duration(
-                                                                    milliseconds:
-                                                                        300),
-                                                            fadeOutCurve:
-                                                                Curves.easeOut,
-                                                            fadeInDuration:
-                                                                const Duration(
-                                                                    milliseconds:
-                                                                        700),
-                                                            fadeInCurve:
-                                                                Curves.easeIn,
-                                                            imageUrl: TMDB_BASE_IMAGE_URL +
+                                                child: collectionMovieList![
+                                                                index]
+                                                            .posterPath ==
+                                                        null
+                                                    ? Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                        width: double.infinity,
+                                                        height: double.infinity)
+                                                    : CachedNetworkImage(
+                                                        cacheManager:
+                                                            cacheProp(),
+                                                        fadeOutDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        fadeOutCurve:
+                                                            Curves.easeOut,
+                                                        fadeInDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    700),
+                                                        fadeInCurve:
+                                                            Curves.easeIn,
+                                                        imageUrl:
+                                                            TMDB_BASE_IMAGE_URL +
                                                                 imageQuality +
                                                                 collectionMovieList![
                                                                         index]
                                                                     .posterPath!,
-                                                            imageBuilder: (context,
-                                                                    imageProvider) =>
-                                                                Container(
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                image:
-                                                                    DecorationImage(
-                                                                  image:
-                                                                      imageProvider,
-                                                                  fit: BoxFit
-                                                                      .cover,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            placeholder: (context,
-                                                                    url) =>
-                                                                scrollingImageShimmer(
-                                                                    themeMode),
-                                                            errorWidget:
-                                                                (context, url,
-                                                                        error) =>
-                                                                    Image.asset(
-                                                              'assets/images/na_rect.png',
+                                                        imageBuilder: (context,
+                                                                imageProvider) =>
+                                                            Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            image:
+                                                                DecorationImage(
+                                                              image:
+                                                                  imageProvider,
                                                               fit: BoxFit.cover,
                                                             ),
                                                           ),
+                                                        ),
+                                                        placeholder: (context,
+                                                                url) =>
+                                                            scrollingImageShimmer(
+                                                                themeMode),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Image.asset(
+                                                                'assets/images/na_logo.png',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                width: double
+                                                                    .infinity,
+                                                                height: double
+                                                                    .infinity),
+                                                      ),
                                               ),
                                               Positioned(
                                                 top: 0,
@@ -3064,6 +3078,7 @@ class WatchNowButton extends StatefulWidget {
     this.api,
     required this.releaseYear,
     required this.backdropPath,
+    required this.releaseDate,
     this.adult,
   }) : super(key: key);
   final String? movieName;
@@ -3074,6 +3089,7 @@ class WatchNowButton extends StatefulWidget {
   final int releaseYear;
   final String? posterPath;
   final String? backdropPath;
+  final String? releaseDate;
 
   @override
   WatchNowButtonState createState() => WatchNowButtonState();
@@ -3112,97 +3128,69 @@ class WatchNowButtonState extends State<WatchNowButton> {
   Widget build(BuildContext context) {
     final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return AnimatedContainer(
-      duration: const Duration(seconds: 1),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          // Add an outer box shadow here
-          BoxShadow(
-            color: _borderColor,
-            spreadRadius: 2.5,
-            blurRadius: 4.25,
-            offset: const Offset(0, 0),
-          ),
-        ],
-      ),
-      child: TextButton(
-        style: ButtonStyle(
-          maximumSize: MaterialStateProperty.all(Size(buttonWidth!, 45)),
-          minimumSize: MaterialStateProperty.all(Size(buttonWidth!, 45)),
-        ).copyWith(
-            backgroundColor: MaterialStateProperty.all(
-          Theme.of(context).colorScheme.primary,
-        )),
-        onPressed: () async {
-          await checkConnection().then((value) {
-            value
-                ? Navigator.push(context,
-                    MaterialPageRoute(builder: ((context) {
-                    return MovieVideoLoader(
-                      route: fetchRoute == "flixHQ"
-                          ? StreamRoute.flixHQ
-                          : StreamRoute.tmDB,
-                      download: false,
-                      metadata: MovieStreamMetadata(
-                          backdropPath: widget.backdropPath,
-                          elapsed: null,
-                          isAdult: widget.adult,
-                          movieId: widget.movieId,
-                          movieName: widget.movieName,
-                          posterPath: widget.posterPath,
-                          releaseYear: widget.releaseYear),
-                      /*
-                      
-                      [
-                        widget.movieId,
-                        widget.movieName,
-                        widget.posterPath,
-                        widget.releaseYear,
-                        
-                        elapsed
-                      ],
-                      */
-                    );
-                  })))
-                : ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        tr("check_connection"),
-                        maxLines: 3,
-                        style: kTextSmallBodyStyle,
-                      ),
-                      duration: const Duration(seconds: 3),
-                    ),
-                  );
-          });
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10, left: 10),
-                child: Icon(
-                  Icons.play_circle,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 5, right: 10),
-                child: Text(tr("watch_now"),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    )),
-              ),
+        duration: const Duration(seconds: 1),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            // Add an outer box shadow here
+            BoxShadow(
+              color: _borderColor,
+              spreadRadius: 2.5,
+              blurRadius: 4.25,
+              offset: const Offset(0, 0),
             ),
           ],
         ),
-      ),
-    );
+        child: GestureDetector(
+          onTap: () async {
+            await checkConnection().then((value) {
+              value
+                  ? Navigator.push(context,
+                      MaterialPageRoute(builder: ((context) {
+                      return MovieVideoLoader(
+                        route: fetchRoute == "flixHQ"
+                            ? StreamRoute.flixHQ
+                            : StreamRoute.tmDB,
+                        download: false,
+                        metadata: MovieStreamMetadata(
+                            backdropPath: widget.backdropPath,
+                            elapsed: null,
+                            isAdult: widget.adult,
+                            movieId: widget.movieId,
+                            movieName: widget.movieName,
+                            posterPath: widget.posterPath,
+                            releaseYear: widget.releaseYear,
+                            releaseDate: widget.releaseDate),
+                      );
+                    })))
+                  : GlobalMethods.showCustomScaffoldMessage(SnackBar(
+                        content: Text(
+                          tr("check_connection"),
+                          maxLines: 3,
+                          style: kTextSmallBodyStyle,
+                        ),
+                        duration: const Duration(seconds: 3),
+                      ), context);
+            });
+          },
+          child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(children: [
+                Icon(
+                  Icons.play_circle_fill_rounded,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+                const SizedBox(width: 6),
+                Text(tr("watch_now"),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ))
+              ])),
+        ));
   }
 }
 

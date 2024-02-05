@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_unnecessary_containers
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clipboard/clipboard.dart';
+import 'package:flixquest/services/globle_method.dart';
 import '/provider/app_dependency_provider.dart';
 import '/screens/common/live_tv_screen.dart';
 import '/screens/common/server_status_screen.dart';
@@ -234,37 +235,22 @@ Widget scrollingMoviesAndTVShimmer(String themeMode) => Column(
       ],
     );
 
-Widget discoverMoviesAndTVShimmer(String themeMode) => Column(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        Expanded(
-          child: ShimmerBase(
-            themeMode: themeMode,
-            child: CarouselSlider.builder(
-              options: CarouselOptions(
-                disableCenter: true,
-                viewportFraction: 0.6,
-                enlargeCenterPage: true,
-                autoPlay: true,
-              ),
-              itemBuilder: (context, index, pageViewIndex) => Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: Colors.grey.shade600),
-              ),
-              itemCount: 10,
-            ),
-          ),
+Widget discoverMoviesAndTVShimmer(String themeMode) => ShimmerBase(
+      themeMode: themeMode,
+      child: CarouselSlider.builder(
+        options: CarouselOptions(
+          disableCenter: true,
+          viewportFraction: 0.6,
+          enlargeCenterPage: true,
+          autoPlay: true,
         ),
-        ShimmerBase(
-          themeMode: themeMode,
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                color: Colors.grey.shade600),
-          ),
-        )
-      ],
+        itemBuilder: (context, index, pageViewIndex) => Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              color: Colors.grey.shade600),
+        ),
+        itemCount: 10,
+      ),
     );
 
 Widget scrollingImageShimmer(String themeMode) => ShimmerBase(
@@ -1988,8 +1974,8 @@ class ExternalPlay extends StatelessWidget {
           },
           onLongPress: () async {
             FlutterClipboard.copy(sources.entries.elementAt(i).value).then(
-                (value) => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(tr("video_link_copied")))));
+                (value) => GlobalMethods.showScaffoldMessage(
+                    tr("video_link_copied"), context));
           },
           child: Text(sources.entries.elementAt(i).key)));
     }

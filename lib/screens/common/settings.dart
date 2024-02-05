@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flixquest/models/app_colors.dart';
+import 'package:flixquest/services/globle_method.dart';
 
 import '../../functions/function.dart';
 import '/models/app_languages.dart';
@@ -561,19 +562,23 @@ class _SettingsState extends State<Settings> {
             trailing: ElevatedButton(
                 onPressed: () async {
                   await clearCache().then((value) =>
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration:
-                              const Duration(seconds: 1, milliseconds: 500),
-                          content: Text(value
-                              ? tr("cleared_cache")
-                              : tr("cache_doesnt_exist")))));
+                      GlobalMethods.showCustomScaffoldMessage(
+                          SnackBar(
+                              duration:
+                                  const Duration(seconds: 1, milliseconds: 500),
+                              content: Text(value
+                                  ? tr("cleared_cache")
+                                  : tr("cache_doesnt_exist"))),
+                          context));
                   await clearTempCache().then((value) =>
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          duration:
-                              const Duration(seconds: 1, milliseconds: 500),
-                          content: Text(value
-                              ? tr("cleared_cache")
-                              : tr("cache_doesnt_exist")))));
+                      GlobalMethods.showCustomScaffoldMessage(
+                          SnackBar(
+                              duration:
+                                  const Duration(seconds: 1, milliseconds: 500),
+                              content: Text(value
+                                  ? tr("cleared_cache")
+                                  : tr("cache_doesnt_exist"))),
+                          context));
                 },
                 child: Text(tr("clear"))),
           ),

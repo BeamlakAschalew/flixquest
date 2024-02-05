@@ -109,12 +109,12 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                                 index]
                                                                             .posterPath ==
                                                                         null
-                                                                    ? Image
-                                                                        .asset(
-                                                                        'assets/images/na_rect.png',
+                                                                    ? Image.asset(
+                                                                        'assets/images/na_logo.png',
                                                                         fit: BoxFit
                                                                             .cover,
-                                                                      )
+                                                                        height:
+                                                                            double.infinity)
                                                                     : CachedNetworkImage(
                                                                         cacheManager:
                                                                             cacheProp(),
@@ -144,14 +144,11 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                         placeholder:
                                                                             (context, url) =>
                                                                                 scrollingImageShimmer(themeMode),
-                                                                        errorWidget: (context,
-                                                                                url,
-                                                                                error) =>
-                                                                            Image.asset(
-                                                                          'assets/images/na_rect.png',
-                                                                          fit: BoxFit
-                                                                              .cover,
-                                                                        ),
+                                                                        errorWidget: (context, url, error) => Image.asset(
+                                                                            'assets/images/na_logo.png',
+                                                                            fit:
+                                                                                BoxFit.cover,
+                                                                            height: double.infinity),
                                                                       ),
                                                               ),
                                                               Positioned(
@@ -161,8 +158,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                     Container(
                                                                   margin:
                                                                       const EdgeInsets
-                                                                          .all(
-                                                                          3),
+                                                                          .all(3),
                                                                   alignment:
                                                                       Alignment
                                                                           .topLeft,
@@ -283,7 +279,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                    .only(
+                                                                        .only(
                                                                     right:
                                                                         10.0),
                                                             child: SizedBox(
@@ -300,10 +296,9 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                       child: Stack(children: [
                                                                         widget.movieList![index].posterPath ==
                                                                                 null
-                                                                            ? Image.asset(
-                                                                                'assets/images/na_logo.png',
+                                                                            ? Image.asset('assets/images/na_rect.png',
                                                                                 fit: BoxFit.cover,
-                                                                              )
+                                                                                width: double.infinity)
                                                                             : CachedNetworkImage(
                                                                                 cacheManager: cacheProp(),
                                                                                 fadeOutDuration: const Duration(milliseconds: 300),
@@ -321,7 +316,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                                 ),
                                                                                 placeholder: (context, url) => mainPageVerticalScrollImageShimmer(themeMode),
                                                                                 errorWidget: (context, url, error) => Image.asset(
-                                                                                  'assets/images/na_logo.png',
+                                                                                  'assets/images/na_rect.png',
                                                                                   fit: BoxFit.cover,
                                                                                 ),
                                                                               ),
@@ -342,7 +337,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                                     });
                                                                                   }
                                                                                 },
-                                                                                icon: const Icon(Icons.bookmark_remove, size: 50),
+                                                                                icon: const Icon(Icons.bookmark_remove_rounded, size: 50),
                                                                               )),
                                                                         ),
                                                                       ])),

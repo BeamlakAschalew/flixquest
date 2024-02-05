@@ -1,6 +1,7 @@
 // ignore_for_file: unused_local_variable, use_build_context_synchronously
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flixquest/services/globle_method.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,6 +10,7 @@ import 'package:photo_view/photo_view.dart';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:provider/provider.dart';
+import '../../functions/function.dart';
 import '../../provider/settings_provider.dart';
 
 class HeroPhotoView extends StatefulWidget {
@@ -51,18 +53,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
         Directory("storage/emulated/0/FlixQuest/$stillFolderName");
     final personImagePath =
         Directory("storage/emulated/0/FlixQuest/$personImageFolderName");
-    var storageStatus = await Permission.storage.status;
-    var externalStatus = await Permission.manageExternalStorage.status;
-    var mediaStatus = await Permission.accessMediaLocation.status;
-    if (!storageStatus.isGranted) {
-      await Permission.storage.request();
-    }
-    if (!externalStatus.isGranted) {
-      await Permission.manageExternalStorage.request();
-    }
-    if (!mediaStatus.isGranted) {
-      await Permission.accessMediaLocation.request();
-    }
+
     if ((await flixquestPath.exists())) {
       imageTypePath.create();
       posterPath.create();
@@ -109,33 +100,37 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   }
 
   void _download(String url, String currentIndex, String themeMode) async {
-    final status = await Permission.storage.request();
-    // final status2 = await Permission.accessMediaLocation.request();
+    var externalStatus = await Permission.manageExternalStorage.status;
+    if (externalStatus.isPermanentlyDenied) {
+      //TODO translate
+      GlobalMethods.showScaffoldMessage(
+          'PFile permission is not given to FlixQuest, goto app settings and enable File permission',
+          context);
+      return;
+    } else if (!externalStatus.isGranted) {
+      await Permission.manageExternalStorage.request().then((value) {
+        if (value.isDenied) {
+          //TODO translate
+          GlobalMethods.showScaffoldMessage(
+              'Give File permission to FlixQuest to download the photo',
+              context);
+          return;
+        }
+      });
+    }
 
-    if (status.isGranted) {
+    if (externalStatus.isGranted) {
       await createFolder(
           'FlixQuest', 'Backdrops', 'Posters', 'Stills', 'Person Images');
       await FlutterDownloader.enqueue(
         url: url,
-        fileName: '${widget.name}_$currentIndex.jpg',
+        fileName: '${widget.name}_${createUniqueId()}.jpg',
         headers: {}, // optional: header send with url (auth token etc)
         savedDir: '/storage/emulated/0/FlixQuest/Person Images/',
         showNotification:
             true, // show download progress in status bar (for Android)
         openFileFromNotification:
             true, // click on notification to open downloaded file (for Android)
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-          tr("no_file_premission"),
-          style: TextStyle(
-              color: themeMode == "dark" || themeMode == "amoled"
-                  ? Colors.white
-                  : Colors.black,
-              fontFamily: 'PoppinsSB'),
-        )),
       );
     }
   }

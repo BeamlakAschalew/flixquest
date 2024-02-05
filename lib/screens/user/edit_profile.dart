@@ -112,16 +112,16 @@ class _ProfileEditState extends State<ProfileEdit> {
         } else if (username != _userName) {
           if (await checkIfDocExists(_userName) == true) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    tr("username_exists"),
-                    maxLines: 3,
-                    style: kTextSmallBodyStyle,
+              GlobalMethods.showCustomScaffoldMessage(
+                  SnackBar(
+                    content: Text(
+                      tr("username_exists"),
+                      maxLines: 3,
+                      style: kTextSmallBodyStyle,
+                    ),
+                    duration: const Duration(seconds: 4),
                   ),
-                  duration: const Duration(seconds: 4),
-                ),
-              );
+                  context);
             }
             setState(() {
               username = userDoc!.get('username');

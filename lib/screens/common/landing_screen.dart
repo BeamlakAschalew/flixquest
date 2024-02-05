@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../flixquest_main.dart';
 import '../../constants/app_constants.dart';
 import '../../functions/function.dart';
+import '../../services/globle_method.dart';
 import '/provider/settings_provider.dart';
 import '/screens/user/login_screen.dart';
 import '/screens/user/signup_screen.dart';
@@ -253,17 +254,17 @@ class _LandingScreenState extends State<LandingScreen> {
                                         }));
                                       });
                                     } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            tr("check_connection"),
-                                            maxLines: 3,
-                                            style: kTextSmallBodyStyle,
+                                      GlobalMethods.showCustomScaffoldMessage(
+                                          SnackBar(
+                                            content: Text(
+                                              tr("check_connection"),
+                                              maxLines: 3,
+                                              style: kTextSmallBodyStyle,
+                                            ),
+                                            duration:
+                                                const Duration(seconds: 3),
                                           ),
-                                          duration: const Duration(seconds: 3),
-                                        ),
-                                      );
+                                          context);
                                     }
                                   });
                                 },

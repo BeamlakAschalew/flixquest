@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flixquest/services/globle_method.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/bookmark_database_controller.dart';
@@ -456,9 +457,10 @@ class ScrollingTVState extends State<ScrollingTV>
                                                             .posterPath ==
                                                         null
                                                     ? Image.asset(
-                                                        'assets/images/na_rect.png',
+                                                        'assets/images/na_logo.png',
                                                         fit: BoxFit.cover,
-                                                      )
+                                                        width: double.infinity,
+                                                        height: double.infinity)
                                                     : CachedNetworkImage(
                                                         cacheManager:
                                                             cacheProp(),
@@ -502,9 +504,13 @@ class ScrollingTVState extends State<ScrollingTV>
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.asset(
-                                                          'assets/images/na_rect.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
+                                                                'assets/images/na_logo.png',
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                width: double
+                                                                    .infinity,
+                                                                height: double
+                                                                    .infinity),
                                                       ),
                                               ),
                                               Positioned(
@@ -705,8 +711,9 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                                   .seriesName,
                                               tvId: widget
                                                   .episodesList[index].seriesId,
+                                              airDate: null,
                                             ))))
-                                : ScaffoldMessenger.of(context).showSnackBar(
+                                : GlobalMethods.showCustomScaffoldMessage(
                                     SnackBar(
                                       content: Text(
                                         tr("check_connection"),
@@ -715,7 +722,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                       ),
                                       duration: const Duration(seconds: 3),
                                     ),
-                                  );
+                                    context);
                           });
                         },
                         child: SizedBox(
@@ -736,9 +743,10 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                                     .posterPath ==
                                                 null
                                             ? Image.asset(
-                                                'assets/images/na_rect.png',
+                                                'assets/images/na_logo.png',
                                                 fit: BoxFit.cover,
-                                              )
+                                                width: double.infinity,
+                                                height: double.infinity)
                                             : CachedNetworkImage(
                                                 cacheManager: cacheProp(),
                                                 fadeOutDuration: const Duration(
@@ -770,12 +778,14 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                                 placeholder: (context, url) =>
                                                     scrollingImageShimmer(
                                                         themeMode),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Image.asset(
-                                                  'assets/images/na_rect.png',
-                                                  fit: BoxFit.cover,
-                                                ),
+                                                errorWidget: (context, url,
+                                                        error) =>
+                                                    Image.asset(
+                                                        'assets/images/na_logo.png',
+                                                        fit: BoxFit.cover,
+                                                        width: double.infinity,
+                                                        height:
+                                                            double.infinity),
                                               ),
                                       ),
                                       Positioned(
@@ -4551,6 +4561,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                         ? Image.asset(
                                                             'assets/images/na_logo.png',
                                                             fit: BoxFit.cover,
+                                                            width:
+                                                                double.infinity,
                                                           )
                                                         : CachedNetworkImage(
                                                             cacheManager:
@@ -6034,8 +6046,8 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                 child: Row(
                   children: [
                     isBookmarked == false
-                        ? const Icon(Icons.bookmark_add)
-                        : const Icon(Icons.bookmark_remove),
+                        ? const Icon(Icons.bookmark_add_rounded)
+                        : const Icon(Icons.bookmark_remove_rounded),
                     Visibility(
                         visible: visible,
                         child: const CircularProgressIndicator())
@@ -6250,7 +6262,8 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
               padding: const EdgeInsets.all(8.0),
               child: ReadMoreText(
                 widget.episodeList.overview!.isEmpty
-                    ? ''
+                    // TODO translate
+                    ? 'This episode doesn\'t have an overview yet'
                     : widget.episodeList.overview!,
                 trimLines: 4,
                 style: const TextStyle(fontFamily: 'Poppins'),
@@ -6286,14 +6299,17 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
               ],
             ),
             const SizedBox(height: 20),
-            appDependency.displayWatchNowButton && widget.posterPath != null
-                ? WatchNowButton(
-                    episodeList: widget.episodeList,
-                    seriesName: widget.seriesName!,
-                    tvId: widget.tvId!,
-                    posterPath: widget.posterPath!,
-                  )
-                : Container(),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              appDependency.displayWatchNowButton && widget.posterPath != null
+                  ? WatchNowButton(
+                      episode: widget.episodeList,
+                      seriesName: widget.seriesName!,
+                      tvId: widget.tvId!,
+                      posterPath: widget.posterPath!,
+                    )
+                  : Container(),
+            ]),
+
             const SizedBox(height: 15),
             ScrollingTVEpisodeCasts(
               passedFrom: 'episode_detail',
@@ -6598,7 +6614,7 @@ class TVEpisodeOptions extends StatelessWidget {
 class WatchNowButton extends StatefulWidget {
   const WatchNowButton(
       {Key? key,
-      required this.episodeList,
+      required this.episode,
       required this.seriesName,
       required this.tvId,
       required this.posterPath})
@@ -6606,14 +6622,13 @@ class WatchNowButton extends StatefulWidget {
 
   final String seriesName, posterPath;
   final int tvId;
-  final EpisodeList episodeList;
+  final EpisodeList episode;
 
   @override
   State<WatchNowButton> createState() => _WatchNowButtonState();
 }
 
 class _WatchNowButtonState extends State<WatchNowButton> {
-  double? buttonWidth = 160;
   TVDetails? tvDetails;
 
   Color _borderColor = Colors.red; // Initial border color
@@ -6658,14 +6673,8 @@ class _WatchNowButtonState extends State<WatchNowButton> {
           ),
         ],
       ),
-      child: TextButton(
-        style: ButtonStyle(
-            maximumSize: MaterialStateProperty.all(Size(buttonWidth!, 100)),
-            minimumSize: MaterialStateProperty.all(Size(buttonWidth!, 50)),
-            backgroundColor: MaterialStateProperty.all(
-              Theme.of(context).colorScheme.primary,
-            )),
-        onPressed: () async {
+      child: GestureDetector(
+        onTap: () async {
           if (mounted) {
             if (mounted) {
               await checkConnection().then((value) {
@@ -6678,17 +6687,17 @@ class _WatchNowButtonState extends State<WatchNowButton> {
                                 ? StreamRoute.flixHQ
                                 : StreamRoute.tmDB,
                             metadata: TVStreamMetadata(
-                              elapsed: null,
-                              episodeId: widget.episodeList.episodeId,
-                              episodeName: widget.episodeList.name,
-                              episodeNumber: widget.episodeList.episodeNumber!,
-                              posterPath: widget.posterPath,
-                              seasonNumber: widget.episodeList.seasonNumber!,
-                              seriesName: widget.seriesName,
-                              tvId: widget.tvId,
-                            ));
+                                elapsed: null,
+                                episodeId: widget.episode.episodeId,
+                                episodeName: widget.episode.name,
+                                episodeNumber: widget.episode.episodeNumber!,
+                                posterPath: widget.posterPath,
+                                seasonNumber: widget.episode.seasonNumber!,
+                                seriesName: widget.seriesName,
+                                tvId: widget.tvId,
+                                airDate: widget.episode.airDate));
                       })))
-                    : ScaffoldMessenger.of(context).showSnackBar(
+                    : GlobalMethods.showCustomScaffoldMessage(
                         SnackBar(
                           content: Text(
                             tr("check_connection"),
@@ -6697,38 +6706,28 @@ class _WatchNowButtonState extends State<WatchNowButton> {
                           ),
                           duration: const Duration(seconds: 3),
                         ),
-                      );
+                        context);
               });
             }
           }
         },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10, left: 10),
-                child: Icon(
-                  Icons.play_circle,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              ),
+        child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(10),
             ),
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 5, right: 10),
-                child: Text(
-                  tr("watch_now"),
+            child: Row(children: [
+              Icon(
+                Icons.play_circle_fill_rounded,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+              const SizedBox(width: 6),
+              Text(tr("watch_now"),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+                  ))
+            ])),
       ),
     );
   }

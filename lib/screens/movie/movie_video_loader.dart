@@ -111,6 +111,13 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       } else {
         widget.metadata.elapsed = 0;
       }
+      if (widget.metadata.releaseDate != null &&
+          !isReleased(widget.metadata.releaseDate!)) {
+        //TODO translate
+        GlobalMethods.showScaffoldMessage(
+            'The movie you are looking to stream might not be available yet.',
+            context);
+      }
       for (int i = 0; i < videoProviders.length; i++) {
         if (mounted) {
           setState(() {
@@ -329,7 +336,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                         style: const TextStyle(fontSize: 15),
                         children: [
                       TextSpan(
-                          text: 'Fetching: ',
+                          text: tr("fetching"),
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.background,
                               fontFamily: 'Poppins')),
@@ -549,7 +556,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       if (mounted) {
         await fetchMovieTVForStreamDCVA(
                 Endpoints.searchMovieTVForStreamDramacool(
-                    removeCharacters(widget.metadata.movieName!).toLowerCase(),
+                    normalizeTitle(widget.metadata.movieName!).toLowerCase(),
                     appDep.consumetUrl))
             .then((value) async {
           if (mounted) {
@@ -563,8 +570,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           }
 
           for (int i = 0; i < dcMovies!.length; i++) {
-            if (removeCharacters(dcMovies![i].title!).toLowerCase().contains(
-                    removeCharacters(widget.metadata.movieName!.toString())
+            if (normalizeTitle(dcMovies![i].title!).toLowerCase().contains(
+                    normalizeTitle(widget.metadata.movieName!.toString())
                         .toLowerCase()) ||
                 dcMovies![i]
                     .title!
@@ -625,7 +632,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       if (mounted) {
         await fetchMovieTVForStreamDCVA(
                 Endpoints.searchMovieTVForStreamViewasian(
-                    removeCharacters(widget.metadata.movieName!).toLowerCase(),
+                    normalizeTitle(widget.metadata.movieName!).toLowerCase(),
                     appDep.consumetUrl))
             .then((value) async {
           if (mounted) {
@@ -639,8 +646,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           }
 
           for (int i = 0; i < vaMovies!.length; i++) {
-            if (removeCharacters(vaMovies![i].title!).toLowerCase().contains(
-                    removeCharacters(widget.metadata.movieName!.toString())
+            if (normalizeTitle(vaMovies![i].title!).toLowerCase().contains(
+                    normalizeTitle(widget.metadata.movieName!.toString())
                         .toLowerCase()) ||
                 vaMovies![i]
                     .title!
@@ -700,7 +707,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     try {
       if (mounted) {
         await fetchMoviesForStreamFlixHQ(Endpoints.searchMovieTVForStreamFlixHQ(
-                removeCharacters(widget.metadata.movieName!).toLowerCase(),
+                normalizeTitle(widget.metadata.movieName!).toLowerCase(),
                 appDep.consumetUrl))
             .then((value) async {
           if (mounted) {
@@ -717,8 +724,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             if (fqMovies![i].releaseDate ==
                     widget.metadata.releaseYear!.toString() &&
                 fqMovies![i].type == 'Movie' &&
-                (removeCharacters(fqMovies![i].title!).toLowerCase().contains(
-                        removeCharacters(widget.metadata.movieName!)
+                (normalizeTitle(fqMovies![i].title!).toLowerCase().contains(
+                        normalizeTitle(widget.metadata.movieName!)
                             .toLowerCase()) ||
                     fqMovies![i]
                         .title!
@@ -816,7 +823,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       if (mounted) {
         await fetchMovieTVForStreamZoro(Endpoints.searchZoroMoviesTV(
           appDep.consumetUrl,
-          removeCharacters(widget.metadata.movieName!).toLowerCase(),
+          normalizeTitle(widget.metadata.movieName!).toLowerCase(),
         )).then((value) async {
           if (mounted) {
             setState(() {
@@ -829,7 +836,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           }
 
           for (int i = 0; i < zoroMovies!.length; i++) {
-            if ((removeCharacters(zoroMovies![i].title!).toLowerCase().contains(
+            if ((normalizeTitle(zoroMovies![i].title!).toLowerCase().contains(
                         widget.metadata.movieName!.toString().toLowerCase()) ||
                     zoroMovies![i]
                         .title!

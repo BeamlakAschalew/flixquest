@@ -498,5 +498,6 @@
     "media_not_found": "Error: media is not found on {s} Server",
     "server_is_down": "Error: {s} Server is down",
     "general_error": "Error: {e}",
-    "enter_full_screen": "Enter full screen"
+    "enter_full_screen": "Enter full screen",
+    "fetching": "Fetching: "
 }

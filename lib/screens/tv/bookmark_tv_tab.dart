@@ -105,12 +105,12 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                 index]
                                                                             .posterPath ==
                                                                         null
-                                                                    ? Image
-                                                                        .asset(
-                                                                        'assets/images/na_rect.png',
+                                                                    ? Image.asset(
+                                                                        'assets/images/na_logo.png',
                                                                         fit: BoxFit
                                                                             .cover,
-                                                                      )
+                                                                        height:
+                                                                            double.infinity)
                                                                     : CachedNetworkImage(
                                                                         cacheManager:
                                                                             cacheProp(),
@@ -140,14 +140,11 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                         placeholder:
                                                                             (context, url) =>
                                                                                 scrollingImageShimmer(themeMode),
-                                                                        errorWidget: (context,
-                                                                                url,
-                                                                                error) =>
-                                                                            Image.asset(
-                                                                          'assets/images/na_rect.png',
-                                                                          fit: BoxFit
-                                                                              .cover,
-                                                                        ),
+                                                                        errorWidget: (context, url, error) => Image.asset(
+                                                                            'assets/images/na_logo.png',
+                                                                            fit:
+                                                                                BoxFit.cover,
+                                                                            height: double.infinity),
                                                                       ),
                                                               ),
                                                               Positioned(
@@ -157,8 +154,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                     Container(
                                                                   margin:
                                                                       const EdgeInsets
-                                                                          .all(
-                                                                          3),
+                                                                          .all(3),
                                                                   alignment:
                                                                       Alignment
                                                                           .topLeft,
@@ -278,7 +274,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                    .only(
+                                                                        .only(
                                                                     right:
                                                                         10.0),
                                                             child: SizedBox(
@@ -295,10 +291,9 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                       child: Stack(children: [
                                                                         widget.tvList![index].posterPath ==
                                                                                 null
-                                                                            ? Image.asset(
-                                                                                'assets/images/na_logo.png',
+                                                                            ? Image.asset('assets/images/na_rect.png',
                                                                                 fit: BoxFit.cover,
-                                                                              )
+                                                                                width: double.infinity)
                                                                             : CachedNetworkImage(
                                                                                 cacheManager: cacheProp(),
                                                                                 fadeOutDuration: const Duration(milliseconds: 300),
@@ -315,10 +310,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                   ),
                                                                                 ),
                                                                                 placeholder: (context, url) => mainPageVerticalScrollImageShimmer(themeMode),
-                                                                                errorWidget: (context, url, error) => Image.asset(
-                                                                                  'assets/images/na_logo.png',
-                                                                                  fit: BoxFit.cover,
-                                                                                ),
+                                                                                errorWidget: (context, url, error) => Image.asset('assets/images/na_rect.png', fit: BoxFit.cover, width: double.infinity),
                                                                               ),
                                                                         Positioned(
                                                                           left:
@@ -337,7 +329,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                     });
                                                                                   }
                                                                                 },
-                                                                                icon: const Icon(Icons.bookmark_remove, size: 50),
+                                                                                icon: const Icon(Icons.bookmark_remove_rounded, size: 50),
                                                                               )),
                                                                         ),
                                                                       ])),

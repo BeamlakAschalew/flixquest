@@ -173,7 +173,7 @@ class StreamListWidget extends StatelessWidget {
         children: <Widget>[
           Row(
             children: [
-              const Icon(Icons.play_circle_outline),
+              const Icon(Icons.play_circle_outline_rounded),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8.0),

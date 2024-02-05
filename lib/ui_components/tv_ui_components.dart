@@ -57,10 +57,10 @@ class HorizontalScrollingTVList extends StatelessWidget {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
                               child: tvList![index].posterPath == null
-                                  ? Image.asset(
-                                      'assets/images/na_rect.png',
+                                  ? Image.asset('assets/images/na_logo.png',
                                       fit: BoxFit.cover,
-                                    )
+                                      width: double.infinity,
+                                      height: double.infinity)
                                   : CachedNetworkImage(
                                       cacheManager: cacheProp(),
                                       fadeOutDuration:
@@ -88,9 +88,10 @@ class HorizontalScrollingTVList extends StatelessWidget {
                                           scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
-                                        'assets/images/na_rect.png',
-                                        fit: BoxFit.cover,
-                                      ),
+                                              'assets/images/na_logo.png',
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
+                                              height: double.infinity),
                                     ),
                             ),
                             Positioned(
@@ -333,10 +334,10 @@ class TVGridView extends StatelessWidget {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
                               child: tvList![index].posterPath == null
-                                  ? Image.asset(
-                                      'assets/images/na_rect.png',
+                                  ? Image.asset('assets/images/na_logo.png',
                                       fit: BoxFit.cover,
-                                    )
+                                      width: double.infinity,
+                                      height: double.infinity)
                                   : CachedNetworkImage(
                                       cacheManager: cacheProp(),
                                       fadeOutDuration:
@@ -361,9 +362,10 @@ class TVGridView extends StatelessWidget {
                                           scrollingImageShimmer(themeMode),
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
-                                        'assets/images/na_rect.png',
-                                        fit: BoxFit.cover,
-                                      ),
+                                              'assets/images/na_logo.png',
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
+                                              height: double.infinity),
                                     ),
                             ),
                             Positioned(

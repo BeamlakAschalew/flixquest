@@ -498,5 +498,6 @@
     "media_not_found": "Error: no se encuentran medios en el servidor {s}",
     "server_is_down": "Error: {s} El servidor no funciona",
     "general_error": "Error: {e}",
-    "enter_full_screen": "Ingrese a pantalla completa"
+    "enter_full_screen": "Ingrese a pantalla completa",
+    "fetching": "Atractiva: "
 }

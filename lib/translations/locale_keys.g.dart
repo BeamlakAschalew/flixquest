@@ -503,4 +503,5 @@ abstract class LocaleKeys {
   static const server_is_down = 'server_is_down';
   static const general_error = 'general_error';
   static const enter_full_screen = 'enter_full_screen';
+  static const fetching = 'fetching';
 }

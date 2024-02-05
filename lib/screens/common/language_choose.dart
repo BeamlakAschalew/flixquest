@@ -56,23 +56,6 @@ class _AppLanguageChooseState extends State<AppLanguageChoose> {
                                   });
                                   EasyLocalization.of(context)!.setLocale(
                                       Locale(languageChange.appLanguage));
-
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //   SnackBar(
-                                  //     content: Text(
-                                  //       tr("restart_language"),
-                                  //       maxLines: 5,
-                                  //       style: kTextSmallBodyStyle,
-                                  //     ),
-                                  //     // action: SnackBarAction(
-                                  //     //     label: tr("restart"),
-                                  //     //     onPressed: () {
-                                  //     //       Phoenix.rebirth(context);
-                                  //     //     }),
-                                  //     behavior: SnackBarBehavior.floating,
-                                  //     duration: const Duration(seconds: 4),
-                                  //   ),
-                                  // );
                                 },
                               ),
                               Image.asset(

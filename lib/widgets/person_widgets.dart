@@ -329,9 +329,13 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                       .posterPath ==
                                                                   null
                                                               ? Image.asset(
-                                                                  'assets/images/na_rect.png',
+                                                                  'assets/images/na_logo.png',
                                                                   fit: BoxFit
                                                                       .cover,
+                                                                      width: double
+                                                                      .infinity,
+                                                                  height: double
+                                                                      .infinity
                                                                 )
                                                               : CachedNetworkImage(
                                                                   cacheManager:
@@ -379,9 +383,13 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                           error) =>
                                                                       Image
                                                                           .asset(
-                                                                    'assets/images/na_rect.png',
+                                                                    'assets/images/na_logo.png',
                                                                     fit: BoxFit
                                                                         .cover,
+                                                                        width: double
+                                                                          .infinity,
+                                                                      height: double
+                                                                          .infinity
                                                                   ),
                                                                 ),
                                                         ),
@@ -589,9 +597,13 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                       .posterPath ==
                                                                   null
                                                               ? Image.asset(
-                                                                  'assets/images/na_rect.png',
+                                                                  'assets/images/na_logo.png',
                                                                   fit: BoxFit
                                                                       .cover,
+                                                                      width: double
+                                                                      .infinity,
+                                                                  height: double
+                                                                      .infinity
                                                                 )
                                                               : CachedNetworkImage(
                                                                   cacheManager:
@@ -639,9 +651,13 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                           error) =>
                                                                       Image
                                                                           .asset(
-                                                                    'assets/images/na_rect.png',
+                                                                    'assets/images/na_logo.png',
                                                                     fit: BoxFit
                                                                         .cover,
+                                                                        width: double
+                                                                          .infinity,
+                                                                      height: double
+                                                                          .infinity
                                                                   ),
                                                                 ),
                                                         ),

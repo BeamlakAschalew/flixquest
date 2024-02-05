@@ -79,16 +79,16 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                       MaterialPageRoute(builder: (context) {
                     return const LandingScreen();
                   })).then((value) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          tr("account_deleted_successfully"),
-                          maxLines: 3,
-                          style: kTextSmallBodyStyle,
+                    GlobalMethods.showCustomScaffoldMessage(
+                        SnackBar(
+                          content: Text(
+                            tr("account_deleted_successfully"),
+                            maxLines: 3,
+                            style: kTextSmallBodyStyle,
+                          ),
+                          duration: const Duration(seconds: 4),
                         ),
-                        duration: const Duration(seconds: 4),
-                      ),
-                    );
+                        context);
                   });
                 });
               });
@@ -180,7 +180,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                     border: const UnderlineInputBorder(),
                                     filled: true,
                                     prefixIcon:
-                                        const Icon(Icons.text_fields_sharp),
+                                        const Icon(Icons.text_fields_rounded),
                                     labelText: tr("type_confirm"),
                                     fillColor: Theme.of(context)
                                         .colorScheme

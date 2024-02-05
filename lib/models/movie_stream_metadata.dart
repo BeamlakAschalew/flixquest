@@ -6,6 +6,7 @@ class MovieStreamMetadata {
   String? backdropPath;
   int? elapsed;
   bool? isAdult;
+  String? releaseDate;
 
   MovieStreamMetadata(
       {required this.backdropPath,
@@ -13,5 +14,7 @@ class MovieStreamMetadata {
       required this.movieId,
       required this.movieName,
       required this.posterPath,
-      required this.releaseYear, required this.isAdult});
+      required this.releaseYear,
+      required this.isAdult,
+      required this.releaseDate});
 }

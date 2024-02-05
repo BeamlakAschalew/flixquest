@@ -82,16 +82,16 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              tr("check_connection"),
-              maxLines: 3,
-              style: kTextSmallBodyStyle,
+        GlobalMethods.showCustomScaffoldMessage(
+            SnackBar(
+              content: Text(
+                tr("check_connection"),
+                maxLines: 3,
+                style: kTextSmallBodyStyle,
+              ),
+              duration: const Duration(seconds: 3),
             ),
-            duration: const Duration(seconds: 3),
-          ),
-        );
+            context);
       }
     });
   }
