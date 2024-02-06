@@ -57,7 +57,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       flixHQFlixQuestStreamSources,
       zoechipVideoSources,
       gomoviesVideoSources,
-      vidsrcVideoSources;
+      vidsrcVideoSources,
+      vidSrcToVideoSources;
   DCVAStreamSources? dramacoolVideoSources;
   DCVAStreamSources? viewasianVideoSources;
   ZoroStreamSources? zoroVideoSources;
@@ -212,6 +213,15 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           }
         } else if (videoProviders[i].codeName == 'vidsrc') {
           await loadVidsrc();
+          if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
+            await subtitleParserFetcher(tvVideoSubs!);
+            break;
+          }
+          if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
+            break;
+          }
+        } else if (videoProviders[i].codeName == 'vidsrcto') {
+          await loadVidSrcTo();
           if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
             await subtitleParserFetcher(tvVideoSubs!);
             break;
@@ -1140,6 +1150,43 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       }
     } on Exception catch (e) {
       GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Vidsrc');
+    }
+  }
+
+  Future<void> loadVidSrcTo() async {
+    try {
+      if (mounted) {
+        await getFlixQuestAPILinks(Endpoints.getTVEndpointFlixQuestAPI(
+                appDep.flixquestAPIURL,
+                widget.metadata.episodeNumber!,
+                widget.metadata.seasonNumber!,
+                widget.metadata.tvId!,
+                'vidsrcto'))
+            .then((value) {
+          if (mounted) {
+            if (value.messageExists == null &&
+                value.videoLinks != null &&
+                value.videoLinks!.isNotEmpty) {
+              setState(() {
+                vidSrcToVideoSources = value;
+              });
+            } else if (value.messageExists != null ||
+                value.videoLinks == null ||
+                value.videoLinks!.isEmpty) {
+              return;
+            }
+          }
+          if (mounted) {
+            tvVideoLinks = vidSrcToVideoSources!.videoLinks;
+            tvVideoSubs = vidSrcToVideoSources!.videoSubtitles;
+            if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
+              convertVideoLinks(tvVideoLinks!);
+            }
+          }
+        });
+      }
+    } on Exception catch (e) {
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'VidSrcTo');
     }
   }
 }

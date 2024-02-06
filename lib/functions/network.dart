@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flixquest/models/custom_exceptions.dart';
 import 'package:flixquest/video_providers/common.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
+import 'package:retry/retry.dart';
 
 import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
@@ -305,14 +306,20 @@ Future<List<TV>> fetchPersonTV(String api) async {
 Future checkForUpdate(String api) async {
   UpdateChecker updateChecker;
   try {
-    var res = await retryOptions.retry(
+    var res = await const RetryOptions(
+            maxDelay: Duration(milliseconds: 300),
+            delayFactor: Duration(seconds: 0),
+            maxAttempts: 3)
+        .retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     var decodeRes = jsonDecode(res.body);
     updateChecker = UpdateChecker.fromJson(decodeRes);
-  } finally {
     client.close();
+  } catch (e) {
+    print("Exception thrown");
+    rethrow;
   }
   return updateChecker;
 }

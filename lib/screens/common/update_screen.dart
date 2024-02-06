@@ -3,6 +3,7 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flixquest/services/globle_method.dart';
 import '/constants/api_constants.dart';
 import '/constants/app_constants.dart';
 import '../../functions/network.dart';
@@ -15,7 +16,9 @@ import 'package:path_provider/path_provider.dart';
 import '../../provider/settings_provider.dart';
 
 class UpdateScreen extends StatefulWidget {
-  const UpdateScreen({Key? key}) : super(key: key);
+  const UpdateScreen({Key? key, required this.isForced}) : super(key: key);
+
+  final bool isForced;
 
   @override
   State<UpdateScreen> createState() => _UpdateScreenState();
@@ -25,130 +28,213 @@ class _UpdateScreenState extends State<UpdateScreen> {
   UpdateChecker? updateChecker;
   var downloadManager = DownloadManager();
   var savedDir = "";
+  bool retry = false;
 
   @override
   void initState() {
-    checkForUpdate(FLIXQUEST_UPDATE_URL).then((value) {
-      if (mounted) {
-        setState(() {
-          updateChecker = value;
-        });
-      }
-    });
-    getTemporaryDirectory().then((value) {
-      if (mounted) {
-        setState(() {
-          savedDir = value.path;
-        });
-      }
-    });
+    checkUpdate();
     super.initState();
+  }
+
+  void checkUpdate() async {
+    setState(() {
+      retry = false;
+    });
+    try {
+      await checkForUpdate(FLIXQUEST_UPDATE_URL).then((value) {
+        if (mounted) {
+          setState(() {
+            updateChecker = value;
+          });
+        }
+      });
+      getTemporaryDirectory().then((value) {
+        if (mounted) {
+          setState(() {
+            savedDir = value.path;
+          });
+        }
+      });
+    } on Exception catch (e) {
+      setState(() {
+        retry = true;
+      });
+      GlobalMethods.showErrorScaffoldMessengerGeneral(e, context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(tr("check_for_update")),
-      ),
-      body: Container(
-          child: updateChecker == null
-              ? const Center(child: CircularProgressIndicator())
-              : updateChecker!.versionNumber != currentAppVersion
-                  ? Center(
-                      child: Column(
+    return WillPopScope(
+      onWillPop: () async {
+        if (widget.isForced) {
+          showDialog(
+              context: context,
+              builder: (BuildContext ctx) {
+                return AlertDialog(
+                  //TODO translate everywhere
+                  content: const Text(
+                      "You must update the app inorder to continue using it"),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Update"),
+                    ),
+                    TextButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "exit",
+                          style: TextStyle(color: Colors.red),
+                        ))
+                  ],
+                );
+              });
+        } else {
+          Navigator.pop(context);
+        }
+
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(tr("check_for_update")),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                child: retry
+                    ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          const Icon(
+                              Icons
+                                  .signal_cellular_connected_no_internet_0_bar_rounded,
+                              size: 70),
                           Text(
-                            tr("update_available"),
-                            style: kTextHeaderStyle,
+                            tr("internet_problem"),
+                            style: const TextStyle(fontSize: 20),
+                            textAlign: TextAlign.center,
                           ),
-                          Text(
-                            tr("new_version", namedArgs: {
-                              "v": updateChecker!.versionNumber!
-                            }),
-                            style: kTextSmallBodyStyle,
+                          const SizedBox(
+                            height: 30,
                           ),
                           ElevatedButton(
                               onPressed: () {
-                                showDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      return SimpleDialog(
-                                          title: Text(tr("changelogs")),
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                  updateChecker!.changeLog!),
-                                            )
-                                          ]);
-                                    });
+                                checkUpdate();
+                                //TODO translate
                               },
-                              child: Text(tr("see_changelogs"))),
-                          ListItem(
-                              appVersion: updateChecker!.versionNumber!,
-                              onDownloadPlayPausedPressed: (url) async {
-                                setState(() {
-                                  var task = downloadManager.getDownload(url);
-
-                                  if (task != null &&
-                                      !task.status.value.isCompleted) {
-                                    switch (task.status.value) {
-                                      case DownloadStatus.downloading:
-                                        downloadManager.pauseDownload(url);
-                                        break;
-                                      case DownloadStatus.paused:
-                                        downloadManager.resumeDownload(url);
-                                        break;
-                                      case DownloadStatus.queued:
-                                        break;
-                                      case DownloadStatus.completed:
-                                        break;
-                                      case DownloadStatus.failed:
-                                        break;
-                                      case DownloadStatus.canceled:
-                                        break;
-                                    }
-                                  } else {
-                                    downloadManager.addDownload(url,
-                                        "$savedDir/${downloadManager.getFileNameFromUrl(url)}");
-                                  }
-                                });
-                              },
-                              onOpen: (url) async {
-                                // OpenFile.open(
-                                //     "$savedDir/${downloadManager.getFileNameFromUrl(url)}");
-                                var fileName =
-                                    "$savedDir/${downloadManager.getFileNameFromUrl(url)}";
-                                var file = File(fileName);
-                                if (file.existsSync()) {
-                                  OpenFile.open(file.path);
-                                }
-                              },
-                              onDelete: (url) async {
-                                var fileName =
-                                    "$savedDir/${downloadManager.getFileNameFromUrl(url)}";
-                                var file = File(fileName);
-                                if (file.existsSync()) {
-                                  file.delete();
-                                }
-                              },
-                              url: updateChecker!.downloadLink!,
-                              downloadTask: downloadManager
-                                  .getDownload(updateChecker!.downloadLink!)),
+                              child: const Text('RETRY')),
                         ],
-                      ),
-                    )
-                  : Center(
-                      child: Text(
-                        tr("no_update"),
-                        textAlign: TextAlign.center,
-                        style: kTextHeaderStyle,
-                      ),
-                    )),
+                      )
+                    : updateChecker == null
+                        ? const CircularProgressIndicator()
+                        : updateChecker!.versionNumber != currentAppVersion
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    tr("update_available"),
+                                    style: kTextHeaderStyle,
+                                  ),
+                                  Text(
+                                    tr("new_version", namedArgs: {
+                                      "v": updateChecker!.versionNumber!
+                                    }),
+                                    style: kTextSmallBodyStyle,
+                                  ),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (_) {
+                                              return SimpleDialog(
+                                                  title: Text(tr("changelogs")),
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text(updateChecker!
+                                                          .changeLog!),
+                                                    )
+                                                  ]);
+                                            });
+                                      },
+                                      child: Text(tr("see_changelogs"))),
+                                  ListItem(
+                                      appVersion: updateChecker!.versionNumber!,
+                                      onDownloadPlayPausedPressed: (url) async {
+                                        setState(() {
+                                          var task =
+                                              downloadManager.getDownload(url);
+
+                                          if (task != null &&
+                                              !task.status.value.isCompleted) {
+                                            switch (task.status.value) {
+                                              case DownloadStatus.downloading:
+                                                downloadManager
+                                                    .pauseDownload(url);
+                                                break;
+                                              case DownloadStatus.paused:
+                                                downloadManager
+                                                    .resumeDownload(url);
+                                                break;
+                                              case DownloadStatus.queued:
+                                                break;
+                                              case DownloadStatus.completed:
+                                                break;
+                                              case DownloadStatus.failed:
+                                                break;
+                                              case DownloadStatus.canceled:
+                                                break;
+                                            }
+                                          } else {
+                                            downloadManager.addDownload(url,
+                                                "$savedDir/${downloadManager.getFileNameFromUrl(url)}");
+                                          }
+                                        });
+                                      },
+                                      onOpen: (url) async {
+                                        // OpenFile.open(
+                                        //     "$savedDir/${downloadManager.getFileNameFromUrl(url)}");
+                                        var fileName =
+                                            "$savedDir/${downloadManager.getFileNameFromUrl(url)}";
+                                        var file = File(fileName);
+                                        if (file.existsSync()) {
+                                          OpenFile.open(file.path);
+                                        }
+                                      },
+                                      onDelete: (url) async {
+                                        var fileName =
+                                            "$savedDir/${downloadManager.getFileNameFromUrl(url)}";
+                                        var file = File(fileName);
+                                        if (file.existsSync()) {
+                                          file.delete();
+                                        }
+                                      },
+                                      url: updateChecker!.downloadLink!,
+                                      downloadTask: downloadManager.getDownload(
+                                          updateChecker!.downloadLink!)),
+                                ],
+                              )
+                            : Center(
+                                child: Text(
+                                  tr("no_update"),
+                                  textAlign: TextAlign.center,
+                                  style: kTextHeaderStyle,
+                                ),
+                              )),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -390,7 +476,9 @@ class _UpdateBottomState extends State<UpdateBottom> {
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: ((context) {
-                    return const UpdateScreen();
+                    return const UpdateScreen(
+                      isForced: false,
+                    );
                   })));
                 },
                 child: Text(tr("goto_update"))),

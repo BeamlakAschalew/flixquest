@@ -3,7 +3,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flixquest/constants/app_constants.dart';
 import 'package:flixquest/models/app_colors.dart';
+import 'package:flixquest/screens/common/update_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 //import 'package:flutter/services.dart';
@@ -81,6 +83,8 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getString('flixquest_api_url');
       appDependencyProvider.streamingServerZoro =
           _remoteConfig.getString('streaming_server_zoro');
+      appDependencyProvider.isForcedUpdate =
+          _remoteConfig.getBool('forced_update');
     }
     await requestNotificationPermissions();
   }
@@ -194,6 +198,9 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
   @override
   void initState() {
     defHome();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkForcedUpdate();
+    });
     super.initState();
   }
 
@@ -205,10 +212,26 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     });
   }
 
+  void checkForcedUpdate() async {
+    await FirebaseRemoteConfig.instance.ensureInitialized();
+    String appVersion =
+        FirebaseRemoteConfig.instance.getString("latest_version");
+    bool isForcedUpdate =
+        FirebaseRemoteConfig.instance.getBool("forced_update");
+    if (isForcedUpdate && (currentAppVersion != appVersion)) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return UpdateScreen(
+          isForced: true,
+        );
+      }));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
+
     return Scaffold(
         key: _scaffoldKey,
         drawer: const Drawer(child: DrawerWidget()),

@@ -708,14 +708,16 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                     .moviesList[index]
                                                     .releaseYear,
                                                 releaseDate: null))))
-                                : GlobalMethods.showCustomScaffoldMessage(SnackBar(
+                                : GlobalMethods.showCustomScaffoldMessage(
+                                    SnackBar(
                                       content: Text(
                                         tr("check_connection"),
                                         maxLines: 3,
                                         style: kTextSmallBodyStyle,
                                       ),
                                       duration: const Duration(seconds: 3),
-                                    ), context);
+                                    ),
+                                    context);
                           });
                         },
                         child: SizedBox(
@@ -3163,14 +3165,16 @@ class WatchNowButtonState extends State<WatchNowButton> {
                             releaseDate: widget.releaseDate),
                       );
                     })))
-                  : GlobalMethods.showCustomScaffoldMessage(SnackBar(
+                  : GlobalMethods.showCustomScaffoldMessage(
+                      SnackBar(
                         content: Text(
                           tr("check_connection"),
                           maxLines: 3,
                           style: kTextSmallBodyStyle,
                         ),
                         duration: const Duration(seconds: 3),
-                      ), context);
+                      ),
+                      context);
             });
           },
           child: Container(

@@ -354,7 +354,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 showModalBottomSheet(
                     builder: (context) {
                       return ExternalPlay(
-                        sources: widget.sources,
+                        videoSources: widget.sources,
+                        subtitleSources: widget.subs,
                       );
                     },
                     context: context);

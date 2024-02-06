@@ -44,6 +44,9 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _displayOTTDrawer = true;
   bool get displayOTTDrawer => _displayOTTDrawer;
 
+  bool _isForcedUpdate = false;
+  bool get isForcedUpdate => _isForcedUpdate;
+
   Future<void> getConsumetUrl() async {
     consumetUrl = await appDependencies.getConsumetUrl();
   }
@@ -146,6 +149,11 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set displayOTTDrawer(bool value) {
     _displayOTTDrawer = value;
+    notifyListeners();
+  }
+
+  set isForcedUpdate(bool value) {
+    _isForcedUpdate = value;
     notifyListeners();
   }
 }

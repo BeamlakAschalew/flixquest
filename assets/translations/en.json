@@ -495,7 +495,7 @@
     "internal_error": "Error: Internal app error occured",
     "timed_out": "Error: Connection timed out",
     "internet_problem": "Error: Internet connection problem",
-    "media_not_found": "Error: media is not found on {s} Server",
+    "media_not_found": "Error: {s} server doesn't have the video",
     "server_is_down": "Error: {s} Server is down",
     "general_error": "Error: {e}",
     "enter_full_screen": "Enter full screen",
