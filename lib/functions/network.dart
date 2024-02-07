@@ -318,7 +318,6 @@ Future checkForUpdate(String api) async {
     updateChecker = UpdateChecker.fromJson(decodeRes);
     client.close();
   } catch (e) {
-    print("Exception thrown");
     rethrow;
   }
   return updateChecker;

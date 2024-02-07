@@ -114,10 +114,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       }
       if (widget.metadata.releaseDate != null &&
           !isReleased(widget.metadata.releaseDate!)) {
-        //TODO translate
         GlobalMethods.showScaffoldMessage(
-            'The movie you are looking to stream might not be available yet.',
-            context);
+            tr("movie_may_not_be_available"), context);
       }
       for (int i = 0; i < videoProviders.length; i++) {
         if (mounted) {

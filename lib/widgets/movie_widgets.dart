@@ -724,10 +724,10 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                           width: 100,
                           child: Column(
                             children: <Widget>[
-                              Expanded(
-                                flex: 6,
-                                child: Material(
-                                  type: MaterialType.transparency,
+                              Material(
+                                type: MaterialType.transparency,
+                                child: SizedBox(
+                                  height: 155,
                                   child: Stack(
                                     alignment: Alignment.bottomCenter,
                                     children: [
@@ -818,16 +818,13 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                   ),
                                 ),
                               ),
-                              Expanded(
-                                flex: 3,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    widget.moviesList[index].title!,
-                                    maxLines: 2,
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  widget.moviesList[index].title!,
+                                  maxLines: 3,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],

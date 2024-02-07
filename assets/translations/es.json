@@ -499,5 +499,13 @@
     "server_is_down": "Error: {s} El servidor no funciona",
     "general_error": "Error: {e}",
     "enter_full_screen": "Ingrese a pantalla completa",
-    "fetching": "Atractiva: "
+    "fetching": "Atractiva: ",
+    "give_file_permission": "No se otorga permiso de archivo a FlixQuest, vaya a la configuración de la aplicación y habilite Permiso de archivo para descargar la foto.",
+    "give_file_permission_short": "Dar permiso de archivo a FlixQuest para descargar la foto",
+    "must_update": "Debes actualizar la aplicación para poder seguir usándola.",
+    "update": "Actualizar",
+    "exit": "Salida",
+    "retry": "Rever",
+    "movie_may_not_be_available": "Es posible que la película que deseas transmitir aún no esté disponible.",
+    "episode_may_not_be_available": "Es posible que el episodio de TV que deseas transmitir aún no esté disponible."
 }

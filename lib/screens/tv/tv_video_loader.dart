@@ -118,10 +118,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       }
       if (widget.metadata.airDate != null &&
           !isReleased(widget.metadata.airDate!)) {
-        //TODO translate
         GlobalMethods.showScaffoldMessage(
-            'The TV episode you are looking to stream might not be available yet.',
-            context);
+            tr("episode_may_not_be_available"), context);
       }
       for (int i = 0; i < videoProviders.length; i++) {
         setState(() {

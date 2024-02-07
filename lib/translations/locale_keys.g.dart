@@ -504,4 +504,12 @@ abstract class LocaleKeys {
   static const general_error = 'general_error';
   static const enter_full_screen = 'enter_full_screen';
   static const fetching = 'fetching';
+  static const give_file_permission = 'give_file_permission';
+  static const give_file_permission_short = 'give_file_permission_short';
+  static const must_update = 'must_update';
+  static const update = 'update';
+  static const exit = 'exit';
+  static const retry = 'retry';
+  static const movie_may_not_be_available = 'movie_may_not_be_available';
+  static const episode_may_not_be_available = 'episode_may_not_be_available';
 }

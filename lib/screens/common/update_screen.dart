@@ -72,15 +72,13 @@ class _UpdateScreenState extends State<UpdateScreen> {
               context: context,
               builder: (BuildContext ctx) {
                 return AlertDialog(
-                  //TODO translate everywhere
-                  content: const Text(
-                      "You must update the app inorder to continue using it"),
+                  content: Text(tr("must_update")),
                   actions: [
                     ElevatedButton(
                       onPressed: () async {
                         Navigator.pop(context);
                       },
-                      child: const Text("Update"),
+                      child: Text(tr("update")),
                     ),
                     TextButton(
                         onPressed: () async {
@@ -88,9 +86,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
                           Navigator.pop(context);
                           Navigator.pop(context);
                         },
-                        child: const Text(
-                          "exit",
-                          style: TextStyle(color: Colors.red),
+                        child: Text(
+                          tr("exit"),
+                          style: const TextStyle(color: Colors.red),
                         ))
                   ],
                 );
@@ -128,9 +126,8 @@ class _UpdateScreenState extends State<UpdateScreen> {
                           ElevatedButton(
                               onPressed: () {
                                 checkUpdate();
-                                //TODO translate
                               },
-                              child: const Text('RETRY')),
+                              child: Text(tr("retry"))),
                         ],
                       )
                     : updateChecker == null

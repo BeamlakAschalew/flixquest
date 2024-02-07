@@ -219,11 +219,13 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     bool isForcedUpdate =
         FirebaseRemoteConfig.instance.getBool("forced_update");
     if (isForcedUpdate && (currentAppVersion != appVersion)) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return UpdateScreen(
-          isForced: true,
-        );
-      }));
+      if (mounted) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const UpdateScreen(
+            isForced: true,
+          );
+        }));
+      }
     }
   }
 

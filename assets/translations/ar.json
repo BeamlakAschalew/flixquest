@@ -499,6 +499,14 @@
     "server_is_down": "خطأ: خادم {s} معطل",
     "general_error": "خطأ: {s}",
 	"enter_full_screen": "أدخل ملء الشاشة",
-	"fetching": "جلب: "
+	"fetching": "جلب: ",
+	"give_file_permission": "لم يتم منح إذن الملف إلى FlixQuest، انتقل إلى إعدادات التطبيق وقم بتمكين إذن الملف لتنزيل الصورة",
+	"give_file_permission_short": "امنح إذن الملف لـ FlixQuest لتنزيل الصورة",
+	"must_update": "يجب عليك تحديث التطبيق لمواصلة استخدامه",
+	"update": "تحديث",
+	"exit": "مخرج",
+	"retry": "أعد المحاولة",
+	"movie_may_not_be_available": "قد لا يكون الفيلم الذي تريد بثه متاحًا بعد.",
+	"episode_may_not_be_available": "قد لا تكون الحلقة التلفزيونية التي تريد بثها متاحة بعد."
 }
 

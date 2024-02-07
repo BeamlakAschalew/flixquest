@@ -499,5 +499,13 @@
     "server_is_down": "Error: {s} Server is down",
     "general_error": "Error: {e}",
     "enter_full_screen": "Enter full screen",
-    "fetching": "Fetching: "
+    "fetching": "Fetching: ",
+    "give_file_permission": "File permission is not given to FlixQuest, goto app settings and enable File permission to download the photo",
+    "give_file_permission_short": "Give File permission to FlixQuest to download the photo",
+    "must_update": "You must update the app inorder to continue using it",
+    "update": "Update",
+    "exit": "Exit",
+    "retry": "Retry",
+    "movie_may_not_be_available": "The movie you are looking to stream might not be available yet.",
+    "episode_may_not_be_available": "The TV episode you are looking to stream might not be available yet."
 }
