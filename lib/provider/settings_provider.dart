@@ -5,18 +5,7 @@ import '../constants/api_constants.dart';
 import '../preferences/setting_preferences.dart';
 
 class SettingsProvider with ChangeNotifier {
-  ThemeModePreferences themeModePreferences = ThemeModePreferences();
-  AdultModePreferences adultModePreferences = AdultModePreferences();
-  DefaultHomePreferences defaultHomePreferences = DefaultHomePreferences();
-  ImagePreferences imagePreferences = ImagePreferences();
-  ViewPreferences viewPreferences = ViewPreferences();
-  CountryPreferences countryPreferences = CountryPreferences();
-  Material3Preferences material3preferences = Material3Preferences();
-  VideoPlayerPreferences videoPlayerPreferences = VideoPlayerPreferences();
-  AppLanguagePreferences appLanguagePreferences = AppLanguagePreferences();
-  AppColorPreferences appColorPreferences = AppColorPreferences();
-  ProviderPrecedencePreference providerPrecedencePreference =
-      ProviderPrecedencePreference();
+  final SettingsPreferences _settingsPreferences = SettingsPreferences();
 
   bool _isAdult = false;
   bool get isAdult => _isAdult;
@@ -41,6 +30,9 @@ class SettingsProvider with ChangeNotifier {
 
   int _defaultSeekDuration = 10;
   int get defaultSeekDuration => _defaultSeekDuration;
+
+  int _playerTimeDisplay = 1;
+  int get playerTimeDisplay => _playerTimeDisplay;
 
   // int _defaultMinBufferDuration = 120000;
   // int get defaultMinBufferDuration => _defaultMinBufferDuration;
@@ -82,67 +74,67 @@ class SettingsProvider with ChangeNotifier {
 
   // theme change
   Future<void> getCurrentThemeMode() async {
-    appTheme = await themeModePreferences.getThemeMode();
+    appTheme = await _settingsPreferences.getThemeMode();
   }
 
   set appTheme(String value) {
     _appTheme = value;
-    themeModePreferences.setThemeMode(value);
+    _settingsPreferences.setThemeMode(value);
     notifyListeners();
   }
 
   // material theme change
   Future<void> getCurrentMaterial3Mode() async {
-    isMaterial3Enabled = await material3preferences.getMaterial3Mode();
+    isMaterial3Enabled = await _settingsPreferences.getMaterial3Mode();
   }
 
   set isMaterial3Enabled(bool value) {
     _isMaterial3Enabled = value;
-    material3preferences.setMaterial3Mode(value);
+    _settingsPreferences.setMaterial3Mode(value);
     notifyListeners();
   }
 
   // adult preference change
   Future<void> getCurrentAdultMode() async {
-    isAdult = await adultModePreferences.getAdultMode();
+    isAdult = await _settingsPreferences.getAdultMode();
   }
 
   set isAdult(bool value) {
     _isAdult = value;
-    adultModePreferences.setAdultMode(value);
+    _settingsPreferences.setAdultMode(value);
     notifyListeners();
   }
 
   // screen preference
   Future<void> getCurrentDefaultScreen() async {
-    defaultValue = await defaultHomePreferences.getDefaultHome();
+    defaultValue = await _settingsPreferences.getDefaultHome();
   }
 
   set defaultValue(int value) {
     _defaultValue = value;
-    defaultHomePreferences.setDefaultHome(value);
+    _settingsPreferences.setDefaultHome(value);
     notifyListeners();
   }
 
   // image preference
   Future<void> getCurrentImageQuality() async {
-    imageQuality = await imagePreferences.getImageQuality();
+    imageQuality = await _settingsPreferences.getImageQuality();
   }
 
   set imageQuality(String value) {
     _imageQuality = value;
-    imagePreferences.setImageQuality(value);
+    _settingsPreferences.setImageQuality(value);
     notifyListeners();
   }
 
   // watch country
   Future<void> getCurrentWatchCountry() async {
-    defaultCountry = await countryPreferences.getCountryName();
+    defaultCountry = await _settingsPreferences.getCountryName();
   }
 
   set defaultCountry(String value) {
     _defaultCountry = value;
-    countryPreferences.setCountryName(value);
+    _settingsPreferences.setCountryName(value);
     notifyListeners();
   }
 
@@ -155,32 +147,32 @@ class SettingsProvider with ChangeNotifier {
 
   // view preference
   Future<void> getCurrentViewType() async {
-    defaultView = await viewPreferences.getViewType();
+    defaultView = await _settingsPreferences.getViewType();
   }
 
   set defaultView(String value) {
     _defaultView = value;
-    viewPreferences.setViewType(value);
+    _settingsPreferences.setViewType(value);
     notifyListeners();
   }
 
   Future<void> getSeekDuration() async {
-    defaultSeekDuration = await videoPlayerPreferences.getSeekDuraion();
+    defaultSeekDuration = await _settingsPreferences.getSeekDuraion();
   }
 
   set defaultSeekDuration(int value) {
     _defaultSeekDuration = value;
-    videoPlayerPreferences.setSeekDuration(value);
+    _settingsPreferences.setSeekDuration(value);
     notifyListeners();
   }
 
   Future<void> getViewMode() async {
-    defaultViewMode = await videoPlayerPreferences.autoFullScreen();
+    defaultViewMode = await _settingsPreferences.autoFullScreen();
   }
 
   set defaultViewMode(bool value) {
     _defaultViewMode = value;
-    videoPlayerPreferences.setDefaultFullScreen(value);
+    _settingsPreferences.setDefaultFullScreen(value);
     notifyListeners();
   }
 
@@ -195,103 +187,113 @@ class SettingsProvider with ChangeNotifier {
   // }
 
   Future<void> getMaxBufferDuration() async {
-    defaultMaxBufferDuration = await videoPlayerPreferences.getMaxBuffer();
+    defaultMaxBufferDuration = await _settingsPreferences.getMaxBuffer();
   }
 
   set defaultMaxBufferDuration(int value) {
     _defaultMaxBufferDuration = value;
-    videoPlayerPreferences.setMaxBufferDuration(value);
+    _settingsPreferences.setMaxBufferDuration(value);
     notifyListeners();
   }
 
   Future<void> getVideoResolution() async {
     defaultVideoResolution =
-        await videoPlayerPreferences.getDefaultVideoQuality();
+        await _settingsPreferences.getDefaultVideoQuality();
   }
 
   set defaultVideoResolution(int value) {
     _defaultVideoResolution = value;
-    videoPlayerPreferences.setDefaultVideoQuality(value);
+    _settingsPreferences.setDefaultVideoQuality(value);
     notifyListeners();
   }
 
   Future<void> getSubtitleLanguage() async {
-    defaultSubtitleLanguage = await videoPlayerPreferences.getSubLanguage();
+    defaultSubtitleLanguage = await _settingsPreferences.getSubLanguage();
   }
 
   set defaultSubtitleLanguage(String value) {
     _defaultSubtitleLanguage = value;
-    videoPlayerPreferences.setDefaultSubtitle(value);
+    _settingsPreferences.setDefaultSubtitle(value);
     notifyListeners();
   }
 
   Future<void> getForegroundSubtitleColor() async {
-    subtitleForegroundColor = await videoPlayerPreferences.subtitleForeground();
+    subtitleForegroundColor = await _settingsPreferences.subtitleForeground();
   }
 
   set subtitleForegroundColor(String value) {
     _subtitleForegroundColor = value;
-    videoPlayerPreferences.setSubtitleForeground(value);
+    _settingsPreferences.setSubtitleForeground(value);
     notifyListeners();
   }
 
   Future<void> getBackgroundSubtitleColor() async {
-    subtitleBackgroundColor = await videoPlayerPreferences.subtitleBackground();
+    subtitleBackgroundColor = await _settingsPreferences.subtitleBackground();
   }
 
   set subtitleBackgroundColor(String value) {
     _subtitleBackgroundColor = value;
-    videoPlayerPreferences.setSubtitleBackground(value);
+    _settingsPreferences.setSubtitleBackground(value);
     notifyListeners();
   }
 
   Future<void> getSubtitleSize() async {
-    subtitleFontSize = await videoPlayerPreferences.subtitleFont();
+    subtitleFontSize = await _settingsPreferences.subtitleFont();
   }
 
   set subtitleFontSize(int value) {
     _subtitleFontSize = value;
-    videoPlayerPreferences.setSubtitleFont(value);
+    _settingsPreferences.setSubtitleFont(value);
     notifyListeners();
   }
 
   Future<void> getAppLanguage() async {
-    appLanguage = await appLanguagePreferences.getAppLang();
+    appLanguage = await _settingsPreferences.getAppLang();
   }
 
   set appLanguage(String value) {
     _appLanguage = value;
-    appLanguagePreferences.setAppLanguage(value);
+    _settingsPreferences.setAppLanguage(value);
     notifyListeners();
   }
 
   Future<void> getSubtitleMode() async {
-    fetchSpecificLangSubs = await videoPlayerPreferences.getSubtitleMode();
+    fetchSpecificLangSubs = await _settingsPreferences.getSubtitleMode();
   }
 
   set fetchSpecificLangSubs(bool value) {
     _fetchSpecificLangSubs = value;
-    videoPlayerPreferences.setSubtitleMode(value);
+    _settingsPreferences.setSubtitleMode(value);
     notifyListeners();
   }
 
   Future<void> getAppColorIndex() async {
-    appColorIndex = await appColorPreferences.getAppColorIndex();
+    appColorIndex = await _settingsPreferences.getAppColorIndex();
   }
 
   set appColorIndex(int value) {
     _appColorIndex = value;
-    appColorPreferences.setAppColorIndex(value);
+    _settingsPreferences.setAppColorIndex(value);
+    notifyListeners();
+  }
+
+  Future<void> getPlayerTimeStyle() async {
+    playerTimeDisplay = await _settingsPreferences.getPlayerStyleIndex();
+  }
+
+  set playerTimeDisplay(int value) {
+    _playerTimeDisplay = value;
+    _settingsPreferences.setPlayerStyleIndex(value);
     notifyListeners();
   }
 
   Future<void> getProviderPrecedence() async {
-    proPreference = await providerPrecedencePreference.getProviderPrecedence();
+    proPreference = await _settingsPreferences.getProviderPrecedence();
   }
 
   set proPreference(String value) {
     _proPrecedence = value;
-    providerPrecedencePreference.setProviderPrecedence(value);
+    _settingsPreferences.setProviderPrecedence(value);
     notifyListeners();
   }
 }

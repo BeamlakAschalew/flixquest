@@ -58,6 +58,7 @@ Future<void> appInitialize() async {
   await settingsProvider.getAppLanguage();
   await settingsProvider.getAppColorIndex();
   await settingsProvider.getProviderPrecedence();
+  await settingsProvider.getPlayerTimeStyle();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
   await appDependencyProvider.getConsumetUrl();

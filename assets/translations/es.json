@@ -507,5 +507,8 @@
     "exit": "Salida",
     "retry": "Rever",
     "movie_may_not_be_available": "Es posible que la película que deseas transmitir aún no esté disponible.",
-    "episode_may_not_be_available": "Es posible que el episodio de TV que deseas transmitir aún no esté disponible."
+    "episode_may_not_be_available": "Es posible que el episodio de TV que deseas transmitir aún no esté disponible.",
+    "player_time_display": "Visualización del tiempo del jugador",
+    "elapsed_total": "Transcurrido / Total",
+    "elapsed_remaining": "Transcurrida / Restante"
 }

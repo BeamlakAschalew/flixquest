@@ -58,8 +58,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   // ignore: unused_field
   Timer? _resetTimer;
 
+  late SettingsProvider settings;
+
   @override
   void initState() {
+    settings = Provider.of<SettingsProvider>(context, listen: false);
     super.initState();
     String backgroundColorString = widget.settings.subtitleBackgroundColor;
     String foregroundColorString = widget.settings.subtitleForegroundColor;
@@ -117,7 +120,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         qualitiesIcon: Icons.hd_rounded,
         enableAudioTracks: false,
         controlBarHeight: 50,
-        watchingText: tr("watching_text"));
+        watchingText: tr("watching_text"),
+        playerTimeMode: settings.playerTimeDisplay);
 
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(

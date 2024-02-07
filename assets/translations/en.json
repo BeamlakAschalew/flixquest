@@ -507,5 +507,8 @@
     "exit": "Exit",
     "retry": "Retry",
     "movie_may_not_be_available": "The movie you are looking to stream might not be available yet.",
-    "episode_may_not_be_available": "The TV episode you are looking to stream might not be available yet."
+    "episode_may_not_be_available": "The TV episode you are looking to stream might not be available yet.",
+    "player_time_display": "Player time display",
+    "elapsed_total": "Elapsed / Total",
+    "elapsed_remaining": "Elapsed / Remaining"
 }

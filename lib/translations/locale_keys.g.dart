@@ -512,4 +512,7 @@ abstract class LocaleKeys {
   static const retry = 'retry';
   static const movie_may_not_be_available = 'movie_may_not_be_available';
   static const episode_may_not_be_available = 'episode_may_not_be_available';
+  static const player_time_display = 'player_time_display';
+  static const elapsed_total = 'elapsed_total';
+  static const elapsed_remaining = 'elapsed_remaining';
 }

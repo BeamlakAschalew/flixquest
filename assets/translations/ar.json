@@ -507,6 +507,9 @@
 	"exit": "مخرج",
 	"retry": "أعد المحاولة",
 	"movie_may_not_be_available": "قد لا يكون الفيلم الذي تريد بثه متاحًا بعد.",
-	"episode_may_not_be_available": "قد لا تكون الحلقة التلفزيونية التي تريد بثها متاحة بعد."
+	"episode_may_not_be_available": "قد لا تكون الحلقة التلفزيونية التي تريد بثها متاحة بعد.",
+	"player_time_display": "عرض وقت اللاعب",
+	"elapsed_total": "المنقضي / الإجمالي",
+    "elapsed_remaining": "المنقضي / المتبقي"
 }
 
