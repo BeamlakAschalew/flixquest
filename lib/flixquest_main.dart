@@ -194,14 +194,43 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     with SingleTickerProviderStateMixin {
   late int selectedIndex;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
 
   @override
   void initState() {
     defHome();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      checkForcedUpdate();
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        checkForcedUpdate();
+        remoteConfig.onConfigUpdated.listen(onFirebaseRemoteConfigUpdate);
+      },
+    );
     super.initState();
+  }
+
+  Future<void> onFirebaseRemoteConfigUpdate(RemoteConfigUpdate rcu) async {
+    await remoteConfig.activate();
+    if (mounted) {
+      final appDep = Provider.of<AppDependencyProvider>(context, listen: false);
+      appDep.consumetUrl = remoteConfig.getString('consumet_url');
+      appDep.flixQuestLogo = remoteConfig.getString('cinemax_logo');
+      appDep.opensubtitlesKey = remoteConfig.getString('opensubtitles_key');
+      appDep.streamingServerFlixHQ =
+          remoteConfig.getString('streaming_server_flixhq');
+      appDep.streamingServerDCVA =
+          remoteConfig.getString('streaming_server_dcva');
+      appDep.enableADS = remoteConfig.getBool('ads_enabled');
+      appDep.fetchRoute = remoteConfig.getString('route_v241');
+      appDep.useExternalSubtitles =
+          remoteConfig.getBool('use_external_subtitles');
+      appDep.enableOTTADS = remoteConfig.getBool('ott_ads_enabled');
+      appDep.displayWatchNowButton = remoteConfig.getBool('enable_stream');
+      appDep.displayOTTDrawer = remoteConfig.getBool('enable_ott');
+      appDep.flixquestAPIURL = remoteConfig.getString('flixquest_api_url');
+      appDep.streamingServerZoro =
+          remoteConfig.getString('streaming_server_zoro');
+      appDep.isForcedUpdate = remoteConfig.getBool('forced_update');
+    }
   }
 
   void defHome() {
@@ -233,7 +262,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
-
     return Scaffold(
         key: _scaffoldKey,
         drawer: const Drawer(child: DrawerWidget()),

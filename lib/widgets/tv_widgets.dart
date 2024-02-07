@@ -247,7 +247,8 @@ class DiscoverTVState extends State<DiscoverTV>
                                               '${tvList![index].id}-${widget.discoverType}')));
                             },
                             child: Hero(
-                              tag: '${tvList![index].id}',
+                              tag:
+                                  '${tvList![index].id}-${widget.discoverType}',
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: CachedNetworkImage(
@@ -450,7 +451,7 @@ class ScrollingTVState extends State<ScrollingTV>
                                       flex: 6,
                                       child: Hero(
                                         tag:
-                                            '${tvList![index].id}${widget.title}',
+                                            '${tvList![index].id}${widget.title}-${widget.discoverType}',
                                         child: Material(
                                           type: MaterialType.transparency,
                                           child: Stack(

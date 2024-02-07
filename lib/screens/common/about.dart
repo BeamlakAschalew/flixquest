@@ -140,7 +140,7 @@ class AboutPage extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(tr("year_range", namedArgs: {
                     "startYear": "2016",
-                    "endYear": "2023"
+                    "endYear": "2024"
                   })), // Translate "2015 EC, 2023 GC"
                 )
               ],

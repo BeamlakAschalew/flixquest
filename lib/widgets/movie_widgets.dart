@@ -63,9 +63,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
     return Container(
       child: ListView(
         children: [
-          DiscoverMovies(
-            includeAdult: includeAdult,
-          ),
+          DiscoverMovies(includeAdult: includeAdult, discoverType: "discover"),
           const UpdateBottom(),
           ScrollingMovies(
             title: tr("popular"),
@@ -114,9 +112,11 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
 }
 
 class DiscoverMovies extends StatefulWidget {
-  const DiscoverMovies({Key? key, required this.includeAdult})
+  const DiscoverMovies(
+      {Key? key, required this.includeAdult, required this.discoverType})
       : super(key: key);
   final bool includeAdult;
+  final String discoverType;
   @override
   DiscoverMoviesState createState() => DiscoverMoviesState();
 }
@@ -232,10 +232,11 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                       builder: (context) => MovieDetailPage(
                                           movie: moviesList![index],
                                           heroId:
-                                              '${moviesList![index].id}discover')));
+                                              '${moviesList![index].id}-${widget.discoverType}')));
                             },
                             child: Hero(
-                              tag: '${moviesList![index].id}discover',
+                              tag:
+                                  '${moviesList![index].id}-${widget.discoverType}',
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: CachedNetworkImage(
@@ -435,7 +436,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                         builder: (context) => MovieDetailPage(
                                             movie: moviesList![index],
                                             heroId:
-                                                '${moviesList![index].id}${widget.title}')));
+                                                '${moviesList![index].id}${widget.title}-${widget.discoverType}')));
                               },
                               child: SizedBox(
                                 width: 100,
@@ -445,7 +446,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                       flex: 6,
                                       child: Hero(
                                         tag:
-                                            '${moviesList![index].id}${widget.title}',
+                                            '${moviesList![index].id}${widget.title}-${widget.discoverType}',
                                         child: Material(
                                           type: MaterialType.transparency,
                                           child: Stack(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../preferences/app_dependency_preferences.dart';
 
 class AppDependencyProvider extends ChangeNotifier {
-  AppDependencies appDependencies = AppDependencies();
+  final AppDependencies __appDependencies = AppDependencies();
 
   String _consumetUrl = CONSUMET_API;
   String get consumetUrl => _consumetUrl;
@@ -48,72 +48,72 @@ class AppDependencyProvider extends ChangeNotifier {
   bool get isForcedUpdate => _isForcedUpdate;
 
   Future<void> getConsumetUrl() async {
-    consumetUrl = await appDependencies.getConsumetUrl();
+    consumetUrl = await __appDependencies.getConsumetUrl();
   }
 
   set consumetUrl(String value) {
     _consumetUrl = value;
-    appDependencies.setConsumetUrl(value);
+    __appDependencies.setConsumetUrl(value);
     notifyListeners();
   }
 
   Future<void> getFQUrl() async {
-    flixquestAPIURL = await appDependencies.getFQURL();
+    flixquestAPIURL = await __appDependencies.getFQURL();
   }
 
   set flixquestAPIURL(String value) {
     _flixquestAPIUrl = value;
-    appDependencies.setFlixquestAPIUrl(value);
+    __appDependencies.setFlixquestAPIUrl(value);
     notifyListeners();
   }
 
   Future<void> getFlixQuestLogo() async {
-    flixQuestLogo = await appDependencies.getFlixQuestLogo();
+    flixQuestLogo = await __appDependencies.getFlixQuestLogo();
   }
 
   set flixQuestLogo(String value) {
     _flixQuestLogo = value;
-    appDependencies.setFlixQuestUrl(value);
+    __appDependencies.setFlixQuestUrl(value);
     notifyListeners();
   }
 
   Future<void> getOpenSubKey() async {
-    opensubtitlesKey = await appDependencies.getOpenSubtitlesKey();
+    opensubtitlesKey = await __appDependencies.getOpenSubtitlesKey();
   }
 
   set opensubtitlesKey(String value) {
     _opensubtitlesKey = value;
-    appDependencies.setOpenSubKey(value);
+    __appDependencies.setOpenSubKey(value);
     notifyListeners();
   }
 
   Future<void> getStreamingServerFlixHQ() async {
-    streamingServerFlixHQ = await appDependencies.getStreamServerFlixHQ();
+    streamingServerFlixHQ = await __appDependencies.getStreamServerFlixHQ();
   }
 
   set streamingServerFlixHQ(String value) {
     _streamingServerFlixHQ = value;
-    appDependencies.setStreamServerFlixHQ(value);
+    __appDependencies.setStreamServerFlixHQ(value);
     notifyListeners();
   }
 
   Future<void> getStreamingServerDCVA() async {
-    streamingServerDCVA = await appDependencies.getStreamServerDCVA();
+    streamingServerDCVA = await __appDependencies.getStreamServerDCVA();
   }
 
   set streamingServerDCVA(String value) {
     _streamingServerDCVA = value;
-    appDependencies.setStreamServerDCVA(value);
+    __appDependencies.setStreamServerDCVA(value);
     notifyListeners();
   }
 
   Future<void> getStreamingServerZoro() async {
-    streamingServerZoro = await appDependencies.getStreamServerZoro();
+    streamingServerZoro = await __appDependencies.getStreamServerZoro();
   }
 
   set streamingServerZoro(String value) {
     _streamingServerZoro = value;
-    appDependencies.setStreamServerZoro(value);
+    __appDependencies.setStreamServerZoro(value);
     notifyListeners();
   }
 
@@ -123,12 +123,12 @@ class AppDependencyProvider extends ChangeNotifier {
   }
 
   Future<void> getStreamRoute() async {
-    fetchRoute = await appDependencies.getStreamRoute();
+    fetchRoute = await __appDependencies.getStreamRoute();
   }
 
   set fetchRoute(String value) {
     _fetchRoute = value;
-    appDependencies.setStreamRoute(value);
+    __appDependencies.setStreamRoute(value);
     notifyListeners();
   }
 
