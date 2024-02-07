@@ -47,6 +47,18 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _isForcedUpdate = false;
   bool get isForcedUpdate => _isForcedUpdate;
 
+  String _flixhqZoeServer = "vidcloud";
+  String get flixhqZoeServer => _flixhqZoeServer;
+
+  String _goMoviesServer = "upcloud";
+  String get goMoviesServer => _goMoviesServer;
+
+  String _vidSrcToServer = "vidplay";
+  String get vidSrcToServer => _vidSrcToServer;
+
+  String _vidSrcServer = "vidsrcembed";
+  String get vidSrcServer => _vidSrcServer;
+
   Future<void> getConsumetUrl() async {
     consumetUrl = await __appDependencies.getConsumetUrl();
   }
@@ -154,6 +166,26 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set isForcedUpdate(bool value) {
     _isForcedUpdate = value;
+    notifyListeners();
+  }
+
+  set goMoviesServer(String value) {
+    _goMoviesServer = value;
+    notifyListeners();
+  }
+
+  set flixhqZoeServer(String value) {
+    _flixhqZoeServer = value;
+    notifyListeners();
+  }
+
+  set vidSrcServer(String value) {
+    _vidSrcServer = value;
+    notifyListeners();
+  }
+
+  set vidSrcToServer(String value) {
+    _vidSrcToServer = value;
     notifyListeners();
   }
 }

@@ -139,7 +139,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}flixhq/watch-movie?tmdbId=455980")
+                  "${appDependency.flixquestAPIURL}flixhq/watch-movie?tmdbId=455980&server=${appDependency.flixhqZoeServer}")
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -153,7 +153,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}zoe/watch-movie?tmdbId=455980")
+                  "${appDependency.flixquestAPIURL}zoe/watch-movie?tmdbId=455980&server=${appDependency.flixhqZoeServer}")
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -167,7 +167,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}gomovies/watch-movie?tmdbId=455980")
+                  "${appDependency.flixquestAPIURL}gomovies/watch-movie?tmdbId=455980&server=${appDependency.goMoviesServer}")
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -181,7 +181,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}vidsrc/watch-movie?tmdbId=455980")
+                  "${appDependency.flixquestAPIURL}vidsrc/watch-movie?tmdbId=455980&server=${appDependency.vidSrcServer}")
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -195,7 +195,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}vidsrcto/watch-movie?tmdbId=455980")
+                  "${appDependency.flixquestAPIURL}vidsrcto/watch-movie?tmdbId=455980&server=${appDependency.vidSrcToServer}")
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;

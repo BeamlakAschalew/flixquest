@@ -74,7 +74,7 @@ final List<String> appNames = [
 
 CacheManager cacheProp() {
   return CacheManager(
-      Config('cacheKey', stalePeriod: const Duration(days: 10)));
+      Config('cacheKey', stalePeriod: const Duration(days: 15)));
 }
 
 enum MediaType { movie, tvShow }
@@ -91,7 +91,7 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 const providerPreference =
-    'flixhqS2-FlixHQ_S2 flixhq-FlixHQ vidsrcto-VidSrcTo zoe-Zoechip gomovies-GoMovies zoro-Zoro vidsrc-VidSrc showbox-ShowBox dramacool-Dramacool viewasian-ViewAsian';
+    'flixhqS2-FlixHQ_S2 flixhq-FlixHQ showbox-ShowBox vidsrcto-VidSrcTo zoe-Zoechip gomovies-GoMovies zoro-Zoro vidsrc-VidSrc dramacool-Dramacool viewasian-ViewAsian';
 
 late SharedPreferences sharedPrefsSingleton;
 

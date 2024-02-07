@@ -406,13 +406,13 @@ class Endpoints {
   }
 
   static String getMovieEndpointFlixQuestAPI(
-      String baseUrl, int tmdbId, String provider) {
-    return '$baseUrl' '$provider/watch-movie?tmdbId=$tmdbId';
+      String baseUrl, int tmdbId, String provider, String server) {
+    return '$baseUrl' '$provider/watch-movie?tmdbId=$tmdbId&server=$server';
   }
 
-  static String getTVEndpointFlixQuestAPI(
-      String baseUrl, int episode, int season, int tmdbId, String provider) {
+  static String getTVEndpointFlixQuestAPI(String baseUrl, int episode,
+      int season, int tmdbId, String provider, String server) {
     return '$baseUrl'
-        '$provider/watch-tv?tmdbId=$tmdbId&season=$season&episode=$episode';
+        '$provider/watch-tv?tmdbId=$tmdbId&season=$season&episode=$episode&server=$server';
   }
 }

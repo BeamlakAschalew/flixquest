@@ -85,6 +85,14 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getString('streaming_server_zoro');
       appDependencyProvider.isForcedUpdate =
           _remoteConfig.getBool('forced_update');
+      appDependencyProvider.flixhqZoeServer =
+          _remoteConfig.getString("flixhq_zoe_server");
+      appDependencyProvider.goMoviesServer =
+          _remoteConfig.getString("gomovies_server");
+      appDependencyProvider.vidSrcServer =
+          _remoteConfig.getString("vidsrc_server");
+      appDependencyProvider.vidSrcToServer =
+          _remoteConfig.getString("vidsrcto_server");
     }
     await requestNotificationPermissions();
   }
@@ -230,6 +238,10 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
       appDep.streamingServerZoro =
           remoteConfig.getString('streaming_server_zoro');
       appDep.isForcedUpdate = remoteConfig.getBool('forced_update');
+      appDep.flixhqZoeServer = remoteConfig.getString("flixhq_zoe_server");
+      appDep.goMoviesServer = remoteConfig.getString("gomovies_server");
+      appDep.vidSrcServer = remoteConfig.getString("vidsrc_server");
+      appDep.vidSrcToServer = remoteConfig.getString("vidsrcto_server");
     }
   }
 

@@ -797,7 +797,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     try {
       if (mounted) {
         await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL, widget.metadata.movieId!, 'showbox'))
+                appDep.flixquestAPIURL,
+                widget.metadata.movieId!,
+                'showbox',
+                ""))
             .then((value) {
           if (mounted) {
             if (value.messageExists == null &&
@@ -902,7 +905,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     try {
       if (mounted) {
         await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL, widget.metadata.movieId!, 'flixhq'))
+                appDep.flixquestAPIURL,
+                widget.metadata.movieId!,
+                'flixhq',
+                appDep.flixhqZoeServer))
             .then((value) {
           if (mounted) {
             if (value.messageExists == null &&
@@ -936,7 +942,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     try {
       if (mounted) {
         await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL, widget.metadata.movieId!, 'zoe'))
+                appDep.flixquestAPIURL,
+                widget.metadata.movieId!,
+                'zoe',
+                appDep.flixhqZoeServer))
             .then((value) {
           if (mounted) {
             if (value.messageExists == null &&
@@ -969,7 +978,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     try {
       if (mounted) {
         await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL, widget.metadata.movieId!, 'gomovies'))
+                appDep.flixquestAPIURL,
+                widget.metadata.movieId!,
+                'gomovies',
+                appDep.goMoviesServer))
             .then((value) {
           if (mounted) {
             if (value.messageExists == null &&
@@ -1002,7 +1014,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     try {
       if (mounted) {
         await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL, widget.metadata.movieId!, 'vidsrc'))
+                appDep.flixquestAPIURL,
+                widget.metadata.movieId!,
+                'vidsrc',
+                appDep.vidSrcServer))
             .then((value) {
           if (mounted) {
             if (value.messageExists == null &&
@@ -1035,7 +1050,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     try {
       if (mounted) {
         await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL, widget.metadata.movieId!, 'vidsrcto'))
+                appDep.flixquestAPIURL,
+                widget.metadata.movieId!,
+                'vidsrcto',
+                appDep.vidSrcToServer))
             .then((value) {
           if (mounted) {
             if (value.messageExists == null &&
