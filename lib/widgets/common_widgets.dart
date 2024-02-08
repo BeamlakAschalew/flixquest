@@ -127,19 +127,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       })));
                     },
                   ),
-                  ListTile(
-                    leading: Icon(
-                      Icons.info_outline,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(tr("about")),
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const AboutPage();
-                      }));
-                    },
-                  ),
+
                   ListTile(
                     leading: Icon(
                       FontAwesomeIcons.server,
@@ -166,6 +154,19 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                           isForced: false,
                         );
                       })));
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(
+                      Icons.info_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(tr("about")),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const AboutPage();
+                      }));
                     },
                   ),
                   ListTile(
