@@ -236,7 +236,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             builder: (context) {
               return ReportErrorWidget(
                 error: tr("tv_vid_404"),
-                hideButton: true,
+                hideButton: false,
               );
             },
             context: context);
@@ -282,7 +282,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               builder: (context) {
                 return ReportErrorWidget(
                   error: tr("tv_vid_404"),
-                  hideButton: true,
+                  hideButton: false,
                 );
               },
               context: context);

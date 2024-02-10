@@ -1918,7 +1918,7 @@ class ReportErrorWidget extends StatelessWidget {
                 Visibility(
                   visible: !hideButton,
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
+                    width: MediaQuery.of(context).size.width * 0.9,
                     child: ElevatedButton(
                         onPressed: () async {
                           await launchUrl(
@@ -1935,7 +1935,7 @@ class ReportErrorWidget extends StatelessWidget {
                             ),
                             Text(
                               tr("report_telegram"),
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             )
                           ],

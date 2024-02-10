@@ -93,7 +93,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
       await createFolder('FlixQuest', 'Backdrops', 'Posters', 'Stills');
       await FlutterDownloader.enqueue(
         url: url,
-        fileName: '${widget.name}_${widget.imageType}_$createUniqueId.jpg',
+        fileName: '${widget.name}_${widget.imageType}_${createUniqueId()}.jpg',
         savedDir: widget.imageType == 'backdrop'
             ? '/storage/emulated/0/FlixQuest/Backdrops/'
             : widget.imageType == 'poster'

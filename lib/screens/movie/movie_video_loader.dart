@@ -233,7 +233,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             builder: (context) {
               return ReportErrorWidget(
                 error: tr("movie_vid_404"),
-                hideButton: true,
+                hideButton: false,
               );
             },
             context: context);
@@ -277,7 +277,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               builder: (context) {
                 return ReportErrorWidget(
                   error: tr("movie_vid_404"),
-                  hideButton: true,
+                  hideButton: false,
                 );
               },
               context: context);
