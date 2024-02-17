@@ -67,7 +67,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
           const UpdateBottom(),
           ScrollingMovies(
             title: tr("popular"),
-            api: Endpoints.popularMoviesUrl(1, lang),
+            api: Endpoints.popularMoviesUrl(lang),
             discoverType: 'popular',
             isTrending: false,
             includeAdult: includeAdult,
@@ -77,14 +77,14 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
               : ScrollingRecentMovies(moviesList: rMovies),
           ScrollingMovies(
             title: tr("trending_this_week"),
-            api: Endpoints.trendingMoviesUrl(1, includeAdult, lang),
+            api: Endpoints.trendingMoviesUrl(includeAdult, lang),
             discoverType: 'Trending',
             isTrending: true,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
             title: tr("top_rated"),
-            api: Endpoints.topRatedUrl(1, lang),
+            api: Endpoints.topRatedUrl(lang),
             discoverType: 'top_rated',
             isTrending: false,
             includeAdult: includeAdult,
@@ -98,7 +98,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
           ),
           ScrollingMovies(
             title: tr("upcoming"),
-            api: Endpoints.upcomingMoviesUrl(1, lang),
+            api: Endpoints.upcomingMoviesUrl(lang),
             discoverType: 'upcoming',
             isTrending: false,
             includeAdult: includeAdult,

@@ -25,7 +25,7 @@ import '../models/live_tv.dart';
 
 Future<List<Movie>> fetchMovies(String api) async {
   MovieList movieList;
-
+  
   try {
     var res = await retryOptions.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOut)),
