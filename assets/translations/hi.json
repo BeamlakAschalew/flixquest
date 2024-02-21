@@ -510,5 +510,6 @@
     "episode_may_not_be_available": "जिस टीवी एपिसोड को आप स्ट्रीम करना चाह रहे हैं वह अभी तक उपलब्ध नहीं हो सकता है।",
     "player_time_display": "खिलाड़ी का समय प्रदर्शन",
     "elapsed_total": "बीता हुआ / कुल",
-    "elapsed_remaining": "बीत गया / शेष"
+    "elapsed_remaining": "बीत गया / शेष",
+    "channels_fetch_failed": "चैनल लोड करने में विफल"
 }

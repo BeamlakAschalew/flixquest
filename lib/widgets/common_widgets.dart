@@ -96,7 +96,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                           onTap: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: ((context) {
-                              return const LiveTV();
+                              return const ChannelList();
                             })));
                           },
                         )

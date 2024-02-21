@@ -510,5 +510,6 @@
     "episode_may_not_be_available": "The TV episode you are looking to stream might not be available yet.",
     "player_time_display": "Player time display",
     "elapsed_total": "Elapsed / Total",
-    "elapsed_remaining": "Elapsed / Remaining"
+    "elapsed_remaining": "Elapsed / Remaining",
+    "channels_fetch_failed": "Failed to load channels"
 }

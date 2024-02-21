@@ -2,7 +2,7 @@
 
 // ignore_for_file: constant_identifier_names
 
-abstract class LocaleKeys {
+abstract class  LocaleKeys {
   static const popularity_descending = 'popularity_descending';
   static const popularity_ascending = 'popularity_ascending';
   static const average_vote_descending = 'average_vote_descending';
@@ -515,4 +515,6 @@ abstract class LocaleKeys {
   static const player_time_display = 'player_time_display';
   static const elapsed_total = 'elapsed_total';
   static const elapsed_remaining = 'elapsed_remaining';
+  static const channels_fetch_failed = 'channels_fetch_failed';
+
 }

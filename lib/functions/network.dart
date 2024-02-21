@@ -534,19 +534,27 @@ Future<String> getVttFileAsString(String url) async {
   }
 }
 
-Future<List<Channel>> fetchChannels(String api) async {
-  ChannelsList channelsList;
+Future<Channels> fetchChannels(String api) async {
+  Channels channelsList;
   try {
     var res = await retryOptions.retry(
       () => http.get(Uri.parse(api)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
-    var decodeRes = jsonDecode(res.body);
-    channelsList = ChannelsList.fromJson(decodeRes);
+    dynamic decodeRes;
+    if (res.statusCode == 200) {
+      decodeRes = jsonDecode(res.body);
+    } else {
+      throw ChannelsNotFoundException();
+    }
+    
+    channelsList = Channels.fromJson(decodeRes);
+  } catch (e) {
+    rethrow;
   } finally {
     client.close();
   }
-  return channelsList.channels ?? [];
+  return channelsList;
 }
 
 /// Stream TMDB route

@@ -510,5 +510,6 @@
     "episode_may_not_be_available": "Es posible que el episodio de TV que deseas transmitir aún no esté disponible.",
     "player_time_display": "Visualización del tiempo del jugador",
     "elapsed_total": "Transcurrido / Total",
-    "elapsed_remaining": "Transcurrida / Restante"
+    "elapsed_remaining": "Transcurrida / Restante",
+    "channels_fetch_failed": "No se pudieron cargar los canales"
 }

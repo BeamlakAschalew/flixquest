@@ -161,7 +161,6 @@ class _FlixQuestState extends State<FlixQuest>
                       supportedLocales: context.supportedLocales,
                       locale: context.locale,
                       debugShowCheckedModeBanner: true,
-                      title: tr("cinemax"),
                       theme: Styles.themeData(
                           appThemeMode: settingsProvider.appTheme,
                           isM3Enabled: settingsProvider.isMaterial3Enabled,

@@ -510,6 +510,7 @@
 	"episode_may_not_be_available": "قد لا تكون الحلقة التلفزيونية التي تريد بثها متاحة بعد.",
 	"player_time_display": "عرض وقت اللاعب",
 	"elapsed_total": "المنقضي / الإجمالي",
-    "elapsed_remaining": "المنقضي / المتبقي"
+    "elapsed_remaining": "المنقضي / المتبقي",
+	"channels_fetch_failed": "فشل في تحميل القنوات"
 }
 
