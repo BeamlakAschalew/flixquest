@@ -183,7 +183,7 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getInt(APP_COLOR_INDEX) ?? -1;
   }
 
-  static const PROVIDER_PRECEDENCE = "providerPrecedence-v6";
+  static const PROVIDER_PRECEDENCE = "providerPrecedence-v7";
 
   setProviderPrecedence(String pre) async {
     sharedPrefsSingleton.setString(PROVIDER_PRECEDENCE, pre);
@@ -202,5 +202,15 @@ class SettingsPreferences {
 
   Future<int> getPlayerStyleIndex() async {
     return sharedPrefsSingleton.getInt(PLAYER_STYLE_INDEX) ?? 1;
+  }
+
+  static const USE_PROXY = "use_proxy";
+
+  setUseProxy(bool useProxy) {
+    sharedPrefsSingleton.setBool(USE_PROXY, useProxy);
+  }
+
+  Future<bool> getUseProxy() async {
+    return sharedPrefsSingleton.getBool(USE_PROXY) ?? false;
   }
 }

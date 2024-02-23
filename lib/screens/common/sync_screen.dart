@@ -5,7 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
 import '../../controllers/bookmark_database_controller.dart';
+import '../../functions/function.dart';
 import '../../models/tv.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../services/globle_method.dart';
 import '../../widgets/common_widgets.dart';
 import '../movie/movie_detail.dart';
@@ -770,6 +772,8 @@ class _SyncScreenState extends State<SyncScreen>
   }
 
   Widget horizontalSyncedTV(String imageQuality, String themeMode) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       itemCount: firebaseTvShows.length,
@@ -814,7 +818,7 @@ class _SyncScreenState extends State<SyncScreen>
                                                 .posterPath ==
                                             null
                                         ? ''
-                                        : TMDB_BASE_IMAGE_URL +
+                                        : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                             imageQuality +
                                             firebaseTvShows[index].posterPath!,
                                     imageBuilder: (context, imageProvider) =>
@@ -875,6 +879,8 @@ class _SyncScreenState extends State<SyncScreen>
   }
 
   Widget horizontalSyncedMovies(String imageQuality, String themeMode) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
       itemCount: firebaseMovies.length,
@@ -918,7 +924,7 @@ class _SyncScreenState extends State<SyncScreen>
                                     imageUrl:
                                         firebaseMovies[index].posterPath == null
                                             ? ''
-                                            : TMDB_BASE_IMAGE_URL +
+                                            : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                 imageQuality +
                                                 firebaseMovies[index]
                                                     .posterPath!,

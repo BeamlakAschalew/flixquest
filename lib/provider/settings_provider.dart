@@ -72,6 +72,9 @@ class SettingsProvider with ChangeNotifier {
   String _proPrecedence = providerPreference;
   String get proPreference => _proPrecedence;
 
+  bool _enableProxy = false;
+  bool get enableProxy => _enableProxy;
+
   // theme change
   Future<void> getCurrentThemeMode() async {
     appTheme = await _settingsPreferences.getThemeMode();
@@ -294,6 +297,16 @@ class SettingsProvider with ChangeNotifier {
   set proPreference(String value) {
     _proPrecedence = value;
     _settingsPreferences.setProviderPrecedence(value);
+    notifyListeners();
+  }
+
+  Future<void> getUseProxyMode() async {
+    enableProxy = await _settingsPreferences.getUseProxy();
+  }
+
+  set enableProxy(bool value) {
+    _enableProxy = value;
+    _settingsPreferences.setUseProxy(value);
     notifyListeners();
   }
 }

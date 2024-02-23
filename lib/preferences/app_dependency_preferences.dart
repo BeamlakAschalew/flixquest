@@ -13,6 +13,7 @@ class AppDependencies {
   static const SHOWBOX_URL = "showbox_url";
   static const STREAM_ROUTE = "streamRoute";
   static const FLIXQUEST_API_URL = "flixquestAPIURL";
+  static const TMDB_PROXY = "tmdb_proxy";
 
   setConsumetUrl(String value) async {
     sharedPrefsSingleton.setString(CONSUMET_URL_KEY, value);
@@ -94,5 +95,13 @@ class AppDependencies {
   Future<String> getStreamServerZoro() async {
     return sharedPrefsSingleton.getString(STREAM_SERVER_ZORO) ??
         STREAMING_SERVER_ZORO;
+  }
+
+  setTmdbProxy(String value) async {
+    sharedPrefsSingleton.setString(TMDB_PROXY, value);
+  }
+
+  Future<String> getTmdbProxy() async {
+    return sharedPrefsSingleton.getString(TMDB_PROXY) ?? "";
   }
 }

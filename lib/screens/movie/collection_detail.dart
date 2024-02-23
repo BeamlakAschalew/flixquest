@@ -3,6 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import '../../constants/app_constants.dart';
 import 'package:flutter/material.dart';
+import '../../functions/function.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';
 import '/api/endpoints.dart';
@@ -33,6 +35,8 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return Scaffold(
         body: CustomScrollView(
       controller: scrollController,
@@ -121,7 +125,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                                     fit: BoxFit.cover,
                                                   ),
                                                   imageUrl:
-                                                      '${TMDB_BASE_IMAGE_URL}original/${widget.belongsToCollection!.backdropPath!}',
+                                                      '${buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context)}original/${widget.belongsToCollection!.backdropPath!}',
                                                   errorWidget:
                                                       (context, url, error) =>
                                                           Image.asset(
@@ -179,7 +183,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                                   'assets/images/na_logo.png',
                                                   fit: BoxFit.cover,
                                                 ),
-                                                imageUrl: TMDB_BASE_IMAGE_URL +
+                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                     imageQuality +
                                                     widget.belongsToCollection!
                                                         .posterPath!,

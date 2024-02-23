@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
 import '../../controllers/bookmark_database_controller.dart';
+import '../../functions/function.dart';
 import '../../models/movie.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';
 import 'movie_detail.dart';
@@ -32,6 +34,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return widget.movieList == null && viewType == 'grid'
         ? Container(child: moviesAndTVShowGridShimmer(themeMode))
         : widget.movieList == null && viewType == 'list'
@@ -126,7 +130,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                             const Duration(milliseconds: 700),
                                                                         fadeInCurve:
                                                                             Curves.easeIn,
-                                                                        imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                        imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                                             imageQuality +
                                                                             widget.movieList![index].posterPath!,
                                                                         imageBuilder:
@@ -305,7 +309,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                                 fadeOutCurve: Curves.easeOut,
                                                                                 fadeInDuration: const Duration(milliseconds: 700),
                                                                                 fadeInCurve: Curves.easeIn,
-                                                                                imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + widget.movieList![index].posterPath!,
+                                                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) + imageQuality + widget.movieList![index].posterPath!,
                                                                                 imageBuilder: (context, imageProvider) => Container(
                                                                                   decoration: BoxDecoration(
                                                                                     image: DecorationImage(

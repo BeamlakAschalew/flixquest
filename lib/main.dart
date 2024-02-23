@@ -59,6 +59,7 @@ Future<void> appInitialize() async {
   await settingsProvider.getAppColorIndex();
   await settingsProvider.getProviderPrecedence();
   await settingsProvider.getPlayerTimeStyle();
+  await settingsProvider.getUseProxyMode();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
   await appDependencyProvider.getConsumetUrl();
@@ -69,6 +70,7 @@ Future<void> appInitialize() async {
   await appDependencyProvider.getStreamingServerZoro();
   await appDependencyProvider.getStreamRoute();
   await appDependencyProvider.getFQUrl();
+  await appDependencyProvider.getTmdbProxy();
 
   await _initialization;
 }

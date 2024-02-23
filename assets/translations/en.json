@@ -511,5 +511,10 @@
     "player_time_display": "Player time display",
     "elapsed_total": "Elapsed / Total",
     "elapsed_remaining": "Elapsed / Remaining",
-    "channels_fetch_failed": "Failed to load channels"
+    "channels_fetch_failed": "Failed to load channels",
+    "use_proxy": "Use proxy for TMDB fetch",
+    "enable_warning": "Only useful if the app doesn't load content initially",
+    "use_proxy_title": "Use proxy?",
+    "use_proxy_detail": "Enabling this option will result in more server load to the app, please only use this if the app doesn't load movies and TV show information initially",
+    "enable": "Enable"
 }

@@ -261,7 +261,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                                         700),
                                                             fadeInCurve:
                                                                 Curves.easeIn,
-                                                            imageUrl: TMDB_BASE_IMAGE_URL +
+                                                            imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                                 imageQuality +
                                                                 tvDetails!
                                                                     .episodes![
@@ -400,3 +400,52 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
   @override
   bool get wantKeepAlive => true;
 }
+
+
+
+
+
+
+
+ Container(
+    //   decoration: BoxDecoration(
+    //     color: Theme.of(context).cardColor,
+    //     borderRadius: BorderRadius.circular(10.0),
+    //     boxShadow: [
+    //       BoxShadow(
+    //         color: Colors.yellow
+    //             .withOpacity(0.9), // Adjust the opacity for the blur effect
+    //         blurRadius: 5.0,
+    //         spreadRadius: 1.0,
+    //         offset: const Offset(0, 0),
+    //       ),
+    //     ],
+    //   ),
+    //   child: Padding(
+    //     padding: const EdgeInsets.symmetric(horizontal: 8.0),
+    //     child: Row(
+    //       children: [
+    //         const SizedBox(width: 8.0),
+    //         Expanded(
+    //           child: TextField(
+    //             onChanged: (v) {
+    //               if (v.isNotEmpty) {
+    //                 channels!.channels = unfilteredChannels!.channels!.where((element) => (element.channelName!.toLowerCase() == v.toLowerCase())).toList();
+    //               } else if (v.isEmpty) {
+    //                 channels = unfilteredChannels;
+    //               }
+    //               setState(() {
+                    
+    //               });
+    //             },
+    //             style: const TextStyle(color: Colors.black),
+    //             decoration: const InputDecoration(
+    //                 hintText: 'Search',
+    //                 border: InputBorder.none,),
+    //           ),
+    //         ),
+    //         const Icon(Icons.search),
+    //       ],
+    //     ),
+    //   ),
+    // ),

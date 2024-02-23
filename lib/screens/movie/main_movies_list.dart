@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../functions/network.dart';
 import '../../models/movie.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/movie_ui_components.dart';
 import '../../widgets/common_widgets.dart';
@@ -32,6 +33,8 @@ class MainMoviesListState extends State<MainMoviesList> {
   bool isLoading = false;
 
   void getMoreData() async {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -40,7 +43,7 @@ class MainMoviesListState extends State<MainMoviesList> {
         });
         if (mounted) {
           fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum', isProxyEnabled, proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -58,7 +61,9 @@ class MainMoviesListState extends State<MainMoviesList> {
   @override
   void initState() {
     super.initState();
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {

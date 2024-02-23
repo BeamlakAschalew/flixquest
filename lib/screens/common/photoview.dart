@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import '../../constants/api_constants.dart';
 import '../../functions/function.dart';
 import '../../models/images.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 
 class HeroPhotoView extends StatefulWidget {
@@ -133,6 +134,8 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return Scaffold(
       appBar: AppBar(
           title: Text(widget.imageType == 'backdrop'
@@ -145,14 +148,14 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
               onPressed: () async {
                 _download(
                     widget.imageType == 'backdrop'
-                        ? TMDB_BASE_IMAGE_URL +
+                        ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                             imageQuality +
                             widget.backdrops![currentIndex].filePath!
                         : widget.imageType == 'poster'
-                            ? TMDB_BASE_IMAGE_URL +
+                            ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                 imageQuality +
                                 widget.posters![currentIndex].posterPath!
-                            : TMDB_BASE_IMAGE_URL +
+                            : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                 imageQuality +
                                 widget.stills![currentIndex].stillPath!,
                     '${currentIndex + 1}',
@@ -173,14 +176,14 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
             return PhotoViewGalleryPageOptions(
               imageProvider: CachedNetworkImageProvider(
                 widget.imageType == 'backdrop'
-                    ? TMDB_BASE_IMAGE_URL +
+                    ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                         imageQuality +
                         widget.backdrops![currentIndex].filePath!
                     : widget.imageType == 'poster'
-                        ? TMDB_BASE_IMAGE_URL +
+                        ?  buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                             imageQuality +
                             widget.posters![currentIndex].posterPath!
-                        : TMDB_BASE_IMAGE_URL +
+                        : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                             imageQuality +
                             widget.stills![currentIndex].stillPath!,
               ),

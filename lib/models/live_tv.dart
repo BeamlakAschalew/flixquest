@@ -1,8 +1,8 @@
 class Channels {
-  String? baseUrl;
-  String? trailingUrl;
-  String? referrer;
-  String? userAgent;
+  static String? baseUrl;
+  static String? trailingUrl;
+  static String? referrer;
+  static String? userAgent;
   List<Channel>? channels;
   Channels.fromJson(Map<String, dynamic> json) {
     baseUrl = json['base_url'];
@@ -16,6 +16,10 @@ class Channels {
       });
     }
   }
+
+  Channels({this.channels});
+
+  Channels.fromObject(Channels channel);
 }
 
 class Channel {

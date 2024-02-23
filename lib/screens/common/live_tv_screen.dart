@@ -19,7 +19,8 @@ class ChannelList extends StatefulWidget {
 }
 
 class _ChannelListState extends State<ChannelList> {
-  Channels? channels;
+  Channels? channels; 
+  Channels? original;
   bool enableRetry = false;
 
   @override
@@ -33,13 +34,14 @@ class _ChannelListState extends State<ChannelList> {
   setState(() {
     enableRetry = false;
   });
-  await fetchChannels(
-          Endpoints.getIPTVEndpoint(Provider.of<AppDependencyProvider>(context, listen: false).flixquestAPIURL))
-      .then((value) {
+  Channels value = await fetchChannels(Endpoints.getIPTVEndpoint(Provider.of<AppDependencyProvider>(context, listen: false).flixquestAPIURL));
+  List<Channel> channelsCopy = List.from(value.channels!);
+  Channels originalCopy = Channels(channels: channelsCopy);
     setState(() {
       channels = value;
+      original = originalCopy;
     });
-  });
+  
 } on Exception catch (e) {
   setState(() {
     enableRetry = true;
@@ -62,27 +64,69 @@ class _ChannelListState extends State<ChannelList> {
           children: [
             const Icon(Icons.link_off_rounded, size: 35,), const SizedBox(width: 25,), Text(tr("channels_fetch_failed"), style: const TextStyle(fontSize: 20),),
           ],
-        ),const SizedBox(height: 15,), ElevatedButton(onPressed: () {loadChannels();}, child: Text(tr("retry")))], ) : channels == null
+        ),
+        const SizedBox(height: 15,), ElevatedButton(onPressed: () {loadChannels();}, child: Text(tr("retry")))], ) : channels == null
             ? const Center(child: CircularProgressIndicator())
-            : channels!.channels!.isEmpty
-                ? Center(
+            : Column(
+                  children: [
+                    Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(10.0),
+       
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          children: [
+            const SizedBox(width: 8.0),
+            Expanded(
+              child: TextField(
+                onChanged: (v) {
+                  setState(() {
+                    channels!.channels = original!.channels;
+                  });
+                  if (v.isNotEmpty) {
+                    setState(() {
+                      channels!.channels = channels!.channels!.where((element) => (element.channelName!.toLowerCase().contains(v.toLowerCase()))).toList();
+                    });
+                  }
+                },
+                decoration: const InputDecoration(
+                    hintText: 'Search',
+                    border: InputBorder.none,),
+              ),
+            ),
+            const Icon(Icons.search),
+          ],
+        ),
+      ),
+    ),
+    channels!.channels!.isEmpty
+                ? Expanded(
+                  child: Center(
                     child: Text(
                       tr("no_channels"),
                       style: kTextHeaderStyle,
                       maxLines: 2,
                       textAlign: TextAlign.center,
                     ),
-                  )
-                : ListView.builder(
-                  itemCount: channels!.channels!.length,
-
-                  itemBuilder: (context, index) {
-                    return ChannelWidget(
-                      channel: channels!,
-                      index: index,
-                    );
-                  },
-                ),
+                  ),
+                )
+                :     Expanded(
+                      child: ListView.builder(
+                        itemCount: channels!.channels!.length,
+                    shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return ChannelWidget(
+                            channel: channels!,
+                            index: index,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                )
       ),
     );
   }
@@ -129,10 +173,10 @@ class _ChannelWidgetState extends State<ChannelWidget> {
             Navigator.push(context, MaterialPageRoute(builder: ((context) {
               return LivePlayer(
                 channelName: widget.channel.channels![widget.index].channelName!,
-                videoUrl: widget.channel.baseUrl! + widget.channel.channels![widget.index].channelId!.toString() + widget.channel.trailingUrl!,
-                referrer: widget.channel.referrer!,
+                videoUrl: Channels.baseUrl! + widget.channel.channels![widget.index].channelId!.toString() + Channels.trailingUrl!,
+                referrer: Channels.referrer!,
                 autoFullScreen: autoFS,
-                userAgent: widget.channel.userAgent!,
+                userAgent: Channels.userAgent!,
                 colors: [
                   Theme.of(context).primaryColor,
                   Theme.of(context).colorScheme.background

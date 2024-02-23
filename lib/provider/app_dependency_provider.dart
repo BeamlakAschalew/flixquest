@@ -59,6 +59,9 @@ class AppDependencyProvider extends ChangeNotifier {
   String _vidSrcServer = "vidsrcembed";
   String get vidSrcServer => _vidSrcServer;
 
+  String _tmdbProxy = "";
+  String get tmdbProxy => _tmdbProxy;
+
   Future<void> getConsumetUrl() async {
     consumetUrl = await __appDependencies.getConsumetUrl();
   }
@@ -186,6 +189,16 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set vidSrcToServer(String value) {
     _vidSrcToServer = value;
+    notifyListeners();
+  }
+
+  Future<void> getTmdbProxy() async {
+    tmdbProxy = await __appDependencies.getTmdbProxy();
+  }
+
+  set tmdbProxy(String value) {
+    _tmdbProxy = value;
+    __appDependencies.setTmdbProxy(value);
     notifyListeners();
   }
 }

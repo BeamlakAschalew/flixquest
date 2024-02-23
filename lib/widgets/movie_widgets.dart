@@ -161,8 +161,10 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     List<MovieGenreFilterChipWidget> genres = movieGenreFilterdata;
     years.shuffle();
     genres.shuffle();
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchMovies(
-            '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&include_adult=${widget.includeAdult}&primary_release_year=${years.first}&with_genres=${genres.first.genreValue}')
+            '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&include_adult=${widget.includeAdult}&primary_release_year=${years.first}&with_genres=${genres.first.genreValue}', isProxyEnabled, proxyUrl)
         .then((value) async {
       if (mounted) {
         setState(() {
@@ -178,6 +180,8 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     deviceHeight = MediaQuery.of(context).size.height;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return Column(
       children: <Widget>[
         Row(
@@ -250,7 +254,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                   imageUrl:
                                       moviesList![index].posterPath == null
                                           ? ''
-                                          : TMDB_BASE_IMAGE_URL +
+                                          : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                               imageQuality +
                                               moviesList![index].posterPath!,
                                   imageBuilder: (context, imageProvider) =>
@@ -314,6 +318,8 @@ class ScrollingMoviesState extends State<ScrollingMovies>
   bool isLoading = false;
 
   void getMoreData() async {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -322,7 +328,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
         });
         if (mounted) {
           fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum', isProxyEnabled, proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -340,7 +346,9 @@ class ScrollingMoviesState extends State<ScrollingMovies>
   @override
   void initState() {
     super.initState();
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -362,6 +370,8 @@ class ScrollingMoviesState extends State<ScrollingMovies>
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return Column(
       children: <Widget>[
         Row(
@@ -483,7 +493,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                                     .posterPath ==
                                                                 null
                                                             ? ''
-                                                            : TMDB_BASE_IMAGE_URL +
+                                                            : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                                 imageQuality +
                                                                 moviesList![
                                                                         index]
@@ -614,6 +624,8 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return Column(
       children: <Widget>[
         Row(
@@ -756,7 +768,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                             .posterPath ==
                                                         null
                                                     ? ''
-                                                    : TMDB_BASE_IMAGE_URL +
+                                                    : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                         imageQuality +
                                                         widget.moviesList[index]
                                                             .posterPath!,
@@ -1011,6 +1023,8 @@ class MovieDetailQuickInfo extends StatelessWidget {
     final watchCountry = Provider.of<SettingsProvider>(context).defaultCountry;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final appLang = Provider.of<SettingsProvider>(context).appLanguage;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return SizedBox(
       height: 310,
       width: double.infinity,
@@ -1065,7 +1079,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                                         fit: BoxFit.cover,
                                       ),
                                       imageUrl:
-                                          '${TMDB_BASE_IMAGE_URL}original/${movie.backdropPath!}',
+                                          '${buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context)}original/${movie.backdropPath!}',
                                       errorWidget: (context, url, error) =>
                                           Image.asset(
                                         'assets/images/na_logo.png',
@@ -1154,7 +1168,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                                           'assets/images/na_logo.png',
                                           fit: BoxFit.cover,
                                         ),
-                                        imageUrl: TMDB_BASE_IMAGE_URL +
+                                        imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                             imageQuality +
                                             movie.posterPath!,
                                       ),
@@ -1660,7 +1674,9 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
   @override
   void initState() {
     super.initState();
-    fetchCredits(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           credits = value;
@@ -1673,6 +1689,8 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return Column(
       children: <Widget>[
         credits == null
@@ -1815,7 +1833,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                                               fadeInDuration: const Duration(
                                                   milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
-                                              imageUrl: TMDB_BASE_IMAGE_URL +
+                                              imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                   imageQuality +
                                                   credits!.cast![index]
                                                       .profilePath!,
@@ -1885,7 +1903,9 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
   @override
   void initState() {
     super.initState();
-    fetchSocialLinks(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchSocialLinks(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           externalLinks = value;
@@ -2011,7 +2031,9 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
   @override
   void initState() {
     super.initState();
-    fetchBelongsToCollection(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchBelongsToCollection(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           belongsToCollection = value;
@@ -2023,6 +2045,8 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
   @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return belongsToCollection == null
         ? ShimmerBase(
             themeMode: themeMode,
@@ -2062,7 +2086,7 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                       placeholder: const AssetImage(
                                           'assets/images/loading_5.gif'),
                                       image: NetworkImage(
-                                          '${TMDB_BASE_IMAGE_URL}w500/${belongsToCollection!.backdropPath!}')),
+                                          '${buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context)}w500/${belongsToCollection!.backdropPath!}')),
                             ),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -2152,7 +2176,9 @@ class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
   @override
   void initState() {
     super.initState();
-    fetchCollectionDetails(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchCollectionDetails(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           collectionDetails = value;
@@ -2203,7 +2229,9 @@ class PartsListState extends State<PartsList> {
   @override
   void initState() {
     super.initState();
-    fetchCollectionMovies(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchCollectionMovies(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           collectionMovieList = value;
@@ -2216,6 +2244,8 @@ class PartsListState extends State<PartsList> {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return Column(
       children: <Widget>[
         Row(
@@ -2355,7 +2385,7 @@ class PartsListState extends State<PartsList> {
                                                         fadeInCurve:
                                                             Curves.easeIn,
                                                         imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
+                                                            buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                                 imageQuality +
                                                                 collectionMovieList![
                                                                         index]
@@ -2505,7 +2535,9 @@ class MovieImagesState extends State<MovieImagesDisplay> {
   @override
   void initState() {
     super.initState();
-    fetchImages(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchImages(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           movieImages = value;
@@ -2518,6 +2550,8 @@ class MovieImagesState extends State<MovieImagesDisplay> {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return SizedBox(
       height: 260,
       width: double.infinity,
@@ -2599,7 +2633,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                         fadeInCurve:
                                                             Curves.easeIn,
                                                         imageUrl:
-                                                            TMDB_BASE_IMAGE_URL +
+                                                            buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                                 imageQuality +
                                                                 movieImages!
                                                                     .poster![0]
@@ -2625,7 +2659,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                             })));
                                                           },
                                                           child: Hero(
-                                                            tag: TMDB_BASE_IMAGE_URL +
+                                                            tag: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                                 imageQuality +
                                                                 movieImages!
                                                                     .poster![0]
@@ -2727,7 +2761,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                       fadeInCurve:
                                                           Curves.easeIn,
                                                       imageUrl:
-                                                          TMDB_BASE_IMAGE_URL +
+                                                          buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                               imageQuality +
                                                               movieImages!
                                                                   .backdrop![0]
@@ -2752,7 +2786,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                           })));
                                                         },
                                                         child: Hero(
-                                                          tag: TMDB_BASE_IMAGE_URL +
+                                                          tag: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                               imageQuality +
                                                               movieImages!
                                                                   .backdrop![0]
@@ -2840,7 +2874,9 @@ class MovieVideosState extends State<MovieVideosDisplay> {
   @override
   void initState() {
     super.initState();
-    fetchVideos(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchVideos(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           movieVideos = value;
@@ -3169,7 +3205,9 @@ class GenreDisplayState extends State<GenreDisplay>
   @override
   void initState() {
     super.initState();
-    fetchGenre(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchGenre(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           genreList = value;
@@ -3286,7 +3324,9 @@ class MovieInfoTableState extends State<MovieInfoTable> {
   @override
   void initState() {
     super.initState();
-    fetchMovieDetails(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchMovieDetails(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           movieDetails = value;
@@ -3508,6 +3548,8 @@ class CastTabState extends State<CastTab>
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return widget.credits.cast!.isEmpty
         ? Container(
             child: Center(
@@ -3571,7 +3613,7 @@ class CastTabState extends State<CastTab>
                                                 fadeInDuration: const Duration(
                                                     milliseconds: 700),
                                                 fadeInCurve: Curves.easeIn,
-                                                imageUrl: TMDB_BASE_IMAGE_URL +
+                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                     imageQuality +
                                                     widget.credits.cast![index]
                                                         .profilePath!,
@@ -3694,6 +3736,8 @@ class CrewTabState extends State<CrewTab>
     super.build(context);
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return widget.credits.crew!.isEmpty
         ? Center(
             child: Text(
@@ -3757,7 +3801,7 @@ class CrewTabState extends State<CrewTab>
                                                 fadeInDuration: const Duration(
                                                     milliseconds: 700),
                                                 fadeInCurve: Curves.easeIn,
-                                                imageUrl: TMDB_BASE_IMAGE_URL +
+                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                     imageQuality +
                                                     widget.credits.crew![index]
                                                         .profilePath!,
@@ -3855,7 +3899,9 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   @override
   void initState() {
     super.initState();
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -3867,6 +3913,8 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
   }
 
   void getMoreData() async {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -3875,7 +3923,7 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
         });
         if (mounted) {
           fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum', isProxyEnabled, proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -3993,7 +4041,9 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
   @override
   void initState() {
     super.initState();
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -4005,6 +4055,8 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
   }
 
   void getMoreData() async {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -4013,7 +4065,7 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
         });
         if (mounted) {
           fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum', isProxyEnabled, proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -4123,6 +4175,8 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   bool isLoading = false;
 
   void getMoreData() async {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -4131,7 +4185,7 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
         });
         if (mounted) {
           fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum', isProxyEnabled, proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -4149,7 +4203,9 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
   @override
   void initState() {
     super.initState();
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -4239,6 +4295,8 @@ class ParticularStreamingServiceMoviesState
   bool isLoading = false;
 
   void getMoreData() async {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -4247,7 +4305,7 @@ class ParticularStreamingServiceMoviesState
         });
         if (mounted) {
           fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum')
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum', isProxyEnabled, proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -4265,7 +4323,9 @@ class ParticularStreamingServiceMoviesState
   @override
   void initState() {
     super.initState();
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}')
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -4403,7 +4463,9 @@ class GenreListGridState extends State<GenreListGrid>
   @override
   void initState() {
     super.initState();
-    fetchGenre(widget.api).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchGenre(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           genreList = value;
@@ -4558,8 +4620,9 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
   @override
   void initState() {
     super.initState();
-
-    fetchWatchProviders(widget.api, widget.country).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchWatchProviders(widget.api, widget.country, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           watchProviders = value;
@@ -4719,7 +4782,9 @@ class CollectionMoviesState extends State<CollectionMovies> {
   @override
   void initState() {
     super.initState();
-    fetchCollectionMovies(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchCollectionMovies(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           moviesList = value;
@@ -4732,6 +4797,8 @@ class CollectionMoviesState extends State<CollectionMovies> {
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return moviesList == null
         ? const Center(
             child: CircularProgressIndicator(),
@@ -4792,7 +4859,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                                           milliseconds: 700),
                                                   fadeInCurve: Curves.easeIn,
                                                   imageUrl:
-                                                      TMDB_BASE_IMAGE_URL +
+                                                      buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                           imageQuality +
                                                           moviesList![index]
                                                               .posterPath!,

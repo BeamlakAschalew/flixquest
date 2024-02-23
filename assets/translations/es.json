@@ -511,5 +511,10 @@
     "player_time_display": "Visualización del tiempo del jugador",
     "elapsed_total": "Transcurrido / Total",
     "elapsed_remaining": "Transcurrida / Restante",
-    "channels_fetch_failed": "No se pudieron cargar los canales"
+    "channels_fetch_failed": "No se pudieron cargar los canales",
+    "use_proxy": "Usar proxy para la búsqueda de TMDB",
+    "enable_warning": "Solo útil si la aplicación no carga contenido inicialmente",
+    "use_proxy_title": "¿Usar proxy?",
+    "use_proxy_detail": "Habilitar esta opción aumentará la carga del servidor para la aplicación. Por favor, úsala solo si la aplicación no carga la información de películas y programas de televisión inicialmente",
+    "enable": "Habilitar"
 }

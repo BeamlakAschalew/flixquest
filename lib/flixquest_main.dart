@@ -93,6 +93,7 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getString("vidsrc_server");
       appDependencyProvider.vidSrcToServer =
           _remoteConfig.getString("vidsrcto_server");
+      appDependencyProvider.tmdbProxy = _remoteConfig.getString("tmdb_proxy");
     }
     await requestNotificationPermissions();
   }
@@ -241,6 +242,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
       appDep.goMoviesServer = remoteConfig.getString("gomovies_server");
       appDep.vidSrcServer = remoteConfig.getString("vidsrc_server");
       appDep.vidSrcToServer = remoteConfig.getString("vidsrcto_server");
+      appDep.tmdbProxy = remoteConfig.getString("tmdb_proxy");
     }
   }
 

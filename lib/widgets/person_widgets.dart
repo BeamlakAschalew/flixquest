@@ -3,7 +3,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../api/endpoints.dart';
+import '../functions/function.dart';
 import '../models/credits.dart';
+import '../provider/app_dependency_provider.dart';
 import '../screens/person/cast_detail.dart';
 import '../screens/person/createdby_detail.dart';
 import '../screens/person/crew_detail.dart';
@@ -51,7 +53,9 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
   @override
   void initState() {
     super.initState();
-    fetchPersonImages(widget.api).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchPersonImages(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           personImages = value;
@@ -65,6 +69,8 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
@@ -127,7 +133,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                               fadeInDuration: const Duration(
                                                   milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
-                                              imageUrl: TMDB_BASE_IMAGE_URL +
+                                              imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                   imageQuality +
                                                   personImages!.profile![index]
                                                       .filePath!,
@@ -143,7 +149,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                                           imageProvider,
                                                       currentIndex: index,
                                                       heroId:
-                                                          TMDB_BASE_IMAGE_URL +
+                                                          buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                               imageQuality +
                                                               personImages!
                                                                   .profile![
@@ -217,7 +223,9 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
   @override
   void initState() {
     super.initState();
-    fetchPersonMovies(widget.api).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchPersonMovies(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           personMoviesList = value;
@@ -242,6 +250,8 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return uniqueMov == null
         ? personMoviesAndTVShowShimmer(themeMode)
         : widget.isPersonAdult == true && widget.includeAdult == false
@@ -354,7 +364,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                   fadeInCurve:
                                                                       Curves
                                                                           .easeIn,
-                                                                  imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                  imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                                       imageQuality +
                                                                       uniqueMov![
                                                                               index]
@@ -486,7 +496,9 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
   @override
   void initState() {
     super.initState();
-    fetchPersonTV(widget.api).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchPersonTV(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           personTVList = value;
@@ -511,6 +523,8 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return uniqueTV == null
         ? personMoviesAndTVShowShimmer(themeMode)
         : widget.isPersonAdult == true && widget.includeAdult == false
@@ -622,7 +636,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                   fadeInCurve:
                                                                       Curves
                                                                           .easeIn,
-                                                                  imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                  imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                                       imageQuality +
                                                                       uniqueTV![
                                                                               index]
@@ -750,7 +764,9 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
   @override
   void initState() {
     super.initState();
-    fetchPersonDetails(widget.api).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchPersonDetails(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           personDetails = value;
@@ -837,7 +853,9 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
   @override
   void initState() {
     super.initState();
-    fetchSocialLinks(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchSocialLinks(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           externalLinks = value;
@@ -959,7 +977,9 @@ class _PersonDataTableState extends State<PersonDataTable> {
   PersonDetails? personDetails;
   @override
   void initState() {
-    fetchPersonDetails(widget.api).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchPersonDetails(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           personDetails = value;
@@ -1202,6 +1222,8 @@ class CastDetailQuickInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1244,7 +1266,7 @@ class CastDetailQuickInfo extends StatelessWidget {
                                         'assets/images/na_rect.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                           imageQuality +
                                           widget.cast!.profilePath!,
                                     ),
@@ -1299,6 +1321,8 @@ class CreatedByQuickInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1341,7 +1365,7 @@ class CreatedByQuickInfo extends StatelessWidget {
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                           imageQuality +
                                           widget.createdBy!.profilePath!,
                                     ),
@@ -1541,6 +1565,8 @@ class CrewDetailQuickInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1583,7 +1609,7 @@ class CrewDetailQuickInfo extends StatelessWidget {
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                           imageQuality +
                                           widget.crew!.profilePath!,
                                     ),
@@ -1793,6 +1819,8 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -1835,7 +1863,7 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                           imageQuality +
                                           widget.cast!.profilePath!,
                                     ),
@@ -2043,6 +2071,8 @@ class SearchedPersonQuickInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return SizedBox(
       height: 200,
       width: double.infinity,
@@ -2085,7 +2115,7 @@ class SearchedPersonQuickInfo extends StatelessWidget {
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: TMDB_BASE_IMAGE_URL +
+                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                           imageQuality +
                                           widget.person!.profilePath!,
                                     ),
