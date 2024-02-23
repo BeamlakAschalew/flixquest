@@ -129,6 +129,7 @@ class GlobalMethods {
                           ? tr("media_not_found", namedArgs: {"s": server})
                           : error is ServerDownException
                               ? tr("server_is_down", namedArgs: {"s": server})
+                              : error is ChannelsNotFoundException ? tr("channels_fetch_failed")
                               : tr("general_error",
                                   namedArgs: {"e": error.toString()}),
           style: const TextStyle(fontFamily: 'Poppins'),

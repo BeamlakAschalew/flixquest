@@ -42,7 +42,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '2.6.1';
+const String currentAppVersion = '2.6.2';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(
@@ -91,7 +91,7 @@ class MyHttpOverrides extends HttpOverrides {
 }
 
 const providerPreference =
-    'gomovies-GoMovies flixhqS2-FlixHQ_S2 flixhq-FlixHQ showbox-ShowBox vidsrcto-VidSrcTo zoe-Zoechip zoro-Zoro vidsrc-VidSrc dramacool-Dramacool viewasian-ViewAsian';
+    'flixhq-FlixHQ showbox-ShowBox vidsrcto-VidSrcTo vidsrc-VidSrc gomovies-GoMovies flixhqS2-FlixHQ_S2 zoe-Zoechip zoro-Zoro dramacool-Dramacool viewasian-ViewAsian';
 
 late SharedPreferences sharedPrefsSingleton;
 

@@ -120,6 +120,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489547233921:android:a0f4d1ec925f4a9c36eb80",
+        "android_client_info": {
+          "package_name": "dev.beamlak.flixquest_v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8ruDaKGPWmJrZK3Gv8PCJKW9B2JFK4s4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

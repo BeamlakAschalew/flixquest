@@ -171,3 +171,12 @@ bool isReleased(String target) {
 int createUniqueId() {
   return DateTime.now().millisecondsSinceEpoch.remainder(100000);
 }
+
+String buildImageUrl(String baseImage, String proxyUrl, bool isProxyEnabled, BuildContext context) {
+  String concatenated = baseImage;
+  if (isProxyEnabled && proxyUrl.isNotEmpty) {
+    concatenated = "$proxyUrl?destination=$baseImage";
+  }
+
+  return concatenated;
+}

@@ -413,4 +413,8 @@ class Endpoints {
     return '$baseUrl'
         '$provider/watch-tv?tmdbId=$tmdbId&season=$season&episode=$episode&server=$server';
   }
+
+  static String getIPTVEndpoint(String baseUrl) {
+    return '$baseUrl' 'daddylive/live';
+  } 
 }

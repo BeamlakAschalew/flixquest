@@ -24,6 +24,7 @@ class PlayerOne extends StatefulWidget {
       this.movieMetadata,
       this.tvMetadata,
       required this.mediaType,
+      required this.subtitleStyle,
       Key? key})
       : super(key: key);
   final Map<String, String> sources;
@@ -33,6 +34,7 @@ class PlayerOne extends StatefulWidget {
   final MovieStreamMetadata? movieMetadata;
   final TVStreamMetadata? tvMetadata;
   final MediaType? mediaType;
+  final String? subtitleStyle;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -122,7 +124,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         controlBarHeight: 50,
         watchingText: tr("watching_text"),
         playerTimeMode: settings.playerTimeDisplay);
-
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
             autoDetectFullscreenDeviceOrientation: true,
@@ -136,7 +137,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             autoDetectFullscreenAspectRatio: true,
             subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
                 backgroundColor: backgroundColor,
-                fontFamily: 'Poppins',
+                fontFamily: widget.subtitleStyle == 'regular' ? 'Poppins' : widget.subtitleStyle == 'bold' ? 'PoppinsSB' : 'PoppinsLight',
                 fontColor: foregroundColor,
                 outlineEnabled: false,
                 fontSize: widget.settings.subtitleFontSize.toDouble()));

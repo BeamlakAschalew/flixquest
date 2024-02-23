@@ -391,6 +391,59 @@ class _SettingsState extends State<Settings> {
               },
             ),
           ),
+          SwitchListTile(
+              inactiveThumbColor: Colors.white,
+              inactiveTrackColor: const Color(0xFF9B9B9B),
+              subtitle: Text(
+                tr("enable_warning"),
+              ),
+              value: settingsValues.enableProxy,
+              secondary: Icon(
+                FontAwesomeIcons.networkWired,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: Text(
+                tr("use_proxy"),
+              ),
+              onChanged: (bool value) {
+                if (value) {
+                   showDialog(
+                                      context: context,
+                                      builder: (BuildContext ctx) {
+                                        return AlertDialog(
+                                          title: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(tr("use_proxy_title")),
+                                          ),
+                                          content: Text(tr("use_proxy_detail")),
+                                          actions: [
+                                            ElevatedButton(
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text(tr("cancel"))),
+                                            TextButton(
+                                                onPressed: () async {
+                                                  setState(() {
+                                                    settingsValues.enableProxy = value;
+                                                  });
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text(
+                                                  tr("enable"),
+                                                 
+                                                ))
+                                          ],
+                                        );
+                                      });
+                } else {
+                  setState(() {
+                    settingsValues.enableProxy = value;
+                  });
+                }
+                
+              },
+            ),
           ListTile(
             leading: Icon(
               Icons.image_rounded,

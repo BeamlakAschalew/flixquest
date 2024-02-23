@@ -4,16 +4,20 @@ import 'package:flutter/services.dart';
 
 class LivePlayer extends StatefulWidget {
   const LivePlayer(
-      {required this.sources,
+      {required this.videoUrl,
       required this.colors,
       required this.autoFullScreen,
       required this.channelName,
+      required this.referrer,
+      required this.userAgent,
       Key? key})
       : super(key: key);
-  final Map<String, String> sources;
+  final String videoUrl;
   final List<Color> colors;
   final bool autoFullScreen;
   final String channelName;
+  final String referrer;
+  final String userAgent;
 
   @override
   State<LivePlayer> createState() => _LivePlayerState();
@@ -82,10 +86,12 @@ class _LivePlayerState extends State<LivePlayer> {
                 fontSize: 17));
 
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network, widget.sources.entries.first.value,
-        resolutions: widget.sources,
+        BetterPlayerDataSourceType.network, widget.videoUrl,
         liveStream: true,
-        bufferingConfiguration: betterPlayerBufferingConfiguration);
+        bufferingConfiguration: betterPlayerBufferingConfiguration, headers: {
+        'User-Agent': widget.userAgent,
+        'Referer': widget.referrer,
+});
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(dataSource).then((value) {
       if (_betterPlayerController.videoPlayerController!.value.aspectRatio >

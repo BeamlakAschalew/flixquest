@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../functions/function.dart';
+import '../../provider/app_dependency_provider.dart';
 import '/screens/tv/tv_detail.dart';
 import '../../constants/api_constants.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,8 @@ class _TVBookmarkState extends State<TVBookmark> {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return widget.tvList == null && viewType == 'grid'
         ? moviesAndTVShowGridShimmer(themeMode)
         : widget.tvList == null && viewType == 'list'
@@ -122,7 +126,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                             const Duration(milliseconds: 700),
                                                                         fadeInCurve:
                                                                             Curves.easeIn,
-                                                                        imageUrl: TMDB_BASE_IMAGE_URL +
+                                                                        imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                                                             imageQuality +
                                                                             widget.tvList![index].posterPath!,
                                                                         imageBuilder:
@@ -300,7 +304,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                                 fadeOutCurve: Curves.easeOut,
                                                                                 fadeInDuration: const Duration(milliseconds: 700),
                                                                                 fadeInCurve: Curves.easeIn,
-                                                                                imageUrl: TMDB_BASE_IMAGE_URL + imageQuality + widget.tvList![index].posterPath!,
+                                                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) + imageQuality + widget.tvList![index].posterPath!,
                                                                                 imageBuilder: (context, imageProvider) => Container(
                                                                                   decoration: BoxDecoration(
                                                                                     image: DecorationImage(

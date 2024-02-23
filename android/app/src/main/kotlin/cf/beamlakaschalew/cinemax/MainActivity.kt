@@ -1,4 +1,4 @@
-package dev.beamlak.flixquest
+package dev.beamlak.flixquest_v2
 
 import io.flutter.embedding.android.FlutterActivity
 

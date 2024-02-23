@@ -3,6 +3,7 @@ import 'package:better_player/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flixquest/services/globle_method.dart';
+import '../functions/function.dart';
 import '/provider/app_dependency_provider.dart';
 import '/screens/common/live_tv_screen.dart';
 import '/screens/common/server_status_screen.dart';
@@ -96,7 +97,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                           onTap: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: ((context) {
-                              return const LiveTV();
+                              return const ChannelList();
                             })));
                           },
                         )
@@ -828,8 +829,10 @@ Widget watchProvidersTabData(
         {required String themeMode,
         required String imageQuality,
         required String noOptionMessage,
-        required List? watchOptions}) =>
-    Container(
+        required List? watchOptions, required BuildContext context}) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+    return Container(
       padding: const EdgeInsets.all(8.0),
       child: watchOptions == null
           ? Center(
@@ -867,7 +870,7 @@ Widget watchProvidersTabData(
                                   fadeInDuration:
                                       const Duration(milliseconds: 700),
                                   fadeInCurve: Curves.easeIn,
-                                  imageUrl: TMDB_BASE_IMAGE_URL +
+                                  imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
                                       imageQuality +
                                       watchOptions[index].logoPath!,
                                   imageBuilder: (context, imageProvider) =>
@@ -905,6 +908,8 @@ Widget watchProvidersTabData(
                 );
               }),
     );
+  }
+        
 
 Widget watchProvidersShimmer(String themeMode) => Container(
       padding: const EdgeInsets.all(8.0),
@@ -1636,7 +1641,9 @@ class _DidYouKnowState extends State<DidYouKnow> {
 
   @override
   void initState() {
-    fetchSocialLinks(widget.api!).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchSocialLinks(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           externalLinks = value;
@@ -1768,7 +1775,9 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
-    fetchWatchProviders(widget.api, widget.country).then((value) {
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchWatchProviders(widget.api, widget.country, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           watchProviders = value;
@@ -1842,17 +1851,17 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                             themeMode: themeMode,
                             imageQuality: imageQuality,
                             noOptionMessage: tr("no_buy"),
-                            watchOptions: watchProviders!.buy),
+                            watchOptions: watchProviders!.buy, context: context),
                         watchProvidersTabData(
                             themeMode: themeMode,
                             imageQuality: imageQuality,
                             noOptionMessage: tr("no_stream"),
-                            watchOptions: watchProviders!.flatRate),
+                            watchOptions: watchProviders!.flatRate, context: context),
                         watchProvidersTabData(
                             themeMode: themeMode,
                             imageQuality: imageQuality,
                             noOptionMessage: tr("no_rent"),
-                            watchOptions: watchProviders!.rent),
+                            watchOptions: watchProviders!.rent, context: context),
                       ],
               ),
             ),

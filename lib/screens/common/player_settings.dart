@@ -35,6 +35,8 @@ class _PlayerSettingsState extends State<PlayerSettings> {
     Color pickerColor = const Color(0xff443a49);
     Color currentColor = const Color(0xff443a49);
 
+    String st = settingValues.subtitleTextStyle;
+
 // ValueChanged<Color> callback
     void changeColor(Color color) {
       setState(() => pickerColor = color);
@@ -113,6 +115,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                           style: TextStyle(
                               backgroundColor: backgroundColor,
                               color: foregroundColor,
+                              fontFamily: st == 'regular' ? 'Poppins' : st == 'bold' ? 'PoppinsSB' : 'PoppinsLight',
                               fontSize:
                                   settingValues.subtitleFontSize.toDouble())),
                     ),
@@ -177,6 +180,33 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                     ),
                   )
                 ],
+              ),
+              const SizedBox(height: 10,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [Text(
+                  tr("text_weight"),
+                  style: kTextSmallBodyStyle,
+                ),
+                 DropdownButton(
+                    value: settingValues.subtitleTextStyle,
+                    items: [
+                      DropdownMenuItem(
+                          value: 'light',
+                          child: Text(tr("light"))),
+                      DropdownMenuItem(
+                          value: 'regular',
+                          child: Text(tr("regular"))),
+                      DropdownMenuItem(
+                          value: 'bold',
+                          child: Text(tr("bold"))),
+                      
+                    ],
+                    onChanged: (String? value) {
+                      setState(() {
+                        settingValues.subtitleTextStyle = value!;
+                      });
+                    }),],
               ),
               const SizedBox(
                 height: 25,

@@ -267,7 +267,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   Theme.of(context).colorScheme.background
                 ],
                 settings: settings,
-                tvMetadata: widget.metadata);
+                tvMetadata: widget.metadata, subtitleStyle: Provider.of<SettingsProvider>(context).subtitleTextStyle,);
           },
         )).then((value) async {
           if (value != null) {
@@ -498,8 +498,10 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     late int totalSeasons;
     try {
       if (mounted) {
+        final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
         await fetchTVDetails(
-                Endpoints.tvDetailsUrl(widget.metadata.tvId!, "en"))
+                Endpoints.tvDetailsUrl(widget.metadata.tvId!, "en"), isProxyEnabled, proxyUrl)
             .then(
           (value) async {
             totalSeasons = value.numberOfSeasons!;
@@ -740,7 +742,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   Future<void> subtitleParserFetcher(
       List<RegularSubtitleLinks> subtitles) async {
     getAppLanguage();
-
+    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     try {
       if (subtitles.isNotEmpty) {
         if (supportedLanguages[foundIndex].englishName == '') {
@@ -814,7 +817,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           } else {
             if (appDep.useExternalSubtitles) {
               await fetchSocialLinks(
-                Endpoints.getExternalLinksForTV(widget.metadata.tvId!, "en"),
+                Endpoints.getExternalLinksForTV(widget.metadata.tvId!, "en"), isProxyEnabled, proxyUrl,
               ).then((value) async {
                 if (value.imdbId != null) {
                   await getExternalSubtitle(

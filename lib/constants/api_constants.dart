@@ -7,7 +7,7 @@ const String opensubtitlesBaseUrl = "https://api.opensubtitles.com/api/v1";
 String TMDB_API_KEY = dotenv.env['TMDB_API_KEY']!;
 String mixpanelKey = dotenv.env['MIXPANEL_API_KEY']!;
 String openSubtitlesKey = dotenv.env['OPENSUBTITLES_API_KEY']!;
-const String TMDB_BASE_IMAGE_URL = 'https://image.tmdb.org/t/p/';
+const TMDB_BASE_IMAGE_URL = 'https://image.tmdb.org/t/p/';
 const String EMBED_BASE_MOVIE_URL =
     'https://www.2embed.to/embed/tmdb/movie?id=';
 const String EMBED_BASE_TV_URL = 'https://www.2embed.to/embed/tmdb/tv?id=';
