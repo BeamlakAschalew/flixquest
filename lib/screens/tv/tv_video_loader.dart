@@ -267,7 +267,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   Theme.of(context).colorScheme.background
                 ],
                 settings: settings,
-                tvMetadata: widget.metadata);
+                tvMetadata: widget.metadata, subtitleStyle: Provider.of<SettingsProvider>(context).subtitleTextStyle,);
           },
         )).then((value) async {
           if (value != null) {

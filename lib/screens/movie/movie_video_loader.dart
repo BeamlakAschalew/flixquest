@@ -262,7 +262,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                   Theme.of(context).colorScheme.background
                 ],
                 settings: settings,
-                movieMetadata: widget.metadata);
+                movieMetadata: widget.metadata, subtitleStyle: Provider.of<SettingsProvider>(context).subtitleTextStyle,);
           },
         )).then((value) async {
           if (value != null) {
