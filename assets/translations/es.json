@@ -516,5 +516,8 @@
     "enable_warning": "Solo útil si la aplicación no carga contenido inicialmente",
     "use_proxy_title": "¿Usar proxy?",
     "use_proxy_detail": "Habilitar esta opción aumentará la carga del servidor para la aplicación. Por favor, úsala solo si la aplicación no carga la información de películas y programas de televisión inicialmente",
-    "enable": "Habilitar"
+    "enable": "Habilitar",
+    "bold": "Negrita",
+    "regular": "Regular",
+    "text_weight": "Peso del texto"
 }

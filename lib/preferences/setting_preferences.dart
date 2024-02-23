@@ -213,4 +213,14 @@ class SettingsPreferences {
   Future<bool> getUseProxy() async {
     return sharedPrefsSingleton.getBool(USE_PROXY) ?? false;
   }
+
+  static const SUBTITLE_TEXT_STYLE = "subtitle_text_style";
+
+  setSubtitleStyle(String value) {
+    sharedPrefsSingleton.setString(SUBTITLE_TEXT_STYLE, value);
+  }
+
+  Future<String> getSubtitleStyle() async {
+    return sharedPrefsSingleton.getString(SUBTITLE_TEXT_STYLE) ?? "regular";
+  }
 }

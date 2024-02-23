@@ -94,6 +94,9 @@ flutter:
     - family: PoppinsBlack
       fonts:
         - asset: assets/fonts/poppins/Poppins-Black.ttf
+    - family: PoppinsLight
+      fonts:
+        - asset: assets/fonts/poppins/Poppins-Light.ttf
     - family: SocialIcons
       fonts:
         - asset: assets/fonts/SocialIcons.ttf

@@ -75,6 +75,9 @@ class SettingsProvider with ChangeNotifier {
   bool _enableProxy = false;
   bool get enableProxy => _enableProxy;
 
+  String _subtitleTextStyle = "regular";
+  String get subtitleTextStyle => _subtitleTextStyle;
+
   // theme change
   Future<void> getCurrentThemeMode() async {
     appTheme = await _settingsPreferences.getThemeMode();
@@ -307,6 +310,16 @@ class SettingsProvider with ChangeNotifier {
   set enableProxy(bool value) {
     _enableProxy = value;
     _settingsPreferences.setUseProxy(value);
+    notifyListeners();
+  }
+
+  Future<void> getSubtitleStyle() async {
+    subtitleTextStyle = await _settingsPreferences.getSubtitleStyle();
+  }
+
+  set subtitleTextStyle(String value) {
+    _subtitleTextStyle = value;
+    _settingsPreferences.setSubtitleStyle(value);
     notifyListeners();
   }
 }
