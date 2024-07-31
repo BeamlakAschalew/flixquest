@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flixquest/services/globle_method.dart';
+import 'package:flutter/services.dart';
 import '/constants/api_constants.dart';
 import '/constants/app_constants.dart';
 import '../../functions/network.dart';
@@ -59,7 +60,9 @@ class _UpdateScreenState extends State<UpdateScreen> {
       setState(() {
         retry = true;
       });
-      GlobalMethods.showErrorScaffoldMessengerGeneral(e, context);
+      if (mounted) {
+        GlobalMethods.showErrorScaffoldMessengerGeneral(e, context);
+      }
     }
   }
 
@@ -82,9 +85,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                     ),
                     TextButton(
                         onPressed: () async {
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          SystemNavigator.pop();
                         },
                         child: Text(
                           tr("exit"),
