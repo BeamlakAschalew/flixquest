@@ -94,7 +94,7 @@ In case of copyright infringement, please directly contact the responsible parti
 It merely scrapes 3rd-party websites that are publicly accessable via any regular web browser and third-party APIs
 
 <h3>Buy me a coffee if you like my work!</h3>
-<a href="https://www.buymeacoffee.com/cinemaxapp"><img src="https://helloimjessa.files.wordpress.com/2021/06/bmc-button.png" height="90" width="320.4" alt="buy me a coffee"></a>
+<a href="https://www.buymeacoffee.com/cinemaxapp"><img src="https://i.ibb.co/Tr4sC5X/bmc-button.png" height="90" width="320.4" alt="buy me a coffee"></a>
 
 ### 🙏 Credits
 Basic UI and TMDB API integration from: [Matinee](https://github.com/bimsina/Matinee-Flutter)
