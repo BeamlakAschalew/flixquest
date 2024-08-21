@@ -14,7 +14,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   carousel_slider: ^4.0.0
   http: ^0.13.4
-  intl: ^0.18.0
+  intl: ^0.19.0
   url_launcher: ^6.0.18
   #flutter_inappwebview: ^5.3.2
   shimmer: ^2.0.0
