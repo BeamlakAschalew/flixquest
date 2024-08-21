@@ -78,7 +78,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
       try {
         user = _auth.currentUser;
 
-        await user!.updateEmail(newEmail).then((value) async {
+        await user!.verifyBeforeUpdateEmail(newEmail).then((value) async {
           await FirebaseFirestore.instance.collection('users').doc(uid).update({
             'createdAt': createdAt,
             'email': newEmail,

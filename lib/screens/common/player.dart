@@ -137,7 +137,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             autoDetectFullscreenAspectRatio: true,
             subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
                 backgroundColor: backgroundColor,
-                fontFamily: widget.subtitleStyle == 'regular' ? 'Poppins' : widget.subtitleStyle == 'bold' ? 'PoppinsSB' : 'PoppinsLight',
+                fontFamily: widget.subtitleStyle == 'regular'
+                    ? 'Poppins'
+                    : widget.subtitleStyle == 'bold'
+                        ? 'PoppinsSB'
+                        : 'PoppinsLight',
                 fontColor: foregroundColor,
                 outlineEnabled: false,
                 fontSize: widget.settings.subtitleFontSize.toDouble()));

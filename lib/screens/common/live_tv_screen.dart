@@ -46,7 +46,9 @@ class _ChannelListState extends State<ChannelList> {
   setState(() {
     enableRetry = true;
   });
+  if (mounted) {
   GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, '');
+  }
 }
   }
 

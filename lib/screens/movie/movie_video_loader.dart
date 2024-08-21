@@ -9,7 +9,6 @@ import 'package:flixquest/video_providers/flixhq.dart';
 import '../../controllers/recently_watched_database_controller.dart';
 import '../../provider/recently_watched_provider.dart';
 import '../../video_providers/common.dart';
-import '../../video_providers/flixquest_api_source.dart';
 import '../../video_providers/names.dart';
 import '../../video_providers/zoro.dart';
 import '/api/endpoints.dart';
@@ -55,12 +54,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   List<ZoroInfoEntries>? zoroEpi;
 
   FlixHQStreamSources? fqMovieVideoSources;
-  FlixQuestAPIStreamSources? flixHQFlixQuestStreamSources,
-      zoechipVideoSources,
-      gomoviesVideoSources,
-      vidsrcVideoSources,
-      showboxVideoSources,
-      vidSrcToVideoSources;
+
   DCVAStreamSources? dramacoolVideoSources;
   DCVAStreamSources? viewasianVideoSources;
   ZoroStreamSources? zoroVideoSources;
@@ -143,15 +137,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               break;
             }
           }
-        } else if (videoProviders[i].codeName == 'showbox') {
-          await loadShowbox();
-          if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
-            await subtitleParserFetcher(movieVideoSubs!);
-            break;
-          }
-          if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-            break;
-          }
         } else if (videoProviders[i].codeName == 'dramacool') {
           await loadDramacool();
           if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
@@ -172,51 +157,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           }
         } else if (videoProviders[i].codeName == 'zoro') {
           await loadZoro();
-          if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
-            await subtitleParserFetcher(movieVideoSubs!);
-            break;
-          }
-          if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-            break;
-          }
-        } else if (videoProviders[i].codeName == 'flixhqS2') {
-          await loadFlixHQFlixQuestApi();
-          if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
-            await subtitleParserFetcher(movieVideoSubs!);
-            break;
-          }
-          if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-            break;
-          }
-        } else if (videoProviders[i].codeName == 'zoe') {
-          await loadZoechip();
-          if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
-            await subtitleParserFetcher(movieVideoSubs!);
-            break;
-          }
-          if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-            break;
-          }
-        } else if (videoProviders[i].codeName == 'gomovies') {
-          await loadGomovies();
-          if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
-            await subtitleParserFetcher(movieVideoSubs!);
-            break;
-          }
-          if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-            break;
-          }
-        } else if (videoProviders[i].codeName == 'vidsrc') {
-          await loadVidsrc();
-          if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
-            await subtitleParserFetcher(movieVideoSubs!);
-            break;
-          }
-          if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-            break;
-          }
-        } else if (videoProviders[i].codeName == 'vidsrcto') {
-          await loadVidSrcTo();
           if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
             await subtitleParserFetcher(movieVideoSubs!);
             break;
@@ -254,15 +194,18 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) {
             return PlayerOne(
-                mediaType: MediaType.movie,
-                sources: reversedVids,
-                subs: subs,
-                colors: [
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).colorScheme.background
-                ],
-                settings: settings,
-                movieMetadata: widget.metadata, subtitleStyle: Provider.of<SettingsProvider>(context).subtitleTextStyle,);
+              mediaType: MediaType.movie,
+              sources: reversedVids,
+              subs: subs,
+              colors: [
+                Theme.of(context).primaryColor,
+                Theme.of(context).colorScheme.background
+              ],
+              settings: settings,
+              movieMetadata: widget.metadata,
+              subtitleStyle:
+                  Provider.of<SettingsProvider>(context).subtitleTextStyle,
+            );
           },
         )).then((value) async {
           if (value != null) {
@@ -389,8 +332,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   Future<void> subtitleParserFetcher(
       List<RegularSubtitleLinks> subtitles) async {
     getAppLanguage();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     try {
       if (subtitles.isNotEmpty) {
         if (supportedLanguages[foundIndex].englishName == '') {
@@ -467,7 +412,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             if (appDep.useExternalSubtitles) {
               await fetchSocialLinks(
                 Endpoints.getExternalLinksForMovie(
-                    widget.metadata.movieId!, "en"), isProxyEnabled, proxyUrl,
+                    widget.metadata.movieId!, "en"),
+                isProxyEnabled,
+                proxyUrl,
               ).then((value) async {
                 if (value.imdbId != null) {
                   await getExternalSubtitle(
@@ -795,42 +742,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     }
   }
 
-  Future<void> loadShowbox() async {
-    try {
-      if (mounted) {
-        await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL,
-                widget.metadata.movieId!,
-                'showbox',
-                ""))
-            .then((value) {
-          if (mounted) {
-            if (value.messageExists == null &&
-                value.videoLinks != null &&
-                value.videoLinks!.isNotEmpty) {
-              setState(() {
-                showboxVideoSources = value;
-              });
-            } else if (value.messageExists != null ||
-                value.videoLinks == null ||
-                value.videoLinks!.isEmpty) {
-              return;
-            }
-          }
-          if (mounted) {
-            movieVideoLinks = showboxVideoSources!.videoLinks;
-            movieVideoSubs = showboxVideoSources!.videoSubtitles;
-            if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-              convertVideoLinks(movieVideoLinks!);
-            }
-          }
-        });
-      }
-    } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'ShowBox');
-    }
-  }
-
   Future<void> loadZoro() async {
     try {
       if (mounted) {
@@ -900,187 +811,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       }
     } on Exception catch (e) {
       GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Zoro');
-    }
-  }
-
-  Future<void> loadFlixHQFlixQuestApi() async {
-    try {
-      if (mounted) {
-        await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL,
-                widget.metadata.movieId!,
-                'flixhq',
-                appDep.flixhqZoeServer))
-            .then((value) {
-          if (mounted) {
-            if (value.messageExists == null &&
-                value.videoLinks != null &&
-                value.videoLinks!.isNotEmpty) {
-              setState(() {
-                flixHQFlixQuestStreamSources = value;
-              });
-            } else if (value.messageExists != null ||
-                value.videoLinks == null ||
-                value.videoLinks!.isEmpty) {
-              return;
-            }
-          }
-          if (mounted) {
-            movieVideoLinks = flixHQFlixQuestStreamSources!.videoLinks;
-            movieVideoSubs = flixHQFlixQuestStreamSources!.videoSubtitles;
-            if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-              convertVideoLinks(movieVideoLinks!);
-            }
-          }
-        });
-      }
-    } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-          e, context, 'FlixHQ_S2');
-    }
-  }
-
-  Future<void> loadZoechip() async {
-    try {
-      if (mounted) {
-        await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL,
-                widget.metadata.movieId!,
-                'zoe',
-                appDep.flixhqZoeServer))
-            .then((value) {
-          if (mounted) {
-            if (value.messageExists == null &&
-                value.videoLinks != null &&
-                value.videoLinks!.isNotEmpty) {
-              setState(() {
-                zoechipVideoSources = value;
-              });
-            } else if (value.messageExists != null ||
-                value.videoLinks == null ||
-                value.videoLinks!.isEmpty) {
-              return;
-            }
-          }
-          if (mounted) {
-            movieVideoLinks = zoechipVideoSources!.videoLinks;
-            movieVideoSubs = zoechipVideoSources!.videoSubtitles;
-            if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-              convertVideoLinks(movieVideoLinks!);
-            }
-          }
-        });
-      }
-    } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Zoechip');
-    }
-  }
-
-  Future<void> loadGomovies() async {
-    try {
-      if (mounted) {
-        await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL,
-                widget.metadata.movieId!,
-                'gomovies',
-                appDep.goMoviesServer))
-            .then((value) {
-          if (mounted) {
-            if (value.messageExists == null &&
-                value.videoLinks != null &&
-                value.videoLinks!.isNotEmpty) {
-              setState(() {
-                gomoviesVideoSources = value;
-              });
-            } else if (value.messageExists != null ||
-                value.videoLinks == null ||
-                value.videoLinks!.isEmpty) {
-              return;
-            }
-          }
-          if (mounted) {
-            movieVideoLinks = gomoviesVideoSources!.videoLinks;
-            movieVideoSubs = gomoviesVideoSources!.videoSubtitles;
-            if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-              convertVideoLinks(movieVideoLinks!);
-            }
-          }
-        });
-      }
-    } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'GoMovies');
-    }
-  }
-
-  Future<void> loadVidsrc() async {
-    try {
-      if (mounted) {
-        await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL,
-                widget.metadata.movieId!,
-                'vidsrc',
-                appDep.vidSrcServer))
-            .then((value) {
-          if (mounted) {
-            if (value.messageExists == null &&
-                value.videoLinks != null &&
-                value.videoLinks!.isNotEmpty) {
-              setState(() {
-                vidsrcVideoSources = value;
-              });
-            } else if (value.messageExists != null ||
-                value.videoLinks == null ||
-                value.videoLinks!.isEmpty) {
-              return;
-            }
-          }
-          if (mounted) {
-            movieVideoLinks = vidsrcVideoSources!.videoLinks;
-            movieVideoSubs = vidsrcVideoSources!.videoSubtitles;
-            if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-              convertVideoLinks(movieVideoLinks!);
-            }
-          }
-        });
-      }
-    } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Vidsrc');
-    }
-  }
-
-  Future<void> loadVidSrcTo() async {
-    try {
-      if (mounted) {
-        await getFlixQuestAPILinks(Endpoints.getMovieEndpointFlixQuestAPI(
-                appDep.flixquestAPIURL,
-                widget.metadata.movieId!,
-                'vidsrcto',
-                appDep.vidSrcToServer))
-            .then((value) {
-          if (mounted) {
-            if (value.messageExists == null &&
-                value.videoLinks != null &&
-                value.videoLinks!.isNotEmpty) {
-              setState(() {
-                vidSrcToVideoSources = value;
-              });
-            } else if (value.messageExists != null ||
-                value.videoLinks == null ||
-                value.videoLinks!.isEmpty) {
-              return;
-            }
-          }
-          if (mounted) {
-            movieVideoLinks = vidSrcToVideoSources!.videoLinks;
-            movieVideoSubs = vidSrcToVideoSources!.videoSubtitles;
-            if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
-              convertVideoLinks(movieVideoLinks!);
-            }
-          }
-        });
-      }
-    } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'VidSrcTo');
     }
   }
 }
