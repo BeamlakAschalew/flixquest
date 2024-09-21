@@ -75,7 +75,7 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
                 child: Text(
               widget.person!.name!,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             )),
             expandedHeight: 210,

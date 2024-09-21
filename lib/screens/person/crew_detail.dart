@@ -75,7 +75,7 @@ class CrewDetailPageState extends State<CrewDetailPage>
                 child: Text(
               widget.crew!.name!,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             )),
             expandedHeight: 210,

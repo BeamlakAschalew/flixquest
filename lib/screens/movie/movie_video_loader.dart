@@ -262,7 +262,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             height: 150,
             width: 190,

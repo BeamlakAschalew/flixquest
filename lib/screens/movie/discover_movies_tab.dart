@@ -362,9 +362,9 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                  style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(
-                        const Size(double.infinity, 50)),
+                  style: const ButtonStyle(
+                    minimumSize:
+                        WidgetStatePropertyAll(Size(double.infinity, 50)),
                   ),
                   onPressed: () {
                     joinGenreStrings();

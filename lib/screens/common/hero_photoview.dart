@@ -158,7 +158,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                         widget.heroId, '${widget.currentIndex + 1}', themeMode);
                   },
                   style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(
+                    minimumSize: WidgetStateProperty.all(
                         const Size(double.infinity, 50)),
                   ),
                   child: Row(

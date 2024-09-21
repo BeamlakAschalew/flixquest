@@ -84,7 +84,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
                       ? widget.movie.title!
                       : '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             )),
             expandedHeight: 390,

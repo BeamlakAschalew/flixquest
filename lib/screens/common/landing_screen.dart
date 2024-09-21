@@ -168,7 +168,7 @@ class _LandingScreenState extends State<LandingScreen> {
                       children: [
                         ElevatedButton(
                             style: ButtonStyle(
-                                minimumSize: MaterialStateProperty.all(
+                                minimumSize: WidgetStateProperty.all(
                                     const Size(150, 50)),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(

@@ -86,7 +86,7 @@ class SeasonsDetailState extends State<SeasonsDetail>
                   ? widget.seasons.name!
                   : '${widget.seasons.name!} (${DateTime.parse(widget.seasons.airDate!).year})',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             )),
             expandedHeight: 315,
@@ -264,7 +264,11 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                      imageUrl: buildImageUrl(
+                                              TMDB_BASE_IMAGE_URL,
+                                              proxyUrl,
+                                              isProxyEnabled,
+                                              context) +
                                           imageQuality +
                                           season.posterPath!,
                                     ),

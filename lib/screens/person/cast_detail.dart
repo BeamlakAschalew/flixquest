@@ -74,7 +74,7 @@ class CastDetailPageState extends State<CastDetailPage>
                 child: Text(
               widget.cast!.name!,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             )),
             expandedHeight: 210,

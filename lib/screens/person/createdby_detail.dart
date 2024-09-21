@@ -74,7 +74,7 @@ class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                 child: Text(
               widget.createdBy!.name!,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             )),
             expandedHeight: 210,

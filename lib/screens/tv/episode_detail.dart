@@ -82,7 +82,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                 child: Text(
               widget.episodeList.name!,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             )),
             expandedHeight: 375,
