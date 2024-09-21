@@ -595,34 +595,34 @@ ThemeData lightsOutThemeData(
     chipTheme: ChipThemeData(),
     snackBarTheme: SnackBarThemeData(
         backgroundColor: isM3Enabled
-            ? darkDynamicColor?.onBackground ?? Color(0xFFece0da)
+            ? darkDynamicColor?.onSurface ?? Color(0xFFece0da)
             : useUserColor
-                ? color.cs.onBackground
+                ? color.cs.onSurface
                 : Color(0xFFece0da),
         contentTextStyle: TextStyle(
           color: isM3Enabled
-              ? darkDynamicColor?.background ?? Color(0xFF201a17)
+              ? darkDynamicColor?.surface ?? Color(0xFF201a17)
               : useUserColor
-                  ? color.cs.background
+                  ? color.cs.surface
                   : Color(0xFF201a17),
         )),
     scaffoldBackgroundColor: Colors.black,
     radioTheme: RadioThemeData(
-        fillColor: MaterialStatePropertyAll(isM3Enabled
+        fillColor: WidgetStatePropertyAll(isM3Enabled
             ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
             : useUserColor
                 ? color.cs.primary
                 : Color(0xFFF57C00))),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
-        backgroundColor: MaterialStatePropertyAll(
+        backgroundColor: WidgetStatePropertyAll(
           isM3Enabled
               ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
               : useUserColor
                   ? color.cs.primary
                   : Color(0xFFF57C00),
         ),
-        foregroundColor: MaterialStatePropertyAll(
+        foregroundColor: WidgetStatePropertyAll(
           isM3Enabled
               ? darkDynamicColor?.onPrimary ?? Colors.white
               : useUserColor
@@ -633,7 +633,7 @@ ThemeData lightsOutThemeData(
     ),
     textButtonTheme: TextButtonThemeData(
       style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(
+          backgroundColor: WidgetStateProperty.all(
             isM3Enabled
                 ? darkDynamicColor?.primary.withOpacity(0.1) ??
                     Color(0xFFF57C00).withOpacity(0.1)
@@ -641,8 +641,8 @@ ThemeData lightsOutThemeData(
                     ? color.cs.primary.withOpacity(0.1)
                     : Color(0xFFF57C00).withOpacity(0.1),
           ),
-          maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          maximumSize: WidgetStateProperty.all(const Size(200, 60)),
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   side: BorderSide(
@@ -686,14 +686,14 @@ ThemeData lightsOutThemeData(
             ? color.cs.primary
             : Color(0xFFF57C00),
     switchTheme: SwitchThemeData(
-      thumbColor: MaterialStatePropertyAll(
+      thumbColor: WidgetStatePropertyAll(
         isM3Enabled
             ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
             : useUserColor
                 ? color.cs.primary
                 : Color(0xFFF57C00),
       ),
-      trackColor: MaterialStatePropertyAll(
+      trackColor: WidgetStatePropertyAll(
         isM3Enabled
             ? darkDynamicColor?.primaryContainer ?? Color(0xFF994d02)
             : useUserColor
@@ -727,11 +727,6 @@ ThemeData lightsOutThemeData(
           : useUserColor
               ? color.cs.surface
               : Colors.black,
-      background: isM3Enabled
-          ? darkDynamicColor?.background ?? Color(0xFF201a17)
-          : useUserColor
-              ? color.cs.background
-              : Colors.black,
       error: isM3Enabled
           ? darkDynamicColor?.error ?? Color(0xFFffb4ab)
           : useUserColor
@@ -751,11 +746,6 @@ ThemeData lightsOutThemeData(
           ? darkDynamicColor?.onSurface ?? Color(0xFFece0da)
           : useUserColor
               ? color.cs.onSurface
-              : Color(0xFFece0da),
-      onBackground: isM3Enabled
-          ? darkDynamicColor?.onBackground ?? Color(0xFFece0da)
-          : useUserColor
-              ? color.cs.onBackground
               : Color(0xFFece0da),
       onError: isM3Enabled
           ? darkDynamicColor?.onError ?? Color(0xFF690005)
@@ -812,17 +802,17 @@ ThemeData lightsOutThemeData(
           : useUserColor
               ? color.cs.tertiaryContainer
               : Color(0xFF48491f),
-      surfaceVariant: isM3Enabled
-          ? darkDynamicColor?.surfaceVariant ?? Color(0xFF52443c)
+      surfaceContainerHighest: isM3Enabled
+          ? darkDynamicColor?.surfaceContainerHighest ?? Color(0xFF52443c)
           : useUserColor
-              ? color.cs.surfaceVariant
+              ? color.cs.surfaceContainerHighest
               : Color(0xFF52443c),
       brightness: Brightness.dark,
     ).copyWith(
-        background: isM3Enabled
-            ? darkDynamicColor?.background ?? Color(0xFF201a17)
+        surface: isM3Enabled
+            ? darkDynamicColor?.surface ?? Color(0xFF201a17)
             : useUserColor
-                ? color.cs.background
+                ? color.cs.surface
                 : Color(0xFF201a17)),
   );
 }

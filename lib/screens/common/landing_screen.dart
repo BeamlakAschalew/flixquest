@@ -170,13 +170,13 @@ class _LandingScreenState extends State<LandingScreen> {
                             style: ButtonStyle(
                                 minimumSize: WidgetStateProperty.all(
                                     const Size(150, 50)),
-                                shape: MaterialStateProperty.all<
+                                shape: WidgetStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
                                 ),
-                                backgroundColor: MaterialStateProperty.all(
+                                backgroundColor: WidgetStateProperty.all(
                                     const Color(0xFFf57c00))),
                             onPressed: () async {
                               // updateFirstRunData();
@@ -194,7 +194,7 @@ class _LandingScreenState extends State<LandingScreen> {
                         ),
                         ElevatedButton(
                             style: ButtonStyle(
-                                minimumSize: MaterialStateProperty.all(
+                                minimumSize: WidgetStateProperty.all(
                                     const Size(150, 50)),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
