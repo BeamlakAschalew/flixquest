@@ -46,7 +46,7 @@ class _DiscoverPageState extends State<DiscoverPage>
                   ),
                   Expanded(
                     child: Text(
-                      tr("movies"),
+                      tr('movies'),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -61,14 +61,14 @@ class _DiscoverPageState extends State<DiscoverPage>
                       child: Icon(Icons.live_tv_rounded)),
                   Expanded(
                     child: Text(
-                      tr("tv_series"),
+                      tr('tv_series'),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ))
             ],
-            indicatorColor: themeMode == "dark" || themeMode == "amoled"
+            indicatorColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.white
                 : Colors.black,
             indicatorWeight: 3,

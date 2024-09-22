@@ -63,10 +63,10 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
     return Container(
       child: ListView(
         children: [
-          DiscoverMovies(includeAdult: includeAdult, discoverType: "discover"),
+          DiscoverMovies(includeAdult: includeAdult, discoverType: 'discover'),
           const UpdateBottom(),
           ScrollingMovies(
-            title: tr("popular"),
+            title: tr('popular'),
             api: Endpoints.popularMoviesUrl(lang),
             discoverType: 'popular',
             isTrending: false,
@@ -76,28 +76,28 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
               ? Container()
               : ScrollingRecentMovies(moviesList: rMovies),
           ScrollingMovies(
-            title: tr("trending_this_week"),
+            title: tr('trending_this_week'),
             api: Endpoints.trendingMoviesUrl(includeAdult, lang),
             discoverType: 'Trending',
             isTrending: true,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
-            title: tr("top_rated"),
+            title: tr('top_rated'),
             api: Endpoints.topRatedUrl(lang),
             discoverType: 'top_rated',
             isTrending: false,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
-            title: tr("now_playing"),
+            title: tr('now_playing'),
             api: Endpoints.nowPlayingMoviesUrl(1, lang),
             discoverType: 'now_playing',
             isTrending: false,
             includeAdult: includeAdult,
           ),
           ScrollingMovies(
-            title: tr("upcoming"),
+            title: tr('upcoming'),
             api: Endpoints.upcomingMoviesUrl(lang),
             discoverType: 'upcoming',
             isTrending: false,
@@ -218,7 +218,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
               : moviesList!.isEmpty
                   ? Center(
                       child: Text(
-                        tr("wow_odd"),
+                        tr('wow_odd'),
                         style: kTextSmallBodyStyle,
                       ),
                     )
@@ -424,15 +424,14 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                     }));
                   },
                   style: ButtonStyle(
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      maximumSize: WidgetStateProperty.all(const Size(200, 60)),
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ))),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: Text(tr("view_all")),
+                    child: Text(tr('view_all')),
                   ),
                 )),
           ],
@@ -560,9 +559,9 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                           BorderRadius.circular(
                                                               8),
                                                       color:
-                                                          themeMode == "dark" ||
+                                                          themeMode == 'dark' ||
                                                                   themeMode ==
-                                                                      "amoled"
+                                                                      'amoled'
                                                               ? Colors.black45
                                                               : Colors.white60),
                                                   child: Row(
@@ -613,7 +612,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                 ),
         ),
         Divider(
-          color: themeMode == "light" ? Colors.black54 : Colors.white54,
+          color: themeMode == 'light' ? Colors.black54 : Colors.white54,
           thickness: 1,
           endIndent: 20,
           indent: 10,
@@ -658,7 +657,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                     const LeadingDot(),
                     Expanded(
                       child: Text(
-                        tr("recently_watched"),
+                        tr('recently_watched'),
                         style: kTextHeaderStyle,
                       ),
                     ),
@@ -678,8 +677,8 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
             //       },
             //       style: ButtonStyle(
             //           maximumSize:
-            //               MaterialStateProperty.all(const Size(200, 60)),
-            //           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            //               WidgetStateProperty.all(const Size(200, 60)),
+            //           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             //               RoundedRectangleBorder(
             //             borderRadius: BorderRadius.circular(20.0),
             //           ))),
@@ -719,7 +718,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                         builder: (context) => MovieVideoLoader(
                                             download: false,
                                             /* return to fetchRoute instead of hard text*/ route:
-                                                fetchRoute == "flixHQ"
+                                                fetchRoute == 'flixHQ'
                                                     ? StreamRoute.flixHQ
                                                     : StreamRoute.tmDB,
                                             metadata: MovieStreamMetadata(
@@ -743,7 +742,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                 : GlobalMethods.showCustomScaffoldMessage(
                                     SnackBar(
                                       content: Text(
-                                        tr("check_connection"),
+                                        tr('check_connection'),
                                         maxLines: 3,
                                         style: kTextSmallBodyStyle,
                                       ),
@@ -875,7 +874,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
           ),
         ),
         Divider(
-          color: themeMode == "light" ? Colors.black54 : Colors.white54,
+          color: themeMode == 'light' ? Colors.black54 : Colors.white54,
           thickness: 1,
           endIndent: 20,
           indent: 10,
@@ -946,7 +945,7 @@ class _SABTNState extends State<SABTN> {
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50.0),
-              color: themeMode == "dark" || themeMode == "amoled"
+              color: themeMode == 'dark' || themeMode == 'amoled'
                   ? Colors.black12
                   : Colors.white38),
           child: IconButton(
@@ -1219,7 +1218,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                           child: Text(
                             movie.releaseDate == null
                                 ? movie.title!
-                                : movie.releaseDate == ""
+                                : movie.releaseDate == ''
                                     ? movie.title!
                                     : '${movie.title!} (${DateTime.parse(movie.releaseDate!).year})',
                             maxLines: 4,
@@ -1309,7 +1308,7 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        tr("rating"),
+                        tr('rating'),
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -1354,7 +1353,7 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    tr("total_ratings"),
+                    tr('total_ratings'),
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -1449,7 +1448,7 @@ class _MovieAboutState extends State<MovieAbout> {
                         const LeadingDot(),
                         Expanded(
                           child: Text(
-                            tr("overview"),
+                            tr('overview'),
                             style: kTextHeaderStyle,
                           ),
                         ),
@@ -1463,15 +1462,15 @@ class _MovieAboutState extends State<MovieAbout> {
               padding: const EdgeInsets.all(8.0),
               child: widget.movie.overview == null ||
                       widget.movie.overview!.isEmpty
-                  ? Text(tr("no_overview_movie"))
+                  ? Text(tr('no_overview_movie'))
                   : ReadMoreText(
                       widget.movie.overview!,
                       trimLines: 4,
                       style: const TextStyle(fontFamily: 'Poppins'),
                       colorClickableText: Theme.of(context).colorScheme.primary,
                       trimMode: TrimMode.Line,
-                      trimCollapsedText: tr("read_more"),
-                      trimExpandedText: tr("read_less"),
+                      trimCollapsedText: tr('read_more'),
+                      trimExpandedText: tr('read_less'),
                       lessStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.primary,
@@ -1491,7 +1490,7 @@ class _MovieAboutState extends State<MovieAbout> {
                     child: Text(
                       widget.movie.releaseDate == null ||
                               widget.movie.releaseDate!.isEmpty
-                          ? tr("no_release_date")
+                          ? tr('no_release_date')
                           : '${tr("release_date")} : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
                       style: const TextStyle(fontFamily: 'PoppinsSB'),
                       maxLines: 2,
@@ -1535,16 +1534,16 @@ class _MovieAboutState extends State<MovieAbout> {
             const SizedBox(height: 15),
             ScrollingArtists(
               api: Endpoints.getCreditsUrl(widget.movie.id!, lang),
-              title: tr("cast"),
+              title: tr('cast'),
             ),
             MovieImagesDisplay(
-              title: tr("images"),
+              title: tr('images'),
               api: Endpoints.getImages(widget.movie.id!),
               name: widget.movie.title,
             ),
             MovieVideosDisplay(
               api: Endpoints.getVideos(widget.movie.id!),
-              title: tr("videos"),
+              title: tr('videos'),
             ),
             MovieSocialLinks(
               api: Endpoints.getExternalLinksForMovie(widget.movie.id!, lang),
@@ -1613,9 +1612,9 @@ class DownloadMovie extends StatelessWidget {
     return Container(
       child: TextButton(
         style: ButtonStyle(
-          maximumSize: MaterialStateProperty.all(Size(buttonWidth, 50)),
+          maximumSize: WidgetStateProperty.all(Size(buttonWidth, 50)),
         ).copyWith(
-            backgroundColor: MaterialStateProperty.all(
+            backgroundColor: WidgetStateProperty.all(
           Theme.of(context).colorScheme.primary,
         )),
         onPressed: () async {
@@ -1659,7 +1658,7 @@ class DownloadMovie extends StatelessWidget {
               ),
             ),
             Text(
-              tr("download"),
+              tr('download'),
               style: const TextStyle(color: Colors.white),
             ),
             Visibility(
@@ -1733,7 +1732,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                           const LeadingDot(),
                           Expanded(
                             child: Text(
-                              tr("cast"),
+                              tr('cast'),
                               style: kTextHeaderStyle,
                             ),
                           ),
@@ -1755,7 +1754,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                             const LeadingDot(),
                             Expanded(
                               child: Text(
-                                tr("cast"),
+                                tr('cast'),
                                 style: kTextHeaderStyle,
                               ),
                             ),
@@ -1763,7 +1762,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                         ),
                       ),
                       Center(
-                          child: Text(tr("no_cast_movie"),
+                          child: Text(tr('no_cast_movie'),
                               textAlign: TextAlign.center)),
                     ],
                   )
@@ -1778,7 +1777,7 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                               const LeadingDot(),
                               Expanded(
                                 child: Text(
-                                  tr("cast"),
+                                  tr('cast'),
                                   style: kTextHeaderStyle,
                                 ),
                               ),
@@ -1797,17 +1796,17 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
                         },
                         style: ButtonStyle(
                           backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
+                              WidgetStateProperty.all(Colors.transparent),
                           maximumSize:
-                              MaterialStateProperty.all(const Size(200, 60)),
+                              WidgetStateProperty.all(const Size(200, 60)),
                           shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0),
                             ),
                           ),
                         ),
-                        child: Text(tr("see_all_cast_crew")),
+                        child: Text(tr('see_all_cast_crew')),
                       )
                     ],
                   ),
@@ -1964,7 +1963,7 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("social_media_links"),
+                    tr('social_media_links'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -1981,14 +1980,14 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
                           externalLinks?.imdbId == null
                       ? Center(
                           child: Text(
-                            tr("no_social_link_movie"),
+                            tr('no_social_link_movie'),
                             textAlign: TextAlign.center,
                           ),
                         )
                       : Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.transparent
                                 : const Color(0xFFDFDEDE),
                           ),
@@ -2134,8 +2133,8 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      tr("belongs_to_the", namedArgs: {
-                                        "collection": belongsToCollection!.name!
+                                      tr('belongs_to_the', namedArgs: {
+                                        'collection': belongsToCollection!.name!
                                       }),
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -2152,16 +2151,15 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                     child: TextButton(
                                       style: ButtonStyle(
                                           backgroundColor:
-                                              MaterialStateProperty.all(
+                                              WidgetStateProperty.all(
                                             Theme.of(context)
                                                 .colorScheme
                                                 .primary
                                                 .withOpacity(0.3),
                                           ),
-                                          maximumSize:
-                                              MaterialStateProperty.all(
-                                                  const Size(200, 40)),
-                                          shape: MaterialStateProperty.all<
+                                          maximumSize: WidgetStateProperty.all(
+                                              const Size(200, 40)),
+                                          shape: WidgetStateProperty.all<
                                                   RoundedRectangleBorder>(
                                               RoundedRectangleBorder(
                                                   borderRadius:
@@ -2182,7 +2180,7 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                         }));
                                       },
                                       child: Text(
-                                        tr("view_collection"),
+                                        tr('view_collection'),
                                         style: const TextStyle(
                                             color: Colors.white),
                                       ),
@@ -2478,9 +2476,9 @@ class PartsListState extends State<PartsList> {
                                                           BorderRadius.circular(
                                                               8),
                                                       color:
-                                                          themeMode == "dark" ||
+                                                          themeMode == 'dark' ||
                                                                   themeMode ==
-                                                                      "amoled"
+                                                                      'amoled'
                                                               ? Colors.black45
                                                               : Colors.white60),
                                                   child: Row(
@@ -2757,17 +2755,17 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                                 child: Text(movieImages!
                                                             .poster!.length ==
                                                         1
-                                                    ? tr("poster_singular",
+                                                    ? tr('poster_singular',
                                                         namedArgs: {
-                                                            "poster":
+                                                            'poster':
                                                                 movieImages!
                                                                     .poster!
                                                                     .length
                                                                     .toString()
                                                           })
-                                                    : tr("poster_plural",
+                                                    : tr('poster_plural',
                                                         namedArgs: {
-                                                            "poster":
+                                                            'poster':
                                                                 movieImages!
                                                                     .poster!
                                                                     .length
@@ -2886,17 +2884,17 @@ class MovieImagesState extends State<MovieImagesDisplay> {
                                               child: Text(movieImages!
                                                           .backdrop!.length ==
                                                       1
-                                                  ? tr("backdrop_singular",
+                                                  ? tr('backdrop_singular',
                                                       namedArgs: {
-                                                          "backdrop":
+                                                          'backdrop':
                                                               movieImages!
                                                                   .backdrop!
                                                                   .length
                                                                   .toString()
                                                         })
-                                                  : tr("backdrop_plural",
+                                                  : tr('backdrop_plural',
                                                       namedArgs: {
-                                                          "backdrop":
+                                                          'backdrop':
                                                               movieImages!
                                                                   .backdrop!
                                                                   .length
@@ -3009,7 +3007,7 @@ class MovieVideosState extends State<MovieVideosDisplay> {
                         width: double.infinity,
                         height: 80,
                         child: Center(
-                          child: Text(tr("no_video_movie"),
+                          child: Text(tr('no_video_movie'),
                               textAlign: TextAlign.center),
                         ),
                       )
@@ -3206,7 +3204,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
                   ? Navigator.push(context,
                       MaterialPageRoute(builder: ((context) {
                       return MovieVideoLoader(
-                        route: fetchRoute == "flixHQ"
+                        route: fetchRoute == 'flixHQ'
                             ? StreamRoute.flixHQ
                             : StreamRoute.tmDB,
                         download: false,
@@ -3224,7 +3222,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
                   : GlobalMethods.showCustomScaffoldMessage(
                       SnackBar(
                         content: Text(
-                          tr("check_connection"),
+                          tr('check_connection'),
                           maxLines: 3,
                           style: kTextSmallBodyStyle,
                         ),
@@ -3245,7 +3243,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
                 const SizedBox(width: 6),
-                Text(tr("watch_now"),
+                Text(tr('watch_now'),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimary,
                     ))
@@ -3359,7 +3357,7 @@ class GenreDisplayState extends State<GenreDisplay>
                                 // style: widget.themeData.textTheme.bodyText1,
                               ),
                               backgroundColor:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? const Color(0xFF2b2c30)
                                       : const Color(0xFFDFDEDE),
                             ),
@@ -3415,7 +3413,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
               const LeadingDot(),
               Expanded(
                 child: Text(
-                  tr("movie_info"),
+                  tr('movie_info'),
                   style: kTextHeaderStyle,
                 ),
               ),
@@ -3431,7 +3429,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                     : DataTable(dataRowMinHeight: 40, columns: [
                         DataColumn(
                             label: Text(
-                          tr("original_title"),
+                          tr('original_title'),
                           style: kTableLeftStyle,
                         )),
                         DataColumn(
@@ -3444,27 +3442,27 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                       ], rows: [
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("status"),
+                            tr('status'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(movieDetails!.status!.isEmpty
-                              ? tr("unknown")
+                              ? tr('unknown')
                               : movieDetails!.status!)),
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("runtime"),
+                            tr('runtime'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(movieDetails!.runtime! == 0
-                              ? tr("not_available")
-                              : tr("runtime_mins", namedArgs: {
-                                  "mins": movieDetails!.runtime!.toString()
+                              ? tr('not_available')
+                              : tr('runtime_mins', namedArgs: {
+                                  'mins': movieDetails!.runtime!.toString()
                                 }))),
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("spoken_language"),
+                            tr('spoken_language'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3482,7 +3480,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(movieDetails!
                                                 .spokenLanguages!.isEmpty
-                                            ? tr("not_available")
+                                            ? tr('not_available')
                                             : '${movieDetails!.spokenLanguages![index].englishName},'),
                                       );
                                     },
@@ -3491,7 +3489,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("budget"),
+                            tr('budget'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(movieDetails!.budget == 0
@@ -3502,7 +3500,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("revenue"),
+                            tr('revenue'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(movieDetails!.budget == 0
@@ -3513,7 +3511,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("tagline"),
+                            tr('tagline'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(
@@ -3528,7 +3526,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("production_companies"),
+                            tr('production_companies'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3546,7 +3544,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(movieDetails!
                                                 .productionCompanies!.isEmpty
-                                            ? tr("not_available")
+                                            ? tr('not_available')
                                             : '${movieDetails!.productionCompanies![index].name},'),
                                       );
                                     },
@@ -3560,7 +3558,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("production_countries"),
+                            tr('production_countries'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3578,7 +3576,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(movieDetails!
                                                 .productionCountries!.isEmpty
-                                            ? tr("not_available")
+                                            ? tr('not_available')
                                             : '${movieDetails!.productionCountries![index].name},'),
                                       );
                                     },
@@ -3620,7 +3618,7 @@ class CastTabState extends State<CastTab>
     return widget.credits.cast!.isEmpty
         ? Container(
             child: Center(
-              child: Text(tr("no_cast_movie")),
+              child: Text(tr('no_cast_movie')),
             ),
           )
         : Container(
@@ -3726,9 +3724,9 @@ class CastTabState extends State<CastTab>
                                       ),
                                       Text(widget.credits.cast![index]
                                               .character!.isEmpty
-                                          ? tr("as_empty")
-                                          : tr("as", namedArgs: {
-                                              "character": widget.credits
+                                          ? tr('as_empty')
+                                          : tr('as', namedArgs: {
+                                              'character': widget.credits
                                                   .cast![index].character!
                                             })),
                                       Visibility(
@@ -3746,18 +3744,18 @@ class CastTabState extends State<CastTab>
                                                           .roles![0]
                                                           .episodeCount! ==
                                                       1
-                                                  ? tr("single_episode",
+                                                  ? tr('single_episode',
                                                       namedArgs: {
-                                                          "count": widget
+                                                          'count': widget
                                                               .credits
                                                               .cast![index]
                                                               .roles![0]
                                                               .episodeCount!
                                                               .toString()
                                                         })
-                                                  : tr("multi_episode",
+                                                  : tr('multi_episode',
                                                       namedArgs: {
-                                                          "count": widget
+                                                          'count': widget
                                                               .credits
                                                               .cast![index]
                                                               .roles![0]
@@ -3772,7 +3770,7 @@ class CastTabState extends State<CastTab>
                               ],
                             ),
                             Divider(
-                              color: themeMode == "light"
+                              color: themeMode == 'light'
                                   ? Colors.black54
                                   : Colors.white54,
                               thickness: 1,
@@ -3812,7 +3810,7 @@ class CrewTabState extends State<CrewTab>
     return widget.credits.crew!.isEmpty
         ? Center(
             child: Text(
-              tr("no_crew_movie"),
+              tr('no_crew_movie'),
               textAlign: TextAlign.center,
             ),
           )
@@ -3918,9 +3916,9 @@ class CrewTabState extends State<CrewTab>
                                       ),
                                       Text(widget.credits.crew![index]
                                               .department!.isEmpty
-                                          ? tr("job_empty")
-                                          : tr("job", namedArgs: {
-                                              "job": widget.credits.crew![index]
+                                          ? tr('job_empty')
+                                          : tr('job', namedArgs: {
+                                              'job': widget.credits.crew![index]
                                                   .department!
                                             })),
                                     ],
@@ -3929,7 +3927,7 @@ class CrewTabState extends State<CrewTab>
                               ],
                             ),
                             Divider(
-                              color: themeMode == "light"
+                              color: themeMode == 'light'
                                   ? Colors.black54
                                   : Colors.white54,
                               thickness: 1,
@@ -4039,7 +4037,7 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                       const LeadingDot(),
                       Expanded(
                         child: Text(
-                          tr("movie_recommendations"),
+                          tr('movie_recommendations'),
                           style: kTextHeaderStyle,
                           maxLines: 2,
                         ),
@@ -4058,7 +4056,7 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                 : movieList!.isEmpty
                     ? Center(
                         child: Text(
-                          tr("no_recommendations_movie"),
+                          tr('no_recommendations_movie'),
                           textAlign: TextAlign.center,
                         ),
                       )
@@ -4082,7 +4080,7 @@ class MovieRecommendationsTabState extends State<MovieRecommendationsTab>
                       ),
           ),
           Divider(
-            color: themeMode == "light" ? Colors.black54 : Colors.white54,
+            color: themeMode == 'light' ? Colors.black54 : Colors.white54,
             thickness: 1,
             endIndent: 20,
             indent: 10,
@@ -4188,8 +4186,8 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
                       const LeadingDot(),
                       Expanded(
                         child: Text(
-                          tr("movies_similar_with",
-                              namedArgs: {"movie": widget.movieName}),
+                          tr('movies_similar_with',
+                              namedArgs: {'movie': widget.movieName}),
                           style: kTextHeaderStyle,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -4209,7 +4207,7 @@ class SimilarMoviesTabState extends State<SimilarMoviesTab>
                 : movieList!.isEmpty
                     ? Center(
                         child: Text(
-                          tr("no_similars_movie"),
+                          tr('no_similars_movie'),
                           textAlign: TextAlign.center,
                         ),
                       )
@@ -4327,7 +4325,7 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
             : moviesList!.isEmpty
                 ? Container(
                     child: Center(
-                      child: Text(tr("no_genre_movie")),
+                      child: Text(tr('no_genre_movie')),
                     ),
                   )
                 : Container(
@@ -4454,7 +4452,7 @@ class ParticularStreamingServiceMoviesState
             : moviesList!.isEmpty
                 ? Container(
                     child: Center(
-                      child: Text(tr("no_watchprovider_movie")),
+                      child: Text(tr('no_watchprovider_movie')),
                     ),
                   )
                 : Container(
@@ -4596,7 +4594,7 @@ class GenreListGridState extends State<GenreListGrid>
                     const LeadingDot(),
                     Expanded(
                       child: Text(
-                        tr("genres"),
+                        tr('genres'),
                         style: kTextHeaderStyle,
                       ),
                     ),
@@ -4640,7 +4638,7 @@ class GenreListGridState extends State<GenreListGrid>
                                         borderRadius:
                                             BorderRadius.circular(15)),
                                     child: Text(
-                                      genreList![index].genreName ?? "Null",
+                                      genreList![index].genreName ?? 'Null',
                                       style: TextStyle(
                                         color: Theme.of(context)
                                             .colorScheme
@@ -4683,11 +4681,11 @@ class TopButtonState extends State<TopButton> {
       padding: const EdgeInsets.all(10.0),
       child: TextButton(
         style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(
+            backgroundColor: WidgetStateProperty.all(
               Theme.of(context).colorScheme.primary.withOpacity(0.3),
             ),
-            maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            maximumSize: WidgetStateProperty.all(const Size(200, 60)),
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     side: BorderSide(
@@ -4745,11 +4743,11 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
       padding: const EdgeInsets.all(10.0),
       child: TextButton(
         style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(
+            backgroundColor: WidgetStateProperty.all(
               Theme.of(context).colorScheme.primary.withOpacity(0.3),
             ),
-            maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            maximumSize: WidgetStateProperty.all(const Size(200, 60)),
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
                     side: BorderSide(
@@ -4759,7 +4757,7 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
           widget.onTap!();
         },
         child: Text(
-          tr("watch_providers"),
+          tr('watch_providers'),
           style: const TextStyle(color: Colors.white),
         ),
       ),
@@ -4792,7 +4790,7 @@ class MoviesFromWatchProvidersState extends State<MoviesFromWatchProviders> {
                       const LeadingDot(),
                       Expanded(
                         child: Text(
-                          tr("streaming_services"),
+                          tr('streaming_services'),
                           style: kTextHeaderStyle,
                         ),
                       ),
@@ -4916,7 +4914,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
         : moviesList!.isEmpty
             ? Center(
                 child: Text(
-                  tr("no_watchprovider_movie"),
+                  tr('no_watchprovider_movie'),
                   style: const TextStyle(fontFamily: 'Poppins'),
                 ),
               )

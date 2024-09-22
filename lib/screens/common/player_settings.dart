@@ -25,12 +25,12 @@ class _PlayerSettingsState extends State<PlayerSettings> {
     String backgroundColorString = settingValues.subtitleBackgroundColor;
     String foregroundColorString = settingValues.subtitleForegroundColor;
     String hexColorBackground =
-        backgroundColorString.replaceAll("Color(0x", "").replaceAll(")", "");
+        backgroundColorString.replaceAll('Color(0x', '').replaceAll(')', '');
     String hexColorForeground =
-        foregroundColorString.replaceAll("Color(0x", "").replaceAll(")", "");
+        foregroundColorString.replaceAll('Color(0x', '').replaceAll(')', '');
 
-    Color backgroundColor = Color(int.parse("0x$hexColorBackground"));
-    Color foregroundColor = Color(int.parse("0x$hexColorForeground"));
+    Color backgroundColor = Color(int.parse('0x$hexColorBackground'));
+    Color foregroundColor = Color(int.parse('0x$hexColorForeground'));
 
     Color pickerColor = const Color(0xff443a49);
     Color currentColor = const Color(0xff443a49);
@@ -60,7 +60,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
             actions: <Widget>[
               ElevatedButton(
                 child: Text(
-                  tr("save"),
+                  tr('save'),
                 ),
                 onPressed: () {
                   setState(() => currentColor = pickerColor);
@@ -81,7 +81,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          tr("player_settings"),
+          tr('player_settings'),
         ),
       ),
       body: Padding(
@@ -95,7 +95,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   const LeadingDot(),
                   Expanded(
                     child: Text(
-                      tr("subtitle"),
+                      tr('subtitle'),
                       style: kTextHeaderStyle,
                     ),
                   ),
@@ -110,12 +110,16 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                     Image.asset('assets/images/sample_frame.jpg'),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 15.0),
-                      child: Text(tr("sample_player_text"),
+                      child: Text(tr('sample_player_text'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               backgroundColor: backgroundColor,
                               color: foregroundColor,
-                              fontFamily: st == 'regular' ? 'Poppins' : st == 'bold' ? 'PoppinsSB' : 'PoppinsLight',
+                              fontFamily: st == 'regular'
+                                  ? 'Poppins'
+                                  : st == 'bold'
+                                      ? 'PoppinsSB'
+                                      : 'PoppinsLight',
                               fontSize:
                                   settingValues.subtitleFontSize.toDouble())),
                     ),
@@ -126,7 +130,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    tr("text_size"),
+                    tr('text_size'),
                     style: kTextSmallBodyStyle,
                   ),
                   Text(
@@ -148,7 +152,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    tr("text_color"),
+                    tr('text_color'),
                     style: kTextSmallBodyStyle,
                   ),
                   GestureDetector(
@@ -168,7 +172,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    tr("background_color"),
+                    tr('background_color'),
                     style: kTextSmallBodyStyle,
                   ),
                   GestureDetector(
@@ -181,32 +185,32 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   )
                 ],
               ),
-              const SizedBox(height: 10,),
+              const SizedBox(
+                height: 10,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [Text(
-                  tr("text_weight"),
-                  style: kTextSmallBodyStyle,
-                ),
-                 DropdownButton(
-                    value: settingValues.subtitleTextStyle,
-                    items: [
-                      DropdownMenuItem(
-                          value: 'light',
-                          child: Text(tr("light"))),
-                      DropdownMenuItem(
-                          value: 'regular',
-                          child: Text(tr("regular"))),
-                      DropdownMenuItem(
-                          value: 'bold',
-                          child: Text(tr("bold"))),
-                      
-                    ],
-                    onChanged: (String? value) {
-                      setState(() {
-                        settingValues.subtitleTextStyle = value!;
-                      });
-                    }),],
+                children: [
+                  Text(
+                    tr('text_weight'),
+                    style: kTextSmallBodyStyle,
+                  ),
+                  DropdownButton(
+                      value: settingValues.subtitleTextStyle,
+                      items: [
+                        DropdownMenuItem(
+                            value: 'light', child: Text(tr('light'))),
+                        DropdownMenuItem(
+                            value: 'regular', child: Text(tr('regular'))),
+                        DropdownMenuItem(
+                            value: 'bold', child: Text(tr('bold'))),
+                      ],
+                      onChanged: (String? value) {
+                        setState(() {
+                          settingValues.subtitleTextStyle = value!;
+                        });
+                      }),
+                ],
               ),
               const SizedBox(
                 height: 25,
@@ -216,7 +220,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   const LeadingDot(),
                   Expanded(
                     child: Text(
-                      tr("general"),
+                      tr('general'),
                       style: kTextHeaderStyle,
                     ),
                   ),
@@ -231,7 +235,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 title: Text(
-                  tr("auto_full_screen"),
+                  tr('auto_full_screen'),
                 ),
                 onChanged: ((value) {
                   setState(() {
@@ -245,7 +249,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 title: Text(
-                  tr("seek_second"),
+                  tr('seek_second'),
                 ),
                 trailing: DropdownButton(
                     value: settingValues.defaultSeekDuration,
@@ -268,7 +272,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 title: Text(
-                  tr("buffer_amount"),
+                  tr('buffer_amount'),
                 ),
                 trailing: DropdownButton(
                     value: settingValues.defaultMaxBufferDuration,
@@ -328,7 +332,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 title: Text(
-                  tr("video_resolution"),
+                  tr('video_resolution'),
                 ),
                 trailing: DropdownButton(
                     value: settingValues.defaultVideoResolution,
@@ -336,7 +340,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       DropdownMenuItem(
                           value: 0,
                           child: Text(
-                            tr("auto"),
+                            tr('auto'),
                           )),
                       const DropdownMenuItem(value: 360, child: Text('360p')),
                       const DropdownMenuItem(value: 720, child: Text('720p')),
@@ -352,15 +356,15 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 title: Text(
-                  tr("player_time_display"),
+                  tr('player_time_display'),
                 ),
                 trailing: DropdownButton(
                     value: settingValues.playerTimeDisplay,
                     items: [
                       DropdownMenuItem(
-                          value: 1, child: Text(tr("elapsed_total"))),
+                          value: 1, child: Text(tr('elapsed_total'))),
                       DropdownMenuItem(
-                          value: 2, child: Text(tr("elapsed_remaining"))),
+                          value: 2, child: Text(tr('elapsed_remaining'))),
                     ],
                     onChanged: (int? value) {
                       setState(() {
@@ -376,7 +380,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 value: settingValues.fetchSpecificLangSubs,
-                title: Text(tr("fetch_all_subs")),
+                title: Text(tr('fetch_all_subs')),
                 onChanged: ((value) {
                   setState(() {
                     settingValues.fetchSpecificLangSubs = value;
@@ -395,7 +399,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 title: Text(
-                  tr("subtitle_language"),
+                  tr('subtitle_language'),
                 ),
               ),
               ListTile(
@@ -410,7 +414,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 title: Text(
-                  tr("provider_precedence"),
+                  tr('provider_precedence'),
                 ),
               ),
             ],

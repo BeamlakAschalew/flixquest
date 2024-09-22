@@ -682,10 +682,10 @@ packages:
     dependency: "direct main"
     description:
       name: mixpanel_flutter
-      sha256: "5dc993ade5eaad51ebb6c91230971a3443ac30a3d1d24399bc3db74c5705d400"
+      sha256: "7ecd7169acfbda58d9afb35cc4fab8db57410b5f26907206e53d72a86955eb8e"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.3.2"
   native_device_orientation:
     dependency: "direct main"
     description:

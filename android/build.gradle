@@ -7,10 +7,17 @@ allprojects {
     }
 }
 
+ext {
+    compileSdkVersion   = 34
+    targetSdkVersion    = 33
+    appCompatVersion    = "1.7.0"
+}
+
 rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
     project.evaluationDependsOn(':app')
+    ext.kotlin_version = '2.0.20'
 }
 
 tasks.register("clean", Delete) {

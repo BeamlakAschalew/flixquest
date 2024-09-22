@@ -64,11 +64,11 @@ class MovieDetailPageState extends State<MovieDetailPage>
           SliverAppBar(
             pinned: true,
             elevation: 1,
-            shadowColor: themeMode == "dark" || themeMode == "amoled"
+            shadowColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.white
                 : Colors.black,
             forceElevated: true,
-            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.black
                 : Colors.white,
             leading: SABTN(
@@ -80,7 +80,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
                 child: Text(
               widget.movie.releaseDate == null
                   ? widget.movie.title!
-                  : widget.movie.releaseDate == ""
+                  : widget.movie.releaseDate == ''
                       ? widget.movie.title!
                       : '${widget.movie.title!} (${DateTime.parse(widget.movie.releaseDate!).year})',
               style: TextStyle(
@@ -114,11 +114,11 @@ class MovieDetailPageState extends State<MovieDetailPage>
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
             await Share.share(tr(
-              "share_movie",
+              'share_movie',
               namedArgs: {
-                "title": widget.movie.title!,
-                "rating": widget.movie.voteAverage!.toStringAsFixed(1),
-                "id": widget.movie.id.toString()
+                'title': widget.movie.title!,
+                'rating': widget.movie.voteAverage!.toStringAsFixed(1),
+                'id': widget.movie.id.toString()
               },
             ));
           },

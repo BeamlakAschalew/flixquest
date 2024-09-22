@@ -19,37 +19,38 @@ class ChannelList extends StatefulWidget {
 }
 
 class _ChannelListState extends State<ChannelList> {
-  Channels? channels; 
+  Channels? channels;
   Channels? original;
   bool enableRetry = false;
 
   @override
   void initState() {
-   loadChannels();
+    loadChannels();
     super.initState();
   }
 
   void loadChannels() async {
- try {
-  setState(() {
-    enableRetry = false;
-  });
-  Channels value = await fetchChannels(Endpoints.getIPTVEndpoint(Provider.of<AppDependencyProvider>(context, listen: false).flixquestAPIURL));
-  List<Channel> channelsCopy = List.from(value.channels!);
-  Channels originalCopy = Channels(channels: channelsCopy);
-    setState(() {
-      channels = value;
-      original = originalCopy;
-    });
-  
-} on Exception catch (e) {
-  setState(() {
-    enableRetry = true;
-  });
-  if (mounted) {
-  GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, '');
-  }
-}
+    try {
+      setState(() {
+        enableRetry = false;
+      });
+      Channels value = await fetchChannels(Endpoints.getIPTVEndpoint(
+          Provider.of<AppDependencyProvider>(context, listen: false)
+              .flixquestAPIURL));
+      List<Channel> channelsCopy = List.from(value.channels!);
+      Channels originalCopy = Channels(channels: channelsCopy);
+      setState(() {
+        channels = value;
+        original = originalCopy;
+      });
+    } on Exception catch (e) {
+      setState(() {
+        enableRetry = true;
+      });
+      if (mounted) {
+        GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, '');
+      }
+    }
   }
 
   @override
@@ -57,79 +58,111 @@ class _ChannelListState extends State<ChannelList> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          tr("channels"),
+          tr('channels'),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: enableRetry ? Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [Row(mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.link_off_rounded, size: 35,), const SizedBox(width: 25,), Text(tr("channels_fetch_failed"), style: const TextStyle(fontSize: 20),),
-          ],
-        ),
-        const SizedBox(height: 15,), ElevatedButton(onPressed: () {loadChannels();}, child: Text(tr("retry")))], ) : channels == null
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
+          padding: const EdgeInsets.all(8.0),
+          child: enableRetry
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(10.0),
-       
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
-          children: [
-            const SizedBox(width: 8.0),
-            Expanded(
-              child: TextField(
-                onChanged: (v) {
-                  setState(() {
-                    channels!.channels = original!.channels;
-                  });
-                  if (v.isNotEmpty) {
-                    setState(() {
-                      channels!.channels = channels!.channels!.where((element) => (element.channelName!.toLowerCase().contains(v.toLowerCase()))).toList();
-                    });
-                  }
-                },
-                decoration: const InputDecoration(
-                    hintText: 'Search',
-                    border: InputBorder.none,),
-              ),
-            ),
-            const Icon(Icons.search),
-          ],
-        ),
-      ),
-    ),
-    channels!.channels!.isEmpty
-                ? Expanded(
-                  child: Center(
-                    child: Text(
-                      tr("no_channels"),
-                      style: kTextHeaderStyle,
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.link_off_rounded,
+                          size: 35,
+                        ),
+                        const SizedBox(
+                          width: 25,
+                        ),
+                        Text(
+                          tr('channels_fetch_failed'),
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ],
                     ),
-                  ),
-                )
-                :     Expanded(
-                      child: ListView.builder(
-                        itemCount: channels!.channels!.length,
-                    shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          return ChannelWidget(
-                            channel: channels!,
-                            index: index,
-                          );
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          loadChannels();
                         },
-                      ),
-                    ),
+                        child: Text(tr('retry')))
                   ],
                 )
-      ),
+              : channels == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 8.0),
+                                Expanded(
+                                  child: TextField(
+                                    onChanged: (v) {
+                                      setState(() {
+                                        channels!.channels = original!.channels;
+                                      });
+                                      if (v.isNotEmpty) {
+                                        setState(() {
+                                          channels!.channels = channels!
+                                              .channels!
+                                              .where((element) => (element
+                                                  .channelName!
+                                                  .toLowerCase()
+                                                  .contains(v.toLowerCase())))
+                                              .toList();
+                                        });
+                                      }
+                                    },
+                                    decoration: const InputDecoration(
+                                      hintText: 'Search',
+                                      border: InputBorder.none,
+                                    ),
+                                  ),
+                                ),
+                                const Icon(Icons.search),
+                              ],
+                            ),
+                          ),
+                        ),
+                        channels!.channels!.isEmpty
+                            ? Expanded(
+                                child: Center(
+                                  child: Text(
+                                    tr('no_channels'),
+                                    style: kTextHeaderStyle,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              )
+                            : Expanded(
+                                child: ListView.builder(
+                                  itemCount: channels!.channels!.length,
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    return ChannelWidget(
+                                      channel: channels!,
+                                      index: index,
+                                    );
+                                  },
+                                ),
+                              ),
+                      ],
+                    )),
     );
   }
 }
@@ -146,7 +179,6 @@ class ChannelWidget extends StatefulWidget {
 }
 
 class _ChannelWidgetState extends State<ChannelWidget> {
-
   late AppDependencyProvider appDep =
       Provider.of<AppDependencyProvider>(context, listen: false);
 
@@ -164,24 +196,27 @@ class _ChannelWidgetState extends State<ChannelWidget> {
         GestureDetector(
           onTap: () {
             final mixpanel =
-                Provider.of<SettingsProvider>(context, listen: false)
-                    .mixpanel;
-            final autoFS =
-                Provider.of<SettingsProvider>(context, listen: false)
-                    .defaultViewMode;
+                Provider.of<SettingsProvider>(context, listen: false).mixpanel;
+            final autoFS = Provider.of<SettingsProvider>(context, listen: false)
+                .defaultViewMode;
             mixpanel.track('Most viewed TV channels', properties: {
-              'TV Channel name': widget.channel.channels![widget.index].channelName ?? "N/A",
+              'TV Channel name':
+                  widget.channel.channels![widget.index].channelName ?? 'N/A',
             });
             Navigator.push(context, MaterialPageRoute(builder: ((context) {
               return LivePlayer(
-                channelName: widget.channel.channels![widget.index].channelName!,
-                videoUrl: Channels.baseUrl! + widget.channel.channels![widget.index].channelId!.toString() + Channels.trailingUrl!,
+                channelName:
+                    widget.channel.channels![widget.index].channelName!,
+                videoUrl: Channels.baseUrl! +
+                    widget.channel.channels![widget.index].channelId!
+                        .toString() +
+                    Channels.trailingUrl!,
                 referrer: Channels.referrer!,
                 autoFullScreen: autoFS,
                 userAgent: Channels.userAgent!,
                 colors: [
                   Theme.of(context).primaryColor,
-                  Theme.of(context).colorScheme.background
+                  Theme.of(context).colorScheme.surface
                 ],
               );
             })));

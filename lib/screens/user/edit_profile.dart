@@ -107,7 +107,9 @@ class _ProfileEditState extends State<ProfileEdit> {
             'username': username!.trim().toLowerCase(),
             'verified': isVerified
           }).then((value) {
-            Navigator.pop(context);
+            if (mounted) {
+              Navigator.pop(context);
+            }
           });
         } else if (username != _userName) {
           if (await checkIfDocExists(_userName) == true) {
@@ -115,7 +117,7 @@ class _ProfileEditState extends State<ProfileEdit> {
               GlobalMethods.showCustomScaffoldMessage(
                   SnackBar(
                     content: Text(
-                      tr("username_exists"),
+                      tr('username_exists'),
                       maxLines: 3,
                       style: kTextSmallBodyStyle,
                     ),
@@ -152,7 +154,9 @@ class _ProfileEditState extends State<ProfileEdit> {
             'username': _userName.trim().toLowerCase(),
             'verified': isVerified
           }).then((value) {
-            Navigator.pop(context);
+            if (mounted) {
+              Navigator.pop(context);
+            }
           });
         }
       } catch (e) {
@@ -179,7 +183,7 @@ class _ProfileEditState extends State<ProfileEdit> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("edit_profile")),
+        title: Text(tr('edit_profile')),
       ),
       body: Container(
         padding: const EdgeInsets.all(8),
@@ -196,7 +200,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            tr("profile_picture"),
+                            tr('profile_picture'),
                             style: const TextStyle(
                               fontFamily: 'PoppinsSB',
                               fontSize: 20,
@@ -254,10 +258,10 @@ class _ProfileEditState extends State<ProfileEdit> {
                               key: const ValueKey('name'),
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return tr("name_empty");
+                                  return tr('name_empty');
                                 } else if (value.length > 40 ||
                                     value.length < 2) {
-                                  return tr("name_short_long");
+                                  return tr('name_short_long');
                                 }
                                 return null;
                               },
@@ -270,9 +274,9 @@ class _ProfileEditState extends State<ProfileEdit> {
                                 border: const UnderlineInputBorder(),
                                 filled: true,
                                 prefixIcon: const Icon(FontAwesomeIcons.user),
-                                labelText: tr("full_name"),
+                                labelText: tr('full_name'),
                                 fillColor:
-                                    Theme.of(context).colorScheme.background,
+                                    Theme.of(context).colorScheme.surface,
                               ),
                               onSaved: (value) {
                                 _fullName = value!;
@@ -293,13 +297,13 @@ class _ProfileEditState extends State<ProfileEdit> {
                               key: const ValueKey('username'),
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return tr("username_empty");
+                                  return tr('username_empty');
                                 } else if (value.length < 5 ||
                                     value.length > 30) {
-                                  return tr("username_short_long");
+                                  return tr('username_short_long');
                                 } else if (!value
                                     .contains(RegExp('^[a-zA-Z0-9_]*'))) {
-                                  return tr("invalid_username");
+                                  return tr('invalid_username');
                                 }
                                 return null;
                               },
@@ -310,9 +314,9 @@ class _ProfileEditState extends State<ProfileEdit> {
                                   border: const UnderlineInputBorder(),
                                   filled: true,
                                   prefixIcon: const Icon(FontAwesomeIcons.at),
-                                  labelText: tr("username"),
+                                  labelText: tr('username'),
                                   fillColor:
-                                      Theme.of(context).colorScheme.background),
+                                      Theme.of(context).colorScheme.surface),
                               onSaved: (value) {
                                 _userName = value!;
                               },
@@ -328,11 +332,11 @@ class _ProfileEditState extends State<ProfileEdit> {
                           : ElevatedButton(
                               style: const ButtonStyle(
                                   minimumSize:
-                                      MaterialStatePropertyAll(Size(250, 45))),
+                                      WidgetStatePropertyAll(Size(250, 45))),
                               onPressed: () {
                                 updateProfile();
                               },
-                              child: Text(tr("confirm"))),
+                              child: Text(tr('confirm'))),
                       const SizedBox(
                         height: 40,
                       ),
@@ -349,14 +353,14 @@ class _ProfileEditState extends State<ProfileEdit> {
                               })));
                             },
                             style: ButtonStyle(
-                                maximumSize: MaterialStateProperty.all(
+                                maximumSize: WidgetStateProperty.all(
                                     const Size(200, 60)),
-                                shape: MaterialStateProperty.all<
+                                shape: WidgetStateProperty.all<
                                         RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ))),
-                            child: Text(tr("change_password")),
+                            child: Text(tr('change_password')),
                           ),
                           TextButton(
                             onPressed: () {
@@ -366,14 +370,14 @@ class _ProfileEditState extends State<ProfileEdit> {
                               })));
                             },
                             style: ButtonStyle(
-                                maximumSize: MaterialStateProperty.all(
+                                maximumSize: WidgetStateProperty.all(
                                     const Size(200, 60)),
-                                shape: MaterialStateProperty.all<
+                                shape: WidgetStateProperty.all<
                                         RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ))),
-                            child: Text(tr("change_email")),
+                            child: Text(tr('change_email')),
                           ),
                           TextButton(
                             onPressed: () {
@@ -383,17 +387,17 @@ class _ProfileEditState extends State<ProfileEdit> {
                               })));
                             },
                             style: ButtonStyle(
-                                maximumSize: MaterialStateProperty.all(
+                                maximumSize: WidgetStateProperty.all(
                                     const Size(200, 60)),
                                 backgroundColor:
-                                    const MaterialStatePropertyAll(Colors.red),
-                                shape: MaterialStateProperty.all<
+                                    const WidgetStatePropertyAll(Colors.red),
+                                shape: WidgetStateProperty.all<
                                         RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ))),
                             child: Text(
-                              tr("delete_account"),
+                              tr('delete_account'),
                               style: const TextStyle(color: Colors.white),
                             ),
                           ),

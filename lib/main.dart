@@ -32,7 +32,7 @@ Future<void> appInitialize() async {
   //     await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
   // SecurityContext.defaultContext
   //     .setTrustedCertificatesBytes(data.buffer.asUint8List());
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: '.env');
   await EasyLocalization.ensureInitialized();
   sharedPrefsSingleton = await SharedPreferencesSingleton.getInstance();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);

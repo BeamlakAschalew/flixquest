@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
@@ -69,12 +71,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     String backgroundColorString = widget.settings.subtitleBackgroundColor;
     String foregroundColorString = widget.settings.subtitleForegroundColor;
     String hexColorBackground =
-        backgroundColorString.replaceAll("Color(0x", "").replaceAll(")", "");
+        backgroundColorString.replaceAll('Color(0x', '').replaceAll(')', '');
     String hexColorForeground =
-        foregroundColorString.replaceAll("Color(0x", "").replaceAll(")", "");
+        foregroundColorString.replaceAll('Color(0x', '').replaceAll(')', '');
 
-    Color backgroundColor = Color(int.parse("0x$hexColorBackground"));
-    Color foregroundColor = Color(int.parse("0x$hexColorForeground"));
+    Color backgroundColor = Color(int.parse('0x$hexColorBackground'));
+    Color foregroundColor = Color(int.parse('0x$hexColorForeground'));
 
     WidgetsBinding.instance.addObserver(this);
     betterPlayerBufferingConfiguration = BetterPlayerBufferingConfiguration(
@@ -89,8 +91,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         },
         enableFullscreen: true,
         name: widget.mediaType == MediaType.movie
-            ? "${widget.movieMetadata!.movieName!} (${widget.movieMetadata!.releaseYear!})"
-            : "${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}",
+            ? '${widget.movieMetadata!.movieName!} (${widget.movieMetadata!.releaseYear!})'
+            : '${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}',
         backgroundColor: Colors.black,
         progressBarBackgroundColor: Colors.white,
         controlBarColor: Colors.black.withOpacity(0.3),
@@ -122,7 +124,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         qualitiesIcon: Icons.hd_rounded,
         enableAudioTracks: false,
         controlBarHeight: 50,
-        watchingText: tr("watching_text"),
+        watchingText: tr('watching_text'),
         playerTimeMode: settings.playerTimeDisplay);
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(

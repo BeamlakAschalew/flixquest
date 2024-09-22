@@ -56,13 +56,13 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     final imagefolderName = imageTypeFolderName;
     final posterFolderName = posterFolder;
     final stillFolderName = stillFolder;
-    final flixquestPath = Directory("storage/emulated/0/$cinefolderName");
+    final flixquestPath = Directory('storage/emulated/0/$cinefolderName');
     final imageTypePath =
-        Directory("storage/emulated/0/FlixQuest/$imagefolderName");
+        Directory('storage/emulated/0/FlixQuest/$imagefolderName');
     final posterPath =
-        Directory("storage/emulated/0/FlixQuest/$posterFolderName");
+        Directory('storage/emulated/0/FlixQuest/$posterFolderName');
     final stillPath =
-        Directory("storage/emulated/0/FlixQuest/$stillFolderName");
+        Directory('storage/emulated/0/FlixQuest/$stillFolderName');
 
     if ((await flixquestPath.exists())) {
       imageTypePath.create();
@@ -79,13 +79,13 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   void _download(String url, String currentIndex, String themeMode) async {
     var externalStatus = await Permission.manageExternalStorage.status;
     if (externalStatus.isPermanentlyDenied) {
-      GlobalMethods.showScaffoldMessage(tr("give_file_permission"), context);
+      GlobalMethods.showScaffoldMessage(tr('give_file_permission'), context);
       return;
     } else if (!externalStatus.isGranted) {
       await Permission.manageExternalStorage.request().then((value) {
         if (value.isDenied) {
           GlobalMethods.showScaffoldMessage(
-              tr("give_file_permission_short"), context);
+              tr('give_file_permission_short'), context);
           return;
         }
       });
@@ -148,14 +148,17 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
               onPressed: () async {
                 _download(
                     widget.imageType == 'backdrop'
-                        ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                        ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
+                                isProxyEnabled, context) +
                             imageQuality +
                             widget.backdrops![currentIndex].filePath!
                         : widget.imageType == 'poster'
-                            ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                            ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
+                                    isProxyEnabled, context) +
                                 imageQuality +
                                 widget.posters![currentIndex].posterPath!
-                            : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                            : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
+                                    isProxyEnabled, context) +
                                 imageQuality +
                                 widget.stills![currentIndex].stillPath!,
                     '${currentIndex + 1}',
@@ -176,14 +179,17 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
             return PhotoViewGalleryPageOptions(
               imageProvider: CachedNetworkImageProvider(
                 widget.imageType == 'backdrop'
-                    ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                    ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
+                            isProxyEnabled, context) +
                         imageQuality +
                         widget.backdrops![currentIndex].filePath!
                     : widget.imageType == 'poster'
-                        ?  buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                        ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
+                                isProxyEnabled, context) +
                             imageQuality +
                             widget.posters![currentIndex].posterPath!
-                        : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                        : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
+                                isProxyEnabled, context) +
                             imageQuality +
                             widget.stills![currentIndex].stillPath!,
               ),
@@ -213,10 +219,10 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
         Container(
           padding: const EdgeInsets.all(20.0),
           child: Text(
-            tr("image_index",
-                namedArgs: {"index": (currentIndex + 1).toString()}),
+            tr('image_index',
+                namedArgs: {'index': (currentIndex + 1).toString()}),
             style: TextStyle(
-              color: themeMode == "dark" || themeMode == "amoled"
+              color: themeMode == 'dark' || themeMode == 'amoled'
                   ? Colors.white
                   : Colors.black,
               fontSize: 17.0,

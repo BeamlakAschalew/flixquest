@@ -3,7 +3,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 const String TMDB_API_BASE_URL = 'https://api.themoviedb.org/3';
-const String opensubtitlesBaseUrl = "https://api.opensubtitles.com/api/v1";
+const String opensubtitlesBaseUrl = 'https://api.opensubtitles.com/api/v1';
 String TMDB_API_KEY = dotenv.env['TMDB_API_KEY']!;
 String mixpanelKey = dotenv.env['MIXPANEL_API_KEY']!;
 String openSubtitlesKey = dotenv.env['OPENSUBTITLES_API_KEY']!;
@@ -23,6 +23,6 @@ const String FLIXQUEST_UPDATE_URL =
 String CONSUMET_API = dotenv.env['CONSUMET_URL']!;
 String CONSUMET_INFO_API = dotenv.env['CONSUMET_URL']!;
 String flixquestApiUrl = dotenv.env['FLIXQUEST_API_URL']!;
-const String STREAMING_SERVER_FLIXHQ = "vidcloud";
-const String STREAMING_SERVER_DCVA = "asianload";
-const String STREAMING_SERVER_ZORO = "vidcloud";
+const String STREAMING_SERVER_FLIXHQ = 'vidcloud';
+const String STREAMING_SERVER_DCVA = 'asianload';
+const String STREAMING_SERVER_ZORO = 'vidcloud';

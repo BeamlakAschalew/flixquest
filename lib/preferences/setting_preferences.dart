@@ -2,7 +2,7 @@
 import 'package:flixquest/constants/app_constants.dart';
 
 class SettingsPreferences {
-  static const ADULT_MODE_STATUS = "adultStatus-v2";
+  static const ADULT_MODE_STATUS = 'adultStatus-v2';
 
   setAdultMode(bool value) async {
     sharedPrefsSingleton.setBool(ADULT_MODE_STATUS, value);
@@ -31,16 +31,16 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getInt(DEFAULT_SCREEN_STATUS) ?? 0;
   }
 
-  static const IMAGE_QUALITY_STATUS = "w500/";
+  static const IMAGE_QUALITY_STATUS = 'w500/';
   setImageQuality(String imageQuality) async {
     sharedPrefsSingleton.setString(IMAGE_QUALITY_STATUS, imageQuality);
   }
 
   Future<String> getImageQuality() async {
-    return sharedPrefsSingleton.getString(IMAGE_QUALITY_STATUS) ?? "w500/";
+    return sharedPrefsSingleton.getString(IMAGE_QUALITY_STATUS) ?? 'w500/';
   }
 
-  static const MATERIAL3_MODE_STATUS = "materialStatus";
+  static const MATERIAL3_MODE_STATUS = 'materialStatus';
 
   setMaterial3Mode(bool value) async {
     sharedPrefsSingleton.setBool(MATERIAL3_MODE_STATUS, value);
@@ -50,23 +50,23 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getBool(MATERIAL3_MODE_STATUS) ?? false;
   }
 
-  static const THEME_MODE_STATUS = "themeStatusV2";
+  static const THEME_MODE_STATUS = 'themeStatusV2';
 
   setThemeMode(String value) async {
     sharedPrefsSingleton.setString(THEME_MODE_STATUS, value);
   }
 
   Future<String> getThemeMode() async {
-    return sharedPrefsSingleton.getString(THEME_MODE_STATUS) ?? "dark";
+    return sharedPrefsSingleton.getString(THEME_MODE_STATUS) ?? 'dark';
   }
 
-  static const VIEW_PREFERENCE_STATUS = "list";
+  static const VIEW_PREFERENCE_STATUS = 'list';
   setViewType(String viewType) async {
     sharedPrefsSingleton.setString(VIEW_PREFERENCE_STATUS, viewType);
   }
 
   Future<String> getViewType() async {
-    return sharedPrefsSingleton.getString(VIEW_PREFERENCE_STATUS) ?? "grid";
+    return sharedPrefsSingleton.getString(VIEW_PREFERENCE_STATUS) ?? 'grid';
   }
 
   static const SEEK_PREFERENCE = 'seek';
@@ -173,7 +173,7 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getString(APP_LANGUAGE_CODE) ?? 'en';
   }
 
-  static const APP_COLOR_INDEX = "appColorIndex";
+  static const APP_COLOR_INDEX = 'appColorIndex';
 
   setAppColorIndex(int index) async {
     sharedPrefsSingleton.setInt(APP_COLOR_INDEX, index);
@@ -183,7 +183,7 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getInt(APP_COLOR_INDEX) ?? -1;
   }
 
-  static const PROVIDER_PRECEDENCE = "providerPrecedence-v8";
+  static const PROVIDER_PRECEDENCE = 'providerPrecedence-v8';
 
   setProviderPrecedence(String pre) async {
     sharedPrefsSingleton.setString(PROVIDER_PRECEDENCE, pre);
@@ -194,7 +194,7 @@ class SettingsPreferences {
         providerPreference;
   }
 
-  static const PLAYER_STYLE_INDEX = "playerStyleIndex";
+  static const PLAYER_STYLE_INDEX = 'playerStyleIndex';
 
   setPlayerStyleIndex(int index) async {
     sharedPrefsSingleton.setInt(PLAYER_STYLE_INDEX, index);
@@ -204,7 +204,7 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getInt(PLAYER_STYLE_INDEX) ?? 1;
   }
 
-  static const USE_PROXY = "use_proxy";
+  static const USE_PROXY = 'use_proxy';
 
   setUseProxy(bool useProxy) {
     sharedPrefsSingleton.setBool(USE_PROXY, useProxy);
@@ -214,13 +214,13 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getBool(USE_PROXY) ?? false;
   }
 
-  static const SUBTITLE_TEXT_STYLE = "subtitle_text_style";
+  static const SUBTITLE_TEXT_STYLE = 'subtitle_text_style';
 
   setSubtitleStyle(String value) {
     sharedPrefsSingleton.setString(SUBTITLE_TEXT_STYLE, value);
   }
 
   Future<String> getSubtitleStyle() async {
-    return sharedPrefsSingleton.getString(SUBTITLE_TEXT_STYLE) ?? "regular";
+    return sharedPrefsSingleton.getString(SUBTITLE_TEXT_STYLE) ?? 'regular';
   }
 }

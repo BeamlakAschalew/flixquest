@@ -77,19 +77,19 @@ class Endpoints {
   }
 
   static String movieSearchUrl(String query, bool includeAdult, String l) {
-    return "$TMDB_API_BASE_URL/search/movie?query=$query&include_adult=$includeAdult&language=$l&api_key=$TMDB_API_KEY";
+    return '$TMDB_API_BASE_URL/search/movie?query=$query&include_adult=$includeAdult&language=$l&api_key=$TMDB_API_KEY';
   }
 
   static String personSearchUrl(String query, bool includeAdult, String l) {
-    return "$TMDB_API_BASE_URL/search/person?query=$query&include_adult=$includeAdult&language=$l&api_key=$TMDB_API_KEY";
+    return '$TMDB_API_BASE_URL/search/person?query=$query&include_adult=$includeAdult&language=$l&api_key=$TMDB_API_KEY';
   }
 
   static String tvSearchUrl(String query, bool includeAdult, String l) {
-    return "$TMDB_API_BASE_URL/search/tv?query=$query&include_adult=$includeAdult&language=$l&api_key=$TMDB_API_KEY";
+    return '$TMDB_API_BASE_URL/search/tv?query=$query&include_adult=$includeAdult&language=$l&api_key=$TMDB_API_KEY';
   }
 
   static getPerson(int personId, String l) {
-    return "$TMDB_API_BASE_URL/person/$personId?api_key=$TMDB_API_KEY&language=$l&append_to_response=movie_credits";
+    return '$TMDB_API_BASE_URL/person/$personId?api_key=$TMDB_API_KEY&language=$l&append_to_response=movie_credits';
   }
 
   static watchProvidersMovies(int providerId, int page, String l) {
@@ -416,5 +416,5 @@ class Endpoints {
 
   static String getIPTVEndpoint(String baseUrl) {
     return '$baseUrl' 'daddylive/live';
-  } 
+  }
 }

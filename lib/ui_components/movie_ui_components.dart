@@ -77,7 +77,11 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                       imageUrl:
                                           movieList![index].posterPath == null
                                               ? ''
-                                              : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                              : buildImageUrl(
+                                                      TMDB_BASE_IMAGE_URL,
+                                                      proxyUrl,
+                                                      isProxyEnabled,
+                                                      context) +
                                                   imageQuality +
                                                   movieList![index].posterPath!,
                                       imageBuilder: (context, imageProvider) =>
@@ -109,8 +113,8 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
-                                    color: themeMode == "dark" ||
-                                            themeMode == "amoled"
+                                    color: themeMode == 'dark' ||
+                                            themeMode == 'amoled'
                                         ? Colors.black45
                                         : Colors.white60),
                                 child: Row(
@@ -219,7 +223,11 @@ class MovieListView extends StatelessWidget {
                                         fadeInDuration:
                                             const Duration(milliseconds: 700),
                                         fadeInCurve: Curves.easeIn,
-                                        imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                        imageUrl: buildImageUrl(
+                                                TMDB_BASE_IMAGE_URL,
+                                                proxyUrl,
+                                                isProxyEnabled,
+                                                context) +
                                             imageQuality +
                                             moviesList![index].posterPath!,
                                         imageBuilder:
@@ -276,7 +284,7 @@ class MovieListView extends StatelessWidget {
                       ],
                     ),
                     Divider(
-                      color: themeMode == "light"
+                      color: themeMode == 'light'
                           ? Colors.black54
                           : Colors.white54,
                       thickness: 1,
@@ -357,7 +365,11 @@ class MovieGridView extends StatelessWidget {
                                       fadeInDuration:
                                           const Duration(milliseconds: 700),
                                       fadeInCurve: Curves.easeIn,
-                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                      imageUrl: buildImageUrl(
+                                              TMDB_BASE_IMAGE_URL,
+                                              proxyUrl,
+                                              isProxyEnabled,
+                                              context) +
                                           imageQuality +
                                           moviesList![index].posterPath!,
                                       imageBuilder: (context, imageProvider) =>
@@ -389,8 +401,8 @@ class MovieGridView extends StatelessWidget {
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
-                                    color: themeMode == "dark" ||
-                                            themeMode == "amoled"
+                                    color: themeMode == 'dark' ||
+                                            themeMode == 'amoled'
                                         ? Colors.black45
                                         : Colors.white60),
                                 child: Row(

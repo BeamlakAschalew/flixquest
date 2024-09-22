@@ -79,7 +79,7 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
               includeAdult: Provider.of<SettingsProvider>(context).isAdult),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr("popular"),
+            title: tr('popular'),
             api: Endpoints.popularTVUrl(lang),
             discoverType: 'popular',
             isTrending: false,
@@ -89,28 +89,28 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
               : ScrollingRecentEpisodes(episodesList: rEpisodes),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr("trending_this_week"),
+            title: tr('trending_this_week'),
             api: Endpoints.trendingTVUrl(lang),
             discoverType: 'trending',
             isTrending: true,
           ),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr("top_rated"),
+            title: tr('top_rated'),
             api: Endpoints.topRatedTVUrl(lang),
             discoverType: 'top_rated',
             isTrending: false,
           ),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr("airing_today"),
+            title: tr('airing_today'),
             api: Endpoints.airingTodayUrl(lang),
             discoverType: 'airing_today',
             isTrending: false,
           ),
           ScrollingTV(
             includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr("on_the_air"),
+            title: tr('on_the_air'),
             api: Endpoints.onTheAirUrl(lang),
             discoverType: 'on_the_air',
             isTrending: false,
@@ -171,13 +171,16 @@ class DiscoverTVState extends State<DiscoverTV>
   ];
 
   void getData() {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     List<String> years = yearDropdownData.yearsList.getRange(1, 26).toList();
     List<TVGenreFilterChipWidget> genres = tvGenreList;
     years.shuffle();
     genres.shuffle();
-    fetchTV('$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&first_air_date_year=${years.first}&with_genres=${genres.first.genreValue}', isProxyEnabled, proxyUrl)
+    fetchTV('$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&first_air_date_year=${years.first}&with_genres=${genres.first.genreValue}',
+            isProxyEnabled, proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -208,7 +211,7 @@ class DiscoverTVState extends State<DiscoverTV>
                     const LeadingDot(),
                     Expanded(
                       child: Text(
-                        tr("featured_tv_shows"),
+                        tr('featured_tv_shows'),
                         style: kTextHeaderStyle,
                       ),
                     ),
@@ -226,7 +229,7 @@ class DiscoverTVState extends State<DiscoverTV>
               : tvList!.isEmpty
                   ? Center(
                       child: Text(
-                        tr("wow_odd"),
+                        tr('wow_odd'),
                         style: kTextSmallBodyStyle,
                       ),
                     )
@@ -265,7 +268,11 @@ class DiscoverTVState extends State<DiscoverTV>
                                   fadeInCurve: Curves.easeIn,
                                   imageUrl: tvList![index].posterPath == null
                                       ? ''
-                                      : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                      : buildImageUrl(
+                                              TMDB_BASE_IMAGE_URL,
+                                              proxyUrl,
+                                              isProxyEnabled,
+                                              context) +
                                           imageQuality +
                                           tvList![index].posterPath!,
                                   imageBuilder: (context, imageProvider) =>
@@ -327,8 +334,10 @@ class ScrollingTVState extends State<ScrollingTV>
   bool isLoading = false;
 
   void getMoreData() async {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -336,7 +345,8 @@ class ScrollingTVState extends State<ScrollingTV>
           isLoading = true;
         });
 
-        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}',
+                isProxyEnabled, proxyUrl)
             .then((value) {
           if (mounted) {
             setState(() {
@@ -353,9 +363,13 @@ class ScrollingTVState extends State<ScrollingTV>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl).then((value) {
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}',
+            isProxyEnabled, proxyUrl)
+        .then((value) {
       if (mounted) {
         setState(() {
           tvList = value;
@@ -414,15 +428,14 @@ class ScrollingTVState extends State<ScrollingTV>
                     }));
                   },
                   style: ButtonStyle(
-                      maximumSize:
-                          MaterialStateProperty.all(const Size(200, 60)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      maximumSize: WidgetStateProperty.all(const Size(200, 60)),
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ))),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: Text(tr("view_all")),
+                    child: Text(tr('view_all')),
                   ),
                 )),
           ],
@@ -497,7 +510,11 @@ class ScrollingTVState extends State<ScrollingTV>
                                                                     .posterPath ==
                                                                 null
                                                             ? ''
-                                                            : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                            : buildImageUrl(
+                                                                    TMDB_BASE_IMAGE_URL,
+                                                                    proxyUrl,
+                                                                    isProxyEnabled,
+                                                                    context) +
                                                                 imageQuality +
                                                                 tvList![index]
                                                                     .posterPath!,
@@ -544,9 +561,9 @@ class ScrollingTVState extends State<ScrollingTV>
                                                           BorderRadius.circular(
                                                               8),
                                                       color:
-                                                          themeMode == "dark" ||
+                                                          themeMode == 'dark' ||
                                                                   themeMode ==
-                                                                      "amoled"
+                                                                      'amoled'
                                                               ? Colors.black45
                                                               : Colors.white60),
                                                   child: Row(
@@ -597,7 +614,7 @@ class ScrollingTVState extends State<ScrollingTV>
                 ),
         ),
         Divider(
-          color: themeMode == "light" ? Colors.black54 : Colors.white54,
+          color: themeMode == 'light' ? Colors.black54 : Colors.white54,
           thickness: 1,
           endIndent: 20,
           indent: 10,
@@ -643,7 +660,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                     const LeadingDot(),
                     Expanded(
                       child: Text(
-                        tr("recently_watched"),
+                        tr('recently_watched'),
                         style: kTextHeaderStyle,
                       ),
                     ),
@@ -662,8 +679,8 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
             //       },
             //       style: ButtonStyle(
             //           maximumSize:
-            //               MaterialStateProperty.all(const Size(200, 60)),
-            //           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            //               WidgetStateProperty.all(const Size(200, 60)),
+            //           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             //               RoundedRectangleBorder(
             //             borderRadius: BorderRadius.circular(20.0),
             //           ))),
@@ -699,13 +716,16 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                         },
                         onTap: () async {
                           await checkConnection().then((value) {
+                            if (!context.mounted) {
+                              return;
+                            }
                             value
                                 ? Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => TVVideoLoader(
                                             download: false,
-                                            route: fetchRoute == "flixHQ"
+                                            route: fetchRoute == 'flixHQ'
                                                 ? StreamRoute.flixHQ
                                                 : StreamRoute.tmDB,
                                             metadata: TVStreamMetadata(
@@ -735,7 +755,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                 : GlobalMethods.showCustomScaffoldMessage(
                                     SnackBar(
                                       content: Text(
-                                        tr("check_connection"),
+                                        tr('check_connection'),
                                         maxLines: 3,
                                         style: kTextSmallBodyStyle,
                                       ),
@@ -779,7 +799,11 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                                             .posterPath ==
                                                         null
                                                     ? ''
-                                                    : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                    : buildImageUrl(
+                                                            TMDB_BASE_IMAGE_URL,
+                                                            proxyUrl,
+                                                            isProxyEnabled,
+                                                            context) +
                                                         imageQuality +
                                                         widget
                                                             .episodesList[index]
@@ -892,7 +916,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
           ),
         ),
         Divider(
-          color: themeMode == "light" ? Colors.black54 : Colors.white54,
+          color: themeMode == 'light' ? Colors.black54 : Colors.white54,
           thickness: 1,
           endIndent: 20,
           indent: 10,
@@ -928,8 +952,10 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -959,7 +985,7 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                     const LeadingDot(),
                     Expanded(
                       child: Text(
-                        tr("cast"),
+                        tr('cast'),
                         style: kTextHeaderStyle,
                       ),
                     ),
@@ -991,16 +1017,15 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                   }
                 },
                 style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
-                  maximumSize: MaterialStateProperty.all(const Size(200, 60)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  backgroundColor: WidgetStateProperty.all(Colors.transparent),
+                  maximumSize: WidgetStateProperty.all(const Size(200, 60)),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                   ),
                 ),
-                child: Text(tr("see_all_cast_crew")))
+                child: Text(tr('see_all_cast_crew')))
           ],
         ),
         SizedBox(
@@ -1016,7 +1041,7 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                         width: double.infinity,
                         child: Center(
                             child: Text(
-                          tr("no_cast_tv"),
+                          tr('no_cast_tv'),
                         )),
                       ))
                   : ListView.builder(
@@ -1068,11 +1093,14 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                                                       const Duration(
                                                           milliseconds: 700),
                                                   fadeInCurve: Curves.easeIn,
-                                                  imageUrl:
-                                                      buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                          imageQuality +
-                                                          credits!.cast![index]
-                                                              .profilePath!,
+                                                  imageUrl: buildImageUrl(
+                                                          TMDB_BASE_IMAGE_URL,
+                                                          proxyUrl,
+                                                          isProxyEnabled,
+                                                          context) +
+                                                      imageQuality +
+                                                      credits!.cast![index]
+                                                          .profilePath!,
                                                   imageBuilder: (context,
                                                           imageProvider) =>
                                                       Container(
@@ -1149,8 +1177,10 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -1180,7 +1210,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                           const LeadingDot(),
                           Expanded(
                             child: Text(
-                              tr("cast"),
+                              tr('cast'),
                               style: kTextHeaderStyle,
                             ),
                           ),
@@ -1202,7 +1232,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                             const LeadingDot(),
                             Expanded(
                               child: Text(
-                                tr("cast"),
+                                tr('cast'),
                                 style: kTextHeaderStyle,
                               ),
                             ),
@@ -1210,7 +1240,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                         ),
                       ),
                       Center(
-                          child: Text(tr("no_cast_episode"),
+                          child: Text(tr('no_cast_episode'),
                               textAlign: TextAlign.center)),
                     ],
                   )
@@ -1225,7 +1255,7 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                               const LeadingDot(),
                               Expanded(
                                 child: Text(
-                                  tr("cast"),
+                                  tr('cast'),
                                   style: kTextHeaderStyle,
                                 ),
                               ),
@@ -1248,17 +1278,17 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                           },
                           style: ButtonStyle(
                             backgroundColor:
-                                MaterialStateProperty.all(Colors.transparent),
+                                WidgetStateProperty.all(Colors.transparent),
                             maximumSize:
-                                MaterialStateProperty.all(const Size(200, 60)),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
+                                WidgetStateProperty.all(const Size(200, 60)),
+                            shape:
+                                WidgetStateProperty.all<RoundedRectangleBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
                               ),
                             ),
                           ),
-                          child: Text(tr("see_all_cast_crew")))
+                          child: Text(tr('see_all_cast_crew')))
                     ],
                   ),
         SizedBox(
@@ -1311,7 +1341,11 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
                                               fadeInDuration: const Duration(
                                                   milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
-                                              imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                              imageUrl: buildImageUrl(
+                                                      TMDB_BASE_IMAGE_URL,
+                                                      proxyUrl,
+                                                      isProxyEnabled,
+                                                      context) +
                                                   imageQuality +
                                                   credits!.cast![index]
                                                       .profilePath!,
@@ -1386,8 +1420,10 @@ class ScrollingTVEpisodeGuestStarsState
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -1413,7 +1449,7 @@ class ScrollingTVEpisodeGuestStarsState
                 child: Row(
                   children: <Widget>[
                     Text(
-                      tr("guest_stars"),
+                      tr('guest_stars'),
                       style: kTextHeaderStyle,
                     ),
                   ],
@@ -1423,7 +1459,7 @@ class ScrollingTVEpisodeGuestStarsState
                 ? Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Center(
-                        child: Text(tr("no_guest_episode"),
+                        child: Text(tr('no_guest_episode'),
                             textAlign: TextAlign.center)),
                   )
                 : Row(
@@ -1432,7 +1468,7 @@ class ScrollingTVEpisodeGuestStarsState
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          tr("guest_stars"),
+                          tr('guest_stars'),
                           style: kTextHeaderStyle,
                         ),
                       ),
@@ -1499,7 +1535,11 @@ class ScrollingTVEpisodeGuestStarsState
                                               fadeInDuration: const Duration(
                                                   milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
-                                              imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                              imageUrl: buildImageUrl(
+                                                      TMDB_BASE_IMAGE_URL,
+                                                      proxyUrl,
+                                                      isProxyEnabled,
+                                                      context) +
                                                   imageQuality +
                                                   credits!
                                                       .episodeGuestStars![index]
@@ -1572,8 +1612,10 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -1599,7 +1641,7 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                 child: Row(
                   children: <Widget>[
                     Text(
-                      tr("crew"),
+                      tr('crew'),
                       style: kTextHeaderStyle,
                     ),
                   ],
@@ -1609,7 +1651,7 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                 ? Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Center(
-                        child: Text(tr("no_crew_episode"),
+                        child: Text(tr('no_crew_episode'),
                             textAlign: TextAlign.center)),
                   )
                 : Row(
@@ -1618,7 +1660,7 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          tr("crew"),
+                          tr('crew'),
                           style: kTextHeaderStyle,
                         ),
                       ),
@@ -1681,7 +1723,11 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                                               fadeInDuration: const Duration(
                                                   milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
-                                              imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                              imageUrl: buildImageUrl(
+                                                      TMDB_BASE_IMAGE_URL,
+                                                      proxyUrl,
+                                                      isProxyEnabled,
+                                                      context) +
                                                   imageQuality +
                                                   credits!.crew![index]
                                                       .profilePath!,
@@ -1756,8 +1802,10 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchTVDetails(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -1786,7 +1834,7 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                     const LeadingDot(),
                     Expanded(
                       child: Text(
-                        tr("created_by"),
+                        tr('created_by'),
                         style: kTextHeaderStyle,
                       ),
                     ),
@@ -1805,7 +1853,7 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                   ? Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Center(
-                          child: Text(tr("no_creators"),
+                          child: Text(tr('no_creators'),
                               textAlign: TextAlign.center)),
                     )
                   : ListView.builder(
@@ -1857,12 +1905,15 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
                                                       const Duration(
                                                           milliseconds: 700),
                                                   fadeInCurve: Curves.easeIn,
-                                                  imageUrl:
-                                                      buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                          imageQuality +
-                                                          tvDetails!
-                                                              .createdBy![index]
-                                                              .profilePath!,
+                                                  imageUrl: buildImageUrl(
+                                                          TMDB_BASE_IMAGE_URL,
+                                                          proxyUrl,
+                                                          isProxyEnabled,
+                                                          context) +
+                                                      imageQuality +
+                                                      tvDetails!
+                                                          .createdBy![index]
+                                                          .profilePath!,
                                                   imageBuilder: (context,
                                                           imageProvider) =>
                                                       Container(
@@ -1929,8 +1980,10 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchImages(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -2016,11 +2069,14 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                                         const Duration(
                                                             milliseconds: 700),
                                                     fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                            imageQuality +
-                                                            tvImages!.poster![0]
-                                                                .posterPath!,
+                                                    imageUrl: buildImageUrl(
+                                                            TMDB_BASE_IMAGE_URL,
+                                                            proxyUrl,
+                                                            isProxyEnabled,
+                                                            context) +
+                                                        imageQuality +
+                                                        tvImages!.poster![0]
+                                                            .posterPath!,
                                                     imageBuilder: (context,
                                                             imageProvider) =>
                                                         GestureDetector(
@@ -2038,7 +2094,11 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                                         })));
                                                       },
                                                       child: Hero(
-                                                        tag: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                        tag: buildImageUrl(
+                                                                TMDB_BASE_IMAGE_URL,
+                                                                proxyUrl,
+                                                                isProxyEnabled,
+                                                                context) +
                                                             imageQuality +
                                                             tvImages!.poster![0]
                                                                 .posterPath!,
@@ -2074,15 +2134,15 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                             color: Colors.black38,
                                             child: Text(
                                                 tvImages!.poster!.length == 1
-                                                    ? tr("poster_singular",
+                                                    ? tr('poster_singular',
                                                         namedArgs: {
-                                                            "poster": tvImages!
+                                                            'poster': tvImages!
                                                                 .poster!.length
                                                                 .toString()
                                                           })
-                                                    : tr("poster_plural",
+                                                    : tr('poster_plural',
                                                         namedArgs: {
-                                                            "poster": tvImages!
+                                                            'poster': tvImages!
                                                                 .poster!.length
                                                                 .toString()
                                                           })),
@@ -2122,12 +2182,14 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                                         const Duration(
                                                             milliseconds: 700),
                                                     fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                            imageQuality +
-                                                            tvImages!
-                                                                .backdrop![0]
-                                                                .filePath!,
+                                                    imageUrl: buildImageUrl(
+                                                            TMDB_BASE_IMAGE_URL,
+                                                            proxyUrl,
+                                                            isProxyEnabled,
+                                                            context) +
+                                                        imageQuality +
+                                                        tvImages!.backdrop![0]
+                                                            .filePath!,
                                                     imageBuilder: (context,
                                                             imageProvider) =>
                                                         GestureDetector(
@@ -2146,13 +2208,15 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                                         })));
                                                       },
                                                       child: Hero(
-                                                        tag:
-                                                            buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                                imageQuality +
-                                                                tvImages!
-                                                                    .backdrop![
-                                                                        0]
-                                                                    .filePath!,
+                                                        tag: buildImageUrl(
+                                                                TMDB_BASE_IMAGE_URL,
+                                                                proxyUrl,
+                                                                isProxyEnabled,
+                                                                context) +
+                                                            imageQuality +
+                                                            tvImages!
+                                                                .backdrop![0]
+                                                                .filePath!,
                                                         child: Container(
                                                           decoration:
                                                               BoxDecoration(
@@ -2185,17 +2249,17 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
                                             color: Colors.black38,
                                             child: Text(
                                                 tvImages!.backdrop!.length == 1
-                                                    ? tr("backdrop_singular",
+                                                    ? tr('backdrop_singular',
                                                         namedArgs: {
-                                                            "backdrop":
+                                                            'backdrop':
                                                                 tvImages!
                                                                     .backdrop!
                                                                     .length
                                                                     .toString()
                                                           })
-                                                    : tr("backdrop_plural",
+                                                    : tr('backdrop_plural',
                                                         namedArgs: {
-                                                            "backdrop":
+                                                            'backdrop':
                                                                 tvImages!
                                                                     .backdrop!
                                                                     .length
@@ -2233,8 +2297,10 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchImages(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -2331,7 +2397,11 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                                           fadeInDuration:
                                               const Duration(milliseconds: 700),
                                           fadeInCurve: Curves.easeIn,
-                                          imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                          imageUrl: buildImageUrl(
+                                                  TMDB_BASE_IMAGE_URL,
+                                                  proxyUrl,
+                                                  isProxyEnabled,
+                                                  context) +
                                               imageQuality +
                                               tvImages!.poster![0].posterPath!,
                                           imageBuilder:
@@ -2372,12 +2442,12 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
                                 child: Container(
                                   color: Colors.black38,
                                   child: Text(tvImages!.poster!.length == 1
-                                      ? tr("poster_singular", namedArgs: {
-                                          "poster": tvImages!.poster!.length
+                                      ? tr('poster_singular', namedArgs: {
+                                          'poster': tvImages!.poster!.length
                                               .toString()
                                         })
-                                      : tr("poster_plural", namedArgs: {
-                                          "poster": tvImages!.poster!.length
+                                      : tr('poster_plural', namedArgs: {
+                                          'poster': tvImages!.poster!.length
                                               .toString()
                                         })),
                                 ),
@@ -2409,8 +2479,10 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchImages(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -2505,7 +2577,11 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                                         fadeInDuration:
                                             const Duration(milliseconds: 700),
                                         fadeInCurve: Curves.easeIn,
-                                        imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                        imageUrl: buildImageUrl(
+                                                TMDB_BASE_IMAGE_URL,
+                                                proxyUrl,
+                                                isProxyEnabled,
+                                                context) +
                                             imageQuality +
                                             tvImages!.still![0].stillPath!,
                                         imageBuilder:
@@ -2546,12 +2622,12 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
                               child: Container(
                                 color: Colors.black38,
                                 child: Text(tvImages!.still!.length == 1
-                                    ? tr("still_singular", namedArgs: {
-                                        "still":
+                                    ? tr('still_singular', namedArgs: {
+                                        'still':
                                             tvImages!.still!.length.toString()
                                       })
-                                    : tr("still_plural", namedArgs: {
-                                        "still":
+                                    : tr('still_plural', namedArgs: {
+                                        'still':
                                             tvImages!.still!.length.toString()
                                       })),
                               ),
@@ -2583,8 +2659,10 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchVideos(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -2656,7 +2734,7 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
                             child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child:
-                              Text(tr("no_video"), textAlign: TextAlign.center),
+                              Text(tr('no_video'), textAlign: TextAlign.center),
                         )),
                       )
                     : SizedBox(
@@ -2790,8 +2868,10 @@ class TVCastTabState extends State<TVCastTab>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -2813,7 +2893,7 @@ class TVCastTabState extends State<TVCastTab>
         : credits!.cast!.isEmpty
             ? Center(
                 child: Text(
-                  tr("no_cast_tv"),
+                  tr('no_cast_tv'),
                   style: kTextSmallHeaderStyle,
                   textAlign: TextAlign.center,
                 ),
@@ -2874,12 +2954,14 @@ class TVCastTabState extends State<TVCastTab>
                                                         const Duration(
                                                             milliseconds: 700),
                                                     fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                            imageQuality +
-                                                            credits!
-                                                                .cast![index]
-                                                                .profilePath!,
+                                                    imageUrl: buildImageUrl(
+                                                            TMDB_BASE_IMAGE_URL,
+                                                            proxyUrl,
+                                                            isProxyEnabled,
+                                                            context) +
+                                                        imageQuality +
+                                                        credits!.cast![index]
+                                                            .profilePath!,
                                                     imageBuilder: (context,
                                                             imageProvider) =>
                                                         Container(
@@ -2919,9 +3001,9 @@ class TVCastTabState extends State<TVCastTab>
                                           ),
                                           Text(credits!.cast![index].roles![0]
                                                   .character!.isEmpty
-                                              ? tr("as_empty")
-                                              : tr("as", namedArgs: {
-                                                  "character": credits!
+                                              ? tr('as_empty')
+                                              : tr('as', namedArgs: {
+                                                  'character': credits!
                                                       .cast![index]
                                                       .roles![0]
                                                       .character!
@@ -2934,17 +3016,17 @@ class TVCastTabState extends State<TVCastTab>
                                                             .roles![0]
                                                             .episodeCount! ==
                                                         1
-                                                    ? tr("single_episode",
+                                                    ? tr('single_episode',
                                                         namedArgs: {
-                                                            "count": credits!
+                                                            'count': credits!
                                                                 .cast![index]
                                                                 .roles![0]
                                                                 .episodeCount!
                                                                 .toString()
                                                           })
-                                                    : tr("multi_episode",
+                                                    : tr('multi_episode',
                                                         namedArgs: {
-                                                            "count": credits!
+                                                            'count': credits!
                                                                 .cast![index]
                                                                 .roles![0]
                                                                 .episodeCount!
@@ -2957,7 +3039,7 @@ class TVCastTabState extends State<TVCastTab>
                                   ],
                                 ),
                                 Divider(
-                                  color: themeMode == "light"
+                                  color: themeMode == 'light'
                                       ? Colors.black54
                                       : Colors.white54,
                                   thickness: 1,
@@ -2996,8 +3078,10 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchTVDetails(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -3019,7 +3103,7 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
         : tvDetails!.seasons!.isEmpty
             ? Center(
                 child: Text(
-                  tr("no_season_tv"),
+                  tr('no_season_tv'),
                   style: kTextSmallHeaderStyle,
                   textAlign: TextAlign.center,
                 ),
@@ -3092,13 +3176,15 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
                                                                     700),
                                                         fadeInCurve:
                                                             Curves.easeIn,
-                                                        imageUrl:
-                                                            buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                                imageQuality +
-                                                                tvDetails!
-                                                                    .seasons![
-                                                                        index]
-                                                                    .posterPath!,
+                                                        imageUrl: buildImageUrl(
+                                                                TMDB_BASE_IMAGE_URL,
+                                                                proxyUrl,
+                                                                isProxyEnabled,
+                                                                context) +
+                                                            imageQuality +
+                                                            tvDetails!
+                                                                .seasons![index]
+                                                                .posterPath!,
                                                         imageBuilder: (context,
                                                                 imageProvider) =>
                                                             Container(
@@ -3147,7 +3233,7 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
                                       ],
                                     ),
                                     Divider(
-                                      color: themeMode == "light"
+                                      color: themeMode == 'light'
                                           ? Colors.black54
                                           : Colors.white54,
                                       thickness: 1,
@@ -3184,8 +3270,10 @@ class TVCrewTabState extends State<TVCrewTab>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -3209,7 +3297,7 @@ class TVCrewTabState extends State<TVCrewTab>
         : credits!.crew!.isEmpty
             ? Center(
                 child: Text(
-                  tr("no_cast_tv"),
+                  tr('no_cast_tv'),
                   style: kTextSmallHeaderStyle,
                   textAlign: TextAlign.center,
                   maxLines: 4,
@@ -3271,12 +3359,14 @@ class TVCrewTabState extends State<TVCrewTab>
                                                         const Duration(
                                                             milliseconds: 700),
                                                     fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                            imageQuality +
-                                                            credits!
-                                                                .crew![index]
-                                                                .profilePath!,
+                                                    imageUrl: buildImageUrl(
+                                                            TMDB_BASE_IMAGE_URL,
+                                                            proxyUrl,
+                                                            isProxyEnabled,
+                                                            context) +
+                                                        imageQuality +
+                                                        credits!.crew![index]
+                                                            .profilePath!,
                                                     imageBuilder: (context,
                                                             imageProvider) =>
                                                         Container(
@@ -3316,9 +3406,9 @@ class TVCrewTabState extends State<TVCrewTab>
                                           ),
                                           Text(credits!.crew![index].department!
                                                   .isEmpty
-                                              ? tr("job_empty")
-                                              : tr("job", namedArgs: {
-                                                  "job": credits!
+                                              ? tr('job_empty')
+                                              : tr('job', namedArgs: {
+                                                  'job': credits!
                                                       .crew![index].department!
                                                 })),
                                         ],
@@ -3327,7 +3417,7 @@ class TVCrewTabState extends State<TVCrewTab>
                                   ],
                                 ),
                                 Divider(
-                                  color: themeMode == "light"
+                                  color: themeMode == 'light'
                                       ? Colors.black54
                                       : Colors.white54,
                                   thickness: 1,
@@ -3367,9 +3457,13 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl).then((value) {
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}',
+            isProxyEnabled, proxyUrl)
+        .then((value) {
       if (mounted) {
         setState(() {
           tvList = value;
@@ -3391,9 +3485,13 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
         setState(() {
           isLoading = true;
         });
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
+        final isProxyEnabled =
+            Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+        final proxyUrl =
+            Provider.of<AppDependencyProvider>(context, listen: false)
+                .tmdbProxy;
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}',
+                isProxyEnabled, proxyUrl)
             .then((value) {
           if (mounted) {
             setState(() {
@@ -3426,7 +3524,7 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
                       const LeadingDot(),
                       Expanded(
                         child: Text(
-                          tr("tv_recommendations"),
+                          tr('tv_recommendations'),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: kTextHeaderStyle,
@@ -3445,7 +3543,7 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
                 ? scrollingMoviesAndTVShimmer(themeMode)
                 : tvList!.isEmpty
                     ? Text(
-                        tr("no_recommendations_tv"),
+                        tr('no_recommendations_tv'),
                         textAlign: TextAlign.center,
                       )
                     : Row(
@@ -3468,7 +3566,7 @@ class TVRecommendationsTabState extends State<TVRecommendationsTab>
                       ),
           ),
           Divider(
-            color: themeMode == "light" ? Colors.black54 : Colors.white54,
+            color: themeMode == 'light' ? Colors.black54 : Colors.white54,
             thickness: 1,
             endIndent: 20,
             indent: 10,
@@ -3506,9 +3604,13 @@ class SimilarTVTabState extends State<SimilarTVTab>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl).then((value) {
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}',
+            isProxyEnabled, proxyUrl)
+        .then((value) {
       if (mounted) {
         setState(() {
           tvList = value;
@@ -3530,9 +3632,13 @@ class SimilarTVTabState extends State<SimilarTVTab>
         setState(() {
           isLoading = true;
         });
-final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
+        final isProxyEnabled =
+            Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+        final proxyUrl =
+            Provider.of<AppDependencyProvider>(context, listen: false)
+                .tmdbProxy;
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}',
+                isProxyEnabled, proxyUrl)
             .then((value) {
           if (mounted) {
             setState(() {
@@ -3565,8 +3671,8 @@ final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).ena
                       const LeadingDot(),
                       Expanded(
                         child: Text(
-                          tr("tv_similar_with",
-                              namedArgs: {"show": widget.tvName}),
+                          tr('tv_similar_with',
+                              namedArgs: {'show': widget.tvName}),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: kTextHeaderStyle,
@@ -3585,7 +3691,7 @@ final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).ena
                 ? scrollingMoviesAndTVShimmer(themeMode)
                 : tvList!.isEmpty
                     ? Text(
-                        tr("no_similars_tv"),
+                        tr('no_similars_tv'),
                         textAlign: TextAlign.center,
                       )
                     : Row(
@@ -3630,8 +3736,10 @@ class TVGenreDisplayState extends State<TVGenreDisplay>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchGenre(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -3687,7 +3795,7 @@ class TVGenreDisplayState extends State<TVGenreDisplay>
                                 // style: widget.themeData.textTheme.bodyText1,
                               ),
                               backgroundColor:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? const Color(0xFF2b2c30)
                                       : const Color(0xFFDFDEDE),
                             ),
@@ -3729,9 +3837,13 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
         setState(() {
           isLoading = true;
         });
-        final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-        final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
+        final isProxyEnabled =
+            Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+        final proxyUrl =
+            Provider.of<AppDependencyProvider>(context, listen: false)
+                .tmdbProxy;
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}',
+                isProxyEnabled, proxyUrl)
             .then((value) {
           if (mounted) {
             setState(() {
@@ -3748,9 +3860,13 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl).then((value) {
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}',
+            isProxyEnabled, proxyUrl)
+        .then((value) {
       if (mounted) {
         setState(() {
           tvList = value;
@@ -3775,7 +3891,7 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
             : tvList!.isEmpty
                 ? Container(
                     child: Center(
-                      child: Text(tr("no_genre_tv")),
+                      child: Text(tr('no_genre_tv')),
                     ),
                   )
                 : Container(
@@ -3829,8 +3945,10 @@ class TVInfoTableState extends State<TVInfoTable> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchTVDetails(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -3853,7 +3971,7 @@ class TVInfoTableState extends State<TVInfoTable> {
               const LeadingDot(),
               Expanded(
                 child: Text(
-                  tr("tv_series_info"),
+                  tr('tv_series_info'),
                   style: kTextHeaderStyle,
                 ),
               ),
@@ -3869,7 +3987,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                     : DataTable(dataRowMinHeight: 40, columns: [
                         DataColumn(
                             label: Text(
-                          tr("original_title"),
+                          tr('original_title'),
                           style: kTableLeftStyle,
                         )),
                         DataColumn(
@@ -3881,29 +3999,29 @@ class TVInfoTableState extends State<TVInfoTable> {
                       ], rows: [
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("status"),
+                            tr('status'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(tvDetails!.status!.isEmpty
-                              ? tr("unknown")
+                              ? tr('unknown')
                               : tvDetails!.status!)),
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("runtime"),
+                            tr('runtime'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(tvDetails!.runtime!.isEmpty
                               ? '-'
                               : tvDetails!.runtime![0] == 0
-                                  ? tr("not_available")
-                                  : tr("runtime_mins", namedArgs: {
-                                      "mins": tvDetails!.runtime![0].toString()
+                                  ? tr('not_available')
+                                  : tr('runtime_mins', namedArgs: {
+                                      'mins': tvDetails!.runtime![0].toString()
                                     }))),
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("spoken_language"),
+                            tr('spoken_language'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3921,7 +4039,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(tvDetails!
                                                 .spokenLanguages!.isEmpty
-                                            ? tr("not_available")
+                                            ? tr('not_available')
                                             : '${tvDetails!.spokenLanguages![index].englishName},'),
                                       );
                                     },
@@ -3930,7 +4048,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("total_seasons"),
+                            tr('total_seasons'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(tvDetails!.numberOfSeasons! == 0
@@ -3939,7 +4057,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("total_episodes"),
+                            tr('total_episodes'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(Text(tvDetails!.numberOfEpisodes! == 0
@@ -3948,7 +4066,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("tagline"),
+                            tr('tagline'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(
@@ -3963,7 +4081,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("production_companies"),
+                            tr('production_companies'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -3981,7 +4099,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(tvDetails!
                                                 .productionCompanies!.isEmpty
-                                            ? tr("not_available")
+                                            ? tr('not_available')
                                             : '${tvDetails!.productionCompanies![index].name},'),
                                       );
                                     },
@@ -3990,7 +4108,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                         ]),
                         DataRow(cells: [
                           DataCell(Text(
-                            tr("production_countries"),
+                            tr('production_countries'),
                             style: kTableLeftStyle,
                           )),
                           DataCell(SizedBox(
@@ -4008,7 +4126,7 @@ class TVInfoTableState extends State<TVInfoTable> {
                                             const EdgeInsets.only(right: 5.0),
                                         child: Text(tvDetails!
                                                 .productionCountries!.isEmpty
-                                            ? tr("not_available")
+                                            ? tr('not_available')
                                             : '${tvDetails!.productionCountries![index].name},'),
                                       );
                                     },
@@ -4042,8 +4160,10 @@ class TVSocialLinksState extends State<TVSocialLinks> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchSocialLinks(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -4068,7 +4188,7 @@ class TVSocialLinksState extends State<TVSocialLinks> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("social_media_links"),
+                    tr('social_media_links'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -4085,14 +4205,14 @@ class TVSocialLinksState extends State<TVSocialLinks> {
                           externalLinks?.imdbId == null
                       ? Center(
                           child: Text(
-                            tr("no_social_link_tv"),
+                            tr('no_social_link_tv'),
                             textAlign: TextAlign.center,
                           ),
                         )
                       : Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.transparent
                                 : const Color(0xFFDFDEDE),
                           ),
@@ -4176,8 +4296,10 @@ class SeasonsListState extends State<SeasonsList> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchTVDetails(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -4224,7 +4346,7 @@ class SeasonsListState extends State<SeasonsList> {
               : tvDetails!.seasons!.isEmpty
                   ? Center(
                       child:
-                          Text(tr("no_season_tv"), textAlign: TextAlign.center),
+                          Text(tr('no_season_tv'), textAlign: TextAlign.center),
                     )
                   : Row(
                       children: [
@@ -4282,13 +4404,15 @@ class SeasonsListState extends State<SeasonsList> {
                                                                   700),
                                                       fadeInCurve:
                                                           Curves.easeIn,
-                                                      imageUrl:
-                                                          buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                              imageQuality +
-                                                              tvDetails!
-                                                                  .seasons![
-                                                                      index]
-                                                                  .posterPath!,
+                                                      imageUrl: buildImageUrl(
+                                                              TMDB_BASE_IMAGE_URL,
+                                                              proxyUrl,
+                                                              isProxyEnabled,
+                                                              context) +
+                                                          imageQuality +
+                                                          tvDetails!
+                                                              .seasons![index]
+                                                              .posterPath!,
                                                       imageBuilder: (context,
                                                               imageProvider) =>
                                                           Container(
@@ -4368,8 +4492,10 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchTVDetails(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -4402,7 +4528,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                               const LeadingDot(),
                               Expanded(
                                 child: Text(
-                                  tr("episodes"),
+                                  tr('episodes'),
                                   style: kTextHeaderStyle,
                                 ),
                               ),
@@ -4495,7 +4621,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
             : tvDetails!.episodes!.isEmpty
                 ? Center(
                     child:
-                        Text(tr("no_episodes"), style: kTextSmallHeaderStyle),
+                        Text(tr('no_episodes'), style: kTextSmallHeaderStyle),
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -4511,7 +4637,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                   const LeadingDot(),
                                   Expanded(
                                     child: Text(
-                                      tr("episodes"),
+                                      tr('episodes'),
                                       style: kTextHeaderStyle,
                                     ),
                                   ),
@@ -4591,7 +4717,11 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                                         700),
                                                             fadeInCurve:
                                                                 Curves.easeIn,
-                                                            imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                            imageUrl: buildImageUrl(
+                                                                    TMDB_BASE_IMAGE_URL,
+                                                                    proxyUrl,
+                                                                    isProxyEnabled,
+                                                                    context) +
                                                                 imageQuality +
                                                                 tvDetails!
                                                                     .episodes![
@@ -4628,8 +4758,8 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                                     Image.asset(
                                                               'assets/images/na_logo.png',
                                                               fit: BoxFit.cover,
-                                                              width:
-                                                                double.infinity,
+                                                              width: double
+                                                                  .infinity,
                                                             ),
                                                           ),
                                                   ),
@@ -4639,11 +4769,11 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                       child: Container(
                                                         color: Colors.black54,
                                                         margin: const EdgeInsets
-                                                                .only(
+                                                            .only(
                                                             left: 4, bottom: 4),
                                                         padding:
                                                             const EdgeInsets
-                                                                    .symmetric(
+                                                                .symmetric(
                                                                 vertical: 0.7,
                                                                 horizontal: 6),
                                                         child: Text(
@@ -4681,13 +4811,13 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                               .episodes![index]
                                                               .airDate!
                                                               .isEmpty
-                                                      ? tr("air_date_unknown")
+                                                      ? tr('air_date_unknown')
                                                       : '${DateTime.parse(tvDetails!.episodes![index].airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(tvDetails!.episodes![index].airDate!))}, ${DateTime.parse(tvDetails!.episodes![index].airDate!).year}',
                                                   style: TextStyle(
                                                     color:
-                                                        themeMode == "dark" ||
+                                                        themeMode == 'dark' ||
                                                                 themeMode ==
-                                                                    "amoled"
+                                                                    'amoled'
                                                             ? Colors.white54
                                                             : Colors.black54,
                                                   ),
@@ -4754,9 +4884,12 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
   void initState() {
     super.initState();
     tabController = TabController(length: 5, vsync: this);
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchWatchProviders(widget.api, widget.country, isProxyEnabled, proxyUrl).then((value) {
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchWatchProviders(widget.api, widget.country, isProxyEnabled, proxyUrl)
+        .then((value) {
       if (mounted) {
         setState(() {
           watchProviders = value;
@@ -4775,7 +4908,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              color: themeMode == "dark" || themeMode == "amoled"
+              color: themeMode == 'dark' || themeMode == 'amoled'
                   ? const Color(0xFF2b2c30)
                   : const Color(0xFFDFDEDE),
             ),
@@ -4789,42 +4922,42 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                 indicatorSize: TabBarIndicatorSize.tab,
                 tabs: [
                   Tab(
-                    child: Text(tr("buy"),
+                    child: Text(tr('buy'),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
                   ),
                   Tab(
-                    child: Text(tr("stream"),
+                    child: Text(tr('stream'),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
                   ),
                   Tab(
-                    child: Text(tr("ads"),
+                    child: Text(tr('ads'),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
                   ),
                   Tab(
-                    child: Text(tr("rent"),
+                    child: Text(tr('rent'),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
                   ),
                   Tab(
-                    child: Text(tr("free"),
+                    child: Text(tr('free'),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
                   ),
@@ -4847,23 +4980,27 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                       watchProvidersTabData(
                           themeMode: themeMode,
                           imageQuality: imageQuality,
-                          noOptionMessage: tr("no_buy_tv"),
-                          watchOptions: watchProviders!.buy, context: context),
+                          noOptionMessage: tr('no_buy_tv'),
+                          watchOptions: watchProviders!.buy,
+                          context: context),
                       watchProvidersTabData(
                           themeMode: themeMode,
                           imageQuality: imageQuality,
-                          noOptionMessage: tr("no_stream_tv"),
-                          watchOptions: watchProviders!.flatRate, context: context),
+                          noOptionMessage: tr('no_stream_tv'),
+                          watchOptions: watchProviders!.flatRate,
+                          context: context),
                       watchProvidersTabData(
                           themeMode: themeMode,
                           imageQuality: imageQuality,
-                          noOptionMessage: tr("no_ads_tv"),
-                          watchOptions: watchProviders!.ads, context: context),
+                          noOptionMessage: tr('no_ads_tv'),
+                          watchOptions: watchProviders!.ads,
+                          context: context),
                       watchProvidersTabData(
                           themeMode: themeMode,
                           imageQuality: imageQuality,
-                          noOptionMessage: tr("no_rent_tv"),
-                          watchOptions: watchProviders!.rent, context: context),
+                          noOptionMessage: tr('no_rent_tv'),
+                          watchOptions: watchProviders!.rent,
+                          context: context),
                       Container(
                         padding: const EdgeInsets.all(8.0),
                         child: GridView.builder(
@@ -4900,7 +5037,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                                     Expanded(
                                         flex: 6,
                                         child: Text(
-                                          tr("cinemax"),
+                                          tr('cinemax'),
                                           textAlign: TextAlign.center,
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
@@ -4934,8 +5071,10 @@ class TVGenreListGridState extends State<TVGenreListGrid>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchGenre(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -4964,7 +5103,7 @@ class TVGenreListGridState extends State<TVGenreListGrid>
                     const LeadingDot(),
                     Expanded(
                       child: Text(
-                        tr("genres"),
+                        tr('genres'),
                         style: kTextHeaderStyle,
                       ),
                     ),
@@ -5007,7 +5146,7 @@ class TVGenreListGridState extends State<TVGenreListGrid>
                                           borderRadius:
                                               BorderRadius.circular(15)),
                                       child: Text(
-                                        genreList![index].genreName ?? "Null",
+                                        genreList![index].genreName ?? 'Null',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: Theme.of(context)
@@ -5053,7 +5192,7 @@ class TVShowsFromWatchProvidersState extends State<TVShowsFromWatchProviders> {
                       const LeadingDot(),
                       Expanded(
                         child: Text(
-                          tr("streaming_services"),
+                          tr('streaming_services'),
                           style: kTextHeaderStyle,
                         ),
                       ),
@@ -5221,9 +5360,13 @@ class ParticularStreamingServiceTVShowsState
         setState(() {
           isLoading = true;
         });
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
+        final isProxyEnabled =
+            Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+        final proxyUrl =
+            Provider.of<AppDependencyProvider>(context, listen: false)
+                .tmdbProxy;
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}',
+                isProxyEnabled, proxyUrl)
             .then((value) {
           if (mounted) {
             setState(() {
@@ -5240,9 +5383,13 @@ class ParticularStreamingServiceTVShowsState
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl).then((value) {
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}',
+            isProxyEnabled, proxyUrl)
+        .then((value) {
       if (mounted) {
         setState(() {
           tvList = value;
@@ -5267,7 +5414,7 @@ class ParticularStreamingServiceTVShowsState
             : tvList!.isEmpty
                 ? Container(
                     child: Center(
-                      child: Text(tr("no_watchprovider_tv")),
+                      child: Text(tr('no_watchprovider_tv')),
                     ),
                   )
                 : Container(
@@ -5321,8 +5468,10 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -5346,7 +5495,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
         : credits!.cast!.isEmpty
             ? Center(
                 child: Text(
-                  tr("no_cast"),
+                  tr('no_cast'),
                   style: kTextSmallHeaderStyle,
                   textAlign: TextAlign.center,
                   maxLines: 4,
@@ -5408,12 +5557,14 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                                         const Duration(
                                                             milliseconds: 700),
                                                     fadeInCurve: Curves.easeIn,
-                                                    imageUrl:
-                                                        buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                            imageQuality +
-                                                            credits!
-                                                                .cast![index]
-                                                                .profilePath!,
+                                                    imageUrl: buildImageUrl(
+                                                            TMDB_BASE_IMAGE_URL,
+                                                            proxyUrl,
+                                                            isProxyEnabled,
+                                                            context) +
+                                                        imageQuality +
+                                                        credits!.cast![index]
+                                                            .profilePath!,
                                                     imageBuilder: (context,
                                                             imageProvider) =>
                                                         Container(
@@ -5453,9 +5604,9 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                           ),
                                           Text(credits!.cast![index].character!
                                                   .isEmpty
-                                              ? tr("as_empty")
-                                              : tr("as", namedArgs: {
-                                                  "character": credits!
+                                              ? tr('as_empty')
+                                              : tr('as', namedArgs: {
+                                                  'character': credits!
                                                       .cast![index].character!
                                                 })),
                                           // Text(
@@ -5477,7 +5628,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                   ],
                                 ),
                                 Divider(
-                                  color: themeMode == "light"
+                                  color: themeMode == 'light'
                                       ? Colors.black54
                                       : Colors.white54,
                                   thickness: 1,
@@ -5510,8 +5661,10 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -5535,7 +5688,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
         : credits!.episodeGuestStars!.isEmpty
             ? Center(
                 child: Text(
-                  tr("no_guest_episode"),
+                  tr('no_guest_episode'),
                   style: kTextSmallHeaderStyle,
                   textAlign: TextAlign.center,
                   maxLines: 4,
@@ -5604,7 +5757,11 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                                                     700),
                                                         fadeInCurve:
                                                             Curves.easeIn,
-                                                        imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                        imageUrl: buildImageUrl(
+                                                                TMDB_BASE_IMAGE_URL,
+                                                                proxyUrl,
+                                                                isProxyEnabled,
+                                                                context) +
                                                             imageQuality +
                                                             credits!
                                                                 .episodeGuestStars![
@@ -5658,7 +5815,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                       ],
                                     ),
                                     Divider(
-                                      color: themeMode == "light"
+                                      color: themeMode == 'light'
                                           ? Colors.black54
                                           : Colors.white54,
                                       thickness: 1,
@@ -5715,7 +5872,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                 ),
               ),
               Divider(
-                color: themeMode == "light" ? Colors.black54 : Colors.white54,
+                color: themeMode == 'light' ? Colors.black54 : Colors.white54,
                 thickness: 1,
                 endIndent: 20,
                 indent: 10,
@@ -5889,7 +6046,11 @@ class TVDetailQuickInfo extends StatelessWidget {
                                           'assets/images/na_logo.png',
                                           fit: BoxFit.cover,
                                         ),
-                                        imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                        imageUrl: buildImageUrl(
+                                                TMDB_BASE_IMAGE_URL,
+                                                proxyUrl,
+                                                isProxyEnabled,
+                                                context) +
                                             imageQuality +
                                             tvSeries.posterPath!,
                                       ),
@@ -5911,7 +6072,7 @@ class TVDetailQuickInfo extends StatelessWidget {
                             // _utilityController.toggleTitleVisibility();
                           },
                           child: Text(
-                            tvSeries.firstAirDate == ""
+                            tvSeries.firstAirDate == ''
                                 ? tvSeries.name!
                                 : '${tvSeries.name!} (${DateTime.parse(tvSeries.firstAirDate!).year})',
                             maxLines: 4,
@@ -5997,7 +6158,7 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      tr("rating"),
+                      tr('rating'),
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -6039,7 +6200,7 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  tr("total_ratings"),
+                  tr('total_ratings'),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -6126,7 +6287,7 @@ class _TVAboutState extends State<TVAbout> {
                         const LeadingDot(),
                         Expanded(
                           child: Text(
-                            tr("overview"),
+                            tr('overview'),
                             style: kTextHeaderStyle,
                           ),
                         ),
@@ -6140,15 +6301,15 @@ class _TVAboutState extends State<TVAbout> {
               padding: const EdgeInsets.all(8.0),
               child: widget.tvSeries.overview!.isEmpty ||
                       widget.tvSeries.overview == null
-                  ? Text(tr("no_overview_tv"))
+                  ? Text(tr('no_overview_tv'))
                   : ReadMoreText(
                       widget.tvSeries.overview!,
                       trimLines: 4,
                       style: const TextStyle(fontFamily: 'Poppins'),
                       colorClickableText: Theme.of(context).colorScheme.primary,
                       trimMode: TrimMode.Line,
-                      trimCollapsedText: tr("read_more"),
-                      trimExpandedText: tr("read_less"),
+                      trimCollapsedText: tr('read_more'),
+                      trimExpandedText: tr('read_less'),
                       lessStyle: TextStyle(
                           fontSize: 14,
                           color: Theme.of(context).colorScheme.primary,
@@ -6168,7 +6329,7 @@ class _TVAboutState extends State<TVAbout> {
                     child: Text(
                       widget.tvSeries.firstAirDate == null ||
                               widget.tvSeries.firstAirDate!.isEmpty
-                          ? tr("first_episode_air_empty")
+                          ? tr('first_episode_air_empty')
                           : '${tr("first_episode_air")} ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
                       style: const TextStyle(
                         fontFamily: 'PoppinsSB',
@@ -6183,28 +6344,28 @@ class _TVAboutState extends State<TVAbout> {
             ScrollingTVArtists(
               passedFrom: 'tv_detail',
               api: Endpoints.getTVCreditsUrl(widget.tvSeries.id!, lang),
-              title: tr("cast"),
+              title: tr('cast'),
               id: widget.tvSeries.id!,
             ),
             ScrollingTVCreators(
               api: Endpoints.tvDetailsUrl(widget.tvSeries.id!, lang),
-              title: tr("created_by"),
+              title: tr('created_by'),
             ),
             SeasonsList(
               tvId: widget.tvSeries.id!,
               seriesName: widget.tvSeries.name!,
-              title: tr("seasons"),
+              title: tr('seasons'),
               api: Endpoints.getTVSeasons(widget.tvSeries.id!, lang),
             ),
             TVImagesDisplay(
-              title: tr("images"),
+              title: tr('images'),
               api: Endpoints.getTVImages(widget.tvSeries.id!),
               name: widget.tvSeries.originalName,
             ),
             TVVideosDisplay(
               api: Endpoints.getTVVideos(widget.tvSeries.id!),
               api2: Endpoints.tvDetailsUrl(widget.tvSeries.id!, lang),
-              title: tr("videos"),
+              title: tr('videos'),
             ),
             TVSocialLinks(
               api: Endpoints.getExternalLinksForTV(widget.tvSeries.id!, lang),
@@ -6279,7 +6440,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                         const LeadingDot(),
                         Expanded(
                           child: Text(
-                            tr("overview"),
+                            tr('overview'),
                             style: kTextHeaderStyle,
                           ),
                         ),
@@ -6293,14 +6454,14 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
               padding: const EdgeInsets.all(8.0),
               child: ReadMoreText(
                 widget.episodeList.overview!.isEmpty
-                    ? tr("no_episode_overview")
+                    ? tr('no_episode_overview')
                     : widget.episodeList.overview!,
                 trimLines: 4,
                 style: const TextStyle(fontFamily: 'Poppins'),
                 colorClickableText: Theme.of(context).colorScheme.primary,
                 trimMode: TrimMode.Line,
-                trimCollapsedText: tr("read_more"),
-                trimExpandedText: tr("read_less"),
+                trimCollapsedText: tr('read_more'),
+                trimExpandedText: tr('read_less'),
                 lessStyle: TextStyle(
                     fontSize: 14,
                     color: Theme.of(context).colorScheme.primary,
@@ -6319,7 +6480,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                   child: Text(
                     widget.episodeList.airDate == null ||
                             widget.episodeList.airDate!.isEmpty
-                        ? tr("episode_air_empty")
+                        ? tr('episode_air_empty')
                         : '${tr("episode_air")}  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
                     style: const TextStyle(
                       fontFamily: 'PoppinsSB',
@@ -6353,7 +6514,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                   lang),
             ),
             TVEpisodeImagesDisplay(
-              title: tr("images"),
+              title: tr('images'),
               name: '${widget.seriesName}_${widget.episodeList.name}',
               api: Endpoints.getTVEpisodeImagesUrl(
                   widget.tvId!,
@@ -6467,7 +6628,7 @@ class TVEpisodeQuickInfo extends StatelessWidget {
                                 alignment: appLang == 'ar'
                                     ? Alignment.topLeft
                                     : Alignment.topRight,
-                                child: TopButton(buttonText: tr("open_season")),
+                                child: TopButton(buttonText: tr('open_season')),
                               ),
                             ),
                           ),
@@ -6508,7 +6669,7 @@ class TVEpisodeQuickInfo extends StatelessWidget {
                                   episodeList.seasonNumber!)),
                               Text(
                                 episodeList.airDate == null ||
-                                        episodeList.airDate == ""
+                                        episodeList.airDate == ''
                                     ? episodeList.name!
                                     : episodeList.name!,
                                 style: kTextSmallHeaderStyle,
@@ -6523,8 +6684,8 @@ class TVEpisodeQuickInfo extends StatelessWidget {
                                       seriesName!,
                                       style: TextStyle(
                                           fontSize: 15,
-                                          color: themeMode == "dark" ||
-                                                  themeMode == "amoled"
+                                          color: themeMode == 'dark' ||
+                                                  themeMode == 'amoled'
                                               ? Colors.white54
                                               : Colors.black54),
                                     ),
@@ -6582,7 +6743,7 @@ class TVEpisodeOptions extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      tr("rating"),
+                      tr('rating'),
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -6624,7 +6785,7 @@ class TVEpisodeOptions extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  tr("total_ratings"),
+                  tr('total_ratings'),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -6710,12 +6871,15 @@ class _WatchNowButtonState extends State<WatchNowButton> {
           if (mounted) {
             if (mounted) {
               await checkConnection().then((value) {
+                if (!context.mounted) {
+                  return;
+                }
                 value
                     ? Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
                         return TVVideoLoader(
                             download: false,
-                            route: fetchRoute == "flixHQ"
+                            route: fetchRoute == 'flixHQ'
                                 ? StreamRoute.flixHQ
                                 : StreamRoute.tmDB,
                             metadata: TVStreamMetadata(
@@ -6729,16 +6893,18 @@ class _WatchNowButtonState extends State<WatchNowButton> {
                                 tvId: widget.tvId,
                                 airDate: widget.episode.airDate));
                       })))
-                    : GlobalMethods.showCustomScaffoldMessage(
-                        SnackBar(
-                          content: Text(
-                            tr("check_connection"),
-                            maxLines: 3,
-                            style: kTextSmallBodyStyle,
-                          ),
-                          duration: const Duration(seconds: 3),
-                        ),
-                        context);
+                    : context.mounted
+                        ? GlobalMethods.showCustomScaffoldMessage(
+                            SnackBar(
+                              content: Text(
+                                tr('check_connection'),
+                                maxLines: 3,
+                                style: kTextSmallBodyStyle,
+                              ),
+                              duration: const Duration(seconds: 3),
+                            ),
+                            context)
+                        : {};
               });
             }
           }
@@ -6755,7 +6921,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               const SizedBox(width: 6),
-              Text(tr("watch_now"),
+              Text(tr('watch_now'),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onPrimary,
                   ))

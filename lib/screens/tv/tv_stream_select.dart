@@ -192,7 +192,7 @@ class StreamListWidget extends StatelessWidget {
             ],
           ),
           Divider(
-            color: themeMode == "dark" || themeMode == "amoled"
+            color: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.white54
                 : Colors.black54,
           )

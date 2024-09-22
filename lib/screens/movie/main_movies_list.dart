@@ -33,8 +33,10 @@ class MainMoviesListState extends State<MainMoviesList> {
   bool isLoading = false;
 
   void getMoreData() async {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -43,7 +45,9 @@ class MainMoviesListState extends State<MainMoviesList> {
         });
         if (mounted) {
           fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum', isProxyEnabled, proxyUrl)
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum',
+                  isProxyEnabled,
+                  proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -61,9 +65,12 @@ class MainMoviesListState extends State<MainMoviesList> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}',
+            isProxyEnabled, proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -81,7 +88,7 @@ class MainMoviesListState extends State<MainMoviesList> {
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("movie_type", namedArgs: {"t": widget.title})),
+        title: Text(tr('movie_type', namedArgs: {'t': widget.title})),
       ),
       body: moviesList == null && viewType == 'grid'
           ? moviesAndTVShowGridShimmer(themeMode)
@@ -92,7 +99,7 @@ class MainMoviesListState extends State<MainMoviesList> {
                   scrollController: _scrollController)
               : moviesList!.isEmpty
                   ? Center(
-                      child: Text(tr("movie_404")),
+                      child: Text(tr('movie_404')),
                     )
                   : Column(
                       children: [

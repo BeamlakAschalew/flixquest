@@ -80,19 +80,21 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.arrow_back_rounded)),
-          title: Text(tr("bookmarks")),
+          title: Text(tr('bookmarks')),
           actions: [
             IconButton(
                 onPressed: () {
                   if (user!.isAnonymous) {
-                    GlobalMethods.showCustomScaffoldMessage(SnackBar(
-                      content: Text(
-                        tr("bookmark_feature_notice"),
-                        style: kTextVerySmallBodyStyle,
-                        maxLines: 6,
-                      ),
-                      duration: const Duration(seconds: 10),
-                    ), context);
+                    GlobalMethods.showCustomScaffoldMessage(
+                        SnackBar(
+                          content: Text(
+                            tr('bookmark_feature_notice'),
+                            style: kTextVerySmallBodyStyle,
+                            maxLines: 6,
+                          ),
+                          duration: const Duration(seconds: 10),
+                        ),
+                        context);
                   } else {
                     Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
@@ -120,7 +122,7 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                       child: Icon(FontAwesomeIcons.clapperboard),
                     ),
                     Text(
-                      tr("movies"),
+                      tr('movies'),
                     ),
                   ],
                 )),
@@ -132,12 +134,12 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                         padding: EdgeInsets.only(right: 8.0),
                         child: Icon(Icons.live_tv_rounded)),
                     Text(
-                      tr("tv_series"),
+                      tr('tv_series'),
                     ),
                   ],
                 ))
               ],
-              indicatorColor: themeMode == "dark" || themeMode == "amoled"
+              indicatorColor: themeMode == 'dark' || themeMode == 'amoled'
                   ? Colors.white
                   : Colors.black,
               indicatorWeight: 3,

@@ -34,8 +34,10 @@ class MainTVListState extends State<MainTVList> {
   bool isLoading = false;
 
   void getMoreData() async {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -43,7 +45,8 @@ class MainTVListState extends State<MainTVList> {
           isLoading = true;
         });
 
-        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
+        fetchTV('${widget.api}&page=$pageNum&include_adult=${widget.includeAdult}',
+                isProxyEnabled, proxyUrl)
             .then((value) {
           if (mounted) {
             setState(() {
@@ -60,9 +63,13 @@ class MainTVListState extends State<MainTVList> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl).then((value) {
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchTV('${widget.api}&include_adult=${widget.includeAdult}',
+            isProxyEnabled, proxyUrl)
+        .then((value) {
       if (mounted) {
         setState(() {
           tvList = value;
@@ -79,7 +86,7 @@ class MainTVListState extends State<MainTVList> {
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("genre_tv_title", namedArgs: {"g": widget.title})),
+        title: Text(tr('genre_tv_title', namedArgs: {'g': widget.title})),
       ),
       body: tvList == null && viewType == 'grid'
           ? moviesAndTVShowGridShimmer(themeMode)
@@ -90,7 +97,7 @@ class MainTVListState extends State<MainTVList> {
                   scrollController: _scrollController)
               : tvList!.isEmpty
                   ? Center(
-                      child: Text(tr("tv_404")),
+                      child: Text(tr('tv_404')),
                     )
                   : Column(
                       children: [

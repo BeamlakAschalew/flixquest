@@ -59,11 +59,11 @@ class CrewDetailPageState extends State<CrewDetailPage>
           SliverAppBar(
             pinned: true,
             elevation: 1,
-            shadowColor: themeMode == "dark" || themeMode == "amoled"
+            shadowColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.white
                 : Colors.black,
             forceElevated: true,
-            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.black
                 : Colors.white,
             leading: SABTN(

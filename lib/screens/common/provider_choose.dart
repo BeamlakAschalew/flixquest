@@ -13,7 +13,7 @@ class ProviderChooseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("choose_provider_order")),
+        title: Text(tr('choose_provider_order')),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -39,7 +39,7 @@ class ProviderChooseScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            tr("provider_precedence_help"),
+                            tr('provider_precedence_help'),
                             style: const TextStyle(fontSize: 15),
                             textAlign: TextAlign.center,
                           ),
@@ -90,10 +90,10 @@ class RearrangeableListViewState extends State<RearrangeableListView> {
             videoProviders.insert(newIndex, item);
           });
 
-          String prov = "";
+          String prov = '';
           for (int i = 0; i < videoProviders.length; i++) {
             prov +=
-                "${videoProviders[i].codeName}-${videoProviders[i].fullName} ";
+                '${videoProviders[i].codeName}-${videoProviders[i].fullName} ';
           }
           prefString.proPreference = prov;
         },

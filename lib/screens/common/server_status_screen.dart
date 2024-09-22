@@ -23,7 +23,7 @@ class ServerStatusScreen extends StatefulWidget {
 class _ServerStatusScreenState extends State<ServerStatusScreen> {
   List<RegularVideoLinks>? videoLinks;
   List<VideoStatusCheck> videoProvidersCheck = [];
-  String ping = "";
+  String ping = '';
   DateTime? start;
   DateTime? end;
   bool checking = false;
@@ -52,15 +52,15 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
           ping: '',
           resultMessage: '',
           start: null,
-          waitingMessage: tr("waiting_queue",
-              namedArgs: {"server": videoProviders[i].fullName})));
+          waitingMessage: tr('waiting_queue',
+              namedArgs: {'server': videoProviders[i].fullName})));
     }
     for (int i = 0; i < videoProviders.length; i++) {
       setState(() {
         videoProvidersCheck[i].waitingMessage =
             '${tr("checking_server")} ${videoProviders[i].fullName}';
-        videoProvidersCheck[i].resultMessage = "";
-        videoProvidersCheck[i].ping = "";
+        videoProvidersCheck[i].resultMessage = '';
+        videoProvidersCheck[i].ping = '';
         videoLinks = null;
         videoProvidersCheck[i].isWaiting = true;
         start = null;
@@ -69,7 +69,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getMovieStreamLinksAndSubsFlixHQ(
-                  "${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServerFlixHQ}")
+                  '${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServerFlixHQ}')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -84,7 +84,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
 
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}showbox/watch-movie?tmdbId=455980")
+                  '${appDependency.flixquestAPIURL}showbox/watch-movie?tmdbId=455980')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -98,7 +98,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getMovieTVStreamLinksAndSubsDCVA(
-                  "${appDependency.consumetUrl}movies/dramacool/watch?id=drama-detail/a-different-girl&episodeId=a-different-girl-2021-episode-1&server=${appDependency.streamingServerDCVA}")
+                  '${appDependency.consumetUrl}movies/dramacool/watch?id=drama-detail/a-different-girl&episodeId=a-different-girl-2021-episode-1&server=${appDependency.streamingServerDCVA}')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -112,7 +112,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getMovieTVStreamLinksAndSubsDCVA(
-                  "${appDependencyProvider.consumetUrl}movies/viewasian/watch?id=drama/tell-me-you-love-me&episodeId=/watch/tell-me-you-love-me/watching.html\$episode\$1&server=${appDependencyProvider.streamingServerDCVA}")
+                  '${appDependencyProvider.consumetUrl}movies/viewasian/watch?id=drama/tell-me-you-love-me&episodeId=/watch/tell-me-you-love-me/watching.html\$episode\$1&server=${appDependencyProvider.streamingServerDCVA}')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -126,7 +126,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getMovieTVStreamLinksAndSubsZoro(
-                  "${appDependencyProvider.consumetUrl}anime/zoro/watch?episodeId=one-piece-movie-1-3096\$episode\$58122\$sub&server=${appDependencyProvider.streamingServerZoro}")
+                  '${appDependencyProvider.consumetUrl}anime/zoro/watch?episodeId=one-piece-movie-1-3096\$episode\$58122\$sub&server=${appDependencyProvider.streamingServerZoro}')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -139,7 +139,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}flixhq/watch-movie?tmdbId=455980&server=${appDependency.flixhqZoeServer}")
+                  '${appDependency.flixquestAPIURL}flixhq/watch-movie?tmdbId=455980&server=${appDependency.flixhqZoeServer}')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -153,7 +153,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}zoe/watch-movie?tmdbId=455980&server=${appDependency.flixhqZoeServer}")
+                  '${appDependency.flixquestAPIURL}zoe/watch-movie?tmdbId=455980&server=${appDependency.flixhqZoeServer}')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -167,7 +167,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}gomovies/watch-movie?tmdbId=455980&server=${appDependency.goMoviesServer}")
+                  '${appDependency.flixquestAPIURL}gomovies/watch-movie?tmdbId=455980&server=${appDependency.goMoviesServer}')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -181,7 +181,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}vidsrc/watch-movie?tmdbId=455980&server=${appDependency.vidSrcServer}")
+                  '${appDependency.flixquestAPIURL}vidsrc/watch-movie?tmdbId=455980&server=${appDependency.vidSrcServer}')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -195,7 +195,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         start = DateTime.now();
         try {
           await getFlixQuestAPILinks(
-                  "${appDependency.flixquestAPIURL}vidsrcto/watch-movie?tmdbId=455980&server=${appDependency.vidSrcToServer}")
+                  '${appDependency.flixquestAPIURL}vidsrcto/watch-movie?tmdbId=455980&server=${appDependency.vidSrcToServer}')
               .then((value) {
             if (mounted) {
               videoLinks = value.videoLinks;
@@ -251,7 +251,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(tr("check_server")),
+          title: Text(tr('check_server')),
         ),
         body: Center(
           child: SingleChildScrollView(
@@ -295,8 +295,8 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
                             Visibility(
                               visible: !videoProvidersCheck[index].isWaiting!,
                               child: Text(
-                                tr("latency", namedArgs: {
-                                  "l": videoProvidersCheck[index].ping!
+                                tr('latency', namedArgs: {
+                                  'l': videoProvidersCheck[index].ping!
                                 }),
                                 style: const TextStyle(
                                   color: Colors.yellow,
@@ -326,7 +326,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
                             onPressed: () {
                               checkServer();
                             },
-                            child: Text(tr("check"))),
+                            child: Text(tr('check'))),
                       ],
                     ),
                   )

@@ -26,8 +26,10 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
   bool isLoading = false;
 
   void getMoreData() async {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -35,7 +37,8 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
           isLoading = true;
         });
 
-        fetchTV('${widget.api}&page=$pageNum', isProxyEnabled, proxyUrl).then((value) {
+        fetchTV('${widget.api}&page=$pageNum', isProxyEnabled, proxyUrl)
+            .then((value) {
           if (mounted) {
             setState(() {
               tvList!.addAll(value);
@@ -51,9 +54,12 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&page=${widget.page}}', isProxyEnabled, proxyUrl).then((value) {
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchTV('${widget.api}&page=${widget.page}}', isProxyEnabled, proxyUrl)
+        .then((value) {
       if (mounted) {
         setState(() {
           tvList = value;
@@ -71,7 +77,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            tr("discover_tv_series"),
+            tr('discover_tv_series'),
           ),
           leading: IconButton(
             icon: const Icon(
@@ -96,7 +102,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
                             padding: const EdgeInsets.all(8),
                             child: Center(
                               child: Text(
-                                tr("parameter_tv_404"),
+                                tr('parameter_tv_404'),
                                 style: kTextHeaderStyle,
                                 textAlign: TextAlign.center,
                               ),

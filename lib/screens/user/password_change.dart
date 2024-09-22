@@ -50,34 +50,37 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
         user = _auth.currentUser;
 
         await user!.updatePassword(newPassword).then((value) {
+          if (!context.mounted) {
+            return;
+          }
           GlobalMethods.showCustomScaffoldMessage(
               SnackBar(
                 content: Text(
-                  tr("password_changed"),
+                  tr('password_changed'),
                   maxLines: 3,
                   style: kTextSmallBodyStyle,
                 ),
                 duration: const Duration(seconds: 4),
               ),
-              context);
+              context.mounted ? context : null);
         });
       } on FirebaseAuthException catch (e) {
         if (mounted) {
           if (e.code == 'user-mismatch') {
-            _globalMethods.authErrorHandle(tr("user_mismatch"), context);
+            _globalMethods.authErrorHandle(tr('user_mismatch'), context);
           } else if (e.code == 'user-not-found') {
-            _globalMethods.authErrorHandle(tr("user_not_found"), context);
+            _globalMethods.authErrorHandle(tr('user_not_found'), context);
           } else if (e.code == 'invalid-credential') {
-            _globalMethods.authErrorHandle(tr("invalid_credential"), context);
+            _globalMethods.authErrorHandle(tr('invalid_credential'), context);
           } else if (e.code == 'invalid-email') {
-            _globalMethods.authErrorHandle(tr("invalid_email"), context);
+            _globalMethods.authErrorHandle(tr('invalid_email'), context);
           } else if (e.code == 'wrong-password:') {
-            _globalMethods.authErrorHandle(tr("wrong_password"), context);
+            _globalMethods.authErrorHandle(tr('wrong_password'), context);
           } else if (e.code == 'weak-password') {
-            _globalMethods.authErrorHandle(tr("weak_password"), context);
+            _globalMethods.authErrorHandle(tr('weak_password'), context);
           } else if (e.code == 'requires-recent-login') {
             _globalMethods.authErrorHandle(
-                tr("requires_recent_login"), context);
+                tr('requires_recent_login'), context);
           }
         }
         // print('error occured ${error.message}');
@@ -114,7 +117,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        tr("password_change"),
+                        tr('password_change'),
                         style: const TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
@@ -122,7 +125,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        tr("process_stuck"),
+                        tr('process_stuck'),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -138,11 +141,11 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 key: const ValueKey('newPassword'),
                                 validator: (value) {
                                   if (value!.isEmpty || value.length < 7) {
-                                    return tr("weak_password");
+                                    return tr('weak_password');
                                   } else if (value == '12345678' ||
                                       value == 'qwertyuiop' ||
                                       value == 'password') {
-                                    return tr("lame_password");
+                                    return tr('lame_password');
                                   }
                                   return null;
                                 },
@@ -168,10 +171,9 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                           ? Icons.visibility
                                           : Icons.visibility_off),
                                     ),
-                                    labelText: tr("enter_new_pass"),
-                                    fillColor: Theme.of(context)
-                                        .colorScheme
-                                        .background),
+                                    labelText: tr('enter_new_pass'),
+                                    fillColor:
+                                        Theme.of(context).colorScheme.surface),
                                 onChanged: (value) {
                                   setState(() {
                                     newPassword = value;
@@ -188,7 +190,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 key: const ValueKey('verifyPassword'),
                                 validator: (value) {
                                   if (value != newPassword) {
-                                    return tr("password_mismatch");
+                                    return tr('password_mismatch');
                                   }
                                   return null;
                                 },
@@ -212,10 +214,9 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                           ? Icons.visibility
                                           : Icons.visibility_off),
                                     ),
-                                    labelText: tr("repeat_new_password"),
-                                    fillColor: Theme.of(context)
-                                        .colorScheme
-                                        .background),
+                                    labelText: tr('repeat_new_password'),
+                                    fillColor:
+                                        Theme.of(context).colorScheme.surface),
                               ),
                             ),
                           ],
@@ -231,9 +232,9 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                           ? const CircularProgressIndicator()
                           : ElevatedButton(
                               style: ButtonStyle(
-                                  minimumSize: const MaterialStatePropertyAll(
+                                  minimumSize: const WidgetStatePropertyAll(
                                       Size(200, 50)),
-                                  shape: MaterialStateProperty.all(
+                                  shape: WidgetStateProperty.all(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
@@ -245,7 +246,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    tr("reset_password"),
+                                    tr('reset_password'),
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 17),

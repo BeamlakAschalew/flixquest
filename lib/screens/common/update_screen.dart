@@ -1,4 +1,4 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, deprecated_member_use
 
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
@@ -28,7 +28,7 @@ class UpdateScreen extends StatefulWidget {
 class _UpdateScreenState extends State<UpdateScreen> {
   UpdateChecker? updateChecker;
   var downloadManager = DownloadManager();
-  var savedDir = "";
+  var savedDir = '';
   bool retry = false;
 
   @override
@@ -75,20 +75,20 @@ class _UpdateScreenState extends State<UpdateScreen> {
               context: context,
               builder: (BuildContext ctx) {
                 return AlertDialog(
-                  content: Text(tr("must_update")),
+                  content: Text(tr('must_update')),
                   actions: [
                     ElevatedButton(
                       onPressed: () async {
                         Navigator.pop(context);
                       },
-                      child: Text(tr("update")),
+                      child: Text(tr('update')),
                     ),
                     TextButton(
                         onPressed: () async {
                           SystemNavigator.pop();
                         },
                         child: Text(
-                          tr("exit"),
+                          tr('exit'),
                           style: const TextStyle(color: Colors.red),
                         ))
                   ],
@@ -102,7 +102,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(tr("check_for_update")),
+          title: Text(tr('check_for_update')),
         ),
         body: Center(
           child: Padding(
@@ -117,7 +117,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                   .signal_cellular_connected_no_internet_0_bar_rounded,
                               size: 70),
                           Text(
-                            tr("internet_problem"),
+                            tr('internet_problem'),
                             style: const TextStyle(fontSize: 20),
                             textAlign: TextAlign.center,
                           ),
@@ -128,7 +128,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                               onPressed: () {
                                 checkUpdate();
                               },
-                              child: Text(tr("retry"))),
+                              child: Text(tr('retry'))),
                         ],
                       )
                     : updateChecker == null
@@ -139,12 +139,12 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    tr("update_available"),
+                                    tr('update_available'),
                                     style: kTextHeaderStyle,
                                   ),
                                   Text(
-                                    tr("new_version", namedArgs: {
-                                      "v": updateChecker!.versionNumber!
+                                    tr('new_version', namedArgs: {
+                                      'v': updateChecker!.versionNumber!
                                     }),
                                     style: kTextSmallBodyStyle,
                                   ),
@@ -154,7 +154,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                             context: context,
                                             builder: (_) {
                                               return SimpleDialog(
-                                                  title: Text(tr("changelogs")),
+                                                  title: Text(tr('changelogs')),
                                                   children: [
                                                     Padding(
                                                       padding:
@@ -166,7 +166,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                                   ]);
                                             });
                                       },
-                                      child: Text(tr("see_changelogs"))),
+                                      child: Text(tr('see_changelogs'))),
                                   ListItem(
                                       appVersion: updateChecker!.versionNumber!,
                                       onDownloadPlayPausedPressed: (url) async {
@@ -196,7 +196,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                             }
                                           } else {
                                             downloadManager.addDownload(url,
-                                                "$savedDir/${downloadManager.getFileNameFromUrl(url)}");
+                                                '$savedDir/${downloadManager.getFileNameFromUrl(url)}');
                                           }
                                         });
                                       },
@@ -204,7 +204,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                         // OpenFile.open(
                                         //     "$savedDir/${downloadManager.getFileNameFromUrl(url)}");
                                         var fileName =
-                                            "$savedDir/${downloadManager.getFileNameFromUrl(url)}";
+                                            '$savedDir/${downloadManager.getFileNameFromUrl(url)}';
                                         var file = File(fileName);
                                         if (file.existsSync()) {
                                           OpenFile.open(file.path);
@@ -212,7 +212,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                       },
                                       onDelete: (url) async {
                                         var fileName =
-                                            "$savedDir/${downloadManager.getFileNameFromUrl(url)}";
+                                            '$savedDir/${downloadManager.getFileNameFromUrl(url)}';
                                         var file = File(fileName);
                                         if (file.existsSync()) {
                                           file.delete();
@@ -225,7 +225,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                               )
                             : Center(
                                 child: Text(
-                                  tr("no_update"),
+                                  tr('no_update'),
                                   textAlign: TextAlign.center,
                                   style: kTextHeaderStyle,
                                 ),
@@ -242,7 +242,7 @@ class ListItem extends StatefulWidget {
   final Function(String) onOpen;
   final Function(String) onDelete;
   DownloadTask? downloadTask;
-  String url = "";
+  String url = '';
   String appVersion;
 
   ListItem(
@@ -295,17 +295,17 @@ class _ListItemState extends State<ListItem> {
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: Text(
                                   value == DownloadStatus.downloading
-                                      ? tr("downloading_file")
+                                      ? tr('downloading_file')
                                       : value == DownloadStatus.completed
-                                          ? tr("file_downloaded")
+                                          ? tr('file_downloaded')
                                           : value == DownloadStatus.failed
-                                              ? tr("downloading_failed")
+                                              ? tr('downloading_failed')
                                               : value == DownloadStatus.paused
-                                                  ? tr("downloading_paused")
+                                                  ? tr('downloading_paused')
                                                   : value ==
                                                           DownloadStatus
                                                               .canceled
-                                                      ? tr("download_cancelled")
+                                                      ? tr('download_cancelled')
                                                       : value.toString(),
                                   style: const TextStyle(fontSize: 16)),
                             );
@@ -340,14 +340,14 @@ class _ListItemState extends State<ListItem> {
                               onPressed: () {
                                 widget.onDownloadPlayPausedPressed(widget.url);
                               },
-                              child: Text(tr("pause")));
+                              child: Text(tr('pause')));
 
                         case DownloadStatus.paused:
                           return ElevatedButton(
                               onPressed: () {
                                 widget.onDownloadPlayPausedPressed(widget.url);
                               },
-                              child: Text(tr("resume")));
+                              child: Text(tr('resume')));
 
                         case DownloadStatus.completed:
                           return Row(
@@ -360,13 +360,13 @@ class _ListItemState extends State<ListItem> {
                                     onPressed: () {
                                       widget.onOpen(widget.url);
                                     },
-                                    child: Text(tr("install"))),
+                                    child: Text(tr('install'))),
                               ),
                               ElevatedButton(
                                   onPressed: () {
                                     widget.onDelete(widget.url);
                                   },
-                                  child: Text(tr("delete"))),
+                                  child: Text(tr('delete'))),
                             ],
                           );
                         case DownloadStatus.failed:
@@ -378,11 +378,11 @@ class _ListItemState extends State<ListItem> {
                                 });
                                 widget.onDownloadPlayPausedPressed(widget.url);
                               },
-                              child: Text(tr("download")));
+                              child: Text(tr('download')));
                         case DownloadStatus.queued:
                           break;
                       }
-                      return Text("$value",
+                      return Text('$value',
                           style: const TextStyle(fontSize: 16));
                     })
                 : ElevatedButton(
@@ -391,7 +391,7 @@ class _ListItemState extends State<ListItem> {
                           properties: {'App version': widget.appVersion});
                       widget.onDownloadPlayPausedPressed(widget.url);
                     },
-                    child: Text(tr("download")))
+                    child: Text(tr('download')))
           ],
         ),
       ),
@@ -410,7 +410,7 @@ class UpdateBottom extends StatefulWidget {
 
 class _UpdateBottomState extends State<UpdateBottom> {
   String? appVersion =
-      FirebaseRemoteConfig.instance.getString("latest_version");
+      FirebaseRemoteConfig.instance.getString('latest_version');
   bool visible = false;
   bool disableCheck = false;
 
@@ -418,7 +418,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
 
   Future getData() async {
     setState(() {
-      ignoreVersion = sharedPrefsSingleton.getString("ignore_version") ?? "";
+      ignoreVersion = sharedPrefsSingleton.getString('ignore_version') ?? '';
       visible = ignoreVersion != appVersion! &&
           appVersion != null &&
           appVersion != currentAppVersion;
@@ -427,9 +427,9 @@ class _UpdateBottomState extends State<UpdateBottom> {
 
   Future checkAction(bool value) async {
     if (value && appVersion != null) {
-      sharedPrefsSingleton.setString("ignore_version", appVersion!);
+      sharedPrefsSingleton.setString('ignore_version', appVersion!);
     } else {
-      sharedPrefsSingleton.setString("ignore_version", "");
+      sharedPrefsSingleton.setString('ignore_version', '');
     }
   }
 
@@ -453,7 +453,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(children: [
             Text(
-              tr("update_available"),
+              tr('update_available'),
               style: kTextHeaderStyle,
               maxLines: 3,
               textAlign: TextAlign.center,
@@ -462,7 +462,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
               height: 10,
             ),
             Text(
-              tr("new_version", namedArgs: {"v": appVersion ?? ""}),
+              tr('new_version', namedArgs: {'v': appVersion ?? ''}),
               style: kTextSmallBodyStyle,
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -479,7 +479,7 @@ class _UpdateBottomState extends State<UpdateBottom> {
                     );
                   })));
                 },
-                child: Text(tr("goto_update"))),
+                child: Text(tr('goto_update'))),
             const SizedBox(
               height: 10,
             ),

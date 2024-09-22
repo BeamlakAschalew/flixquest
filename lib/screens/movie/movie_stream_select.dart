@@ -29,7 +29,7 @@ class _MovieStreamSelectState extends State<MovieStreamSelect> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("watch_movie", namedArgs: {"movie": widget.movieName})),
+        title: Text(tr('watch_movie', namedArgs: {'movie': widget.movieName})),
         leading: IconButton(
             icon: const Icon(
               Icons.arrow_back,
@@ -191,7 +191,7 @@ class StreamListWidget extends StatelessWidget {
             ],
           ),
           Divider(
-            color: themeMode == "dark" || themeMode == "amoled"
+            color: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.white54
                 : Colors.black54,
           )

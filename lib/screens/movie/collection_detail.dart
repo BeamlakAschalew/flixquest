@@ -44,11 +44,11 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
         SliverAppBar(
           pinned: true,
           elevation: 1,
-          shadowColor: themeMode == "dark" || themeMode == "amoled"
+          shadowColor: themeMode == 'dark' || themeMode == 'amoled'
               ? Colors.white
               : Colors.black,
           forceElevated: true,
-          backgroundColor: themeMode == "dark" || themeMode == "amoled"
+          backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
               ? Colors.black
               : Colors.white,
           leading: SABTN(
@@ -183,7 +183,11 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                                   'assets/images/na_logo.png',
                                                   fit: BoxFit.cover,
                                                 ),
-                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                imageUrl: buildImageUrl(
+                                                        TMDB_BASE_IMAGE_URL,
+                                                        proxyUrl,
+                                                        isProxyEnabled,
+                                                        context) +
                                                     imageQuality +
                                                     widget.belongsToCollection!
                                                         .posterPath!,
@@ -246,7 +250,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                             children: [
                               const LeadingDot(),
                               Text(
-                                tr("overview"),
+                                tr('overview'),
                                 style: kTextHeaderStyle,
                               ),
                             ],
@@ -263,7 +267,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                       // child: CollectionOverviewWidget(),
                     ),
                     PartsList(
-                      title: tr("movies"),
+                      title: tr('movies'),
                       api: Endpoints.getCollectionDetails(
                           widget.belongsToCollection!.id!, lang),
                     )

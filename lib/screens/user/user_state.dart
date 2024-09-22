@@ -22,7 +22,7 @@ class UserState extends StatelessWidget {
             }
           } else {
             return Center(
-              child: Text(tr("error_occured")),
+              child: Text(tr('error_occured')),
             );
           }
         });

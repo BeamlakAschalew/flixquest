@@ -51,7 +51,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
     AppDependencyProvider appDependencyProvider = AppDependencyProvider();
     return Drawer(
       child: Container(
-        color: themeMode == "dark" || themeMode == "amoled"
+        color: themeMode == 'dark' || themeMode == 'amoled'
             ? Colors.black
             : Colors.white,
         child: SingleChildScrollView(
@@ -64,7 +64,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     width: double.infinity,
                     child: DrawerHeader(
                       decoration: BoxDecoration(
-                          color: themeMode == "dark" || themeMode == "amoled"
+                          color: themeMode == 'dark' || themeMode == 'amoled'
                               ? Colors.white
                               : Colors.black),
                       child: flixquestLogo == 'default'
@@ -79,7 +79,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       FontAwesomeIcons.bookmark,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: Text(tr("bookmarks")),
+                    title: Text(tr('bookmarks')),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: ((context) {
@@ -93,7 +93,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                             FontAwesomeIcons.tv,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          title: Text(tr("live_tv")),
+                          title: Text(tr('live_tv')),
                           onTap: () {
                             Navigator.push(context,
                                 MaterialPageRoute(builder: ((context) {
@@ -120,7 +120,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Icons.settings_rounded,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: Text(tr("settings")),
+                    title: Text(tr('settings')),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: ((context) {
@@ -134,7 +134,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       FontAwesomeIcons.server,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: Text(tr("check_server")),
+                    title: Text(tr('check_server')),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
@@ -147,7 +147,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Icons.update_rounded,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: Text(tr("check_for_update")),
+                    title: Text(tr('check_for_update')),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: ((context) {
@@ -162,7 +162,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Icons.info_outline,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: Text(tr("about")),
+                    title: Text(tr('about')),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
@@ -175,12 +175,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       Icons.share_rounded,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: Text(tr("shared_the_app")),
+                    title: Text(tr('shared_the_app')),
                     onTap: () async {
                       mixpanel.track('Share button data', properties: {
                         'Share button click': 'Share',
                       });
-                      await Share.share(tr("share_text"));
+                      await Share.share(tr('share_text'));
                     },
                   ),
                 ],
@@ -358,9 +358,9 @@ Widget detailGenreShimmer(String themeMode) => ShimmerBase(
               borderRadius: BorderRadius.circular(20.0),
             ),
             label: Text(
-              tr("placeholder"),
+              tr('placeholder'),
             ),
-            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? const Color(0xFF2b2c30)
                 : const Color(0xFFDFDEDE),
           ),
@@ -552,7 +552,7 @@ Widget detailVideoShimmer(String themeMode) => SizedBox(
 Widget socialMediaShimmer(String themeMode) => Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: themeMode == "dark" || themeMode == "amoled"
+        color: themeMode == 'dark' || themeMode == 'amoled'
             ? Colors.transparent
             : const Color(0xFFDFDEDE),
       ),
@@ -720,7 +720,7 @@ Widget movieCastAndCrewTabShimmer(String themeMode) => Container(
                       ],
                     ),
                     Divider(
-                      color: themeMode == "light"
+                      color: themeMode == 'light'
                           ? Colors.black54
                           : Colors.white54,
                       thickness: 1,
@@ -804,7 +804,7 @@ Widget detailsRecommendationsAndSimilarShimmer(
                         ],
                       ),
                       Divider(
-                        color: themeMode == "light"
+                        color: themeMode == 'light'
                             ? Colors.black54
                             : Colors.white54,
                         thickness: 1,
@@ -826,90 +826,91 @@ Widget detailsRecommendationsAndSimilarShimmer(
     );
 
 Widget watchProvidersTabData(
-        {required String themeMode,
-        required String imageQuality,
-        required String noOptionMessage,
-        required List? watchOptions, required BuildContext context}) {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      child: watchOptions == null
-          ? Center(
-              child: Text(
-              noOptionMessage,
-              textAlign: TextAlign.center,
-            ))
-          : GridView.builder(
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 100,
-                childAspectRatio: 0.65,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
-              ),
-              itemCount: watchOptions.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 6,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: watchOptions[index].logoPath == null
-                              ? Image.asset(
-                                  'assets/images/na_logo.png',
-                                  fit: BoxFit.cover,
-                                )
-                              : CachedNetworkImage(
-                                  cacheManager: cacheProp(),
-                                  fadeOutDuration:
-                                      const Duration(milliseconds: 300),
-                                  fadeOutCurve: Curves.easeOut,
-                                  fadeInDuration:
-                                      const Duration(milliseconds: 700),
-                                  fadeInCurve: Curves.easeIn,
-                                  imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                      imageQuality +
-                                      watchOptions[index].logoPath!,
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
-                                      ),
+    {required String themeMode,
+    required String imageQuality,
+    required String noOptionMessage,
+    required List? watchOptions,
+    required BuildContext context}) {
+  final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+  final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+  return Container(
+    padding: const EdgeInsets.all(8.0),
+    child: watchOptions == null
+        ? Center(
+            child: Text(
+            noOptionMessage,
+            textAlign: TextAlign.center,
+          ))
+        : GridView.builder(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 100,
+              childAspectRatio: 0.65,
+              crossAxisSpacing: 5,
+              mainAxisSpacing: 5,
+            ),
+            itemCount: watchOptions.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: watchOptions[index].logoPath == null
+                            ? Image.asset(
+                                'assets/images/na_logo.png',
+                                fit: BoxFit.cover,
+                              )
+                            : CachedNetworkImage(
+                                cacheManager: cacheProp(),
+                                fadeOutDuration:
+                                    const Duration(milliseconds: 300),
+                                fadeOutCurve: Curves.easeOut,
+                                fadeInDuration:
+                                    const Duration(milliseconds: 700),
+                                fadeInCurve: Curves.easeIn,
+                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL,
+                                        proxyUrl, isProxyEnabled, context) +
+                                    imageQuality +
+                                    watchOptions[index].logoPath!,
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                  placeholder: (context, url) =>
-                                      watchProvidersImageShimmer(themeMode),
-                                  errorWidget: (context, url, error) =>
-                                      Image.asset(
-                                    'assets/images/na_logo.png',
-                                    fit: BoxFit.cover,
-                                  ),
                                 ),
-                        ),
+                                placeholder: (context, url) =>
+                                    watchProvidersImageShimmer(themeMode),
+                                errorWidget: (context, url, error) =>
+                                    Image.asset(
+                                  'assets/images/na_logo.png',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Expanded(
-                          flex: 3,
-                          child: Text(
-                            watchOptions[index].providerName!,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          )),
-                    ],
-                  ),
-                );
-              }),
-    );
-  }
-        
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Expanded(
+                        flex: 3,
+                        child: Text(
+                          watchOptions[index].providerName!,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        )),
+                  ],
+                ),
+              );
+            }),
+  );
+}
 
 Widget watchProvidersShimmer(String themeMode) => Container(
       padding: const EdgeInsets.all(8.0),
@@ -1066,7 +1067,7 @@ Widget mainPageVerticalScrollShimmer(
                                       ],
                                     ),
                                     Divider(
-                                      color: themeMode == "light"
+                                      color: themeMode == 'light'
                                           ? Colors.black54
                                           : Colors.white54,
                                       thickness: 1,
@@ -1203,7 +1204,7 @@ Widget tvDetailsSeasonsTabShimmer(String themeMode) => Column(
                             ],
                           ),
                           Divider(
-                            color: themeMode == "light"
+                            color: themeMode == 'light'
                                 ? Colors.black54
                                 : Colors.white54,
                             thickness: 1,
@@ -1282,7 +1283,7 @@ Widget tvCastAndCrewTabShimmer(String themeMode) => Container(
                       ],
                     ),
                     Divider(
-                      color: themeMode == "light"
+                      color: themeMode == 'light'
                           ? Colors.black54
                           : Colors.white54,
                       thickness: 1,
@@ -1472,7 +1473,7 @@ Widget personAboutSimmer(themeMode) => Column(
               const LeadingDot(),
               Expanded(
                 child: Text(
-                  tr("biography"),
+                  tr('biography'),
                   style: kTextHeaderStyle,
                 ),
               ),
@@ -1598,7 +1599,7 @@ Widget newsShimmer(String themeMode, scrollController, isLoading) {
                                     ),
                                   ),
                                   Divider(
-                                    color: themeMode == "light"
+                                    color: themeMode == 'light'
                                         ? Colors.black54
                                         : Colors.white54,
                                     thickness: 1,
@@ -1641,8 +1642,10 @@ class _DidYouKnowState extends State<DidYouKnow> {
 
   @override
   void initState() {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchSocialLinks(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -1671,7 +1674,7 @@ class _DidYouKnowState extends State<DidYouKnow> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            tr("did_you_know"),
+            tr('did_you_know'),
             style: kTextHeaderStyle,
           ),
           const SizedBox(
@@ -1684,7 +1687,7 @@ class _DidYouKnowState extends State<DidYouKnow> {
                           externalLinks!.imdbId!.isEmpty
                       ? Center(
                           child: Text(
-                          tr("no_imdb_id"),
+                          tr('no_imdb_id'),
                           textAlign: TextAlign.center,
                         ))
                       : Wrap(
@@ -1692,47 +1695,47 @@ class _DidYouKnowState extends State<DidYouKnow> {
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                navToDYK('trivia', tr("trivia"),
+                                navToDYK('trivia', tr('trivia'),
                                     externalLinks!.imdbId!);
                               },
-                              child: Text(tr("trivia")),
+                              child: Text(tr('trivia')),
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                navToDYK('quotes', tr("quotes"),
+                                navToDYK('quotes', tr('quotes'),
                                     externalLinks!.imdbId!);
                               },
-                              child: Text(tr("quotes")),
+                              child: Text(tr('quotes')),
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                navToDYK('goofs', tr("goofs"),
+                                navToDYK('goofs', tr('goofs'),
                                     externalLinks!.imdbId!);
                               },
-                              child: Text(tr("goofs")),
+                              child: Text(tr('goofs')),
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                navToDYK('crazycredits', tr("crazy_credits"),
+                                navToDYK('crazycredits', tr('crazy_credits'),
                                     externalLinks!.imdbId!);
                               },
-                              child: Text(tr("crazy_credits")),
+                              child: Text(tr('crazy_credits')),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 navToDYK(
                                     'alternateversions',
-                                    tr("alternate_versions"),
+                                    tr('alternate_versions'),
                                     externalLinks!.imdbId!);
                               },
-                              child: Text(tr("alternate_versions")),
+                              child: Text(tr('alternate_versions')),
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                navToDYK('soundtrack', tr("soundtrack"),
+                                navToDYK('soundtrack', tr('soundtrack'),
                                     externalLinks!.imdbId!);
                               },
-                              child: Text(tr("soundtrack")),
+                              child: Text(tr('soundtrack')),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -1742,7 +1745,7 @@ class _DidYouKnowState extends State<DidYouKnow> {
                                 //       imdbId: externalLinks!.imdbId!);
                                 // })));
                               },
-                              child: Text(tr("reviews")),
+                              child: Text(tr('reviews')),
                             ),
                           ],
                         )),
@@ -1775,9 +1778,12 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchWatchProviders(widget.api, widget.country, isProxyEnabled, proxyUrl).then((value) {
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    fetchWatchProviders(widget.api, widget.country, isProxyEnabled, proxyUrl)
+        .then((value) {
       if (mounted) {
         setState(() {
           watchProviders = value;
@@ -1805,26 +1811,26 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                 indicatorSize: TabBarIndicatorSize.tab,
                 tabs: [
                   Tab(
-                    child: Text(tr("buy"),
+                    child: Text(tr('buy'),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
                   ),
                   Tab(
-                    child: Text(tr("stream"),
+                    child: Text(tr('stream'),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
                   ),
                   Tab(
-                    child: Text(tr("rent"),
+                    child: Text(tr('rent'),
                         style: TextStyle(
                             fontFamily: 'Poppins',
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
                   ),
@@ -1834,7 +1840,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
           ),
           Expanded(
             child: Container(
-              color: themeMode == "dark" || themeMode == "amoled"
+              color: themeMode == 'dark' || themeMode == 'amoled'
                   ? Colors.black
                   : Colors.white,
               child: TabBarView(
@@ -1850,18 +1856,21 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                         watchProvidersTabData(
                             themeMode: themeMode,
                             imageQuality: imageQuality,
-                            noOptionMessage: tr("no_buy"),
-                            watchOptions: watchProviders!.buy, context: context),
+                            noOptionMessage: tr('no_buy'),
+                            watchOptions: watchProviders!.buy,
+                            context: context),
                         watchProvidersTabData(
                             themeMode: themeMode,
                             imageQuality: imageQuality,
-                            noOptionMessage: tr("no_stream"),
-                            watchOptions: watchProviders!.flatRate, context: context),
+                            noOptionMessage: tr('no_stream'),
+                            watchOptions: watchProviders!.flatRate,
+                            context: context),
                         watchProvidersTabData(
                             themeMode: themeMode,
                             imageQuality: imageQuality,
-                            noOptionMessage: tr("no_rent"),
-                            watchOptions: watchProviders!.rent, context: context),
+                            noOptionMessage: tr('no_rent'),
+                            watchOptions: watchProviders!.rent,
+                            context: context),
                       ],
               ),
             ),
@@ -1882,10 +1891,10 @@ class ShimmerBase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: themeMode == "dark" || themeMode == "amoled"
+      baseColor: themeMode == 'dark' || themeMode == 'amoled'
           ? Colors.grey.shade900
           : Colors.grey.shade300,
-      highlightColor: themeMode == "dark" || themeMode == "amoled"
+      highlightColor: themeMode == 'dark' || themeMode == 'amoled'
           ? Colors.grey.shade800.withOpacity(0.1)
           : Colors.grey.shade200,
       child: child,
@@ -1931,7 +1940,7 @@ class ReportErrorWidget extends StatelessWidget {
                     child: ElevatedButton(
                         onPressed: () async {
                           await launchUrl(
-                              Uri.parse("https://t.me/flixquestgroup"),
+                              Uri.parse('https://t.me/flixquestgroup'),
                               mode: LaunchMode.externalApplication);
                         },
                         child: Row(
@@ -1943,7 +1952,7 @@ class ReportErrorWidget extends StatelessWidget {
                               width: 10,
                             ),
                             Text(
-                              tr("report_telegram"),
+                              tr('report_telegram'),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             )
@@ -2020,8 +2029,11 @@ class ExternalPlay extends StatelessWidget {
                             FlutterClipboard.copy(
                                     videoSources.entries.elementAt(index).value)
                                 .then((value) {
+                              if (!context.mounted) {
+                                return;
+                              }
                               GlobalMethods.showScaffoldMessage(
-                                  tr("video_link_copied"), context);
+                                  tr('video_link_copied'), context);
                               Navigator.pop(context);
                             });
                           },

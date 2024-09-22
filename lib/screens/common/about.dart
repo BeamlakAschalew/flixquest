@@ -12,7 +12,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("about")), // Translate "About"
+        title: Text(tr('about')),
       ),
       body: Center(
         child: Padding(
@@ -41,13 +41,13 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  tr("app_version", namedArgs: {"version": currentAppVersion}),
+                  tr('app_version', namedArgs: {'version': currentAppVersion}),
                   style: const TextStyle(
                     fontSize: 27.0,
                   ),
                 ),
                 Text(
-                  tr("endorsment"),
+                  tr('endorsment'),
                   maxLines: 5,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
@@ -71,7 +71,7 @@ class AboutPage extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: GestureDetector(
                     child: Text(
-                      tr("bug_notice"), // Translate "Noticed any bugs? Inform me on Telegram, click here"
+                      tr('bug_notice'), // Translate "Noticed any bugs? Inform me on Telegram, click here"
                       maxLines: 5,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
@@ -88,7 +88,7 @@ class AboutPage extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      tr("follow_cinemax"),
+                      tr('follow_cinemax'),
                       maxLines: 5,
                       textAlign: TextAlign.center,
                       style: kTextSmallHeaderStyle,
@@ -130,7 +130,7 @@ class AboutPage extends StatelessWidget {
                     right: 7.0,
                   ),
                   child: Text(
-                    tr("made_with"), // Translate "Made with ❤️ by Beamlak Aschalew"
+                    tr('made_with'), // Translate "Made with ❤️ by Beamlak Aschalew"
                     maxLines: 5,
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20.0),
@@ -138,9 +138,9 @@ class AboutPage extends StatelessWidget {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(tr("year_range", namedArgs: {
-                    "startYear": "2016",
-                    "endYear": "2024"
+                  child: Text(tr('year_range', namedArgs: {
+                    'startYear': '2016',
+                    'endYear': '2024'
                   })), // Translate "2015 EC, 2023 GC"
                 )
               ],

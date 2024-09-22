@@ -825,11 +825,11 @@ class Styles {
       required ColorScheme? darkDynamicColor,
       required BuildContext context,
       required AppColor appColor}) {
-    return appThemeMode == "dark"
+    return appThemeMode == 'dark'
         ? darkThemeData(isM3Enabled, darkDynamicColor, appColor)
-        : appThemeMode == "light"
+        : appThemeMode == 'light'
             ? lightThemeData(isM3Enabled, lightDynamicColor, appColor)
-            : appThemeMode == "amoled"
+            : appThemeMode == 'amoled'
                 ? lightsOutThemeData(isM3Enabled, darkDynamicColor, appColor)
                 : darkThemeData(isM3Enabled, darkDynamicColor, appColor);
   }

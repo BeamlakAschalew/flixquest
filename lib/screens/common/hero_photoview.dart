@@ -44,15 +44,15 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
     final posterFolderName = posterFolder;
     final stillFolderName = stillFolder;
     final personImageFolderName = personImageFolder;
-    final flixquestPath = Directory("storage/emulated/0/$cinefolderName");
+    final flixquestPath = Directory('storage/emulated/0/$cinefolderName');
     final imageTypePath =
-        Directory("storage/emulated/0/FlixQuest/$imagefolderName");
+        Directory('storage/emulated/0/FlixQuest/$imagefolderName');
     final posterPath =
-        Directory("storage/emulated/0/FlixQuest/$posterFolderName");
+        Directory('storage/emulated/0/FlixQuest/$posterFolderName');
     final stillPath =
-        Directory("storage/emulated/0/FlixQuest/$stillFolderName");
+        Directory('storage/emulated/0/FlixQuest/$stillFolderName');
     final personImagePath =
-        Directory("storage/emulated/0/FlixQuest/$personImageFolderName");
+        Directory('storage/emulated/0/FlixQuest/$personImageFolderName');
 
     if ((await flixquestPath.exists())) {
       imageTypePath.create();
@@ -102,13 +102,13 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   void _download(String url, String currentIndex, String themeMode) async {
     var externalStatus = await Permission.manageExternalStorage.status;
     if (externalStatus.isPermanentlyDenied) {
-      GlobalMethods.showScaffoldMessage(tr("give_file_permission"), context);
+      GlobalMethods.showScaffoldMessage(tr('give_file_permission'), context);
       return;
     } else if (!externalStatus.isGranted) {
       await Permission.manageExternalStorage.request().then((value) {
         if (value.isDenied) {
           GlobalMethods.showScaffoldMessage(
-              tr("give_file_permission_short"), context);
+              tr('give_file_permission_short'), context);
           return;
         }
       });
@@ -137,9 +137,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
       child: Scaffold(
           appBar: AppBar(
             title: Text(widget.name.endsWith('s')
-                ? tr("plular_person_image", namedArgs: {"name": widget.name})
-                : tr("singular_person_image",
-                    namedArgs: {"name": widget.name})),
+                ? tr('plular_person_image', namedArgs: {'name': widget.name})
+                : tr('singular_person_image',
+                    namedArgs: {'name': widget.name})),
           ),
           body: Column(
             children: [
@@ -168,7 +168,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                         padding: EdgeInsets.only(right: 8.0),
                         child: Icon(FontAwesomeIcons.solidFloppyDisk),
                       ),
-                      Text(tr("download")),
+                      Text(tr('download')),
                     ],
                   ),
                 ),

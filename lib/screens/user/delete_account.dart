@@ -75,21 +75,29 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                   .delete()
                   .then((value) async {
                 await user!.delete().then((value) async {
-                  await Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) {
-                    return const LandingScreen();
-                  })).then((value) {
-                    GlobalMethods.showCustomScaffoldMessage(
-                        SnackBar(
-                          content: Text(
-                            tr("account_deleted_successfully"),
-                            maxLines: 3,
-                            style: kTextSmallBodyStyle,
+                  if (!context.mounted) {
+                    return;
+                  }
+                  if (mounted) {
+                    await Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
+                      return const LandingScreen();
+                    })).then((value) {
+                      if (!context.mounted) {
+                        return;
+                      }
+                      GlobalMethods.showCustomScaffoldMessage(
+                          SnackBar(
+                            content: Text(
+                              tr('account_deleted_successfully'),
+                              maxLines: 3,
+                              style: kTextSmallBodyStyle,
+                            ),
+                            duration: const Duration(seconds: 4),
                           ),
-                          duration: const Duration(seconds: 4),
-                        ),
-                        context);
-                  });
+                          context.mounted ? context : null);
+                    });
+                  }
                 });
               });
             });
@@ -98,20 +106,20 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
       } on FirebaseAuthException catch (e) {
         if (mounted) {
           if (e.code == 'user-mismatch') {
-            _globalMethods.authErrorHandle(tr("user_mismatch"), context);
+            _globalMethods.authErrorHandle(tr('user_mismatch'), context);
           } else if (e.code == 'user-not-found') {
-            _globalMethods.authErrorHandle(tr("user_not_found"), context);
+            _globalMethods.authErrorHandle(tr('user_not_found'), context);
           } else if (e.code == 'invalid-credential') {
-            _globalMethods.authErrorHandle(tr("invalid_credential"), context);
+            _globalMethods.authErrorHandle(tr('invalid_credential'), context);
           } else if (e.code == 'invalid-email') {
-            _globalMethods.authErrorHandle(tr("invalid_email"), context);
+            _globalMethods.authErrorHandle(tr('invalid_email'), context);
           } else if (e.code == 'wrong-password:') {
-            _globalMethods.authErrorHandle(tr("wrong_password"), context);
+            _globalMethods.authErrorHandle(tr('wrong_password'), context);
           } else if (e.code == 'weak-password') {
-            _globalMethods.authErrorHandle(tr("weak_password"), context);
+            _globalMethods.authErrorHandle(tr('weak_password'), context);
           } else if (e.code == 'requires-recent-login') {
             _globalMethods.authErrorHandle(
-                tr("requires_recent_login"), context);
+                tr('requires_recent_login'), context);
           }
         }
         // print('error occured ${error.message}');
@@ -129,7 +137,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(tr("delete_account"))),
+        appBar: AppBar(title: Text(tr('delete_account'))),
         body: userDoc == null
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -147,13 +155,13 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        tr("delete_account"),
+                        tr('delete_account'),
                         style: const TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Text(
-                      tr("delete_notice"),
+                      tr('delete_notice'),
                       textAlign: TextAlign.center,
                     ),
                     Padding(
@@ -168,7 +176,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                 key: const ValueKey('confirmation'),
                                 validator: (value) {
                                   if (value != 'CONFIRM') {
-                                    return tr("del_input_err");
+                                    return tr('del_input_err');
                                   }
                                   return null;
                                 },
@@ -181,10 +189,9 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                     filled: true,
                                     prefixIcon:
                                         const Icon(Icons.text_fields_rounded),
-                                    labelText: tr("type_confirm"),
-                                    fillColor: Theme.of(context)
-                                        .colorScheme
-                                        .background),
+                                    labelText: tr('type_confirm'),
+                                    fillColor:
+                                        Theme.of(context).colorScheme.surface),
                                 onSaved: (value) {
                                   setState(() {
                                     confirmationText = value!;
@@ -208,12 +215,12 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                   : ElevatedButton(
                                       style: ButtonStyle(
                                           backgroundColor:
-                                              const MaterialStatePropertyAll(
+                                              const WidgetStatePropertyAll(
                                                   Colors.red),
                                           minimumSize:
-                                              const MaterialStatePropertyAll(
+                                              const WidgetStatePropertyAll(
                                                   Size(200, 50)),
-                                          shape: MaterialStateProperty.all(
+                                          shape: WidgetStateProperty.all(
                                             RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10.0),
@@ -227,7 +234,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            tr("delete_account"),
+                                            tr('delete_account'),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: 17),

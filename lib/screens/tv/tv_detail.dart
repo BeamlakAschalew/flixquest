@@ -60,11 +60,11 @@ class TVDetailPageState extends State<TVDetailPage>
           SliverAppBar(
             pinned: true,
             elevation: 1,
-            shadowColor: themeMode == "dark" || themeMode == "amoled"
+            shadowColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.white
                 : Colors.black,
             forceElevated: true,
-            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.black
                 : Colors.white,
             leading: SABTN(
@@ -74,7 +74,7 @@ class TVDetailPageState extends State<TVDetailPage>
             ),
             title: SABT(
                 child: Text(
-              widget.tvSeries.firstAirDate == ""
+              widget.tvSeries.firstAirDate == ''
                   ? widget.tvSeries.name!
                   : '${widget.tvSeries.name!} (${DateTime.parse(widget.tvSeries.firstAirDate!).year})',
               style: TextStyle(
@@ -103,10 +103,10 @@ class TVDetailPageState extends State<TVDetailPage>
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Share.share(tr("share_tv", namedArgs: {
-              "title": widget.tvSeries.name!,
-              "rating": widget.tvSeries.voteAverage!.toStringAsFixed(1),
-              "id": widget.tvSeries.id.toString()
+            await Share.share(tr('share_tv', namedArgs: {
+              'title': widget.tvSeries.name!,
+              'rating': widget.tvSeries.voteAverage!.toStringAsFixed(1),
+              'id': widget.tvSeries.id.toString()
             }));
           },
           child: const Icon(FontAwesomeIcons.shareNodes)),

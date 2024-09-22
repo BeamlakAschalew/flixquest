@@ -28,12 +28,15 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       try {
         await _auth
             .sendPasswordResetEmail(email: _emailAddress.trim().toLowerCase())
-            .then((value) =>
-                _globalMethods.checkMessage(tr("reset_sent"), context));
+            .then((value) {
+          if (mounted) {
+            _globalMethods.checkMessage(tr('reset_sent'), context);
+          }
+        });
       } on FirebaseAuthException catch (e) {
         if (mounted) {
           if (e.code == 'user-not-found') {
-            _globalMethods.authErrorHandle(tr("no_account"), context);
+            _globalMethods.authErrorHandle(tr('no_account'), context);
           } else {
             _globalMethods.authErrorHandle(e.toString(), context);
           }
@@ -50,7 +53,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(tr("reset_password"))),
+      appBar: AppBar(title: Text(tr('reset_password'))),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -63,7 +66,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                tr("forgot_password"),
+                tr('forgot_password'),
                 style:
                     const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
@@ -76,7 +79,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   key: const ValueKey('email'),
                   validator: (value) {
                     if (value!.isEmpty || !value.contains('@')) {
-                      return tr("invalid_email");
+                      return tr('invalid_email');
                     }
                     return null;
                   },
@@ -86,8 +89,8 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       border: const UnderlineInputBorder(),
                       filled: true,
                       prefixIcon: const Icon(FontAwesomeIcons.envelope),
-                      labelText: tr("email_address"),
-                      fillColor: Theme.of(context).colorScheme.background),
+                      labelText: tr('email_address'),
+                      fillColor: Theme.of(context).colorScheme.surface),
                   onSaved: (value) {
                     _emailAddress = value!;
                   },
@@ -104,8 +107,8 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   : ElevatedButton(
                       style: ButtonStyle(
                           minimumSize:
-                              const MaterialStatePropertyAll(Size(200, 50)),
-                          shape: MaterialStateProperty.all(
+                              const WidgetStatePropertyAll(Size(200, 50)),
+                          shape: WidgetStateProperty.all(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
@@ -115,7 +118,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            tr("reset_password"),
+                            tr('reset_password'),
                             style: const TextStyle(
                                 fontWeight: FontWeight.w500, fontSize: 17),
                           ),

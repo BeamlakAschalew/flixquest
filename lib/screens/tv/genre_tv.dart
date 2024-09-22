@@ -20,8 +20,8 @@ class TVGenre extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(tr(
-          "genre_tv_title",
-          namedArgs: {"g": genres.genreName ?? "Null"},
+          'genre_tv_title',
+          namedArgs: {'g': genres.genreName ?? 'Null'},
         )),
         leading: IconButton(
           icon: const Icon(

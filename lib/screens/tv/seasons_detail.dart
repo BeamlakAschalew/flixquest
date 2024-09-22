@@ -68,11 +68,11 @@ class SeasonsDetailState extends State<SeasonsDetail>
           SliverAppBar(
             pinned: true,
             elevation: 1,
-            shadowColor: themeMode == "dark" || themeMode == "amoled"
+            shadowColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.white
                 : Colors.black,
             forceElevated: true,
-            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.black
                 : Colors.white,
             leading: SABTN(
@@ -82,7 +82,7 @@ class SeasonsDetailState extends State<SeasonsDetail>
             ),
             title: SABT(
                 child: Text(
-              widget.seasons.airDate == null || widget.seasons.airDate == ""
+              widget.seasons.airDate == null || widget.seasons.airDate == ''
                   ? widget.seasons.name!
                   : '${widget.seasons.name!} (${DateTime.parse(widget.seasons.airDate!).year})',
               style: TextStyle(
@@ -215,7 +215,7 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                                     ? Alignment.topLeft
                                     : Alignment.topRight,
                                 child: TopButton(
-                                  buttonText: tr("open_show"),
+                                  buttonText: tr('open_show'),
                                 ),
                               ),
                             ),
@@ -293,7 +293,7 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                season.airDate == null || season.airDate == ""
+                                season.airDate == null || season.airDate == ''
                                     ? season.name!
                                     : '${season.name!} (${DateTime.parse(season.airDate!).year})',
                                 style: kTextSmallHeaderStyle,
@@ -308,8 +308,8 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                                       tvSeries.originalTitle!,
                                       style: TextStyle(
                                           fontSize: 15,
-                                          color: themeMode == "dark" ||
-                                                  themeMode == "amoled"
+                                          color: themeMode == 'dark' ||
+                                                  themeMode == 'amoled'
                                               ? Colors.white54
                                               : Colors.black54),
                                     ),
@@ -371,7 +371,7 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
                         const LeadingDot(),
                         Expanded(
                           child: Text(
-                            tr("overview"),
+                            tr('overview'),
                             style: kTextHeaderStyle,
                           ),
                         ),
@@ -385,14 +385,14 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
               padding: const EdgeInsets.all(8.0),
               child: ReadMoreText(
                 widget.season.overview!.isEmpty
-                    ? tr("no_season_overview")
+                    ? tr('no_season_overview')
                     : widget.season.overview!,
                 trimLines: 4,
                 style: const TextStyle(fontFamily: 'Poppins'),
                 colorClickableText: Theme.of(context).colorScheme.primary,
                 trimMode: TrimMode.Line,
-                trimCollapsedText: tr("read_more"),
-                trimExpandedText: tr("read_less"),
+                trimCollapsedText: tr('read_more'),
+                trimExpandedText: tr('read_less'),
                 lessStyle: TextStyle(
                     fontSize: 14,
                     color: Theme.of(context).colorScheme.primary,
@@ -410,14 +410,14 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
                       const EdgeInsets.only(left: 8.0, bottom: 4.0, right: 8.0),
                   child: Text(
                     widget.season.airDate == null
-                        ? tr("no_first_episode_air_date")
-                        : tr("first_episode_air_date", namedArgs: {
-                            "day": DateTime.parse(widget.season.airDate!)
+                        ? tr('no_first_episode_air_date')
+                        : tr('first_episode_air_date', namedArgs: {
+                            'day': DateTime.parse(widget.season.airDate!)
                                 .day
                                 .toString(),
-                            "date": DateFormat("MMMM")
+                            'date': DateFormat('MMMM')
                                 .format(DateTime.parse(widget.season.airDate!)),
-                            "year": DateTime.parse(widget.season.airDate!)
+                            'year': DateTime.parse(widget.season.airDate!)
                                 .year
                                 .toString()
                           }),
@@ -444,7 +444,7 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
               posterPath: widget.season.posterPath,
             ),
             TVSeasonImagesDisplay(
-              title: tr("images"),
+              title: tr('images'),
               name: '${widget.seriesName}_season_${widget.season.seasonNumber}',
               api: Endpoints.getTVSeasonImagesUrl(
                   widget.tvDetails.id!, widget.season.seasonNumber!),
