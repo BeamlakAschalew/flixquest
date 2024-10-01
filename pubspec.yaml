@@ -11,23 +11,24 @@ environment:
 dependencies:
   animated_text_kit: ^4.2.1
   better_player:
-    git:
-      url: https://github.com/BeamlakAschalew/flixquest-betterplayer.git
+    # git:
+    #   url: https://github.com/BeamlakAschalew/flixquest-betterplayer.git
+    path: ../flixquest-betterplayer
   cached_network_image: ^3.2.1
   carousel_slider: ^5.0.0
   clipboard: ^0.1.3
-  cloud_firestore: ^4.8.2
+  cloud_firestore: ^5.4.2
   cupertino_icons: ^1.0.2
   device_info_plus: ^10.1.2
   dio: ^4.0.6
   dynamic_color: ^1.5.4
   easy_localization: ^3.0.2
   fading_edge_scrollview: ^4.1.1
-  firebase_analytics: ^10.4.3
-  firebase_auth: ^4.6.3
-  firebase_core: ^2.14.0
-  firebase_messaging: ^14.6.4
-  firebase_remote_config: ^4.2.5
+  firebase_analytics: ^11.3.2
+  firebase_auth: ^5.3.0
+  firebase_core: ^3.5.0
+  firebase_messaging: ^15.1.2
+  firebase_remote_config: ^5.1.2
   flutter:
     sdk: flutter
   flutter_cache_manager: ^3.3.0

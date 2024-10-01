@@ -591,8 +591,8 @@ Future<FlixHQStreamSources> getTVStreamLinksAndSubsFlixHQ(String api) async {
 Future<String> getVttFileAsString(String url) async {
   try {
     var response = await retryOptions.retry(
-      () => http.get(Uri.parse(url)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
+      () => http.get(Uri.parse(url)).timeout(const Duration(seconds: 15)),
+      retryIf: (e) => e is SocketException,
     );
     if (response.statusCode == 200) {
       final bytes = response.bodyBytes;

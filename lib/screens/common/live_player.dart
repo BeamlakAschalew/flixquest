@@ -64,6 +64,9 @@ class _LivePlayerState extends State<LivePlayer> {
       overflowMenuIcon: Icons.menu_rounded,
       subtitlesIcon: Icons.closed_caption_rounded,
       qualitiesIcon: Icons.hd_rounded,
+      overflowMenuIconsColor: widget.colors.first,
+      overflowModalTextColor: widget.colors.first,
+      overflowModalColor: widget.colors.last,
       enableAudioTracks: false,
     );
 
@@ -88,10 +91,11 @@ class _LivePlayerState extends State<LivePlayer> {
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
         BetterPlayerDataSourceType.network, widget.videoUrl,
         liveStream: true,
-        bufferingConfiguration: betterPlayerBufferingConfiguration, headers: {
-        'User-Agent': widget.userAgent,
-        'Referer': widget.referrer,
-});
+        bufferingConfiguration: betterPlayerBufferingConfiguration,
+        headers: {
+          'User-Agent': widget.userAgent,
+          'Referer': widget.referrer,
+        });
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(dataSource).then((value) {
       if (_betterPlayerController.videoPlayerController!.value.aspectRatio >

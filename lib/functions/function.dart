@@ -94,7 +94,7 @@ void updateAndLogTotalStreamingDuration(int durationInSeconds) {
   // Log the new total duration as a custom event for tracking purposes
   analytics.logEvent(
     name: 'total_streaming_duration',
-    parameters: <String, dynamic>{
+    parameters: <String, Object>{
       'duration_seconds': totalStreamingDuration,
     },
   );

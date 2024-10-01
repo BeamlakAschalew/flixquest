@@ -62,6 +62,9 @@ class AppDependencyProvider extends ChangeNotifier {
   String _tmdbProxy = '';
   String get tmdbProxy => _tmdbProxy;
 
+  bool _fetchSubtitles = true;
+  bool get fetchSubtitles => _fetchSubtitles;
+
   Future<void> getConsumetUrl() async {
     consumetUrl = await __appDependencies.getConsumetUrl();
   }
@@ -189,6 +192,11 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set vidSrcToServer(String value) {
     _vidSrcToServer = value;
+    notifyListeners();
+  }
+
+  set fetchSubtitles(bool value) {
+    _fetchSubtitles = value;
     notifyListeners();
   }
 

@@ -334,10 +334,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     getAppLanguage();
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl =
-        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final appDep = Provider.of<AppDependencyProvider>(context, listen: false);
     try {
-      if (subtitles.isNotEmpty) {
+      if (subtitles.isNotEmpty && appDep.fetchSubtitles) {
         if (supportedLanguages[foundIndex].englishName == '') {
           for (int i = 0; i < subtitles.length - 1; i++) {
             if (mounted) {
@@ -414,7 +413,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 Endpoints.getExternalLinksForMovie(
                     widget.metadata.movieId!, 'en'),
                 isProxyEnabled,
-                proxyUrl,
+                appDep.tmdbProxy,
               ).then((value) async {
                 if (value.imdbId != null) {
                   await getExternalSubtitle(

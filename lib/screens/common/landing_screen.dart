@@ -108,7 +108,6 @@ class _LandingScreenState extends State<LandingScreen> {
                               Text(tr('thousands_of'),
                                   style: const TextStyle(color: Colors.black)),
                               SizedBox(
-                                height: 75,
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 5.0),
                                   child: AnimatedTextKit(
