@@ -48,7 +48,7 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "dev.beamlak.flixquest_v2"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -66,6 +66,11 @@ android {
    buildTypes {
        release {
            signingConfig signingConfigs.release
+           packagingOptions {
+            jniLibs {
+            useLegacyPackaging true
+            }
+           }
        }
    }
 }

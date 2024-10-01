@@ -145,7 +145,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("sort_by"),
+                    tr('sort_by'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -173,7 +173,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("include_adult"),
+                    tr('include_adult'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -203,7 +203,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("release_year"),
+                    tr('release_year'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -230,7 +230,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                           const LeadingDot(),
                           Expanded(
                             child: Text(
-                              tr("total_ratings"),
+                              tr('total_ratings'),
                               style: kTextHeaderStyle,
                             ),
                           ),
@@ -263,8 +263,8 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30, 15),
                   child: Text(
-                    tr("ratings_count", namedArgs: {
-                      "r": movieTotalRatingSlider.toInt().toString()
+                    tr('ratings_count', namedArgs: {
+                      'r': movieTotalRatingSlider.toInt().toString()
                     }),
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20),
@@ -277,7 +277,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("with_genres"),
+                    tr('with_genres'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -321,7 +321,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("with_streaming_services"),
+                    tr('with_streaming_services'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -362,9 +362,9 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                  style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(
-                        const Size(double.infinity, 50)),
+                  style: const ButtonStyle(
+                    minimumSize:
+                        WidgetStatePropertyAll(Size(double.infinity, 50)),
                   ),
                   onPressed: () {
                     joinGenreStrings();
@@ -385,7 +385,7 @@ class _DiscoverMoviesTabState extends State<DiscoverMoviesTab> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: Text(tr("discover")),
+                        child: Text(tr('discover')),
                       ),
                       const Icon(FontAwesomeIcons.wandMagicSparkles)
                     ],

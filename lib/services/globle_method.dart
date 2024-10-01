@@ -32,13 +32,13 @@ class GlobalMethods {
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(tr("cancel"))),
+                  child: Text(tr('cancel'))),
               TextButton(
                   onPressed: () {
                     fct();
                     Navigator.pop(context);
                   },
-                  child: Text(tr("ok")))
+                  child: Text(tr('ok')))
             ],
           );
         });
@@ -53,7 +53,7 @@ class GlobalMethods {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(tr("error_occured")),
+                  child: Text(tr('error_occured')),
                 ),
               ],
             ),
@@ -63,7 +63,7 @@ class GlobalMethods {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(tr("ok")))
+                  child: Text(tr('ok')))
             ],
           );
         });
@@ -82,7 +82,7 @@ class GlobalMethods {
                     Navigator.pop(context);
                     Navigator.pop(context);
                   },
-                  child: Text(tr("ok")))
+                  child: Text(tr('ok')))
             ],
           );
         });
@@ -98,7 +98,7 @@ class GlobalMethods {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(tr("error_occured")),
+                  child: Text(tr('error_occured')),
                 ),
               ],
             ),
@@ -108,7 +108,7 @@ class GlobalMethods {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(tr("ok")))
+                  child: Text(tr('ok')))
             ],
           );
         });
@@ -120,18 +120,19 @@ class GlobalMethods {
         duration: const Duration(milliseconds: 1500),
         content: Text(
           error is FormatException
-              ? tr("internal_error")
+              ? tr('internal_error')
               : error is TimeoutException
-                  ? tr("timed_out")
+                  ? tr('timed_out')
                   : error is SocketException
-                      ? tr("internet_problem")
+                      ? tr('internet_problem')
                       : error is NotFoundException
-                          ? tr("media_not_found", namedArgs: {"s": server})
+                          ? tr('media_not_found', namedArgs: {'s': server})
                           : error is ServerDownException
-                              ? tr("server_is_down", namedArgs: {"s": server})
-                              : error is ChannelsNotFoundException ? tr("channels_fetch_failed")
-                              : tr("general_error",
-                                  namedArgs: {"e": error.toString()}),
+                              ? tr('server_is_down', namedArgs: {'s': server})
+                              : error is ChannelsNotFoundException
+                                  ? tr('channels_fetch_failed')
+                                  : tr('general_error',
+                                      namedArgs: {'e': error.toString()}),
           style: const TextStyle(fontFamily: 'Poppins'),
         )));
   }
@@ -142,10 +143,10 @@ class GlobalMethods {
         duration: const Duration(milliseconds: 1500),
         content: Text(
           error is TimeoutException
-              ? tr("timed_out")
+              ? tr('timed_out')
               : error is SocketException
-                  ? tr("internet_problem")
-                  : tr("general_error", namedArgs: {"e": error.toString()}),
+                  ? tr('internet_problem')
+                  : tr('general_error', namedArgs: {'e': error.toString()}),
           style: const TextStyle(fontFamily: 'Poppins'),
         )));
   }
@@ -160,7 +161,9 @@ class GlobalMethods {
   }
 
   static void showCustomScaffoldMessage(
-      SnackBar message, BuildContext context) async {
-    ScaffoldMessenger.of(context).showSnackBar(message);
+      SnackBar message, BuildContext? context) async {
+    if (context != null) {
+      ScaffoldMessenger.of(context).showSnackBar(message);
+    }
   }
 }

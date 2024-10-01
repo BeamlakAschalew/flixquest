@@ -4,16 +4,16 @@ import '../constants/api_constants.dart';
 import '../constants/app_constants.dart';
 
 class AppDependencies {
-  static const CONSUMET_URL_KEY = "consumetUrlKey";
-  static const FLIXQUEST_LOGO_URL = "flixquestLogoUrl";
-  static const OPENSUBTITLES_KEY = "opensubtitlesKey";
-  static const STREAM_SERVER_FLIXHQ = "vidcloud";
-  static const STREAM_SERVER_DCVA = "asianload";
-  static const STREAM_SERVER_ZORO = "vidcloud";
-  static const SHOWBOX_URL = "showbox_url";
-  static const STREAM_ROUTE = "streamRoute";
-  static const FLIXQUEST_API_URL = "flixquestAPIURL";
-  static const TMDB_PROXY = "tmdb_proxy";
+  static const CONSUMET_URL_KEY = 'consumetUrlKey';
+  static const FLIXQUEST_LOGO_URL = 'flixquestLogoUrl';
+  static const OPENSUBTITLES_KEY = 'opensubtitlesKey';
+  static const STREAM_SERVER_FLIXHQ = 'vidcloud';
+  static const STREAM_SERVER_DCVA = 'asianload';
+  static const STREAM_SERVER_ZORO = 'vidcloud';
+  static const SHOWBOX_URL = 'showbox_url';
+  static const STREAM_ROUTE = 'streamRoute';
+  static const FLIXQUEST_API_URL = 'flixquestAPIURL';
+  static const TMDB_PROXY = 'tmdb_proxy';
 
   setConsumetUrl(String value) async {
     sharedPrefsSingleton.setString(CONSUMET_URL_KEY, value);
@@ -73,7 +73,7 @@ class AppDependencies {
   }
 
   Future<String> getShowboxUrl() async {
-    return sharedPrefsSingleton.getString(SHOWBOX_URL) ?? "";
+    return sharedPrefsSingleton.getString(SHOWBOX_URL) ?? '';
   }
 
   setShowboxUrl(String value) async {
@@ -102,6 +102,6 @@ class AppDependencies {
   }
 
   Future<String> getTmdbProxy() async {
-    return sharedPrefsSingleton.getString(TMDB_PROXY) ?? "";
+    return sharedPrefsSingleton.getString(TMDB_PROXY) ?? '';
   }
 }

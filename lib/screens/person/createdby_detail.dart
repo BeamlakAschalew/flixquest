@@ -58,11 +58,11 @@ class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
           SliverAppBar(
             pinned: true,
             elevation: 1,
-            shadowColor: themeMode == "dark" || themeMode == "amoled"
+            shadowColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.white
                 : Colors.black,
             forceElevated: true,
-            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.black
                 : Colors.white,
             leading: SABTN(
@@ -74,7 +74,7 @@ class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
                 child: Text(
               widget.createdBy!.name!,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             )),
             expandedHeight: 210,

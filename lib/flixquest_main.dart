@@ -86,14 +86,16 @@ class _FlixQuestState extends State<FlixQuest>
       appDependencyProvider.isForcedUpdate =
           _remoteConfig.getBool('forced_update');
       appDependencyProvider.flixhqZoeServer =
-          _remoteConfig.getString("flixhq_zoe_server");
+          _remoteConfig.getString('flixhq_zoe_server');
       appDependencyProvider.goMoviesServer =
-          _remoteConfig.getString("gomovies_server");
+          _remoteConfig.getString('gomovies_server');
       appDependencyProvider.vidSrcServer =
-          _remoteConfig.getString("vidsrc_server");
+          _remoteConfig.getString('vidsrc_server');
       appDependencyProvider.vidSrcToServer =
-          _remoteConfig.getString("vidsrcto_server");
-      appDependencyProvider.tmdbProxy = _remoteConfig.getString("tmdb_proxy");
+          _remoteConfig.getString('vidsrcto_server');
+      appDependencyProvider.tmdbProxy = _remoteConfig.getString('tmdb_proxy');
+      appDependencyProvider.fetchSubtitles =
+          _remoteConfig.getBool('fetch_subtitles');
     }
     await requestNotificationPermissions();
   }
@@ -134,7 +136,7 @@ class _FlixQuestState extends State<FlixQuest>
               debugShowCheckedModeBanner: true,
               home: Scaffold(
                 body: Center(
-                  child: Text(tr("error_occured")),
+                  child: Text(tr('error_occured')),
                 ),
               ),
             );
@@ -238,11 +240,11 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
       appDep.streamingServerZoro =
           remoteConfig.getString('streaming_server_zoro');
       appDep.isForcedUpdate = remoteConfig.getBool('forced_update');
-      appDep.flixhqZoeServer = remoteConfig.getString("flixhq_zoe_server");
-      appDep.goMoviesServer = remoteConfig.getString("gomovies_server");
-      appDep.vidSrcServer = remoteConfig.getString("vidsrc_server");
-      appDep.vidSrcToServer = remoteConfig.getString("vidsrcto_server");
-      appDep.tmdbProxy = remoteConfig.getString("tmdb_proxy");
+      appDep.flixhqZoeServer = remoteConfig.getString('flixhq_zoe_server');
+      appDep.goMoviesServer = remoteConfig.getString('gomovies_server');
+      appDep.vidSrcServer = remoteConfig.getString('vidsrc_server');
+      appDep.vidSrcToServer = remoteConfig.getString('vidsrcto_server');
+      appDep.tmdbProxy = remoteConfig.getString('tmdb_proxy');
     }
   }
 
@@ -257,9 +259,9 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
   void checkForcedUpdate() async {
     await FirebaseRemoteConfig.instance.ensureInitialized();
     String appVersion =
-        FirebaseRemoteConfig.instance.getString("latest_version");
+        FirebaseRemoteConfig.instance.getString('latest_version');
     bool isForcedUpdate =
-        FirebaseRemoteConfig.instance.getBool("forced_update");
+        FirebaseRemoteConfig.instance.getBool('forced_update');
     if (isForcedUpdate && (currentAppVersion != appVersion)) {
       if (mounted) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -298,7 +300,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                 color: Theme.of(context).colorScheme.primary,
               ),
               Text(
-                tr("flixquest_appbar"),
+                tr('flixquest_appbar'),
                 style: TextStyle(
                   fontFamily: 'PoppinsSB',
                   color: Theme.of(context).primaryColor,

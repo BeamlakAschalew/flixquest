@@ -82,13 +82,16 @@ class _UserInfoState extends State<UserInfo> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      tr("current_account_anonymous"),
+                      tr('current_account_anonymous'),
                       textAlign: TextAlign.center,
                     ),
                     ElevatedButton(
                         onPressed: () async {
                           await _auth.currentUser!.delete().then((value) async {
                             await _auth.signOut().then((value) {
+                              if (!context.mounted) {
+                                return;
+                              }
                               Navigator.pushReplacement(context,
                                   MaterialPageRoute(builder: ((context) {
                                 return const LandingScreen();
@@ -96,7 +99,7 @@ class _UserInfoState extends State<UserInfo> {
                             });
                           });
                         },
-                        child: Text(tr("login_signup")))
+                        child: Text(tr('login_signup')))
                   ],
                 ),
               )
@@ -112,7 +115,7 @@ class _UserInfoState extends State<UserInfo> {
                     );
                   } else if (snapshot.hasError) {
                     Center(
-                      child: Text(tr("error_occured")),
+                      child: Text(tr('error_occured')),
                     );
                   }
                   return Container(
@@ -147,7 +150,7 @@ class _UserInfoState extends State<UserInfo> {
                                       children: [
                                         Text(
                                           snapshot.data!['name'] ??
-                                              tr("not_available"),
+                                              tr('not_available'),
                                           style: kTextHeaderStyle,
                                         ),
                                         Visibility(
@@ -178,24 +181,24 @@ class _UserInfoState extends State<UserInfo> {
                                 const EdgeInsets.only(top: 15.0, bottom: 10),
                             child: ElevatedButton(
                                 style: const ButtonStyle(
-                                    minimumSize: MaterialStatePropertyAll(
-                                        Size(250, 45))),
+                                    minimumSize:
+                                        WidgetStatePropertyAll(Size(250, 45))),
                                 onPressed: () {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
                                     return const ProfileEdit();
                                   }));
                                 },
-                                child: Text(tr("edit_profile"))),
+                                child: Text(tr('edit_profile'))),
                           ),
                           const Divider(
                             thickness: 1,
                             color: Colors.grey,
                           ),
-                          userListTile(tr("email"),
+                          userListTile(tr('email'),
                               snapshot.data!['email'] ?? '', 0, context),
                           userListTile(
-                              tr("joined"),
+                              tr('joined'),
                               '${DateFormat('MMMM').format(DateTime(0, DateTime.parse(snapshot.data!['joinedAt']).month))} ${DateTime.parse(snapshot.data!['joinedAt']).year}',
                               3,
                               context),
@@ -212,20 +215,23 @@ class _UserInfoState extends State<UserInfo> {
                                         return AlertDialog(
                                           title: Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            child: Text(tr("sign_out")),
+                                            child: Text(tr('sign_out')),
                                           ),
-                                          content: Text(tr("want_to_sign_out")),
+                                          content: Text(tr('want_to_sign_out')),
                                           actions: [
                                             ElevatedButton(
                                                 onPressed: () async {
                                                   Navigator.pop(context);
                                                 },
-                                                child: Text(tr("cancel"))),
+                                                child: Text(tr('cancel'))),
                                             TextButton(
                                                 onPressed: () async {
                                                   await _auth
                                                       .signOut()
                                                       .then((value) {
+                                                    if (!context.mounted) {
+                                                      return;
+                                                    }
                                                     Navigator.pushReplacement(
                                                         context,
                                                         MaterialPageRoute(
@@ -236,7 +242,7 @@ class _UserInfoState extends State<UserInfo> {
                                                   });
                                                 },
                                                 child: Text(
-                                                  tr("ok"),
+                                                  tr('ok'),
                                                   style: const TextStyle(
                                                       color: Colors.red),
                                                 ))
@@ -244,7 +250,7 @@ class _UserInfoState extends State<UserInfo> {
                                         );
                                       });
                                 },
-                                title: Text(tr("logout")),
+                                title: Text(tr('logout')),
                                 leading: Icon(
                                   Icons.exit_to_app_rounded,
                                   color: Theme.of(context).colorScheme.primary,

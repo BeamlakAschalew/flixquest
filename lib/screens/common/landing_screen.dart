@@ -105,37 +105,36 @@ class _LandingScreenState extends State<LandingScreen> {
                                   ),
                                 ),
                               ),
-                              Text(tr("thousands_of"),
+                              Text(tr('thousands_of'),
                                   style: const TextStyle(color: Colors.black)),
                               SizedBox(
-                                height: 75,
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 5.0),
                                   child: AnimatedTextKit(
                                     repeatForever: true,
                                     animatedTexts: [
                                       animatedTextWIdget(
-                                          textTitle: tr("top_rated_movies"),
+                                          textTitle: tr('top_rated_movies'),
                                           animationDuration: 90,
                                           fontSize: 25),
                                       animatedTextWIdget(
-                                          textTitle: tr("top_rated_tv_shows"),
+                                          textTitle: tr('top_rated_tv_shows'),
                                           animationDuration: 90,
                                           fontSize: 25),
                                       animatedTextWIdget(
-                                          textTitle: tr("trending_movies"),
+                                          textTitle: tr('trending_movies'),
                                           animationDuration: 90,
                                           fontSize: 25),
                                       animatedTextWIdget(
-                                          textTitle: tr("trending_tv_shows"),
+                                          textTitle: tr('trending_tv_shows'),
                                           animationDuration: 90,
                                           fontSize: 25),
                                       animatedTextWIdget(
-                                          textTitle: tr("popular_movies"),
+                                          textTitle: tr('popular_movies'),
                                           animationDuration: 90,
                                           fontSize: 25),
                                       animatedTextWIdget(
-                                          textTitle: tr("popular_tv_shows"),
+                                          textTitle: tr('popular_tv_shows'),
                                           animationDuration: 90,
                                           fontSize: 25),
                                     ],
@@ -145,7 +144,7 @@ class _LandingScreenState extends State<LandingScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
                                 child: Text(
-                                  tr("unlimited_on_cinemax"),
+                                  tr('unlimited_on_cinemax'),
                                   style: const TextStyle(
                                     color: Colors.black,
                                     fontSize: 20,
@@ -168,15 +167,15 @@ class _LandingScreenState extends State<LandingScreen> {
                       children: [
                         ElevatedButton(
                             style: ButtonStyle(
-                                minimumSize: MaterialStateProperty.all(
+                                minimumSize: WidgetStateProperty.all(
                                     const Size(150, 50)),
-                                shape: MaterialStateProperty.all<
+                                shape: WidgetStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
                                 ),
-                                backgroundColor: MaterialStateProperty.all(
+                                backgroundColor: WidgetStateProperty.all(
                                     const Color(0xFFf57c00))),
                             onPressed: () async {
                               // updateFirstRunData();
@@ -186,7 +185,7 @@ class _LandingScreenState extends State<LandingScreen> {
                               }));
                             },
                             child: Text(
-                              tr("log_in"),
+                              tr('log_in'),
                               style: const TextStyle(color: Colors.white),
                             )),
                         const SizedBox(
@@ -194,16 +193,16 @@ class _LandingScreenState extends State<LandingScreen> {
                         ),
                         ElevatedButton(
                             style: ButtonStyle(
-                                minimumSize: MaterialStateProperty.all(
+                                minimumSize: WidgetStateProperty.all(
                                     const Size(150, 50)),
-                                shape: MaterialStateProperty.all<
+                                shape: WidgetStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
                                 ),
                                 backgroundColor:
-                                    MaterialStateProperty.all(Colors.white)),
+                                    WidgetStateProperty.all(Colors.white)),
                             onPressed: () async {
                               // updateFirstRunData();
                               Navigator.push(context,
@@ -212,7 +211,7 @@ class _LandingScreenState extends State<LandingScreen> {
                               }));
                             },
                             child: Text(
-                              tr("sign_up"),
+                              tr('sign_up'),
                               style: const TextStyle(color: Colors.black),
                             )),
                         const SizedBox(
@@ -221,16 +220,16 @@ class _LandingScreenState extends State<LandingScreen> {
                         anonButtonVisible
                             ? ElevatedButton(
                                 style: ButtonStyle(
-                                    minimumSize: MaterialStateProperty.all(
+                                    minimumSize: WidgetStateProperty.all(
                                         const Size(150, 50)),
-                                    shape: MaterialStateProperty.all<
+                                    shape: WidgetStateProperty.all<
                                         RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(20.0),
                                       ),
                                     ),
-                                    backgroundColor: MaterialStateProperty.all(
+                                    backgroundColor: WidgetStateProperty.all(
                                         const Color(0xFFfad2aa))),
                                 onPressed: () async {
                                   setState(() {
@@ -247,6 +246,9 @@ class _LandingScreenState extends State<LandingScreen> {
                                         setState(() {
                                           anonButtonVisible = true;
                                         });
+                                        if (!context.mounted) {
+                                          return;
+                                        }
                                         Navigator.push(context,
                                             MaterialPageRoute(
                                                 builder: (context) {
@@ -254,10 +256,13 @@ class _LandingScreenState extends State<LandingScreen> {
                                         }));
                                       });
                                     } else {
+                                      if (!context.mounted) {
+                                        return;
+                                      }
                                       GlobalMethods.showCustomScaffoldMessage(
                                           SnackBar(
                                             content: Text(
-                                              tr("check_connection"),
+                                              tr('check_connection'),
                                               maxLines: 3,
                                               style: kTextSmallBodyStyle,
                                             ),
@@ -269,7 +274,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                   });
                                 },
                                 child: Text(
-                                  tr("continue_anonymously"),
+                                  tr('continue_anonymously'),
                                   style: const TextStyle(color: Colors.black),
                                 ))
                             : const CircularProgressIndicator()

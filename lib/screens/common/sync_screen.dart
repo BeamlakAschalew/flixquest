@@ -100,7 +100,7 @@ class _SyncScreenState extends State<SyncScreen>
         .then((value) {
       if (mounted) {
         setState(() {
-          for (Map<String, dynamic>? element
+          for (final Map<String, dynamic>? element
               in List.from(value.get('movies'))) {
             firebaseMovies.add(Movie.fromJson(element!));
           }
@@ -115,7 +115,7 @@ class _SyncScreenState extends State<SyncScreen>
         .then((value) {
       if (mounted) {
         setState(() {
-          for (Map<String, dynamic>? element
+          for (final Map<String, dynamic>? element
               in List.from(value.get('tvShows'))) {
             firebaseTvShows.add(TV.fromJson(element!));
           }
@@ -159,7 +159,7 @@ class _SyncScreenState extends State<SyncScreen>
         GlobalMethods.showCustomScaffoldMessage(
             SnackBar(
               content: Text(
-                tr("finished_sync_local"),
+                tr('finished_sync_local'),
                 maxLines: 3,
                 style: kTextSmallBodyStyle,
               ),
@@ -200,7 +200,7 @@ class _SyncScreenState extends State<SyncScreen>
         GlobalMethods.showCustomScaffoldMessage(
             SnackBar(
               content: Text(
-                tr("finished_sync_local"),
+                tr('finished_sync_local'),
                 style: kTextSmallBodyStyle,
                 maxLines: 3,
               ),
@@ -230,7 +230,7 @@ class _SyncScreenState extends State<SyncScreen>
           .then((value) {
         if (mounted) {
           setState(() {
-            for (Map<String, dynamic>? element
+            for (final Map<String, dynamic>? element
                 in List.from(value.get('movies'))) {
               firebaseMovieForOnlineSync.add(Movie.fromJson(element!));
             }
@@ -254,7 +254,7 @@ class _SyncScreenState extends State<SyncScreen>
         return list.any((item) => item.id == id);
       }
 
-      for (var movie in sqliteMovieForOnlineSync) {
+      for (final movie in sqliteMovieForOnlineSync) {
         if (!containsById(difference, movie.id!)) {
           difference.add(movie);
         }
@@ -282,7 +282,7 @@ class _SyncScreenState extends State<SyncScreen>
         GlobalMethods.showCustomScaffoldMessage(
             SnackBar(
               content: Text(
-                tr("finished_sync_online"),
+                tr('finished_sync_online'),
                 maxLines: 3,
                 style: kTextSmallBodyStyle,
               ),
@@ -310,7 +310,7 @@ class _SyncScreenState extends State<SyncScreen>
           .then((value) {
         if (mounted) {
           setState(() {
-            for (Map<String, dynamic>? element
+            for (final Map<String, dynamic>? element
                 in List.from(value.get('tvShows'))) {
               firebaseTVForOnlineSync.add(TV.fromJson(element!));
             }
@@ -332,7 +332,7 @@ class _SyncScreenState extends State<SyncScreen>
         return list.any((item) => item.id == id);
       }
 
-      for (var tv in sqliteTVForOnlineSync) {
+      for (final tv in sqliteTVForOnlineSync) {
         if (!containsById(difference, tv.id!)) {
           difference.add(tv);
         }
@@ -358,7 +358,7 @@ class _SyncScreenState extends State<SyncScreen>
         GlobalMethods.showCustomScaffoldMessage(
             SnackBar(
               content: Text(
-                tr("finished_sync_online"),
+                tr('finished_sync_online'),
                 maxLines: 3,
                 style: kTextSmallBodyStyle,
               ),
@@ -408,7 +408,7 @@ class _SyncScreenState extends State<SyncScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("sync")),
+        title: Text(tr('sync')),
       ),
       body: isLoading!
           ? const Padding(
@@ -430,7 +430,7 @@ class _SyncScreenState extends State<SyncScreen>
                             child: Icon(Icons.movie_creation_rounded),
                           ),
                           Text(
-                            tr("movies"),
+                            tr('movies'),
                           ),
                         ],
                       )),
@@ -442,12 +442,12 @@ class _SyncScreenState extends State<SyncScreen>
                               padding: EdgeInsets.only(right: 8.0),
                               child: Icon(Icons.live_tv_rounded)),
                           Text(
-                            tr("tv_series"),
+                            tr('tv_series'),
                           ),
                         ],
                       ))
                     ],
-                    indicatorColor: themeMode == "dark" || themeMode == "amoled"
+                    indicatorColor: themeMode == 'dark' || themeMode == 'amoled'
                         ? Colors.white
                         : Colors.black,
                     indicatorWeight: 3,
@@ -477,7 +477,7 @@ class _SyncScreenState extends State<SyncScreen>
                                   children: [
                                     Center(
                                       child: Text(
-                                        tr("no_movies_online"),
+                                        tr('no_movies_online'),
                                         textAlign: TextAlign.center,
                                         maxLines: 3,
                                         style: kTextSmallBodyStyle,
@@ -497,7 +497,7 @@ class _SyncScreenState extends State<SyncScreen>
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  tr("online_movie_sync"),
+                                                  tr('online_movie_sync'),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -527,7 +527,7 @@ class _SyncScreenState extends State<SyncScreen>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      tr("movies_online"),
+                                      tr('movies_online'),
                                       style: kTextSmallHeaderStyle,
                                     ),
                                     SizedBox(
@@ -549,7 +549,7 @@ class _SyncScreenState extends State<SyncScreen>
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  tr("offline_movie_sync"),
+                                                  tr('offline_movie_sync'),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -587,7 +587,7 @@ class _SyncScreenState extends State<SyncScreen>
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  tr("online_movie_sync"),
+                                                  tr('online_movie_sync'),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -625,7 +625,7 @@ class _SyncScreenState extends State<SyncScreen>
                                   children: [
                                     Center(
                                       child: Text(
-                                        tr("no_tv_online"),
+                                        tr('no_tv_online'),
                                         textAlign: TextAlign.center,
                                         maxLines: 3,
                                         style: kTextSmallBodyStyle,
@@ -645,7 +645,7 @@ class _SyncScreenState extends State<SyncScreen>
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  tr("online_tv_sync"),
+                                                  tr('online_tv_sync'),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -675,7 +675,7 @@ class _SyncScreenState extends State<SyncScreen>
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      tr("tv_online"),
+                                      tr('tv_online'),
                                       style: kTextSmallHeaderStyle,
                                     ),
                                     SizedBox(
@@ -697,7 +697,7 @@ class _SyncScreenState extends State<SyncScreen>
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  tr("offline_tv_sync"),
+                                                  tr('offline_tv_sync'),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -735,7 +735,7 @@ class _SyncScreenState extends State<SyncScreen>
                                             children: [
                                               Expanded(
                                                 child: Text(
-                                                  tr("online_tv_sync"),
+                                                  tr('online_tv_sync'),
                                                   textAlign: TextAlign.center,
                                                   maxLines: 3,
                                                 ),
@@ -818,7 +818,11 @@ class _SyncScreenState extends State<SyncScreen>
                                                 .posterPath ==
                                             null
                                         ? ''
-                                        : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                        : buildImageUrl(
+                                                TMDB_BASE_IMAGE_URL,
+                                                proxyUrl,
+                                                isProxyEnabled,
+                                                context) +
                                             imageQuality +
                                             firebaseTvShows[index].posterPath!,
                                     imageBuilder: (context, imageProvider) =>
@@ -924,7 +928,11 @@ class _SyncScreenState extends State<SyncScreen>
                                     imageUrl:
                                         firebaseMovies[index].posterPath == null
                                             ? ''
-                                            : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                            : buildImageUrl(
+                                                    TMDB_BASE_IMAGE_URL,
+                                                    proxyUrl,
+                                                    isProxyEnabled,
+                                                    context) +
                                                 imageQuality +
                                                 firebaseMovies[index]
                                                     .posterPath!,

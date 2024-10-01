@@ -13,13 +13,13 @@ class SettingsProvider with ChangeNotifier {
   bool _isMaterial3Enabled = false;
   bool get isMaterial3Enabled => _isMaterial3Enabled;
 
-  String _appTheme = "dark";
+  String _appTheme = 'dark';
   String get appTheme => _appTheme;
 
   int _defaultValue = 0;
   int get defaultValue => _defaultValue;
 
-  String _imageQuality = "w500/";
+  String _imageQuality = 'w500/';
   String get imageQuality => _imageQuality;
 
   String _defaultCountry = 'US';
@@ -75,7 +75,7 @@ class SettingsProvider with ChangeNotifier {
   bool _enableProxy = false;
   bool get enableProxy => _enableProxy;
 
-  String _subtitleTextStyle = "regular";
+  String _subtitleTextStyle = 'regular';
   String get subtitleTextStyle => _subtitleTextStyle;
 
   // theme change

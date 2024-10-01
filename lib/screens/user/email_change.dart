@@ -89,35 +89,38 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
             'username': username!.trim().toLowerCase(),
             'verified': isVerified
           }).then((value) {
+            if (!context.mounted) {
+              return;
+            }
             GlobalMethods.showCustomScaffoldMessage(
                 SnackBar(
                   content: Text(
-                    tr("email_successful"),
+                    tr('email_successful'),
                     maxLines: 3,
                     style: kTextSmallBodyStyle,
                   ),
                   duration: const Duration(seconds: 4),
                 ),
-                context);
+                context.mounted ? context : null);
           });
         });
       } on FirebaseAuthException catch (e) {
         if (mounted) {
           if (e.code == 'user-mismatch') {
-            _globalMethods.authErrorHandle(tr("user_mismatch"), context);
+            _globalMethods.authErrorHandle(tr('user_mismatch'), context);
           } else if (e.code == 'user-not-found') {
-            _globalMethods.authErrorHandle(tr("user_not_found"), context);
+            _globalMethods.authErrorHandle(tr('user_not_found'), context);
           } else if (e.code == 'invalid-credential') {
-            _globalMethods.authErrorHandle(tr("invalid_credential"), context);
+            _globalMethods.authErrorHandle(tr('invalid_credential'), context);
           } else if (e.code == 'invalid-email') {
-            _globalMethods.authErrorHandle(tr("invalid_email"), context);
+            _globalMethods.authErrorHandle(tr('invalid_email'), context);
           } else if (e.code == 'wrong-password:') {
-            _globalMethods.authErrorHandle(tr("wrong_password"), context);
+            _globalMethods.authErrorHandle(tr('wrong_password'), context);
           } else if (e.code == 'weak-password') {
-            _globalMethods.authErrorHandle(tr("weak_password"), context);
+            _globalMethods.authErrorHandle(tr('weak_password'), context);
           } else if (e.code == 'requires-recent-login') {
             _globalMethods.authErrorHandle(
-                tr("requires_recent_login"), context);
+                tr('requires_recent_login'), context);
           }
         }
         // print('error occured ${error.message}');
@@ -136,7 +139,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(tr("change_email"))),
+      appBar: AppBar(title: Text(tr('change_email'))),
       body: userDoc == null
           ? const Center(
               child: CircularProgressIndicator(),
@@ -154,7 +157,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        tr("change_email"),
+                        tr('change_email'),
                         style: const TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
@@ -162,7 +165,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        tr("process_stuck"),
+                        tr('process_stuck'),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -179,7 +182,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                 focusNode: _newEmailFocusNode,
                                 validator: (value) {
                                   if (value!.isEmpty || !value.contains('@')) {
-                                    return tr("invalid_email");
+                                    return tr('invalid_email');
                                   }
                                   return null;
                                 },
@@ -193,10 +196,9 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                     filled: true,
                                     prefixIcon:
                                         const Icon(FontAwesomeIcons.envelope),
-                                    labelText: tr("new_email_address"),
-                                    fillColor: Theme.of(context)
-                                        .colorScheme
-                                        .background),
+                                    labelText: tr('new_email_address'),
+                                    fillColor:
+                                        Theme.of(context).colorScheme.surface),
                                 onSaved: (value) {
                                   newEmail = value!;
                                 },
@@ -211,7 +213,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                 key: const ValueKey('verifyEmail'),
                                 validator: (value) {
                                   if (value != newEmail) {
-                                    return tr("email_mismatch");
+                                    return tr('email_mismatch');
                                   }
                                   return null;
                                 },
@@ -223,10 +225,9 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                     filled: true,
                                     prefixIcon:
                                         const Icon(FontAwesomeIcons.envelope),
-                                    labelText: tr("repeat_new_email"),
-                                    fillColor: Theme.of(context)
-                                        .colorScheme
-                                        .background),
+                                    labelText: tr('repeat_new_email'),
+                                    fillColor:
+                                        Theme.of(context).colorScheme.surface),
                               ),
                             ),
                           ],
@@ -242,9 +243,9 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                           ? const CircularProgressIndicator()
                           : ElevatedButton(
                               style: ButtonStyle(
-                                  minimumSize: const MaterialStatePropertyAll(
+                                  minimumSize: const WidgetStatePropertyAll(
                                       Size(200, 50)),
-                                  shape: MaterialStateProperty.all(
+                                  shape: WidgetStateProperty.all(
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
@@ -256,7 +257,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    tr("change_email"),
+                                    tr('change_email'),
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 17),

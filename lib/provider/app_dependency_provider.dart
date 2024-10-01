@@ -29,7 +29,7 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _enableADS = true;
   bool get enableADS => _enableADS;
 
-  String _fetchRoute = "flixHQ";
+  String _fetchRoute = 'flixHQ';
   String get fetchRoute => _fetchRoute;
 
   bool _useExternalSubtitles = false;
@@ -47,20 +47,23 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _isForcedUpdate = false;
   bool get isForcedUpdate => _isForcedUpdate;
 
-  String _flixhqZoeServer = "vidcloud";
+  String _flixhqZoeServer = 'vidcloud';
   String get flixhqZoeServer => _flixhqZoeServer;
 
-  String _goMoviesServer = "upcloud";
+  String _goMoviesServer = 'upcloud';
   String get goMoviesServer => _goMoviesServer;
 
-  String _vidSrcToServer = "vidplay";
+  String _vidSrcToServer = 'vidplay';
   String get vidSrcToServer => _vidSrcToServer;
 
-  String _vidSrcServer = "vidsrcembed";
+  String _vidSrcServer = 'vidsrcembed';
   String get vidSrcServer => _vidSrcServer;
 
-  String _tmdbProxy = "";
+  String _tmdbProxy = '';
   String get tmdbProxy => _tmdbProxy;
+
+  bool _fetchSubtitles = true;
+  bool get fetchSubtitles => _fetchSubtitles;
 
   Future<void> getConsumetUrl() async {
     consumetUrl = await __appDependencies.getConsumetUrl();
@@ -189,6 +192,11 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set vidSrcToServer(String value) {
     _vidSrcToServer = value;
+    notifyListeners();
+  }
+
+  set fetchSubtitles(bool value) {
+    _fetchSubtitles = value;
     notifyListeners();
   }
 

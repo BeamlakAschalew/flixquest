@@ -19,24 +19,24 @@ class _AppLanguageChooseState extends State<AppLanguageChoose> {
     List<AppLanguages> langs = [
       AppLanguages(
           languageFlag: 'assets/images/country_flags/united-kingdom.png',
-          languageName: tr("english"),
+          languageName: tr('english'),
           languageCode: 'en'),
       AppLanguages(
           languageFlag: 'assets/images/country_flags/united-arab-emirates.png',
-          languageName: tr("arabic"),
+          languageName: tr('arabic'),
           languageCode: 'ar'),
       AppLanguages(
           languageFlag: 'assets/images/country_flags/spain.png',
-          languageName: tr("spanish"),
+          languageName: tr('spanish'),
           languageCode: 'es'),
       AppLanguages(
           languageFlag: 'assets/images/country_flags/india.png',
-          languageName: tr("hindi"),
+          languageName: tr('hindi'),
           languageCode: 'hi')
     ];
 
     return Scaffold(
-        appBar: AppBar(title: Text(tr("choose_language"))),
+        appBar: AppBar(title: Text(tr('choose_language'))),
         body: SingleChildScrollView(
           child: Center(
               child: Column(

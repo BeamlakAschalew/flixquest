@@ -77,7 +77,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   List<BetterPlayerSubtitlesSource> subs = [];
 
   late int foundIndex;
-  late String currentProvider = "";
+  late String currentProvider = '';
 
   @override
   void initState() {
@@ -109,7 +109,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       if (widget.metadata.releaseDate != null &&
           !isReleased(widget.metadata.releaseDate!)) {
         GlobalMethods.showScaffoldMessage(
-            tr("movie_may_not_be_available"), context);
+            tr('movie_may_not_be_available'), context);
       }
       for (int i = 0; i < videoProviders.length; i++) {
         if (mounted) {
@@ -172,7 +172,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         showModalBottomSheet(
             builder: (context) {
               return ReportErrorWidget(
-                error: tr("movie_vid_404"),
+                error: tr('movie_vid_404'),
                 hideButton: false,
               );
             },
@@ -199,7 +199,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               subs: subs,
               colors: [
                 Theme.of(context).primaryColor,
-                Theme.of(context).colorScheme.background
+                Theme.of(context).colorScheme.surface
               ],
               settings: settings,
               movieMetadata: widget.metadata,
@@ -219,7 +219,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           showModalBottomSheet(
               builder: (context) {
                 return ReportErrorWidget(
-                  error: tr("movie_vid_404"),
+                  error: tr('movie_vid_404'),
                   hideButton: false,
                 );
               },
@@ -262,7 +262,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             height: 150,
             width: 190,
@@ -287,14 +287,14 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                         style: const TextStyle(fontSize: 15),
                         children: [
                       TextSpan(
-                          text: tr("fetching"),
+                          text: tr('fetching'),
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.background,
+                              color: Theme.of(context).colorScheme.surface,
                               fontFamily: 'Poppins')),
                       TextSpan(
                           text: currentProvider,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.background,
+                            color: Theme.of(context).colorScheme.surface,
                             fontFamily: 'PoppinsBold',
                           ))
                     ])),
@@ -303,8 +303,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                       settings.defaultSubtitleLanguage != '' ? false : true,
                   child: Text(
                     'Subtitle load progress: ${loadProgress.toStringAsFixed(0).toString()}%',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.background),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.surface),
                   ),
                 ),
               ],
@@ -319,7 +319,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     for (int k = 0; k < vids.length; k++) {
       if (vids[k].quality! == 'unknown quality') {
         videos.addAll({
-          "${vids[k].quality!} $k": vids[k].url!,
+          '${vids[k].quality!} $k': vids[k].url!,
         });
       } else {
         videos.addAll({
@@ -334,10 +334,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     getAppLanguage();
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl =
-        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final appDep = Provider.of<AppDependencyProvider>(context, listen: false);
     try {
-      if (subtitles.isNotEmpty) {
+      if (subtitles.isNotEmpty && appDep.fetchSubtitles) {
         if (supportedLanguages[foundIndex].englishName == '') {
           for (int i = 0; i < subtitles.length - 1; i++) {
             if (mounted) {
@@ -412,9 +411,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             if (appDep.useExternalSubtitles) {
               await fetchSocialLinks(
                 Endpoints.getExternalLinksForMovie(
-                    widget.metadata.movieId!, "en"),
+                    widget.metadata.movieId!, 'en'),
                 isProxyEnabled,
-                proxyUrl,
+                appDep.tmdbProxy,
               ).then((value) async {
                 if (value.imdbId != null) {
                   await getExternalSubtitle(
@@ -458,7 +457,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       if (mounted) {
         await getMovieStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
                 widget.metadata.movieId!.toString(),
-                "movie",
+                'movie',
                 appDep.consumetUrl))
             .then((value) async {
           if (mounted) {

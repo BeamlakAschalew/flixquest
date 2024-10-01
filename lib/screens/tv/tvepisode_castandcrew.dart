@@ -43,7 +43,7 @@ class _TVEpisodeCastAndCrewState extends State<TVEpisodeCastAndCrew>
         child: Scaffold(
           appBar: AppBar(
             elevation: 3,
-            title: Text(tr("cast_and_crew")),
+            title: Text(tr('cast_and_crew')),
             leading: IconButton(
               icon: const Icon(
                 Icons.arrow_back,
@@ -64,15 +64,15 @@ class _TVEpisodeCastAndCrewState extends State<TVEpisodeCastAndCrew>
                     tabs: [
                       Tab(
                           child: Text(
-                        tr("cast"),
+                        tr('cast'),
                       )),
-                      Tab(child: Text(tr("guest_stars"))),
+                      Tab(child: Text(tr('guest_stars'))),
                       Tab(
                           child: Text(
-                        tr("crew"),
+                        tr('crew'),
                       )),
                     ],
-                    indicatorColor: themeMode == "dark" || themeMode == "amoled"
+                    indicatorColor: themeMode == 'dark' || themeMode == 'amoled'
                         ? Colors.white
                         : Colors.black,
                     indicatorWeight: 3,

@@ -48,7 +48,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 .signInWithEmailAndPassword(
                     email: emailAddress.toLowerCase().trim(),
                     password: password.trim())
-                .then((value) => Navigator.canPop(context)
+                .then((value) {
+              if (mounted) {
+                Navigator.canPop(context)
                     ? Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: ((context) {
                         final mixpanel =
@@ -58,18 +60,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                         return const FlixQuestHomePage();
                       })))
-                    : null);
+                    : null;
+              }
+            });
           } on FirebaseAuthException catch (error) {
             if (mounted) {
               if (error.code == 'wrong-password') {
                 globalMethods.authErrorHandle(
-                    tr("invalid_credential"), context);
+                    tr('invalid_credential'), context);
               } else if (error.code == 'invalid-email') {
-                globalMethods.authErrorHandle(tr("invalid_email"), context);
+                globalMethods.authErrorHandle(tr('invalid_email'), context);
               } else if (error.code == 'user-disabled') {
-                globalMethods.authErrorHandle(tr("banned_user"), context);
+                globalMethods.authErrorHandle(tr('banned_user'), context);
               } else if (error.code == 'user-not-found') {
-                globalMethods.authErrorHandle(tr("user_not_found"), context);
+                globalMethods.authErrorHandle(tr('user_not_found'), context);
               }
             }
             // print('error occured $error}');
@@ -85,13 +89,13 @@ class _LoginScreenState extends State<LoginScreen> {
         GlobalMethods.showCustomScaffoldMessage(
             SnackBar(
               content: Text(
-                tr("check_connection"),
+                tr('check_connection'),
                 maxLines: 3,
                 style: kTextSmallBodyStyle,
               ),
               duration: const Duration(seconds: 3),
             ),
-            context);
+            context.mounted ? context : null);
       }
     });
   }
@@ -99,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(tr("login"))),
+      appBar: AppBar(title: Text(tr('login'))),
       body: Container(
           padding: const EdgeInsets.all(8),
           child: Center(
@@ -127,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   validator: (value) {
                                     if (value!.isEmpty ||
                                         !value.contains('@')) {
-                                      return tr("invalid_email");
+                                      return tr('invalid_email');
                                     }
                                     return null;
                                   },
@@ -141,10 +145,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       filled: true,
                                       prefixIcon:
                                           const Icon(FontAwesomeIcons.envelope),
-                                      labelText: tr("email_address"),
+                                      labelText: tr('email_address'),
                                       fillColor: Theme.of(context)
                                           .colorScheme
-                                          .background),
+                                          .surface),
                                   onSaved: (value) {
                                     emailAddress = value!;
                                   },
@@ -156,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   key: const ValueKey('Password'),
                                   validator: (value) {
                                     if (value!.isEmpty || value.length < 7) {
-                                      return tr("weak_password");
+                                      return tr('weak_password');
                                     }
                                     return null;
                                   },
@@ -177,10 +181,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ? Icons.visibility
                                             : Icons.visibility_off),
                                       ),
-                                      labelText: tr("password"),
+                                      labelText: tr('password'),
                                       fillColor: Theme.of(context)
                                           .colorScheme
-                                          .background),
+                                          .surface),
                                   onSaved: (value) {
                                     password = value!;
                                   },
@@ -195,9 +199,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       : ElevatedButton(
                                           style: ButtonStyle(
                                               minimumSize:
-                                                  MaterialStateProperty.all(
+                                                  WidgetStateProperty.all(
                                                       const Size(150, 50)),
-                                              shape: MaterialStateProperty.all<
+                                              shape: WidgetStateProperty.all<
                                                   RoundedRectangleBorder>(
                                                 RoundedRectangleBorder(
                                                   borderRadius:
@@ -207,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               )),
                                           onPressed: submitForm,
                                           child: Text(
-                                            tr("login"),
+                                            tr('login'),
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.w500,
                                                 fontSize: 17),
@@ -219,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               TextButton(
                                   style: const ButtonStyle(
-                                      backgroundColor: MaterialStatePropertyAll(
+                                      backgroundColor: WidgetStatePropertyAll(
                                           Colors.transparent)),
                                   onPressed: () {
                                     Navigator.push(context,
@@ -228,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     })));
                                   },
                                   child: Text(
-                                    tr("forgot_password"),
+                                    tr('forgot_password'),
                                   )),
                             ],
                           )),

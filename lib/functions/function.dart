@@ -13,7 +13,7 @@ String episodeSeasonFormatter(int episodeNumber, int seasonNumber) {
       seasonNumber <= 9 ? 'S0$seasonNumber' : 'S$seasonNumber';
   String formattedEpisode =
       episodeNumber <= 9 ? 'E0$episodeNumber' : 'E$episodeNumber';
-  return "$formattedSeason : $formattedEpisode";
+  return '$formattedSeason : $formattedEpisode';
 }
 
 Future<void> requestNotificationPermissions() async {
@@ -55,7 +55,7 @@ Future<bool> clearTempCache() async {
       return false;
     }
   } catch (e) {
-    throw Exception("Failed to clear temp files");
+    throw Exception('Failed to clear temp files');
   }
 }
 
@@ -69,13 +69,14 @@ Future<bool> clearCache() async {
       return false;
     }
   } catch (e) {
-    throw Exception("Failed to clear cache");
+    throw Exception('Failed to clear cache');
   }
 }
 
 void fileDelete() async {
   for (int i = 0; i < appNames.length; i++) {
     File file =
+        // ignore: prefer_single_quotes
         File("${(await getApplicationCacheDirectory()).path}${appNames[i]}");
     if (file.existsSync()) {
       file.delete();
@@ -93,7 +94,7 @@ void updateAndLogTotalStreamingDuration(int durationInSeconds) {
   // Log the new total duration as a custom event for tracking purposes
   analytics.logEvent(
     name: 'total_streaming_duration',
-    parameters: <String, dynamic>{
+    parameters: <String, Object>{
       'duration_seconds': totalStreamingDuration,
     },
   );
@@ -103,7 +104,7 @@ String generateCacheKey() {
   Random random = Random();
 
   List<String> characters = [];
-  String generatedChars = "";
+  String generatedChars = '';
 
   for (var i = 0; i < 26; i++) {
     characters.add(String.fromCharCode(97 + i)); // Lowercase letters a-z
@@ -172,10 +173,11 @@ int createUniqueId() {
   return DateTime.now().millisecondsSinceEpoch.remainder(100000);
 }
 
-String buildImageUrl(String baseImage, String proxyUrl, bool isProxyEnabled, BuildContext context) {
+String buildImageUrl(String baseImage, String proxyUrl, bool isProxyEnabled,
+    BuildContext context) {
   String concatenated = baseImage;
   if (isProxyEnabled && proxyUrl.isNotEmpty) {
-    concatenated = "$proxyUrl?destination=$baseImage";
+    concatenated = '$proxyUrl?destination=$baseImage';
   }
 
   return concatenated;

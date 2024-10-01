@@ -52,8 +52,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<bool> usernameExists(String username) async =>
       (await FirebaseFirestore.instance
-              .collection("usernames")
-              .where("username", isEqualTo: username.trim().toLowerCase())
+              .collection('usernames')
+              .where('username', isEqualTo: username.trim().toLowerCase())
               .get())
           .docs
           .isEmpty;
@@ -87,7 +87,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
             if (await checkIfDocExists(_userName) == true) {
               _globalMethods.authErrorHandle(
-                  tr("username_exists").toString(), context);
+                  tr('username_exists').toString(), context);
               return;
             } else {
               await _auth.createUserWithEmailAndPassword(
@@ -158,14 +158,14 @@ class _SignupScreenState extends State<SignupScreen> {
             }
           } on FirebaseAuthException catch (error) {
             if (error.code == 'weak-password') {
-              _globalMethods.authErrorHandle(tr("weak_password"), context);
+              _globalMethods.authErrorHandle(tr('weak_password'), context);
             } else if (error.code == 'email-already-in-use') {
-              _globalMethods.authErrorHandle(tr("email_exists"), context);
+              _globalMethods.authErrorHandle(tr('email_exists'), context);
             } else if (error.code == 'invalid-email') {
-              _globalMethods.authErrorHandle(tr("invalid_email"), context);
+              _globalMethods.authErrorHandle(tr('invalid_email'), context);
             } else if (error.code == 'operation-not-allowed') {
               _globalMethods.authErrorHandle(
-                  tr("operation_not_allowed"), context);
+                  tr('operation_not_allowed'), context);
             }
           } catch (e) {
             _globalMethods.authErrorHandle(e.toString(), context);
@@ -181,7 +181,7 @@ class _SignupScreenState extends State<SignupScreen> {
         GlobalMethods.showCustomScaffoldMessage(
             SnackBar(
               content: Text(
-                tr("check_connection"),
+                tr('check_connection'),
                 maxLines: 3,
                 style: kTextSmallBodyStyle,
               ),
@@ -196,7 +196,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr("signup")),
+        title: Text(tr('signup')),
       ),
       body: Container(
         padding: const EdgeInsets.all(8),
@@ -227,7 +227,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     Expanded(
                       child: Text(
-                        tr("signup_to_sync"),
+                        tr('signup_to_sync'),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 4,
                         style: kTextSmallHeaderStyle,
@@ -245,7 +245,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            tr("choose_profile"),
+                            tr('choose_profile'),
                             style: const TextStyle(
                               fontFamily: 'PoppinsSB',
                               fontSize: 20,
@@ -305,9 +305,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           key: const ValueKey('name'),
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return tr("name_empty");
+                              return tr('name_empty');
                             } else if (value.length > 40 || value.length < 2) {
-                              return tr("name_short_long");
+                              return tr('name_short_long');
                             }
                             return null;
                           },
@@ -320,8 +320,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             border: const UnderlineInputBorder(),
                             filled: true,
                             prefixIcon: const Icon(FontAwesomeIcons.user),
-                            labelText: tr("full_name"),
-                            fillColor: Theme.of(context).colorScheme.background,
+                            labelText: tr('full_name'),
+                            fillColor: Theme.of(context).colorScheme.surface,
                           ),
                           onSaved: (value) {
                             _fullName = value!;
@@ -338,7 +338,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           focusNode: _emailFocusNode,
                           validator: (value) {
                             if (value!.isEmpty || !value.contains('@')) {
-                              return tr("invalid_email");
+                              return tr('invalid_email');
                             }
                             return null;
                           },
@@ -351,9 +351,8 @@ class _SignupScreenState extends State<SignupScreen> {
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(FontAwesomeIcons.envelope),
-                              labelText: tr("email_address"),
-                              fillColor:
-                                  Theme.of(context).colorScheme.background),
+                              labelText: tr('email_address'),
+                              fillColor: Theme.of(context).colorScheme.surface),
                           onSaved: (value) {
                             _emailAddress = value!;
                           },
@@ -372,12 +371,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           key: const ValueKey('username'),
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return tr("username_empty");
+                              return tr('username_empty');
                             } else if (value.length < 5 || value.length > 30) {
-                              return tr("username_short_long");
+                              return tr('username_short_long');
                             } else if (!value
                                 .contains(RegExp('^[a-zA-Z0-9_]*'))) {
-                              return tr("invalid_username");
+                              return tr('invalid_username');
                             }
                             return null;
                           },
@@ -391,9 +390,8 @@ class _SignupScreenState extends State<SignupScreen> {
                               border: const UnderlineInputBorder(),
                               filled: true,
                               prefixIcon: const Icon(FontAwesomeIcons.at),
-                              labelText: tr("username"),
-                              fillColor:
-                                  Theme.of(context).colorScheme.background),
+                              labelText: tr('username'),
+                              fillColor: Theme.of(context).colorScheme.surface),
                           onSaved: (value) {
                             _userName = value!;
                           },
@@ -408,11 +406,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           key: const ValueKey('Password'),
                           validator: (value) {
                             if (value!.isEmpty || value.length < 7) {
-                              return tr("invalid_password");
+                              return tr('invalid_password');
                             } else if (value == '12345678' ||
                                 value == 'qwertyuiop' ||
                                 value == 'password') {
-                              return tr("lame_password");
+                              return tr('lame_password');
                             }
                             return null;
                           },
@@ -436,9 +434,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ? Icons.visibility
                                     : Icons.visibility_off),
                               ),
-                              labelText: tr("enter_password"),
-                              fillColor:
-                                  Theme.of(context).colorScheme.background),
+                              labelText: tr('enter_password'),
+                              fillColor: Theme.of(context).colorScheme.surface),
                           onSaved: (value) {
                             _password = value!;
                           },
@@ -453,7 +450,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           key: const ValueKey('VerifyPassword'),
                           validator: (value) {
                             if (value != _password) {
-                              return tr("password_mismatch");
+                              return tr('password_mismatch');
                             }
                             return null;
                           },
@@ -475,9 +472,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ? Icons.visibility
                                     : Icons.visibility_off),
                               ),
-                              labelText: tr("repeat_password"),
-                              fillColor:
-                                  Theme.of(context).colorScheme.background),
+                              labelText: tr('repeat_password'),
+                              fillColor: Theme.of(context).colorScheme.surface),
                           // onSaved: (value) {
                           //   _passwordVerify = value!;
                           // }
@@ -493,9 +489,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               ? const CircularProgressIndicator()
                               : ElevatedButton(
                                   style: ButtonStyle(
-                                      minimumSize: MaterialStateProperty.all(
+                                      minimumSize: WidgetStateProperty.all(
                                           const Size(150, 50)),
-                                      shape: MaterialStateProperty.all<
+                                      shape: WidgetStateProperty.all<
                                           RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
                                           borderRadius:
@@ -504,7 +500,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       )),
                                   onPressed: submitForm,
                                   child: Text(
-                                    tr("sign_up"),
+                                    tr('sign_up'),
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 17),

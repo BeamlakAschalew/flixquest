@@ -34,7 +34,7 @@ class _MovieCastAndCrewState extends State<MovieCastAndCrew>
           appBar: AppBar(
             elevation: 3,
             title: Text(
-              tr("cast_and_crew"),
+              tr('cast_and_crew'),
             ),
             leading: IconButton(
               icon: const Icon(
@@ -53,14 +53,14 @@ class _MovieCastAndCrewState extends State<MovieCastAndCrew>
                   tabs: [
                     Tab(
                         child: Text(
-                      tr("cast"),
+                      tr('cast'),
                     )),
                     Tab(
                         child: Text(
-                      tr("crew"),
+                      tr('crew'),
                     ))
                   ],
-                  indicatorColor: themeMode == "dark" || themeMode == "amoled"
+                  indicatorColor: themeMode == 'dark' || themeMode == 'amoled'
                       ? Colors.white
                       : Colors.black,
                   indicatorWeight: 3,

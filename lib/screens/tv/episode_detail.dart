@@ -67,10 +67,10 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
             pinned: true,
             elevation: 1,
             forceElevated: true,
-            backgroundColor: themeMode == "dark" || themeMode == "amoled"
+            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.black
                 : Colors.white,
-            shadowColor: themeMode == "dark" || themeMode == "amoled"
+            shadowColor: themeMode == 'dark' || themeMode == 'amoled'
                 ? Colors.white
                 : Colors.black,
             leading: SABTN(
@@ -82,7 +82,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                 child: Text(
               widget.episodeList.name!,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onBackground,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             )),
             expandedHeight: 375,
@@ -113,13 +113,13 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
       ),
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Share.share(tr("share_episode", namedArgs: {
-              "title": widget.seriesName!,
-              "rating": widget.episodeList.voteAverage!.toStringAsFixed(1),
-              "id": widget.tvId!.toString(),
-              "et": widget.episodeList.name ?? "N/A",
-              "season": widget.episodeList.seasonNumber.toString(),
-              "episode": widget.episodeList.episodeNumber.toString()
+            await Share.share(tr('share_episode', namedArgs: {
+              'title': widget.seriesName!,
+              'rating': widget.episodeList.voteAverage!.toStringAsFixed(1),
+              'id': widget.tvId!.toString(),
+              'et': widget.episodeList.name ?? 'N/A',
+              'season': widget.episodeList.seasonNumber.toString(),
+              'episode': widget.episodeList.episodeNumber.toString()
             }));
           },
           child: const Icon(FontAwesomeIcons.shareNodes)),

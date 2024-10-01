@@ -53,8 +53,10 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchPersonImages(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -103,7 +105,7 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                 ? personImageShimmer(themeMode)
                 : personImages!.profile!.isEmpty
                     ? Center(
-                        child: Text(tr("no_images_person")),
+                        child: Text(tr('no_images_person')),
                       )
                     : Row(
                         children: [
@@ -133,7 +135,11 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                               fadeInDuration: const Duration(
                                                   milliseconds: 700),
                                               fadeInCurve: Curves.easeIn,
-                                              imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                              imageUrl: buildImageUrl(
+                                                      TMDB_BASE_IMAGE_URL,
+                                                      proxyUrl,
+                                                      isProxyEnabled,
+                                                      context) +
                                                   imageQuality +
                                                   personImages!.profile![index]
                                                       .filePath!,
@@ -148,13 +154,15 @@ class _PersonImagesDisplayState extends State<PersonImagesDisplay>
                                                       imageProvider:
                                                           imageProvider,
                                                       currentIndex: index,
-                                                      heroId:
-                                                          buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
-                                                              imageQuality +
-                                                              personImages!
-                                                                  .profile![
-                                                                      index]
-                                                                  .filePath!,
+                                                      heroId: buildImageUrl(
+                                                              TMDB_BASE_IMAGE_URL,
+                                                              proxyUrl,
+                                                              isProxyEnabled,
+                                                              context) +
+                                                          imageQuality +
+                                                          personImages!
+                                                              .profile![index]
+                                                              .filePath!,
                                                       name: widget.personName,
                                                     );
                                                   })));
@@ -223,8 +231,10 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchPersonMovies(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -233,7 +243,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
       }
       if (personMoviesList != null) {
         uniqueMov = [];
-        for (Movie mov in personMoviesList!) {
+        for (final Movie mov in personMoviesList!) {
           if (!seenIds.contains(mov.id)) {
             uniqueMov!.add(mov);
             seenIds.add(mov.id!);
@@ -259,7 +269,7 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
-                    tr("contains_nsfw"),
+                    tr('contains_nsfw'),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -272,8 +282,8 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
-                          tr("person_movie_count", namedArgs: {
-                            "count": uniqueMov!.length.toString()
+                          tr('person_movie_count', namedArgs: {
+                            'count': uniqueMov!.length.toString()
                           }),
                           style: const TextStyle(fontSize: 15),
                         ),
@@ -334,19 +344,17 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                               BorderRadius
                                                                   .circular(
                                                                       8.0),
-                                                          child: uniqueMov![
-                                                                          index]
+                                                          child: uniqueMov![index]
                                                                       .posterPath ==
                                                                   null
                                                               ? Image.asset(
                                                                   'assets/images/na_logo.png',
                                                                   fit: BoxFit
                                                                       .cover,
-                                                                      width: double
+                                                                  width: double
                                                                       .infinity,
                                                                   height: double
-                                                                      .infinity
-                                                                )
+                                                                      .infinity)
                                                               : CachedNetworkImage(
                                                                   cacheManager:
                                                                       cacheProp(),
@@ -364,7 +372,11 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                   fadeInCurve:
                                                                       Curves
                                                                           .easeIn,
-                                                                  imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                                  imageUrl: buildImageUrl(
+                                                                          TMDB_BASE_IMAGE_URL,
+                                                                          proxyUrl,
+                                                                          isProxyEnabled,
+                                                                          context) +
                                                                       imageQuality +
                                                                       uniqueMov![
                                                                               index]
@@ -388,19 +400,14 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                           url) =>
                                                                       scrollingImageShimmer(
                                                                           themeMode),
-                                                                  errorWidget: (context,
-                                                                          url,
-                                                                          error) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/na_logo.png',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                        width: double
+                                                                  errorWidget: (context, url, error) => Image.asset(
+                                                                      'assets/images/na_logo.png',
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                      width: double
                                                                           .infinity,
                                                                       height: double
-                                                                          .infinity
-                                                                  ),
+                                                                          .infinity),
                                                                 ),
                                                         ),
                                                         Positioned(
@@ -420,9 +427,9 @@ class PersonMovieListWidgetState extends State<PersonMovieListWidget>
                                                                         .circular(
                                                                             8),
                                                                 color: themeMode ==
-                                                                            "dark" ||
+                                                                            'dark' ||
                                                                         themeMode ==
-                                                                            "amoled"
+                                                                            'amoled'
                                                                     ? Colors
                                                                         .black45
                                                                     : Colors
@@ -496,8 +503,10 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchPersonTV(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -506,7 +515,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
       }
       if (personTVList != null) {
         uniqueTV = [];
-        for (TV tv in personTVList!) {
+        for (final TV tv in personTVList!) {
           if (!seenIds.contains(tv.id)) {
             uniqueTV!.add(tv);
             seenIds.add(tv.id!);
@@ -532,7 +541,7 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: Text(
-                    tr("contains_nsfw"),
+                    tr('contains_nsfw'),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -545,8 +554,8 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
-                          tr("person_tv_count", namedArgs: {
-                            "count": uniqueTV!.length.toString()
+                          tr('person_tv_count', namedArgs: {
+                            'count': uniqueTV!.length.toString()
                           }),
                           style: const TextStyle(fontSize: 15),
                         ),
@@ -614,11 +623,10 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                   'assets/images/na_logo.png',
                                                                   fit: BoxFit
                                                                       .cover,
-                                                                      width: double
+                                                                  width: double
                                                                       .infinity,
                                                                   height: double
-                                                                      .infinity
-                                                                )
+                                                                      .infinity)
                                                               : CachedNetworkImage(
                                                                   cacheManager:
                                                                       cacheProp(),
@@ -636,7 +644,11 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                   fadeInCurve:
                                                                       Curves
                                                                           .easeIn,
-                                                                  imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                                  imageUrl: buildImageUrl(
+                                                                          TMDB_BASE_IMAGE_URL,
+                                                                          proxyUrl,
+                                                                          isProxyEnabled,
+                                                                          context) +
                                                                       imageQuality +
                                                                       uniqueTV![
                                                                               index]
@@ -660,19 +672,14 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                           url) =>
                                                                       scrollingImageShimmer(
                                                                           themeMode),
-                                                                  errorWidget: (context,
-                                                                          url,
-                                                                          error) =>
-                                                                      Image
-                                                                          .asset(
-                                                                    'assets/images/na_logo.png',
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                        width: double
+                                                                  errorWidget: (context, url, error) => Image.asset(
+                                                                      'assets/images/na_logo.png',
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                      width: double
                                                                           .infinity,
                                                                       height: double
-                                                                          .infinity
-                                                                  ),
+                                                                          .infinity),
                                                                 ),
                                                         ),
                                                         Positioned(
@@ -692,9 +699,9 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
                                                                         .circular(
                                                                             8),
                                                                 color: themeMode ==
-                                                                            "dark" ||
+                                                                            'dark' ||
                                                                         themeMode ==
-                                                                            "amoled"
+                                                                            'amoled'
                                                                     ? Colors
                                                                         .black45
                                                                     : Colors
@@ -764,8 +771,10 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchPersonDetails(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -797,7 +806,7 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                               const LeadingDot(),
                               Expanded(
                                 child: Text(
-                                  tr("biography"),
+                                  tr('biography'),
                                   style: kTextHeaderStyle,
                                 ),
                               ),
@@ -808,15 +817,15 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
                     ],
                   ),
                   ReadMoreText(
-                    personDetails?.biography != ""
+                    personDetails?.biography != ''
                         ? personDetails!.biography!
-                        : tr("no_biography_person"),
+                        : tr('no_biography_person'),
                     trimLines: 4,
                     style: kTextSmallAboutBodyStyle,
                     colorClickableText: Theme.of(context).colorScheme.primary,
                     trimMode: TrimMode.Line,
-                    trimCollapsedText: tr("read_more"),
-                    trimExpandedText: tr("read_less"),
+                    trimCollapsedText: tr('read_more'),
+                    trimExpandedText: tr('read_less'),
                     lessStyle: TextStyle(
                         fontSize: 14,
                         color: Theme.of(context).colorScheme.primary,
@@ -853,8 +862,10 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchSocialLinks(widget.api!, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -879,7 +890,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("social_media_links"),
+                    tr('social_media_links'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -896,7 +907,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                           externalLinks?.imdbId == null
                       ? Center(
                           child: Text(
-                            tr("no_social_link_person"),
+                            tr('no_social_link_person'),
                             textAlign: TextAlign.center,
                             style: kTextSmallBodyStyle,
                           ),
@@ -904,7 +915,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                       : Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: themeMode == "dark" || themeMode == "amoled"
+                            color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.transparent
                                 : const Color(0xFFDFDEDE),
                           ),
@@ -977,8 +988,10 @@ class _PersonDataTableState extends State<PersonDataTable> {
   PersonDetails? personDetails;
   @override
   void initState() {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchPersonDetails(widget.api, isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
@@ -1004,11 +1017,11 @@ class _PersonDataTableState extends State<PersonDataTable> {
                       label: personDetails!.deathday != null &&
                               personDetails!.birthday != null
                           ? Text(
-                              tr("died_aged"),
+                              tr('died_aged'),
                               style: kTableLeftStyle,
                             )
                           : Text(
-                              tr("age"),
+                              tr('age'),
                               style: kTableLeftStyle,
                             )),
                   DataColumn(
@@ -1023,7 +1036,7 @@ class _PersonDataTableState extends State<PersonDataTable> {
                 ], rows: [
                   DataRow(cells: [
                     DataCell(Text(
-                      tr("born_on"),
+                      tr('born_on'),
                       style: kTableLeftStyle,
                     )),
                     DataCell(
@@ -1034,7 +1047,7 @@ class _PersonDataTableState extends State<PersonDataTable> {
                   ]),
                   DataRow(cells: [
                     DataCell(Text(
-                      tr("from"),
+                      tr('from'),
                       style: kTableLeftStyle,
                     )),
                     DataCell(
@@ -1097,29 +1110,29 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text(tr("about"),
+                      child: Text(tr('about'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("movies"),
+                      child: Text(tr('movies'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("tv_shows"),
+                      child: Text(tr('tv_shows'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
@@ -1162,7 +1175,7 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.cast!.id!,
                                           ),
-                                          title: tr("images"),
+                                          title: tr('images'),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
@@ -1266,7 +1279,11 @@ class CastDetailQuickInfo extends StatelessWidget {
                                         'assets/images/na_rect.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                      imageUrl: buildImageUrl(
+                                              TMDB_BASE_IMAGE_URL,
+                                              proxyUrl,
+                                              isProxyEnabled,
+                                              context) +
                                           imageQuality +
                                           widget.cast!.profilePath!,
                                     ),
@@ -1365,7 +1382,11 @@ class CreatedByQuickInfo extends StatelessWidget {
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                      imageUrl: buildImageUrl(
+                                              TMDB_BASE_IMAGE_URL,
+                                              proxyUrl,
+                                              isProxyEnabled,
+                                              context) +
                                           imageQuality +
                                           widget.createdBy!.profilePath!,
                                     ),
@@ -1443,29 +1464,29 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text(tr("about"),
+                      child: Text(tr('about'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("movies"),
+                      child: Text(tr('movies'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("tv_shows"),
+                      child: Text(tr('tv_shows'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
@@ -1508,7 +1529,7 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.createdBy!.id!,
                                           ),
-                                          title: tr("images"),
+                                          title: tr('images'),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
@@ -1609,7 +1630,11 @@ class CrewDetailQuickInfo extends StatelessWidget {
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                      imageUrl: buildImageUrl(
+                                              TMDB_BASE_IMAGE_URL,
+                                              proxyUrl,
+                                              isProxyEnabled,
+                                              context) +
                                           imageQuality +
                                           widget.crew!.profilePath!,
                                     ),
@@ -1695,29 +1720,29 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text(tr("about"),
+                      child: Text(tr('about'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("movies"),
+                      child: Text(tr('movies'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("tv_shows"),
+                      child: Text(tr('tv_shows'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
@@ -1760,7 +1785,7 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.crew!.id!,
                                           ),
-                                          title: tr("images"),
+                                          title: tr('images'),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
@@ -1863,7 +1888,11 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                      imageUrl: buildImageUrl(
+                                              TMDB_BASE_IMAGE_URL,
+                                              proxyUrl,
+                                              isProxyEnabled,
+                                              context) +
                                           imageQuality +
                                           widget.cast!.profilePath!,
                                     ),
@@ -1948,29 +1977,29 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text(tr("about"),
+                      child: Text(tr('about'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("movies"),
+                      child: Text(tr('movies'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("tv_shows"),
+                      child: Text(tr('tv_shows'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
@@ -2013,7 +2042,7 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.cast!.id!,
                                           ),
-                                          title: tr("images"),
+                                          title: tr('images'),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(
@@ -2115,7 +2144,11 @@ class SearchedPersonQuickInfo extends StatelessWidget {
                                         'assets/images/na_logo.png',
                                         fit: BoxFit.cover,
                                       ),
-                                      imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                      imageUrl: buildImageUrl(
+                                              TMDB_BASE_IMAGE_URL,
+                                              proxyUrl,
+                                              isProxyEnabled,
+                                              context) +
                                           imageQuality +
                                           widget.person!.profilePath!,
                                     ),
@@ -2200,29 +2233,29 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                   labelColor: Colors.white,
                   tabs: [
                     Tab(
-                      child: Text(tr("about"),
+                      child: Text(tr('about'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("movies"),
+                      child: Text(tr('movies'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
                     Tab(
-                      child: Text(tr("tv_shows"),
+                      child: Text(tr('tv_shows'),
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               color:
-                                  themeMode == "dark" || themeMode == "amoled"
+                                  themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
                                       : Colors.black)),
                     ),
@@ -2265,7 +2298,7 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                                           api: Endpoints.getPersonImages(
                                             widget.person!.id!,
                                           ),
-                                          title: tr("images"),
+                                          title: tr('images'),
                                         ),
                                         PersonDataTable(
                                           api: Endpoints.getPersonDetails(

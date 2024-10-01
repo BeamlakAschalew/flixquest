@@ -78,7 +78,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
 
-  late String currentProvider = "";
+  late String currentProvider = '';
 
   @override
   void initState() {
@@ -113,7 +113,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       if (widget.metadata.airDate != null &&
           !isReleased(widget.metadata.airDate!)) {
         GlobalMethods.showScaffoldMessage(
-            tr("episode_may_not_be_available"), context);
+            tr('episode_may_not_be_available'), context);
       }
       for (int i = 0; i < videoProviders.length; i++) {
         setState(() {
@@ -175,7 +175,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         showModalBottomSheet(
             builder: (context) {
               return ReportErrorWidget(
-                error: tr("tv_vid_404"),
+                error: tr('tv_vid_404'),
                 hideButton: false,
               );
             },
@@ -204,7 +204,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               subs: subs,
               colors: [
                 Theme.of(context).primaryColor,
-                Theme.of(context).colorScheme.background
+                Theme.of(context).colorScheme.surface
               ],
               settings: settings,
               tvMetadata: widget.metadata,
@@ -224,7 +224,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           showModalBottomSheet(
               builder: (context) {
                 return ReportErrorWidget(
-                  error: tr("tv_vid_404"),
+                  error: tr('tv_vid_404'),
                   hideButton: false,
                 );
               },
@@ -257,7 +257,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: Theme.of(context).colorScheme.onBackground,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             height: 150,
             width: 190,
@@ -282,14 +282,14 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                         style: const TextStyle(fontSize: 15),
                         children: [
                       TextSpan(
-                          text: tr("fetching"),
+                          text: tr('fetching'),
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.background,
+                              color: Theme.of(context).colorScheme.surface,
                               fontFamily: 'Poppins')),
                       TextSpan(
                           text: currentProvider,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.background,
+                            color: Theme.of(context).colorScheme.surface,
                             fontFamily: 'PoppinsBold',
                           ))
                     ])),
@@ -298,8 +298,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                       settings.defaultSubtitleLanguage != '' ? false : true,
                   child: Text(
                     'Subtitle load progress: ${loadProgress.toStringAsFixed(0).toString()}%',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.background),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.surface),
                   ),
                 ),
               ],
@@ -409,7 +409,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             Provider.of<AppDependencyProvider>(context, listen: false)
                 .tmdbProxy;
         await fetchTVDetails(
-                Endpoints.tvDetailsUrl(widget.metadata.tvId!, "en"),
+                Endpoints.tvDetailsUrl(widget.metadata.tvId!, 'en'),
                 isProxyEnabled,
                 proxyUrl)
             .then(
@@ -549,7 +549,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     try {
       if (mounted) {
         await getTVStreamEpisodesTMDB(Endpoints.getMovieTVStreamInfoTMDB(
-                widget.metadata.tvId!.toString(), "tv", appDep.consumetUrl))
+                widget.metadata.tvId!.toString(), 'tv', appDep.consumetUrl))
             .then((value) async {
           setState(() {
             tvInfoTMDB = value;
@@ -690,7 +690,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           } else {
             if (appDep.useExternalSubtitles) {
               await fetchSocialLinks(
-                Endpoints.getExternalLinksForTV(widget.metadata.tvId!, "en"),
+                Endpoints.getExternalLinksForTV(widget.metadata.tvId!, 'en'),
                 isProxyEnabled,
                 proxyUrl,
               ).then((value) async {
@@ -738,7 +738,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     for (int k = 0; k < vids.length; k++) {
       if (vids[k].quality! == 'unknown quality') {
         videos.addAll({
-          "${vids[k].quality!} $k": vids[k].url!,
+          '${vids[k].quality!} $k': vids[k].url!,
         });
       } else {
         videos.addAll({

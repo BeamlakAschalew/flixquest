@@ -25,7 +25,7 @@ class Search extends SearchDelegate<String> {
   Search(
       {required this.mixpanel, required this.includeAdult, required this.lang})
       : super(
-          searchFieldLabel: tr("search_text"),
+          searchFieldLabel: tr('search_text'),
         );
 
   @override
@@ -71,34 +71,34 @@ class Search extends SearchDelegate<String> {
         body: Column(
           children: [
             Container(
-              color: themeMode == "dark" || themeMode == "amoled"
+              color: themeMode == 'dark' || themeMode == 'amoled'
                   ? Colors.black
                   : Colors.white,
               child: TabBar(
                 tabs: [
                   Tab(
-                    child: Text(tr("movies"),
+                    child: Text(tr('movies'),
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          color: themeMode == "light"
+                          color: themeMode == 'light'
                               ? const Color(0xFF202124)
                               : const Color(0xFFDFDEDE),
                         )),
                   ),
                   Tab(
-                    child: Text(tr("tv_shows"),
+                    child: Text(tr('tv_shows'),
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          color: themeMode == "light"
+                          color: themeMode == 'light'
                               ? const Color(0xFF202124)
                               : const Color(0xFFDFDEDE),
                         )),
                   ),
                   Tab(
-                    child: Text(tr("celebrities"),
+                    child: Text(tr('celebrities'),
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          color: themeMode == "light"
+                          color: themeMode == 'light'
                               ? const Color(0xFF202124)
                               : const Color(0xFFDFDEDE),
                         )),
@@ -113,10 +113,12 @@ class Search extends SearchDelegate<String> {
                     .then((value) async {
                   if (query.isNotEmpty) {
                     mixpanel
-                        .track("Searched query", properties: {"query": query});
+                        .track('Searched query', properties: {'query': query});
                   }
                   return await fetchMovies(
-                      Endpoints.movieSearchUrl(query, includeAdult, lang), isProxyEnabled, proxyUrl);
+                      Endpoints.movieSearchUrl(query, includeAdult, lang),
+                      isProxyEnabled,
+                      proxyUrl);
                 }),
                 builder: (context, snapshot) {
                   if (query.isEmpty) return searchATermWidget(themeMode);
@@ -137,7 +139,9 @@ class Search extends SearchDelegate<String> {
               FutureBuilder<List<TV>>(
                 future: Future.delayed(const Duration(seconds: 3)).then(
                     (value) async => await fetchTV(
-                        Endpoints.tvSearchUrl(query, includeAdult, lang), isProxyEnabled, proxyUrl)),
+                        Endpoints.tvSearchUrl(query, includeAdult, lang),
+                        isProxyEnabled,
+                        proxyUrl)),
                 builder: (context, snapshot) {
                   if (query.isEmpty) return searchATermWidget(themeMode);
 
@@ -157,7 +161,9 @@ class Search extends SearchDelegate<String> {
               FutureBuilder<List<Person>>(
                 future: Future.delayed(const Duration(seconds: 3)).then(
                     (value) async => await fetchPerson(
-                        Endpoints.personSearchUrl(query, includeAdult, lang), isProxyEnabled, proxyUrl)),
+                        Endpoints.personSearchUrl(query, includeAdult, lang),
+                        isProxyEnabled,
+                        proxyUrl)),
                 builder: (context, snapshot) {
                   if (query.isEmpty) return searchATermWidget(themeMode);
                   switch (snapshot.connectionState) {
@@ -251,7 +257,7 @@ class Search extends SearchDelegate<String> {
                             ),
                           ),
                           Divider(
-                            color: themeMode == "light"
+                            color: themeMode == 'light'
                                 ? Colors.black54
                                 : Colors.white54,
                             thickness: 1,
@@ -311,7 +317,7 @@ class Search extends SearchDelegate<String> {
                 ),
               ),
               Divider(
-                color: themeMode == "light" ? Colors.black54 : Colors.white54,
+                color: themeMode == 'light' ? Colors.black54 : Colors.white54,
                 thickness: 1,
                 endIndent: 20,
                 indent: 10,
@@ -328,10 +334,10 @@ class Search extends SearchDelegate<String> {
         children: [
           Image.asset('assets/images/404.png'),
           Text(
-            tr("no_result"),
+            tr('no_result'),
             style: TextStyle(
                 fontFamily: 'Poppins',
-                color: themeMode == "dark" || themeMode == "amoled"
+                color: themeMode == 'dark' || themeMode == 'amoled'
                     ? Colors.white
                     : Colors.black),
           )
@@ -347,9 +353,9 @@ class Search extends SearchDelegate<String> {
         children: [
           Image.asset('assets/images/search.png'),
           const Padding(padding: EdgeInsets.only(top: 10, bottom: 5)),
-          Text(tr("enter_word"),
+          Text(tr('enter_word'),
               style: TextStyle(
-                  color: themeMode == "dark" || themeMode == "amoled"
+                  color: themeMode == 'dark' || themeMode == 'amoled'
                       ? Colors.white
                       : Colors.black,
                   fontFamily: 'Poppins'))
@@ -418,7 +424,11 @@ class Search extends SearchDelegate<String> {
                                                 fadeInDuration: const Duration(
                                                     milliseconds: 700),
                                                 fadeInCurve: Curves.easeIn,
-                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                imageUrl: buildImageUrl(
+                                                        TMDB_BASE_IMAGE_URL,
+                                                        proxyUrl,
+                                                        isProxyEnabled,
+                                                        context) +
                                                     imageQuality +
                                                     moviesList[index]
                                                         .posterPath!,
@@ -457,8 +467,8 @@ class Search extends SearchDelegate<String> {
                                             fontFamily: 'PoppinsSB',
                                             fontSize: 15,
                                             overflow: TextOverflow.ellipsis,
-                                            color: themeMode == "dark" ||
-                                                    themeMode == "amoled"
+                                            color: themeMode == 'dark' ||
+                                                    themeMode == 'amoled'
                                                 ? Colors.white
                                                 : Colors.black),
                                       ),
@@ -476,8 +486,8 @@ class Search extends SearchDelegate<String> {
                                                     .toStringAsFixed(1),
                                             style: TextStyle(
                                                 fontFamily: 'Poppins',
-                                                color: themeMode == "dark" ||
-                                                        themeMode == "amoled"
+                                                color: themeMode == 'dark' ||
+                                                        themeMode == 'amoled'
                                                     ? Colors.white
                                                     : Colors.black),
                                           ),
@@ -489,7 +499,7 @@ class Search extends SearchDelegate<String> {
                               ],
                             ),
                             Divider(
-                              color: themeMode == "light"
+                              color: themeMode == 'light'
                                   ? Colors.black54
                                   : Colors.white54,
                               thickness: 1,
@@ -566,7 +576,11 @@ class Search extends SearchDelegate<String> {
                                                 fadeInDuration: const Duration(
                                                     milliseconds: 700),
                                                 fadeInCurve: Curves.easeIn,
-                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                imageUrl: buildImageUrl(
+                                                        TMDB_BASE_IMAGE_URL,
+                                                        proxyUrl,
+                                                        isProxyEnabled,
+                                                        context) +
                                                     imageQuality +
                                                     tvList[index].posterPath!,
                                                 imageBuilder:
@@ -604,8 +618,8 @@ class Search extends SearchDelegate<String> {
                                             fontFamily: 'PoppinsSB',
                                             fontSize: 15,
                                             overflow: TextOverflow.ellipsis,
-                                            color: themeMode == "dark" ||
-                                                    themeMode == "amoled"
+                                            color: themeMode == 'dark' ||
+                                                    themeMode == 'amoled'
                                                 ? Colors.white
                                                 : Colors.black),
                                       ),
@@ -622,8 +636,8 @@ class Search extends SearchDelegate<String> {
                                                     .toStringAsFixed(1),
                                             style: TextStyle(
                                                 fontFamily: 'Poppins',
-                                                color: themeMode == "dark" ||
-                                                        themeMode == "amoled"
+                                                color: themeMode == 'dark' ||
+                                                        themeMode == 'amoled'
                                                     ? Colors.white
                                                     : Colors.black),
                                           ),
@@ -635,7 +649,7 @@ class Search extends SearchDelegate<String> {
                               ],
                             ),
                             Divider(
-                              color: themeMode == "light"
+                              color: themeMode == 'light'
                                   ? Colors.black54
                                   : Colors.white54,
                               thickness: 1,
@@ -705,7 +719,11 @@ class Search extends SearchDelegate<String> {
                                         fadeInDuration:
                                             const Duration(milliseconds: 700),
                                         fadeInCurve: Curves.easeIn,
-                                        imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                        imageUrl: buildImageUrl(
+                                                TMDB_BASE_IMAGE_URL,
+                                                proxyUrl,
+                                                isProxyEnabled,
+                                                context) +
                                             imageQuality +
                                             personList[index].profilePath!,
                                         imageBuilder:
@@ -739,8 +757,8 @@ class Search extends SearchDelegate<String> {
                                 style: TextStyle(
                                     fontFamily: 'PoppinsSB',
                                     fontSize: 17,
-                                    color: themeMode == "dark" ||
-                                            themeMode == "amoled"
+                                    color: themeMode == 'dark' ||
+                                            themeMode == 'amoled'
                                         ? Colors.white
                                         : Colors.black),
                                 overflow: TextOverflow.ellipsis,
@@ -751,7 +769,7 @@ class Search extends SearchDelegate<String> {
                       ],
                     ),
                     Divider(
-                      color: themeMode == "light"
+                      color: themeMode == 'light'
                           ? Colors.black54
                           : Colors.white54,
                       thickness: 1,
@@ -776,13 +794,13 @@ class Search extends SearchDelegate<String> {
             TabBar(
               tabs: [
                 Tab(
-                  text: tr("movies"),
+                  text: tr('movies'),
                 ),
                 Tab(
-                  text: tr("tv"),
+                  text: tr('tv'),
                 ),
                 Tab(
-                  text: tr("celebrities"),
+                  text: tr('celebrities'),
                 )
               ],
             ),

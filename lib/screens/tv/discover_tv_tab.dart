@@ -149,7 +149,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("sort_by"),
+                    tr('sort_by'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -177,7 +177,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("tv_series_status"),
+                    tr('tv_series_status'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -232,7 +232,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                           const LeadingDot(),
                           Expanded(
                             child: Text(
-                              tr("total_ratings"),
+                              tr('total_ratings'),
                               style: kTextHeaderStyle,
                             ),
                           ),
@@ -265,8 +265,8 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30, 15),
                   child: Text(
-                    tr("ratings_count", namedArgs: {
-                      "r": tvTotalRatingSlider.toInt().toString()
+                    tr('ratings_count', namedArgs: {
+                      'r': tvTotalRatingSlider.toInt().toString()
                     }),
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20),
@@ -279,7 +279,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("with_genres"),
+                    tr('with_genres'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -320,7 +320,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 const LeadingDot(),
                 Expanded(
                   child: Text(
-                    tr("with_streaming_services"),
+                    tr('with_streaming_services'),
                     style: kTextHeaderStyle,
                   ),
                 ),
@@ -362,7 +362,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                   style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(
+                    minimumSize: WidgetStateProperty.all(
                         const Size(double.infinity, 50)),
                   ),
                   onPressed: () {
@@ -383,7 +383,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(right: 8.0),
-                        child: Text(tr("discover")),
+                        child: Text(tr('discover')),
                       ),
                       const Icon(FontAwesomeIcons.wandMagicSparkles)
                     ],

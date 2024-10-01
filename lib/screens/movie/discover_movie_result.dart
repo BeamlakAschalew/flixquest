@@ -29,11 +29,12 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
-  
 
   void getMoreData() async {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     _scrollController.addListener(() async {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
@@ -43,7 +44,9 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
 
         if (mounted) {
           fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum', isProxyEnabled, proxyUrl)
+                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum',
+                  isProxyEnabled,
+                  proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -61,10 +64,14 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled = Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+    final isProxyEnabled =
+        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+    final proxyUrl =
+        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchMovies(
-            '${widget.api}&page=${widget.page}&include_adult=${widget.includeAdult}', isProxyEnabled, proxyUrl)
+            '${widget.api}&page=${widget.page}&include_adult=${widget.includeAdult}',
+            isProxyEnabled,
+            proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -83,7 +90,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            tr("discover_movies"),
+            tr('discover_movies'),
           ),
           leading: IconButton(
             icon: const Icon(
@@ -108,7 +115,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
                             padding: const EdgeInsets.all(8),
                             child: Center(
                               child: Text(
-                                tr("parameter_movie_404"),
+                                tr('parameter_movie_404'),
                                 style: kTextHeaderStyle,
                                 textAlign: TextAlign.center,
                               ),

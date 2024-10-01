@@ -43,7 +43,7 @@ class _TVBookmarkState extends State<TVBookmark> {
             : widget.tvList!.isEmpty
                 ? Center(
                     child: Text(
-                      tr("no_tv_bookmarked"),
+                      tr('no_tv_bookmarked'),
                       textAlign: TextAlign.center,
                       style: kTextSmallHeaderStyle,
                       maxLines: 4,
@@ -126,7 +126,11 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                             const Duration(milliseconds: 700),
                                                                         fadeInCurve:
                                                                             Curves.easeIn,
-                                                                        imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) +
+                                                                        imageUrl: buildImageUrl(
+                                                                                TMDB_BASE_IMAGE_URL,
+                                                                                proxyUrl,
+                                                                                isProxyEnabled,
+                                                                                context) +
                                                                             imageQuality +
                                                                             widget.tvList![index].posterPath!,
                                                                         imageBuilder:
@@ -158,7 +162,8 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                     Container(
                                                                   margin:
                                                                       const EdgeInsets
-                                                                          .all(3),
+                                                                          .all(
+                                                                          3),
                                                                   alignment:
                                                                       Alignment
                                                                           .topLeft,
@@ -168,9 +173,9 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               8),
-                                                                      color: themeMode == "dark" ||
+                                                                      color: themeMode == 'dark' ||
                                                                               themeMode ==
-                                                                                  "amoled"
+                                                                                  'amoled'
                                                                           ? Colors
                                                                               .black45
                                                                           : Colors
@@ -278,7 +283,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                           Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                        .only(
+                                                                    .only(
                                                                     right:
                                                                         10.0),
                                                             child: SizedBox(
@@ -387,7 +392,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                       ),
                                                       Divider(
                                                         color: themeMode ==
-                                                                "light"
+                                                                'light'
                                                             ? Colors.black54
                                                             : Colors.white54,
                                                         thickness: 1,
