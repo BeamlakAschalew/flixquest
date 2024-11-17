@@ -36,6 +36,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   flutter_download_manager: ^0.5.4
   flutter_downloader: ^1.8.3+2
+  flutter_inappwebview: ^6.1.5
   flutter_local_notifications: ^17.2.3
   flutter_localization: ^0.1.13
   flutter_svg: ^1.1.5
