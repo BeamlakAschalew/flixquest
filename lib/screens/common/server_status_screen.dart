@@ -269,7 +269,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
                             Text(
                               videoProvidersCheck[index].waitingMessage!,
                               style: const TextStyle(
-                                fontFamily: 'PoppinsSB',
+                                fontFamily: 'FigtreeSB',
                                 fontSize: 15,
                               ),
                               textAlign: TextAlign.center,

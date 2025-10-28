@@ -247,7 +247,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           Text(
                             tr('choose_profile'),
                             style: const TextStyle(
-                              fontFamily: 'PoppinsSB',
+                              fontFamily: 'FigtreeSB',
                               fontSize: 20,
                               overflow: TextOverflow.ellipsis,
                             ),

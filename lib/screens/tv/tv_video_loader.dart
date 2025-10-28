@@ -285,12 +285,12 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                           text: tr('fetching'),
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.surface,
-                              fontFamily: 'Poppins')),
+                              fontFamily: 'Figtree')),
                       TextSpan(
                           text: currentProvider,
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.surface,
-                            fontFamily: 'PoppinsBold',
+                            fontFamily: 'FigtreeBold',
                           ))
                     ])),
                 Visibility(

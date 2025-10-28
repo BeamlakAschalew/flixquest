@@ -260,7 +260,7 @@ class MovieListView extends StatelessWidget {
                               Text(
                                 moviesList![index].title!,
                                 style: const TextStyle(
-                                    fontFamily: 'PoppinsSB',
+                                    fontFamily: 'FigtreeSB',
                                     fontSize: 15,
                                     overflow: TextOverflow.ellipsis),
                               ),
@@ -274,7 +274,7 @@ class MovieListView extends StatelessWidget {
                                         .voteAverage!
                                         .toStringAsFixed(1),
                                     style:
-                                        const TextStyle(fontFamily: 'Poppins'),
+                                        const TextStyle(fontFamily: 'Figtree'),
                                   ),
                                 ],
                               ),

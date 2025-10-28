@@ -133,7 +133,7 @@ class GlobalMethods {
                                   ? tr('channels_fetch_failed')
                                   : tr('general_error',
                                       namedArgs: {'e': error.toString()}),
-          style: const TextStyle(fontFamily: 'Poppins'),
+          style: const TextStyle(fontFamily: 'Figtree'),
         )));
   }
 
@@ -147,7 +147,7 @@ class GlobalMethods {
               : error is SocketException
                   ? tr('internet_problem')
                   : tr('general_error', namedArgs: {'e': error.toString()}),
-          style: const TextStyle(fontFamily: 'Poppins'),
+          style: const TextStyle(fontFamily: 'Figtree'),
         )));
   }
 
@@ -156,7 +156,7 @@ class GlobalMethods {
         duration: const Duration(milliseconds: 4000),
         content: Text(
           message,
-          style: const TextStyle(fontFamily: 'Poppins'),
+          style: const TextStyle(fontFamily: 'Figtree'),
         )));
   }
 

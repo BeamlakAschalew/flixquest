@@ -367,7 +367,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                       .title!,
                                                                   style: const TextStyle(
                                                                       fontFamily:
-                                                                          'PoppinsSB',
+                                                                          'FigtreeSB',
                                                                       fontSize:
                                                                           15,
                                                                       overflow:
@@ -389,7 +389,7 @@ class _MovieBookmarkState extends State<MovieBookmark> {
                                                                               1),
                                                                       style: const TextStyle(
                                                                           fontFamily:
-                                                                              'Poppins'),
+                                                                              'Figtree'),
                                                                     ),
                                                                   ],
                                                                 ),

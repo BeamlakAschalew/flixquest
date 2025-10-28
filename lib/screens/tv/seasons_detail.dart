@@ -388,7 +388,7 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
                     ? tr('no_season_overview')
                     : widget.season.overview!,
                 trimLines: 4,
-                style: const TextStyle(fontFamily: 'Poppins'),
+                style: const TextStyle(fontFamily: 'Figtree'),
                 colorClickableText: Theme.of(context).colorScheme.primary,
                 trimMode: TrimMode.Line,
                 trimCollapsedText: tr('read_more'),
@@ -422,7 +422,7 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
                                 .toString()
                           }),
                     style: const TextStyle(
-                      fontFamily: 'PoppinsSB',
+                      fontFamily: 'FigtreeSB',
                     ),
                   ),
                 ),

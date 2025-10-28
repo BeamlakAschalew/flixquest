@@ -1224,7 +1224,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                                fontSize: 18, fontFamily: 'PoppinsSB'),
+                                fontSize: 18, fontFamily: 'FigtreeSB'),
                           ),
                         ),
                       ],
@@ -1466,7 +1466,7 @@ class _MovieAboutState extends State<MovieAbout> {
                   : ReadMoreText(
                       widget.movie.overview!,
                       trimLines: 4,
-                      style: const TextStyle(fontFamily: 'Poppins'),
+                      style: const TextStyle(fontFamily: 'Figtree'),
                       colorClickableText: Theme.of(context).colorScheme.primary,
                       trimMode: TrimMode.Line,
                       trimCollapsedText: tr('read_more'),
@@ -1492,7 +1492,7 @@ class _MovieAboutState extends State<MovieAbout> {
                               widget.movie.releaseDate!.isEmpty
                           ? tr('no_release_date')
                           : '${tr("release_date")} : ${DateTime.parse(widget.movie.releaseDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.movie.releaseDate!))}, ${DateTime.parse(widget.movie.releaseDate!).year}',
-                      style: const TextStyle(fontFamily: 'PoppinsSB'),
+                      style: const TextStyle(fontFamily: 'FigtreeSB'),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -3353,7 +3353,7 @@ class GenreDisplayState extends State<GenreDisplay>
                               ),
                               label: Text(
                                 genreList![index].genreName!,
-                                style: const TextStyle(fontFamily: 'Poppins'),
+                                style: const TextStyle(fontFamily: 'Figtree'),
                                 // style: widget.themeData.textTheme.bodyText1,
                               ),
                               backgroundColor:
@@ -3719,7 +3719,7 @@ class CastTabState extends State<CastTab>
                                         widget.credits.cast![index].name!,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                            fontFamily: 'PoppinsSB',
+                                            fontFamily: 'FigtreeSB',
                                             fontSize: 20),
                                       ),
                                       Text(widget.credits.cast![index]
@@ -3911,7 +3911,7 @@ class CrewTabState extends State<CrewTab>
                                         widget.credits.crew![index].name!,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                            fontFamily: 'PoppinsSB',
+                                            fontFamily: 'FigtreeSB',
                                             fontSize: 20),
                                       ),
                                       Text(widget.credits.crew![index]
@@ -4915,7 +4915,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
             ? Center(
                 child: Text(
                   tr('no_watchprovider_movie'),
-                  style: const TextStyle(fontFamily: 'Poppins'),
+                  style: const TextStyle(fontFamily: 'Figtree'),
                 ),
               )
             : Column(
@@ -5011,7 +5011,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 1,
                                               style: const TextStyle(
-                                                  fontFamily: 'Poppins'),
+                                                  fontFamily: 'Figtree'),
                                             ),
                                             Row(
                                               children: <Widget>[
@@ -5020,7 +5020,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                                       .voteAverage!
                                                       .toStringAsFixed(1),
                                                   style: const TextStyle(
-                                                      fontFamily: 'Poppins'),
+                                                      fontFamily: 'Figtree'),
                                                 ),
                                                 const Icon(
                                                   Icons.star_rounded,

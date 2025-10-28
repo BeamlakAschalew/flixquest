@@ -116,10 +116,10 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                               backgroundColor: backgroundColor,
                               color: foregroundColor,
                               fontFamily: st == 'regular'
-                                  ? 'Poppins'
+                                  ? 'Figtree'
                                   : st == 'bold'
-                                      ? 'PoppinsSB'
-                                      : 'PoppinsLight',
+                                      ? 'FigtreeSB'
+                                      : 'FigtreeLight',
                               fontSize:
                                   settingValues.subtitleFontSize.toDouble())),
                     ),

@@ -78,12 +78,12 @@ class _TVEpisodeCastAndCrewState extends State<TVEpisodeCastAndCrew>
                     indicatorWeight: 3,
                     //isScrollable: true,
                     labelStyle: const TextStyle(
-                      fontFamily: 'PoppinsSB',
+                      fontFamily: 'FigtreeSB',
                       color: Colors.black,
                       fontSize: 17,
                     ),
                     unselectedLabelStyle: const TextStyle(
-                        fontFamily: 'Poppins', color: Colors.black87),
+                        fontFamily: 'Figtree', color: Colors.black87),
                     labelColor: Colors.black,
                     controller: tabController,
                     indicatorSize: TabBarIndicatorSize.tab,

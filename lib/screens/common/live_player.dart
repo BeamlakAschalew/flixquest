@@ -83,7 +83,7 @@ class _LivePlayerState extends State<LivePlayer> {
             showPlaceholderUntilPlay: true,
             subtitlesConfiguration: const BetterPlayerSubtitlesConfiguration(
                 backgroundColor: Colors.black45,
-                fontFamily: 'Poppins',
+                fontFamily: 'Figtree',
                 fontColor: Colors.white,
                 outlineEnabled: false,
                 fontSize: 17));

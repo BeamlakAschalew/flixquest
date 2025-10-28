@@ -1813,7 +1813,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                   Tab(
                     child: Text(tr('buy'),
                         style: TextStyle(
-                            fontFamily: 'Poppins',
+                            fontFamily: 'Figtree',
                             color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
@@ -1821,7 +1821,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                   Tab(
                     child: Text(tr('stream'),
                         style: TextStyle(
-                            fontFamily: 'Poppins',
+                            fontFamily: 'Figtree',
                             color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
@@ -1829,7 +1829,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
                   Tab(
                     child: Text(tr('rent'),
                         style: TextStyle(
-                            fontFamily: 'Poppins',
+                            fontFamily: 'Figtree',
                             color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),

@@ -140,10 +140,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
                 backgroundColor: backgroundColor,
                 fontFamily: widget.subtitleStyle == 'regular'
-                    ? 'Poppins'
+                    ? 'Figtree'
                     : widget.subtitleStyle == 'bold'
-                        ? 'PoppinsSB'
-                        : 'PoppinsLight',
+                        ? 'FigtreeSB'
+                        : 'FigtreeLight',
                 fontColor: foregroundColor,
                 outlineEnabled: false,
                 fontSize: widget.settings.subtitleFontSize.toDouble()));

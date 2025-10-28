@@ -1112,7 +1112,7 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                     Tab(
                       child: Text(tr('about'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1121,7 +1121,7 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                     Tab(
                       child: Text(tr('movies'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1130,7 +1130,7 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
                     Tab(
                       child: Text(tr('tv_shows'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1303,14 +1303,14 @@ class CastDetailQuickInfo extends StatelessWidget {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                              fontSize: 25, fontFamily: 'FigtreeSB'),
                         ),
                         Text(
                           widget.cast!.department!,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 15, fontFamily: 'Poppins'),
+                              fontSize: 15, fontFamily: 'Figtree'),
                         ),
                       ],
                     ),
@@ -1406,7 +1406,7 @@ class CreatedByQuickInfo extends StatelessWidget {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                              fontSize: 25, fontFamily: 'FigtreeSB'),
                         ),
                       ],
                     ),
@@ -1466,7 +1466,7 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                     Tab(
                       child: Text(tr('about'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1475,7 +1475,7 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                     Tab(
                       child: Text(tr('movies'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1484,7 +1484,7 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
                     Tab(
                       child: Text(tr('tv_shows'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1654,14 +1654,14 @@ class CrewDetailQuickInfo extends StatelessWidget {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                              fontSize: 25, fontFamily: 'FigtreeSB'),
                         ),
                         Text(
                           widget.crew!.department!,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 15, fontFamily: 'Poppins'),
+                              fontSize: 15, fontFamily: 'Figtree'),
                         ),
                       ],
                     ),
@@ -1722,7 +1722,7 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                     Tab(
                       child: Text(tr('about'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1731,7 +1731,7 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                     Tab(
                       child: Text(tr('movies'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1740,7 +1740,7 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
                     Tab(
                       child: Text(tr('tv_shows'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1912,14 +1912,14 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                              fontSize: 25, fontFamily: 'FigtreeSB'),
                         ),
                         Text(
                           widget.cast!.department!,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 15, fontFamily: 'Poppins'),
+                              fontSize: 15, fontFamily: 'Figtree'),
                         ),
                       ],
                     ),
@@ -1979,7 +1979,7 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                     Tab(
                       child: Text(tr('about'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1988,7 +1988,7 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                     Tab(
                       child: Text(tr('movies'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -1997,7 +1997,7 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
                     Tab(
                       child: Text(tr('tv_shows'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -2168,14 +2168,14 @@ class SearchedPersonQuickInfo extends StatelessWidget {
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 25, fontFamily: 'PoppinsSB'),
+                              fontSize: 25, fontFamily: 'FigtreeSB'),
                         ),
                         Text(
                           widget.person!.department!,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                              fontSize: 15, fontFamily: 'Poppins'),
+                              fontSize: 15, fontFamily: 'Figtree'),
                         ),
                       ],
                     ),
@@ -2235,7 +2235,7 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                     Tab(
                       child: Text(tr('about'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -2244,7 +2244,7 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                     Tab(
                       child: Text(tr('movies'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white
@@ -2253,7 +2253,7 @@ class _SearchedPersonAboutState extends State<SearchedPersonAbout> {
                     Tab(
                       child: Text(tr('tv_shows'),
                           style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Figtree',
                               color:
                                   themeMode == 'dark' || themeMode == 'amoled'
                                       ? Colors.white

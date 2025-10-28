@@ -74,24 +74,24 @@ flutter:
     - .env
 
   fonts:
-    - family: Poppins
+    - family: Figtree
       fonts:
-        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
-    - family: PoppinsBold
+        - asset: assets/fonts/Figtree/Figtree-Medium.ttf
+    - family: FigtreeBold
       fonts:
-        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
-    - family: PoppinsSB
+        - asset: assets/fonts/Figtree/Figtree-ExtraBold.ttf
+    - family: FigtreeSB
       fonts:
-        - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
-    - family: PoppinsMedium
+        - asset: assets/fonts/Figtree/Figtree-Bold.ttf
+    - family: FigtreeMedium
       fonts:
-        - asset: assets/fonts/Poppins/Poppins-Medium.ttf
-    - family: PoppinsBlack
+        - asset: assets/fonts/Figtree/Figtree-Medium.ttf
+    - family: FigtreeBlack
       fonts:
-        - asset: assets/fonts/Poppins/Poppins-Black.ttf
-    - family: PoppinsLight
+        - asset: assets/fonts/Figtree/Figtree-Black.ttf
+    - family: FigtreeLight
       fonts:
-        - asset: assets/fonts/Poppins/Poppins-Light.ttf
+        - asset: assets/fonts/Figtree/Figtree-Regular.ttf
     - family: SocialIcons
       fonts:
         - asset: assets/fonts/SocialIcons.ttf

@@ -2995,7 +2995,7 @@ class TVCastTabState extends State<TVCastTab>
                                           Text(
                                             credits!.cast![index].name!,
                                             style: const TextStyle(
-                                                fontFamily: 'PoppinsSB',
+                                                fontFamily: 'FigtreeSB',
                                                 fontSize: 20),
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -3223,7 +3223,7 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
                                                     .seasons![index].name!,
                                                 style: const TextStyle(
                                                     fontSize: 20,
-                                                    fontFamily: 'PoppinsSB',
+                                                    fontFamily: 'FigtreeSB',
                                                     overflow:
                                                         TextOverflow.ellipsis),
                                               ),
@@ -3401,7 +3401,7 @@ class TVCrewTabState extends State<TVCrewTab>
                                             credits!.crew![index].name!,
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
-                                                fontFamily: 'PoppinsSB',
+                                                fontFamily: 'FigtreeSB',
                                                 fontSize: 20),
                                           ),
                                           Text(credits!.crew![index].department!
@@ -3791,7 +3791,7 @@ class TVGenreDisplayState extends State<TVGenreDisplay>
                               ),
                               label: Text(
                                 genres![index].genreName!,
-                                style: const TextStyle(fontFamily: 'Poppins'),
+                                style: const TextStyle(fontFamily: 'Figtree'),
                                 // style: widget.themeData.textTheme.bodyText1,
                               ),
                               backgroundColor:
@@ -4924,7 +4924,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                   Tab(
                     child: Text(tr('buy'),
                         style: TextStyle(
-                            fontFamily: 'Poppins',
+                            fontFamily: 'Figtree',
                             color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
@@ -4932,7 +4932,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                   Tab(
                     child: Text(tr('stream'),
                         style: TextStyle(
-                            fontFamily: 'Poppins',
+                            fontFamily: 'Figtree',
                             color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
@@ -4940,7 +4940,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                   Tab(
                     child: Text(tr('ads'),
                         style: TextStyle(
-                            fontFamily: 'Poppins',
+                            fontFamily: 'Figtree',
                             color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
@@ -4948,7 +4948,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                   Tab(
                     child: Text(tr('rent'),
                         style: TextStyle(
-                            fontFamily: 'Poppins',
+                            fontFamily: 'Figtree',
                             color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
@@ -4956,7 +4956,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
                   Tab(
                     child: Text(tr('free'),
                         style: TextStyle(
-                            fontFamily: 'Poppins',
+                            fontFamily: 'Figtree',
                             color: themeMode == 'dark' || themeMode == 'amoled'
                                 ? Colors.white
                                 : Colors.black)),
@@ -5598,7 +5598,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
                                           Text(
                                             credits!.cast![index].name!,
                                             style: const TextStyle(
-                                                fontFamily: 'PoppinsSB',
+                                                fontFamily: 'FigtreeSB',
                                                 fontSize: 20),
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -5805,7 +5805,7 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
                                                     .episodeGuestStars![index]
                                                     .name!,
                                                 style: const TextStyle(
-                                                    fontFamily: 'PoppinsSB',
+                                                    fontFamily: 'FigtreeSB',
                                                     fontSize: 20),
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -6078,7 +6078,7 @@ class TVDetailQuickInfo extends StatelessWidget {
                             maxLines: 4,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                                fontSize: 18, fontFamily: 'PoppinsSB'),
+                                fontSize: 18, fontFamily: 'FigtreeSB'),
                           ),
                         ),
                       ],
@@ -6305,7 +6305,7 @@ class _TVAboutState extends State<TVAbout> {
                   : ReadMoreText(
                       widget.tvSeries.overview!,
                       trimLines: 4,
-                      style: const TextStyle(fontFamily: 'Poppins'),
+                      style: const TextStyle(fontFamily: 'Figtree'),
                       colorClickableText: Theme.of(context).colorScheme.primary,
                       trimMode: TrimMode.Line,
                       trimCollapsedText: tr('read_more'),
@@ -6332,7 +6332,7 @@ class _TVAboutState extends State<TVAbout> {
                           ? tr('first_episode_air_empty')
                           : '${tr("first_episode_air")} ${DateTime.parse(widget.tvSeries.firstAirDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.tvSeries.firstAirDate!))}, ${DateTime.parse(widget.tvSeries.firstAirDate!).year}',
                       style: const TextStyle(
-                        fontFamily: 'PoppinsSB',
+                        fontFamily: 'FigtreeSB',
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -6457,7 +6457,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                     ? tr('no_episode_overview')
                     : widget.episodeList.overview!,
                 trimLines: 4,
-                style: const TextStyle(fontFamily: 'Poppins'),
+                style: const TextStyle(fontFamily: 'Figtree'),
                 colorClickableText: Theme.of(context).colorScheme.primary,
                 trimMode: TrimMode.Line,
                 trimCollapsedText: tr('read_more'),
@@ -6483,7 +6483,7 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
                         ? tr('episode_air_empty')
                         : '${tr("episode_air")}  ${DateTime.parse(widget.episodeList.airDate!).day} ${DateFormat("MMMM").format(DateTime.parse(widget.episodeList.airDate!))}, ${DateTime.parse(widget.episodeList.airDate!).year}',
                     style: const TextStyle(
-                      fontFamily: 'PoppinsSB',
+                      fontFamily: 'FigtreeSB',
                     ),
                   ),
                 ),

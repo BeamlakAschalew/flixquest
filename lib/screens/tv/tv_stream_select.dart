@@ -184,7 +184,7 @@ class StreamListWidget extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                       style:
-                          const TextStyle(fontFamily: 'Poppins', fontSize: 15),
+                          const TextStyle(fontFamily: 'Figtree', fontSize: 15),
                     ),
                   ),
                 ),

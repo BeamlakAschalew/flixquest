@@ -261,7 +261,7 @@ class TVListView extends StatelessWidget {
                               Text(
                                 tvList![index].name!,
                                 style: const TextStyle(
-                                    fontFamily: 'PoppinsSB',
+                                    fontFamily: 'FigtreeSB',
                                     fontSize: 15,
                                     overflow: TextOverflow.ellipsis),
                               ),
@@ -275,7 +275,7 @@ class TVListView extends StatelessWidget {
                                         .voteAverage!
                                         .toStringAsFixed(1),
                                     style:
-                                        const TextStyle(fontFamily: 'Poppins'),
+                                        const TextStyle(fontFamily: 'Figtree'),
                                   ),
                                 ],
                               ),

@@ -7,7 +7,7 @@ ThemeData darkThemeData(
   bool useUserColor = color.index != -1;
   return ThemeData(
     useMaterial3: false,
-    textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Poppins'),
+    textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Figtree'),
     bottomSheetTheme:
         BottomSheetThemeData(backgroundColor: Colors.grey.shade900),
     appBarTheme: AppBarTheme(
@@ -29,7 +29,7 @@ ThemeData darkThemeData(
               : useUserColor
                   ? color.cs.onPrimary
                   : Colors.black,
-          fontFamily: 'PoppinsSB',
+          fontFamily: 'FigtreeSB',
           fontSize: 21),
     ),
     dialogTheme: DialogThemeData(backgroundColor: Color(0xFF171717)),
@@ -129,7 +129,7 @@ ThemeData darkThemeData(
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: InputBorder.none,
-      hintStyle: TextStyle(color: Colors.white24, fontFamily: 'Poppins'),
+      hintStyle: TextStyle(color: Colors.white24, fontFamily: 'Figtree'),
       focusedBorder: InputBorder.none,
       enabledBorder: InputBorder.none,
       errorBorder: InputBorder.none,
@@ -277,7 +277,7 @@ ThemeData lightThemeData(
   bool useUserColor = color.index != -1;
   return ThemeData(
     useMaterial3: false,
-    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Poppins'),
+    textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Figtree'),
     bottomSheetTheme:
         BottomSheetThemeData(backgroundColor: Colors.grey.shade400),
     appBarTheme: AppBarTheme(
@@ -299,7 +299,7 @@ ThemeData lightThemeData(
               : useUserColor
                   ? color.cs.onPrimary
                   : Colors.black,
-          fontFamily: 'PoppinsSB',
+          fontFamily: 'FigtreeSB',
           fontSize: 21),
     ),
     dialogTheme: DialogThemeData(backgroundColor: Color(0xFFdedede)),
@@ -399,7 +399,7 @@ ThemeData lightThemeData(
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: InputBorder.none,
-      hintStyle: TextStyle(color: Colors.black26, fontFamily: 'Poppins'),
+      hintStyle: TextStyle(color: Colors.black26, fontFamily: 'Figtree'),
       focusedBorder: InputBorder.none,
       enabledBorder: InputBorder.none,
       errorBorder: InputBorder.none,
@@ -547,7 +547,7 @@ ThemeData lightsOutThemeData(
   bool useUserColor = color.index != -1;
   return ThemeData(
     useMaterial3: false,
-    textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Poppins'),
+    textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Figtree'),
     bottomSheetTheme:
         BottomSheetThemeData(backgroundColor: Colors.grey.shade900),
     appBarTheme: AppBarTheme(
@@ -569,7 +569,7 @@ ThemeData lightsOutThemeData(
               : useUserColor
                   ? color.cs.onPrimary
                   : Colors.black,
-          fontFamily: 'PoppinsSB',
+          fontFamily: 'FigtreeSB',
           fontSize: 21),
       // shape: ContinuousRectangleBorder(
       //   borderRadius: BorderRadius.only(
@@ -674,7 +674,7 @@ ThemeData lightsOutThemeData(
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: InputBorder.none,
-      hintStyle: TextStyle(color: Colors.white24, fontFamily: 'Poppins'),
+      hintStyle: TextStyle(color: Colors.white24, fontFamily: 'Figtree'),
       focusedBorder: InputBorder.none,
       enabledBorder: InputBorder.none,
       errorBorder: InputBorder.none,

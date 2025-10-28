@@ -359,7 +359,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                       .name!,
                                                                   style: const TextStyle(
                                                                       fontFamily:
-                                                                          'PoppinsSB',
+                                                                          'FigtreeSB',
                                                                       fontSize:
                                                                           15,
                                                                       overflow:
@@ -381,7 +381,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                                                                               1),
                                                                       style: const TextStyle(
                                                                           fontFamily:
-                                                                              'Poppins'),
+                                                                              'Figtree'),
                                                                     ),
                                                                   ],
                                                                 ),

@@ -302,7 +302,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
               Text(
                 tr('flixquest_appbar'),
                 style: TextStyle(
-                  fontFamily: 'PoppinsSB',
+                  fontFamily: 'FigtreeSB',
                   color: Theme.of(context).primaryColor,
                 ),
               ),

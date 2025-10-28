@@ -213,7 +213,7 @@ class CollectionDetailsWidgetState extends State<CollectionDetailsWidget>
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                             fontSize: 18,
-                                            fontFamily: 'PoppinsSB'),
+                                            fontFamily: 'FigtreeSB'),
                                       ),
                                     ),
                                   ],

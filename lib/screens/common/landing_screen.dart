@@ -81,7 +81,7 @@ class _LandingScreenState extends State<LandingScreen> {
                         child: DefaultTextStyle(
                           style: const TextStyle(
                             fontSize: 30.0,
-                            fontFamily: 'PoppinsBold',
+                            fontFamily: 'FigtreeBold',
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,

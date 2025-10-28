@@ -6,35 +6,35 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const kTextHeaderStyle = TextStyle(
-  fontFamily: 'PoppinsSB',
+  fontFamily: 'FigtreeSB',
   fontSize: 22,
 );
 
 const kBoldItemTitleStyle = TextStyle(
-  fontFamily: 'PoppinsSB',
+  fontFamily: 'FigtreeSB',
   fontSize: 19,
 );
 
 const kTextSmallHeaderStyle = TextStyle(
-  fontFamily: 'PoppinsSB',
+  fontFamily: 'FigtreeSB',
   fontSize: 17,
   overflow: TextOverflow.ellipsis,
 );
 
 const kTextSmallBodyStyle = TextStyle(
-  fontFamily: 'Poppins',
+  fontFamily: 'Figtree',
   fontSize: 17,
   overflow: TextOverflow.ellipsis,
 );
 
 const kTextVerySmallBodyStyle = TextStyle(
-  fontFamily: 'Poppins',
+  fontFamily: 'Figtree',
   fontSize: 13,
   overflow: TextOverflow.ellipsis,
 );
 
 const kTextSmallAboutBodyStyle = TextStyle(
-  fontFamily: 'Poppins',
+  fontFamily: 'Figtree',
   fontSize: 14,
   overflow: TextOverflow.ellipsis,
 );
@@ -92,11 +92,9 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-const providerPreference =
-    'flixhq-FlixHQ zoro-Zoro dramacool-Dramacool';
+const providerPreference = 'flixhq-FlixHQ zoro-Zoro dramacool-Dramacool';
 
 late SharedPreferences sharedPrefsSingleton;
-
 
 /// easy localization run command
 // flutter pub run easy_localization:generate -S assets/translations -f keys -O lib/translations -o locale_keys.g.dart

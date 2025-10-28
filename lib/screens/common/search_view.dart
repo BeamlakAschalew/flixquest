@@ -79,7 +79,7 @@ class Search extends SearchDelegate<String> {
                   Tab(
                     child: Text(tr('movies'),
                         style: TextStyle(
-                          fontFamily: 'Poppins',
+                          fontFamily: 'Figtree',
                           color: themeMode == 'light'
                               ? const Color(0xFF202124)
                               : const Color(0xFFDFDEDE),
@@ -88,7 +88,7 @@ class Search extends SearchDelegate<String> {
                   Tab(
                     child: Text(tr('tv_shows'),
                         style: TextStyle(
-                          fontFamily: 'Poppins',
+                          fontFamily: 'Figtree',
                           color: themeMode == 'light'
                               ? const Color(0xFF202124)
                               : const Color(0xFFDFDEDE),
@@ -97,7 +97,7 @@ class Search extends SearchDelegate<String> {
                   Tab(
                     child: Text(tr('celebrities'),
                         style: TextStyle(
-                          fontFamily: 'Poppins',
+                          fontFamily: 'Figtree',
                           color: themeMode == 'light'
                               ? const Color(0xFF202124)
                               : const Color(0xFFDFDEDE),
@@ -336,7 +336,7 @@ class Search extends SearchDelegate<String> {
           Text(
             tr('no_result'),
             style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Figtree',
                 color: themeMode == 'dark' || themeMode == 'amoled'
                     ? Colors.white
                     : Colors.black),
@@ -358,7 +358,7 @@ class Search extends SearchDelegate<String> {
                   color: themeMode == 'dark' || themeMode == 'amoled'
                       ? Colors.white
                       : Colors.black,
-                  fontFamily: 'Poppins'))
+                  fontFamily: 'Figtree'))
         ],
       ),
     );
@@ -464,7 +464,7 @@ class Search extends SearchDelegate<String> {
                                       Text(
                                         '${moviesList[index].title!} ${moviesList[index].releaseDate == null || moviesList[index].releaseDate == '' ? '' : '(${DateTime.parse(moviesList[index].releaseDate!).year})'}',
                                         style: TextStyle(
-                                            fontFamily: 'PoppinsSB',
+                                            fontFamily: 'FigtreeSB',
                                             fontSize: 15,
                                             overflow: TextOverflow.ellipsis,
                                             color: themeMode == 'dark' ||
@@ -485,7 +485,7 @@ class Search extends SearchDelegate<String> {
                                                     .voteAverage!
                                                     .toStringAsFixed(1),
                                             style: TextStyle(
-                                                fontFamily: 'Poppins',
+                                                fontFamily: 'Figtree',
                                                 color: themeMode == 'dark' ||
                                                         themeMode == 'amoled'
                                                     ? Colors.white
@@ -615,7 +615,7 @@ class Search extends SearchDelegate<String> {
                                       Text(
                                         '${tvList[index].name!} ${tvList[index].firstAirDate == null ? '' : tvList[index].firstAirDate == "" ? '' : '(${DateTime.parse(tvList[index].firstAirDate!).year})'}',
                                         style: TextStyle(
-                                            fontFamily: 'PoppinsSB',
+                                            fontFamily: 'FigtreeSB',
                                             fontSize: 15,
                                             overflow: TextOverflow.ellipsis,
                                             color: themeMode == 'dark' ||
@@ -635,7 +635,7 @@ class Search extends SearchDelegate<String> {
                                                     .voteAverage!
                                                     .toStringAsFixed(1),
                                             style: TextStyle(
-                                                fontFamily: 'Poppins',
+                                                fontFamily: 'Figtree',
                                                 color: themeMode == 'dark' ||
                                                         themeMode == 'amoled'
                                                     ? Colors.white
@@ -755,7 +755,7 @@ class Search extends SearchDelegate<String> {
                               Text(
                                 personList[index].name!,
                                 style: TextStyle(
-                                    fontFamily: 'PoppinsSB',
+                                    fontFamily: 'FigtreeSB',
                                     fontSize: 17,
                                     color: themeMode == 'dark' ||
                                             themeMode == 'amoled'
