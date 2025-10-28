@@ -32,7 +32,7 @@ ThemeData darkThemeData(
           fontFamily: 'PoppinsSB',
           fontSize: 21),
     ),
-    dialogTheme: DialogTheme(backgroundColor: Color(0xFF171717)),
+    dialogTheme: DialogThemeData(backgroundColor: Color(0xFF171717)),
     primaryColor: isM3Enabled
         ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
         : useUserColor
@@ -302,7 +302,7 @@ ThemeData lightThemeData(
           fontFamily: 'PoppinsSB',
           fontSize: 21),
     ),
-    dialogTheme: DialogTheme(backgroundColor: Color(0xFFdedede)),
+    dialogTheme: DialogThemeData(backgroundColor: Color(0xFFdedede)),
     primaryColor: isM3Enabled
         ? lightDynamicColor?.primary ?? Color(0xFFF57C00)
         : useUserColor
@@ -578,7 +578,7 @@ ThemeData lightsOutThemeData(
       //   ),
       // ),
     ),
-    dialogTheme: DialogTheme(backgroundColor: Color(0xFF171717)),
+    dialogTheme: DialogThemeData(backgroundColor: Color(0xFF171717)),
     primaryColor: isM3Enabled
         ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
         : useUserColor

@@ -10,7 +10,7 @@ import '/constants/app_constants.dart';
 import '../../functions/network.dart';
 import '/models/update.dart';
 import 'package:flutter/material.dart';
-import 'package:open_file_plus/open_file_plus.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_download_manager/flutter_download_manager.dart';
 import 'package:path_provider/path_provider.dart';
@@ -207,7 +207,7 @@ class _UpdateScreenState extends State<UpdateScreen> {
                                             '$savedDir/${downloadManager.getFileNameFromUrl(url)}';
                                         var file = File(fileName);
                                         if (file.existsSync()) {
-                                          OpenFile.open(file.path);
+                                          OpenFilex.open(file.path);
                                         }
                                       },
                                       onDelete: (url) async {
