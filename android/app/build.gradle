@@ -31,11 +31,12 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace 'dev.beamlak.flixquest_v2'
-    compileSdk 34
+    compileSdk 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -49,7 +50,7 @@ android {
     defaultConfig {
         applicationId "dev.beamlak.flixquest_v2"
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 34
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
@@ -76,6 +77,7 @@ flutter {
 }
 
 dependencies {
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
     implementation platform('com.google.firebase:firebase-bom:32.7.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'androidx.multidex:multidex:2.0.1'

@@ -12,7 +12,7 @@ import '/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:better_player/better_player.dart';
+import 'package:better_player_plus/better_player.dart';
 import '../../functions/function.dart';
 import '../../provider/recently_watched_provider.dart';
 import '../../provider/settings_provider.dart';

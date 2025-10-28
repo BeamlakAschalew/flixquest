@@ -14,7 +14,7 @@ import '/functions/network.dart';
 import '/widgets/common_widgets.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
-import 'package:better_player/better_player.dart';
+import 'package:better_player_plus/better_player.dart';
 import '../../models/sub_languages.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';

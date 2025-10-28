@@ -1,5 +1,5 @@
 // ignore_for_file: avoid_unnecessary_containers
-import 'package:better_player/better_player.dart';
+import 'package:better_player_plus/better_player.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flixquest/services/globle_method.dart';

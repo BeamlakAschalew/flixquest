@@ -6,63 +6,60 @@ publish_to: "none"
 version: 2.7.1+7
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  animated_text_kit: ^4.2.1
-  better_player:
-    # git:
-    #   url: https://github.com/BeamlakAschalew/flixquest-betterplayer.git
+  animated_text_kit: ^4.2.2
+  better_player_plus:
     path: ../flixquest-betterplayer
-  cached_network_image: ^3.2.1
+  cached_network_image: ^3.4.1
   carousel_slider: ^5.0.0
   clipboard: ^0.1.3
-  cloud_firestore: ^5.4.2
-  cupertino_icons: ^1.0.2
+  cloud_firestore: ^5.4.4
+  cupertino_icons: ^1.0.8
   device_info_plus: ^10.1.2
-  dio: ^4.0.6
-  dynamic_color: ^1.5.4
-  easy_localization: ^3.0.2
+  dio: ^5.7.0
+  dynamic_color: ^1.7.0
+  easy_localization: ^3.0.7
   fading_edge_scrollview: ^4.1.1
-  firebase_analytics: ^11.3.2
-  firebase_auth: ^5.3.0
-  firebase_core: ^3.5.0
-  firebase_messaging: ^15.1.2
-  firebase_remote_config: ^5.1.2
+  firebase_analytics: ^11.3.3
+  firebase_auth: ^5.3.1
+  firebase_core: ^3.6.0
+  firebase_messaging: ^15.1.3
+  firebase_remote_config: ^5.1.3
   flutter:
     sdk: flutter
-  flutter_cache_manager: ^3.3.0
-  flutter_colorpicker: ^1.0.3
-  flutter_dotenv: ^5.1.0
-  flutter_download_manager: ^0.5.4
-  flutter_downloader: ^1.8.3+2
-  flutter_local_notifications: ^17.2.3
-  flutter_localization: ^0.1.13
-  flutter_svg: ^1.1.5
-  font_awesome_flutter: ^10.5.0
+  flutter_cache_manager: ^3.4.1
+  flutter_colorpicker: ^1.1.0
+  flutter_dotenv: ^5.2.1
+  flutter_download_manager: ^0.5.5
+  flutter_downloader: ^1.11.10
+  flutter_local_notifications: ^18.0.1
+  flutter_localization: ^0.2.2
+  flutter_svg: ^2.0.10+1
+  font_awesome_flutter: ^10.7.0
   google_nav_bar: ^5.0.6
-  http: ^0.13.4
-  intl: ^0.19.0
-  mixpanel_flutter: ^2.3.2
-  native_device_orientation: ^1.1.4
-  open_file_plus: ^3.3.0
-  path_provider: ^2.1.2
-  percent_indicator: ^4.2.2
-  permission_handler: ^11.0.1
-  photo_view: ^0.14.0
-  provider: ^6.0.3
-  readmore: ^2.1.0
-  retry: ^3.1.0
-  share_plus: ^4.0.7
-  share_plus_web: ^3.0.0
-  shared_preferences: ^2.0.15
-  shimmer: ^2.0.0
-  sqflite: ^2.2.2
-  url_launcher: ^6.0.18
+  http: ^1.2.2
+  intl: ^0.20.2
+  mixpanel_flutter: ^2.3.3
+  native_device_orientation: ^2.0.2
+  open_filex: ^4.5.0
+  path_provider: ^2.1.4
+  percent_indicator: ^4.2.3
+  permission_handler: ^11.3.1
+  photo_view: ^0.15.0
+  provider: ^6.1.2
+  readmore: ^3.0.0
+  retry: ^3.1.2
+  share_plus: ^10.1.1
+  shared_preferences: ^2.3.2
+  shimmer: ^3.0.0
+  sqflite: ^2.4.0
+  url_launcher: ^6.3.2
 
 dev_dependencies:
-  flutter_lints: ^2.0.1
-  flutter_native_splash: ^2.2.10+1
+  flutter_lints: ^5.0.0
+  flutter_native_splash: ^2.4.2
   flutter_test:
     sdk: flutter
 
@@ -79,22 +76,22 @@ flutter:
   fonts:
     - family: Poppins
       fonts:
-        - asset: assets/fonts/poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
     - family: PoppinsBold
       fonts:
-        - asset: assets/fonts/poppins/Poppins-Bold.ttf
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
     - family: PoppinsSB
       fonts:
-        - asset: assets/fonts/poppins/Poppins-SemiBold.ttf
+        - asset: assets/fonts/Poppins/Poppins-SemiBold.ttf
     - family: PoppinsMedium
       fonts:
-        - asset: assets/fonts/poppins/Poppins-Medium.ttf
+        - asset: assets/fonts/Poppins/Poppins-Medium.ttf
     - family: PoppinsBlack
       fonts:
-        - asset: assets/fonts/poppins/Poppins-Black.ttf
+        - asset: assets/fonts/Poppins/Poppins-Black.ttf
     - family: PoppinsLight
       fonts:
-        - asset: assets/fonts/poppins/Poppins-Light.ttf
+        - asset: assets/fonts/Poppins/Poppins-Light.ttf
     - family: SocialIcons
       fonts:
         - asset: assets/fonts/SocialIcons.ttf
