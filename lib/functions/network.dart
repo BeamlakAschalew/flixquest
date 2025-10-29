@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flixquest/models/custom_exceptions.dart';
 import 'package:flixquest/video_providers/common.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
+import 'package:flixquest/video_providers/flixhq_new.dart';
 import 'package:retry/retry.dart';
 import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
@@ -936,4 +937,81 @@ Future<FlixQuestAPIStreamSources> getFlixQuestAPILinks(String api) async {
     rethrow;
   }
   return fqAPIStreamSources;
+}
+
+Future<FlixHQNewStreamSources> getMovieStreamLinksAndSubsFlixHQNew(
+    String api) async {
+  FlixHQNewStreamSources movieVideoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('error')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('error') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+
+    if (!decodeRes.containsKey('sources') || decodeRes['sources'].isEmpty) {
+      throw NotFoundException();
+    }
+    movieVideoSources =
+        FlixHQNewStreamSources.fromJson(decodeRes['sources'][0]);
+
+    if (movieVideoSources.videoLinks == null ||
+        movieVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return movieVideoSources;
+}
+
+Future<FlixHQNewStreamSources> getTVStreamLinksAndSubsFlixHQNew(
+    String api) async {
+  FlixHQNewStreamSources tvVideoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('error')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('error') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    if (!decodeRes.containsKey('sources') || decodeRes['sources'].isEmpty) {
+      throw NotFoundException();
+    }
+    tvVideoSources = FlixHQNewStreamSources.fromJson(decodeRes['sources'][0]);
+
+    if (tvVideoSources.videoLinks == null ||
+        tvVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return tvVideoSources;
 }

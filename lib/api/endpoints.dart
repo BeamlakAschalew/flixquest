@@ -417,4 +417,14 @@ class Endpoints {
   static String getIPTVEndpoint(String baseUrl) {
     return '$baseUrl' 'daddylive/live';
   }
+
+  static String getMovieStreamLinkFlixhqNew(
+      String baseUrl, int movieId, String server) {
+    return '$baseUrl' '/movie/' '$movieId/' '$server';
+  }
+
+  static String getTVStreamLinkFlixhqNew(
+      String baseUrl, int tmdbId, int episodeId, int seasonId, String server) {
+    return '$baseUrl' '/tv/' '$tmdbId/' '$seasonId/' '$episodeId/' '$server';
+  }
 }

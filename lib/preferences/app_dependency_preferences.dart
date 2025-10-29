@@ -5,6 +5,7 @@ import '../constants/app_constants.dart';
 
 class AppDependencies {
   static const CONSUMET_URL_KEY = 'consumetUrlKey';
+  static const NEW_FLIXHQ_URL = 'newFlixHQUrl';
   static const FLIXQUEST_LOGO_URL = 'flixquestLogoUrl';
   static const OPENSUBTITLES_KEY = 'opensubtitlesKey';
   static const STREAM_SERVER_FLIXHQ = 'vidcloud';
@@ -14,6 +15,7 @@ class AppDependencies {
   static const STREAM_ROUTE = 'streamRoute';
   static const FLIXQUEST_API_URL = 'flixquestAPIURL';
   static const TMDB_PROXY = 'tmdb_proxy';
+  static const NEW_FLIXHQ_SERVER = 'megacloud';
 
   setConsumetUrl(String value) async {
     sharedPrefsSingleton.setString(CONSUMET_URL_KEY, value);
@@ -22,6 +24,15 @@ class AppDependencies {
   Future<String> getConsumetUrl() async {
     return sharedPrefsSingleton.getString(CONSUMET_URL_KEY) ??
         'https://consumet.beamlak.dev/';
+  }
+
+  setNewFlixHQUrl(String value) async {
+    sharedPrefsSingleton.setString(NEW_FLIXHQ_URL, value);
+  }
+
+  Future<String> getNewFlixHQUrl() async {
+    return sharedPrefsSingleton.getString(NEW_FLIXHQ_URL) ??
+        'https://flixhq.beamlak.dev/';
   }
 
   setFlixQuestUrl(String value) async {
@@ -57,6 +68,15 @@ class AppDependencies {
   Future<String> getStreamServerFlixHQ() async {
     return sharedPrefsSingleton.getString(STREAM_SERVER_FLIXHQ) ??
         STREAMING_SERVER_FLIXHQ;
+  }
+
+  setStreamServerNewFlixHQ(String value) async {
+    sharedPrefsSingleton.setString(NEW_FLIXHQ_SERVER, value);
+  }
+
+  Future<String> getStreamServerNewFlixHQ() async {
+    return sharedPrefsSingleton.getString(NEW_FLIXHQ_SERVER) ??
+        STREAMING_SERVER_NEW_FLIXHQ;
   }
 
   setStreamServerDCVA(String value) async {

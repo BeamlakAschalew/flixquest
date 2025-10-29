@@ -8,6 +8,9 @@ class AppDependencyProvider extends ChangeNotifier {
   String _consumetUrl = CONSUMET_API;
   String get consumetUrl => _consumetUrl;
 
+  String _newFlixHQUrl = flixhqNewUrl;
+  String get newFlixHQUrl => _newFlixHQUrl;
+
   String _flixquestAPIUrl = flixquestApiUrl;
   String get flixquestAPIURL => _flixquestAPIUrl;
 
@@ -50,6 +53,9 @@ class AppDependencyProvider extends ChangeNotifier {
   String _flixhqZoeServer = 'vidcloud';
   String get flixhqZoeServer => _flixhqZoeServer;
 
+  String _newFlixhqServer = 'megacloud';
+  String get newFlixhqServer => _newFlixhqServer;
+
   String _goMoviesServer = 'upcloud';
   String get goMoviesServer => _goMoviesServer;
 
@@ -72,6 +78,16 @@ class AppDependencyProvider extends ChangeNotifier {
   set consumetUrl(String value) {
     _consumetUrl = value;
     __appDependencies.setConsumetUrl(value);
+    notifyListeners();
+  }
+
+  Future<void> getNewFlixHQUrl() async {
+    newFlixHQUrl = await __appDependencies.getNewFlixHQUrl();
+  }
+
+  set newFlixHQUrl(String value) {
+    _newFlixHQUrl = value;
+    __appDependencies.setNewFlixHQUrl(value);
     notifyListeners();
   }
 
@@ -182,6 +198,11 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set flixhqZoeServer(String value) {
     _flixhqZoeServer = value;
+    notifyListeners();
+  }
+
+  set newFlixhqServer(String value) {
+    _newFlixhqServer = value;
     notifyListeners();
   }
 

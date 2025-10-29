@@ -96,6 +96,10 @@ class _FlixQuestState extends State<FlixQuest>
       appDependencyProvider.tmdbProxy = _remoteConfig.getString('tmdb_proxy');
       appDependencyProvider.fetchSubtitles =
           _remoteConfig.getBool('fetch_subtitles');
+      appDependencyProvider.newFlixHQUrl =
+          _remoteConfig.getString('new_flixhq_url');
+      appDependencyProvider.newFlixhqServer =
+          _remoteConfig.getString('new_flixhq_server');
     }
     await requestNotificationPermissions();
   }
