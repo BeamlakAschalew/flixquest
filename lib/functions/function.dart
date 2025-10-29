@@ -42,7 +42,7 @@ String normalizeTitle(String title) {
       .trim()
       .toLowerCase()
       .replaceAll(RegExp('[":\']'), '')
-      .replaceAll(RegExp('[^a-zA-Z0-9]+'), '_');
+      .replaceAll(RegExp('[^a-z0-9 ]+'), '_');
 }
 
 Future<bool> clearTempCache() async {
