@@ -13,15 +13,17 @@ class FlixHQNewStreamSources {
   bool? messageExists;
 
   FlixHQNewStreamSources.fromJson(Map<String, dynamic> json) {
+    print('LAST JSON: ${json}');
     if (json.containsKey('sources') && json['sources'] != null) {
       videoLinks = [];
       json['sources'].forEach((v) {
         videoLinks!.add(FlixHQVideoLinks.fromJson(v));
       });
     }
-    if (json.containsKey('subtitles') && json['subtitles'] != null) {
+    if (json['sources'][0].containsKey('subtitles') &&
+        json['sources'][0]['subtitles'] != null) {
       videoSubtitles = [];
-      json['subtitles'].forEach((v) {
+      json['sources'][0]['subtitles'].forEach((v) {
         videoSubtitles!.add(FlixHQSubLinks.fromJson(v));
       });
     }
