@@ -54,3 +54,9 @@ app.*.map.json
 android/app/google-services.json
 "/android/app/google-services.json"
 "android/app/google-services.json"
+
+# Keystore files
+*.jks
+*.keystore
+/android/key.properties
+/android/app/key.properties
