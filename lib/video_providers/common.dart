@@ -19,8 +19,8 @@ class RegularSubtitleLinks {
   String? language;
 
   RegularSubtitleLinks.fromJson(Map<String, dynamic> json) {
-    url = json['url'];
-    language = json['lang'];
+    url = json['url'] ?? json['file'];
+    language = json['lang'] ?? json['label'];
   }
 }
 

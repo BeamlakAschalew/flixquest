@@ -232,33 +232,19 @@ class _LandingScreenState extends State<LandingScreen> {
                                     backgroundColor: WidgetStateProperty.all(
                                         const Color(0xFFfad2aa))),
                                 onPressed: () async {
+                                  // Use async/await with mounted checks and error handling
+                                  if (!mounted) return;
                                   setState(() {
                                     anonButtonVisible = false;
                                   });
-                                  await checkConnection().then((value) async {
-                                    if (value && mounted) {
-                                      await auth
-                                          .signInAnonymously()
-                                          .then((value) {
-                                        mixpanel.track(
-                                          'Anonymous Login',
-                                        );
-                                        setState(() {
-                                          anonButtonVisible = true;
-                                        });
-                                        if (!context.mounted) {
-                                          return;
-                                        }
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return const FlixQuestHomePage();
-                                        }));
+
+                                  try {
+                                    final connected = await checkConnection();
+                                    if (!connected && mounted) {
+                                      // Restore button and show connection message
+                                      setState(() {
+                                        anonButtonVisible = true;
                                       });
-                                    } else {
-                                      if (!context.mounted) {
-                                        return;
-                                      }
                                       GlobalMethods.showCustomScaffoldMessage(
                                           SnackBar(
                                             content: Text(
@@ -271,7 +257,40 @@ class _LandingScreenState extends State<LandingScreen> {
                                           ),
                                           context);
                                     }
-                                  });
+
+                                    // Attempt anonymous sign-in
+                                    await auth.signInAnonymously();
+                                    mixpanel.track('Anonymous Login');
+
+                                    if (!mounted) return;
+                                    setState(() {
+                                      anonButtonVisible = true;
+                                    });
+
+                                    if (!mounted) return;
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return const FlixQuestHomePage();
+                                    }));
+                                  } catch (e) {
+                                    // Restore button and show an error message
+                                    if (mounted) {
+                                      setState(() {
+                                        anonButtonVisible = true;
+                                      });
+                                      GlobalMethods.showCustomScaffoldMessage(
+                                          SnackBar(
+                                            content: Text(
+                                              e.toString(),
+                                              maxLines: 3,
+                                              style: kTextSmallBodyStyle,
+                                            ),
+                                            duration:
+                                                const Duration(seconds: 3),
+                                          ),
+                                          context);
+                                    }
+                                  }
                                 },
                                 child: Text(
                                   tr('continue_anonymously'),

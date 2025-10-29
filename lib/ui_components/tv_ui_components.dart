@@ -396,7 +396,7 @@ class TVGridView extends StatelessWidget {
                               child: Container(
                                 margin: const EdgeInsets.all(3),
                                 alignment: Alignment.topLeft,
-                                width: 50,
+                                width: 53,
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),

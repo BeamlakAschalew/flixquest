@@ -951,7 +951,6 @@ Future<FlixHQNewStreamSources> getMovieStreamLinksAndSubsFlixHQNew(
         (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
-      print(res.body);
       decodeRes = jsonDecode(res.body);
       if (decodeRes.containsKey('error')) {
         --tries;
@@ -959,28 +958,27 @@ Future<FlixHQNewStreamSources> getMovieStreamLinksAndSubsFlixHQNew(
         break;
       }
     }
-    if (decodeRes.containsKey('error') || res.statusCode != 200) {
-      print('ERROR');
+
+    if (res.statusCode == 500) {
       throw ServerDownException();
+    }
+    if (decodeRes.containsKey('error')) {
+      throw NotFoundException();
     }
 
     if (!decodeRes.containsKey('sources') || decodeRes['sources'].isEmpty) {
-      print('NO SOURCE');
       throw NotFoundException();
     }
-    print('Decoded: ${decodeRes}');
     movieVideoSources = FlixHQNewStreamSources.fromJson(decodeRes);
 
     if (movieVideoSources.videoLinks == null ||
         movieVideoSources.videoLinks!.isEmpty) {
-      print('EMPTY');
       throw NotFoundException();
     }
   } catch (e) {
     rethrow;
   }
 
-  print('DATA: ${movieVideoSources.videoLinks}');
   return movieVideoSources;
 }
 
@@ -996,7 +994,6 @@ Future<FlixHQNewStreamSources> getTVStreamLinksAndSubsFlixHQNew(
         (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
-      print(res.body);
       decodeRes = jsonDecode(res.body);
       if (decodeRes.containsKey('error')) {
         --tries;
@@ -1004,13 +1001,18 @@ Future<FlixHQNewStreamSources> getTVStreamLinksAndSubsFlixHQNew(
         break;
       }
     }
-    if (decodeRes.containsKey('error') || res.statusCode != 200) {
+    if (res.statusCode == 500) {
       throw ServerDownException();
     }
+    if (decodeRes.containsKey('error')) {
+      throw NotFoundException();
+    }
+
     if (!decodeRes.containsKey('sources') || decodeRes['sources'].isEmpty) {
       throw NotFoundException();
     }
-    tvVideoSources = FlixHQNewStreamSources.fromJson(decodeRes['sources'][0]);
+
+    tvVideoSources = FlixHQNewStreamSources.fromJson(decodeRes);
 
     if (tvVideoSources.videoLinks == null ||
         tvVideoSources.videoLinks!.isEmpty) {

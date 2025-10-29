@@ -614,41 +614,35 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     try {
       if (mounted) {
         if (widget.metadata.seasonNumber! != 0) {
-          if (tvInfoTMDB!.id != null &&
-              tvInfoTMDB!.seasons != null &&
-              tvInfoTMDB!.seasons![widget.metadata.seasonNumber! - 1]
-                      .episodes![widget.metadata.episodeNumber! - 1].id !=
-                  null) {
-            await getTVStreamLinksAndSubsFlixHQNew(
-                    Endpoints.getTVStreamLinkFlixhqNew(
-                        appDep.newFlixHQUrl,
-                        widget.metadata.tvId!,
-                        widget.metadata.episodeId!,
-                        widget.metadata.seasonNumber!,
-                        appDep.newFlixhqServer))
-                .then((value) {
-              if (value.messageExists == null &&
-                  value.videoLinks != null &&
-                  value.videoLinks!.isNotEmpty) {
-                if (mounted) {
-                  setState(() {
-                    fqNewTVVideoSources = value;
-                  });
-                }
-              } else if (value.messageExists != null ||
-                  value.videoLinks == null ||
-                  value.videoLinks!.isEmpty) {
-                return;
-              }
+          await getTVStreamLinksAndSubsFlixHQNew(
+                  Endpoints.getTVStreamLinkFlixhqNew(
+                      appDep.newFlixHQUrl,
+                      widget.metadata.tvId!,
+                      widget.metadata.episodeNumber!,
+                      widget.metadata.seasonNumber!,
+                      appDep.newFlixhqServer))
+              .then((value) {
+            if (value.messageExists == null &&
+                value.videoLinks != null &&
+                value.videoLinks!.isNotEmpty) {
               if (mounted) {
-                tvVideoLinks = fqNewTVVideoSources!.videoLinks;
-                tvVideoSubs = fqNewTVVideoSources!.videoSubtitles;
-                if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
-                  convertVideoLinks(tvVideoLinks!);
-                }
+                setState(() {
+                  fqNewTVVideoSources = value;
+                });
               }
-            });
-          }
+            } else if (value.messageExists != null ||
+                value.videoLinks == null ||
+                value.videoLinks!.isEmpty) {
+              return;
+            }
+            if (mounted) {
+              tvVideoLinks = fqNewTVVideoSources!.videoLinks;
+              tvVideoSubs = fqNewTVVideoSources!.videoSubtitles;
+              if (tvVideoLinks != null && tvVideoLinks!.isNotEmpty) {
+                convertVideoLinks(tvVideoLinks!);
+              }
+            }
+          });
         }
       }
     } on Exception catch (e) {

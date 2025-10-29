@@ -79,6 +79,20 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
           GlobalMethods.showErrorScaffoldMessengerMediaLoad(
               e, context, 'FlixHQ');
         }
+      } else if (videoProviders[i].codeName == 'flixhqNew') {
+        start = DateTime.now();
+        try {
+          await getMovieStreamLinksAndSubsFlixHQNew(
+                  '${appDependency.newFlixHQUrl}movie/884605')
+              .then((value) {
+            if (mounted) {
+              videoLinks = value.videoLinks;
+            }
+          });
+        } on Exception catch (e) {
+          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+              e, context, 'FlixHQNew');
+        }
       } else if (videoProviders[i].codeName == 'showbox') {
         start = DateTime.now();
 

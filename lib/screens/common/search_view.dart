@@ -109,7 +109,7 @@ class Search extends SearchDelegate<String> {
             Expanded(
                 child: TabBarView(children: [
               FutureBuilder<List<Movie>>(
-                future: Future.delayed(const Duration(seconds: 3))
+                future: Future.delayed(const Duration(milliseconds: 700))
                     .then((value) async {
                   if (query.isNotEmpty) {
                     mixpanel
@@ -137,7 +137,7 @@ class Search extends SearchDelegate<String> {
                 },
               ),
               FutureBuilder<List<TV>>(
-                future: Future.delayed(const Duration(seconds: 3)).then(
+                future: Future.delayed(const Duration(milliseconds: 700)).then(
                     (value) async => await fetchTV(
                         Endpoints.tvSearchUrl(query, includeAdult, lang),
                         isProxyEnabled,
@@ -159,7 +159,7 @@ class Search extends SearchDelegate<String> {
                 },
               ),
               FutureBuilder<List<Person>>(
-                future: Future.delayed(const Duration(seconds: 3)).then(
+                future: Future.delayed(const Duration(milliseconds: 700)).then(
                     (value) async => await fetchPerson(
                         Endpoints.personSearchUrl(query, includeAdult, lang),
                         isProxyEnabled,
