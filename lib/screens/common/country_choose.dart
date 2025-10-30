@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:easy_localization/easy_localization.dart';
 import '/models/watchprovider_countries.dart';
 import '/provider/settings_provider.dart';
@@ -258,32 +260,33 @@ class _CountryChooseState extends State<CountryChoose> {
         body: SingleChildScrollView(
           child: Center(
               child: Column(
-                  children: count
-                      .map(
-                        (WatchProviderCountries countries) => ListTile(
-                          title: Text(countries.countryName),
-                          leading: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              Radio(
-                                value: countries.isoCode,
-                                groupValue: countryChange.defaultCountry,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    countryChange.defaultCountry = value!;
-                                  });
-                                },
-                              ),
-                              Image.asset(
-                                countries.flagPath,
-                                width: 25,
-                                height: 25,
-                              ),
-                            ],
-                          ),
+            children: count
+                .map(
+                  (WatchProviderCountries countries) => ListTile(
+                    title: Text(countries.countryName),
+                    leading: Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Radio<String>(
+                          value: countries.isoCode,
+                          groupValue: countryChange.defaultCountry,
+                          onChanged: (String? value) {
+                            if (value != null) {
+                              countryChange.defaultCountry = value;
+                            }
+                          },
                         ),
-                      )
-                      .toList())),
+                        Image.asset(
+                          countries.flagPath,
+                          width: 25,
+                          height: 25,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
+          )),
         ));
   }
 }

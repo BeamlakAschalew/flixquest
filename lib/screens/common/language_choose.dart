@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import '../../models/app_languages.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '/provider/settings_provider.dart';

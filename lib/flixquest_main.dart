@@ -300,7 +300,10 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                 'assets/images/fq_svg.svg',
                 width: 20,
                 height: 20,
-                color: Theme.of(context).colorScheme.primary,
+                colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primary,
+                  BlendMode.srcIn,
+                ),
               ),
               Text(
                 tr('flixquest_appbar'),

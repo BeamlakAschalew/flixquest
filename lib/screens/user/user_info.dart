@@ -164,9 +164,11 @@ class _UserInfoState extends State<UserInfo> {
                                                 'assets/images/checkmark.svg',
                                                 width: 20,
                                                 height: 20,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary,
+                                                colorFilter: ColorFilter.mode(
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                    BlendMode.srcIn),
                                               ),
                                             ))
                                       ]),

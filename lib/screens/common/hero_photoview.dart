@@ -19,8 +19,7 @@ class HeroPhotoView extends StatefulWidget {
       required this.currentIndex,
       required this.name,
       required this.heroId,
-      Key? key})
-      : super(key: key);
+      super.key});
   final ImageProvider imageProvider;
   final String heroId;
   final int currentIndex;

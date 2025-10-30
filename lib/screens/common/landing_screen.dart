@@ -240,7 +240,7 @@ class _LandingScreenState extends State<LandingScreen> {
 
                                   try {
                                     final connected = await checkConnection();
-                                    if (!connected && mounted) {
+                                    if (!connected && context.mounted) {
                                       // Restore button and show connection message
                                       setState(() {
                                         anonButtonVisible = true;
@@ -267,7 +267,7 @@ class _LandingScreenState extends State<LandingScreen> {
                                       anonButtonVisible = true;
                                     });
 
-                                    if (!mounted) return;
+                                    if (!context.mounted) return;
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                       return const FlixQuestHomePage();
