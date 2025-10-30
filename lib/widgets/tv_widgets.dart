@@ -6423,7 +6423,8 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
               children: <Widget>[
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 6),
                     child: Row(
                       children: [
                         const LeadingDot(),

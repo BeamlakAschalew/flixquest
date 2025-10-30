@@ -365,7 +365,8 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
               children: <Widget>[
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 3),
                     child: Row(
                       children: [
                         const LeadingDot(),
