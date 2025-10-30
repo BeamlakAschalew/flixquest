@@ -10,6 +10,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'constants/app_constants.dart';
 import 'provider/recently_watched_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'provider/settings_provider.dart';
 import 'singleton/sharedpreferences_singleton.dart';
 
@@ -28,6 +29,18 @@ final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Reset orientation to all orientations on app start
+  // This is CRITICAL for handling ungraceful app termination (force-close, system kill)
+  // When the app is killed while streaming in landscape mode, this ensures
+  // orientation is reset on next app launch since dispose() never gets called
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
   // ByteData data =
   //     await PlatformAssetBundle().load('assets/ca/lets-encrypt-r3.pem');
   // SecurityContext.defaultContext

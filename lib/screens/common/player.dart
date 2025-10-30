@@ -10,6 +10,7 @@ import '/controllers/recently_watched_database_controller.dart';
 import '/models/recently_watched.dart';
 import '/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player_plus/better_player.dart';
@@ -328,6 +329,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   @override
   void dispose() {
     // _resetTimer?.cancel();
+    // Reset orientation to portrait when leaving the player
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
