@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 import 'player_settings.dart';
 
 class Settings extends StatefulWidget {
-  const Settings({Key? key}) : super(key: key);
+  const Settings({super.key});
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -666,7 +666,7 @@ class _SettingsState extends State<Settings> {
                           selectedColor: Theme.of(context)
                               .colorScheme
                               .primary
-                              .withOpacity(0.35),
+                              .withValues(alpha: 0.35),
                           showCheckmark: true,
                           label: ClipRRect(
                             borderRadius: BorderRadius.circular(200),

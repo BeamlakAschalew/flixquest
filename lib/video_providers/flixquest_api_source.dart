@@ -33,11 +33,9 @@ class FlixQuestAPIStreamSources {
 }
 
 class FlixQuestAPIVideoLinks extends RegularVideoLinks {
-  FlixQuestAPIVideoLinks.fromJson(Map<String, dynamic> json)
-      : super.fromJson(json);
+  FlixQuestAPIVideoLinks.fromJson(super.json) : super.fromJson();
 }
 
 class FlixQuestAPISubLinks extends RegularSubtitleLinks {
-  FlixQuestAPISubLinks.fromJson(Map<String, dynamic> json)
-      : super.fromJson(json);
+  FlixQuestAPISubLinks.fromJson(super.json) : super.fromJson();
 }

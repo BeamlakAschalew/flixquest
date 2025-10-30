@@ -129,9 +129,9 @@ class DCVAStreamSources {
 }
 
 class DCVAVideoLinks extends RegularVideoLinks {
-  DCVAVideoLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  DCVAVideoLinks.fromJson(super.json) : super.fromJson();
 }
 
 class DCVASubLinks extends RegularSubtitleLinks {
-  DCVASubLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  DCVASubLinks.fromJson(super.json) : super.fromJson();
 }

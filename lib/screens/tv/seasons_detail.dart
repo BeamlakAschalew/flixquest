@@ -22,13 +22,13 @@ class SeasonsDetail extends StatefulWidget {
   final TVDetails tvDetails;
 
   const SeasonsDetail({
-    Key? key,
+    super.key,
     required this.seasons,
     required this.heroId,
     required this.tvDetails,
     this.seriesName,
     this.tvId,
-  }) : super(key: key);
+  });
 
   @override
   SeasonsDetailState createState() => SeasonsDetailState();
@@ -124,11 +124,11 @@ class SeasonsDetailState extends State<SeasonsDetail>
 
 class TVSeasonDetailQuickInfo extends StatelessWidget {
   const TVSeasonDetailQuickInfo({
-    Key? key,
+    super.key,
     required this.tvSeries,
     required this.heroId,
     required this.season,
-  }) : super(key: key);
+  });
 
   final TVDetails tvSeries;
   final Seasons season;
@@ -332,11 +332,11 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
 
 class TVSeasonAbout extends StatefulWidget {
   const TVSeasonAbout({
-    Key? key,
+    super.key,
     required this.season,
     required this.tvDetails,
     required this.seriesName,
-  }) : super(key: key);
+  });
 
   final Seasons season;
   final TVDetails tvDetails;

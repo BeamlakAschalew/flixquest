@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../functions/function.dart';
 
 class ProviderChooseScreen extends StatelessWidget {
-  const ProviderChooseScreen({Key? key}) : super(key: key);
+  const ProviderChooseScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class ProviderChooseScreen extends StatelessWidget {
 }
 
 class RearrangeableListView extends StatefulWidget {
-  const RearrangeableListView({Key? key}) : super(key: key);
+  const RearrangeableListView({super.key});
 
   @override
   RearrangeableListViewState createState() => RearrangeableListViewState();

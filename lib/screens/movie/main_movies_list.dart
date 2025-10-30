@@ -15,13 +15,13 @@ class MainMoviesList extends StatefulWidget {
   final bool isTrending;
   final String title;
   const MainMoviesList({
-    Key? key,
+    super.key,
     required this.api,
     required this.discoverType,
     required this.isTrending,
     required this.includeAdult,
     required this.title,
-  }) : super(key: key);
+  });
   @override
   MainMoviesListState createState() => MainMoviesListState();
 }

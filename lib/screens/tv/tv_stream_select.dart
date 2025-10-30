@@ -12,14 +12,14 @@ class TVStreamSelect extends StatefulWidget {
   final String episodeName;
   final int episodeNumber;
   const TVStreamSelect({
-    Key? key,
+    super.key,
     required this.tvSeriesName,
     required this.tvSeriesId,
     required this.episodeName,
     this.tvSeriesImdbId,
     required this.episodeNumber,
     required this.seasonNumber,
-  }) : super(key: key);
+  });
 
   @override
   State<TVStreamSelect> createState() => _TVStreamSelectState();
@@ -151,11 +151,11 @@ class StreamListWidget extends StatelessWidget {
   final String streamLink;
   final String tvSeriesName;
   const StreamListWidget({
-    Key? key,
+    super.key,
     required this.streamName,
     required this.streamLink,
     required this.tvSeriesName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -12,10 +12,10 @@ class CastDetailPage extends StatefulWidget {
   final String heroId;
 
   const CastDetailPage({
-    Key? key,
+    super.key,
     this.cast,
     required this.heroId,
-  }) : super(key: key);
+  });
   @override
   CastDetailPageState createState() => CastDetailPageState();
 }

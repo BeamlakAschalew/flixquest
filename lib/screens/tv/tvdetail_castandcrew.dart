@@ -9,8 +9,7 @@ import '../../provider/settings_provider.dart';
 
 class TVDetailCastAndCrew extends StatefulWidget {
   const TVDetailCastAndCrew(
-      {Key? key, required this.id, required this.passedFrom})
-      : super(key: key);
+      {super.key, required this.id, required this.passedFrom});
 
   final int id;
   final String passedFrom;

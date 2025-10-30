@@ -7,8 +7,8 @@ import '../tv/discover_tv_tab.dart';
 
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<DiscoverPage> createState() => _DiscoverPageState();

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class SubLangChoose extends StatefulWidget {
-  const SubLangChoose({Key? key}) : super(key: key);
+  const SubLangChoose({super.key});
 
   @override
   State<SubLangChoose> createState() => _SubLangChooseState();

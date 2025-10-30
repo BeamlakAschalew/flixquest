@@ -9,11 +9,11 @@ class MovieStreamSelect extends StatefulWidget {
   final int movieId;
   final dynamic movieImdbId;
   const MovieStreamSelect({
-    Key? key,
+    super.key,
     required this.movieName,
     required this.movieId,
     this.movieImdbId,
-  }) : super(key: key);
+  });
 
   @override
   State<MovieStreamSelect> createState() => _MovieStreamSelectState();
@@ -150,11 +150,11 @@ class StreamListWidget extends StatelessWidget {
   final String streamLink;
   final String movieName;
   const StreamListWidget({
-    Key? key,
+    super.key,
     required this.streamName,
     required this.streamLink,
     required this.movieName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

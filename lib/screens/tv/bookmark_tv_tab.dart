@@ -13,7 +13,7 @@ import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';
 
 class TVBookmark extends StatefulWidget {
-  const TVBookmark({Key? key, required this.tvList}) : super(key: key);
+  const TVBookmark({super.key, required this.tvList});
 
   final List<TV>? tvList;
 

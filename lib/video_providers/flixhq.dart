@@ -276,9 +276,9 @@ class FlixHQStreamSources {
 }
 
 class FlixHQVideoLinks extends RegularVideoLinks {
-  FlixHQVideoLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  FlixHQVideoLinks.fromJson(super.json) : super.fromJson();
 }
 
 class FlixHQSubLinks extends RegularSubtitleLinks {
-  FlixHQSubLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  FlixHQSubLinks.fromJson(super.json) : super.fromJson();
 }

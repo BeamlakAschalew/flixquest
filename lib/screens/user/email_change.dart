@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class EmailChangeScreen extends StatefulWidget {
-  const EmailChangeScreen({Key? key}) : super(key: key);
+  const EmailChangeScreen({super.key});
 
   @override
   EmailChangeScreenState createState() => EmailChangeScreenState();

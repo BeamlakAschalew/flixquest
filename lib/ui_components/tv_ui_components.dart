@@ -13,13 +13,12 @@ import '../widgets/common_widgets.dart';
 
 class HorizontalScrollingTVList extends StatelessWidget {
   const HorizontalScrollingTVList({
-    Key? key,
+    super.key,
     required ScrollController scrollController,
     required this.tvList,
     required this.imageQuality,
     required this.themeMode,
-  })  : _scrollController = scrollController,
-        super(key: key);
+  }) : _scrollController = scrollController;
 
   final ScrollController _scrollController;
   final List<TV>? tvList;
@@ -159,13 +158,12 @@ class HorizontalScrollingTVList extends StatelessWidget {
 
 class TVListView extends StatelessWidget {
   const TVListView({
-    Key? key,
+    super.key,
     required ScrollController scrollController,
     required this.tvList,
     required this.themeMode,
     required this.imageQuality,
-  })  : _scrollController = scrollController,
-        super(key: key);
+  }) : _scrollController = scrollController;
 
   final ScrollController _scrollController;
   final List<TV>? tvList;
@@ -303,12 +301,12 @@ class TVListView extends StatelessWidget {
 
 class TVGridView extends StatelessWidget {
   const TVGridView({
-    Key? key,
+    super.key,
     required this.tvList,
     required this.imageQuality,
     required this.themeMode,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   final List<TV>? tvList;
   final String imageQuality;

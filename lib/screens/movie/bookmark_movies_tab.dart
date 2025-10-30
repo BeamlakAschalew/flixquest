@@ -14,9 +14,9 @@ import 'movie_detail.dart';
 
 class MovieBookmark extends StatefulWidget {
   const MovieBookmark({
-    Key? key,
+    super.key,
     required this.movieList,
-  }) : super(key: key);
+  });
 
   final List<Movie>? movieList;
 

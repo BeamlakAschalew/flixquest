@@ -12,7 +12,7 @@ import '/api/endpoints.dart';
 
 class TVGenre extends StatelessWidget {
   final Genres genres;
-  const TVGenre({Key? key, required this.genres}) : super(key: key);
+  const TVGenre({super.key, required this.genres});
 
   @override
   Widget build(BuildContext context) {

@@ -12,10 +12,10 @@ class SearchedPersonDetailPage extends StatefulWidget {
   final String heroId;
 
   const SearchedPersonDetailPage({
-    Key? key,
+    super.key,
     this.person,
     required this.heroId,
-  }) : super(key: key);
+  });
   @override
   SearchedPersonDetailPageState createState() =>
       SearchedPersonDetailPageState();

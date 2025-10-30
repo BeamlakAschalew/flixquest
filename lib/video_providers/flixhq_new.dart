@@ -37,5 +37,5 @@ class FlixHQNewVideoLinks extends RegularVideoLinks {
 }
 
 class FlixHQNewSubLinks extends RegularSubtitleLinks {
-  FlixHQNewSubLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  FlixHQNewSubLinks.fromJson(super.json) : super.fromJson();
 }

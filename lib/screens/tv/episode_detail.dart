@@ -19,13 +19,13 @@ class EpisodeDetailPage extends StatefulWidget {
   final String? posterPath;
 
   const EpisodeDetailPage({
-    Key? key,
+    super.key,
     required this.episodeList,
     this.episodes,
     this.tvId,
     this.seriesName,
     required this.posterPath,
-  }) : super(key: key);
+  });
 
   @override
   EpisodeDetailPageState createState() => EpisodeDetailPageState();

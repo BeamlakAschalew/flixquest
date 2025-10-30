@@ -27,8 +27,7 @@ class PlayerOne extends StatefulWidget {
       this.tvMetadata,
       required this.mediaType,
       required this.subtitleStyle,
-      Key? key})
-      : super(key: key);
+      super.key});
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
   final List<Color> colors;
@@ -95,7 +94,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             : '${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}',
         backgroundColor: Colors.black,
         progressBarBackgroundColor: Colors.white,
-        controlBarColor: Colors.black.withOpacity(0.3),
+        controlBarColor: Colors.black.withValues(alpha: 0.3),
         muteIcon: Icons.volume_off_rounded,
         unMuteIcon: Icons.volume_up_rounded,
         pauseIcon: Icons.pause_rounded,

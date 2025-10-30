@@ -9,11 +9,10 @@ import '../../provider/settings_provider.dart';
 
 class TVSeasonCastAndCrew extends StatefulWidget {
   const TVSeasonCastAndCrew(
-      {Key? key,
+      {super.key,
       required this.id,
       required this.seasonNumber,
-      required this.passedFrom})
-      : super(key: key);
+      required this.passedFrom});
 
   final int id;
   final int seasonNumber;

@@ -42,7 +42,7 @@
 //     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
 //       enableFullscreen: true,
 //       name: "No Hard Feelings (2023)",
-//       controlBarColor: Colors.black.withOpacity(0.3),
+//       controlBarColor: Colors.black.withValues(alpha: 0.3),
 //       enablePip: true,
 //       progressBarBackgroundColor: Colors.white,
 //       muteIcon: Icons.volume_mute_rounded,

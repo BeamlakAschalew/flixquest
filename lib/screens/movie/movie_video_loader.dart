@@ -30,8 +30,7 @@ class MovieVideoLoader extends StatefulWidget {
       {required this.download,
       required this.metadata,
       required this.route,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   final bool download;
   final MovieStreamMetadata metadata;

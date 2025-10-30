@@ -103,9 +103,9 @@ class GogoStreamSources {
 }
 
 class GogoVideoLinks extends RegularVideoLinks {
-  GogoVideoLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  GogoVideoLinks.fromJson(super.json) : super.fromJson();
 }
 
 class GogoSubLinks extends RegularSubtitleLinks {
-  GogoSubLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  GogoSubLinks.fromJson(super.json) : super.fromJson();
 }

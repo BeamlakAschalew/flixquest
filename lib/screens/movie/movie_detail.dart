@@ -17,10 +17,10 @@ class MovieDetailPage extends StatefulWidget {
   final String heroId;
 
   const MovieDetailPage({
-    Key? key,
+    super.key,
     required this.movie,
     required this.heroId,
-  }) : super(key: key);
+  });
   @override
   MovieDetailPageState createState() => MovieDetailPageState();
 }

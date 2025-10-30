@@ -47,8 +47,8 @@ import 'common_widgets.dart';
 
 class MainMoviesDisplay extends StatefulWidget {
   const MainMoviesDisplay({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<MainMoviesDisplay> createState() => _MainMoviesDisplayState();
@@ -113,8 +113,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
 
 class DiscoverMovies extends StatefulWidget {
   const DiscoverMovies(
-      {Key? key, required this.includeAdult, required this.discoverType})
-      : super(key: key);
+      {super.key, required this.includeAdult, required this.discoverType});
   final bool includeAdult;
   final String discoverType;
   @override
@@ -305,13 +304,13 @@ class ScrollingMovies extends StatefulWidget {
   final bool? includeAdult;
 
   const ScrollingMovies({
-    Key? key,
+    super.key,
     required this.api,
     required this.title,
     this.discoverType,
     required this.isTrending,
     required this.includeAdult,
-  }) : super(key: key);
+  });
   @override
   ScrollingMoviesState createState() => ScrollingMoviesState();
 }
@@ -626,8 +625,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
 }
 
 class ScrollingRecentMovies extends StatefulWidget {
-  const ScrollingRecentMovies({required this.moviesList, Key? key})
-      : super(key: key);
+  const ScrollingRecentMovies({required this.moviesList, super.key});
 
   final List<RecentMovie> moviesList;
 
@@ -887,7 +885,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
 class SABTN extends StatefulWidget {
   final void Function()? onBack;
 
-  const SABTN({Key? key, this.onBack}) : super(key: key);
+  const SABTN({super.key, this.onBack});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -968,8 +966,8 @@ class SABT extends StatefulWidget {
 
   const SABT({
     required this.child,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   // ignore: library_private_types_in_public_api
@@ -1031,10 +1029,10 @@ class _SABTState extends State<SABT> {
 
 class MovieDetailQuickInfo extends StatelessWidget {
   const MovieDetailQuickInfo({
-    Key? key,
+    super.key,
     required this.movie,
     required this.heroId,
-  }) : super(key: key);
+  });
 
   final Movie movie;
   final String heroId;
@@ -1241,7 +1239,7 @@ class MovieDetailQuickInfo extends StatelessWidget {
 }
 
 class MovieDetailOptions extends StatefulWidget {
-  const MovieDetailOptions({Key? key, required this.movie}) : super(key: key);
+  const MovieDetailOptions({super.key, required this.movie});
 
   final Movie movie;
 
@@ -1410,7 +1408,7 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
 }
 
 class MovieAbout extends StatefulWidget {
-  const MovieAbout({required this.movie, Key? key}) : super(key: key);
+  const MovieAbout({required this.movie, super.key});
   final Movie movie;
 
   @override
@@ -1587,7 +1585,7 @@ class _MovieAboutState extends State<MovieAbout> {
 
 class DownloadMovie extends StatelessWidget {
   const DownloadMovie({
-    Key? key,
+    super.key,
     required this.adult,
     required this.api,
     required this.movieId,
@@ -1595,7 +1593,7 @@ class DownloadMovie extends StatelessWidget {
     required this.movieName,
     required this.releaseYear,
     required this.thumbnail,
-  }) : super(key: key);
+  });
 
   final String? movieName;
   final int movieId;
@@ -1686,11 +1684,11 @@ class DownloadMovie extends StatelessWidget {
 class ScrollingArtists extends StatefulWidget {
   final String? api, title, tapButtonText;
   const ScrollingArtists({
-    Key? key,
+    super.key,
     this.api,
     this.title,
     this.tapButtonText,
-  }) : super(key: key);
+  });
   @override
   ScrollingArtistsState createState() => ScrollingArtistsState();
 }
@@ -1921,9 +1919,9 @@ class ScrollingArtistsState extends State<ScrollingArtists> {
 class MovieSocialLinks extends StatefulWidget {
   final String? api;
   const MovieSocialLinks({
-    Key? key,
+    super.key,
     this.api,
-  }) : super(key: key);
+  });
 
   @override
   MovieSocialLinksState createState() => MovieSocialLinksState();
@@ -2051,9 +2049,9 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
 class BelongsToCollectionWidget extends StatefulWidget {
   final String? api;
   const BelongsToCollectionWidget({
-    Key? key,
+    super.key,
     this.api,
-  }) : super(key: key);
+  });
 
   @override
   BelongsToCollectionWidgetState createState() =>
@@ -2155,7 +2153,7 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
                                             Theme.of(context)
                                                 .colorScheme
                                                 .primary
-                                                .withOpacity(0.3),
+                                                .withValues(alpha: 0.3),
                                           ),
                                           maximumSize: WidgetStateProperty.all(
                                               const Size(200, 40)),
@@ -2199,7 +2197,7 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
 
 class CollectionOverviewWidget extends StatefulWidget {
   final String? api;
-  const CollectionOverviewWidget({Key? key, this.api}) : super(key: key);
+  const CollectionOverviewWidget({super.key, this.api});
 
   @override
   CollectionOverviewWidgetState createState() =>
@@ -2256,7 +2254,7 @@ class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
 class PartsList extends StatefulWidget {
   final String? api;
   final String? title;
-  const PartsList({Key? key, this.api, this.title}) : super(key: key);
+  const PartsList({super.key, this.api, this.title});
 
   @override
   PartsListState createState() => PartsListState();
@@ -2529,11 +2527,11 @@ class PartsListState extends State<PartsList> {
 
 class SocialIconWidget extends StatelessWidget {
   const SocialIconWidget({
-    Key? key,
+    super.key,
     this.url,
     this.icon,
     this.isNull,
-  }) : super(key: key);
+  });
 
   final String? url;
   final Widget? icon;
@@ -2566,8 +2564,7 @@ class SocialIconWidget extends StatelessWidget {
 
 class MovieImagesDisplay extends StatefulWidget {
   final String? api, title, name;
-  const MovieImagesDisplay({Key? key, this.api, this.name, this.title})
-      : super(key: key);
+  const MovieImagesDisplay({super.key, this.api, this.name, this.title});
 
   @override
   MovieImagesState createState() => MovieImagesState();
@@ -2921,7 +2918,7 @@ class MovieImagesState extends State<MovieImagesDisplay> {
 
 class MovieVideosDisplay extends StatefulWidget {
   final String? api, title;
-  const MovieVideosDisplay({Key? key, this.api, this.title}) : super(key: key);
+  const MovieVideosDisplay({super.key, this.api, this.title});
 
   @override
   MovieVideosState createState() => MovieVideosState();
@@ -3126,7 +3123,7 @@ class MovieVideosState extends State<MovieVideosDisplay> {
 
 class WatchNowButton extends StatefulWidget {
   const WatchNowButton({
-    Key? key,
+    super.key,
     required this.posterPath,
     required this.movieId,
     this.movieName,
@@ -3136,7 +3133,7 @@ class WatchNowButton extends StatefulWidget {
     required this.backdropPath,
     required this.releaseDate,
     this.adult,
-  }) : super(key: key);
+  });
   final String? movieName;
   final int movieId;
   final int? movieImdbId;
@@ -3254,7 +3251,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
 
 class GenreDisplay extends StatefulWidget {
   final String? api;
-  const GenreDisplay({Key? key, this.api}) : super(key: key);
+  const GenreDisplay({super.key, this.api});
 
   @override
   GenreDisplayState createState() => GenreDisplayState();
@@ -3374,7 +3371,7 @@ class GenreDisplayState extends State<GenreDisplay>
 
 class MovieInfoTable extends StatefulWidget {
   final String? api;
-  const MovieInfoTable({Key? key, this.api}) : super(key: key);
+  const MovieInfoTable({super.key, this.api});
 
   @override
   MovieInfoTableState createState() => MovieInfoTableState();
@@ -3600,7 +3597,7 @@ class MovieInfoTableState extends State<MovieInfoTable> {
 
 class CastTab extends StatefulWidget {
   final Credits credits;
-  const CastTab({Key? key, required this.credits}) : super(key: key);
+  const CastTab({super.key, required this.credits});
 
   @override
   CastTabState createState() => CastTabState();
@@ -3790,7 +3787,7 @@ class CastTabState extends State<CastTab>
 }
 
 class CrewTab extends StatefulWidget {
-  const CrewTab({Key? key, required this.credits}) : super(key: key);
+  const CrewTab({super.key, required this.credits});
 
   final Credits credits;
 
@@ -3952,11 +3949,10 @@ class MovieRecommendationsTab extends StatefulWidget {
   final int movieId;
   final bool? includeAdult;
   const MovieRecommendationsTab(
-      {Key? key,
+      {super.key,
       required this.api,
       required this.movieId,
-      required this.includeAdult})
-      : super(key: key);
+      required this.includeAdult});
 
   @override
   MovieRecommendationsTabState createState() => MovieRecommendationsTabState();
@@ -4100,12 +4096,11 @@ class SimilarMoviesTab extends StatefulWidget {
   final String movieName;
   final bool? includeAdult;
   const SimilarMoviesTab(
-      {Key? key,
+      {super.key,
       required this.api,
       required this.movieId,
       required this.movieName,
-      required this.includeAdult})
-      : super(key: key);
+      required this.includeAdult});
 
   @override
   SimilarMoviesTabState createState() => SimilarMoviesTabState();
@@ -4245,12 +4240,11 @@ class ParticularGenreMovies extends StatefulWidget {
   final String watchRegion;
   final bool? includeAdult;
   const ParticularGenreMovies(
-      {Key? key,
+      {super.key,
       required this.api,
       required this.genreId,
       required this.includeAdult,
-      required this.watchRegion})
-      : super(key: key);
+      required this.watchRegion});
   @override
   ParticularGenreMoviesState createState() => ParticularGenreMoviesState();
 }
@@ -4370,12 +4364,12 @@ class ParticularStreamingServiceMovies extends StatefulWidget {
   final bool? includeAdult;
   final String watchRegion;
   const ParticularStreamingServiceMovies({
-    Key? key,
+    super.key,
     required this.api,
     required this.providerID,
     required this.includeAdult,
     required this.watchRegion,
-  }) : super(key: key);
+  });
   @override
   ParticularStreamingServiceMoviesState createState() =>
       ParticularStreamingServiceMoviesState();
@@ -4495,11 +4489,11 @@ class StreamingServicesWidget extends StatelessWidget {
   final String title;
   final int providerID;
   const StreamingServicesWidget({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.title,
     required this.providerID,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -4549,9 +4543,9 @@ class StreamingServicesWidget extends StatelessWidget {
 class GenreListGrid extends StatefulWidget {
   final String api;
   const GenreListGrid({
-    Key? key,
+    super.key,
     required this.api,
-  }) : super(key: key);
+  });
 
   @override
   GenreListGridState createState() => GenreListGridState();
@@ -4666,9 +4660,9 @@ class GenreListGridState extends State<GenreListGrid>
 class TopButton extends StatefulWidget {
   final String buttonText;
   const TopButton({
-    Key? key,
+    super.key,
     required this.buttonText,
-  }) : super(key: key);
+  });
 
   @override
   TopButtonState createState() => TopButtonState();
@@ -4682,7 +4676,7 @@ class TopButtonState extends State<TopButton> {
       child: TextButton(
         style: ButtonStyle(
             backgroundColor: WidgetStateProperty.all(
-              Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             ),
             maximumSize: WidgetStateProperty.all(const Size(200, 60)),
             shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -4708,11 +4702,11 @@ class WatchProvidersButton extends StatefulWidget {
   final String api;
   final String country;
   const WatchProvidersButton({
-    Key? key,
+    super.key,
     this.onTap,
     required this.api,
     required this.country,
-  }) : super(key: key);
+  });
 
   @override
   State<WatchProvidersButton> createState() => _WatchProvidersButtonState();
@@ -4744,7 +4738,7 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
       child: TextButton(
         style: ButtonStyle(
             backgroundColor: WidgetStateProperty.all(
-              Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             ),
             maximumSize: WidgetStateProperty.all(const Size(200, 60)),
             shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -4766,7 +4760,7 @@ class _WatchProvidersButtonState extends State<WatchProvidersButton> {
 }
 
 class MoviesFromWatchProviders extends StatefulWidget {
-  const MoviesFromWatchProviders({Key? key}) : super(key: key);
+  const MoviesFromWatchProviders({super.key});
 
   @override
   MoviesFromWatchProvidersState createState() =>
@@ -4876,9 +4870,9 @@ class MoviesFromWatchProvidersState extends State<MoviesFromWatchProviders> {
 class CollectionMovies extends StatefulWidget {
   final String? api;
   const CollectionMovies({
-    Key? key,
+    super.key,
     this.api,
-  }) : super(key: key);
+  });
   @override
   CollectionMoviesState createState() => CollectionMoviesState();
 }

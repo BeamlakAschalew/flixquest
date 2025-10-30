@@ -12,8 +12,7 @@ class StreamingServicesMovies extends StatelessWidget {
   final int providerId;
   final String providerName;
   const StreamingServicesMovies(
-      {Key? key, required this.providerId, required this.providerName})
-      : super(key: key);
+      {super.key, required this.providerId, required this.providerName});
 
   @override
   Widget build(BuildContext context) {

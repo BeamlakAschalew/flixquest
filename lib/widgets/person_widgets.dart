@@ -33,11 +33,11 @@ import '/models/credits.dart' as cre;
 
 class PersonImagesDisplay extends StatefulWidget {
   const PersonImagesDisplay({
-    Key? key,
+    super.key,
     required this.api,
     required this.title,
     required this.personName,
-  }) : super(key: key);
+  });
 
   final String api;
   final String title;
@@ -212,11 +212,10 @@ class PersonMovieListWidget extends StatefulWidget {
   final bool? isPersonAdult;
   final bool? includeAdult;
   const PersonMovieListWidget(
-      {Key? key,
+      {super.key,
       required this.api,
       this.isPersonAdult,
-      required this.includeAdult})
-      : super(key: key);
+      required this.includeAdult});
 
   @override
   PersonMovieListWidgetState createState() => PersonMovieListWidgetState();
@@ -485,11 +484,10 @@ class PersonTVListWidget extends StatefulWidget {
   final bool? isPersonAdult;
   final bool? includeAdult;
   const PersonTVListWidget(
-      {Key? key,
+      {super.key,
       required this.api,
       this.isPersonAdult,
-      required this.includeAdult})
-      : super(key: key);
+      required this.includeAdult});
 
   @override
   PersonTVListWidgetState createState() => PersonTVListWidgetState();
@@ -756,9 +754,9 @@ class PersonTVListWidgetState extends State<PersonTVListWidget>
 class PersonAboutWidget extends StatefulWidget {
   final String api;
   const PersonAboutWidget({
-    Key? key,
+    super.key,
     required this.api,
-  }) : super(key: key);
+  });
 
   @override
   State<PersonAboutWidget> createState() => _PersonAboutWidgetState();
@@ -848,9 +846,9 @@ class _PersonAboutWidgetState extends State<PersonAboutWidget>
 class PersonSocialLinks extends StatefulWidget {
   final String? api;
   const PersonSocialLinks({
-    Key? key,
+    super.key,
     this.api,
-  }) : super(key: key);
+  });
 
   @override
   PersonSocialLinksState createState() => PersonSocialLinksState();
@@ -977,7 +975,7 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
 }
 
 class PersonDataTable extends StatefulWidget {
-  const PersonDataTable({required this.api, Key? key}) : super(key: key);
+  const PersonDataTable({required this.api, super.key});
   final String api;
 
   @override
@@ -1070,11 +1068,10 @@ class _PersonDataTableState extends State<PersonDataTable> {
 // ignore: must_be_immutable
 class CastDetailAbout extends StatefulWidget {
   CastDetailAbout(
-      {Key? key,
+      {super.key,
       required this.cast,
       required this.selectedIndex,
-      required this.tabController})
-      : super(key: key);
+      required this.tabController});
   int selectedIndex;
   final cre.Cast? cast;
   final TabController tabController;
@@ -1223,10 +1220,10 @@ class _CastDetailAboutState extends State<CastDetailAbout> {
 
 class CastDetailQuickInfo extends StatelessWidget {
   const CastDetailQuickInfo({
-    Key? key,
+    super.key,
     required this.widget,
     required this.imageQuality,
-  }) : super(key: key);
+  });
 
   final CastDetailPage widget;
 
@@ -1327,10 +1324,10 @@ class CastDetailQuickInfo extends StatelessWidget {
 
 class CreatedByQuickInfo extends StatelessWidget {
   const CreatedByQuickInfo({
-    Key? key,
+    super.key,
     required this.widget,
     required this.imageQuality,
-  }) : super(key: key);
+  });
 
   final CreatedByPersonDetailPage widget;
   final String imageQuality;
@@ -1424,11 +1421,10 @@ class CreatedByQuickInfo extends StatelessWidget {
 // ignore: must_be_immutable
 class CreatedByAbout extends StatefulWidget {
   CreatedByAbout(
-      {Key? key,
+      {super.key,
       required this.createdBy,
       required this.selectedIndex,
-      required this.tabController})
-      : super(key: key);
+      required this.tabController});
   int selectedIndex;
   final CreatedBy? createdBy;
   final TabController tabController;
@@ -1575,10 +1571,10 @@ class _CreatedByAboutState extends State<CreatedByAbout> {
 
 class CrewDetailQuickInfo extends StatelessWidget {
   const CrewDetailQuickInfo({
-    Key? key,
+    super.key,
     required this.widget,
     required this.imageQuality,
-  }) : super(key: key);
+  });
 
   final CrewDetailPage widget;
   final String imageQuality;
@@ -1679,11 +1675,10 @@ class CrewDetailQuickInfo extends StatelessWidget {
 // ignore: must_be_immutable
 class CrewDetailAbout extends StatefulWidget {
   CrewDetailAbout(
-      {Key? key,
+      {super.key,
       required this.crew,
       required this.selectedIndex,
-      required this.tabController})
-      : super(key: key);
+      required this.tabController});
 
   int selectedIndex;
   final TabController tabController;
@@ -1833,10 +1828,10 @@ class _CrewDetailAboutState extends State<CrewDetailAbout> {
 
 class GuestStarDetailQuickInfo extends StatelessWidget {
   const GuestStarDetailQuickInfo({
-    Key? key,
+    super.key,
     required this.widget,
     required this.imageQuality,
-  }) : super(key: key);
+  });
 
   final GuestStarDetailPage widget;
   final String imageQuality;
@@ -1937,11 +1932,10 @@ class GuestStarDetailQuickInfo extends StatelessWidget {
 // ignore: must_be_immutable
 class GuestStarDetailAbout extends StatefulWidget {
   GuestStarDetailAbout(
-      {Key? key,
+      {super.key,
       required this.cast,
       required this.selectedIndex,
-      required this.tabController})
-      : super(key: key);
+      required this.tabController});
   int selectedIndex;
   final TabController tabController;
   final TVEpisodeGuestStars? cast;
@@ -2090,10 +2084,10 @@ class _GuestStarDetailAboutState extends State<GuestStarDetailAbout> {
 
 class SearchedPersonQuickInfo extends StatelessWidget {
   const SearchedPersonQuickInfo({
-    Key? key,
+    super.key,
     required this.widget,
     required this.imageQuality,
-  }) : super(key: key);
+  });
 
   final SearchedPersonDetailPage widget;
   final String imageQuality;
@@ -2193,11 +2187,10 @@ class SearchedPersonQuickInfo extends StatelessWidget {
 // ignore: must_be_immutable
 class SearchedPersonAbout extends StatefulWidget {
   SearchedPersonAbout(
-      {Key? key,
+      {super.key,
       required this.person,
       required this.selectedIndex,
-      required this.tabController})
-      : super(key: key);
+      required this.tabController});
   int selectedIndex;
   final TabController tabController;
   final Person? person;

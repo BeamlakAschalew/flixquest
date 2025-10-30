@@ -17,10 +17,10 @@ class TVDetailPage extends StatefulWidget {
   final String heroId;
 
   const TVDetailPage({
-    Key? key,
+    super.key,
     required this.tvSeries,
     required this.heroId,
-  }) : super(key: key);
+  });
   @override
   TVDetailPageState createState() => TVDetailPageState();
 }

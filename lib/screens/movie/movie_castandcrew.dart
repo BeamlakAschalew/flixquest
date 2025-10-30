@@ -8,7 +8,7 @@ import '../../models/credits.dart';
 import '../../provider/settings_provider.dart';
 
 class MovieCastAndCrew extends StatefulWidget {
-  const MovieCastAndCrew({Key? key, required this.credits}) : super(key: key);
+  const MovieCastAndCrew({super.key, required this.credits});
   final Credits credits;
 
   @override

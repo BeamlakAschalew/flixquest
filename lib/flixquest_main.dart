@@ -32,8 +32,7 @@ class FlixQuest extends StatefulWidget {
       required this.recentProvider,
       required this.appDependencyProvider,
       required this.init,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   final SettingsProvider settingsProvider;
   final RecentProvider recentProvider;
@@ -197,8 +196,8 @@ class _FlixQuestState extends State<FlixQuest>
 
 class FlixQuestHomePage extends StatefulWidget {
   const FlixQuestHomePage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<FlixQuestHomePage> createState() => _FlixQuestHomePageState();
@@ -337,7 +336,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
             boxShadow: [
               BoxShadow(
                 blurRadius: 20,
-                color: Colors.black.withOpacity(.1),
+                color: Colors.black.withValues(alpha: .1),
               )
             ],
           ),

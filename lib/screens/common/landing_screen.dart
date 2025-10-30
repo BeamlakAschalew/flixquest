@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
 class LandingScreen extends StatefulWidget {
-  const LandingScreen({Key? key}) : super(key: key);
+  const LandingScreen({super.key});
 
   @override
   State<LandingScreen> createState() => _LandingScreenState();
@@ -53,7 +53,7 @@ class _LandingScreenState extends State<LandingScreen> {
             ),
             child: Container(
               decoration: const BoxDecoration(
-                // color: Colors.black.withOpacity(0.5),
+                // color: Colors.black.withValues(alpha: 0.5),
                 gradient: LinearGradient(
                   colors: [Color(0xff000000), Colors.transparent],
                   begin: Alignment.bottomCenter,

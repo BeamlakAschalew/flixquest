@@ -28,8 +28,7 @@ class TVVideoLoader extends StatefulWidget {
       {required this.metadata,
       required this.download,
       required this.route,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   final TVStreamMetadata metadata;
   final bool download;

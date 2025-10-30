@@ -414,7 +414,7 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
     //     boxShadow: [
     //       BoxShadow(
     //         color: Colors.yellow
-    //             .withOpacity(0.9), // Adjust the opacity for the blur effect
+    //             .withValues(alpha: 0.9), // Adjust the opacity for the blur effect
     //         blurRadius: 5.0,
     //         spreadRadius: 1.0,
     //         offset: const Offset(0, 0),

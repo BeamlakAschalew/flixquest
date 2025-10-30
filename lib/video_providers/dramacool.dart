@@ -4,33 +4,29 @@ import 'common.dart';
 
 /// Dramacool search
 class DramacoolSearch extends DCVASearch {
-  DramacoolSearch.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  DramacoolSearch.fromJson(super.json) : super.fromJson();
 }
 
 class DramacoolSearchEntry extends DCVASearchEntry {
-  DramacoolSearchEntry.fromJson(Map<String, dynamic> json)
-      : super.fromJson(json);
+  DramacoolSearchEntry.fromJson(super.json) : super.fromJson();
 }
 
 class DramacoolInfo extends DCVAInfo {
-  DramacoolInfo.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  DramacoolInfo.fromJson(super.json) : super.fromJson();
 }
 
 class DramacoolInfoEntries extends DCVAInfoEntries {
-  DramacoolInfoEntries.fromJson(Map<String, dynamic> json)
-      : super.fromJson(json);
+  DramacoolInfoEntries.fromJson(super.json) : super.fromJson();
 }
 
 class DramacoolStreamSources extends DCVAStreamSources {
-  DramacoolStreamSources.fromJson(Map<String, dynamic> json)
-      : super.fromJson(json);
+  DramacoolStreamSources.fromJson(super.json) : super.fromJson();
 }
 
 class DramacoolVideoLinks extends RegularVideoLinks {
-  DramacoolVideoLinks.fromJson(Map<String, dynamic> json)
-      : super.fromJson(json);
+  DramacoolVideoLinks.fromJson(super.json) : super.fromJson();
 }
 
 class DramacoolSubLinks extends RegularSubtitleLinks {
-  DramacoolSubLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  DramacoolSubLinks.fromJson(super.json) : super.fromJson();
 }

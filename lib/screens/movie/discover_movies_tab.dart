@@ -10,7 +10,7 @@ import '../../widgets/common_widgets.dart';
 import 'discover_movie_result.dart';
 
 class DiscoverMoviesTab extends StatefulWidget {
-  const DiscoverMoviesTab({Key? key}) : super(key: key);
+  const DiscoverMoviesTab({super.key});
 
   @override
   State<DiscoverMoviesTab> createState() => _DiscoverMoviesTabState();

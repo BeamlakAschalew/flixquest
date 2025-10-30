@@ -11,7 +11,7 @@ import '/models/genres.dart';
 
 class GenreMovies extends StatelessWidget {
   final Genres genres;
-  const GenreMovies({Key? key, required this.genres}) : super(key: key);
+  const GenreMovies({super.key, required this.genres});
 
   @override
   Widget build(BuildContext context) {

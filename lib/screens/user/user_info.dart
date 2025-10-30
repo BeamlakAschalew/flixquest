@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class UserInfo extends StatefulWidget {
-  const UserInfo({Key? key}) : super(key: key);
+  const UserInfo({super.key});
 
   @override
   State<UserInfo> createState() => _UserInfoState();

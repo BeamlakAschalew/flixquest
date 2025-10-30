@@ -88,11 +88,11 @@ ThemeData darkThemeData(
       style: ButtonStyle(
           backgroundColor: WidgetStateProperty.all(
             isM3Enabled
-                ? darkDynamicColor?.primary.withOpacity(0.1) ??
-                    Color(0xFFF57C00).withOpacity(0.1)
+                ? darkDynamicColor?.primary.withValues(alpha: 0.1) ??
+                    Color(0xFFF57C00).withValues(alpha: 0.1)
                 : useUserColor
-                    ? color.cs.primary.withOpacity(0.1)
-                    : Color(0xFFF57C00).withOpacity(0.1),
+                    ? color.cs.primary.withValues(alpha: 0.1)
+                    : Color(0xFFF57C00).withValues(alpha: 0.1),
           ),
           maximumSize: WidgetStateProperty.all(const Size(200, 60)),
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -135,11 +135,13 @@ ThemeData darkThemeData(
       errorBorder: InputBorder.none,
       disabledBorder: InputBorder.none,
     ),
-    indicatorColor: isM3Enabled
-        ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
-        : useUserColor
-            ? color.cs.primary
-            : Color(0xFFF57C00),
+    tabBarTheme: TabBarThemeData(
+      indicatorColor: isM3Enabled
+          ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+          : useUserColor
+              ? color.cs.primary
+              : Color(0xFFF57C00),
+    ),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStatePropertyAll(
         isM3Enabled
@@ -358,11 +360,11 @@ ThemeData lightThemeData(
       style: ButtonStyle(
           backgroundColor: WidgetStateProperty.all(
             isM3Enabled
-                ? lightDynamicColor?.primary.withOpacity(0.1) ??
-                    Color(0xFFF57C00).withOpacity(0.1)
+                ? lightDynamicColor?.primary.withValues(alpha: 0.1) ??
+                    Color(0xFFF57C00).withValues(alpha: 0.1)
                 : useUserColor
-                    ? color.cs.primary.withOpacity(0.1)
-                    : Color(0xFFF57C00).withOpacity(0.1),
+                    ? color.cs.primary.withValues(alpha: 0.1)
+                    : Color(0xFFF57C00).withValues(alpha: 0.1),
           ),
           maximumSize: WidgetStateProperty.all(const Size(200, 60)),
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -405,11 +407,12 @@ ThemeData lightThemeData(
       errorBorder: InputBorder.none,
       disabledBorder: InputBorder.none,
     ),
-    indicatorColor: isM3Enabled
-        ? lightDynamicColor?.primary ?? Color(0xFFF57C00)
-        : useUserColor
-            ? color.cs.primary
-            : Color(0xFFF57C00),
+    tabBarTheme: TabBarThemeData(
+        indicatorColor: isM3Enabled
+            ? lightDynamicColor?.primary ?? Color(0xFFF57C00)
+            : useUserColor
+                ? color.cs.primary
+                : Color(0xFFF57C00)),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStatePropertyAll(
         isM3Enabled
@@ -635,11 +638,11 @@ ThemeData lightsOutThemeData(
       style: ButtonStyle(
           backgroundColor: WidgetStateProperty.all(
             isM3Enabled
-                ? darkDynamicColor?.primary.withOpacity(0.1) ??
-                    Color(0xFFF57C00).withOpacity(0.1)
+                ? darkDynamicColor?.primary.withValues(alpha: 0.1) ??
+                    Color(0xFFF57C00).withValues(alpha: 0.1)
                 : useUserColor
-                    ? color.cs.primary.withOpacity(0.1)
-                    : Color(0xFFF57C00).withOpacity(0.1),
+                    ? color.cs.primary.withValues(alpha: 0.1)
+                    : Color(0xFFF57C00).withValues(alpha: 0.1),
           ),
           maximumSize: WidgetStateProperty.all(const Size(200, 60)),
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -680,11 +683,13 @@ ThemeData lightsOutThemeData(
       errorBorder: InputBorder.none,
       disabledBorder: InputBorder.none,
     ),
-    indicatorColor: isM3Enabled
-        ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
-        : useUserColor
-            ? color.cs.primary
-            : Color(0xFFF57C00),
+    tabBarTheme: TabBarThemeData(
+      indicatorColor: isM3Enabled
+          ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
+          : useUserColor
+              ? color.cs.primary
+              : Color(0xFFF57C00),
+    ),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStatePropertyAll(
         isM3Enabled

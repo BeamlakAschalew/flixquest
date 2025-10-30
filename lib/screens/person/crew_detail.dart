@@ -12,10 +12,10 @@ class CrewDetailPage extends StatefulWidget {
   final Crew? crew;
 
   const CrewDetailPage({
-    Key? key,
+    super.key,
     this.crew,
     required this.heroId,
-  }) : super(key: key);
+  });
   @override
   CrewDetailPageState createState() => CrewDetailPageState();
 }

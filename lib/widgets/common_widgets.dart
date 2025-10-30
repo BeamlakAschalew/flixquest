@@ -29,8 +29,8 @@ import 'package:shimmer/shimmer.dart';
 
 class DrawerWidget extends StatefulWidget {
   const DrawerWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<DrawerWidget> createState() => _DrawerWidgetState();
@@ -1629,7 +1629,7 @@ Widget newsShimmer(String themeMode, scrollController, isLoading) {
 }
 
 class DidYouKnow extends StatefulWidget {
-  const DidYouKnow({Key? key, required this.api}) : super(key: key);
+  const DidYouKnow({super.key, required this.api});
 
   final String? api;
 
@@ -1762,8 +1762,7 @@ class WatchProvidersDetails extends StatefulWidget {
   final String api;
   final String country;
   const WatchProvidersDetails(
-      {Key? key, required this.api, required this.country})
-      : super(key: key);
+      {super.key, required this.api, required this.country});
 
   @override
   State<WatchProvidersDetails> createState() => _WatchProvidersDetailsState();
@@ -1882,8 +1881,7 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
 }
 
 class ShimmerBase extends StatelessWidget {
-  const ShimmerBase({Key? key, required this.child, required this.themeMode})
-      : super(key: key);
+  const ShimmerBase({super.key, required this.child, required this.themeMode});
 
   final Widget child;
   final String themeMode;
@@ -1895,7 +1893,7 @@ class ShimmerBase extends StatelessWidget {
           ? Colors.grey.shade900
           : Colors.grey.shade300,
       highlightColor: themeMode == 'dark' || themeMode == 'amoled'
-          ? Colors.grey.shade800.withOpacity(0.1)
+          ? Colors.grey.shade800.withValues(alpha: 0.1)
           : Colors.grey.shade200,
       child: child,
     );
@@ -1904,8 +1902,7 @@ class ShimmerBase extends StatelessWidget {
 
 class ReportErrorWidget extends StatelessWidget {
   const ReportErrorWidget(
-      {Key? key, required this.error, required this.hideButton})
-      : super(key: key);
+      {super.key, required this.error, required this.hideButton});
 
   final String error;
   final bool hideButton;
@@ -1978,8 +1975,7 @@ class ReportErrorWidget extends StatelessWidget {
 
 class ExternalPlay extends StatelessWidget {
   const ExternalPlay(
-      {Key? key, required this.videoSources, required this.subtitleSources})
-      : super(key: key);
+      {super.key, required this.videoSources, required this.subtitleSources});
 
   final Map<String, String> videoSources;
   final List<BetterPlayerSubtitlesSource> subtitleSources;
@@ -2101,7 +2097,7 @@ class ExternalPlay extends StatelessWidget {
 // }
 
 class LeadingDot extends StatelessWidget {
-  const LeadingDot({Key? key}) : super(key: key);
+  const LeadingDot({super.key});
 
   @override
   Widget build(BuildContext context) {

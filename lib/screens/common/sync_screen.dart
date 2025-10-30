@@ -19,7 +19,7 @@ import '../../models/movie.dart';
 import '../../provider/settings_provider.dart';
 
 class SyncScreen extends StatefulWidget {
-  const SyncScreen({Key? key}) : super(key: key);
+  const SyncScreen({super.key});
 
   @override
   State<SyncScreen> createState() => _SyncScreenState();

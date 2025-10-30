@@ -11,7 +11,7 @@ import '/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 
 class PlayerSettings extends StatefulWidget {
-  const PlayerSettings({Key? key}) : super(key: key);
+  const PlayerSettings({super.key});
 
   @override
   State<PlayerSettings> createState() => _PlayerSettingsState();

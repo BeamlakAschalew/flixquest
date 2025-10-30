@@ -103,11 +103,9 @@ class ViewasianStreamSources {
 }
 
 class ViewasianVideoLinks extends RegularVideoLinks {
-  ViewasianVideoLinks.fromJson(Map<String, dynamic> json)
-      : super.fromJson(json);
+  ViewasianVideoLinks.fromJson(super.json) : super.fromJson();
 }
 
 class ViewasianSubLinks extends RegularSubtitleLinks {
-  ViewasianSubLinks.fromJson(Map<String, dynamic> json)
-      : super.fromJson(json);
+  ViewasianSubLinks.fromJson(super.json) : super.fromJson();
 }

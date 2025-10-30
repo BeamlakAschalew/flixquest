@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AboutPage extends StatelessWidget {
-  const AboutPage({Key? key}) : super(key: key);
+  const AboutPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +156,8 @@ class SocialIconContainer extends StatelessWidget {
   const SocialIconContainer({
     required this.platformIcon,
     required this.uri,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final IconData platformIcon;
   final String uri;
@@ -179,8 +179,8 @@ class PlatformIcon extends StatelessWidget {
   const PlatformIcon({
     required this.platformIcon,
     required this.uri,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final IconData platformIcon;
   final String uri;

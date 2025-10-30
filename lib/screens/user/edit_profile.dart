@@ -12,7 +12,7 @@ import '../../models/profile_image_list.dart';
 import '../../services/globle_method.dart';
 
 class ProfileEdit extends StatefulWidget {
-  const ProfileEdit({Key? key}) : super(key: key);
+  const ProfileEdit({super.key});
 
   @override
   State<ProfileEdit> createState() => _ProfileEditState();

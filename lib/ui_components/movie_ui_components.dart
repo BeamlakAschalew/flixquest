@@ -12,13 +12,12 @@ import '../widgets/common_widgets.dart';
 
 class HorizontalScrollingMoviesList extends StatelessWidget {
   const HorizontalScrollingMoviesList({
-    Key? key,
+    super.key,
     required ScrollController scrollController,
     required this.movieList,
     required this.imageQuality,
     required this.themeMode,
-  })  : _scrollController = scrollController,
-        super(key: key);
+  }) : _scrollController = scrollController;
 
   final ScrollController _scrollController;
   final List<Movie>? movieList;
@@ -158,13 +157,12 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
 
 class MovieListView extends StatelessWidget {
   const MovieListView({
-    Key? key,
+    super.key,
     required ScrollController scrollController,
     required this.moviesList,
     required this.themeMode,
     required this.imageQuality,
-  })  : _scrollController = scrollController,
-        super(key: key);
+  }) : _scrollController = scrollController;
 
   final ScrollController _scrollController;
   final List<Movie>? moviesList;
@@ -302,13 +300,12 @@ class MovieListView extends StatelessWidget {
 
 class MovieGridView extends StatelessWidget {
   const MovieGridView({
-    Key? key,
+    super.key,
     required ScrollController scrollController,
     required this.moviesList,
     required this.imageQuality,
     required this.themeMode,
-  })  : _scrollController = scrollController,
-        super(key: key);
+  }) : _scrollController = scrollController;
 
   final ScrollController _scrollController;
   final List<Movie>? moviesList;

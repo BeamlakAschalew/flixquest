@@ -11,10 +11,10 @@ class GuestStarDetailPage extends StatefulWidget {
   final String heroId;
 
   const GuestStarDetailPage({
-    Key? key,
+    super.key,
     this.cast,
     required this.heroId,
-  }) : super(key: key);
+  });
   @override
   GuestStarDetailPageState createState() => GuestStarDetailPageState();
 }

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CountryChoose extends StatefulWidget {
-  const CountryChoose({Key? key}) : super(key: key);
+  const CountryChoose({super.key});
 
   @override
   State<CountryChoose> createState() => _CountryChooseState();

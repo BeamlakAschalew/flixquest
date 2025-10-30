@@ -14,7 +14,7 @@ import '../movie/bookmark_movies_tab.dart';
 import '../tv/bookmark_tv_tab.dart';
 
 class BookmarkScreen extends StatefulWidget {
-  const BookmarkScreen({Key? key}) : super(key: key);
+  const BookmarkScreen({super.key});
 
   @override
   State<BookmarkScreen> createState() => _BookmarkScreenState();

@@ -14,7 +14,7 @@ import '../../video_providers/names.dart';
 import '../../services/globle_method.dart';
 
 class ServerStatusScreen extends StatefulWidget {
-  const ServerStatusScreen({Key? key}) : super(key: key);
+  const ServerStatusScreen({super.key});
 
   @override
   State<ServerStatusScreen> createState() => _ServerStatusScreenState();

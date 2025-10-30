@@ -12,7 +12,7 @@ import '../../functions/network.dart';
 import '../../provider/settings_provider.dart';
 
 class ChannelList extends StatefulWidget {
-  const ChannelList({Key? key}) : super(key: key);
+  const ChannelList({super.key});
 
   @override
   State<ChannelList> createState() => _ChannelListState();
@@ -168,8 +168,7 @@ class _ChannelListState extends State<ChannelList> {
 }
 
 class ChannelWidget extends StatefulWidget {
-  const ChannelWidget({Key? key, required this.channel, required this.index})
-      : super(key: key);
+  const ChannelWidget({super.key, required this.channel, required this.index});
 
   final Channels channel;
   final int index;
@@ -280,7 +279,6 @@ Center(
 
 
  */
-
 
 /*
 

@@ -10,8 +10,7 @@ class LivePlayer extends StatefulWidget {
       required this.channelName,
       required this.referrer,
       required this.userAgent,
-      Key? key})
-      : super(key: key);
+      super.key});
   final String videoUrl;
   final List<Color> colors;
   final bool autoFullScreen;
@@ -44,8 +43,8 @@ class _LivePlayerState extends State<LivePlayer> {
       enableFullscreen: true,
       enableSubtitles: false,
       enablePip: true,
-      backgroundColor: widget.colors.elementAt(1).withOpacity(0.6),
-      controlBarColor: Colors.black.withOpacity(0.3),
+      backgroundColor: widget.colors.elementAt(1).withValues(alpha: 0.6),
+      controlBarColor: Colors.black.withValues(alpha: 0.3),
       progressBarBackgroundColor: Colors.white,
       muteIcon: Icons.volume_off_rounded,
       unMuteIcon: Icons.volume_up_rounded,

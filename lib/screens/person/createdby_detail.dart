@@ -11,10 +11,10 @@ class CreatedByPersonDetailPage extends StatefulWidget {
   final String heroId;
 
   const CreatedByPersonDetailPage({
-    Key? key,
+    super.key,
     this.createdBy,
     required this.heroId,
-  }) : super(key: key);
+  });
   @override
   CreatedByPersonDetailPageState createState() =>
       CreatedByPersonDetailPageState();

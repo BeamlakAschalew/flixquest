@@ -14,8 +14,7 @@ class DiscoverMovieResult extends StatefulWidget {
       {required this.api,
       required this.includeAdult,
       required this.page,
-      Key? key})
-      : super(key: key);
+      super.key});
   final String api;
   final bool? includeAdult;
   final int page;

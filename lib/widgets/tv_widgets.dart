@@ -54,8 +54,8 @@ import '/widgets/common_widgets.dart';
 
 class MainTVDisplay extends StatefulWidget {
   const MainTVDisplay({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<MainTVDisplay> createState() => _MainTVDisplayState();
@@ -126,8 +126,7 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
 class DiscoverTV extends StatefulWidget {
   final bool includeAdult;
   const DiscoverTV(
-      {required this.includeAdult, required this.discoverType, Key? key})
-      : super(key: key);
+      {required this.includeAdult, required this.discoverType, super.key});
 
   final String discoverType;
   @override
@@ -314,13 +313,13 @@ class ScrollingTV extends StatefulWidget {
   final bool isTrending;
   final bool? includeAdult;
   const ScrollingTV({
-    Key? key,
+    super.key,
     required this.api,
     required this.title,
     this.discoverType,
     required this.isTrending,
     required this.includeAdult,
-  }) : super(key: key);
+  });
   @override
   ScrollingTVState createState() => ScrollingTVState();
 }
@@ -628,8 +627,7 @@ class ScrollingTVState extends State<ScrollingTV>
 }
 
 class ScrollingRecentEpisodes extends StatefulWidget {
-  const ScrollingRecentEpisodes({required this.episodesList, Key? key})
-      : super(key: key);
+  const ScrollingRecentEpisodes({required this.episodesList, super.key});
 
   final List<RecentEpisode> episodesList;
 
@@ -843,7 +841,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                                   BorderRadius.circular(8),
                                               color: Theme.of(context)
                                                   .primaryColor
-                                                  .withOpacity(0.85)),
+                                                  .withValues(alpha: 0.85)),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 4.0),
@@ -857,7 +855,8 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                                         color: Theme.of(context)
                                                             .colorScheme
                                                             .onPrimary
-                                                            .withOpacity(0.85)))
+                                                            .withValues(
+                                                                alpha: 0.85)))
                                               ],
                                             ),
                                           ),
@@ -933,15 +932,14 @@ class ScrollingTVArtists extends StatefulWidget {
   final int? seasonNumber;
   final String passedFrom;
   const ScrollingTVArtists(
-      {Key? key,
+      {super.key,
       this.api,
       this.title,
       this.tapButtonText,
       required this.id,
       this.episodeNumber,
       this.seasonNumber,
-      required this.passedFrom})
-      : super(key: key);
+      required this.passedFrom});
   @override
   ScrollingTVArtistsState createState() => ScrollingTVArtistsState();
 }
@@ -1160,13 +1158,13 @@ class ScrollingTVEpisodeCasts extends StatefulWidget {
   final int seasonNumber;
   final String passedFrom;
   const ScrollingTVEpisodeCasts({
-    Key? key,
+    super.key,
     this.api,
     required this.id,
     required this.episodeNumber,
     required this.seasonNumber,
     required this.passedFrom,
-  }) : super(key: key);
+  });
   @override
   ScrollingTVEpisodeCastsState createState() => ScrollingTVEpisodeCastsState();
 }
@@ -1404,9 +1402,9 @@ class ScrollingTVEpisodeCastsState extends State<ScrollingTVEpisodeCasts>
 class ScrollingTVEpisodeGuestStars extends StatefulWidget {
   final String? api;
   const ScrollingTVEpisodeGuestStars({
-    Key? key,
+    super.key,
     this.api,
-  }) : super(key: key);
+  });
   @override
   ScrollingTVEpisodeGuestStarsState createState() =>
       ScrollingTVEpisodeGuestStarsState();
@@ -1599,9 +1597,9 @@ class ScrollingTVEpisodeGuestStarsState
 class ScrollingTVEpisodeCrew extends StatefulWidget {
   final String? api;
   const ScrollingTVEpisodeCrew({
-    Key? key,
+    super.key,
     this.api,
-  }) : super(key: key);
+  });
   @override
   ScrollingTVEpisodeCrewState createState() => ScrollingTVEpisodeCrewState();
 }
@@ -1786,11 +1784,11 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
 class ScrollingTVCreators extends StatefulWidget {
   final String? api, title, tapButtonText;
   const ScrollingTVCreators({
-    Key? key,
+    super.key,
     this.api,
     this.title,
     this.tapButtonText,
-  }) : super(key: key);
+  });
   @override
   ScrollingTVCreatorsState createState() => ScrollingTVCreatorsState();
 }
@@ -1968,8 +1966,7 @@ class ScrollingTVCreatorsState extends State<ScrollingTVCreators>
 
 class TVImagesDisplay extends StatefulWidget {
   final String? api, title, name;
-  const TVImagesDisplay({Key? key, this.api, this.name, this.title})
-      : super(key: key);
+  const TVImagesDisplay({super.key, this.api, this.name, this.title});
 
   @override
   TVImagesDisplayState createState() => TVImagesDisplayState();
@@ -2285,8 +2282,7 @@ class TVImagesDisplayState extends State<TVImagesDisplay> {
 
 class TVSeasonImagesDisplay extends StatefulWidget {
   final String? api, title, name;
-  const TVSeasonImagesDisplay({Key? key, this.api, this.name, this.title})
-      : super(key: key);
+  const TVSeasonImagesDisplay({super.key, this.api, this.name, this.title});
 
   @override
   TVSeasonImagesDisplayState createState() => TVSeasonImagesDisplayState();
@@ -2467,8 +2463,7 @@ class TVSeasonImagesDisplayState extends State<TVSeasonImagesDisplay> {
 
 class TVEpisodeImagesDisplay extends StatefulWidget {
   final String? api, title, name;
-  const TVEpisodeImagesDisplay({Key? key, this.api, this.name, this.title})
-      : super(key: key);
+  const TVEpisodeImagesDisplay({super.key, this.api, this.name, this.title});
 
   @override
   TVEpisodeImagesDisplayState createState() => TVEpisodeImagesDisplayState();
@@ -2646,8 +2641,7 @@ class TVEpisodeImagesDisplayState extends State<TVEpisodeImagesDisplay> {
 
 class TVVideosDisplay extends StatefulWidget {
   final String? api, title, api2;
-  const TVVideosDisplay({Key? key, this.api, this.title, this.api2})
-      : super(key: key);
+  const TVVideosDisplay({super.key, this.api, this.title, this.api2});
 
   @override
   TVVideosDisplayState createState() => TVVideosDisplayState();
@@ -2853,9 +2847,9 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
 class TVCastTab extends StatefulWidget {
   final String? api;
   const TVCastTab({
-    Key? key,
+    super.key,
     this.api,
-  }) : super(key: key);
+  });
 
   @override
   TVCastTabState createState() => TVCastTabState();
@@ -3064,8 +3058,7 @@ class TVSeasonsTab extends StatefulWidget {
   final String? seriesName;
   final bool? adult;
   const TVSeasonsTab(
-      {Key? key, this.api, this.tvId, this.seriesName, required this.adult})
-      : super(key: key);
+      {super.key, this.api, this.tvId, this.seriesName, required this.adult});
 
   @override
   TVSeasonsTabState createState() => TVSeasonsTabState();
@@ -3257,7 +3250,7 @@ class TVSeasonsTabState extends State<TVSeasonsTab>
 
 class TVCrewTab extends StatefulWidget {
   final String? api;
-  const TVCrewTab({Key? key, this.api}) : super(key: key);
+  const TVCrewTab({super.key, this.api});
 
   @override
   TVCrewTabState createState() => TVCrewTabState();
@@ -3441,11 +3434,10 @@ class TVRecommendationsTab extends StatefulWidget {
   final int tvId;
   final bool? includeAdult;
   const TVRecommendationsTab(
-      {Key? key,
+      {super.key,
       required this.api,
       required this.tvId,
-      required this.includeAdult})
-      : super(key: key);
+      required this.includeAdult});
 
   @override
   TVRecommendationsTabState createState() => TVRecommendationsTabState();
@@ -3586,12 +3578,11 @@ class SimilarTVTab extends StatefulWidget {
   final bool? includeAdult;
   final String tvName;
   const SimilarTVTab(
-      {Key? key,
+      {super.key,
       required this.api,
       required this.tvId,
       required this.includeAdult,
-      required this.tvName})
-      : super(key: key);
+      required this.tvName});
 
   @override
   SimilarTVTabState createState() => SimilarTVTabState();
@@ -3724,7 +3715,7 @@ class SimilarTVTabState extends State<SimilarTVTab>
 
 class TVGenreDisplay extends StatefulWidget {
   final String? api;
-  const TVGenreDisplay({Key? key, this.api}) : super(key: key);
+  const TVGenreDisplay({super.key, this.api});
 
   @override
   TVGenreDisplayState createState() => TVGenreDisplayState();
@@ -3815,11 +3806,10 @@ class ParticularGenreTV extends StatefulWidget {
   final int genreId;
   final bool? includeAdult;
   const ParticularGenreTV(
-      {Key? key,
+      {super.key,
       required this.api,
       required this.genreId,
-      required this.includeAdult})
-      : super(key: key);
+      required this.includeAdult});
   @override
   ParticularGenreTVState createState() => ParticularGenreTVState();
 }
@@ -3933,7 +3923,7 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
 
 class TVInfoTable extends StatefulWidget {
   final String? api;
-  const TVInfoTable({Key? key, this.api}) : super(key: key);
+  const TVInfoTable({super.key, this.api});
 
   @override
   TVInfoTableState createState() => TVInfoTableState();
@@ -4146,9 +4136,9 @@ class TVInfoTableState extends State<TVInfoTable> {
 class TVSocialLinks extends StatefulWidget {
   final String? api;
   const TVSocialLinks({
-    Key? key,
+    super.key,
     this.api,
-  }) : super(key: key);
+  });
 
   @override
   TVSocialLinksState createState() => TVSocialLinksState();
@@ -4280,12 +4270,12 @@ class SeasonsList extends StatefulWidget {
   final String? seriesName;
 
   const SeasonsList({
-    Key? key,
+    super.key,
     this.api,
     this.title,
     this.tvId,
     this.seriesName,
-  }) : super(key: key);
+  });
 
   @override
   SeasonsListState createState() => SeasonsListState();
@@ -4474,12 +4464,12 @@ class EpisodeListWidget extends StatefulWidget {
   final String? seriesName;
   final String? posterPath;
   const EpisodeListWidget({
-    Key? key,
+    super.key,
     this.api,
     this.tvId,
     this.seriesName,
     required this.posterPath,
-  }) : super(key: key);
+  });
 
   @override
   EpisodeListWidgetState createState() => EpisodeListWidgetState();
@@ -4867,8 +4857,7 @@ class TVWatchProvidersDetails extends StatefulWidget {
   final String api;
   final String country;
   const TVWatchProvidersDetails(
-      {Key? key, required this.api, required this.country})
-      : super(key: key);
+      {super.key, required this.api, required this.country});
 
   @override
   State<TVWatchProvidersDetails> createState() =>
@@ -5058,7 +5047,7 @@ class _TVWatchProvidersDetailsState extends State<TVWatchProvidersDetails>
 
 class TVGenreListGrid extends StatefulWidget {
   final String api;
-  const TVGenreListGrid({Key? key, required this.api}) : super(key: key);
+  const TVGenreListGrid({super.key, required this.api});
 
   @override
   TVGenreListGridState createState() => TVGenreListGridState();
@@ -5168,7 +5157,7 @@ class TVGenreListGridState extends State<TVGenreListGrid>
 }
 
 class TVShowsFromWatchProviders extends StatefulWidget {
-  const TVShowsFromWatchProviders({Key? key}) : super(key: key);
+  const TVShowsFromWatchProviders({super.key});
 
   @override
   TVShowsFromWatchProvidersState createState() =>
@@ -5280,11 +5269,11 @@ class TVStreamingServicesWidget extends StatelessWidget {
   final String title;
   final int providerID;
   const TVStreamingServicesWidget({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.title,
     required this.providerID,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -5336,11 +5325,11 @@ class ParticularStreamingServiceTVShows extends StatefulWidget {
   final int providerID;
   final bool? includeAdult;
   const ParticularStreamingServiceTVShows({
-    Key? key,
+    super.key,
     required this.api,
     required this.providerID,
     required this.includeAdult,
-  }) : super(key: key);
+  });
   @override
   ParticularStreamingServiceTVShowsState createState() =>
       ParticularStreamingServiceTVShowsState();
@@ -5456,7 +5445,7 @@ class ParticularStreamingServiceTVShowsState
 
 class TVEpisodeCastTab extends StatefulWidget {
   final String? api;
-  const TVEpisodeCastTab({Key? key, this.api}) : super(key: key);
+  const TVEpisodeCastTab({super.key, this.api});
 
   @override
   TVEpisodeCastTabState createState() => TVEpisodeCastTabState();
@@ -5649,7 +5638,7 @@ class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
 
 class TVEpisodeGuestStarsTab extends StatefulWidget {
   final String? api;
-  const TVEpisodeGuestStarsTab({Key? key, this.api}) : super(key: key);
+  const TVEpisodeGuestStarsTab({super.key, this.api});
 
   @override
   TVEpisodeGuestStarsTabState createState() => TVEpisodeGuestStarsTabState();
@@ -5888,10 +5877,10 @@ class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
 
 class TVDetailQuickInfo extends StatelessWidget {
   const TVDetailQuickInfo({
-    Key? key,
+    super.key,
     required this.tvSeries,
     required this.heroId,
-  }) : super(key: key);
+  });
 
   final TV tvSeries;
   final String heroId;
@@ -6095,7 +6084,7 @@ class TVDetailQuickInfo extends StatelessWidget {
 }
 
 class TVDetailOptions extends StatefulWidget {
-  const TVDetailOptions({Key? key, required this.tvSeries}) : super(key: key);
+  const TVDetailOptions({super.key, required this.tvSeries});
 
   final TV tvSeries;
 
@@ -6253,7 +6242,7 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
 }
 
 class TVAbout extends StatefulWidget {
-  const TVAbout({Key? key, required this.tvSeries}) : super(key: key);
+  const TVAbout({super.key, required this.tvSeries});
 
   final TV tvSeries;
 
@@ -6403,13 +6392,13 @@ class _TVAboutState extends State<TVAbout> {
 
 class EpisodeAbout extends StatefulWidget {
   const EpisodeAbout({
-    Key? key,
+    super.key,
     required this.episodeList,
     this.episodes,
     this.tvId,
     required this.posterPath,
     this.seriesName,
-  }) : super(key: key);
+  });
   final EpisodeList episodeList;
   final List<EpisodeList>? episodes;
   final int? tvId;
@@ -6537,12 +6526,12 @@ class _EpisodeAboutState extends State<EpisodeAbout> {
 
 class TVEpisodeQuickInfo extends StatelessWidget {
   const TVEpisodeQuickInfo({
-    Key? key,
+    super.key,
     required this.episodeList,
     this.episodes,
     this.tvId,
     this.seriesName,
-  }) : super(key: key);
+  });
 
   final EpisodeList episodeList;
   final List<EpisodeList>? episodes;
@@ -6707,8 +6696,7 @@ class TVEpisodeQuickInfo extends StatelessWidget {
 }
 
 class TVEpisodeOptions extends StatelessWidget {
-  const TVEpisodeOptions({Key? key, required this.episodeList})
-      : super(key: key);
+  const TVEpisodeOptions({super.key, required this.episodeList});
   final EpisodeList episodeList;
 
   @override
@@ -6768,7 +6756,10 @@ class TVEpisodeOptions extends StatelessWidget {
               // width: 46,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -6806,12 +6797,11 @@ class TVEpisodeOptions extends StatelessWidget {
 
 class WatchNowButton extends StatefulWidget {
   const WatchNowButton(
-      {Key? key,
+      {super.key,
       required this.episode,
       required this.seriesName,
       required this.tvId,
-      required this.posterPath})
-      : super(key: key);
+      required this.posterPath});
 
   final String seriesName, posterPath;
   final int tvId;

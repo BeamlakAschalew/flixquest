@@ -100,9 +100,9 @@ class ZoroStreamSources {
 }
 
 class ZoroVideoLinks extends RegularVideoLinks {
-  ZoroVideoLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  ZoroVideoLinks.fromJson(super.json) : super.fromJson();
 }
 
 class ZoroSubLinks extends RegularSubtitleLinks {
-  ZoroSubLinks.fromJson(Map<String, dynamic> json) : super.fromJson(json);
+  ZoroSubLinks.fromJson(super.json) : super.fromJson();
 }

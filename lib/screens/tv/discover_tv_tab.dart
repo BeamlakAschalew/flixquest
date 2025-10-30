@@ -10,7 +10,7 @@ import '../../widgets/common_widgets.dart';
 import 'discover_tv_result.dart';
 
 class DiscoverTVTab extends StatefulWidget {
-  const DiscoverTVTab({Key? key}) : super(key: key);
+  const DiscoverTVTab({super.key});
 
   @override
   State<DiscoverTVTab> createState() => _DiscoverTVTabState();

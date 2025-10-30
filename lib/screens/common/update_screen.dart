@@ -17,7 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../provider/settings_provider.dart';
 
 class UpdateScreen extends StatefulWidget {
-  const UpdateScreen({Key? key, required this.isForced}) : super(key: key);
+  const UpdateScreen({super.key, required this.isForced});
 
   final bool isForced;
 
@@ -246,14 +246,13 @@ class ListItem extends StatefulWidget {
   String appVersion;
 
   ListItem(
-      {Key? key,
+      {super.key,
       required this.url,
       required this.onDownloadPlayPausedPressed,
       required this.onOpen,
       required this.appVersion,
       required this.onDelete,
-      this.downloadTask})
-      : super(key: key);
+      this.downloadTask});
 
   @override
   State<ListItem> createState() => _ListItemState();
@@ -401,8 +400,8 @@ class _ListItemState extends State<ListItem> {
 
 class UpdateBottom extends StatefulWidget {
   const UpdateBottom({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<UpdateBottom> createState() => _UpdateBottomState();

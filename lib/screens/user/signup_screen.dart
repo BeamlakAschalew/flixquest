@@ -14,7 +14,7 @@ import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key? key}) : super(key: key);
+  const SignupScreen({super.key});
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();

@@ -10,8 +10,7 @@ import '../../provider/settings_provider.dart';
 import '../../widgets/common_widgets.dart';
 
 class DiscoverTVResult extends StatefulWidget {
-  const DiscoverTVResult({required this.api, required this.page, Key? key})
-      : super(key: key);
+  const DiscoverTVResult({required this.api, required this.page, super.key});
   final String api;
   final int page;
 

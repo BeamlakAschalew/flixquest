@@ -16,9 +16,9 @@ class CollectionDetailsWidget extends StatefulWidget {
   final BelongsToCollection? belongsToCollection;
 
   const CollectionDetailsWidget({
-    Key? key,
+    super.key,
     this.belongsToCollection,
-  }) : super(key: key);
+  });
   @override
   CollectionDetailsWidgetState createState() => CollectionDetailsWidgetState();
 }

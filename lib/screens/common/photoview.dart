@@ -26,8 +26,7 @@ class HeroPhotoView extends StatefulWidget {
       this.stills,
       this.posters,
       this.backdrops,
-      Key? key})
-      : super(key: key);
+      super.key});
   final List<Backdrops>? backdrops;
   final List<Posters>? posters;
   final List<Stills>? stills;
