@@ -67,6 +67,7 @@ class EpisodeMetadata {
   final String? airDate;
   final int? runtime; // Duration in minutes
   final String? overview;
+  final num? voteAverage; // Rating
 
   EpisodeMetadata({
     required this.episodeId,
@@ -77,6 +78,7 @@ class EpisodeMetadata {
     this.airDate,
     this.runtime,
     this.overview,
+    this.voteAverage,
   });
 
   // Factory constructor to create from EpisodeList model
@@ -90,6 +92,7 @@ class EpisodeMetadata {
       airDate: episode.airDate,
       runtime: null, // Runtime might not be in EpisodeList
       overview: episode.overview,
+      voteAverage: episode.voteAverage,
     );
   }
 }

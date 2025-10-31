@@ -123,6 +123,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         onMovieRecommendationsTap: () {
           _showMovieRecommendationsBottomSheet();
         },
+        enableNextEpisodeButton: widget.mediaType == MediaType.tvShow,
         name: widget.mediaType == MediaType.movie
             ? '${widget.movieMetadata!.movieName!} (${widget.movieMetadata!.releaseYear!})'
             : '${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}',
@@ -262,12 +263,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         if (duration != null && duration.inSeconds > 0) {
           final progress = position.inSeconds / duration.inSeconds;
 
-          // Show button at 85% progress if there's a next episode, in fullscreen, and not manually dismissed
+          // Show button at 85% progress if there's a next episode, in fullscreen, not manually dismissed, and feature is enabled
           if (progress >= 0.85 &&
               !_showNextEpisodeButton &&
               !_nextEpisodeButtonDismissed &&
               _hasNextEpisode() &&
-              isFullScreen) {
+              isFullScreen &&
+              betterPlayerControlsConfiguration.enableNextEpisodeButton) {
             _showNextEpisodeButton = true;
             _showNextEpisodeOverlay();
           } else if ((progress < 0.85 || !isFullScreen) &&
@@ -722,18 +724,59 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      if (episode.runtime != null)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 4.0),
-                                          child: Text(
-                                            '${episode.runtime}m',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[400],
+                                      SizedBox(height: 4),
+                                      // Rating and runtime row
+                                      Row(
+                                        children: [
+                                          if (episode.voteAverage != null &&
+                                              episode.voteAverage! > 0)
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 6,
+                                                vertical: 2,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: widget.colors.first
+                                                    .withOpacity(0.2),
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                    Icons.star_rounded,
+                                                    size: 14,
+                                                    color: widget.colors.first,
+                                                  ),
+                                                  SizedBox(width: 2),
+                                                  Text(
+                                                    '${episode.voteAverage!.toStringAsFixed(1)}/10',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color:
+                                                          widget.colors.first,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ),
+                                          if (episode.voteAverage != null &&
+                                              episode.voteAverage! > 0 &&
+                                              episode.runtime != null)
+                                            SizedBox(width: 8),
+                                          if (episode.runtime != null)
+                                            Text(
+                                              '${episode.runtime}m',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey[400],
+                                              ),
+                                            ),
+                                        ],
+                                      ),
                                       if (episode.overview != null &&
                                           episode.overview!.isNotEmpty)
                                         Padding(
@@ -1023,6 +1066,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                       airDate: episode.airDate,
                       runtime: null,
                       overview: episode.overview,
+                      voteAverage: episode.voteAverage,
                     ))
                 .toList();
           });
@@ -1226,40 +1270,57 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                           .onSurface,
                                     ),
                                   ),
-                                  if (movie.releaseDate != null)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4.0),
-                                      child: Text(
-                                        movie.releaseDate!.split('-')[0],
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontFamily: 'Figtree',
-                                          color: Colors.grey[400],
+                                  SizedBox(height: 4),
+                                  // Rating and release year row
+                                  Row(
+                                    children: [
+                                      if (movie.voteAverage != null &&
+                                          movie.voteAverage! > 0)
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: widget.colors.first
+                                                .withOpacity(0.2),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.star_rounded,
+                                                size: 14,
+                                                color: widget.colors.first,
+                                              ),
+                                              SizedBox(width: 2),
+                                              Text(
+                                                '${movie.voteAverage!.toStringAsFixed(1)}/10',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: widget.colors.first,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  if (movie.voteAverage != null)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4.0),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.star,
-                                            color: Colors.amber,
-                                            size: 16,
+                                      if (movie.voteAverage != null &&
+                                          movie.voteAverage! > 0 &&
+                                          movie.releaseDate != null)
+                                        SizedBox(width: 8),
+                                      if (movie.releaseDate != null)
+                                        Text(
+                                          movie.releaseDate!.split('-')[0],
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[400],
                                           ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            '${movie.voteAverage!.toStringAsFixed(1)}/10',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              fontFamily: 'Figtree',
-                                              color: Colors.grey[400],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                        ),
+                                    ],
+                                  ),
                                   if (movie.overview != null &&
                                       movie.overview!.isNotEmpty)
                                     Padding(
@@ -1564,26 +1625,38 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
-                      if (currentMovie.voteAverage != null)
+                      if (currentMovie.voteAverage != null &&
+                          currentMovie.voteAverage! > 0)
                         Padding(
-                          padding: const EdgeInsets.only(top: 4.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                                size: 16,
-                              ),
-                              SizedBox(width: 4),
-                              Text(
-                                '${currentMovie.voteAverage!.toStringAsFixed(1)}/10',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontFamily: 'Figtree',
-                                  color: Colors.grey[400],
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: widget.colors.first.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.star_rounded,
+                                  size: 14,
+                                  color: widget.colors.first,
                                 ),
-                              ),
-                            ],
+                                SizedBox(width: 2),
+                                Text(
+                                  '${currentMovie.voteAverage!.toStringAsFixed(1)}/10',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: widget.colors.first,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       if (currentMovie.overview != null &&

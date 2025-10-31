@@ -1059,6 +1059,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                         airDate: episode.airDate,
                         runtime: null,
                         overview: episode.overview,
+                        voteAverage: episode.voteAverage,
                       ))
                   .toList();
             });
