@@ -223,8 +223,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               subtitleStyle:
                   Provider.of<SettingsProvider>(context).subtitleTextStyle,
               onEpisodeChange: (episodeId, episodeNumber, seasonNumber) async {
-                // Navigate back and reload with new episode
+                // Pop the current player to dispose it
                 Navigator.of(context).pop();
+                // Push new episode loader
                 await Navigator.push(
                   context,
                   MaterialPageRoute(

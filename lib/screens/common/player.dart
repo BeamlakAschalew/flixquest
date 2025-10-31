@@ -108,6 +108,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         onEpisodeListTap: () {
           _showEpisodeSelectionBottomSheet();
         },
+        enableMovieRecommendations: widget.mediaType == MediaType.movie &&
+            widget.movieMetadata?.recommendations != null &&
+            widget.movieMetadata!.recommendations!.isNotEmpty,
+        onMovieRecommendationsTap: () {
+          _showMovieRecommendationsBottomSheet();
+        },
         name: widget.mediaType == MediaType.movie
             ? '${widget.movieMetadata!.movieName!} (${widget.movieMetadata!.releaseYear!})'
             : '${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}',
@@ -404,6 +410,22 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     }
   }
 
+  /// Handles saving progress and analytics before switching to a new episode/movie
+  Future<void> _handleContentSwitch() async {
+    // Save current playback progress
+    if (widget.mediaType == MediaType.movie) {
+      await insertRecentMovieData();
+    } else {
+      await insertRecentEpisodeData();
+    }
+
+    // Send analytics for current viewing session
+    updateAndLogTotalStreamingDuration(playbackDurationInSeconds);
+
+    // Reset playback duration timer for next content
+    playbackDurationInSeconds = 0;
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     final isInBackground = (state == AppLifecycleState.paused) ||
@@ -530,15 +552,22 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                               : 0.0;
 
                       return InkWell(
-                        onTap: () {
+                        onTap: () async {
                           if (!isCurrentEpisode &&
                               widget.onEpisodeChange != null) {
-                            Navigator.pop(context);
-                            widget.onEpisodeChange!(
-                              episode.episodeId,
-                              episode.episodeNumber,
-                              episode.seasonNumber,
-                            );
+                            // Save progress and send analytics before switching
+                            await _handleContentSwitch();
+
+                            if (mounted) {
+                              // Close the bottom sheet first
+                              Navigator.pop(context);
+                              // Then trigger the callback to load new episode
+                              widget.onEpisodeChange!(
+                                episode.episodeId,
+                                episode.episodeNumber,
+                                episode.seasonNumber,
+                              );
+                            }
                           }
                         },
                         child: Container(
@@ -961,6 +990,201 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     }
   }
 
+  void _showMovieRecommendationsBottomSheet() {
+    if (widget.movieMetadata?.recommendations == null ||
+        widget.movieMetadata!.recommendations!.isEmpty) {
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 30.0, vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Recommended Movies',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 1),
+            // Movie List
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.movieMetadata!.recommendations!.length,
+                itemBuilder: (context, index) {
+                  final movie = widget.movieMetadata!.recommendations![index];
+
+                  return InkWell(
+                    onTap: () {
+                      // Close the bottom sheet
+                      Navigator.pop(context);
+                      // Show a message that movie loading will be implemented
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Loading ${movie.title}...'),
+                          backgroundColor: widget.colors.first,
+                        ),
+                      );
+                      // TODO: Implement movie switching similar to episode switching
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Theme.of(context).dividerColor,
+                            width: 0.5,
+                          ),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Movie poster
+                            Container(
+                              width: 100,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: Colors.grey[800],
+                              ),
+                              child: movie.posterPath != null
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        'https://image.tmdb.org/t/p/w300${movie.posterPath}',
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return Center(
+                                            child: Icon(
+                                              Icons.movie,
+                                              color: Colors.grey[600],
+                                              size: 40,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  : Center(
+                                      child: Icon(
+                                        Icons.movie,
+                                        color: Colors.grey[600],
+                                        size: 40,
+                                      ),
+                                    ),
+                            ),
+                            SizedBox(width: 12),
+                            // Movie info
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    movie.title,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'FigtreeSB',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                    ),
+                                  ),
+                                  if (movie.releaseDate != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4.0),
+                                      child: Text(
+                                        movie.releaseDate!.split('-')[0],
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontFamily: 'Figtree',
+                                          color: Colors.grey[400],
+                                        ),
+                                      ),
+                                    ),
+                                  if (movie.voteAverage != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4.0),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.star,
+                                            color: Colors.amber,
+                                            size: 16,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            '${movie.voteAverage!.toStringAsFixed(1)}/10',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontFamily: 'Figtree',
+                                              color: Colors.grey[400],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  if (movie.overview != null &&
+                                      movie.overview!.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8.0),
+                                      child: Text(
+                                        movie.overview!,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontFamily: 'Figtree',
+                                          color: Colors.grey[500],
+                                        ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _handleVideoFinished() {
     if (widget.mediaType == MediaType.tvShow &&
         widget.tvMetadata?.seasonEpisodes != null &&
@@ -979,11 +1203,16 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         // Show countdown dialog for next episode
         _showNextEpisodeCountdown(nextEpisode);
       }
-    } else if (widget.mediaType == MediaType.movie &&
-        widget.movieMetadata?.recommendations != null &&
-        widget.movieMetadata!.recommendations!.isNotEmpty) {
-      // Show recommended movie countdown
-      _showRecommendedMovieCountdown();
+    } else if (widget.mediaType == MediaType.movie) {
+      debugPrint(
+          'Movie finished. Recommendations: ${widget.movieMetadata?.recommendations?.length ?? 0}');
+      if (widget.movieMetadata?.recommendations != null &&
+          widget.movieMetadata!.recommendations!.isNotEmpty) {
+        // Show recommended movie countdown
+        _showRecommendedMovieCountdown();
+      } else {
+        debugPrint('No recommendations available for this movie');
+      }
     }
   }
 
@@ -1008,14 +1237,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 if (Navigator.canPop(dialogContext)) {
                   Navigator.of(dialogContext).pop();
                 }
-                // Trigger next episode
-                if (widget.onEpisodeChange != null) {
-                  widget.onEpisodeChange!(
-                    nextEpisode.episodeId,
-                    nextEpisode.episodeNumber,
-                    nextEpisode.seasonNumber,
-                  );
-                }
+                // Save progress and send analytics before switching
+                _handleContentSwitch().then((_) {
+                  // Trigger next episode
+                  if (widget.onEpisodeChange != null && mounted) {
+                    widget.onEpisodeChange!(
+                      nextEpisode.episodeId,
+                      nextEpisode.episodeNumber,
+                      nextEpisode.seasonNumber,
+                    );
+                  }
+                });
               }
             });
 
@@ -1083,12 +1315,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     dismissed = true;
                     countdownTimer?.cancel();
                     Navigator.of(dialogContext).pop();
+                    // Save progress and send analytics before switching
+                    await _handleContentSwitch();
                     // Trigger next episode immediately
-                    if (widget.onEpisodeChange != null) {
+                    if (widget.onEpisodeChange != null && mounted) {
                       widget.onEpisodeChange!(
                         nextEpisode.episodeId,
                         nextEpisode.episodeNumber,
@@ -1122,11 +1356,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       return;
     }
 
-    // Show the first recommended movie
-    final recommendedMovie = widget.movieMetadata!.recommendations!.first;
     int countdown = 10; // 10 second countdown
     Timer? countdownTimer;
     bool dismissed = false;
+    int selectedIndex = 0; // Track which movie is selected
 
     showDialog(
       context: context,
@@ -1147,9 +1380,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 // Trigger next movie (would need to be implemented)
                 // For now, just show a message
                 if (mounted) {
+                  final selectedMovie =
+                      widget.movieMetadata!.recommendations![selectedIndex];
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Loading recommended movie...'),
+                      content: Text('Loading ${selectedMovie.title}...'),
                       backgroundColor: widget.colors.first,
                     ),
                   );
@@ -1157,101 +1392,222 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               }
             });
 
+            final currentMovie =
+                widget.movieMetadata!.recommendations![selectedIndex];
+
             return AlertDialog(
               backgroundColor: Theme.of(context).colorScheme.surface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
               title: Text(
-                'Recommended Movie',
+                'Recommended Movies',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
+                  fontFamily: 'FigtreeBold',
                 ),
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Movie poster
-                  if (recommendedMovie.posterPath != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        'https://image.tmdb.org/t/p/w300${recommendedMovie.posterPath}',
-                        height: 200,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            height: 200,
-                            color: Colors.grey[800],
-                            child: Center(
-                              child: Icon(
-                                Icons.movie,
-                                color: Colors.grey[600],
-                                size: 50,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  SizedBox(height: 12),
-                  Text(
-                    recommendedMovie.title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  if (recommendedMovie.voteAverage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                            size: 16,
+              content: Container(
+                width: double.maxFinite,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.6,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Movie poster
+                      if (currentMovie.posterPath != null)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            'https://image.tmdb.org/t/p/w300${currentMovie.posterPath}',
+                            height: 180,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: 180,
+                                color: Colors.grey[800],
+                                child: Center(
+                                  child: Icon(
+                                    Icons.movie,
+                                    color: Colors.grey[600],
+                                    size: 50,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          SizedBox(width: 4),
-                          Text(
-                            '${recommendedMovie.voteAverage!.toStringAsFixed(1)}/10',
+                        ),
+                      SizedBox(height: 12),
+                      Text(
+                        currentMovie.title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'FigtreeSB',
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      if (currentMovie.voteAverage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 16,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                '${currentMovie.voteAverage!.toStringAsFixed(1)}/10',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontFamily: 'Figtree',
+                                  color: Colors.grey[400],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      if (currentMovie.overview != null &&
+                          currentMovie.overview!.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            currentMovie.overview!,
                             style: TextStyle(
                               fontSize: 13,
+                              fontFamily: 'Figtree',
                               color: Colors.grey[400],
                             ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
-                    ),
-                  if (recommendedMovie.overview != null &&
-                      recommendedMovie.overview!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        recommendedMovie.overview!,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[400],
                         ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
+                      SizedBox(height: 16),
+                      Center(
+                        child: Text(
+                          'Playing in $countdown seconds...',
+                          style: TextStyle(
+                            color: widget.colors.first,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'FigtreeBold',
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
-                    ),
-                  SizedBox(height: 16),
-                  Center(
-                    child: Text(
-                      'Playing in $countdown seconds...',
-                      style: TextStyle(
-                        color: widget.colors.first,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
+                      // Show other recommendations
+                      if (widget.movieMetadata!.recommendations!.length >
+                          1) ...[
+                        SizedBox(height: 16),
+                        Divider(),
+                        SizedBox(height: 8),
+                        Text(
+                          'More Recommendations',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'FigtreeSB',
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                        Container(
+                          height: 140,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount:
+                                widget.movieMetadata!.recommendations!.length,
+                            itemBuilder: (context, index) {
+                              final movie =
+                                  widget.movieMetadata!.recommendations![index];
+                              final isSelected = index == selectedIndex;
+
+                              return GestureDetector(
+                                onTap: () {
+                                  setDialogState(() {
+                                    selectedIndex = index;
+                                    countdown = 10; // Reset countdown
+                                  });
+                                },
+                                child: Container(
+                                  width: 90,
+                                  margin: EdgeInsets.only(right: 8),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: isSelected
+                                        ? Border.all(
+                                            color: widget.colors.first,
+                                            width: 2,
+                                          )
+                                        : null,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(6),
+                                        child: movie.posterPath != null
+                                            ? Image.network(
+                                                'https://image.tmdb.org/t/p/w185${movie.posterPath}',
+                                                height: 110,
+                                                width: 90,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  return Container(
+                                                    height: 110,
+                                                    width: 90,
+                                                    color: Colors.grey[800],
+                                                    child: Icon(
+                                                      Icons.movie,
+                                                      color: Colors.grey[600],
+                                                      size: 30,
+                                                    ),
+                                                  );
+                                                },
+                                              )
+                                            : Container(
+                                                height: 110,
+                                                width: 90,
+                                                color: Colors.grey[800],
+                                                child: Icon(
+                                                  Icons.movie,
+                                                  color: Colors.grey[600],
+                                                  size: 30,
+                                                ),
+                                              ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        movie.title,
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontFamily: 'Figtree',
+                                          color: isSelected
+                                              ? widget.colors.first
+                                              : Colors.grey[300],
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -1262,7 +1618,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   },
                   child: Text(
                     'Cancel',
-                    style: TextStyle(color: Colors.grey[400]),
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontFamily: 'Figtree',
+                    ),
                   ),
                 ),
                 ElevatedButton(
@@ -1270,11 +1629,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     dismissed = true;
                     countdownTimer?.cancel();
                     Navigator.of(dialogContext).pop();
-                    // Trigger next movie immediately
+                    // Trigger selected movie immediately
                     if (mounted) {
+                      final selectedMovie =
+                          widget.movieMetadata!.recommendations![selectedIndex];
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Loading ${recommendedMovie.title}...'),
+                          content: Text('Loading ${selectedMovie.title}...'),
                           backgroundColor: widget.colors.first,
                         ),
                       );
@@ -1285,7 +1646,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   ),
                   child: Text(
                     'Play Now',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'FigtreeSB',
+                    ),
                   ),
                 ),
               ],
@@ -1372,13 +1736,19 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         opacity: _showNextEpisodeButton ? 1.0 : 0.0,
         duration: Duration(milliseconds: 300),
         child: GestureDetector(
-          onTap: () {
+          onTap: () async {
             if (widget.onEpisodeChange != null) {
-              widget.onEpisodeChange!(
-                nextEpisode.episodeId,
-                nextEpisode.episodeNumber,
-                nextEpisode.seasonNumber,
-              );
+              // Save progress and send analytics before switching
+              await _handleContentSwitch();
+
+              if (mounted) {
+                // Trigger next episode
+                widget.onEpisodeChange!(
+                  nextEpisode.episodeId,
+                  nextEpisode.episodeNumber,
+                  nextEpisode.seasonNumber,
+                );
+              }
             }
           },
           child: Container(

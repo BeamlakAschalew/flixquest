@@ -877,6 +877,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           isProxyEnabled,
           proxyUrl,
         ).then((movies) {
+          debugPrint('Fetched ${movies.length} movie recommendations');
           if (movies.isNotEmpty) {
             setState(() {
               // Get top 10 recommendations
@@ -884,6 +885,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               widget.metadata.recommendations = topRecommendations
                   .map((movie) => MovieRecommendation.fromMovie(movie))
                   .toList();
+              debugPrint(
+                  'Set ${widget.metadata.recommendations?.length} recommendations in metadata');
             });
           }
         });
