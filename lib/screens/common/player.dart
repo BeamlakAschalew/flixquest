@@ -76,12 +76,19 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   Timer? _progressCheckTimer;
   OverlayEntry? _nextEpisodeOverlay;
 
+  // Track which season is currently being browsed in the episode list
+  int? _browsedSeasonNumber;
+
   late SettingsProvider settings;
 
   @override
   void initState() {
     settings = Provider.of<SettingsProvider>(context, listen: false);
     super.initState();
+
+    // Initialize browsed season to the currently playing season
+    _browsedSeasonNumber = widget.tvMetadata?.seasonNumber;
+
     String backgroundColorString = widget.settings.subtitleBackgroundColor;
     String foregroundColorString = widget.settings.subtitleForegroundColor;
     String hexColorBackground =
@@ -499,7 +506,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     SizedBox(width: 60),
                   Expanded(
                     child: Text(
-                      'Season ${widget.tvMetadata!.seasonNumber} Episodes',
+                      'Season ${_browsedSeasonNumber ?? widget.tvMetadata!.seasonNumber} Episodes',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -568,7 +575,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                             // Save progress and send analytics before switching
                             await _handleContentSwitch();
 
-                            if (mounted) {
+                            if (context.mounted) {
                               // Close the bottom sheet first
                               Navigator.pop(context);
                               // Then trigger the callback to load new episode
@@ -816,14 +823,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
                   return InkWell(
                     onTap: () async {
-                      if (!isCurrentSeason) {
+                      // Check if we need to fetch episodes (either different season OR episodes from wrong season are loaded)
+                      if (!isCurrentSeason ||
+                          _browsedSeasonNumber != season.seasonNumber) {
                         // Close season selector first
                         Navigator.pop(context);
 
-                        // Show loading indicator and store the dialog context
-                        final loadingContext = this.context;
+                        // Show loading indicator
                         showDialog(
-                          context: loadingContext,
+                          context: this.context,
                           barrierDismissible: false,
                           builder: (dialogContext) => Center(
                             child: CircularProgressIndicator(
@@ -835,9 +843,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                         // Fetch episodes for the selected season
                         await _fetchEpisodesForSeason(season.seasonNumber);
 
-                        // Close loading dialog using the correct context
-                        if (mounted && Navigator.canPop(loadingContext)) {
-                          Navigator.of(loadingContext).pop();
+                        // Close loading dialog
+                        if (mounted) {
+                          Navigator.of(this.context).pop();
                         }
 
                         // Show episode list for the new season
@@ -845,7 +853,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                           _showEpisodeSelectionBottomSheet();
                         }
                       } else {
-                        // Already on this season, just go back to episode list
+                        // Already showing correct season's episodes, just go back
                         Navigator.pop(context);
                         _showEpisodeSelectionBottomSheet();
                       }
@@ -996,6 +1004,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       ).then((value) {
         if (value.episodes != null && value.episodes!.isNotEmpty) {
           setState(() {
+            // Update the browsed season number to show in the title
+            _browsedSeasonNumber = seasonNumber;
+
             // DON'T update widget.tvMetadata!.seasonNumber here!
             // That field represents the CURRENTLY PLAYING episode's season,
             // not the season being browsed in the list.
@@ -1519,7 +1530,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                   'https://image.tmdb.org/t/p/w500${currentMovie.posterPath}',
                               height: 240,
                               fit: BoxFit.contain,
-                              placeholder: (context, url) => Container(
+                              placeholder: (context, url) => SizedBox(
                                 height: 240,
                                 width: 160,
                                 child: Center(
@@ -1618,7 +1629,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                           ),
                         ),
                         SizedBox(height: 12),
-                        Container(
+                        SizedBox(
                           height: 140,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
