@@ -20,6 +20,7 @@ import '../../provider/settings_provider.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../api/endpoints.dart';
 import '../../functions/network.dart';
+import '../movie/movie_video_loader.dart';
 
 class PlayerOne extends StatefulWidget {
   const PlayerOne(
@@ -523,7 +524,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     itemBuilder: (context, index) {
                       final episode = widget.tvMetadata!.seasonEpisodes![index];
                       final isCurrentEpisode = episode.episodeNumber ==
-                          widget.tvMetadata!.episodeNumber;
+                              widget.tvMetadata!.episodeNumber &&
+                          episode.seasonNumber ==
+                              widget.tvMetadata!.seasonNumber;
 
                       // Check if episode is in recently watched
                       final recentEpisode = recentProvider.episodes.firstWhere(
@@ -971,8 +974,20 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         if (value.episodes != null && value.episodes!.isNotEmpty) {
           setState(() {
             widget.tvMetadata!.seasonNumber = seasonNumber;
+            // Explicitly pass seasonNumber to ensure it's correct
             widget.tvMetadata!.seasonEpisodes = value.episodes!
-                .map((episode) => EpisodeMetadata.fromEpisodeList(episode))
+                .map((episode) => EpisodeMetadata(
+                      episodeId: episode.episodeId ?? 0,
+                      episodeName:
+                          episode.name ?? 'Episode ${episode.episodeNumber}',
+                      episodeNumber: episode.episodeNumber ?? 0,
+                      seasonNumber:
+                          seasonNumber, // Use the fetched season number
+                      stillPath: episode.stillPath,
+                      airDate: episode.airDate,
+                      runtime: null,
+                      overview: episode.overview,
+                    ))
                 .toList();
           });
         }
@@ -983,6 +998,62 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to load season episodes'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _loadRecommendedMovie(int movieId) async {
+    try {
+      // Save progress and analytics for current movie before switching
+      if (widget.movieMetadata != null) {
+        await _handleContentSwitch();
+      }
+
+      // Find the movie in recommendations to get all its details
+      final recommendedMovie = widget.movieMetadata?.recommendations
+          ?.firstWhere((movie) => movie.movieId == movieId);
+
+      if (recommendedMovie == null) {
+        throw Exception('Movie not found in recommendations');
+      }
+
+      // Create new movie metadata from the recommendation
+      final newMetadata = MovieStreamMetadata(
+        movieId: recommendedMovie.movieId,
+        movieName: recommendedMovie.title,
+        posterPath: recommendedMovie.posterPath,
+        backdropPath: recommendedMovie.backdropPath,
+        releaseDate: recommendedMovie.releaseDate,
+        releaseYear: recommendedMovie.releaseDate != null
+            ? DateTime.tryParse(recommendedMovie.releaseDate!)?.year
+            : null,
+        isAdult: false, // This info is not in recommendations
+        elapsed: 0, // New movie, no elapsed time
+      );
+
+      // Use pushReplacement to replace current player with video loader
+      // This prevents screen stacking
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MovieVideoLoader(
+              download: false,
+              metadata: newMetadata,
+              route: StreamRoute.flixHQ,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Failed to load movie: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load movie: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -1045,14 +1116,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     onTap: () {
                       // Close the bottom sheet
                       Navigator.pop(context);
-                      // Show a message that movie loading will be implemented
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Loading ${movie.title}...'),
-                          backgroundColor: widget.colors.first,
-                        ),
-                      );
-                      // TODO: Implement movie switching similar to episode switching
+                      // Load the selected movie
+                      _loadRecommendedMovie(movie.movieId);
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -1377,17 +1442,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 if (Navigator.canPop(dialogContext)) {
                   Navigator.of(dialogContext).pop();
                 }
-                // Trigger next movie (would need to be implemented)
-                // For now, just show a message
+                // Load the selected recommended movie
                 if (mounted) {
                   final selectedMovie =
                       widget.movieMetadata!.recommendations![selectedIndex];
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Loading ${selectedMovie.title}...'),
-                      backgroundColor: widget.colors.first,
-                    ),
-                  );
+                  _loadRecommendedMovie(selectedMovie.movieId);
                 }
               }
             });
@@ -1420,26 +1479,28 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     children: [
                       // Movie poster
                       if (currentMovie.posterPath != null)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            'https://image.tmdb.org/t/p/w300${currentMovie.posterPath}',
-                            height: 180,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                height: 180,
-                                color: Colors.grey[800],
-                                child: Center(
-                                  child: Icon(
-                                    Icons.movie,
-                                    color: Colors.grey[600],
-                                    size: 50,
+                        Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              'https://image.tmdb.org/t/p/w500${currentMovie.posterPath}',
+                              height: 240,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 240,
+                                  width: 160,
+                                  color: Colors.grey[800],
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.movie,
+                                      color: Colors.grey[600],
+                                      size: 50,
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       SizedBox(height: 12),
@@ -1629,16 +1690,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     dismissed = true;
                     countdownTimer?.cancel();
                     Navigator.of(dialogContext).pop();
-                    // Trigger selected movie immediately
+                    // Load selected movie immediately
                     if (mounted) {
                       final selectedMovie =
                           widget.movieMetadata!.recommendations![selectedIndex];
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Loading ${selectedMovie.title}...'),
-                          backgroundColor: widget.colors.first,
-                        ),
-                      );
+                      _loadRecommendedMovie(selectedMovie.movieId);
                     }
                   },
                   style: ElevatedButton.styleFrom(

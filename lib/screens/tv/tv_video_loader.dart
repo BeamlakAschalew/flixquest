@@ -208,53 +208,60 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           'TV series season number': '${widget.metadata.seasonNumber}',
           'TV series episode number': '${widget.metadata.episodeNumber}'
         });
-        Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) {
-            return PlayerOne(
-              mediaType: MediaType.tvShow,
-              sources: reversedVids,
-              subs: subs,
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).colorScheme.surface
-              ],
-              settings: settings,
-              tvMetadata: widget.metadata,
-              subtitleStyle:
-                  Provider.of<SettingsProvider>(context).subtitleTextStyle,
-              onEpisodeChange: (episodeId, episodeNumber, seasonNumber) async {
-                // Pop the current player to dispose it
-                Navigator.of(context).pop();
-                // Push new episode loader
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TVVideoLoader(
-                      download: false,
-                      route: widget.route,
-                      metadata: TVStreamMetadata(
-                        elapsed: null,
-                        episodeId: episodeId,
-                        episodeName: widget.metadata.seasonEpisodes!
-                            .firstWhere((e) => e.episodeId == episodeId)
-                            .episodeName,
-                        episodeNumber: episodeNumber,
-                        posterPath: widget.metadata.posterPath,
-                        seasonNumber: seasonNumber,
-                        seriesName: widget.metadata.seriesName,
-                        tvId: widget.metadata.tvId,
-                        airDate: widget.metadata.seasonEpisodes!
-                            .firstWhere((e) => e.episodeId == episodeId)
-                            .airDate,
-                        seasonEpisodes: widget.metadata.seasonEpisodes,
+        // Use pushAndRemoveUntil to remove VideoLoader from stack
+        // This ensures clean navigation: only the new player remains
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return PlayerOne(
+                mediaType: MediaType.tvShow,
+                sources: reversedVids,
+                subs: subs,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.surface
+                ],
+                settings: settings,
+                tvMetadata: widget.metadata,
+                subtitleStyle:
+                    Provider.of<SettingsProvider>(context).subtitleTextStyle,
+                onEpisodeChange:
+                    (episodeId, episodeNumber, seasonNumber) async {
+                  // Use pushReplacement to replace current player with video loader
+                  // This prevents screen stacking
+                  await Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TVVideoLoader(
+                        download: false,
+                        route: widget.route,
+                        metadata: TVStreamMetadata(
+                          elapsed: null,
+                          episodeId: episodeId,
+                          episodeName: widget.metadata.seasonEpisodes!
+                              .firstWhere((e) => e.episodeId == episodeId)
+                              .episodeName,
+                          episodeNumber: episodeNumber,
+                          posterPath: widget.metadata.posterPath,
+                          seasonNumber: seasonNumber,
+                          seriesName: widget.metadata.seriesName,
+                          tvId: widget.metadata.tvId,
+                          airDate: widget.metadata.seasonEpisodes!
+                              .firstWhere((e) => e.episodeId == episodeId)
+                              .airDate,
+                          seasonEpisodes: widget.metadata.seasonEpisodes,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            );
-          },
-        )).then((value) async {
+                  );
+                },
+              );
+            },
+          ),
+          (route) =>
+              route.isFirst, // Keep only the first route (home/previous screen)
+        ).then((value) async {
           if (value != null) {
             Function callback = value;
             await callback.call();
@@ -1039,8 +1046,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         ).then((value) {
           if (value.episodes != null && value.episodes!.isNotEmpty) {
             setState(() {
+              // Explicitly pass seasonNumber to ensure it's correct
               widget.metadata.seasonEpisodes = value.episodes!
-                  .map((episode) => EpisodeMetadata.fromEpisodeList(episode))
+                  .map((episode) => EpisodeMetadata(
+                        episodeId: episode.episodeId ?? 0,
+                        episodeName:
+                            episode.name ?? 'Episode ${episode.episodeNumber}',
+                        episodeNumber: episode.episodeNumber ?? 0,
+                        seasonNumber: widget.metadata
+                            .seasonNumber!, // Use the current season number
+                        stillPath: episode.stillPath,
+                        airDate: episode.airDate,
+                        runtime: null,
+                        overview: episode.overview,
+                      ))
                   .toList();
             });
           }

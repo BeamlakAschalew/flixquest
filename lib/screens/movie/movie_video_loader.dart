@@ -203,23 +203,30 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           'Movie id': widget.metadata.movieId,
           'Is Movie adult?': widget.metadata.isAdult ?? 'unknown',
         });
-        Navigator.pushReplacement(context, MaterialPageRoute(
-          builder: (context) {
-            return PlayerOne(
-              mediaType: MediaType.movie,
-              sources: reversedVids,
-              subs: subs,
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).colorScheme.surface
-              ],
-              settings: settings,
-              movieMetadata: widget.metadata,
-              subtitleStyle:
-                  Provider.of<SettingsProvider>(context).subtitleTextStyle,
-            );
-          },
-        )).then((value) async {
+        // Use pushAndRemoveUntil to remove VideoLoader from stack
+        // This ensures clean navigation: only the new player remains
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return PlayerOne(
+                mediaType: MediaType.movie,
+                sources: reversedVids,
+                subs: subs,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.surface
+                ],
+                settings: settings,
+                movieMetadata: widget.metadata,
+                subtitleStyle:
+                    Provider.of<SettingsProvider>(context).subtitleTextStyle,
+              );
+            },
+          ),
+          (route) =>
+              route.isFirst, // Keep only the first route (home/previous screen)
+        ).then((value) async {
           if (value != null) {
             Function callback = value;
             await callback.call();
