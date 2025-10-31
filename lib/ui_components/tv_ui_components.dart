@@ -109,7 +109,7 @@ class HorizontalScrollingTVList extends StatelessWidget {
                               child: Container(
                                 margin: const EdgeInsets.all(3),
                                 alignment: Alignment.topLeft,
-                                width: 50,
+                                padding: EdgeInsets.symmetric(horizontal: 3),
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
@@ -122,9 +122,14 @@ class HorizontalScrollingTVList extends StatelessWidget {
                                     const Icon(
                                       Icons.star_rounded,
                                     ),
-                                    Text(tvList![index]
-                                        .voteAverage!
-                                        .toStringAsFixed(1))
+                                    Text(tvList![index].voteAverage! % 1 == 0
+                                        ? tvList![index]
+                                            .voteAverage!
+                                            .toInt()
+                                            .toString()
+                                        : tvList![index]
+                                            .voteAverage!
+                                            .toStringAsFixed(1))
                                   ],
                                 ),
                               ),
@@ -269,9 +274,14 @@ class TVListView extends StatelessWidget {
                                     Icons.star_rounded,
                                   ),
                                   Text(
-                                    tvList![index]
-                                        .voteAverage!
-                                        .toStringAsFixed(1),
+                                    tvList![index].voteAverage! % 1 == 0
+                                        ? tvList![index]
+                                            .voteAverage!
+                                            .toInt()
+                                            .toString()
+                                        : tvList![index]
+                                            .voteAverage!
+                                            .toStringAsFixed(1),
                                     style:
                                         const TextStyle(fontFamily: 'Figtree'),
                                   ),
@@ -394,7 +404,7 @@ class TVGridView extends StatelessWidget {
                               child: Container(
                                 margin: const EdgeInsets.all(3),
                                 alignment: Alignment.topLeft,
-                                width: 53,
+                                padding: EdgeInsets.symmetric(horizontal: 3),
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
@@ -407,9 +417,14 @@ class TVGridView extends StatelessWidget {
                                     const Icon(
                                       Icons.star_rounded,
                                     ),
-                                    Text(tvList![index]
-                                        .voteAverage!
-                                        .toStringAsFixed(1))
+                                    Text(tvList![index].voteAverage! % 1 == 0
+                                        ? tvList![index]
+                                            .voteAverage!
+                                            .toInt()
+                                            .toString()
+                                        : tvList![index]
+                                            .voteAverage!
+                                            .toStringAsFixed(1))
                                   ],
                                 ),
                               ),

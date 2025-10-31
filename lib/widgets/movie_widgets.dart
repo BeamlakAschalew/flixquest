@@ -551,7 +551,8 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                   margin:
                                                       const EdgeInsets.all(3),
                                                   alignment: Alignment.topLeft,
-                                                  width: 50,
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 3),
                                                   height: 25,
                                                   decoration: BoxDecoration(
                                                       borderRadius:
@@ -569,8 +570,17 @@ class ScrollingMoviesState extends State<ScrollingMovies>
                                                         Icons.star_rounded,
                                                       ),
                                                       Text(moviesList![index]
-                                                          .voteAverage!
-                                                          .toStringAsFixed(1))
+                                                                      .voteAverage! %
+                                                                  1 ==
+                                                              0
+                                                          ? moviesList![index]
+                                                              .voteAverage!
+                                                              .toInt()
+                                                              .toString()
+                                                          : moviesList![index]
+                                                              .voteAverage!
+                                                              .toStringAsFixed(
+                                                                  1))
                                                     ],
                                                   ),
                                                 ),

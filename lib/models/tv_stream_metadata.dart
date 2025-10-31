@@ -8,7 +8,11 @@ class TVStreamMetadata {
   int? elapsed;
   int? tvId;
   String? airDate;
-  List<EpisodeMetadata>? seasonEpisodes; // List of all episodes in the season
+  List<EpisodeMetadata>?
+      seasonEpisodes; // List of all episodes in the current season
+  List<SeasonMetadata>? allSeasons; // List of all available seasons
+  Function(int seasonNumber)?
+      onSeasonChange; // Callback to fetch episodes for a season
 
   TVStreamMetadata({
     required this.elapsed,
@@ -21,7 +25,36 @@ class TVStreamMetadata {
     required this.tvId,
     required this.airDate,
     this.seasonEpisodes,
+    this.allSeasons,
+    this.onSeasonChange,
   });
+}
+
+// Metadata for each season
+class SeasonMetadata {
+  final int seasonNumber;
+  final String seasonName;
+  final int episodeCount;
+  final String? posterPath;
+  final String? overview;
+
+  SeasonMetadata({
+    required this.seasonNumber,
+    required this.seasonName,
+    required this.episodeCount,
+    this.posterPath,
+    this.overview,
+  });
+
+  factory SeasonMetadata.fromSeason(dynamic season) {
+    return SeasonMetadata(
+      seasonNumber: season.seasonNumber ?? 0,
+      seasonName: season.name ?? 'Season ${season.seasonNumber}',
+      episodeCount: season.episodeCount ?? 0,
+      posterPath: season.posterPath,
+      overview: season.overview,
+    );
+  }
 }
 
 // Metadata for each episode in the season

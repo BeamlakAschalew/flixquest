@@ -91,6 +91,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   void loadVideo() async {
     try {
+      // Fetch movie recommendations first
+      await _fetchMovieRecommendations();
+
       var isBookmarked = await recentlyWatchedMoviesController
           .contain(widget.metadata.movieId!);
       int elapsed = 0;
@@ -856,6 +859,43 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       }
     } on Exception catch (e) {
       GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Zoro');
+    }
+  }
+
+  Future<void> _fetchMovieRecommendations() async {
+    try {
+      if (widget.metadata.movieId != null) {
+        final isProxyEnabled =
+            Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+        final proxyUrl =
+            Provider.of<AppDependencyProvider>(context, listen: false)
+                .tmdbProxy;
+
+        // Fetch movie recommendations
+        await fetchMovies(
+          Endpoints.getMovieRecommendations(widget.metadata.movieId!, 1, 'en'),
+          isProxyEnabled,
+          proxyUrl,
+        ).then((movies) {
+          if (movies.isNotEmpty) {
+            setState(() {
+              // Get top 10 recommendations
+              final topRecommendations = movies.take(10).toList();
+              widget.metadata.recommendations = topRecommendations
+                  .map((movie) => MovieRecommendation.fromMovie(movie))
+                  .toList();
+            });
+          }
+        });
+
+        // Set the movie change callback
+        widget.metadata.onMovieChange = (int movieId) async {
+          // This will be called from the player when user selects a movie
+        };
+      }
+    } catch (e) {
+      // If fetching recommendations fails, continue without them
+      debugPrint('Failed to fetch movie recommendations: $e');
     }
   }
 }

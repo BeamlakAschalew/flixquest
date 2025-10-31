@@ -107,8 +107,8 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                               left: 0,
                               child: Container(
                                 margin: const EdgeInsets.all(3),
+                                padding: EdgeInsets.symmetric(horizontal: 3),
                                 alignment: Alignment.topLeft,
-                                width: 50,
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
@@ -121,9 +121,14 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                     const Icon(
                                       Icons.star_rounded,
                                     ),
-                                    Text(movieList![index]
-                                        .voteAverage!
-                                        .toStringAsFixed(1))
+                                    Text(movieList![index].voteAverage! % 1 == 0
+                                        ? movieList![index]
+                                            .voteAverage!
+                                            .toInt()
+                                            .toString()
+                                        : movieList![index]
+                                            .voteAverage!
+                                            .toStringAsFixed(1))
                                   ],
                                 ),
                               ),
@@ -268,9 +273,14 @@ class MovieListView extends StatelessWidget {
                                     Icons.star_rounded,
                                   ),
                                   Text(
-                                    moviesList![index]
-                                        .voteAverage!
-                                        .toStringAsFixed(1),
+                                    moviesList![index].voteAverage! % 1 == 0
+                                        ? moviesList![index]
+                                            .voteAverage!
+                                            .toInt()
+                                            .toString()
+                                        : moviesList![index]
+                                            .voteAverage!
+                                            .toStringAsFixed(1),
                                     style:
                                         const TextStyle(fontFamily: 'Figtree'),
                                   ),
@@ -394,7 +404,7 @@ class MovieGridView extends StatelessWidget {
                               child: Container(
                                 margin: const EdgeInsets.all(3),
                                 alignment: Alignment.topLeft,
-                                width: 53,
+                                padding: EdgeInsets.symmetric(horizontal: 3),
                                 height: 25,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
@@ -407,9 +417,15 @@ class MovieGridView extends StatelessWidget {
                                     const Icon(
                                       Icons.star_rounded,
                                     ),
-                                    Text(moviesList![index]
-                                        .voteAverage!
-                                        .toStringAsFixed(1))
+                                    Text(
+                                        moviesList![index].voteAverage! % 1 == 0
+                                            ? moviesList![index]
+                                                .voteAverage!
+                                                .toInt()
+                                                .toString()
+                                            : moviesList![index]
+                                                .voteAverage!
+                                                .toStringAsFixed(1))
                                   ],
                                 ),
                               ),

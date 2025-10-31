@@ -1011,7 +1011,22 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             Provider.of<AppDependencyProvider>(context, listen: false)
                 .tmdbProxy;
 
-        // Fetch season details to get all episodes
+        // First, fetch TV details to get all seasons
+        await fetchTVDetails(
+          Endpoints.tvDetailsUrl(widget.metadata.tvId!, 'en'),
+          isProxyEnabled,
+          proxyUrl,
+        ).then((tvDetails) {
+          if (tvDetails.seasons != null && tvDetails.seasons!.isNotEmpty) {
+            setState(() {
+              widget.metadata.allSeasons = tvDetails.seasons!
+                  .map((season) => SeasonMetadata.fromSeason(season))
+                  .toList();
+            });
+          }
+        });
+
+        // Then fetch current season's episodes
         await fetchTVDetails(
           Endpoints.getSeasonDetails(
             widget.metadata.tvId!,
@@ -1029,6 +1044,12 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             });
           }
         });
+
+        // Set the season change callback
+        widget.metadata.onSeasonChange = (int seasonNumber) async {
+          // This will be called from the player when user changes season
+          // We don't need to implement the fetch here, it's handled in the player
+        };
       }
     } catch (e) {
       // If fetching episodes fails, continue without them
