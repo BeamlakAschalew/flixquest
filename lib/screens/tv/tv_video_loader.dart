@@ -92,6 +92,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   void loadVideo() async {
     try {
+      // Fetch season episodes first
+      await _fetchSeasonEpisodes();
+
       var isBookmarked = await recentlyWatchedEpisodeController
           .contain(widget.metadata.episodeId!);
       int elapsed = 0;
@@ -219,6 +222,35 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
               tvMetadata: widget.metadata,
               subtitleStyle:
                   Provider.of<SettingsProvider>(context).subtitleTextStyle,
+              onEpisodeChange: (episodeId, episodeNumber, seasonNumber) async {
+                // Navigate back and reload with new episode
+                Navigator.of(context).pop();
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TVVideoLoader(
+                      download: false,
+                      route: widget.route,
+                      metadata: TVStreamMetadata(
+                        elapsed: null,
+                        episodeId: episodeId,
+                        episodeName: widget.metadata.seasonEpisodes!
+                            .firstWhere((e) => e.episodeId == episodeId)
+                            .episodeName,
+                        episodeNumber: episodeNumber,
+                        posterPath: widget.metadata.posterPath,
+                        seasonNumber: seasonNumber,
+                        seriesName: widget.metadata.seriesName,
+                        tvId: widget.metadata.tvId,
+                        airDate: widget.metadata.seasonEpisodes!
+                            .firstWhere((e) => e.episodeId == episodeId)
+                            .airDate,
+                        seasonEpisodes: widget.metadata.seasonEpisodes,
+                      ),
+                    ),
+                  ),
+                );
+              },
             );
           },
         )).then((value) async {
@@ -966,6 +998,41 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       }
     } on Exception catch (e) {
       GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Zoro');
+    }
+  }
+
+  Future<void> _fetchSeasonEpisodes() async {
+    try {
+      if (widget.metadata.tvId != null &&
+          widget.metadata.seasonNumber != null) {
+        final isProxyEnabled =
+            Provider.of<SettingsProvider>(context, listen: false).enableProxy;
+        final proxyUrl =
+            Provider.of<AppDependencyProvider>(context, listen: false)
+                .tmdbProxy;
+
+        // Fetch season details to get all episodes
+        await fetchTVDetails(
+          Endpoints.getSeasonDetails(
+            widget.metadata.tvId!,
+            widget.metadata.seasonNumber!,
+            'en',
+          ),
+          isProxyEnabled,
+          proxyUrl,
+        ).then((value) {
+          if (value.episodes != null && value.episodes!.isNotEmpty) {
+            setState(() {
+              widget.metadata.seasonEpisodes = value.episodes!
+                  .map((episode) => EpisodeMetadata.fromEpisodeList(episode))
+                  .toList();
+            });
+          }
+        });
+      }
+    } catch (e) {
+      // If fetching episodes fails, continue without them
+      debugPrint('Failed to fetch season episodes: $e');
     }
   }
 }

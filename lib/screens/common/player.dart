@@ -28,6 +28,7 @@ class PlayerOne extends StatefulWidget {
       this.tvMetadata,
       required this.mediaType,
       required this.subtitleStyle,
+      this.onEpisodeChange, // Callback for when user selects a different episode
       super.key});
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
@@ -37,6 +38,8 @@ class PlayerOne extends StatefulWidget {
   final TVStreamMetadata? tvMetadata;
   final MediaType? mediaType;
   final String? subtitleStyle;
+  final Function(int episodeId, int episodeNumber, int seasonNumber)?
+      onEpisodeChange;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -90,6 +93,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               : insertRecentEpisodeData();
         },
         enableFullscreen: true,
+        enableEpisodeSelection: widget.mediaType == MediaType.tvShow &&
+            widget.tvMetadata?.seasonEpisodes != null &&
+            widget.tvMetadata!.seasonEpisodes!.isNotEmpty,
+        onEpisodeListTap: () {
+          _showEpisodeSelectionBottomSheet();
+        },
         name: widget.mediaType == MediaType.movie
             ? '${widget.movieMetadata!.movieName!} (${widget.movieMetadata!.releaseYear!})'
             : '${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}',
@@ -188,6 +197,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           .videoPlayerController!.value.duration!.inSeconds;
     });
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
+
+    // Add event listener for video finish detection
+    _betterPlayerController.addEventsListener((BetterPlayerEvent event) {
+      if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
+        // Video finished, check if there's a next episode
+        _handleVideoFinished();
+      }
+    });
 
     // _betterPlayerController.addEventsListener((BetterPlayerEvent event) {
     //   if (event.betterPlayerEventType == BetterPlayerEventType.play ||
@@ -338,6 +355,421 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     ]);
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void _showEpisodeSelectionBottomSheet() {
+    if (widget.mediaType != MediaType.tvShow ||
+        widget.tvMetadata?.seasonEpisodes == null ||
+        widget.tvMetadata!.seasonEpisodes!.isEmpty) {
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Season ${widget.tvMetadata!.seasonNumber} Episodes',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+            ),
+            Divider(height: 1),
+            // Episode List
+            Expanded(
+              child: Consumer<RecentProvider>(
+                builder: (context, recentProvider, child) {
+                  return ListView.builder(
+                    itemCount: widget.tvMetadata!.seasonEpisodes!.length,
+                    itemBuilder: (context, index) {
+                      final episode = widget.tvMetadata!.seasonEpisodes![index];
+                      final isCurrentEpisode = episode.episodeNumber ==
+                          widget.tvMetadata!.episodeNumber;
+
+                      // Check if episode is in recently watched
+                      final recentEpisode = recentProvider.episodes.firstWhere(
+                        (e) => e.id == episode.episodeId,
+                        orElse: () => RecentEpisode(
+                          dateTime: '',
+                          elapsed: 0,
+                          id: 0,
+                          posterPath: '',
+                          remaining: 0,
+                          seriesName: '',
+                          episodeName: '',
+                          episodeNum: 0,
+                          seasonNum: 0,
+                          seriesId: 0,
+                        ),
+                      );
+
+                      final hasProgress = recentEpisode.id != 0;
+                      final progressPercentage =
+                          hasProgress && recentEpisode.elapsed! > 0
+                              ? (recentEpisode.elapsed! /
+                                      (recentEpisode.elapsed! +
+                                          recentEpisode.remaining!)) *
+                                  100
+                              : 0.0;
+
+                      return InkWell(
+                        onTap: () {
+                          if (!isCurrentEpisode &&
+                              widget.onEpisodeChange != null) {
+                            Navigator.pop(context);
+                            widget.onEpisodeChange!(
+                              episode.episodeId,
+                              episode.episodeNumber,
+                              episode.seasonNumber,
+                            );
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isCurrentEpisode
+                                ? widget.colors.first.withOpacity(0.1)
+                                : null,
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Theme.of(context).dividerColor,
+                                width: 0.5,
+                              ),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Episode thumbnail
+                                Stack(
+                                  children: [
+                                    Container(
+                                      width: 140,
+                                      height: 80,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: Colors.grey[800],
+                                      ),
+                                      child: episode.stillPath != null
+                                          ? ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              child: Image.network(
+                                                'https://image.tmdb.org/t/p/w300${episode.stillPath}',
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  return Center(
+                                                    child: Icon(
+                                                      Icons.movie,
+                                                      color: Colors.grey[600],
+                                                      size: 32,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            )
+                                          : Center(
+                                              child: Icon(
+                                                Icons.movie,
+                                                color: Colors.grey[600],
+                                                size: 32,
+                                              ),
+                                            ),
+                                    ),
+                                    // Progress bar
+                                    if (hasProgress && progressPercentage > 0)
+                                      Positioned(
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                        child: Container(
+                                          height: 3,
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              bottomLeft: Radius.circular(8),
+                                              bottomRight: Radius.circular(8),
+                                            ),
+                                          ),
+                                          child: LinearProgressIndicator(
+                                            value: progressPercentage / 100,
+                                            backgroundColor: Colors.grey[700],
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                              widget.colors.first,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    // Current episode indicator
+                                    if (isCurrentEpisode)
+                                      Positioned(
+                                        top: 4,
+                                        right: 4,
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: widget.colors.first,
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            'Playing',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                SizedBox(width: 12),
+                                // Episode info
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${episode.episodeNumber}. ${episode.episodeName}',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: isCurrentEpisode
+                                              ? FontWeight.bold
+                                              : FontWeight.w600,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      if (episode.runtime != null)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 4.0),
+                                          child: Text(
+                                            '${episode.runtime}m',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[400],
+                                            ),
+                                          ),
+                                        ),
+                                      if (episode.overview != null &&
+                                          episode.overview!.isNotEmpty)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 4.0),
+                                          child: Text(
+                                            episode.overview!,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[500],
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleVideoFinished() {
+    if (widget.mediaType == MediaType.tvShow &&
+        widget.tvMetadata?.seasonEpisodes != null &&
+        widget.tvMetadata!.seasonEpisodes!.isNotEmpty) {
+      // Find current episode index
+      final currentIndex = widget.tvMetadata!.seasonEpisodes!.indexWhere(
+        (e) => e.episodeNumber == widget.tvMetadata!.episodeNumber,
+      );
+
+      // Check if there's a next episode
+      if (currentIndex != -1 &&
+          currentIndex < widget.tvMetadata!.seasonEpisodes!.length - 1) {
+        final nextEpisode =
+            widget.tvMetadata!.seasonEpisodes![currentIndex + 1];
+
+        // Show countdown dialog for next episode
+        _showNextEpisodeCountdown(nextEpisode);
+      }
+    }
+  }
+
+  void _showNextEpisodeCountdown(EpisodeMetadata nextEpisode) {
+    int countdown = 10; // 10 second countdown
+    Timer? countdownTimer;
+    bool dismissed = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+              if (countdown > 0 && !dismissed) {
+                setDialogState(() {
+                  countdown--;
+                });
+              } else if (countdown == 0 && !dismissed) {
+                timer.cancel();
+                if (Navigator.canPop(dialogContext)) {
+                  Navigator.of(dialogContext).pop();
+                }
+                // Trigger next episode
+                if (widget.onEpisodeChange != null) {
+                  widget.onEpisodeChange!(
+                    nextEpisode.episodeId,
+                    nextEpisode.episodeNumber,
+                    nextEpisode.seasonNumber,
+                  );
+                }
+              }
+            });
+
+            return AlertDialog(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Text(
+                'Next Episode',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${nextEpisode.episodeNumber}. ${nextEpisode.episodeName}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  if (nextEpisode.overview != null &&
+                      nextEpisode.overview!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        nextEpisode.overview!,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[400],
+                        ),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  SizedBox(height: 16),
+                  Center(
+                    child: Text(
+                      'Playing in $countdown seconds...',
+                      style: TextStyle(
+                        color: widget.colors.first,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    dismissed = true;
+                    countdownTimer?.cancel();
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    dismissed = true;
+                    countdownTimer?.cancel();
+                    Navigator.of(dialogContext).pop();
+                    // Trigger next episode immediately
+                    if (widget.onEpisodeChange != null) {
+                      widget.onEpisodeChange!(
+                        nextEpisode.episodeId,
+                        nextEpisode.episodeNumber,
+                        nextEpisode.seasonNumber,
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.colors.first,
+                  ),
+                  child: Text(
+                    'Play Now',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    ).then((_) {
+      // Dialog dismissed, cancel timer
+      dismissed = true;
+      countdownTimer?.cancel();
+    });
   }
 
   @override
