@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
 
@@ -528,6 +529,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                           episode.seasonNumber ==
                               widget.tvMetadata!.seasonNumber;
 
+                      // Debug: Print to help identify the issue
+                      if (episode.episodeNumber == 1) {
+                        debugPrint(
+                            'Episode: S${episode.seasonNumber}E${episode.episodeNumber}, '
+                            'Current: S${widget.tvMetadata!.seasonNumber}E${widget.tvMetadata!.episodeNumber}, '
+                            'isCurrentEpisode: $isCurrentEpisode');
+                      }
+
                       // Check if episode is in recently watched
                       final recentEpisode = recentProvider.episodes.firstWhere(
                         (e) => e.id == episode.episodeId,
@@ -604,19 +613,28 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                           ? ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(8),
-                                              child: Image.network(
-                                                'https://image.tmdb.org/t/p/w300${episode.stillPath}',
+                                              child: CachedNetworkImage(
+                                                cacheManager: cacheProp(),
+                                                imageUrl:
+                                                    'https://image.tmdb.org/t/p/w300${episode.stillPath}',
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (context, error,
-                                                    stackTrace) {
-                                                  return Center(
-                                                    child: Icon(
-                                                      Icons.movie,
-                                                      color: Colors.grey[600],
-                                                      size: 32,
-                                                    ),
-                                                  );
-                                                },
+                                                placeholder: (context, url) =>
+                                                    Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: widget.colors.first,
+                                                  ),
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Center(
+                                                  child: Icon(
+                                                    Icons.movie,
+                                                    color: Colors.grey[600],
+                                                    size: 32,
+                                                  ),
+                                                ),
                                               ),
                                             )
                                           : Center(
@@ -861,18 +879,25 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                 ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    'https://image.tmdb.org/t/p/w185${season.posterPath}',
+                                  child: CachedNetworkImage(
+                                    cacheManager: cacheProp(),
+                                    imageUrl:
+                                        'https://image.tmdb.org/t/p/w185${season.posterPath}',
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Center(
-                                        child: Icon(
-                                          Icons.tv,
-                                          color: Colors.grey[600],
-                                          size: 32,
-                                        ),
-                                      );
-                                    },
+                                    placeholder: (context, url) => Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: widget.colors.first,
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Center(
+                                      child: Icon(
+                                        Icons.tv,
+                                        color: Colors.grey[600],
+                                        size: 32,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               )
@@ -1144,19 +1169,25 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                               child: movie.posterPath != null
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
-                                      child: Image.network(
-                                        'https://image.tmdb.org/t/p/w300${movie.posterPath}',
+                                      child: CachedNetworkImage(
+                                        cacheManager: cacheProp(),
+                                        imageUrl:
+                                            'https://image.tmdb.org/t/p/w300${movie.posterPath}',
                                         fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return Center(
-                                            child: Icon(
-                                              Icons.movie,
-                                              color: Colors.grey[600],
-                                              size: 40,
-                                            ),
-                                          );
-                                        },
+                                        placeholder: (context, url) => Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: widget.colors.first,
+                                          ),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            Center(
+                                          child: Icon(
+                                            Icons.movie,
+                                            color: Colors.grey[600],
+                                            size: 40,
+                                          ),
+                                        ),
                                       ),
                                     )
                                   : Center(
@@ -1482,24 +1513,33 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                         Center(
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              'https://image.tmdb.org/t/p/w500${currentMovie.posterPath}',
+                            child: CachedNetworkImage(
+                              cacheManager: cacheProp(),
+                              imageUrl:
+                                  'https://image.tmdb.org/t/p/w500${currentMovie.posterPath}',
                               height: 240,
                               fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  height: 240,
-                                  width: 160,
-                                  color: Colors.grey[800],
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.movie,
-                                      color: Colors.grey[600],
-                                      size: 50,
-                                    ),
+                              placeholder: (context, url) => Container(
+                                height: 240,
+                                width: 160,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    color: widget.colors.first,
                                   ),
-                                );
-                              },
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                height: 240,
+                                width: 160,
+                                color: Colors.grey[800],
+                                child: Center(
+                                  child: Icon(
+                                    Icons.movie,
+                                    color: Colors.grey[600],
+                                    size: 50,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -1615,24 +1655,39 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(6),
                                         child: movie.posterPath != null
-                                            ? Image.network(
-                                                'https://image.tmdb.org/t/p/w185${movie.posterPath}',
+                                            ? CachedNetworkImage(
+                                                cacheManager: cacheProp(),
+                                                imageUrl:
+                                                    'https://image.tmdb.org/t/p/w185${movie.posterPath}',
                                                 height: 110,
                                                 width: 90,
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (context, error,
-                                                    stackTrace) {
-                                                  return Container(
-                                                    height: 110,
-                                                    width: 90,
-                                                    color: Colors.grey[800],
-                                                    child: Icon(
-                                                      Icons.movie,
-                                                      color: Colors.grey[600],
-                                                      size: 30,
+                                                placeholder: (context, url) =>
+                                                    Container(
+                                                  height: 110,
+                                                  width: 90,
+                                                  color: Colors.grey[800],
+                                                  child: Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      color:
+                                                          widget.colors.first,
                                                     ),
-                                                  );
-                                                },
+                                                  ),
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Container(
+                                                  height: 110,
+                                                  width: 90,
+                                                  color: Colors.grey[800],
+                                                  child: Icon(
+                                                    Icons.movie,
+                                                    color: Colors.grey[600],
+                                                    size: 30,
+                                                  ),
+                                                ),
                                               )
                                             : Container(
                                                 height: 110,
@@ -1838,24 +1893,34 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                         ),
                         child: Stack(
                           children: [
-                            Image.network(
-                              'https://image.tmdb.org/t/p/w300${nextEpisode.stillPath}',
+                            CachedNetworkImage(
+                              cacheManager: cacheProp(),
+                              imageUrl:
+                                  'https://image.tmdb.org/t/p/w300${nextEpisode.stillPath}',
                               height: 110,
                               width: double.infinity,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  height: 110,
-                                  color: Colors.grey[800],
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.movie,
-                                      color: Colors.grey[600],
-                                      size: 40,
-                                    ),
+                              placeholder: (context, url) => Container(
+                                height: 110,
+                                color: Colors.grey[800],
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: widget.colors.first,
                                   ),
-                                );
-                              },
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                height: 110,
+                                color: Colors.grey[800],
+                                child: Center(
+                                  child: Icon(
+                                    Icons.movie,
+                                    color: Colors.grey[600],
+                                    size: 40,
+                                  ),
+                                ),
+                              ),
                             ),
                             // Play icon overlay
                             Positioned.fill(
