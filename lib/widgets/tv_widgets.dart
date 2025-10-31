@@ -691,7 +691,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
         ),
         SizedBox(
           width: double.infinity,
-          height: 300,
+          height: 275,
           child: Row(
             children: [
               Expanded(
