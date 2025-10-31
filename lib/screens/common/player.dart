@@ -530,12 +530,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                               widget.tvMetadata!.seasonNumber;
 
                       // Debug: Print to help identify the issue
-                      if (episode.episodeNumber == 1) {
-                        debugPrint(
-                            'Episode: S${episode.seasonNumber}E${episode.episodeNumber}, '
-                            'Current: S${widget.tvMetadata!.seasonNumber}E${widget.tvMetadata!.episodeNumber}, '
-                            'isCurrentEpisode: $isCurrentEpisode');
-                      }
+                      debugPrint(
+                          'Checking Episode: S${episode.seasonNumber}E${episode.episodeNumber}, '
+                          'Currently Playing in Player: S${widget.tvMetadata!.seasonNumber}E${widget.tvMetadata!.episodeNumber}, '
+                          'Match: $isCurrentEpisode');
 
                       // Check if episode is in recently watched
                       final recentEpisode = recentProvider.episodes.firstWhere(
@@ -998,8 +996,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       ).then((value) {
         if (value.episodes != null && value.episodes!.isNotEmpty) {
           setState(() {
-            widget.tvMetadata!.seasonNumber = seasonNumber;
-            // Explicitly pass seasonNumber to ensure it's correct
+            // DON'T update widget.tvMetadata!.seasonNumber here!
+            // That field represents the CURRENTLY PLAYING episode's season,
+            // not the season being browsed in the list.
+            // Only update the episodes list.
             widget.tvMetadata!.seasonEpisodes = value.episodes!
                 .map((episode) => EpisodeMetadata(
                       episodeId: episode.episodeId ?? 0,
