@@ -22,6 +22,7 @@ import '../../provider/app_dependency_provider.dart';
 import '../../api/endpoints.dart';
 import '../../functions/network.dart';
 import '../movie/movie_video_loader.dart';
+import '../tv/tv_video_loader.dart';
 
 class PlayerOne extends StatefulWidget {
   const PlayerOne(
@@ -34,6 +35,7 @@ class PlayerOne extends StatefulWidget {
       required this.mediaType,
       required this.subtitleStyle,
       this.onEpisodeChange, // Callback for when user selects a different episode
+      this.tvRoute, // StreamRoute for TV shows (needed for loading new episodes)
       super.key});
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
@@ -45,6 +47,7 @@ class PlayerOne extends StatefulWidget {
   final String? subtitleStyle;
   final Function(int episodeId, int episodeNumber, int seasonNumber)?
       onEpisodeChange;
+  final StreamRoute? tvRoute;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -263,8 +266,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         if (duration != null && duration.inSeconds > 0) {
           final progress = position.inSeconds / duration.inSeconds;
 
-          // Show button at 85% progress if there's a next episode, in fullscreen, not manually dismissed, and feature is enabled
-          if (progress >= 0.85 &&
+          // Show button at 95% progress if there's a next episode, in fullscreen, not manually dismissed, and feature is enabled
+          if (progress >= 0.95 &&
               !_showNextEpisodeButton &&
               !_nextEpisodeButtonDismissed &&
               _hasNextEpisode() &&
@@ -272,7 +275,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               betterPlayerControlsConfiguration.enableNextEpisodeButton) {
             _showNextEpisodeButton = true;
             _showNextEpisodeOverlay();
-          } else if ((progress < 0.85 || !isFullScreen) &&
+          } else if ((progress < 0.95 || !isFullScreen) &&
               _showNextEpisodeButton) {
             _showNextEpisodeButton = false;
             _hideNextEpisodeOverlay();
@@ -580,11 +583,31 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                             if (context.mounted) {
                               // Close the bottom sheet first
                               Navigator.pop(context);
-                              // Then trigger the callback to load new episode
-                              widget.onEpisodeChange!(
-                                episode.episodeId,
-                                episode.episodeNumber,
-                                episode.seasonNumber,
+
+                              // Use pushReplacement to replace Player with VideoLoader
+                              // This prevents player stacking
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TVVideoLoader(
+                                    download: false,
+                                    route: widget.tvRoute ?? StreamRoute.flixHQ,
+                                    metadata: TVStreamMetadata(
+                                      elapsed: null,
+                                      episodeId: episode.episodeId,
+                                      episodeName: episode.episodeName,
+                                      episodeNumber: episode.episodeNumber,
+                                      posterPath: widget.tvMetadata!.posterPath,
+                                      seasonNumber: episode.seasonNumber,
+                                      seriesName: widget.tvMetadata!.seriesName,
+                                      tvId: widget.tvMetadata!.tvId,
+                                      airDate: episode.airDate,
+                                      seasonEpisodes:
+                                          widget.tvMetadata!.seasonEpisodes,
+                                      allSeasons: widget.tvMetadata!.allSeasons,
+                                    ),
+                                  ),
+                                ),
                               );
                             }
                           }
@@ -1114,9 +1137,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         elapsed: 0, // New movie, no elapsed time
       );
 
-      // Use pushReplacement to replace current player with video loader
-      // This prevents screen stacking
+      // Pop current player, then push new video loader
+      // This prevents player stacking while maintaining navigation history
       if (mounted) {
+        Navigator.pop(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -1407,12 +1431,29 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 }
                 // Save progress and send analytics before switching
                 _handleContentSwitch().then((_) {
-                  // Trigger next episode
+                  // Use pushReplacement to replace Player with VideoLoader
                   if (widget.onEpisodeChange != null && mounted) {
-                    widget.onEpisodeChange!(
-                      nextEpisode.episodeId,
-                      nextEpisode.episodeNumber,
-                      nextEpisode.seasonNumber,
+                    Navigator.pushReplacement(
+                      this.context,
+                      MaterialPageRoute(
+                        builder: (context) => TVVideoLoader(
+                          download: false,
+                          route: widget.tvRoute ?? StreamRoute.flixHQ,
+                          metadata: TVStreamMetadata(
+                            elapsed: null,
+                            episodeId: nextEpisode.episodeId,
+                            episodeName: nextEpisode.episodeName,
+                            episodeNumber: nextEpisode.episodeNumber,
+                            posterPath: widget.tvMetadata!.posterPath,
+                            seasonNumber: nextEpisode.seasonNumber,
+                            seriesName: widget.tvMetadata!.seriesName,
+                            tvId: widget.tvMetadata!.tvId,
+                            airDate: nextEpisode.airDate,
+                            seasonEpisodes: widget.tvMetadata!.seasonEpisodes,
+                            allSeasons: widget.tvMetadata!.allSeasons,
+                          ),
+                        ),
+                      ),
                     );
                   }
                 });
@@ -1937,11 +1978,28 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               await _handleContentSwitch();
 
               if (mounted) {
-                // Trigger next episode
-                widget.onEpisodeChange!(
-                  nextEpisode.episodeId,
-                  nextEpisode.episodeNumber,
-                  nextEpisode.seasonNumber,
+                // Use pushReplacement to replace Player with VideoLoader
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TVVideoLoader(
+                      download: false,
+                      route: widget.tvRoute ?? StreamRoute.flixHQ,
+                      metadata: TVStreamMetadata(
+                        elapsed: null,
+                        episodeId: nextEpisode.episodeId,
+                        episodeName: nextEpisode.episodeName,
+                        episodeNumber: nextEpisode.episodeNumber,
+                        posterPath: widget.tvMetadata!.posterPath,
+                        seasonNumber: nextEpisode.seasonNumber,
+                        seriesName: widget.tvMetadata!.seriesName,
+                        tvId: widget.tvMetadata!.tvId,
+                        airDate: nextEpisode.airDate,
+                        seasonEpisodes: widget.tvMetadata!.seasonEpisodes,
+                        allSeasons: widget.tvMetadata!.allSeasons,
+                      ),
+                    ),
+                  ),
                 );
               }
             }

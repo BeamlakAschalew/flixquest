@@ -203,9 +203,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           'Movie id': widget.metadata.movieId,
           'Is Movie adult?': widget.metadata.isAdult ?? 'unknown',
         });
-        // Use pushAndRemoveUntil to remove VideoLoader from stack
-        // This ensures clean navigation: only the new player remains
-        Navigator.pushAndRemoveUntil(
+        // Use pushReplacement to replace VideoLoader with Player
+        // This preserves the navigation stack so back button works correctly
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) {
@@ -224,8 +224,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               );
             },
           ),
-          (route) =>
-              route.isFirst, // Keep only the first route (home/previous screen)
         ).then((value) async {
           if (value != null) {
             Function callback = value;

@@ -208,9 +208,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           'TV series season number': '${widget.metadata.seasonNumber}',
           'TV series episode number': '${widget.metadata.episodeNumber}'
         });
-        // Use pushAndRemoveUntil to remove VideoLoader from stack
-        // This ensures clean navigation: only the new player remains
-        Navigator.pushAndRemoveUntil(
+        // Use pushReplacement to replace VideoLoader with Player
+        // This preserves the navigation stack so back button works correctly
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) {
@@ -224,43 +224,17 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 ],
                 settings: settings,
                 tvMetadata: widget.metadata,
+                tvRoute: widget.route,
                 subtitleStyle:
                     Provider.of<SettingsProvider>(context).subtitleTextStyle,
                 onEpisodeChange:
                     (episodeId, episodeNumber, seasonNumber) async {
-                  // Use pushReplacement to replace current player with video loader
-                  // This prevents screen stacking
-                  await Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TVVideoLoader(
-                        download: false,
-                        route: widget.route,
-                        metadata: TVStreamMetadata(
-                          elapsed: null,
-                          episodeId: episodeId,
-                          episodeName: widget.metadata.seasonEpisodes!
-                              .firstWhere((e) => e.episodeId == episodeId)
-                              .episodeName,
-                          episodeNumber: episodeNumber,
-                          posterPath: widget.metadata.posterPath,
-                          seasonNumber: seasonNumber,
-                          seriesName: widget.metadata.seriesName,
-                          tvId: widget.metadata.tvId,
-                          airDate: widget.metadata.seasonEpisodes!
-                              .firstWhere((e) => e.episodeId == episodeId)
-                              .airDate,
-                          seasonEpisodes: widget.metadata.seasonEpisodes,
-                        ),
-                      ),
-                    ),
-                  );
+                  // This callback is now unused but kept for backwards compatibility
+                  // Episode changes are handled directly in the player
                 },
               );
             },
           ),
-          (route) =>
-              route.isFirst, // Keep only the first route (home/previous screen)
         ).then((value) async {
           if (value != null) {
             Function callback = value;
