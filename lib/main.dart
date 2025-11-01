@@ -74,6 +74,7 @@ Future<void> appInitialize() async {
   await settingsProvider.getPlayerTimeStyle();
   await settingsProvider.getUseProxyMode();
   await settingsProvider.getSubtitleStyle();
+  await settingsProvider.getEnableNextEpisodeButton();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
   await appDependencyProvider.getConsumetUrl();

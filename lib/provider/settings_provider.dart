@@ -78,6 +78,9 @@ class SettingsProvider with ChangeNotifier {
   String _subtitleTextStyle = 'regular';
   String get subtitleTextStyle => _subtitleTextStyle;
 
+  bool _enableNextEpisodeButton = true;
+  bool get enableNextEpisodeButton => _enableNextEpisodeButton;
+
   // theme change
   Future<void> getCurrentThemeMode() async {
     appTheme = await _settingsPreferences.getThemeMode();
@@ -320,6 +323,17 @@ class SettingsProvider with ChangeNotifier {
   set subtitleTextStyle(String value) {
     _subtitleTextStyle = value;
     _settingsPreferences.setSubtitleStyle(value);
+    notifyListeners();
+  }
+
+  Future<void> getEnableNextEpisodeButton() async {
+    enableNextEpisodeButton =
+        await _settingsPreferences.getEnableNextEpisodeButton();
+  }
+
+  set enableNextEpisodeButton(bool value) {
+    _enableNextEpisodeButton = value;
+    _settingsPreferences.setEnableNextEpisodeButton(value);
     notifyListeners();
   }
 }

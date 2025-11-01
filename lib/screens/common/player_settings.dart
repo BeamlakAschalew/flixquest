@@ -387,6 +387,21 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                   });
                 }),
               ),
+              SwitchListTile(
+                inactiveThumbColor: Colors.white,
+                inactiveTrackColor: const Color(0xFF9B9B9B),
+                secondary: Icon(
+                  FontAwesomeIcons.forward,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                value: settingValues.enableNextEpisodeButton,
+                title: Text(tr('enable_next_episode_button')),
+                onChanged: ((value) {
+                  setState(() {
+                    settingValues.enableNextEpisodeButton = value;
+                  });
+                }),
+              ),
               ListTile(
                 onTap: () {
                   Navigator.push(context,

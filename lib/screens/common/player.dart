@@ -126,7 +126,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         onMovieRecommendationsTap: () {
           _showMovieRecommendationsBottomSheet();
         },
-        enableNextEpisodeButton: widget.mediaType == MediaType.tvShow,
+        enableNextEpisodeButton: widget.mediaType == MediaType.tvShow &&
+            widget.settings.enableNextEpisodeButton,
         name: widget.mediaType == MediaType.movie
             ? '${widget.movieMetadata!.movieName!} (${widget.movieMetadata!.releaseYear!})'
             : '${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}',

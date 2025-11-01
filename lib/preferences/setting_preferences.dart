@@ -223,4 +223,14 @@ class SettingsPreferences {
   Future<String> getSubtitleStyle() async {
     return sharedPrefsSingleton.getString(SUBTITLE_TEXT_STYLE) ?? 'regular';
   }
+
+  static const ENABLE_NEXT_EPISODE_BUTTON = 'enable_next_episode_button';
+
+  setEnableNextEpisodeButton(bool value) {
+    sharedPrefsSingleton.setBool(ENABLE_NEXT_EPISODE_BUTTON, value);
+  }
+
+  Future<bool> getEnableNextEpisodeButton() async {
+    return sharedPrefsSingleton.getBool(ENABLE_NEXT_EPISODE_BUTTON) ?? true;
+  }
 }
