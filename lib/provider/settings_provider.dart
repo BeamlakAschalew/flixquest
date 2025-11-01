@@ -78,7 +78,7 @@ class SettingsProvider with ChangeNotifier {
   String _subtitleTextStyle = 'regular';
   String get subtitleTextStyle => _subtitleTextStyle;
 
-  bool _enableNextEpisodeButton = true;
+  bool _enableNextEpisodeButton = false;
   bool get enableNextEpisodeButton => _enableNextEpisodeButton;
 
   // theme change

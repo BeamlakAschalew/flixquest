@@ -231,6 +231,6 @@ class SettingsPreferences {
   }
 
   Future<bool> getEnableNextEpisodeButton() async {
-    return sharedPrefsSingleton.getBool(ENABLE_NEXT_EPISODE_BUTTON) ?? true;
+    return sharedPrefsSingleton.getBool(ENABLE_NEXT_EPISODE_BUTTON) ?? false;
   }
 }

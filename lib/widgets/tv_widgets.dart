@@ -1023,7 +1023,10 @@ class ScrollingTVArtistsState extends State<ScrollingTVArtists>
                     ),
                   ),
                 ),
-                child: Text(tr('see_all_cast_crew')))
+                child: Text(
+                  tr('see_all_cast_crew'),
+                  textAlign: TextAlign.center,
+                ))
           ],
         ),
         SizedBox(

@@ -406,24 +406,26 @@ class _TVSeasonAboutState extends State<TVSeasonAbout> {
             ),
             Row(
               children: <Widget>[
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 8.0, bottom: 4.0, right: 8.0),
-                  child: Text(
-                    widget.season.airDate == null
-                        ? tr('no_first_episode_air_date')
-                        : tr('first_episode_air_date', namedArgs: {
-                            'day': DateTime.parse(widget.season.airDate!)
-                                .day
-                                .toString(),
-                            'date': DateFormat('MMMM')
-                                .format(DateTime.parse(widget.season.airDate!)),
-                            'year': DateTime.parse(widget.season.airDate!)
-                                .year
-                                .toString()
-                          }),
-                    style: const TextStyle(
-                      fontFamily: 'FigtreeSB',
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 8.0, bottom: 4.0, right: 8.0),
+                    child: Text(
+                      widget.season.airDate == null
+                          ? tr('no_first_episode_air_date')
+                          : tr('first_episode_air_date', namedArgs: {
+                              'day': DateTime.parse(widget.season.airDate!)
+                                  .day
+                                  .toString(),
+                              'date': DateFormat('MMMM').format(
+                                  DateTime.parse(widget.season.airDate!)),
+                              'year': DateTime.parse(widget.season.airDate!)
+                                  .year
+                                  .toString()
+                            }),
+                      style: const TextStyle(
+                        fontFamily: 'FigtreeSB',
+                      ),
                     ),
                   ),
                 ),

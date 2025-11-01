@@ -647,7 +647,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                       child: episode.stillPath != null
                                           ? ClipRRect(
                                               borderRadius:
-                                                  BorderRadius.circular(8),
+                                                  BorderRadius.circular(4),
                                               child: CachedNetworkImage(
                                                 cacheManager: cacheProp(),
                                                 imageUrl:
@@ -951,11 +951,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                 width: 60,
                                 height: 90,
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(4),
                                   color: Colors.grey[800],
                                 ),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(4),
                                   child: CachedNetworkImage(
                                     cacheManager: cacheProp(),
                                     imageUrl:
@@ -1798,7 +1798,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                         CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
-                                        borderRadius: BorderRadius.circular(6),
+                                        borderRadius: BorderRadius.circular(3),
                                         child: movie.posterPath != null
                                             ? CachedNetworkImage(
                                                 cacheManager: cacheProp(),
@@ -2049,8 +2049,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     if (nextEpisode.stillPath != null)
                       ClipRRect(
                         borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
+                          topLeft: Radius.circular(6),
+                          topRight: Radius.circular(6),
                         ),
                         child: Stack(
                           children: [
