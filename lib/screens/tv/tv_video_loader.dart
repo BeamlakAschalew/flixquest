@@ -432,7 +432,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             Provider.of<AppDependencyProvider>(context, listen: false)
                 .tmdbProxy;
         await fetchTVDetails(
-                Endpoints.tvDetailsUrl(widget.metadata.tvId!, 'en'),
+                Endpoints.tvDetailsUrl(
+                    widget.metadata.tvId!, settings.appLanguage),
                 isProxyEnabled,
                 proxyUrl)
             .then(
@@ -753,7 +754,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           } else {
             if (appDep.useExternalSubtitles) {
               await fetchSocialLinks(
-                Endpoints.getExternalLinksForTV(widget.metadata.tvId!, 'en'),
+                Endpoints.getExternalLinksForTV(
+                    widget.metadata.tvId!, settings.appLanguage),
                 isProxyEnabled,
                 proxyUrl,
               ).then((value) async {
@@ -995,7 +997,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
         // First, fetch TV details to get all seasons
         await fetchTVDetails(
-          Endpoints.tvDetailsUrl(widget.metadata.tvId!, 'en'),
+          Endpoints.tvDetailsUrl(widget.metadata.tvId!, settings.appLanguage),
           isProxyEnabled,
           proxyUrl,
         ).then((tvDetails) {
@@ -1013,7 +1015,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           Endpoints.getSeasonDetails(
             widget.metadata.tvId!,
             widget.metadata.seasonNumber!,
-            'en',
+            settings.appLanguage,
           ),
           isProxyEnabled,
           proxyUrl,

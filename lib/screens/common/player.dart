@@ -512,7 +512,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     SizedBox(width: 60),
                   Expanded(
                     child: Text(
-                      'Season ${_browsedSeasonNumber ?? widget.tvMetadata!.seasonNumber} Episodes',
+                      tr('season_episodes', namedArgs: {
+                        'season':
+                            '${_browsedSeasonNumber ?? widget.tvMetadata!.seasonNumber}'
+                      }),
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -717,7 +720,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                                 BorderRadius.circular(4),
                                           ),
                                           child: Text(
-                                            'Playing',
+                                            tr('playing'),
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 10,
@@ -865,7 +868,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Select Season',
+                    tr('select_season'),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -1011,7 +1014,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    '${season.episodeCount} Episodes',
+                                    tr('episodes_count', namedArgs: {
+                                      'count': '${season.episodeCount}'
+                                    }),
                                     style: TextStyle(
                                       fontSize: 13,
                                       color: Colors.grey[400],
@@ -1060,12 +1065,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           Provider.of<SettingsProvider>(context, listen: false).enableProxy;
       final proxyUrl =
           Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
+      final currentLanguage =
+          Provider.of<SettingsProvider>(context, listen: false).appLanguage;
 
       await fetchTVDetails(
         Endpoints.getSeasonDetails(
           widget.tvMetadata!.tvId!,
           seasonNumber,
-          'en',
+          currentLanguage,
         ),
         isProxyEnabled,
         proxyUrl,
@@ -1102,7 +1109,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load season episodes'),
+            content: Text(tr('failed_load_season_episodes')),
             backgroundColor: Colors.red,
           ),
         );
@@ -1159,7 +1166,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load movie: ${e.toString()}'),
+            content: Text(
+                tr('failed_load_movie', namedArgs: {'error': e.toString()})),
             backgroundColor: Colors.red,
           ),
         );
@@ -1196,7 +1204,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Recommended Movies',
+                    tr('recommended_movies'),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -1473,7 +1481,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 borderRadius: BorderRadius.circular(16),
               ),
               title: Text(
-                'Next Episode',
+                tr('next_episode'),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -1511,7 +1519,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                       SizedBox(height: 16),
                       Center(
                         child: Text(
-                          'Playing in $countdown seconds...',
+                          tr('playing_in_seconds',
+                              namedArgs: {'seconds': countdown.toString()}),
                           style: TextStyle(
                             color: widget.colors.first,
                             fontWeight: FontWeight.bold,
@@ -1531,7 +1540,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     Navigator.of(dialogContext).pop();
                   },
                   child: Text(
-                    'Cancel',
+                    tr('cancel'),
                     style: TextStyle(color: Colors.grey[400]),
                   ),
                 ),
@@ -1573,7 +1582,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     backgroundColor: widget.colors.first,
                   ),
                   child: Text(
-                    'Play Now',
+                    tr('play_now'),
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -1612,7 +1621,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 borderRadius: BorderRadius.circular(16),
               ),
               title: Text(
-                'Recommended Movies',
+                tr('recommended_movies'),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
@@ -1746,7 +1755,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                         Divider(),
                         SizedBox(height: 8),
                         Text(
-                          'More Recommendations',
+                          tr('more_recommendations'),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -1873,7 +1882,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     Navigator.of(dialogContext).pop();
                   },
                   child: Text(
-                    'Cancel',
+                    tr('cancel'),
                     style: TextStyle(
                       color: Colors.grey[400],
                       fontFamily: 'Figtree',
@@ -1894,7 +1903,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     backgroundColor: widget.colors.first,
                   ),
                   child: Text(
-                    'Play Now',
+                    tr('play_now'),
                     style: TextStyle(
                       color: Colors.white,
                       fontFamily: 'FigtreeSB',
@@ -2106,7 +2115,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Next Episode',
+                            tr('next_episode'),
                             style: TextStyle(
                               color: widget.colors.first,
                               fontSize: 11,

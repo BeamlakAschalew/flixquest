@@ -428,7 +428,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             if (appDep.useExternalSubtitles) {
               await fetchSocialLinks(
                 Endpoints.getExternalLinksForMovie(
-                    widget.metadata.movieId!, 'en'),
+                    widget.metadata.movieId!, settings.appLanguage),
                 isProxyEnabled,
                 appDep.tmdbProxy,
               ).then((value) async {
@@ -878,7 +878,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
         // Fetch movie recommendations
         await fetchMovies(
-          Endpoints.getMovieRecommendations(widget.metadata.movieId!, 1, 'en'),
+          Endpoints.getMovieRecommendations(
+              widget.metadata.movieId!, 1, settings.appLanguage),
           isProxyEnabled,
           proxyUrl,
         ).then((movies) {
