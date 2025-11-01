@@ -1420,49 +1420,51 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       builder: (BuildContext dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-              if (countdown > 0 && !dismissed) {
-                setDialogState(() {
-                  countdown--;
-                });
-              } else if (countdown == 0 && !dismissed) {
-                timer.cancel();
-                if (Navigator.canPop(dialogContext)) {
-                  Navigator.of(dialogContext).pop();
-                }
+            // Only create timer once, not on every rebuild
+            if (countdownTimer == null && !dismissed) {
+              countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+                if (countdown > 0 && !dismissed) {
+                  setDialogState(() {
+                    countdown--;
+                  });
+                } else if (countdown == 0 && !dismissed) {
+                  timer.cancel();
+                  if (Navigator.canPop(dialogContext)) {
+                    Navigator.of(dialogContext).pop();
+                  }
 
-                // Save progress and send analytics before switching
-                _handleContentSwitch().then((_) {
-                  // Use pushReplacement to replace Player with VideoLoader
-                  if (widget.onEpisodeChange != null && mounted) {
-                    Navigator.pop(context);
-
-                    Navigator.pushReplacement(
-                      this.context,
-                      MaterialPageRoute(
-                        builder: (context) => TVVideoLoader(
-                          download: false,
-                          route: widget.tvRoute ?? StreamRoute.flixHQ,
-                          metadata: TVStreamMetadata(
-                            elapsed: null,
-                            episodeId: nextEpisode.episodeId,
-                            episodeName: nextEpisode.episodeName,
-                            episodeNumber: nextEpisode.episodeNumber,
-                            posterPath: widget.tvMetadata!.posterPath,
-                            seasonNumber: nextEpisode.seasonNumber,
-                            seriesName: widget.tvMetadata!.seriesName,
-                            tvId: widget.tvMetadata!.tvId,
-                            airDate: nextEpisode.airDate,
-                            seasonEpisodes: widget.tvMetadata!.seasonEpisodes,
-                            allSeasons: widget.tvMetadata!.allSeasons,
+                  // Save progress and send analytics before switching
+                  _handleContentSwitch().then((_) {
+                    // Pop current player, then push new video loader
+                    if (widget.onEpisodeChange != null && mounted) {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        this.context,
+                        MaterialPageRoute(
+                          builder: (context) => TVVideoLoader(
+                            download: false,
+                            route: widget.tvRoute ?? StreamRoute.flixHQ,
+                            metadata: TVStreamMetadata(
+                              elapsed: null,
+                              episodeId: nextEpisode.episodeId,
+                              episodeName: nextEpisode.episodeName,
+                              episodeNumber: nextEpisode.episodeNumber,
+                              posterPath: widget.tvMetadata!.posterPath,
+                              seasonNumber: nextEpisode.seasonNumber,
+                              seriesName: widget.tvMetadata!.seriesName,
+                              tvId: widget.tvMetadata!.tvId,
+                              airDate: nextEpisode.airDate,
+                              seasonEpisodes: widget.tvMetadata!.seasonEpisodes,
+                              allSeasons: widget.tvMetadata!.allSeasons,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  }
-                });
-              }
-            });
+                      );
+                    }
+                  });
+                }
+              });
+            }
 
             return AlertDialog(
               backgroundColor: Theme.of(context).colorScheme.surface,
@@ -1476,44 +1478,49 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${nextEpisode.episodeNumber}. ${nextEpisode.episodeName}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  if (nextEpisode.overview != null &&
-                      nextEpisode.overview!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        nextEpisode.overview!,
+              content: SizedBox(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${nextEpisode.episodeNumber}. ${nextEpisode.episodeName}',
                         style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[400],
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  SizedBox(height: 16),
-                  Center(
-                    child: Text(
-                      'Playing in $countdown seconds...',
-                      style: TextStyle(
-                        color: widget.colors.first,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                      if (nextEpisode.overview != null &&
+                          nextEpisode.overview!.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            nextEpisode.overview!,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[400],
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      SizedBox(height: 16),
+                      Center(
+                        child: Text(
+                          'Playing in $countdown seconds...',
+                          style: TextStyle(
+                            color: widget.colors.first,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -1534,12 +1541,30 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     Navigator.of(dialogContext).pop();
                     // Save progress and send analytics before switching
                     await _handleContentSwitch();
-                    // Trigger next episode immediately
+                    // Pop current player, then push new video loader
                     if (widget.onEpisodeChange != null && mounted) {
-                      widget.onEpisodeChange!(
-                        nextEpisode.episodeId,
-                        nextEpisode.episodeNumber,
-                        nextEpisode.seasonNumber,
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(
+                        this.context,
+                        MaterialPageRoute(
+                          builder: (context) => TVVideoLoader(
+                            download: false,
+                            route: widget.tvRoute ?? StreamRoute.flixHQ,
+                            metadata: TVStreamMetadata(
+                              elapsed: null,
+                              episodeId: nextEpisode.episodeId,
+                              episodeName: nextEpisode.episodeName,
+                              episodeNumber: nextEpisode.episodeNumber,
+                              posterPath: widget.tvMetadata!.posterPath,
+                              seasonNumber: nextEpisode.seasonNumber,
+                              seriesName: widget.tvMetadata!.seriesName,
+                              tvId: widget.tvMetadata!.tvId,
+                              airDate: nextEpisode.airDate,
+                              seasonEpisodes: widget.tvMetadata!.seasonEpisodes,
+                              allSeasons: widget.tvMetadata!.allSeasons,
+                            ),
+                          ),
+                        ),
                       );
                     }
                   },
