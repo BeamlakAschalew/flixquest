@@ -583,6 +583,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                             if (context.mounted) {
                               // Close the bottom sheet first
                               Navigator.pop(context);
+                              Navigator.pop(context);
 
                               // Use pushReplacement to replace Player with VideoLoader
                               // This prevents player stacking
