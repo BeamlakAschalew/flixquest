@@ -1569,9 +1569,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       return;
     }
 
-    int countdown = 10; // 10 second countdown
-    Timer? countdownTimer;
-    bool dismissed = false;
     int selectedIndex = 0; // Track which movie is selected
 
     showDialog(
@@ -1580,25 +1577,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       builder: (BuildContext dialogContext) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-              if (countdown > 0 && !dismissed) {
-                setDialogState(() {
-                  countdown--;
-                });
-              } else if (countdown == 0 && !dismissed) {
-                timer.cancel();
-                if (Navigator.canPop(dialogContext)) {
-                  Navigator.of(dialogContext).pop();
-                }
-                // Load the selected recommended movie
-                if (mounted) {
-                  final selectedMovie =
-                      widget.movieMetadata!.recommendations![selectedIndex];
-                  _loadRecommendedMovie(selectedMovie.movieId);
-                }
-              }
-            });
-
             final currentMovie =
                 widget.movieMetadata!.recommendations![selectedIndex];
 
@@ -1625,111 +1603,115 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Movie poster
-                      if (currentMovie.posterPath != null)
-                        Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: CachedNetworkImage(
-                              cacheManager: cacheProp(),
-                              imageUrl:
-                                  'https://image.tmdb.org/t/p/w500${currentMovie.posterPath}',
-                              height: 240,
-                              fit: BoxFit.contain,
-                              placeholder: (context, url) => SizedBox(
-                                height: 240,
-                                width: 160,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    color: widget.colors.first,
+                      // Movie poster and info in a row
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Movie poster on the left
+                          if (currentMovie.posterPath != null)
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: CachedNetworkImage(
+                                cacheManager: cacheProp(),
+                                imageUrl:
+                                    'https://image.tmdb.org/t/p/w500${currentMovie.posterPath}',
+                                width: 120,
+                                height: 180,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Container(
+                                  width: 120,
+                                  height: 180,
+                                  color: Colors.grey[800],
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: widget.colors.first,
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Container(
+                                  width: 120,
+                                  height: 180,
+                                  color: Colors.grey[800],
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.movie,
+                                      color: Colors.grey[600],
+                                      size: 40,
+                                    ),
                                   ),
                                 ),
                               ),
-                              errorWidget: (context, url, error) => Container(
-                                height: 240,
-                                width: 160,
-                                color: Colors.grey[800],
-                                child: Center(
-                                  child: Icon(
-                                    Icons.movie,
-                                    color: Colors.grey[600],
-                                    size: 50,
-                                  ),
-                                ),
-                              ),
                             ),
-                          ),
-                        ),
-                      SizedBox(height: 12),
-                      Text(
-                        currentMovie.title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'FigtreeSB',
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      if (currentMovie.voteAverage != null &&
-                          currentMovie.voteAverage! > 0)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: widget.colors.first.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
+                          SizedBox(width: 12),
+                          // Movie info on the right
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(
-                                  Icons.star_rounded,
-                                  size: 14,
-                                  color: widget.colors.first,
-                                ),
-                                SizedBox(width: 2),
                                 Text(
-                                  '${currentMovie.voteAverage!.toStringAsFixed(1)}/10',
+                                  currentMovie.title,
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    color: widget.colors.first,
+                                    fontFamily: 'FigtreeSB',
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
+                                if (currentMovie.voteAverage != null &&
+                                    currentMovie.voteAverage! > 0)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: widget.colors.first
+                                            .withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.star_rounded,
+                                            size: 14,
+                                            color: widget.colors.first,
+                                          ),
+                                          SizedBox(width: 2),
+                                          Text(
+                                            '${currentMovie.voteAverage!.toStringAsFixed(1)}/10',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: widget.colors.first,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (currentMovie.overview != null &&
+                                    currentMovie.overview!.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(
+                                      currentMovie.overview!,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontFamily: 'Figtree',
+                                        color: Colors.grey[400],
+                                      ),
+                                      maxLines: 6,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
                               ],
                             ),
                           ),
-                        ),
-                      if (currentMovie.overview != null &&
-                          currentMovie.overview!.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            currentMovie.overview!,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontFamily: 'Figtree',
-                              color: Colors.grey[400],
-                            ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      SizedBox(height: 16),
-                      Center(
-                        child: Text(
-                          'Playing in $countdown seconds...',
-                          style: TextStyle(
-                            color: widget.colors.first,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'FigtreeBold',
-                            fontSize: 14,
-                          ),
-                        ),
+                        ],
                       ),
                       // Show other recommendations
                       if (widget.movieMetadata!.recommendations!.length >
@@ -1748,7 +1730,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                         ),
                         SizedBox(height: 12),
                         SizedBox(
-                          height: 140,
+                          height: 160,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
                             itemCount:
@@ -1762,11 +1744,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                 onTap: () {
                                   setDialogState(() {
                                     selectedIndex = index;
-                                    countdown = 10; // Reset countdown
                                   });
                                 },
                                 child: Container(
-                                  width: 90,
+                                  width: 100,
                                   margin: EdgeInsets.only(right: 8),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
@@ -1788,13 +1769,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                                 cacheManager: cacheProp(),
                                                 imageUrl:
                                                     'https://image.tmdb.org/t/p/w185${movie.posterPath}',
-                                                height: 110,
-                                                width: 90,
+                                                height: 130,
+                                                width: 100,
                                                 fit: BoxFit.cover,
                                                 placeholder: (context, url) =>
                                                     Container(
-                                                  height: 110,
-                                                  width: 90,
+                                                  height: 130,
+                                                  width: 100,
                                                   color: Colors.grey[800],
                                                   child: Center(
                                                     child:
@@ -1808,8 +1789,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                                 errorWidget:
                                                     (context, url, error) =>
                                                         Container(
-                                                  height: 110,
-                                                  width: 90,
+                                                  height: 130,
+                                                  width: 100,
                                                   color: Colors.grey[800],
                                                   child: Icon(
                                                     Icons.movie,
@@ -1819,8 +1800,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                                 ),
                                               )
                                             : Container(
-                                                height: 110,
-                                                width: 90,
+                                                height: 130,
+                                                width: 100,
                                                 color: Colors.grey[800],
                                                 child: Icon(
                                                   Icons.movie,
@@ -1830,17 +1811,23 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                               ),
                                       ),
                                       SizedBox(height: 4),
-                                      Text(
-                                        movie.title,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontFamily: 'Figtree',
-                                          color: isSelected
-                                              ? widget.colors.first
-                                              : Colors.grey[300],
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 2, vertical: 5.0),
+                                          child: Text(
+                                            movie.title,
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontFamily: 'Figtree',
+                                              color: isSelected
+                                                  ? widget.colors.first
+                                                  : Colors.grey[300],
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ],
                                   ),
@@ -1857,8 +1844,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               actions: [
                 TextButton(
                   onPressed: () {
-                    dismissed = true;
-                    countdownTimer?.cancel();
                     Navigator.of(dialogContext).pop();
                   },
                   child: Text(
@@ -1871,8 +1856,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    dismissed = true;
-                    countdownTimer?.cancel();
                     Navigator.of(dialogContext).pop();
                     // Load selected movie immediately
                     if (mounted) {
@@ -1897,11 +1880,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           },
         );
       },
-    ).then((_) {
-      // Dialog dismissed, cancel timer
-      dismissed = true;
-      countdownTimer?.cancel();
-    });
+    );
   }
 
   @override
