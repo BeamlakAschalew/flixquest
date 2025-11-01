@@ -1430,10 +1430,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 if (Navigator.canPop(dialogContext)) {
                   Navigator.of(dialogContext).pop();
                 }
+
                 // Save progress and send analytics before switching
                 _handleContentSwitch().then((_) {
                   // Use pushReplacement to replace Player with VideoLoader
                   if (widget.onEpisodeChange != null && mounted) {
+                    Navigator.pop(context);
+
                     Navigator.pushReplacement(
                       this.context,
                       MaterialPageRoute(
@@ -1979,6 +1982,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               await _handleContentSwitch();
 
               if (mounted) {
+                Navigator.pop(context);
                 // Use pushReplacement to replace Player with VideoLoader
                 Navigator.pushReplacement(
                   context,
