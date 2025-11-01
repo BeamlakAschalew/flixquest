@@ -233,4 +233,37 @@ class SettingsPreferences {
   Future<bool> getEnableNextEpisodeButton() async {
     return sharedPrefsSingleton.getBool(ENABLE_NEXT_EPISODE_BUTTON) ?? false;
   }
+
+  static const RECENT_SEARCHES = 'recent_searches';
+
+  Future<List<String>> getRecentSearches() async {
+    return sharedPrefsSingleton.getStringList(RECENT_SEARCHES) ?? [];
+  }
+
+  Future<void> addRecentSearch(String searchTerm) async {
+    List<String> searches = await getRecentSearches();
+
+    // Remove if already exists (to move to top)
+    searches.remove(searchTerm);
+
+    // Add to beginning
+    searches.insert(0, searchTerm);
+
+    // Keep only last 10
+    if (searches.length > 10) {
+      searches = searches.sublist(0, 10);
+    }
+
+    await sharedPrefsSingleton.setStringList(RECENT_SEARCHES, searches);
+  }
+
+  Future<void> removeRecentSearch(String searchTerm) async {
+    List<String> searches = await getRecentSearches();
+    searches.remove(searchTerm);
+    await sharedPrefsSingleton.setStringList(RECENT_SEARCHES, searches);
+  }
+
+  Future<void> clearRecentSearches() async {
+    await sharedPrefsSingleton.setStringList(RECENT_SEARCHES, []);
+  }
 }

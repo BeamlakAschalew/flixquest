@@ -170,6 +170,8 @@
   "auto": "Auto",
   "subtitle_language": "Idioma del subtítulo",
   "search_text": "Busca una película, un programa de televisión o una celebridad",
+  "recent_searches": "Búsquedas Recientes",
+  "clear_all": "Borrar Todo",
   "tv_shows": "Programas de TV",
   "celebrities": "Celebridades",
   "no_result": "El término que ingresaste no arrojó ningún resultado",

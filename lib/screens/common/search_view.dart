@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'dart:async';
 import '../../constants/app_constants.dart';
 import '../../functions/function.dart';
 import '../../provider/app_dependency_provider.dart';
+import '../../preferences/setting_preferences.dart';
 import '/api/endpoints.dart';
 import '../../functions/network.dart';
 import '/widgets/common_widgets.dart';
@@ -22,11 +24,29 @@ class Search extends SearchDelegate<String> {
   final Mixpanel mixpanel;
   final bool includeAdult;
   final String lang;
+  Timer? _debounce;
+  final SettingsPreferences _settingsPreferences = SettingsPreferences();
+
   Search(
       {required this.mixpanel, required this.includeAdult, required this.lang})
       : super(
           searchFieldLabel: tr('search_text'),
         );
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String searchQuery) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    if (searchQuery.trim().isEmpty) return;
+
+    _debounce = Timer(const Duration(seconds: 3), () {
+      _settingsPreferences.addRecentSearch(searchQuery.trim());
+    });
+  }
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -64,6 +84,12 @@ class Search extends SearchDelegate<String> {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+
+    // Trigger search saving timer when query changes
+    if (query.isNotEmpty) {
+      _onSearchChanged(query);
+    }
+
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
@@ -121,7 +147,8 @@ class Search extends SearchDelegate<String> {
                       proxyUrl);
                 }),
                 builder: (context, snapshot) {
-                  if (query.isEmpty) return searchATermWidget(themeMode);
+                  if (query.isEmpty)
+                    return recentSearchesWidget(context, themeMode);
 
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
@@ -143,7 +170,8 @@ class Search extends SearchDelegate<String> {
                         isProxyEnabled,
                         proxyUrl)),
                 builder: (context, snapshot) {
-                  if (query.isEmpty) return searchATermWidget(themeMode);
+                  if (query.isEmpty)
+                    return recentSearchesWidget(context, themeMode);
 
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
@@ -165,7 +193,8 @@ class Search extends SearchDelegate<String> {
                         isProxyEnabled,
                         proxyUrl)),
                 builder: (context, snapshot) {
-                  if (query.isEmpty) return searchATermWidget(themeMode);
+                  if (query.isEmpty)
+                    return recentSearchesWidget(context, themeMode);
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                       return searchedPersonShimmer(themeMode);
@@ -361,6 +390,101 @@ class Search extends SearchDelegate<String> {
                   fontFamily: 'Figtree'))
         ],
       ),
+    );
+  }
+
+  Widget recentSearchesWidget(BuildContext context, String themeMode) {
+    return FutureBuilder<List<String>>(
+      future: _settingsPreferences.getRecentSearches(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return searchATermWidget(themeMode);
+        }
+
+        final recentSearches = snapshot.data!;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    tr('recent_searches'),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Figtree',
+                      color: themeMode == 'dark' || themeMode == 'amoled'
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await _settingsPreferences.clearRecentSearches();
+                      // Trigger rebuild
+                      query = query; // This forces a rebuild
+                    },
+                    child: Text(
+                      tr('clear_all'),
+                      style: const TextStyle(
+                        fontFamily: 'Figtree',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                itemCount: recentSearches.length,
+                itemBuilder: (context, index) {
+                  final searchTerm = recentSearches[index];
+                  return ListTile(
+                    leading: Icon(
+                      Icons.history,
+                      color: themeMode == 'dark' || themeMode == 'amoled'
+                          ? Colors.white70
+                          : Colors.black54,
+                    ),
+                    title: Text(
+                      searchTerm,
+                      style: TextStyle(
+                        fontFamily: 'Figtree',
+                        color: themeMode == 'dark' || themeMode == 'amoled'
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: themeMode == 'dark' || themeMode == 'amoled'
+                            ? Colors.white70
+                            : Colors.black54,
+                      ),
+                      onPressed: () async {
+                        await _settingsPreferences
+                            .removeRecentSearch(searchTerm);
+                        // Trigger rebuild
+                        query = query;
+                      },
+                    ),
+                    onTap: () {
+                      query = searchTerm;
+                      showResults(context);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

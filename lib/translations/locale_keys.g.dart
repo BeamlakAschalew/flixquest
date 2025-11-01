@@ -174,6 +174,8 @@ abstract class  LocaleKeys {
   static const auto = 'auto';
   static const subtitle_language = 'subtitle_language';
   static const search_text = 'search_text';
+  static const recent_searches = 'recent_searches';
+  static const clear_all = 'clear_all';
   static const tv_shows = 'tv_shows';
   static const celebrities = 'celebrities';
   static const no_result = 'no_result';

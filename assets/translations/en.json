@@ -170,6 +170,8 @@
   "auto": "Auto",
   "subtitle_language": "Subtitle language",
   "search_text": "Search for a movie, TV show or a celebrity",
+  "recent_searches": "Recent Searches",
+  "clear_all": "Clear All",
   "tv_shows": "TV Shows",
   "celebrities": "Celebrities",
   "no_result": "The term you entered didn't bring any results",
