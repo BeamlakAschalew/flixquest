@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:better_player_plus/better_player.dart';
+import 'package:better_player_plus/better_player_plus.dart';
 import '../../functions/function.dart';
 import '../../provider/recently_watched_provider.dart';
 import '../../provider/settings_provider.dart';
@@ -108,6 +108,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       minBufferMs: 15000,
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
+        // Gesture controls configuration
+        gestureConfiguration: BetterPlayerGestureConfiguration(
+          enableVolumeSwipe: true,
+          enableBrightnessSwipe: true,
+          enableSeekSwipe: true,
+          volumeSwipeSensitivity: 0.5,
+          brightnessSwipeSensitivity: 0.5,
+          seekSwipeSensitivity: 1.0,
+        ),
         onFullScreenChange: () {
           widget.mediaType == MediaType.movie
               ? insertRecentMovieData()
