@@ -468,6 +468,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     // _resetTimer?.cancel();
     _progressCheckTimer?.cancel();
     _hideNextEpisodeOverlay();
+
+    // Dispose the BetterPlayer controller to restore brightness and clean up resources
+    _betterPlayerController.dispose();
+
     // Reset orientation to portrait when leaving the player
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
