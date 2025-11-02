@@ -543,5 +543,11 @@
   "found_external_subtitles": "تم العثور على {count} ترجمات خارجية",
   "subtitles_selected": "{count} محددة",
   "apply": "تطبيق",
-  "refresh": "تحديث"
+  "refresh": "تحديث",
+  "subtitle_source": "المصدر: {source}",
+  "failed_load_subtitles": "فشل تحميل الترجمات: {error}",
+  "downloading_processing_subtitles": "جاري تنزيل ومعالجة {count} ترجمة...",
+  "added_external_subtitles": "تمت إضافة {count} ترجمة خارجية. تحقق من قائمة الترجمات للاختيار.",
+  "all_subtitles_already_added": "تمت إضافة جميع الترجمات المحددة بالفعل.",
+  "failed_add_subtitles": "فشل في إضافة الترجمات: {error}"
 }

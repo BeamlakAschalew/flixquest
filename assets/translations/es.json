@@ -543,5 +543,11 @@
   "found_external_subtitles": "Se encontraron {count} subtítulos externos",
   "subtitles_selected": "{count} seleccionados",
   "apply": "Aplicar",
-  "refresh": "Actualizar"
+  "refresh": "Actualizar",
+  "subtitle_source": "Fuente: {source}",
+  "failed_load_subtitles": "Error al cargar subtítulos: {error}",
+  "downloading_processing_subtitles": "Descargando y procesando {count} subtítulo(s)...",
+  "added_external_subtitles": "Se agregaron {count} subtítulo(s) externo(s). Consulta el menú de subtítulos para seleccionar.",
+  "all_subtitles_already_added": "Todos los subtítulos seleccionados ya fueron agregados.",
+  "failed_add_subtitles": "Error al agregar subtítulos: {error}"
 }

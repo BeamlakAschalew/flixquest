@@ -543,5 +543,11 @@
   "found_external_subtitles": "{count} बाहरी उपशीर्षक मिले",
   "subtitles_selected": "{count} चयनित",
   "apply": "लागू करें",
-  "refresh": "ताज़ा करें"
+  "refresh": "ताज़ा करें",
+  "subtitle_source": "स्रोत: {source}",
+  "failed_load_subtitles": "उपशीर्षक लोड करने में विफल: {error}",
+  "downloading_processing_subtitles": "{count} उपशीर्षक डाउनलोड और प्रोसेस हो रहे हैं...",
+  "added_external_subtitles": "{count} बाहरी उपशीर्षक जोड़े गए। चयन करने के लिए उपशीर्षक मेनू देखें।",
+  "all_subtitles_already_added": "सभी चयनित उपशीर्षक पहले से जोड़े जा चुके हैं।",
+  "failed_add_subtitles": "उपशीर्षक जोड़ने में विफल: {error}"
 }

@@ -539,5 +539,20 @@ abstract class  LocaleKeys {
   static const bold = 'bold';
   static const regular = 'regular';
   static const text_weight = 'text_weight';
+  static const external_subtitles = 'external_subtitles';
+  static const searching_for_subtitles = 'searching_for_subtitles';
+  static const no_external_subtitles_found = 'no_external_subtitles_found';
+  static const try_searching_for_subtitles = 'try_searching_for_subtitles';
+  static const search_subtitles = 'search_subtitles';
+  static const found_external_subtitles = 'found_external_subtitles';
+  static const subtitles_selected = 'subtitles_selected';
+  static const apply = 'apply';
+  static const refresh = 'refresh';
+  static const subtitle_source = 'subtitle_source';
+  static const failed_load_subtitles = 'failed_load_subtitles';
+  static const downloading_processing_subtitles = 'downloading_processing_subtitles';
+  static const added_external_subtitles = 'added_external_subtitles';
+  static const all_subtitles_already_added = 'all_subtitles_already_added';
+  static const failed_add_subtitles = 'failed_add_subtitles';
 
 }

@@ -9,9 +9,9 @@ import '../../../services/external_subtitle_service.dart';
 
 class PlayerExternalSubtitles {
   List<ExternalSubtitle> _availableExternalSubtitles = [];
-  List<ExternalSubtitle> _selectedExternalSubtitles = [];
+  final List<ExternalSubtitle> _selectedExternalSubtitles = [];
   bool _isLoadingExternalSubtitles = false;
-  Set<String> _addedExternalSubtitleIds = {}; // Track added subtitle IDs
+  final Set<String> _addedExternalSubtitleIds = {}; // Track added subtitle IDs
 
   /// Show external subtitles menu
   void showExternalSubtitlesMenu({
@@ -263,7 +263,11 @@ class PlayerExternalSubtitles {
                                                   ),
                                                   SizedBox(height: 4),
                                                   Text(
-                                                    'Source: ${subtitle.source}',
+                                                    tr('subtitle_source',
+                                                        namedArgs: {
+                                                          'source':
+                                                              subtitle.source
+                                                        }),
                                                     style: TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.grey[500],
@@ -413,7 +417,8 @@ class PlayerExternalSubtitles {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load subtitles: ${e.toString()}'),
+            content: Text(tr('failed_load_subtitles',
+                namedArgs: {'error': e.toString()})),
             backgroundColor: Colors.red,
             duration: Duration(seconds: 3),
           ),
@@ -462,7 +467,8 @@ class PlayerExternalSubtitles {
             ),
             SizedBox(width: 16),
             Text(
-              'Downloading and processing ${_selectedExternalSubtitles.length} subtitle(s)...',
+              tr('downloading_processing_subtitles',
+                  namedArgs: {'count': '${_selectedExternalSubtitles.length}'}),
               style: TextStyle(fontFamily: 'Figtree'),
             ),
           ],
@@ -513,7 +519,8 @@ class PlayerExternalSubtitles {
         scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(
-              'Added $successCount external subtitle(s). Check subtitles menu to select.',
+              tr('added_external_subtitles',
+                  namedArgs: {'count': '$successCount'}),
               style: TextStyle(fontFamily: 'Figtree'),
             ),
             backgroundColor: Colors.green,
@@ -524,7 +531,7 @@ class PlayerExternalSubtitles {
         scaffoldMessenger.showSnackBar(
           SnackBar(
             content: Text(
-              'All selected subtitles were already added.',
+              tr('all_subtitles_already_added'),
               style: TextStyle(fontFamily: 'Figtree'),
             ),
             backgroundColor: Colors.orange,
@@ -543,7 +550,8 @@ class PlayerExternalSubtitles {
       // Show error message
       scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Text('Failed to add subtitles: ${e.toString()}'),
+          content: Text(
+              tr('failed_add_subtitles', namedArgs: {'error': e.toString()})),
           backgroundColor: Colors.red,
           duration: Duration(seconds: 3),
         ),
