@@ -23,6 +23,7 @@ import '../../api/endpoints.dart';
 import '../../functions/network.dart';
 import '../movie/movie_video_loader.dart';
 import '../tv/tv_video_loader.dart';
+import '../../services/external_subtitle_service.dart';
 
 class PlayerOne extends StatefulWidget {
   const PlayerOne(
@@ -83,6 +84,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   int? _browsedSeasonNumber;
 
   late SettingsProvider settings;
+
+  // External subtitles tracking
+  List<ExternalSubtitle> _availableExternalSubtitles = [];
+  List<ExternalSubtitle> _selectedExternalSubtitles = [];
+  bool _isLoadingExternalSubtitles = false;
+  Set<String> _addedExternalSubtitleIds = {}; // Track added subtitle IDs
 
   @override
   void initState() {
@@ -172,7 +179,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         enableAudioTracks: false,
         controlBarHeight: 50,
         watchingText: tr('watching_text'),
-        playerTimeMode: settings.playerTimeDisplay);
+        playerTimeMode: settings.playerTimeDisplay,
+        // Add custom overflow menu item for external subtitles
+        overflowMenuCustomItems: [
+          BetterPlayerOverflowMenuItem(
+            Icons.subtitles_outlined,
+            'External Subtitles',
+            () {
+              _showExternalSubtitlesMenu();
+            },
+          ),
+        ]);
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
             autoDetectFullscreenDeviceOrientation: true,
@@ -1932,6 +1949,478 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         );
       },
     );
+  }
+
+  /// Show external subtitles menu
+  void _showExternalSubtitlesMenu() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (bottomSheetContext) => StatefulBuilder(
+        builder: (context, setBottomSheetState) {
+          // Auto-load subtitles when menu is first opened if not already loaded
+          if (_availableExternalSubtitles.isEmpty &&
+              !_isLoadingExternalSubtitles) {
+            Future.microtask(
+                () => _fetchExternalSubtitles(setBottomSheetState));
+          }
+
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.7,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              ),
+            ),
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'External Subtitles',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          if (_availableExternalSubtitles.isNotEmpty)
+                            IconButton(
+                              icon: Icon(Icons.refresh),
+                              onPressed: () =>
+                                  _fetchExternalSubtitles(setBottomSheetState),
+                              tooltip: 'Refresh',
+                            ),
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(height: 1),
+                // Content
+                Expanded(
+                  child: _isLoadingExternalSubtitles
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(
+                                color: widget.colors.first,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'Searching for subtitles...',
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : _availableExternalSubtitles.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.subtitles_off_outlined,
+                                    size: 64,
+                                    color: Colors.grey[600],
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'No external subtitles found',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.grey[400],
+                                    ),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Try searching for subtitles',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  SizedBox(height: 24),
+                                  ElevatedButton.icon(
+                                    onPressed: () => _fetchExternalSubtitles(
+                                        setBottomSheetState),
+                                    icon: Icon(Icons.search),
+                                    label: Text('Search Subtitles'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: widget.colors.first,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: _availableExternalSubtitles.length,
+                              itemBuilder: (context, index) {
+                                final subtitle =
+                                    _availableExternalSubtitles[index];
+                                final isSelected = _selectedExternalSubtitles
+                                    .any((s) => s.id == subtitle.id);
+
+                                return InkWell(
+                                  onTap: () => _toggleExternalSubtitle(
+                                      subtitle, setBottomSheetState),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? widget.colors.first.withOpacity(0.1)
+                                          : null,
+                                      border: Border(
+                                        bottom: BorderSide(
+                                          color: Theme.of(context).dividerColor,
+                                          width: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0,
+                                        vertical: 12.0,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          // Flag icon
+                                          if (subtitle.flagUrl.isNotEmpty)
+                                            CachedNetworkImage(
+                                              imageUrl: subtitle.flagUrl,
+                                              width: 32,
+                                              height: 24,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  Container(
+                                                width: 32,
+                                                height: 24,
+                                                color: Colors.grey[800],
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) => Icon(
+                                                Icons.flag,
+                                                color: Colors.grey[600],
+                                                size: 24,
+                                              ),
+                                            )
+                                          else
+                                            Icon(
+                                              Icons.flag,
+                                              color: Colors.grey[600],
+                                              size: 24,
+                                            ),
+                                          SizedBox(width: 16),
+                                          // Subtitle info
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  subtitle.displayName,
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: isSelected
+                                                        ? FontWeight.bold
+                                                        : FontWeight.w600,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 4),
+                                                Text(
+                                                  'Source: ${subtitle.source}',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey[500],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          // Selection indicator
+                                          if (isSelected)
+                                            Icon(
+                                              Icons.check_circle,
+                                              color: widget.colors.first,
+                                              size: 24,
+                                            )
+                                          else
+                                            Icon(
+                                              Icons.circle_outlined,
+                                              color: Colors.grey[600],
+                                              size: 24,
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                ),
+                // Footer with selected count
+                if (_selectedExternalSubtitles.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      border: Border(
+                        top: BorderSide(
+                          color: Theme.of(context).dividerColor,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${_selectedExternalSubtitles.length} selected',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _applyExternalSubtitles();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: widget.colors.first,
+                          ),
+                          child: Text(
+                            'Apply',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Fetch external subtitles from libre-subs API
+  Future<void> _fetchExternalSubtitles(StateSetter setBottomSheetState) async {
+    setState(() {
+      _isLoadingExternalSubtitles = true;
+    });
+    setBottomSheetState(() {
+      _isLoadingExternalSubtitles = true;
+    });
+
+    try {
+      List<ExternalSubtitle> subtitles = [];
+
+      if (widget.mediaType == MediaType.movie) {
+        // Fetch movie subtitles using TMDB ID
+        subtitles = await ExternalSubtitleService.fetchMovieSubtitles(
+          widget.movieMetadata!.movieId!,
+        );
+      } else if (widget.mediaType == MediaType.tvShow) {
+        // Fetch TV episode subtitles using TMDB ID, season, and episode
+        subtitles = await ExternalSubtitleService.fetchTVSubtitles(
+          widget.tvMetadata!.tvId!,
+          widget.tvMetadata!.seasonNumber!,
+          widget.tvMetadata!.episodeNumber!,
+        );
+      }
+
+      if (mounted) {
+        setState(() {
+          _availableExternalSubtitles = subtitles;
+          _isLoadingExternalSubtitles = false;
+        });
+        setBottomSheetState(() {
+          _availableExternalSubtitles = subtitles;
+          _isLoadingExternalSubtitles = false;
+        });
+
+        // Show success message
+        if (subtitles.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Found ${subtitles.length} external subtitles'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoadingExternalSubtitles = false;
+        });
+        setBottomSheetState(() {
+          _isLoadingExternalSubtitles = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load subtitles: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Toggle selection of an external subtitle
+  void _toggleExternalSubtitle(
+      ExternalSubtitle subtitle, StateSetter setBottomSheetState) {
+    final isSelected =
+        _selectedExternalSubtitles.any((s) => s.id == subtitle.id);
+
+    if (isSelected) {
+      _selectedExternalSubtitles.removeWhere((s) => s.id == subtitle.id);
+    } else {
+      _selectedExternalSubtitles.add(subtitle);
+    }
+
+    // Update both states
+    setState(() {});
+    setBottomSheetState(() {});
+  }
+
+  /// Apply selected external subtitles to the player
+  Future<void> _applyExternalSubtitles() async {
+    if (_selectedExternalSubtitles.isEmpty) {
+      return;
+    }
+
+    // Show loading indicator
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ),
+              SizedBox(width: 16),
+              Text(
+                  'Downloading and processing ${_selectedExternalSubtitles.length} subtitle(s)...'),
+            ],
+          ),
+          backgroundColor: widget.colors.first,
+          duration: Duration(seconds: 30),
+        ),
+      );
+    }
+
+    try {
+      int successCount = 0;
+
+      // Add selected external subtitles to the player's subtitle list
+      for (final externalSubtitle in _selectedExternalSubtitles) {
+        // Check if this exact subtitle (by ID) is already added
+        if (_addedExternalSubtitleIds.contains(externalSubtitle.id)) {
+          continue; // Skip already added subtitles
+        }
+
+        // Count how many subtitles with the same display name exist
+        final sameLanguageCount = _betterPlayerController
+            .betterPlayerSubtitlesSourceList
+            .where(
+                (source) => source.name!.startsWith(externalSubtitle.display))
+            .length;
+
+        // Download and convert to BetterPlayer source with a number
+        final betterPlayerSource =
+            await ExternalSubtitleService.convertToBetterPlayerSource(
+          externalSubtitle,
+          subtitleNumber: sameLanguageCount > 0 ? sameLanguageCount + 1 : null,
+        );
+
+        // Add to the controller's subtitle list
+        _betterPlayerController.betterPlayerSubtitlesSourceList
+            .add(betterPlayerSource);
+
+        // Mark this subtitle ID as added
+        _addedExternalSubtitleIds.add(externalSubtitle.id);
+        successCount++;
+      }
+
+      if (!mounted) return;
+
+      // Hide loading snackbar
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      // Show success message
+      if (successCount > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Added $successCount external subtitle(s). Check subtitles menu to select.',
+            ),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'All selected subtitles were already added.',
+            ),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+
+      // Clear selection after applying
+      setState(() {
+        _selectedExternalSubtitles.clear();
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      // Hide loading snackbar
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      debugPrint(e.toString());
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to add subtitles: ${e.toString()}'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   @override
