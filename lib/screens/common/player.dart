@@ -1447,7 +1447,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     // Pop current player, then push new video loader
                     if (widget.onEpisodeChange != null && mounted) {
                       Navigator.pop(context);
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         this.context,
                         MaterialPageRoute(
                           builder: (context) => TVVideoLoader(
