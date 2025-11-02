@@ -531,62 +531,70 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           ),
           child: Column(
             children: [
-              // Drag handle
-              Container(
-                margin: EdgeInsets.only(top: 8, bottom: 4),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[600],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+              // Draggable Header
+              SingleChildScrollView(
+                controller: scrollController,
+                physics: ClampingScrollPhysics(),
+                child: Column(
                   children: [
-                    // Back button to season selector (if multiple seasons available)
-                    if (widget.tvMetadata!.allSeasons != null &&
-                        widget.tvMetadata!.allSeasons!.length > 1)
-                      IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _showSeasonSelectionBottomSheet();
-                        },
-                      )
-                    else
-                      SizedBox(width: 60),
-                    Expanded(
-                      child: Text(
-                        tr('season_episodes', namedArgs: {
-                          'season':
-                              '${_browsedSeasonNumber ?? widget.tvMetadata!.seasonNumber}'
-                        }),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                        textAlign: TextAlign.start,
+                    // Drag handle
+                    Container(
+                      margin: EdgeInsets.only(top: 8, bottom: 4),
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[600],
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          // Back button to season selector (if multiple seasons available)
+                          if (widget.tvMetadata!.allSeasons != null &&
+                              widget.tvMetadata!.allSeasons!.length > 1)
+                            IconButton(
+                              icon: Icon(Icons.arrow_back),
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _showSeasonSelectionBottomSheet();
+                              },
+                            )
+                          else
+                            SizedBox(width: 60),
+                          Expanded(
+                            child: Text(
+                              tr('season_episodes', namedArgs: {
+                                'season':
+                                    '${_browsedSeasonNumber ?? widget.tvMetadata!.seasonNumber}'
+                              }),
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
                     ),
+                    Divider(height: 1),
                   ],
                 ),
               ),
-              Divider(height: 1),
               // Episode List
               Expanded(
                 child: Consumer<RecentProvider>(
                   builder: (context, recentProvider, child) {
                     return ListView.builder(
-                      controller: scrollController,
                       itemCount: widget.tvMetadata!.seasonEpisodes!.length,
                       itemBuilder: (context, index) {
                         final episode =
@@ -927,43 +935,51 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           ),
           child: Column(
             children: [
-              // Drag handle
-              Container(
-                margin: EdgeInsets.only(top: 8, bottom: 4),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[600],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              // Header
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // Draggable Header
+              SingleChildScrollView(
+                controller: scrollController,
+                physics: ClampingScrollPhysics(),
+                child: Column(
                   children: [
-                    Text(
-                      tr('select_season'),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
+                    // Drag handle
+                    Container(
+                      margin: EdgeInsets.only(top: 8, bottom: 4),
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[600],
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30.0, vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tr('select_season'),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
                     ),
+                    Divider(height: 1),
                   ],
                 ),
               ),
-              Divider(height: 1),
               // Season List
               Expanded(
                 child: ListView.builder(
-                  controller: scrollController,
                   itemCount: widget.tvMetadata!.allSeasons!.length,
                   itemBuilder: (context, index) {
                     final season = widget.tvMetadata!.allSeasons![index];
@@ -1282,43 +1298,51 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           ),
           child: Column(
             children: [
-              // Drag handle
-              Container(
-                margin: EdgeInsets.only(top: 8, bottom: 4),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[600],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              // Header
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30.0, vertical: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // Draggable Header
+              SingleChildScrollView(
+                controller: scrollController,
+                physics: ClampingScrollPhysics(),
+                child: Column(
                   children: [
-                    Text(
-                      tr('recommended_movies'),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
+                    // Drag handle
+                    Container(
+                      margin: EdgeInsets.only(top: 8, bottom: 4),
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[600],
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30.0, vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tr('recommended_movies'),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
                     ),
+                    Divider(height: 1),
                   ],
                 ),
               ),
-              Divider(height: 1),
               // Movie List
               Expanded(
                 child: ListView.builder(
-                  controller: scrollController,
                   itemCount: widget.movieMetadata!.recommendations!.length,
                   itemBuilder: (context, index) {
                     final movie = widget.movieMetadata!.recommendations![index];
@@ -2049,49 +2073,59 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               ),
               child: Column(
                 children: [
-                  // Drag handle
-                  Container(
-                    margin: EdgeInsets.only(top: 8, bottom: 4),
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[600],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  // Header
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Draggable Header
+                  SingleChildScrollView(
+                    controller: scrollController,
+                    physics: ClampingScrollPhysics(),
+                    child: Column(
                       children: [
-                        Text(
-                          'External Subtitles',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
+                        // Drag handle
+                        Container(
+                          margin: EdgeInsets.only(top: 8, bottom: 4),
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[600],
+                            borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                        Row(
-                          children: [
-                            if (_availableExternalSubtitles.isNotEmpty)
-                              IconButton(
-                                icon: Icon(Icons.refresh),
-                                onPressed: () => _fetchExternalSubtitles(
-                                    setBottomSheetState),
-                                tooltip: 'Refresh',
+                        // Header
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'External Subtitles',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
                               ),
-                            IconButton(
-                              icon: Icon(Icons.close),
-                              onPressed: () => Navigator.pop(context),
-                            ),
-                          ],
+                              Row(
+                                children: [
+                                  if (_availableExternalSubtitles.isNotEmpty)
+                                    IconButton(
+                                      icon: Icon(Icons.refresh),
+                                      onPressed: () => _fetchExternalSubtitles(
+                                          setBottomSheetState),
+                                      tooltip: 'Refresh',
+                                    ),
+                                  IconButton(
+                                    icon: Icon(Icons.close),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
+                        Divider(height: 1),
                       ],
                     ),
                   ),
-                  Divider(height: 1),
                   // Content
                   Expanded(
                     child: _isLoadingExternalSubtitles
@@ -2154,7 +2188,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                 ),
                               )
                             : ListView.builder(
-                                controller: scrollController,
                                 itemCount: _availableExternalSubtitles.length,
                                 itemBuilder: (context, index) {
                                   final subtitle =
