@@ -506,16 +506,28 @@ class PlayerEpisodeSelection {
                         // Check if we need to fetch episodes (either different season OR episodes from wrong season are loaded)
                         if (!isCurrentSeason ||
                             _browsedSeasonNumber != season.seasonNumber) {
-                          // Close season selector first
-                          Navigator.pop(context);
+                          // Store the root navigator and context before closing the sheet
+                          final rootNavigator =
+                              Navigator.of(context, rootNavigator: true);
 
-                          // Show loading indicator
-                          showDialog(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (dialogContext) => Center(
-                              child: CircularProgressIndicator(
-                                color: colors.first,
+                          // Close season selector first
+                          Navigator.of(context).pop();
+
+                          // Show loading indicator using root navigator
+                          rootNavigator.push(
+                            PageRouteBuilder(
+                              opaque: false,
+                              barrierDismissible: false,
+                              pageBuilder: (_, __, ___) => WillPopScope(
+                                onWillPop: () async => false,
+                                child: Container(
+                                  color: Colors.black54,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: colors.first,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           );
@@ -528,22 +540,24 @@ class PlayerEpisodeSelection {
                             colors,
                           );
 
-                          // Close loading dialog
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                          }
+                          // Close loading indicator using root navigator
+                          rootNavigator.pop();
 
-                          // Show episode list for the new season
-                          if (context.mounted) {
-                            showEpisodeSelectionBottomSheet(
-                              context: context,
-                              colors: colors,
-                              tvMetadata: tvMetadata,
-                              tvRoute: tvRoute,
-                              onSaveProgress: onSaveProgress,
-                              closePlayer: closePlayer,
-                            );
-                          }
+                          // Use WidgetsBinding to ensure we show the sheet after the frame is complete
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            // Get the current context from the root navigator
+                            final currentContext = rootNavigator.context;
+                            if (currentContext.mounted) {
+                              showEpisodeSelectionBottomSheet(
+                                context: currentContext,
+                                colors: colors,
+                                tvMetadata: tvMetadata,
+                                tvRoute: tvRoute,
+                                onSaveProgress: onSaveProgress,
+                                closePlayer: closePlayer,
+                              );
+                            }
+                          });
                         } else {
                           // Already showing correct season's episodes, just go back
                           Navigator.pop(context);
