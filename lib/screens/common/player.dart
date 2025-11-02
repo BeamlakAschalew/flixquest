@@ -512,361 +512,389 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // Back button to season selector (if multiple seasons available)
-                  if (widget.tvMetadata!.allSeasons != null &&
-                      widget.tvMetadata!.allSeasons!.length > 1)
-                    IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _showSeasonSelectionBottomSheet();
-                      },
-                    )
-                  else
-                    SizedBox(width: 60),
-                  Expanded(
-                    child: Text(
-                      tr('season_episodes', namedArgs: {
-                        'season':
-                            '${_browsedSeasonNumber ?? widget.tvMetadata!.seasonNumber}'
-                      }),
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        snap: true,
+        snapSizes: [0.5, 0.7, 0.95],
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
-            Divider(height: 1),
-            // Episode List
-            Expanded(
-              child: Consumer<RecentProvider>(
-                builder: (context, recentProvider, child) {
-                  return ListView.builder(
-                    itemCount: widget.tvMetadata!.seasonEpisodes!.length,
-                    itemBuilder: (context, index) {
-                      final episode = widget.tvMetadata!.seasonEpisodes![index];
-                      final isCurrentEpisode = episode.episodeNumber ==
-                              widget.tvMetadata!.episodeNumber &&
-                          episode.seasonNumber ==
-                              widget.tvMetadata!.seasonNumber;
-
-                      // Debug: Print to help identify the issue
-                      debugPrint(
-                          'Checking Episode: S${episode.seasonNumber}E${episode.episodeNumber}, '
-                          'Currently Playing in Player: S${widget.tvMetadata!.seasonNumber}E${widget.tvMetadata!.episodeNumber}, '
-                          'Match: $isCurrentEpisode');
-
-                      // Check if episode is in recently watched
-                      final recentEpisode = recentProvider.episodes.firstWhere(
-                        (e) => e.id == episode.episodeId,
-                        orElse: () => RecentEpisode(
-                          dateTime: '',
-                          elapsed: 0,
-                          id: 0,
-                          posterPath: '',
-                          remaining: 0,
-                          seriesName: '',
-                          episodeName: '',
-                          episodeNum: 0,
-                          seasonNum: 0,
-                          seriesId: 0,
+          ),
+          child: Column(
+            children: [
+              // Drag handle
+              Container(
+                margin: EdgeInsets.only(top: 8, bottom: 4),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // Back button to season selector (if multiple seasons available)
+                    if (widget.tvMetadata!.allSeasons != null &&
+                        widget.tvMetadata!.allSeasons!.length > 1)
+                      IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _showSeasonSelectionBottomSheet();
+                        },
+                      )
+                    else
+                      SizedBox(width: 60),
+                    Expanded(
+                      child: Text(
+                        tr('season_episodes', namedArgs: {
+                          'season':
+                              '${_browsedSeasonNumber ?? widget.tvMetadata!.seasonNumber}'
+                        }),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
-                      );
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1),
+              // Episode List
+              Expanded(
+                child: Consumer<RecentProvider>(
+                  builder: (context, recentProvider, child) {
+                    return ListView.builder(
+                      controller: scrollController,
+                      itemCount: widget.tvMetadata!.seasonEpisodes!.length,
+                      itemBuilder: (context, index) {
+                        final episode =
+                            widget.tvMetadata!.seasonEpisodes![index];
+                        final isCurrentEpisode = episode.episodeNumber ==
+                                widget.tvMetadata!.episodeNumber &&
+                            episode.seasonNumber ==
+                                widget.tvMetadata!.seasonNumber;
 
-                      final hasProgress = recentEpisode.id != 0;
-                      final progressPercentage =
-                          hasProgress && recentEpisode.elapsed! > 0
-                              ? (recentEpisode.elapsed! /
-                                      (recentEpisode.elapsed! +
-                                          recentEpisode.remaining!)) *
-                                  100
-                              : 0.0;
+                        // Debug: Print to help identify the issue
+                        debugPrint(
+                            'Checking Episode: S${episode.seasonNumber}E${episode.episodeNumber}, '
+                            'Currently Playing in Player: S${widget.tvMetadata!.seasonNumber}E${widget.tvMetadata!.episodeNumber}, '
+                            'Match: $isCurrentEpisode');
 
-                      return InkWell(
-                        onTap: () async {
-                          if (!isCurrentEpisode &&
-                              widget.onEpisodeChange != null) {
-                            // Save progress and send analytics before switching
-                            await _handleContentSwitch();
+                        // Check if episode is in recently watched
+                        final recentEpisode =
+                            recentProvider.episodes.firstWhere(
+                          (e) => e.id == episode.episodeId,
+                          orElse: () => RecentEpisode(
+                            dateTime: '',
+                            elapsed: 0,
+                            id: 0,
+                            posterPath: '',
+                            remaining: 0,
+                            seriesName: '',
+                            episodeName: '',
+                            episodeNum: 0,
+                            seasonNum: 0,
+                            seriesId: 0,
+                          ),
+                        );
 
-                            if (context.mounted) {
-                              // Close the bottom sheet first
-                              Navigator.pop(context);
-                              Navigator.pop(context);
+                        final hasProgress = recentEpisode.id != 0;
+                        final progressPercentage =
+                            hasProgress && recentEpisode.elapsed! > 0
+                                ? (recentEpisode.elapsed! /
+                                        (recentEpisode.elapsed! +
+                                            recentEpisode.remaining!)) *
+                                    100
+                                : 0.0;
 
-                              // Use pushReplacement to replace Player with VideoLoader
-                              // This prevents player stacking
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TVVideoLoader(
-                                    download: false,
-                                    route: widget.tvRoute ?? StreamRoute.flixHQ,
-                                    metadata: TVStreamMetadata(
-                                      elapsed: null,
-                                      episodeId: episode.episodeId,
-                                      episodeName: episode.episodeName,
-                                      episodeNumber: episode.episodeNumber,
-                                      posterPath: widget.tvMetadata!.posterPath,
-                                      seasonNumber: episode.seasonNumber,
-                                      seriesName: widget.tvMetadata!.seriesName,
-                                      tvId: widget.tvMetadata!.tvId,
-                                      airDate: episode.airDate,
-                                      seasonEpisodes:
-                                          widget.tvMetadata!.seasonEpisodes,
-                                      allSeasons: widget.tvMetadata!.allSeasons,
+                        return InkWell(
+                          onTap: () async {
+                            if (!isCurrentEpisode &&
+                                widget.onEpisodeChange != null) {
+                              // Save progress and send analytics before switching
+                              await _handleContentSwitch();
+
+                              if (context.mounted) {
+                                // Close the bottom sheet first
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+
+                                // Use pushReplacement to replace Player with VideoLoader
+                                // This prevents player stacking
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TVVideoLoader(
+                                      download: false,
+                                      route:
+                                          widget.tvRoute ?? StreamRoute.flixHQ,
+                                      metadata: TVStreamMetadata(
+                                        elapsed: null,
+                                        episodeId: episode.episodeId,
+                                        episodeName: episode.episodeName,
+                                        episodeNumber: episode.episodeNumber,
+                                        posterPath:
+                                            widget.tvMetadata!.posterPath,
+                                        seasonNumber: episode.seasonNumber,
+                                        seriesName:
+                                            widget.tvMetadata!.seriesName,
+                                        tvId: widget.tvMetadata!.tvId,
+                                        airDate: episode.airDate,
+                                        seasonEpisodes:
+                                            widget.tvMetadata!.seasonEpisodes,
+                                        allSeasons:
+                                            widget.tvMetadata!.allSeasons,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             }
-                          }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isCurrentEpisode
-                                ? widget.colors.first.withOpacity(0.1)
-                                : null,
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Theme.of(context).dividerColor,
-                                width: 0.5,
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isCurrentEpisode
+                                  ? widget.colors.first.withOpacity(0.1)
+                                  : null,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Theme.of(context).dividerColor,
+                                  width: 0.5,
+                                ),
                               ),
                             ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Episode thumbnail
-                                Stack(
-                                  children: [
-                                    Container(
-                                      width: 140,
-                                      height: 80,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: Colors.grey[800],
-                                      ),
-                                      child: episode.stillPath != null
-                                          ? ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              child: CachedNetworkImage(
-                                                cacheManager: cacheProp(),
-                                                imageUrl:
-                                                    'https://image.tmdb.org/t/p/w300${episode.stillPath}',
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    color: widget.colors.first,
-                                                  ),
-                                                ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Center(
-                                                  child: Icon(
-                                                    Icons.movie,
-                                                    color: Colors.grey[600],
-                                                    size: 32,
-                                                  ),
-                                                ),
-                                              ),
-                                            )
-                                          : Center(
-                                              child: Icon(
-                                                Icons.movie,
-                                                color: Colors.grey[600],
-                                                size: 32,
-                                              ),
-                                            ),
-                                    ),
-                                    // Progress bar
-                                    if (hasProgress && progressPercentage > 0)
-                                      Positioned(
-                                        bottom: 0,
-                                        left: 0,
-                                        right: 0,
-                                        child: Container(
-                                          height: 3,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.only(
-                                              bottomLeft: Radius.circular(8),
-                                              bottomRight: Radius.circular(8),
-                                            ),
-                                          ),
-                                          child: LinearProgressIndicator(
-                                            value: progressPercentage / 100,
-                                            backgroundColor: Colors.grey[700],
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                              widget.colors.first,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    // Current episode indicator
-                                    if (isCurrentEpisode)
-                                      Positioned(
-                                        top: 4,
-                                        right: 4,
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: widget.colors.first,
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Text(
-                                            tr('playing'),
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                SizedBox(width: 12),
-                                // Episode info
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Episode thumbnail
+                                  Stack(
                                     children: [
-                                      Text(
-                                        '${episode.episodeNumber}. ${episode.episodeName}',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: isCurrentEpisode
-                                              ? FontWeight.bold
-                                              : FontWeight.w600,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurface,
+                                      Container(
+                                        width: 140,
+                                        height: 80,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          color: Colors.grey[800],
                                         ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      SizedBox(height: 4),
-                                      // Rating and runtime row
-                                      Row(
-                                        children: [
-                                          if (episode.voteAverage != null &&
-                                              episode.voteAverage! > 0)
-                                            Container(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 6,
-                                                vertical: 2,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: widget.colors.first
-                                                    .withOpacity(0.2),
+                                        child: episode.stillPath != null
+                                            ? ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(4),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Icon(
-                                                    Icons.star_rounded,
-                                                    size: 14,
-                                                    color: widget.colors.first,
-                                                  ),
-                                                  SizedBox(width: 2),
-                                                  Text(
-                                                    '${episode.voteAverage!.toStringAsFixed(1)}/10',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.w600,
+                                                child: CachedNetworkImage(
+                                                  cacheManager: cacheProp(),
+                                                  imageUrl:
+                                                      'https://image.tmdb.org/t/p/w300${episode.stillPath}',
+                                                  fit: BoxFit.cover,
+                                                  placeholder: (context, url) =>
+                                                      Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      strokeWidth: 2,
                                                       color:
                                                           widget.colors.first,
                                                     ),
                                                   ),
-                                                ],
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Center(
+                                                    child: Icon(
+                                                      Icons.movie,
+                                                      color: Colors.grey[600],
+                                                      size: 32,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : Center(
+                                                child: Icon(
+                                                  Icons.movie,
+                                                  color: Colors.grey[600],
+                                                  size: 32,
+                                                ),
                                               ),
-                                            ),
-                                          if (episode.voteAverage != null &&
-                                              episode.voteAverage! > 0 &&
-                                              episode.runtime != null)
-                                            SizedBox(width: 8),
-                                          if (episode.runtime != null)
-                                            Text(
-                                              '${episode.runtime}m',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey[400],
-                                              ),
-                                            ),
-                                        ],
                                       ),
-                                      if (episode.overview != null &&
-                                          episode.overview!.isNotEmpty)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 4.0),
-                                          child: Text(
-                                            episode.overview!,
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[500],
+                                      // Progress bar
+                                      if (hasProgress && progressPercentage > 0)
+                                        Positioned(
+                                          bottom: 0,
+                                          left: 0,
+                                          right: 0,
+                                          child: Container(
+                                            height: 3,
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                bottomLeft: Radius.circular(8),
+                                                bottomRight: Radius.circular(8),
+                                              ),
                                             ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
+                                            child: LinearProgressIndicator(
+                                              value: progressPercentage / 100,
+                                              backgroundColor: Colors.grey[700],
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                widget.colors.first,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      // Current episode indicator
+                                      if (isCurrentEpisode)
+                                        Positioned(
+                                          top: 4,
+                                          right: 4,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: widget.colors.first,
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              tr('playing'),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                  SizedBox(width: 12),
+                                  // Episode info
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${episode.episodeNumber}. ${episode.episodeName}',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: isCurrentEpisode
+                                                ? FontWeight.bold
+                                                : FontWeight.w600,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        SizedBox(height: 4),
+                                        // Rating and runtime row
+                                        Row(
+                                          children: [
+                                            if (episode.voteAverage != null &&
+                                                episode.voteAverage! > 0)
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 6,
+                                                  vertical: 2,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: widget.colors.first
+                                                      .withOpacity(0.2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
+                                                ),
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.star_rounded,
+                                                      size: 14,
+                                                      color:
+                                                          widget.colors.first,
+                                                    ),
+                                                    SizedBox(width: 2),
+                                                    Text(
+                                                      '${episode.voteAverage!.toStringAsFixed(1)}/10',
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color:
+                                                            widget.colors.first,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            if (episode.voteAverage != null &&
+                                                episode.voteAverage! > 0 &&
+                                                episode.runtime != null)
+                                              SizedBox(width: 8),
+                                            if (episode.runtime != null)
+                                              Text(
+                                                '${episode.runtime}m',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[400],
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        if (episode.overview != null &&
+                                            episode.overview!.isNotEmpty)
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 4.0),
+                                            child: Text(
+                                              episode.overview!,
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey[500],
+                                              ),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -880,213 +908,232 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.6,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    tr('select_season'),
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.9,
+        expand: false,
+        snap: true,
+        snapSizes: [0.4, 0.6, 0.9],
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
-            Divider(height: 1),
-            // Season List
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.tvMetadata!.allSeasons!.length,
-                itemBuilder: (context, index) {
-                  final season = widget.tvMetadata!.allSeasons![index];
-                  final isCurrentSeason =
-                      season.seasonNumber == widget.tvMetadata!.seasonNumber;
+          ),
+          child: Column(
+            children: [
+              // Drag handle
+              Container(
+                margin: EdgeInsets.only(top: 8, bottom: 4),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30.0, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tr('select_season'),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1),
+              // Season List
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: widget.tvMetadata!.allSeasons!.length,
+                  itemBuilder: (context, index) {
+                    final season = widget.tvMetadata!.allSeasons![index];
+                    final isCurrentSeason =
+                        season.seasonNumber == widget.tvMetadata!.seasonNumber;
 
-                  return InkWell(
-                    onTap: () async {
-                      // Check if we need to fetch episodes (either different season OR episodes from wrong season are loaded)
-                      if (!isCurrentSeason ||
-                          _browsedSeasonNumber != season.seasonNumber) {
-                        // Close season selector first
-                        Navigator.pop(context);
+                    return InkWell(
+                      onTap: () async {
+                        // Check if we need to fetch episodes (either different season OR episodes from wrong season are loaded)
+                        if (!isCurrentSeason ||
+                            _browsedSeasonNumber != season.seasonNumber) {
+                          // Close season selector first
+                          Navigator.pop(context);
 
-                        // Show loading indicator
-                        showDialog(
-                          context: this.context,
-                          barrierDismissible: false,
-                          builder: (dialogContext) => Center(
-                            child: CircularProgressIndicator(
-                              color: widget.colors.first,
+                          // Show loading indicator
+                          showDialog(
+                            context: this.context,
+                            barrierDismissible: false,
+                            builder: (dialogContext) => Center(
+                              child: CircularProgressIndicator(
+                                color: widget.colors.first,
+                              ),
                             ),
-                          ),
-                        );
+                          );
 
-                        // Fetch episodes for the selected season
-                        await _fetchEpisodesForSeason(season.seasonNumber);
+                          // Fetch episodes for the selected season
+                          await _fetchEpisodesForSeason(season.seasonNumber);
 
-                        // Close loading dialog
-                        if (mounted) {
-                          Navigator.of(this.context).pop();
-                        }
+                          // Close loading dialog
+                          if (mounted) {
+                            Navigator.of(this.context).pop();
+                          }
 
-                        // Show episode list for the new season
-                        if (mounted) {
+                          // Show episode list for the new season
+                          if (mounted) {
+                            _showEpisodeSelectionBottomSheet();
+                          }
+                        } else {
+                          // Already showing correct season's episodes, just go back
+                          Navigator.pop(context);
                           _showEpisodeSelectionBottomSheet();
                         }
-                      } else {
-                        // Already showing correct season's episodes, just go back
-                        Navigator.pop(context);
-                        _showEpisodeSelectionBottomSheet();
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: isCurrentSeason
-                            ? widget.colors.first.withOpacity(0.1)
-                            : null,
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Theme.of(context).dividerColor,
-                            width: 0.5,
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isCurrentSeason
+                              ? widget.colors.first.withOpacity(0.1)
+                              : null,
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                              width: 0.5,
+                            ),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            children: [
+                              // Season poster
+                              if (season.posterPath != null)
+                                Container(
+                                  width: 60,
+                                  height: 90,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: Colors.grey[800],
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(4),
+                                    child: CachedNetworkImage(
+                                      cacheManager: cacheProp(),
+                                      imageUrl:
+                                          'https://image.tmdb.org/t/p/w185${season.posterPath}',
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) => Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: widget.colors.first,
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Center(
+                                        child: Icon(
+                                          Icons.tv,
+                                          color: Colors.grey[600],
+                                          size: 32,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Container(
+                                  width: 60,
+                                  height: 90,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.grey[800],
+                                  ),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.tv,
+                                      color: Colors.grey[600],
+                                      size: 32,
+                                    ),
+                                  ),
+                                ),
+                              SizedBox(width: 16),
+                              // Season info
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      season.seasonName,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: isCurrentSeason
+                                            ? FontWeight.bold
+                                            : FontWeight.w600,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      tr('episodes_count', namedArgs: {
+                                        'count': '${season.episodeCount}'
+                                      }),
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.grey[400],
+                                      ),
+                                    ),
+                                    if (season.overview != null &&
+                                        season.overview!.isNotEmpty)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 4.0),
+                                        child: Text(
+                                          season.overview!,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[500],
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              if (isCurrentSeason)
+                                Icon(
+                                  Icons.check_circle,
+                                  color: widget.colors.first,
+                                  size: 24,
+                                ),
+                            ],
                           ),
                         ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            // Season poster
-                            if (season.posterPath != null)
-                              Container(
-                                width: 60,
-                                height: 90,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: Colors.grey[800],
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(4),
-                                  child: CachedNetworkImage(
-                                    cacheManager: cacheProp(),
-                                    imageUrl:
-                                        'https://image.tmdb.org/t/p/w185${season.posterPath}',
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Center(
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: widget.colors.first,
-                                      ),
-                                    ),
-                                    errorWidget: (context, url, error) =>
-                                        Center(
-                                      child: Icon(
-                                        Icons.tv,
-                                        color: Colors.grey[600],
-                                        size: 32,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            else
-                              Container(
-                                width: 60,
-                                height: 90,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.grey[800],
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.tv,
-                                    color: Colors.grey[600],
-                                    size: 32,
-                                  ),
-                                ),
-                              ),
-                            SizedBox(width: 16),
-                            // Season info
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    season.seasonName,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: isCurrentSeason
-                                          ? FontWeight.bold
-                                          : FontWeight.w600,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    tr('episodes_count', namedArgs: {
-                                      'count': '${season.episodeCount}'
-                                    }),
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.grey[400],
-                                    ),
-                                  ),
-                                  if (season.overview != null &&
-                                      season.overview!.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4.0),
-                                      child: Text(
-                                        season.overview!,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey[500],
-                                        ),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            if (isCurrentSeason)
-                              Icon(
-                                Icons.check_circle,
-                                color: widget.colors.first,
-                                size: 24,
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1216,205 +1263,224 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 30.0, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    tr('recommended_movies'),
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        snap: true,
+        snapSizes: [0.5, 0.7, 0.95],
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
-            Divider(height: 1),
-            // Movie List
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.movieMetadata!.recommendations!.length,
-                itemBuilder: (context, index) {
-                  final movie = widget.movieMetadata!.recommendations![index];
+          ),
+          child: Column(
+            children: [
+              // Drag handle
+              Container(
+                margin: EdgeInsets.only(top: 8, bottom: 4),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[600],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 30.0, vertical: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tr('recommended_movies'),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(height: 1),
+              // Movie List
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: widget.movieMetadata!.recommendations!.length,
+                  itemBuilder: (context, index) {
+                    final movie = widget.movieMetadata!.recommendations![index];
 
-                  return InkWell(
-                    onTap: () {
-                      // Close the bottom sheet
-                      Navigator.pop(context);
-                      // Load the selected movie
-                      _loadRecommendedMovie(movie.movieId);
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Theme.of(context).dividerColor,
-                            width: 0.5,
+                    return InkWell(
+                      onTap: () {
+                        // Close the bottom sheet
+                        Navigator.pop(context);
+                        // Load the selected movie
+                        _loadRecommendedMovie(movie.movieId);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                              width: 0.5,
+                            ),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Movie poster
+                              Container(
+                                width: 100,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.grey[800],
+                                ),
+                                child: movie.posterPath != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: CachedNetworkImage(
+                                          cacheManager: cacheProp(),
+                                          imageUrl:
+                                              'https://image.tmdb.org/t/p/w300${movie.posterPath}',
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) => Center(
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: widget.colors.first,
+                                            ),
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Center(
+                                            child: Icon(
+                                              Icons.movie,
+                                              color: Colors.grey[600],
+                                              size: 40,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Icon(
+                                          Icons.movie,
+                                          color: Colors.grey[600],
+                                          size: 40,
+                                        ),
+                                      ),
+                              ),
+                              SizedBox(width: 12),
+                              // Movie info
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      movie.title,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'FigtreeSB',
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    // Rating and release year row
+                                    Row(
+                                      children: [
+                                        if (movie.voteAverage != null &&
+                                            movie.voteAverage! > 0)
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: widget.colors.first
+                                                  .withOpacity(0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.star_rounded,
+                                                  size: 14,
+                                                  color: widget.colors.first,
+                                                ),
+                                                SizedBox(width: 2),
+                                                Text(
+                                                  '${movie.voteAverage!.toStringAsFixed(1)}/10',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: widget.colors.first,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        if (movie.voteAverage != null &&
+                                            movie.voteAverage! > 0 &&
+                                            movie.releaseDate != null)
+                                          SizedBox(width: 8),
+                                        if (movie.releaseDate != null)
+                                          Text(
+                                            movie.releaseDate!.split('-')[0],
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[400],
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    if (movie.overview != null &&
+                                        movie.overview!.isNotEmpty)
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 8.0),
+                                        child: Text(
+                                          movie.overview!,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontFamily: 'Figtree',
+                                            color: Colors.grey[500],
+                                          ),
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Movie poster
-                            Container(
-                              width: 100,
-                              height: 150,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                color: Colors.grey[800],
-                              ),
-                              child: movie.posterPath != null
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: CachedNetworkImage(
-                                        cacheManager: cacheProp(),
-                                        imageUrl:
-                                            'https://image.tmdb.org/t/p/w300${movie.posterPath}',
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) => Center(
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: widget.colors.first,
-                                          ),
-                                        ),
-                                        errorWidget: (context, url, error) =>
-                                            Center(
-                                          child: Icon(
-                                            Icons.movie,
-                                            color: Colors.grey[600],
-                                            size: 40,
-                                          ),
-                                        ),
-                                      ),
-                                    )
-                                  : Center(
-                                      child: Icon(
-                                        Icons.movie,
-                                        color: Colors.grey[600],
-                                        size: 40,
-                                      ),
-                                    ),
-                            ),
-                            SizedBox(width: 12),
-                            // Movie info
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    movie.title,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: 'FigtreeSB',
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  // Rating and release year row
-                                  Row(
-                                    children: [
-                                      if (movie.voteAverage != null &&
-                                          movie.voteAverage! > 0)
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: widget.colors.first
-                                                .withOpacity(0.2),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.star_rounded,
-                                                size: 14,
-                                                color: widget.colors.first,
-                                              ),
-                                              SizedBox(width: 2),
-                                              Text(
-                                                '${movie.voteAverage!.toStringAsFixed(1)}/10',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: widget.colors.first,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      if (movie.voteAverage != null &&
-                                          movie.voteAverage! > 0 &&
-                                          movie.releaseDate != null)
-                                        SizedBox(width: 8),
-                                      if (movie.releaseDate != null)
-                                        Text(
-                                          movie.releaseDate!.split('-')[0],
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey[400],
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                  if (movie.overview != null &&
-                                      movie.overview!.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Text(
-                                        movie.overview!,
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontFamily: 'Figtree',
-                                          color: Colors.grey[500],
-                                        ),
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -1955,272 +2021,293 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   void _showExternalSubtitlesMenu() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (bottomSheetContext) => StatefulBuilder(
-        builder: (context, setBottomSheetState) {
-          // Auto-load subtitles when menu is first opened if not already loaded
-          if (_availableExternalSubtitles.isEmpty &&
-              !_isLoadingExternalSubtitles) {
-            Future.microtask(
-                () => _fetchExternalSubtitles(setBottomSheetState));
-          }
+      backgroundColor: Colors.transparent,
+      builder: (bottomSheetContext) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        snap: true,
+        snapSizes: [0.5, 0.7, 0.95],
+        builder: (context, scrollController) => StatefulBuilder(
+          builder: (context, setBottomSheetState) {
+            // Auto-load subtitles when menu is first opened if not already loaded
+            if (_availableExternalSubtitles.isEmpty &&
+                !_isLoadingExternalSubtitles) {
+              Future.microtask(
+                  () => _fetchExternalSubtitles(setBottomSheetState));
+            }
 
-          return Container(
-            height: MediaQuery.of(context).size.height * 0.7,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
               ),
-            ),
-            child: Column(
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'External Subtitles',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          if (_availableExternalSubtitles.isNotEmpty)
-                            IconButton(
-                              icon: Icon(Icons.refresh),
-                              onPressed: () =>
-                                  _fetchExternalSubtitles(setBottomSheetState),
-                              tooltip: 'Refresh',
-                            ),
-                          IconButton(
-                            icon: Icon(Icons.close),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(height: 1),
-                // Content
-                Expanded(
-                  child: _isLoadingExternalSubtitles
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircularProgressIndicator(
-                                color: widget.colors.first,
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                'Searching for subtitles...',
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : _availableExternalSubtitles.isEmpty
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.subtitles_off_outlined,
-                                    size: 64,
-                                    color: Colors.grey[600],
-                                  ),
-                                  SizedBox(height: 16),
-                                  Text(
-                                    'No external subtitles found',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[400],
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Try searching for subtitles',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[500],
-                                    ),
-                                  ),
-                                  SizedBox(height: 24),
-                                  ElevatedButton.icon(
-                                    onPressed: () => _fetchExternalSubtitles(
-                                        setBottomSheetState),
-                                    icon: Icon(Icons.search),
-                                    label: Text('Search Subtitles'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: widget.colors.first,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: _availableExternalSubtitles.length,
-                              itemBuilder: (context, index) {
-                                final subtitle =
-                                    _availableExternalSubtitles[index];
-                                final isSelected = _selectedExternalSubtitles
-                                    .any((s) => s.id == subtitle.id);
-
-                                return InkWell(
-                                  onTap: () => _toggleExternalSubtitle(
-                                      subtitle, setBottomSheetState),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? widget.colors.first.withOpacity(0.1)
-                                          : null,
-                                      border: Border(
-                                        bottom: BorderSide(
-                                          color: Theme.of(context).dividerColor,
-                                          width: 0.5,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16.0,
-                                        vertical: 12.0,
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          // Flag icon
-                                          if (subtitle.flagUrl.isNotEmpty)
-                                            CachedNetworkImage(
-                                              imageUrl: subtitle.flagUrl,
-                                              width: 32,
-                                              height: 24,
-                                              fit: BoxFit.cover,
-                                              placeholder: (context, url) =>
-                                                  Container(
-                                                width: 32,
-                                                height: 24,
-                                                color: Colors.grey[800],
-                                              ),
-                                              errorWidget:
-                                                  (context, url, error) => Icon(
-                                                Icons.flag,
-                                                color: Colors.grey[600],
-                                                size: 24,
-                                              ),
-                                            )
-                                          else
-                                            Icon(
-                                              Icons.flag,
-                                              color: Colors.grey[600],
-                                              size: 24,
-                                            ),
-                                          SizedBox(width: 16),
-                                          // Subtitle info
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  subtitle.displayName,
-                                                  style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: isSelected
-                                                        ? FontWeight.bold
-                                                        : FontWeight.w600,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurface,
-                                                  ),
-                                                ),
-                                                SizedBox(height: 4),
-                                                Text(
-                                                  'Source: ${subtitle.source}',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey[500],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          // Selection indicator
-                                          if (isSelected)
-                                            Icon(
-                                              Icons.check_circle,
-                                              color: widget.colors.first,
-                                              size: 24,
-                                            )
-                                          else
-                                            Icon(
-                                              Icons.circle_outlined,
-                                              color: Colors.grey[600],
-                                              size: 24,
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                ),
-                // Footer with selected count
-                if (_selectedExternalSubtitles.isNotEmpty)
+              child: Column(
+                children: [
+                  // Drag handle
                   Container(
-                    padding: EdgeInsets.all(16),
+                    margin: EdgeInsets.only(top: 8, bottom: 4),
+                    width: 40,
+                    height: 4,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      border: Border(
-                        top: BorderSide(
-                          color: Theme.of(context).dividerColor,
-                          width: 1,
-                        ),
-                      ),
+                      color: Colors.grey[600],
+                      borderRadius: BorderRadius.circular(2),
                     ),
+                  ),
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${_selectedExternalSubtitles.length} selected',
+                          'External Subtitles',
                           style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[400],
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            _applyExternalSubtitles();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: widget.colors.first,
-                          ),
-                          child: Text(
-                            'Apply',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                        Row(
+                          children: [
+                            if (_availableExternalSubtitles.isNotEmpty)
+                              IconButton(
+                                icon: Icon(Icons.refresh),
+                                onPressed: () => _fetchExternalSubtitles(
+                                    setBottomSheetState),
+                                tooltip: 'Refresh',
+                              ),
+                            IconButton(
+                              icon: Icon(Icons.close),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-              ],
-            ),
-          );
-        },
+                  Divider(height: 1),
+                  // Content
+                  Expanded(
+                    child: _isLoadingExternalSubtitles
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(
+                                  color: widget.colors.first,
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Searching for subtitles...',
+                                  style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : _availableExternalSubtitles.isEmpty
+                            ? Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.subtitles_off_outlined,
+                                      size: 64,
+                                      color: Colors.grey[600],
+                                    ),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      'No external subtitles found',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[400],
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Try searching for subtitles',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[500],
+                                      ),
+                                    ),
+                                    SizedBox(height: 24),
+                                    ElevatedButton.icon(
+                                      onPressed: () => _fetchExternalSubtitles(
+                                          setBottomSheetState),
+                                      icon: Icon(Icons.search),
+                                      label: Text('Search Subtitles'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: widget.colors.first,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : ListView.builder(
+                                controller: scrollController,
+                                itemCount: _availableExternalSubtitles.length,
+                                itemBuilder: (context, index) {
+                                  final subtitle =
+                                      _availableExternalSubtitles[index];
+                                  final isSelected = _selectedExternalSubtitles
+                                      .any((s) => s.id == subtitle.id);
+
+                                  return InkWell(
+                                    onTap: () => _toggleExternalSubtitle(
+                                        subtitle, setBottomSheetState),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? widget.colors.first
+                                                .withOpacity(0.1)
+                                            : null,
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            color:
+                                                Theme.of(context).dividerColor,
+                                            width: 0.5,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16.0,
+                                          vertical: 12.0,
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            // Flag icon
+                                            if (subtitle.flagUrl.isNotEmpty)
+                                              CachedNetworkImage(
+                                                imageUrl: subtitle.flagUrl,
+                                                width: 32,
+                                                height: 24,
+                                                fit: BoxFit.cover,
+                                                placeholder: (context, url) =>
+                                                    Container(
+                                                  width: 32,
+                                                  height: 24,
+                                                  color: Colors.grey[800],
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Icon(
+                                                  Icons.flag,
+                                                  color: Colors.grey[600],
+                                                  size: 24,
+                                                ),
+                                              )
+                                            else
+                                              Icon(
+                                                Icons.flag,
+                                                color: Colors.grey[600],
+                                                size: 24,
+                                              ),
+                                            SizedBox(width: 16),
+                                            // Subtitle info
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    subtitle.displayName,
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight: isSelected
+                                                          ? FontWeight.bold
+                                                          : FontWeight.w600,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onSurface,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  Text(
+                                                    'Source: ${subtitle.source}',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.grey[500],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            // Selection indicator
+                                            if (isSelected)
+                                              Icon(
+                                                Icons.check_circle,
+                                                color: widget.colors.first,
+                                                size: 24,
+                                              )
+                                            else
+                                              Icon(
+                                                Icons.circle_outlined,
+                                                color: Colors.grey[600],
+                                                size: 24,
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                  ),
+                  // Footer with selected count
+                  if (_selectedExternalSubtitles.isNotEmpty)
+                    Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        border: Border(
+                          top: BorderSide(
+                            color: Theme.of(context).dividerColor,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${_selectedExternalSubtitles.length} selected',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              _applyExternalSubtitles();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: widget.colors.first,
+                            ),
+                            child: Text(
+                              'Apply',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
