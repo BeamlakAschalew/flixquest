@@ -174,7 +174,7 @@ class DiscoverTVState extends State<DiscoverTV>
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    List<String> years = yearDropdownData.yearsList.getRange(1, 26).toList();
+    List<String> years = yearDropdownData.yearsList.getRange(2, 28).toList();
     List<TVGenreFilterChipWidget> genres = tvGenreList;
     years.shuffle();
     genres.shuffle();
