@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 class AppDependencies {
   static const CONSUMET_URL_KEY = 'consumetUrlKey';
   static const NEW_FLIXHQ_URL = 'newFlixHQUrl';
+  static const FLIXAPI_URL = 'flixApiUrl';
   static const FLIXQUEST_LOGO_URL = 'flixquestLogoUrl';
   static const OPENSUBTITLES_KEY = 'opensubtitlesKey';
   static const STREAM_SERVER_FLIXHQ = 'vidcloud';
@@ -33,6 +34,15 @@ class AppDependencies {
   Future<String> getNewFlixHQUrl() async {
     return sharedPrefsSingleton.getString(NEW_FLIXHQ_URL) ??
         'https://flixhq.beamlak.dev/';
+  }
+
+  setFlixApiUrl(String value) async {
+    sharedPrefsSingleton.setString(FLIXAPI_URL, value);
+  }
+
+  Future<String> getFlixApiUrl() async {
+    return sharedPrefsSingleton.getString(FLIXAPI_URL) ??
+        'https://flix-api.beamlak.dev/';
   }
 
   setFlixQuestUrl(String value) async {

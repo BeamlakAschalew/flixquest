@@ -93,6 +93,24 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
           GlobalMethods.showErrorScaffoldMessengerMediaLoad(
               e, context, 'FlixHQNew');
         }
+      } else if (videoProviders[i].codeName == 'flixapi') {
+        start = DateTime.now();
+        try {
+          await getMovieTVStreamLinksAndSubsFlixAPI(
+                  '${appDependency.flixApiUrl}/stream-movie?tmdbId=884605')
+              .then((value) {
+            if (mounted) {
+              videoLinks = [
+                RegularVideoLinks(
+                    url: value.stream!.playlist,
+                    isM3U8: value.stream!.playlist!.endsWith('.m3u8'))
+              ];
+            }
+          });
+        } on Exception catch (e) {
+          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+              e, context, 'FlixAPI');
+        }
       } else if (videoProviders[i].codeName == 'showbox') {
         start = DateTime.now();
 

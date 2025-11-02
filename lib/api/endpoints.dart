@@ -427,4 +427,14 @@ class Endpoints {
       String baseUrl, int tmdbId, int episodeId, int seasonId, String server) {
     return '$baseUrl' '/tv/' '$tmdbId/' '$seasonId/' '$episodeId/' '$server';
   }
+
+  static String getMovieStreamLinkFlixAPI(String baseUrl, int movieId) {
+    return '$baseUrl' '/stream-movie?tmdbId=$movieId';
+  }
+
+  static String getTVStreamLinkFlixAPI(
+      String baseUrl, int tmdbId, int episodeId, int seasonId) {
+    return '$baseUrl'
+        '/stream-tv?tmdbId=$tmdbId&season=$seasonId&episode=$episodeId';
+  }
 }

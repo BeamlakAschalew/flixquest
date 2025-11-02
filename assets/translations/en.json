@@ -534,5 +534,14 @@
   "enable": "Enable",
   "bold": "Bold",
   "regular": "Regular",
-  "text_weight": "Text weight"
+  "text_weight": "Text weight",
+  "external_subtitles": "External Subtitles",
+  "searching_for_subtitles": "Searching for subtitles...",
+  "no_external_subtitles_found": "No external subtitles found",
+  "try_searching_for_subtitles": "Try searching for subtitles",
+  "search_subtitles": "Search Subtitles",
+  "found_external_subtitles": "Found {count} external subtitles",
+  "subtitles_selected": "{count} selected",
+  "apply": "Apply",
+  "refresh": "Refresh"
 }

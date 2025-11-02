@@ -5,6 +5,7 @@ import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/models/custom_exceptions.dart';
 import 'package:flixquest/models/movie_stream_metadata.dart';
 import 'package:flixquest/services/globle_method.dart';
+import 'package:flixquest/video_providers/flix_api.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
 import 'package:flixquest/video_providers/flixhq_new.dart';
 import '../../controllers/recently_watched_database_controller.dart';
@@ -55,6 +56,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   FlixHQStreamSources? fqMovieVideoSources;
   FlixHQNewStreamSources? fqNewVideoSources;
+  FlixAPIResponse? flixApiSources;
   DCVAStreamSources? dramacoolVideoSources;
   DCVAStreamSources? viewasianVideoSources;
   ZoroStreamSources? zoroVideoSources;
@@ -142,6 +144,15 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           }
         } else if (videoProviders[i].codeName == 'flixhqNew') {
           await loadNewFlixHQ();
+          if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
+            await subtitleParserFetcher(movieVideoSubs!);
+            break;
+          }
+          if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
+            break;
+          }
+        } else if (videoProviders[i].codeName == 'flixapi') {
+          await loadFlixAPI();
           if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
             await subtitleParserFetcher(movieVideoSubs!);
             break;
@@ -558,6 +569,49 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     } on Exception catch (e) {
       GlobalMethods.showErrorScaffoldMessengerMediaLoad(
           e, context, 'FlixHQNew');
+    }
+  }
+
+  Future<void> loadFlixAPI() async {
+    try {
+      if (mounted) {
+        await getMovieTVStreamLinksAndSubsFlixAPI(
+                Endpoints.getMovieStreamLinkFlixAPI(
+                    appDep.flixApiUrl, widget.metadata.movieId!))
+            .then((value) {
+          if (mounted) {
+            if (value.success &&
+                value.stream != null &&
+                value.stream!.playlist != null) {
+              setState(() {
+                flixApiSources = value;
+              });
+            } else if (!value.success ||
+                value.stream == null ||
+                value.stream!.playlist == null) {
+              return;
+            }
+          }
+          if (mounted) {
+            movieVideoLinks = [
+              RegularVideoLinks(
+                  url: flixApiSources!.stream!.playlist,
+                  isM3U8: flixApiSources!.stream!.playlist!.endsWith('.m3u8'))
+            ];
+            movieVideoSubs = flixApiSources!.stream!.captions
+                ?.map((caption) => RegularSubtitleLinks(
+                      url: caption.url,
+                      language: caption.language,
+                    ))
+                .toList();
+            if (movieVideoLinks != null && movieVideoLinks!.isNotEmpty) {
+              convertVideoLinks(movieVideoLinks!);
+            }
+          }
+        });
+      }
+    } on Exception catch (e) {
+      GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'FlixAPI');
     }
   }
 

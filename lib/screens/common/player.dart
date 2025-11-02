@@ -184,7 +184,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         overflowMenuCustomItems: [
           BetterPlayerOverflowMenuItem(
             Icons.subtitles_outlined,
-            'External Subtitles',
+            tr('external_subtitles'),
             () {
               _showExternalSubtitlesMenu();
             },
@@ -2096,7 +2096,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'External Subtitles',
+                                tr('external_subtitles'),
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -2111,7 +2111,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                       icon: Icon(Icons.refresh),
                                       onPressed: () => _fetchExternalSubtitles(
                                           setBottomSheetState),
-                                      tooltip: 'Refresh',
+                                      tooltip: tr('refresh'),
                                     ),
                                   IconButton(
                                     icon: Icon(Icons.close),
@@ -2138,7 +2138,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                 ),
                                 SizedBox(height: 16),
                                 Text(
-                                  'Searching for subtitles...',
+                                  tr('searching_for_subtitles'),
                                   style: TextStyle(
                                     color: Colors.grey[400],
                                     fontSize: 14,
@@ -2159,7 +2159,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                     ),
                                     SizedBox(height: 16),
                                     Text(
-                                      'No external subtitles found',
+                                      tr('no_external_subtitles_found'),
                                       style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.grey[400],
@@ -2167,7 +2167,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                     ),
                                     SizedBox(height: 8),
                                     Text(
-                                      'Try searching for subtitles',
+                                      tr('try_searching_for_subtitles'),
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey[500],
@@ -2178,7 +2178,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                                       onPressed: () => _fetchExternalSubtitles(
                                           setBottomSheetState),
                                       icon: Icon(Icons.search),
-                                      label: Text('Search Subtitles'),
+                                      label: Text(tr('search_subtitles')),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: widget.colors.first,
                                         foregroundColor: Colors.white,
@@ -2314,7 +2314,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '${_selectedExternalSubtitles.length} selected',
+                            tr('subtitles_selected', namedArgs: {
+                              'count': '${_selectedExternalSubtitles.length}'
+                            }),
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[400],
@@ -2329,7 +2331,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                               backgroundColor: widget.colors.first,
                             ),
                             child: Text(
-                              'Apply',
+                              tr('apply'),
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -2385,7 +2387,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         if (subtitles.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Found ${subtitles.length} external subtitles'),
+              content: Text(tr('found_external_subtitles',
+                  namedArgs: {'count': '${subtitles.length}'})),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 2),
             ),
@@ -2446,12 +2449,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(widget.colors.last),
                 ),
               ),
               SizedBox(width: 16),
               Text(
-                  'Downloading and processing ${_selectedExternalSubtitles.length} subtitle(s)...'),
+                'Downloading and processing ${_selectedExternalSubtitles.length} subtitle(s)...',
+                style: TextStyle(fontFamily: 'Figtree'),
+              ),
             ],
           ),
           backgroundColor: widget.colors.first,
@@ -2504,6 +2509,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           SnackBar(
             content: Text(
               'Added $successCount external subtitle(s). Check subtitles menu to select.',
+              style: TextStyle(fontFamily: 'Figtree'),
             ),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 3),
@@ -2514,6 +2520,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           SnackBar(
             content: Text(
               'All selected subtitles were already added.',
+              style: TextStyle(fontFamily: 'Figtree'),
             ),
             backgroundColor: Colors.orange,
             duration: Duration(seconds: 2),

@@ -534,5 +534,14 @@
   "enable": "Habilitar",
   "bold": "Negrita",
   "regular": "Regular",
-  "text_weight": "Peso del texto"
+  "text_weight": "Peso del texto",
+  "external_subtitles": "Subtítulos Externos",
+  "searching_for_subtitles": "Buscando subtítulos...",
+  "no_external_subtitles_found": "No se encontraron subtítulos externos",
+  "try_searching_for_subtitles": "Intenta buscar subtítulos",
+  "search_subtitles": "Buscar Subtítulos",
+  "found_external_subtitles": "Se encontraron {count} subtítulos externos",
+  "subtitles_selected": "{count} seleccionados",
+  "apply": "Aplicar",
+  "refresh": "Actualizar"
 }

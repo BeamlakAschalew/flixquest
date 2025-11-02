@@ -534,5 +534,14 @@
   "enable": "تمكين",
   "bold": "عريض",
   "regular": "عادي",
-  "text_weight": "وزن النص"
+  "text_weight": "وزن النص",
+  "external_subtitles": "ترجمات خارجية",
+  "searching_for_subtitles": "البحث عن الترجمات...",
+  "no_external_subtitles_found": "لم يتم العثور على ترجمات خارجية",
+  "try_searching_for_subtitles": "حاول البحث عن الترجمات",
+  "search_subtitles": "البحث عن الترجمات",
+  "found_external_subtitles": "تم العثور على {count} ترجمات خارجية",
+  "subtitles_selected": "{count} محددة",
+  "apply": "تطبيق",
+  "refresh": "تحديث"
 }

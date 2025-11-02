@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flixquest/models/custom_exceptions.dart';
 import 'package:flixquest/video_providers/common.dart';
+import 'package:flixquest/video_providers/flix_api.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
 import 'package:flixquest/video_providers/flixhq_new.dart';
 import 'package:retry/retry.dart';
@@ -1022,4 +1023,46 @@ Future<FlixHQNewStreamSources> getTVStreamLinksAndSubsFlixHQNew(
     rethrow;
   }
   return tvVideoSources;
+}
+
+Future<FlixAPIResponse> getMovieTVStreamLinksAndSubsFlixAPI(String api) async {
+  FlixAPIResponse movieVideoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('error')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+
+    if (res.statusCode == 500) {
+      throw ServerDownException();
+    }
+    if (decodeRes.containsKey('error')) {
+      throw NotFoundException();
+    }
+
+    if (!decodeRes.containsKey('stream')) {
+      throw NotFoundException();
+    }
+    movieVideoSources = FlixAPIResponse.fromJson(decodeRes);
+
+    if (movieVideoSources.stream == null ||
+        movieVideoSources.stream!.playlist == null) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return movieVideoSources;
 }

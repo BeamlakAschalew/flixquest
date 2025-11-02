@@ -24,6 +24,7 @@ String CONSUMET_API = dotenv.env['CONSUMET_URL']!;
 String CONSUMET_INFO_API = dotenv.env['CONSUMET_URL']!;
 String flixquestApiUrl = dotenv.env['FLIXQUEST_API_URL']!;
 String flixhqNewUrl = dotenv.env['FLIXHQ_NEW_URL']!;
+String flixAPIUrl = dotenv.env['FLIXAPI_URL']!;
 const String STREAMING_SERVER_FLIXHQ = 'vidcloud';
 const String STREAMING_SERVER_NEW_FLIXHQ = 'megacloud';
 const String STREAMING_SERVER_DCVA = 'asianload';

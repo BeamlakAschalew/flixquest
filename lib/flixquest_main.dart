@@ -98,6 +98,7 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getString('new_flixhq_url');
       appDependencyProvider.newFlixhqServer =
           _remoteConfig.getString('new_flixhq_server');
+      appDependencyProvider.flixApiUrl = _remoteConfig.getString('flixapi_url');
     }
     await requestNotificationPermissions();
   }

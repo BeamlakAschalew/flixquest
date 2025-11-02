@@ -11,6 +11,9 @@ class AppDependencyProvider extends ChangeNotifier {
   String _newFlixHQUrl = flixhqNewUrl;
   String get newFlixHQUrl => _newFlixHQUrl;
 
+  String _flixApiUrl = flixAPIUrl;
+  String get flixApiUrl => _flixApiUrl;
+
   String _flixquestAPIUrl = flixquestApiUrl;
   String get flixquestAPIURL => _flixquestAPIUrl;
 
@@ -88,6 +91,16 @@ class AppDependencyProvider extends ChangeNotifier {
   set newFlixHQUrl(String value) {
     _newFlixHQUrl = value;
     __appDependencies.setNewFlixHQUrl(value);
+    notifyListeners();
+  }
+
+  Future<void> getFlixApiUrl() async {
+    flixApiUrl = await __appDependencies.getFlixApiUrl();
+  }
+
+  set flixApiUrl(String value) {
+    _flixApiUrl = value;
+    __appDependencies.setFlixApiUrl(value);
     notifyListeners();
   }
 

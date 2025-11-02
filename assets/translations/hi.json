@@ -534,5 +534,14 @@
   "enable": "सक्षम करें",
   "bold": "बोल्ड",
   "regular": "नियमित",
-  "text_weight": "पाठ का वजन"
+  "text_weight": "पाठ का वजन",
+  "external_subtitles": "बाहरी उपशीर्षक",
+  "searching_for_subtitles": "उपशीर्षक खोज रहे हैं...",
+  "no_external_subtitles_found": "कोई बाहरी उपशीर्षक नहीं मिला",
+  "try_searching_for_subtitles": "उपशीर्षक खोजने का प्रयास करें",
+  "search_subtitles": "उपशीर्षक खोजें",
+  "found_external_subtitles": "{count} बाहरी उपशीर्षक मिले",
+  "subtitles_selected": "{count} चयनित",
+  "apply": "लागू करें",
+  "refresh": "ताज़ा करें"
 }
