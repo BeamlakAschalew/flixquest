@@ -42,12 +42,12 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
       _player = Player(
         configuration: PlayerConfiguration(
           title: 'Live TV',
-          // Buffer configuration for live streams
-          bufferSize: 32 * 1024 * 1024, // 32 MB
+          // Larger buffer for live streams to prevent pausing
+          bufferSize: 128 * 1024 * 1024, // 64 MB (increased from 32 MB)
           // Custom options for live streaming
           muted: false,
-          // Additional options for better live stream handling
-          logLevel: MPVLogLevel.debug,
+          // Reduce logging noise
+          logLevel: MPVLogLevel.warn,
         ),
       );
 
@@ -66,7 +66,14 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
             _hasError = true;
             _errorMessage = error;
           });
-          print(error);
+          print('Player error: $error');
+        }
+      });
+
+      // Listen to buffering state to detect issues
+      _player.stream.buffering.listen((isBuffering) {
+        if (mounted) {
+          print('Buffering: $isBuffering');
         }
       });
 
@@ -126,6 +133,7 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
               'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           'Connection': 'keep-alive',
           'Accept': '*/*',
+          'Cache-Control': 'no-cache',
         },
       ),
       play: true,
