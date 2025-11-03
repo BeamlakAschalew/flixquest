@@ -157,6 +157,10 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
                 Center(
                   child: MaterialVideoControlsTheme(
                     normal: MaterialVideoControlsThemeData(
+                      // Disable seeking for live streams to prevent failures
+                      seekOnDoubleTap: false,
+                      displaySeekBar: false, // Hide seek bar for live streams
+
                       // Custom theme colors
                       seekBarThumbColor: widget.colors.first,
                       seekBarPositionColor: widget.colors.first,
