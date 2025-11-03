@@ -1,7 +1,6 @@
 import 'package:better_player_plus/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class LivePlayer extends StatefulWidget {
   const LivePlayer({
@@ -29,6 +28,8 @@ class _LivePlayerState extends State<LivePlayer> {
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
 
   final GlobalKey _betterPlayerKey = GlobalKey();
+  bool _hasError = false;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -38,6 +39,8 @@ class _LivePlayerState extends State<LivePlayer> {
         const BetterPlayerBufferingConfiguration(
       maxBufferMs: 120000,
       minBufferMs: 15000,
+      bufferForPlaybackMs: 2500,
+      bufferForPlaybackAfterRebufferMs: 5000,
     );
 
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
@@ -95,6 +98,12 @@ class _LivePlayerState extends State<LivePlayer> {
       widget.videoUrl,
       liveStream: true,
       bufferingConfiguration: betterPlayerBufferingConfiguration,
+      headers: {
+        'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Connection': 'keep-alive',
+      },
+      videoFormat: BetterPlayerVideoFormat.other,
     );
 
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
@@ -105,12 +114,40 @@ class _LivePlayerState extends State<LivePlayer> {
           _betterPlayerController.enterFullScreen();
         }
       }
+    }).catchError((error) {
+      if (mounted) {
+        setState(() {
+          _hasError = true;
+          _errorMessage = error.toString();
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading stream: ${error.toString()}'),
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: 'Retry',
+              onPressed: () {
+                _retryStream();
+              },
+            ),
+          ),
+        );
+      }
     });
     _betterPlayerController.setBetterPlayerGlobalKey(_betterPlayerKey);
   }
 
+  void _retryStream() {
+    setState(() {
+      _hasError = false;
+      _errorMessage = null;
+    });
+    _betterPlayerController.retryDataSource();
+  }
+
   @override
   void dispose() {
+    _betterPlayerController.dispose();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -122,7 +159,6 @@ class _LivePlayerState extends State<LivePlayer> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.videoUrl);
     return Scaffold(
       body: Center(
         child: SizedBox(
