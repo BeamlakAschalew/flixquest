@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:media_kit/media_kit.dart';
 import 'constants/app_constants.dart';
 import 'provider/recently_watched_provider.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,9 @@ final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
 Future<void> appInitialize() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize MediaKit for video playback with multiple codec support
+  MediaKit.ensureInitialized();
 
   // Reset orientation to all orientations on app start
   // This is CRITICAL for handling ungraceful app termination (force-close, system kill)
