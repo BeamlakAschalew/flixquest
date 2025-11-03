@@ -82,7 +82,11 @@ class _ChannelListState extends State<ChannelList> {
           GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, '');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error loading channels: ${e.toString()}')),
+            SnackBar(
+                content: Text(
+              'Error loading channels: ${e.toString()}',
+              style: TextStyle(fontFamily: 'Figtree'),
+            )),
           );
         }
       }
@@ -125,7 +129,11 @@ class _ChannelListState extends State<ChannelList> {
           GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, '');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error fetching channels: ${e.toString()}')),
+            SnackBar(
+                content: Text(
+              'Error fetching channels: ${e.toString()}',
+              style: TextStyle(fontFamily: 'Figtree'),
+            )),
           );
         }
       }
@@ -156,7 +164,11 @@ class _ChannelListState extends State<ChannelList> {
       await _dbController.clearCache();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(tr('cache_cleared'))),
+          SnackBar(
+              content: Text(
+            tr('cache_cleared'),
+            style: TextStyle(fontFamily: 'Figtree'),
+          )),
         );
       }
       await _fetchChannelsFromAPI();

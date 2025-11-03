@@ -38,17 +38,26 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
 
   Future<void> _initializePlayer() async {
     try {
-      // Initialize the player
+      // Initialize the player with live stream optimizations
       _player = Player(
-        configuration: const PlayerConfiguration(
+        configuration: PlayerConfiguration(
           title: 'Live TV',
           // Buffer configuration for live streams
           bufferSize: 32 * 1024 * 1024, // 32 MB
+          // Custom options for live streaming
+          muted: false,
+          // Additional options for better live stream handling
+          logLevel: MPVLogLevel.debug,
         ),
       );
 
       // Create video controller
-      _videoController = VideoController(_player);
+      _videoController = VideoController(
+        _player,
+        configuration: const VideoControllerConfiguration(
+          enableHardwareAcceleration: true,
+        ),
+      );
 
       // Listen to player errors
       _player.stream.error.listen((error) {
@@ -57,16 +66,7 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
             _hasError = true;
             _errorMessage = error;
           });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Playback error: $error'),
-              duration: const Duration(seconds: 5),
-              action: SnackBarAction(
-                label: 'Retry',
-                onPressed: _retryStream,
-              ),
-            ),
-          );
+          print(error);
         }
       });
 
@@ -125,6 +125,7 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
           'User-Agent':
               'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
           'Connection': 'keep-alive',
+          'Accept': '*/*',
         },
       ),
       play: true,
@@ -157,9 +158,9 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
                 Center(
                   child: MaterialVideoControlsTheme(
                     normal: MaterialVideoControlsThemeData(
-                      // Disable seeking for live streams to prevent failures
+                      // Allow seeking for live streams
                       seekOnDoubleTap: false,
-                      displaySeekBar: false, // Hide seek bar for live streams
+                      displaySeekBar: false, // Show seek bar
 
                       // Custom theme colors
                       seekBarThumbColor: widget.colors.first,
@@ -273,13 +274,120 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
                       ],
                     ),
                     fullscreen: MaterialVideoControlsThemeData(
-                      // Fullscreen theme
+                      // Fullscreen theme - same as normal for consistency
+                      seekOnDoubleTap: false,
+                      displaySeekBar: false,
+
+                      // Custom theme colors
                       seekBarThumbColor: widget.colors.first,
                       seekBarPositionColor: widget.colors.first,
                       seekBarBufferColor:
                           widget.colors.first.withValues(alpha: 0.4),
                       seekBarColor: Colors.white.withValues(alpha: 0.2),
-                      displaySeekBar: true,
+
+                      // Button styling
+                      buttonBarButtonSize: 32,
+                      buttonBarButtonColor: Colors.white,
+
+                      // Padding and margins
+                      topButtonBarMargin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      bottomButtonBarMargin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+
+                      // Top bar with channel name
+                      topButtonBar: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.live_tv_rounded,
+                                color: widget.colors.first,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  widget.channelName,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    shadows: [
+                                      Shadow(
+                                        offset: Offset(0, 1),
+                                        blurRadius: 3,
+                                        color: Colors.black45,
+                                      ),
+                                    ],
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Spacer(),
+                      ],
+
+                      // Bottom controls bar
+                      bottomButtonBar: [
+                        const MaterialPlayOrPauseButton(iconSize: 32),
+                        const SizedBox(width: 8),
+                        const MaterialPositionIndicator(
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withValues(alpha: 0.9),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.circle,
+                                color: Colors.white,
+                                size: 10,
+                              ),
+                              SizedBox(width: 6),
+                              Text(
+                                'LIVE',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const MaterialFullscreenButton(iconSize: 28),
+                      ],
                     ),
                     child: Video(
                       controller: _videoController,
@@ -346,7 +454,7 @@ class _MediaKitLivePlayerState extends State<MediaKitLivePlayer> {
                                   fontSize: 13,
                                 ),
                                 textAlign: TextAlign.center,
-                                maxLines: 3,
+                                maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
