@@ -226,7 +226,7 @@ class PlayerEpisodeSelection {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: isCurrentEpisode ? colors.first.withOpacity(0.1) : null,
+        color: isCurrentEpisode ? colors.first.withValues(alpha: 0.1) : null,
         border: Border(
           bottom: BorderSide(
             color: Theme.of(context).dividerColor,
@@ -358,7 +358,7 @@ class PlayerEpisodeSelection {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: colors.first.withOpacity(0.2),
+                            color: colors.first.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Row(
@@ -596,7 +596,7 @@ class PlayerEpisodeSelection {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: isCurrentSeason ? colors.first.withOpacity(0.1) : null,
+        color: isCurrentSeason ? colors.first.withValues(alpha: 0.1) : null,
         border: Border(
           bottom: BorderSide(
             color: Theme.of(context).dividerColor,

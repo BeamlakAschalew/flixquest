@@ -198,7 +198,8 @@ class PlayerExternalSubtitles {
                                     child: Container(
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? colors.first.withOpacity(0.1)
+                                            ? colors.first
+                                                .withValues(alpha: 0.1)
                                             : null,
                                         border: Border(
                                           bottom: BorderSide(

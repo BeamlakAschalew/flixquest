@@ -73,7 +73,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   // For next episode button
   bool _showNextEpisodeButton = false;
-  bool _nextEpisodeButtonDismissed = false;
+  final bool _nextEpisodeButtonDismissed = false;
   Timer? _progressCheckTimer;
   OverlayEntry? _nextEpisodeOverlay;
 

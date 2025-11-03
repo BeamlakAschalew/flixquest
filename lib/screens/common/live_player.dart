@@ -28,8 +28,6 @@ class _LivePlayerState extends State<LivePlayer> {
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
 
   final GlobalKey _betterPlayerKey = GlobalKey();
-  bool _hasError = false;
-  String? _errorMessage;
 
   @override
   void initState() {
@@ -116,10 +114,6 @@ class _LivePlayerState extends State<LivePlayer> {
       }
     }).catchError((error) {
       if (mounted) {
-        setState(() {
-          _hasError = true;
-          _errorMessage = error.toString();
-        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error loading stream: ${error.toString()}'),
@@ -138,10 +132,6 @@ class _LivePlayerState extends State<LivePlayer> {
   }
 
   void _retryStream() {
-    setState(() {
-      _hasError = false;
-      _errorMessage = null;
-    });
     _betterPlayerController.retryDataSource();
   }
 

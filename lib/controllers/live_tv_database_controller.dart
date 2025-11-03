@@ -52,7 +52,7 @@ class LiveTVDatabaseController {
 
     // Insert channels in batches for better performance
     Batch batch = db.batch();
-    for (var channel in channels) {
+    for (final channel in channels) {
       batch.insert(
         tableName,
         channel.toMap(),

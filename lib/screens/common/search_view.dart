@@ -147,8 +147,9 @@ class Search extends SearchDelegate<String> {
                       proxyUrl);
                 }),
                 builder: (context, snapshot) {
-                  if (query.isEmpty)
+                  if (query.isEmpty) {
                     return recentSearchesWidget(context, themeMode);
+                  }
 
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
@@ -170,8 +171,9 @@ class Search extends SearchDelegate<String> {
                         isProxyEnabled,
                         proxyUrl)),
                 builder: (context, snapshot) {
-                  if (query.isEmpty)
+                  if (query.isEmpty) {
                     return recentSearchesWidget(context, themeMode);
+                  }
 
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
@@ -193,8 +195,9 @@ class Search extends SearchDelegate<String> {
                         isProxyEnabled,
                         proxyUrl)),
                 builder: (context, snapshot) {
-                  if (query.isEmpty)
+                  if (query.isEmpty) {
                     return recentSearchesWidget(context, themeMode);
+                  }
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                       return searchedPersonShimmer(themeMode);

@@ -5,7 +5,7 @@ class Channels {
 
   Channels.fromJson(List<dynamic> json) {
     channels = [];
-    for (var v in json) {
+    for (final v in json) {
       channels!.add(Channel.fromJson(v));
     }
   }

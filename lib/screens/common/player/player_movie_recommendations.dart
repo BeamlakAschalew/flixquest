@@ -246,8 +246,8 @@ class PlayerMovieRecommendations {
                                               vertical: 2,
                                             ),
                                             decoration: BoxDecoration(
-                                              color:
-                                                  colors.first.withOpacity(0.2),
+                                              color: colors.first
+                                                  .withValues(alpha: 0.2),
                                               borderRadius:
                                                   BorderRadius.circular(4),
                                             ),
@@ -429,7 +429,8 @@ class PlayerMovieRecommendations {
                                         vertical: 2,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: colors.first.withOpacity(0.2),
+                                        color:
+                                            colors.first.withValues(alpha: 0.2),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Row(
