@@ -46,13 +46,18 @@ class PlayerDataManagement {
 
     double percentage = (elapsed / duration) * 100;
 
-    if (!isBookmarked) {
-      prv.addMovie(rMov);
-    } else {
-      if (percentage <= 85) {
-        prv.updateMovie(rMov, movieMetadata.movieId!);
-      } else {
+    // If completion is > 85%, remove from recents (if exists) and don't add
+    if (percentage > 85) {
+      if (isBookmarked) {
         prv.deleteMovie(movieMetadata.movieId!);
+      }
+      // Don't add to recents if already completed
+    } else {
+      // If completion <= 85%, add or update
+      if (!isBookmarked) {
+        prv.addMovie(rMov);
+      } else {
+        prv.updateMovie(rMov, movieMetadata.movieId!);
       }
     }
   }
@@ -90,15 +95,21 @@ class PlayerDataManagement {
         seriesId: tvMetadata.tvId!);
 
     double percentage = (elapsed / duration) * 100;
-    if (!isBookmarked) {
-      prv.addEpisode(rEpisode);
-    } else {
-      if (percentage <= 85) {
-        prv.updateEpisode(rEpisode, tvMetadata.episodeId!,
-            tvMetadata.episodeNumber!, tvMetadata.seasonNumber!);
-      } else {
+
+    // If completion is > 85%, remove from recents (if exists) and don't add
+    if (percentage > 85) {
+      if (isBookmarked) {
         prv.deleteEpisode(tvMetadata.episodeId!, tvMetadata.episodeNumber!,
             tvMetadata.seasonNumber!);
+      }
+      // Don't add to recents if already completed
+    } else {
+      // If completion <= 85%, add or update
+      if (!isBookmarked) {
+        prv.addEpisode(rEpisode);
+      } else {
+        prv.updateEpisode(rEpisode, tvMetadata.episodeId!,
+            tvMetadata.episodeNumber!, tvMetadata.seasonNumber!);
       }
     }
   }
