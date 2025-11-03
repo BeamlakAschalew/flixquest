@@ -1,34 +1,73 @@
 class Channels {
-  static String? baseUrl;
-  static String? trailingUrl;
-  static String? referrer;
-  static String? userAgent;
   List<Channel>? channels;
-  Channels.fromJson(Map<String, dynamic> json) {
-    baseUrl = json['base_url'];
-    trailingUrl = json['trailing_url'];
-    referrer = json['referrer'];
-    userAgent = json['user_agent'];
-    if (json['channels'] != null) {
-      channels = [];
-      json['channels'].forEach((v) {
-        channels!.add(Channel.fromJson(v));
-      });
-    }
-  }
 
   Channels({this.channels});
 
-  Channels.fromObject(Channels channel);
+  Channels.fromJson(List<dynamic> json) {
+    channels = [];
+    for (var v in json) {
+      channels!.add(Channel.fromJson(v));
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'channels': channels?.map((v) => v.toJson()).toList(),
+    };
+  }
 }
 
 class Channel {
-  String? channelName;
-  int? channelId;
-  Channel({this.channelId, this.channelName});
+  String? name;
+  int? streamId;
+  String? streamIcon;
+  String? directSource;
+  String? videoUrl;
+
+  Channel({
+    this.name,
+    this.streamId,
+    this.streamIcon,
+    this.directSource,
+    this.videoUrl,
+  });
 
   Channel.fromJson(Map<String, dynamic> json) {
-    channelName = json['channel_name'];
-    channelId = json['id'];
+    name = json['name'];
+    streamId = json['stream_id'];
+    streamIcon = json['stream_icon'];
+    directSource = json['direct_source'];
+    videoUrl = json['video_url'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'stream_id': streamId,
+      'stream_icon': streamIcon,
+      'direct_source': directSource,
+      'video_url': videoUrl,
+    };
+  }
+
+  // For database storage
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'stream_id': streamId,
+      'stream_icon': streamIcon,
+      'direct_source': directSource,
+      'video_url': videoUrl,
+    };
+  }
+
+  factory Channel.fromMap(Map<String, dynamic> map) {
+    return Channel(
+      name: map['name'],
+      streamId: map['stream_id'],
+      streamIcon: map['stream_icon'],
+      directSource: map['direct_source'],
+      videoUrl: map['video_url'],
+    );
   }
 }

@@ -415,7 +415,7 @@ class Endpoints {
   }
 
   static String getIPTVEndpoint(String baseUrl) {
-    return '$baseUrl' 'daddylive/live';
+    return 'https://flixquest.beamlak.dev/live/generate_live_playlist.php';
   }
 
   static String getMovieStreamLinkFlixhqNew(

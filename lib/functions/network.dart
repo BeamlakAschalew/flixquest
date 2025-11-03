@@ -616,7 +616,7 @@ Future<Channels> fetchChannels(String api) async {
   Channels channelsList;
   try {
     var res = await retryOptions.retry(
-      () => http.get(Uri.parse(api)),
+      () => http.get(Uri.parse(api)).timeout(const Duration(seconds: 60)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
     dynamic decodeRes;

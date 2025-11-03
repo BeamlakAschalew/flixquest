@@ -531,6 +531,17 @@ abstract class  LocaleKeys {
   static const elapsed_total = 'elapsed_total';
   static const elapsed_remaining = 'elapsed_remaining';
   static const channels_fetch_failed = 'channels_fetch_failed';
+  static const clear_cache_confirmation = 'clear_cache_confirmation';
+  static const cache_cleared = 'cache_cleared';
+  static const total_channels = 'total_channels';
+  static const last_updated = 'last_updated';
+  static const just_now = 'just_now';
+  static const minutes_ago = 'minutes_ago';
+  static const hours_ago = 'hours_ago';
+  static const showing = 'showing';
+  static const results = 'results';
+  static const no_channels_found = 'no_channels_found';
+  static const search = 'search';
   static const use_proxy = 'use_proxy';
   static const enable_warning = 'enable_warning';
   static const use_proxy_title = 'use_proxy_title';

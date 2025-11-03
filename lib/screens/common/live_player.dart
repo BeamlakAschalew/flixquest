@@ -1,22 +1,23 @@
 import 'package:better_player_plus/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class LivePlayer extends StatefulWidget {
-  const LivePlayer(
-      {required this.videoUrl,
-      required this.colors,
-      required this.autoFullScreen,
-      required this.channelName,
-      required this.referrer,
-      required this.userAgent,
-      super.key});
+  const LivePlayer({
+    required this.videoUrl,
+    required this.colors,
+    required this.autoFullScreen,
+    required this.channelName,
+    this.streamIcon,
+    super.key,
+  });
+
   final String videoUrl;
   final List<Color> colors;
   final bool autoFullScreen;
   final String channelName;
-  final String referrer;
-  final String userAgent;
+  final String? streamIcon;
 
   @override
   State<LivePlayer> createState() => _LivePlayerState();
@@ -38,6 +39,7 @@ class _LivePlayerState extends State<LivePlayer> {
       maxBufferMs: 120000,
       minBufferMs: 15000,
     );
+
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
       name: widget.channelName,
       enableFullscreen: true,
@@ -71,30 +73,30 @@ class _LivePlayerState extends State<LivePlayer> {
 
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
-            autoDetectFullscreenDeviceOrientation: true,
-            //  fullScreenByDefault: true,
-            looping: true,
-            autoPlay: true,
-            allowedScreenSleep: false,
-            fit: BoxFit.contain,
-            autoDispose: true,
-            controlsConfiguration: betterPlayerControlsConfiguration,
-            showPlaceholderUntilPlay: true,
-            subtitlesConfiguration: const BetterPlayerSubtitlesConfiguration(
-                backgroundColor: Colors.black45,
-                fontFamily: 'Figtree',
-                fontColor: Colors.white,
-                outlineEnabled: false,
-                fontSize: 17));
+      autoDetectFullscreenDeviceOrientation: true,
+      looping: true,
+      autoPlay: true,
+      allowedScreenSleep: false,
+      fit: BoxFit.contain,
+      autoDispose: true,
+      controlsConfiguration: betterPlayerControlsConfiguration,
+      showPlaceholderUntilPlay: true,
+      subtitlesConfiguration: const BetterPlayerSubtitlesConfiguration(
+        backgroundColor: Colors.black45,
+        fontFamily: 'Figtree',
+        fontColor: Colors.white,
+        outlineEnabled: false,
+        fontSize: 17,
+      ),
+    );
 
     BetterPlayerDataSource dataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network, widget.videoUrl,
-        liveStream: true,
-        bufferingConfiguration: betterPlayerBufferingConfiguration,
-        headers: {
-          'User-Agent': widget.userAgent,
-          'Referer': widget.referrer,
-        });
+      BetterPlayerDataSourceType.network,
+      widget.videoUrl,
+      liveStream: true,
+      bufferingConfiguration: betterPlayerBufferingConfiguration,
+    );
+
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(dataSource).then((value) {
       if (_betterPlayerController.videoPlayerController!.value.aspectRatio >
@@ -120,13 +122,8 @@ class _LivePlayerState extends State<LivePlayer> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.videoUrl);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        forceMaterialTransparency: true,
-        leading: null,
-        automaticallyImplyLeading: false,
-      ),
       body: Center(
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
