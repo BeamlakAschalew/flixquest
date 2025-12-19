@@ -19,7 +19,8 @@ import 'package:provider/provider.dart';
 import 'package:better_player_plus/better_player.dart';
 import '../../models/sub_languages.dart';
 import '../../widgets/common_widgets.dart';
-import 'package:flixquest/constants/app_constants.dart' show MediaType, StreamRoute;
+import 'package:flixquest/constants/app_constants.dart'
+    show MediaType, StreamRoute;
 
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
@@ -69,7 +70,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         parseProviderPrecedenceString(prefString.proPreference)
             .where((provider) => provider != null)
             .cast<VideoProvider>());
-    
+
     // Initialize provider states
     for (var provider in videoProviders) {
       providerStates.add(ProviderLoadState(
@@ -78,7 +79,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         status: ProviderStatus.pending,
       ));
     }
-    
+
     loadVideo();
   }
 
@@ -102,7 +103,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       } else {
         widget.metadata.elapsed = 0;
       }
-      
+
       if (widget.metadata.releaseDate != null &&
           !isReleased(widget.metadata.releaseDate!)) {
         GlobalMethods.showScaffoldMessage(
@@ -198,7 +199,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       }
 
       // Prepare final video map (reversed for quality ordering)
-      Map<String, String> reversedVids = VideoUtils.reverseVideoQualityMap(videos);
+      Map<String, String> reversedVids =
+          VideoUtils.reverseVideoQualityMap(videos);
 
       if (movieVideoLinks != null && mounted) {
         final mixpanel =
@@ -280,7 +282,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final appDep = Provider.of<AppDependencyProvider>(context, listen: false);
-    
+
     try {
       if (!appDep.fetchSubtitles) {
         return;
@@ -318,8 +320,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                         supportedLanguages[foundIndex].languageCode),
                     appDep.opensubtitlesKey)
                 .then((value) async {
-              if (value.isNotEmpty &&
-                  value[0].attr!.files![0].fileId != null) {
+              if (value.isNotEmpty && value[0].attr!.files![0].fileId != null) {
                 await downloadExternalSubtitle(
                         Endpoints.externalSubtitleDownload(),
                         value[0].attr!.files![0].fileId!,

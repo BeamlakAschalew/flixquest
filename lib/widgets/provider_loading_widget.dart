@@ -102,7 +102,8 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
   }
 
   Widget _buildProviderCarousel() {
-    final int prevIndex = widget.currentIndex > 0 ? widget.currentIndex - 1 : -1;
+    final int prevIndex =
+        widget.currentIndex > 0 ? widget.currentIndex - 1 : -1;
     final int nextIndex = widget.currentIndex < widget.providers.length - 1
         ? widget.currentIndex + 1
         : -1;
@@ -182,7 +183,8 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSurface,
                       fontSize: isHighlighted ? 16 : 14,
-                      fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
+                      fontWeight:
+                          isHighlighted ? FontWeight.bold : FontWeight.normal,
                       fontFamily: isHighlighted ? 'FigtreeBold' : 'Figtree',
                     ),
                     overflow: TextOverflow.ellipsis,

@@ -3,7 +3,8 @@ import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/functions/network.dart';
 import 'package:flixquest/functions/video_utils.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
-import 'package:flixquest/constants/app_constants.dart' show MediaType, StreamRoute;
+import 'package:flixquest/constants/app_constants.dart'
+    show MediaType, StreamRoute;
 import 'package:flixquest/models/provider_load_state.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:flixquest/video_providers/provider_loader.dart';
@@ -69,7 +70,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         parseProviderPrecedenceString(prefString.proPreference)
             .where((provider) => provider != null)
             .cast<VideoProvider>());
-    
+
     // Initialize provider states
     for (var provider in videoProviders) {
       providerStates.add(ProviderLoadState(
@@ -78,7 +79,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         status: ProviderStatus.pending,
       ));
     }
-    
+
     loadVideo();
   }
 
@@ -203,7 +204,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       }
 
       // Prepare final video map (reversed for quality ordering)
-      Map<String, String> reversedVids = VideoUtils.reverseVideoQualityMap(videos);
+      Map<String, String> reversedVids =
+          VideoUtils.reverseVideoQualityMap(videos);
 
       if (tvVideoLinks != null && mounted) {
         final mixpanel =
@@ -339,13 +341,11 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         ).then((value) async {
           if (value.imdbId != null) {
             await getExternalSubtitle(
-                    Endpoints.searchExternalMovieSubtitles(
-                        value.imdbId!,
+                    Endpoints.searchExternalMovieSubtitles(value.imdbId!,
                         supportedLanguages[foundIndex].languageCode),
                     appDep.opensubtitlesKey)
                 .then((value) async {
-              if (value.isNotEmpty &&
-                  value[0].attr!.files![0].fileId != null) {
+              if (value.isNotEmpty && value[0].attr!.files![0].fileId != null) {
                 await downloadExternalSubtitle(
                         Endpoints.externalSubtitleDownload(),
                         value[0].attr!.files![0].fileId!,

@@ -214,7 +214,8 @@ class ProviderLoader {
     required String streamingServerFlixHQ,
   }) async {
     final episode = await getMovieStreamEpisodesTMDB(
-      Endpoints.getMovieTVStreamInfoTMDB(movieId.toString(), 'movie', consumetUrl),
+      Endpoints.getMovieTVStreamInfoTMDB(
+          movieId.toString(), 'movie', consumetUrl),
     );
 
     if (episode != null &&
@@ -336,8 +337,9 @@ class ProviderLoader {
     }
 
     for (var movie in movies) {
-      if (normalizeTitle(movie.title!).toLowerCase().contains(
-                normalizeTitle(movieName).toLowerCase()) ||
+      if (normalizeTitle(movie.title!)
+              .toLowerCase()
+              .contains(normalizeTitle(movieName).toLowerCase()) ||
           movie.title!.contains(movieName)) {
         final episodes = await getMovieTVStreamEpisodesDCVA(
           Endpoints.getMovieTVStreamInfoDramacool(movie.id!, consumetUrl),
@@ -394,8 +396,9 @@ class ProviderLoader {
     }
 
     for (var movie in movies) {
-      if (normalizeTitle(movie.title!).toLowerCase().contains(
-                normalizeTitle(movieName).toLowerCase()) ||
+      if (normalizeTitle(movie.title!)
+              .toLowerCase()
+              .contains(normalizeTitle(movieName).toLowerCase()) ||
           movie.title!.contains(movieName)) {
         final episodes = await getMovieTVStreamEpisodesDCVA(
           Endpoints.getMovieTVStreamInfoViewasian(movie.id!, consumetUrl),
@@ -456,8 +459,9 @@ class ProviderLoader {
     for (var movie in movies) {
       if (movie.releaseDate == releaseYear.toString() &&
           movie.type == 'Movie' &&
-          (normalizeTitle(movie.title!).toLowerCase().contains(
-                    normalizeTitle(movieName).toLowerCase()) ||
+          (normalizeTitle(movie.title!)
+                  .toLowerCase()
+                  .contains(normalizeTitle(movieName).toLowerCase()) ||
               movie.title!.contains(movieName))) {
         entryFound = true;
 
@@ -520,8 +524,9 @@ class ProviderLoader {
     }
 
     for (var movie in movies) {
-      if ((normalizeTitle(movie.title!).toLowerCase().contains(
-                    movieName.toLowerCase()) ||
+      if ((normalizeTitle(movie.title!)
+                  .toLowerCase()
+                  .contains(movieName.toLowerCase()) ||
               movie.title!.contains(movieName)) &&
           movie.type == 'MOVIE') {
         final episodes = await getMovieTVStreamEpisodesZoro(
@@ -573,7 +578,8 @@ class ProviderLoader {
     if (seasonNumber != 0 &&
         tvInfo.id != null &&
         tvInfo.seasons != null &&
-        tvInfo.seasons![seasonNumber - 1].episodes![episodeNumber - 1].id != null) {
+        tvInfo.seasons![seasonNumber - 1].episodes![episodeNumber - 1].id !=
+            null) {
       final sources = await getTVStreamLinksAndSubsFlixHQ(
         Endpoints.getMovieTVStreamLinksTMDB(
           consumetUrl,
@@ -703,8 +709,9 @@ class ProviderLoader {
     }
 
     for (var show in shows) {
-      if (normalizeTitle(show.title!).toLowerCase().contains(
-                normalizeTitle(seriesName).toLowerCase()) ||
+      if (normalizeTitle(show.title!)
+              .toLowerCase()
+              .contains(normalizeTitle(seriesName).toLowerCase()) ||
           show.title!.contains(seriesName)) {
         final episodes = await getMovieTVStreamEpisodesDCVA(
           Endpoints.getMovieTVStreamInfoDramacool(show.id!, consumetUrl),
@@ -724,7 +731,8 @@ class ProviderLoader {
           }
 
           final targetEpisode = episodes.firstWhere(
-            (element) => element.episode == 'Episode ${episodeNumber.toString()}',
+            (element) =>
+                element.episode == 'Episode ${episodeNumber.toString()}',
           );
 
           final sources = await getMovieTVStreamLinksAndSubsDCVA(
@@ -779,8 +787,9 @@ class ProviderLoader {
     }
 
     for (var show in shows) {
-      if (normalizeTitle(show.title!).toLowerCase().contains(
-                normalizeTitle(seriesName).toLowerCase()) ||
+      if (normalizeTitle(show.title!)
+              .toLowerCase()
+              .contains(normalizeTitle(seriesName).toLowerCase()) ||
           show.title!.contains(seriesName)) {
         final episodes = await getMovieTVStreamEpisodesDCVA(
           Endpoints.getMovieTVStreamInfoViewasian(show.id!, consumetUrl),
@@ -800,7 +809,8 @@ class ProviderLoader {
           }
 
           final targetEpisode = episodes.firstWhere(
-            (element) => element.episode == 'Episode ${episodeNumber.toString()}',
+            (element) =>
+                element.episode == 'Episode ${episodeNumber.toString()}',
           );
 
           final sources = await getMovieTVStreamLinksAndSubsDCVA(
@@ -842,7 +852,8 @@ class ProviderLoader {
     required String appLanguage,
   }) async {
     // Import network and endpoints for fetching TV details
-    final isProxyEnabled = false; // This should be passed as parameter if needed
+    final isProxyEnabled =
+        false; // This should be passed as parameter if needed
     final proxyUrl = '';
 
     final tvDetails = await fetchTVDetails(
@@ -871,8 +882,9 @@ class ProviderLoader {
     for (var show in shows) {
       if (show.seasons == totalSeasons &&
           show.type == 'TV Series' &&
-          (normalizeTitle(show.title!).toLowerCase().contains(
-                    normalizeTitle(seriesName).toLowerCase()) ||
+          (normalizeTitle(show.title!)
+                  .toLowerCase()
+                  .contains(normalizeTitle(seriesName).toLowerCase()) ||
               show.title!.contains(seriesName))) {
         entryFound = true;
 
@@ -981,8 +993,9 @@ class ProviderLoader {
     }
 
     for (var show in shows) {
-      if ((normalizeTitle(show.title!).toLowerCase().contains(
-                    seriesName.toLowerCase()) ||
+      if ((normalizeTitle(show.title!)
+                  .toLowerCase()
+                  .contains(seriesName.toLowerCase()) ||
               show.title!.contains(seriesName)) &&
           show.type == 'TV') {
         final episodes = await getMovieTVStreamEpisodesZoro(
@@ -991,8 +1004,7 @@ class ProviderLoader {
 
         if (episodes != null && episodes.isNotEmpty) {
           bool doesntExist = episodes
-              .where((element) =>
-                  element.episode == episodeNumber.toString())
+              .where((element) => element.episode == episodeNumber.toString())
               .isEmpty;
 
           if (doesntExist) {

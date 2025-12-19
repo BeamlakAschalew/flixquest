@@ -66,7 +66,9 @@ class VideoUtils {
     } else {
       // Check if preferred language exists
       final hasPreferredLanguage = subtitles.any((sub) =>
-          sub.language!.toLowerCase().startsWith(defaultLanguage.toLowerCase()) ||
+          sub.language!
+              .toLowerCase()
+              .startsWith(defaultLanguage.toLowerCase()) ||
           sub.language == defaultLanguage);
 
       if (hasPreferredLanguage) {
