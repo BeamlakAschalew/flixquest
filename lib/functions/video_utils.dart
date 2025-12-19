@@ -22,12 +22,22 @@ class VideoUtils {
 
   /// Process VTT file timestamps to fix formatting issues
   static String processVttFileTimestamps(String vttContent) {
-    // Replace timestamps with incorrect formatting
-    // Example: "00:00.000" -> "00:00:00.000"
-    RegExp timeRegex = RegExp(r'(\d{2}):(\d{2})\.(\d{3})');
-    return vttContent.replaceAllMapped(timeRegex, (match) {
-      return '${match.group(1)}:${match.group(2)}:00.${match.group(3)}';
-    });
+    final lines = vttContent.split('\n');
+    final processedLines = <String>[];
+
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      if (line.contains('-->') && line.trim().length == 23) {
+        String endTimeModifiedString =
+            '${line.trim().substring(0, line.trim().length - 9)}00:${line.trim().substring(line.trim().length - 9)}';
+        String finalStr = '00:$endTimeModifiedString';
+        processedLines.add(finalStr);
+      } else {
+        processedLines.add(line);
+      }
+    }
+
+    return processedLines.join('\n');
   }
 
   /// Parse and create BetterPlayer subtitle sources from subtitle links
