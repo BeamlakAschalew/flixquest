@@ -496,4 +496,45 @@ class Endpoints {
       int tmdbId, int episodeId, int seasonId) {
     return '$baseUrl/$provider/stream-tv?tmdbId=$tmdbId&episode=$episodeId&season=$seasonId';
   }
+
+  // AnimeKai endpoints
+  static String searchAnimeKai(String baseUrl, String query) {
+    return '$baseUrl/anime/animekai/$query';
+  }
+
+  static String getAnimeInfoAnimeKai(String baseUrl, String id) {
+    return '$baseUrl/anime/animekai/info?id=$id';
+  }
+
+  static String getAnimeStreamAnimeKai(
+      String baseUrl, String episodeId, String server) {
+    return '$baseUrl/anime/animekai/watch/$episodeId?server=$server';
+  }
+
+  // AnimePahe endpoints
+  static String searchAnimePahe(String baseUrl, String query) {
+    return '$baseUrl/anime/animepahe/$query';
+  }
+
+  static String getAnimeInfoAnimePahe(String baseUrl, String id) {
+    return '$baseUrl/anime/animepahe/info/$id';
+  }
+
+  static String getAnimeStreamAnimePahe(String baseUrl, String episodeId) {
+    return '$baseUrl/anime/animepahe/watch?episodeId=$episodeId';
+  }
+
+  // HiAnime endpoints
+  static String searchHiAnime(String baseUrl, String query) {
+    return '$baseUrl/anime/hianime/$query';
+  }
+
+  static String getAnimeInfoHiAnime(String baseUrl, String id) {
+    return '$baseUrl/anime/hianime/info?id=$id';
+  }
+
+  static String getAnimeStreamHiAnime(
+      String baseUrl, String episodeId, String server) {
+    return '$baseUrl/anime/hianime/watch/$episodeId?server=$server';
+  }
 }

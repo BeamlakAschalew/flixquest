@@ -71,6 +71,12 @@ class AppDependencyProvider extends ChangeNotifier {
   String _himoviesServer = 'upcloud';
   String get himoviesServer => _himoviesServer;
 
+  String _animekaiServer = 'megacloud';
+  String get animekaiServer => _animekaiServer;
+
+  String _hianimeServer = 'megacloud';
+  String get hianimeServer => _hianimeServer;
+
   String _tmdbProxy = '';
   String get tmdbProxy => _tmdbProxy;
 
@@ -224,6 +230,16 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set himoviesServer(String value) {
     _himoviesServer = value;
+    notifyListeners();
+  }
+
+  set animekaiServer(String value) {
+    _animekaiServer = value;
+    notifyListeners();
+  }
+
+  set hianimeServer(String value) {
+    _hianimeServer = value;
     notifyListeners();
   }
 

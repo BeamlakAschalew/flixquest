@@ -142,6 +142,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             gokuServer: appDep.gokuServer,
             sflixServer: appDep.sflixServer,
             himoviesServer: appDep.himoviesServer,
+            animekaiServer: appDep.animekaiServer,
+            hianimeServer: appDep.hianimeServer,
           );
 
           if (result.success &&

@@ -55,7 +55,7 @@ const retryOptionsStream = RetryOptions(
     maxDelay: Duration(milliseconds: 300),
     delayFactor: Duration(seconds: 0),
     maxAttempts: 1);
-const timeOutStream = Duration(seconds: 15);
+const timeOutStream = Duration(seconds: 30);
 
 final List<String> appNames = [
   'flixquest-v2.4.0.apk',
@@ -97,6 +97,7 @@ class MyHttpOverrides extends HttpOverrides {
 
 const providerPreference =
     'flixhq-FlixHQ vixsrc-VixSrc myflixerz-MyFlixerz goku-Goku sflix-Sflix himovies-Himovies showbox-ShowBox';
+//animekai-AnimeKai animepahe-AnimePahe hianime-HiAnime
 
 late SharedPreferences sharedPrefsSingleton;
 

@@ -35,6 +35,8 @@ class ProviderLoader {
     required String gokuServer,
     required String sflixServer,
     required String himoviesServer,
+    required String animekaiServer,
+    required String hianimeServer,
   }) async {
     try {
       switch (providerCode) {
@@ -110,6 +112,29 @@ class ProviderLoader {
             provider: 'showbox',
           );
 
+        case 'animekai':
+          return await _loadAnimeKai(
+            animeName: movieName,
+            episodeNumber: 1,
+            consumetUrl: consumetUrl,
+            animekaiServer: animekaiServer,
+          );
+
+        case 'animepahe':
+          return await _loadAnimePahe(
+            animeName: movieName,
+            episodeNumber: 1,
+            consumetUrl: consumetUrl,
+          );
+
+        case 'hianime':
+          return await _loadHiAnime(
+            animeName: movieName,
+            episodeNumber: 1,
+            consumetUrl: consumetUrl,
+            hianimeServer: hianimeServer,
+          );
+
         default:
           return ProviderLoaderResult(
             success: false,
@@ -141,6 +166,8 @@ class ProviderLoader {
     required String gokuServer,
     required String sflixServer,
     required String himoviesServer,
+    required String animekaiServer,
+    required String hianimeServer,
   }) async {
     try {
       switch (providerCode) {
@@ -232,6 +259,29 @@ class ProviderLoader {
             episodeNumber: episodeNumber,
             flixApiUrl: flixApiUrl,
             provider: 'showbox',
+          );
+
+        case 'animekai':
+          return await _loadAnimeKai(
+            animeName: seriesName,
+            episodeNumber: episodeNumber,
+            consumetUrl: consumetUrl,
+            animekaiServer: animekaiServer,
+          );
+
+        case 'animepahe':
+          return await _loadAnimePahe(
+            animeName: seriesName,
+            episodeNumber: episodeNumber,
+            consumetUrl: consumetUrl,
+          );
+
+        case 'hianime':
+          return await _loadHiAnime(
+            animeName: seriesName,
+            episodeNumber: episodeNumber,
+            consumetUrl: consumetUrl,
+            hianimeServer: hianimeServer,
           );
 
         default:
@@ -1155,6 +1205,183 @@ class ProviderLoader {
 
     if (!entryFound) {
       throw NotFoundException();
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  // ==================== ANIME PROVIDER METHODS ====================
+
+  /// Load anime from AnimeKai
+  static Future<ProviderLoaderResult> _loadAnimeKai({
+    required String animeName,
+    required int episodeNumber,
+    required String consumetUrl,
+    required String animekaiServer,
+  }) async {
+    final animeList = await fetchAnimeForStreamAnimeKai(
+      Endpoints.searchAnimeKai(
+        consumetUrl,
+        Uri.encodeComponent(normalizeTitle(animeName).toLowerCase()),
+      ),
+    );
+
+    if (animeList.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No results found',
+      );
+    }
+
+    // Try to find a matching anime
+    for (final anime in animeList) {
+      final info = await getAnimeInfoAnimeKai(
+        Endpoints.getAnimeInfoAnimeKai(consumetUrl, anime.id!),
+      );
+
+      if (info.episodes != null && info.episodes!.isNotEmpty) {
+        // Find the episode
+        for (final episode in info.episodes!) {
+          if (episode.number == episodeNumber) {
+            final sources = await getAnimeStreamAnimeKai(
+              Endpoints.getAnimeStreamAnimeKai(
+                consumetUrl,
+                episode.id!,
+                animekaiServer,
+              ),
+            );
+
+            if (sources.videoLinks != null && sources.videoLinks!.isNotEmpty) {
+              return ProviderLoaderResult(
+                success: true,
+                videoLinks: sources.videoLinks,
+                subtitleLinks: sources.videoSubtitles,
+              );
+            }
+            break;
+          }
+        }
+      }
+      // Only try the first result
+      break;
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  /// Load anime from AnimePahe
+  static Future<ProviderLoaderResult> _loadAnimePahe({
+    required String animeName,
+    required int episodeNumber,
+    required String consumetUrl,
+  }) async {
+    final animeList = await fetchAnimeForStreamAnimePahe(
+      Endpoints.searchAnimePahe(
+        consumetUrl,
+        Uri.encodeComponent(normalizeTitle(animeName).toLowerCase()),
+      ),
+    );
+
+    if (animeList.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No results found',
+      );
+    }
+
+    // Try to find a matching anime
+    for (final anime in animeList) {
+      final info = await getAnimeInfoAnimePahe(
+        Endpoints.getAnimeInfoAnimePahe(consumetUrl, anime.id!),
+      );
+
+      if (info.episodes != null && info.episodes!.isNotEmpty) {
+        // Find the episode
+        for (final episode in info.episodes!) {
+          if (episode.number == episodeNumber) {
+            final sources = await getAnimeStreamAnimePahe(
+              Endpoints.getAnimeStreamAnimePahe(consumetUrl, episode.id!),
+            );
+
+            if (sources.videoLinks != null && sources.videoLinks!.isNotEmpty) {
+              return ProviderLoaderResult(
+                success: true,
+                videoLinks: sources.videoLinks,
+                subtitleLinks: sources.videoSubtitles,
+              );
+            }
+            break;
+          }
+        }
+      }
+      // Only try the first result
+      break;
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  /// Load anime from HiAnime
+  static Future<ProviderLoaderResult> _loadHiAnime({
+    required String animeName,
+    required int episodeNumber,
+    required String consumetUrl,
+    required String hianimeServer,
+  }) async {
+    final animeList = await fetchAnimeForStreamHiAnime(
+      Endpoints.searchHiAnime(
+        consumetUrl,
+        Uri.encodeComponent(normalizeTitle(animeName).toLowerCase()),
+      ),
+    );
+
+    if (animeList.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No results found',
+      );
+    }
+
+    // Try to find a matching anime
+    for (final anime in animeList) {
+      final info = await getAnimeInfoHiAnime(
+        Endpoints.getAnimeInfoHiAnime(consumetUrl, anime.id!),
+      );
+
+      if (info.episodes != null && info.episodes!.isNotEmpty) {
+        // Find the episode
+        for (final episode in info.episodes!) {
+          if (episode.number == episodeNumber) {
+            final sources = await getAnimeStreamHiAnime(
+              Endpoints.getAnimeStreamHiAnime(
+                consumetUrl,
+                episode.id!,
+                hianimeServer,
+              ),
+            );
+
+            if (sources.videoLinks != null && sources.videoLinks!.isNotEmpty) {
+              return ProviderLoaderResult(
+                success: true,
+                videoLinks: sources.videoLinks,
+                subtitleLinks: sources.videoSubtitles,
+              );
+            }
+            break;
+          }
+        }
+      }
+      // Only try the first result
+      break;
     }
 
     return ProviderLoaderResult(

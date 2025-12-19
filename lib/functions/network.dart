@@ -10,6 +10,9 @@ import 'package:flixquest/video_providers/flixhq_new.dart';
 import 'package:flixquest/video_providers/goku.dart';
 import 'package:flixquest/video_providers/sflix.dart';
 import 'package:flixquest/video_providers/himovies.dart';
+import 'package:flixquest/video_providers/animekai.dart';
+import 'package:flixquest/video_providers/animepahe.dart';
+import 'package:flixquest/video_providers/hianime.dart';
 import 'package:retry/retry.dart';
 import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
@@ -1587,6 +1590,233 @@ Future<FlixAPIMultiResponse> getStreamLinksFlixAPIMulti(String api) async {
     videoSources = FlixAPIMultiResponse.fromJson(decodeRes);
 
     if (videoSources.links == null || videoSources.links!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return videoSources;
+}
+
+// ===================== ANIMEKAI FUNCTIONS =====================
+
+Future<List<AnimeKaiSearchEntry>> fetchAnimeForStreamAnimeKai(
+    String api) async {
+  List<AnimeKaiSearchEntry> animeList = [];
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      for (int i = 0; i < decodeRes['results'].length; i++) {
+        animeList.add(AnimeKaiSearchEntry.fromJson(decodeRes['results'][i]));
+      }
+    } else {
+      throw Exception("Couldn't fetch anime from AnimeKai");
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return animeList;
+}
+
+Future<AnimeKaiInfo> getAnimeInfoAnimeKai(String api) async {
+  AnimeKaiInfo animeInfo;
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      animeInfo = AnimeKaiInfo.fromJson(decodeRes);
+    } else {
+      throw Exception("Couldn't get anime info from AnimeKai");
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return animeInfo;
+}
+
+Future<AnimeKaiStreamSources> getAnimeStreamAnimeKai(String api) async {
+  AnimeKaiStreamSources videoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    videoSources = AnimeKaiStreamSources.fromJson(decodeRes);
+
+    if (videoSources.videoLinks == null || videoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return videoSources;
+}
+
+// ===================== ANIMEPAHE FUNCTIONS =====================
+
+Future<List<AnimePaheSearchEntry>> fetchAnimeForStreamAnimePahe(
+    String api) async {
+  List<AnimePaheSearchEntry> animeList = [];
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      for (int i = 0; i < decodeRes['results'].length; i++) {
+        animeList.add(AnimePaheSearchEntry.fromJson(decodeRes['results'][i]));
+      }
+    } else {
+      throw Exception("Couldn't fetch anime from AnimePahe");
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return animeList;
+}
+
+Future<AnimePaheInfo> getAnimeInfoAnimePahe(String api) async {
+  AnimePaheInfo animeInfo;
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      animeInfo = AnimePaheInfo.fromJson(decodeRes);
+    } else {
+      throw Exception("Couldn't get anime info from AnimePahe");
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return animeInfo;
+}
+
+Future<AnimePaheStreamSources> getAnimeStreamAnimePahe(String api) async {
+  AnimePaheStreamSources videoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    videoSources = AnimePaheStreamSources.fromJson(decodeRes);
+
+    if (videoSources.videoLinks == null || videoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return videoSources;
+}
+
+// ===================== HIANIME FUNCTIONS =====================
+
+Future<List<HiAnimeSearchEntry>> fetchAnimeForStreamHiAnime(String api) async {
+  List<HiAnimeSearchEntry> animeList = [];
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      for (int i = 0; i < decodeRes['results'].length; i++) {
+        animeList.add(HiAnimeSearchEntry.fromJson(decodeRes['results'][i]));
+      }
+    } else {
+      throw Exception("Couldn't fetch anime from HiAnime");
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return animeList;
+}
+
+Future<HiAnimeInfo> getAnimeInfoHiAnime(String api) async {
+  HiAnimeInfo animeInfo;
+  try {
+    var res = await retryOptions.retry(
+      () => http.get(Uri.parse(api)).timeout(timeOut),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (res.statusCode == 200) {
+      animeInfo = HiAnimeInfo.fromJson(decodeRes);
+    } else {
+      throw Exception("Couldn't get anime info from HiAnime");
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return animeInfo;
+}
+
+Future<HiAnimeStreamSources> getAnimeStreamHiAnime(String api) async {
+  HiAnimeStreamSources videoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    videoSources = HiAnimeStreamSources.fromJson(decodeRes);
+
+    if (videoSources.videoLinks == null || videoSources.videoLinks!.isEmpty) {
       throw NotFoundException();
     }
   } catch (e) {
