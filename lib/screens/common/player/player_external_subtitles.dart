@@ -37,7 +37,8 @@ class PlayerExternalSubtitles {
           builder: (context, setBottomSheetState) {
             // Auto-load subtitles when menu is first opened if not already loaded
             if (_availableExternalSubtitles.isEmpty &&
-                !_isLoadingExternalSubtitles) {
+                !_isLoadingExternalSubtitles &&
+                context.mounted) {
               Future.microtask(() => _fetchExternalSubtitles(
                     setBottomSheetState,
                     context,

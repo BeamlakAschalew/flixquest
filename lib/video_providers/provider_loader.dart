@@ -52,14 +52,14 @@ class ProviderLoader {
             );
           }
 
-        case 'flixhqNew':
+        case 'myflixerz':
           return await _loadMovieNewFlixHQ(
             movieId: movieId,
             newFlixHQUrl: newFlixHQUrl,
             newFlixhqServer: newFlixhqServer,
           );
 
-        case 'flixapi':
+        case 'pstream':
           return await _loadMovieFlixAPI(
             movieId: movieId,
             flixApiUrl: flixApiUrl,
@@ -117,7 +117,7 @@ class ProviderLoader {
             );
           }
 
-        case 'flixhqNew':
+        case 'myflixerz':
           return await _loadTVNewFlixHQ(
             tvId: tvId,
             seasonNumber: seasonNumber,
@@ -126,7 +126,7 @@ class ProviderLoader {
             newFlixhqServer: newFlixhqServer,
           );
 
-        case 'flixapi':
+        case 'pstream':
           return await _loadTVFlixAPI(
             tvId: tvId,
             seasonNumber: seasonNumber,
@@ -160,8 +160,7 @@ class ProviderLoader {
           movieId.toString(), 'movie', consumetUrl),
     );
 
-    if (episode != null &&
-        episode.id != null &&
+    if (episode.id != null &&
         episode.id!.isNotEmpty &&
         episode.episodeId != null &&
         episode.episodeId!.isNotEmpty) {
@@ -258,124 +257,6 @@ class ProviderLoader {
     );
   }
 
-  static Future<ProviderLoaderResult> _loadMovieDramacool({
-    required int movieId,
-    required String movieName,
-    required String consumetUrl,
-    required String streamingServerDCVA,
-  }) async {
-    final movies = await fetchMovieTVForStreamDCVA(
-      Endpoints.searchMovieTVForStreamDramacool(
-        normalizeTitle(movieName).toLowerCase(),
-        consumetUrl,
-      ),
-    );
-
-    if (movies == null || movies.isEmpty) {
-      return ProviderLoaderResult(
-        success: false,
-        errorMessage: 'No results found',
-      );
-    }
-
-    for (var movie in movies) {
-      if (normalizeTitle(movie.title!)
-              .toLowerCase()
-              .contains(normalizeTitle(movieName).toLowerCase()) ||
-          movie.title!.contains(movieName)) {
-        final episodes = await getMovieTVStreamEpisodesDCVA(
-          Endpoints.getMovieTVStreamInfoDramacool(movie.id!, consumetUrl),
-        );
-
-        if (episodes != null && episodes.isNotEmpty) {
-          final sources = await getMovieTVStreamLinksAndSubsDCVA(
-            Endpoints.getMovieTVStreamLinksDramacool(
-              episodes[0].id!,
-              movie.id!,
-              consumetUrl,
-              streamingServerDCVA,
-            ),
-          );
-
-          if (sources.messageExists == null &&
-              sources.videoLinks != null &&
-              sources.videoLinks!.isNotEmpty) {
-            return ProviderLoaderResult(
-              success: true,
-              videoLinks: sources.videoLinks,
-              subtitleLinks: sources.videoSubtitles,
-            );
-          }
-        }
-        break;
-      }
-    }
-
-    return ProviderLoaderResult(
-      success: false,
-      errorMessage: 'No video sources found',
-    );
-  }
-
-  static Future<ProviderLoaderResult> _loadMovieViewasian({
-    required int movieId,
-    required String movieName,
-    required String consumetUrl,
-    required String streamingServerDCVA,
-  }) async {
-    final movies = await fetchMovieTVForStreamDCVA(
-      Endpoints.searchMovieTVForStreamViewasian(
-        normalizeTitle(movieName).toLowerCase(),
-        consumetUrl,
-      ),
-    );
-
-    if (movies == null || movies.isEmpty) {
-      return ProviderLoaderResult(
-        success: false,
-        errorMessage: 'No results found',
-      );
-    }
-
-    for (var movie in movies) {
-      if (normalizeTitle(movie.title!)
-              .toLowerCase()
-              .contains(normalizeTitle(movieName).toLowerCase()) ||
-          movie.title!.contains(movieName)) {
-        final episodes = await getMovieTVStreamEpisodesDCVA(
-          Endpoints.getMovieTVStreamInfoViewasian(movie.id!, consumetUrl),
-        );
-
-        if (episodes != null && episodes.isNotEmpty) {
-          final sources = await getMovieTVStreamLinksAndSubsDCVA(
-            Endpoints.getMovieTVStreamLinksViewasian(
-              episodes[0].id!,
-              movie.id!,
-              consumetUrl,
-              streamingServerDCVA,
-            ),
-          );
-
-          if (sources.messageExists == null &&
-              sources.videoLinks != null &&
-              sources.videoLinks!.isNotEmpty) {
-            return ProviderLoaderResult(
-              success: true,
-              videoLinks: sources.videoLinks,
-              subtitleLinks: sources.videoSubtitles,
-            );
-          }
-        }
-        break;
-      }
-    }
-
-    return ProviderLoaderResult(
-      success: false,
-      errorMessage: 'No video sources found',
-    );
-  }
-
   static Future<ProviderLoaderResult> _loadMovieFlixHQNormalRoute({
     required int movieId,
     required String movieName,
@@ -390,7 +271,7 @@ class ProviderLoader {
       ),
     );
 
-    if (movies == null || movies.isEmpty) {
+    if (movies.isEmpty) {
       return ProviderLoaderResult(
         success: false,
         errorMessage: 'No results found',
@@ -398,7 +279,7 @@ class ProviderLoader {
     }
 
     bool entryFound = false;
-    for (var movie in movies) {
+    for (final movie in movies) {
       if (movie.releaseDate == releaseYear.toString() &&
           movie.type == 'Movie' &&
           (normalizeTitle(movie.title!)
@@ -411,7 +292,7 @@ class ProviderLoader {
           Endpoints.getMovieTVStreamInfoFlixHQ(movie.id!, consumetUrl),
         );
 
-        if (episodes != null && episodes.isNotEmpty) {
+        if (episodes.isNotEmpty) {
           final sources = await getMovieStreamLinksAndSubsFlixHQ(
             Endpoints.getMovieTVStreamLinksFlixHQ(
               episodes[0].id!,
@@ -437,65 +318,6 @@ class ProviderLoader {
 
     if (!entryFound) {
       throw NotFoundException();
-    }
-
-    return ProviderLoaderResult(
-      success: false,
-      errorMessage: 'No video sources found',
-    );
-  }
-
-  static Future<ProviderLoaderResult> _loadMovieZoro({
-    required int movieId,
-    required String movieName,
-    required String consumetUrl,
-    required String streamingServerZoro,
-  }) async {
-    final movies = await fetchMovieTVForStreamZoro(
-      Endpoints.searchZoroMoviesTV(
-        consumetUrl,
-        normalizeTitle(movieName).toLowerCase(),
-      ),
-    );
-
-    if (movies == null || movies.isEmpty) {
-      return ProviderLoaderResult(
-        success: false,
-        errorMessage: 'No results found',
-      );
-    }
-
-    for (var movie in movies) {
-      if ((normalizeTitle(movie.title!)
-                  .toLowerCase()
-                  .contains(movieName.toLowerCase()) ||
-              movie.title!.contains(movieName)) &&
-          movie.type == 'MOVIE') {
-        final episodes = await getMovieTVStreamEpisodesZoro(
-          Endpoints.getMovieTVInfoZoro(consumetUrl, movie.id!),
-        );
-
-        if (episodes != null && episodes.isNotEmpty) {
-          final sources = await getMovieTVStreamLinksAndSubsZoro(
-            Endpoints.getMovieTVStreamLinksZoro(
-              episodes[0].id!,
-              consumetUrl,
-              streamingServerZoro,
-            ),
-          );
-
-          if (sources.messageExists == null &&
-              sources.videoLinks != null &&
-              sources.videoLinks!.isNotEmpty) {
-            return ProviderLoaderResult(
-              success: true,
-              videoLinks: sources.videoLinks,
-              subtitleLinks: sources.videoSubtitles,
-            );
-          }
-        }
-        break;
-      }
     }
 
     return ProviderLoaderResult(
@@ -628,162 +450,6 @@ class ProviderLoader {
     );
   }
 
-  static Future<ProviderLoaderResult> _loadTVDramacool({
-    required int tvId,
-    required String seriesName,
-    required int seasonNumber,
-    required int episodeNumber,
-    required String consumetUrl,
-    required String streamingServerDCVA,
-  }) async {
-    final shows = await fetchMovieTVForStreamDCVA(
-      Endpoints.searchMovieTVForStreamDramacool(
-        normalizeTitle(seriesName),
-        consumetUrl,
-      ).toLowerCase(),
-    );
-
-    if (shows == null || shows.isEmpty) {
-      return ProviderLoaderResult(
-        success: false,
-        errorMessage: 'No results found',
-      );
-    }
-
-    for (var show in shows) {
-      if (normalizeTitle(show.title!)
-              .toLowerCase()
-              .contains(normalizeTitle(seriesName).toLowerCase()) ||
-          show.title!.contains(seriesName)) {
-        final episodes = await getMovieTVStreamEpisodesDCVA(
-          Endpoints.getMovieTVStreamInfoDramacool(show.id!, consumetUrl),
-        );
-
-        if (episodes != null && episodes.isNotEmpty) {
-          bool doesntExist = episodes
-              .where((element) =>
-                  element.episode == 'Episode ${episodeNumber.toString()}')
-              .isEmpty;
-
-          if (doesntExist) {
-            return ProviderLoaderResult(
-              success: false,
-              errorMessage: 'Episode not found',
-            );
-          }
-
-          final targetEpisode = episodes.firstWhere(
-            (element) =>
-                element.episode == 'Episode ${episodeNumber.toString()}',
-          );
-
-          final sources = await getMovieTVStreamLinksAndSubsDCVA(
-            Endpoints.getMovieTVStreamLinksDramacool(
-              targetEpisode.id!,
-              show.id!,
-              consumetUrl,
-              streamingServerDCVA,
-            ),
-          );
-
-          if (sources.messageExists == null &&
-              sources.videoLinks != null &&
-              sources.videoLinks!.isNotEmpty) {
-            return ProviderLoaderResult(
-              success: true,
-              videoLinks: sources.videoLinks,
-              subtitleLinks: sources.videoSubtitles,
-            );
-          }
-        }
-        break;
-      }
-    }
-
-    return ProviderLoaderResult(
-      success: false,
-      errorMessage: 'No video sources found',
-    );
-  }
-
-  static Future<ProviderLoaderResult> _loadTVViewasian({
-    required int tvId,
-    required String seriesName,
-    required int seasonNumber,
-    required int episodeNumber,
-    required String consumetUrl,
-    required String streamingServerDCVA,
-  }) async {
-    final shows = await fetchMovieTVForStreamDCVA(
-      Endpoints.searchMovieTVForStreamViewasian(
-        normalizeTitle(seriesName).toLowerCase(),
-        consumetUrl,
-      ),
-    );
-
-    if (shows == null || shows.isEmpty) {
-      return ProviderLoaderResult(
-        success: false,
-        errorMessage: 'No results found',
-      );
-    }
-
-    for (var show in shows) {
-      if (normalizeTitle(show.title!)
-              .toLowerCase()
-              .contains(normalizeTitle(seriesName).toLowerCase()) ||
-          show.title!.contains(seriesName)) {
-        final episodes = await getMovieTVStreamEpisodesDCVA(
-          Endpoints.getMovieTVStreamInfoViewasian(show.id!, consumetUrl),
-        );
-
-        if (episodes != null && episodes.isNotEmpty) {
-          bool doesntExist = episodes
-              .where((element) =>
-                  element.episode == 'Episode ${episodeNumber.toString()}')
-              .isEmpty;
-
-          if (doesntExist) {
-            return ProviderLoaderResult(
-              success: false,
-              errorMessage: 'Episode not found',
-            );
-          }
-
-          final targetEpisode = episodes.firstWhere(
-            (element) =>
-                element.episode == 'Episode ${episodeNumber.toString()}',
-          );
-
-          final sources = await getMovieTVStreamLinksAndSubsDCVA(
-            Endpoints.getMovieTVStreamLinksViewasian(
-              targetEpisode.id!,
-              show.id!,
-              consumetUrl,
-              streamingServerDCVA,
-            ),
-          );
-
-          if (sources.messageExists == null &&
-              sources.videoLinks != null &&
-              sources.videoLinks!.isNotEmpty) {
-            return ProviderLoaderResult(
-              success: true,
-              videoLinks: sources.videoLinks,
-              subtitleLinks: sources.videoSubtitles,
-            );
-          }
-        }
-        break;
-      }
-    }
-
-    return ProviderLoaderResult(
-      success: false,
-      errorMessage: 'No video sources found',
-    );
-  }
-
   static Future<ProviderLoaderResult> _loadTVFlixHQNormalRoute({
     required int tvId,
     required String seriesName,
@@ -813,7 +479,7 @@ class ProviderLoader {
       ),
     );
 
-    if (shows == null || shows.isEmpty) {
+    if (shows.isEmpty) {
       return ProviderLoaderResult(
         success: false,
         errorMessage: 'No results found',
@@ -821,7 +487,7 @@ class ProviderLoader {
     }
 
     bool entryFound = false;
-    for (var show in shows) {
+    for (final show in shows) {
       if (show.seasons == totalSeasons &&
           show.type == 'TV Series' &&
           (normalizeTitle(show.title!)
@@ -836,7 +502,7 @@ class ProviderLoader {
 
         if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
           // Find the matching episode
-          for (var episode in tvInfo.episodes!) {
+          for (final episode in tvInfo.episodes!) {
             if (episode.episode == episodeNumber &&
                 episode.season == seasonNumber) {
               final sources = await getTVStreamLinksAndSubsFlixHQ(
@@ -873,7 +539,7 @@ class ProviderLoader {
 
         if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
           // Find the matching episode
-          for (var episode in tvInfo.episodes!) {
+          for (final episode in tvInfo.episodes!) {
             if (episode.episode == episodeNumber &&
                 episode.season == seasonNumber) {
               final sources = await getTVStreamLinksAndSubsFlixHQ(
@@ -904,82 +570,6 @@ class ProviderLoader {
 
     if (!entryFound) {
       throw NotFoundException();
-    }
-
-    return ProviderLoaderResult(
-      success: false,
-      errorMessage: 'No video sources found',
-    );
-  }
-
-  static Future<ProviderLoaderResult> _loadTVZoro({
-    required int tvId,
-    required String seriesName,
-    required int seasonNumber,
-    required int episodeNumber,
-    required String consumetUrl,
-    required String streamingServerZoro,
-  }) async {
-    final shows = await fetchMovieTVForStreamZoro(
-      Endpoints.searchZoroMoviesTV(
-        consumetUrl,
-        normalizeTitle(seriesName).toLowerCase(),
-      ),
-    );
-
-    if (shows == null || shows.isEmpty) {
-      return ProviderLoaderResult(
-        success: false,
-        errorMessage: 'No results found',
-      );
-    }
-
-    for (var show in shows) {
-      if ((normalizeTitle(show.title!)
-                  .toLowerCase()
-                  .contains(seriesName.toLowerCase()) ||
-              show.title!.contains(seriesName)) &&
-          show.type == 'TV') {
-        final episodes = await getMovieTVStreamEpisodesZoro(
-          Endpoints.getMovieTVInfoZoro(consumetUrl, show.id!),
-        );
-
-        if (episodes != null && episodes.isNotEmpty) {
-          bool doesntExist = episodes
-              .where((element) => element.episode == episodeNumber.toString())
-              .isEmpty;
-
-          if (doesntExist) {
-            return ProviderLoaderResult(
-              success: false,
-              errorMessage: 'Episode not found',
-            );
-          }
-
-          final targetEpisode = episodes.firstWhere(
-            (element) => element.episode == episodeNumber.toString(),
-          );
-
-          final sources = await getMovieTVStreamLinksAndSubsZoro(
-            Endpoints.getMovieTVStreamLinksZoro(
-              targetEpisode.id!,
-              consumetUrl,
-              streamingServerZoro,
-            ),
-          );
-
-          if (sources.messageExists == null &&
-              sources.videoLinks != null &&
-              sources.videoLinks!.isNotEmpty) {
-            return ProviderLoaderResult(
-              success: true,
-              videoLinks: sources.videoLinks,
-              subtitleLinks: sources.videoSubtitles,
-            );
-          }
-        }
-        break;
-      }
     }
 
     return ProviderLoaderResult(

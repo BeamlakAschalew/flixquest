@@ -42,7 +42,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '3.0.1';
+const String currentAppVersion = '3.1.0';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(
@@ -95,7 +95,7 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-const providerPreference = 'flixhqNew-FlixHQNew flixapi-FlixAPI flixhq-FlixHQ ';
+const providerPreference = 'myflixerz-MyFlixerz pstream-PStream flixhq-FlixHQ ';
 
 late SharedPreferences sharedPrefsSingleton;
 

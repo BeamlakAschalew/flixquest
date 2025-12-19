@@ -73,7 +73,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             .cast<VideoProvider>());
 
     // Initialize provider states
-    for (var provider in videoProviders) {
+    for (final provider in videoProviders) {
       providerStates.add(ProviderLoadState(
         codeName: provider.codeName,
         fullName: provider.fullName,

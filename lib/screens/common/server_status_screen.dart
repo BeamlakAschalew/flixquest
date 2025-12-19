@@ -1,13 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:flixquest/main.dart';
 import 'package:flixquest/video_providers/common.dart';
 import 'package:provider/provider.dart';
 import '../../functions/function.dart';
 import '../../provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import '../../constants/app_constants.dart';
 import '../../functions/network.dart';
 import '../../provider/settings_provider.dart';
 import '../../video_providers/names.dart';
@@ -37,11 +35,65 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
   late AppDependencyProvider appDependency =
       Provider.of<AppDependencyProvider>(context, listen: false);
 
+  Future<void> _checkSingleServer(int index) async {
+    final provider = videoProviders[index];
+    List<RegularVideoLinks>? videoLinks;
+    DateTime start = DateTime.now();
+
+    try {
+      if (provider.codeName == 'flixhq') {
+        final result = await getMovieStreamLinksAndSubsFlixHQ(
+            '${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServerFlixHQ}');
+        videoLinks = result.videoLinks;
+      } else if (provider.codeName == 'pstream') {
+        final result = await getMovieStreamLinksAndSubsFlixHQNew(
+            '${appDependency.newFlixHQUrl}movie/884605');
+        videoLinks = result.videoLinks;
+      } else if (provider.codeName == 'myflixerz') {
+        final result = await getMovieTVStreamLinksAndSubsFlixAPI(
+            '${appDependency.flixApiUrl}/stream-movie?tmdbId=884605');
+        videoLinks = [
+          RegularVideoLinks(
+              url: result.stream!.playlist,
+              isM3U8: result.stream!.playlist!.endsWith('.m3u8'))
+        ];
+      }
+    } catch (e) {
+      // Error handling - server is down
+      if (mounted) {
+        GlobalMethods.showErrorScaffoldMessengerMediaLoad(
+            e as Exception, context, provider.fullName);
+      }
+    }
+
+    DateTime end = DateTime.now();
+    String ping = end.difference(start).inMilliseconds.toString();
+
+    if (mounted) {
+      setState(() {
+        videoProvidersCheck[index].ping = ping;
+        videoProvidersCheck[index].isWaiting = false;
+
+        if (videoLinks == null || videoLinks.isEmpty) {
+          videoProvidersCheck[index].isWorking = false;
+          videoProvidersCheck[index].resultMessage =
+              "${provider.fullName} ${tr("server_down")}";
+        } else {
+          videoProvidersCheck[index].isWorking = true;
+          videoProvidersCheck[index].resultMessage =
+              '${provider.fullName} ${tr("server_working")}';
+        }
+      });
+    }
+  }
+
   void checkServer() async {
     setState(() {
       checking = true;
       videoProvidersCheck = [];
     });
+
+    // Initialize all providers
     for (int i = 0; i < videoProviders.length; i++) {
       videoProvidersCheck.add(VideoStatusCheck(
           codeName: videoProviders[i].codeName,
@@ -52,176 +104,18 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
           ping: '',
           resultMessage: '',
           start: null,
-          waitingMessage: tr('waiting_queue',
-              namedArgs: {'server': videoProviders[i].fullName})));
+          waitingMessage:
+              '${tr("checking_server")} ${videoProviders[i].fullName}'));
     }
-    for (int i = 0; i < videoProviders.length; i++) {
-      setState(() {
-        videoProvidersCheck[i].waitingMessage =
-            '${tr("checking_server")} ${videoProviders[i].fullName}';
-        videoProvidersCheck[i].resultMessage = '';
-        videoProvidersCheck[i].ping = '';
-        videoLinks = null;
-        videoProvidersCheck[i].isWaiting = true;
-        start = null;
-      });
-      if (videoProviders[i].codeName == 'flixhq') {
-        start = DateTime.now();
-        try {
-          await getMovieStreamLinksAndSubsFlixHQ(
-                  '${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServerFlixHQ}')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'FlixHQ');
-        }
-      } else if (videoProviders[i].codeName == 'flixhqNew') {
-        start = DateTime.now();
-        try {
-          await getMovieStreamLinksAndSubsFlixHQNew(
-                  '${appDependency.newFlixHQUrl}movie/884605')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'FlixHQNew');
-        }
-      } else if (videoProviders[i].codeName == 'flixapi') {
-        start = DateTime.now();
-        try {
-          await getMovieTVStreamLinksAndSubsFlixAPI(
-                  '${appDependency.flixApiUrl}/stream-movie?tmdbId=884605')
-              .then((value) {
-            if (mounted) {
-              videoLinks = [
-                RegularVideoLinks(
-                    url: value.stream!.playlist,
-                    isM3U8: value.stream!.playlist!.endsWith('.m3u8'))
-              ];
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'FlixAPI');
-        }
-      } else if (videoProviders[i].codeName == 'showbox') {
-        start = DateTime.now();
 
-        try {
-          await getFlixQuestAPILinks(
-                  '${appDependency.flixquestAPIURL}showbox/watch-movie?tmdbId=455980')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'ShowBox');
-        }
-      } else if (videoProviders[i].codeName == 'flixhqS2') {
-        start = DateTime.now();
-        try {
-          await getFlixQuestAPILinks(
-                  '${appDependency.flixquestAPIURL}flixhq/watch-movie?tmdbId=455980&server=${appDependency.flixhqZoeServer}')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'FlixHQ_S2');
-        }
-      } else if (videoProviders[i].codeName == 'zoe') {
-        start = DateTime.now();
-        try {
-          await getFlixQuestAPILinks(
-                  '${appDependency.flixquestAPIURL}zoe/watch-movie?tmdbId=455980&server=${appDependency.flixhqZoeServer}')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'Zoechip');
-        }
-      } else if (videoProviders[i].codeName == 'gomovies') {
-        start = DateTime.now();
-        try {
-          await getFlixQuestAPILinks(
-                  '${appDependency.flixquestAPIURL}gomovies/watch-movie?tmdbId=455980&server=${appDependency.goMoviesServer}')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'GoMovies');
-        }
-      } else if (videoProviders[i].codeName == 'vidsrc') {
-        start = DateTime.now();
-        try {
-          await getFlixQuestAPILinks(
-                  '${appDependency.flixquestAPIURL}vidsrc/watch-movie?tmdbId=455980&server=${appDependency.vidSrcServer}')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'Vidsrc');
-        }
-      } else if (videoProviders[i].codeName == 'vidsrcto') {
-        start = DateTime.now();
-        try {
-          await getFlixQuestAPILinks(
-                  '${appDependency.flixquestAPIURL}vidsrcto/watch-movie?tmdbId=455980&server=${appDependency.vidSrcToServer}')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'VidSrcTo');
-        }
-      }
+    // Check all servers simultaneously
+    await Future.wait(
+      List.generate(
+        videoProviders.length,
+        (index) => _checkSingleServer(index),
+      ),
+    );
 
-      end = DateTime.now();
-      ping = end!.difference(start!).inMilliseconds.toString();
-      videoProvidersCheck[i].ping = ping;
-
-      videoProvidersCheck[i].waitingMessage =
-          '${videoProviders[i].fullName} ${tr("server_check_complete")}';
-
-      if (mounted) {
-        if (videoLinks == null || videoLinks!.isEmpty) {
-          setState(() {
-            videoProvidersCheck[i].isWaiting = false;
-            videoProvidersCheck[i].resultMessage =
-                "❌ ${videoProviders[i].fullName} ${tr("server_down")}";
-          });
-        } else {
-          setState(() {
-            videoProvidersCheck[i].isWaiting = false;
-            videoProvidersCheck[i].isWorking = true;
-            videoProvidersCheck[i].resultMessage =
-                '✔️ ${videoProviders[i].fullName} ${tr("server_working")}';
-          });
-        }
-      }
-    }
     setState(() {
       checking = false;
     });
@@ -243,89 +137,241 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Text(tr('check_server')),
+          elevation: 0,
         ),
-        body: Center(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Theme.of(context).primaryColor.withOpacity(0.1),
+                Colors.transparent,
+              ],
+            ),
+          ),
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  if (checking)
+                    Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              tr('checking_server'),
+                              style: const TextStyle(
+                                fontFamily: 'FigtreeSB',
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 16),
                   ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: videoProviders.length,
                       itemBuilder: ((context, index) {
-                        return Column(
-                          children: [
-                            Text(
-                              videoProvidersCheck[index].waitingMessage!,
-                              style: const TextStyle(
-                                fontFamily: 'FigtreeSB',
-                                fontSize: 15,
-                              ),
-                              textAlign: TextAlign.center,
-                              maxLines: 3,
-                            ),
-                            Visibility(
-                              visible: !videoProvidersCheck[index].isWaiting! &&
-                                  videoProvidersCheck[index].resultMessage !=
-                                      null,
-                              child: Text(
-                                videoProvidersCheck[index].resultMessage!,
-                                style: kTextHeaderStyle.copyWith(
-                                    color: videoProvidersCheck[index].isWaiting!
-                                        ? Colors.white
-                                        : videoProvidersCheck[index].isWorking!
-                                            ? Colors.green
-                                            : Colors.red,
-                                    fontSize: 17),
-                                textAlign: TextAlign.center,
-                                maxLines: 3,
+                        final status = videoProvidersCheck[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: Card(
+                            elevation: 3,
+                            color: status.isWaiting!
+                                ? Colors.yellow.withOpacity(0.15)
+                                : status.isWorking!
+                                    ? Colors.green.withOpacity(0.15)
+                                    : Colors.red.withOpacity(0.15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: status.isWaiting!
+                                    ? Colors.yellow.withOpacity(0.3)
+                                    : status.isWorking!
+                                        ? Colors.green.withOpacity(0.5)
+                                        : Colors.red.withOpacity(0.5),
+                                width: 2,
                               ),
                             ),
-                            Visibility(
-                              visible: !videoProvidersCheck[index].isWaiting!,
-                              child: Text(
-                                tr('latency', namedArgs: {
-                                  'l': videoProvidersCheck[index].ping!
-                                }),
-                                style: const TextStyle(
-                                  color: Colors.yellow,
-                                  fontSize: 13,
-                                ),
-                                textAlign: TextAlign.center,
-                                maxLines: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: status.isWaiting!
+                                              ? Colors.grey.withOpacity(0.2)
+                                              : status.isWorking!
+                                                  ? Colors.green
+                                                      .withOpacity(0.2)
+                                                  : Colors.red.withOpacity(0.2),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: status.isWaiting!
+                                            ? const Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                ),
+                                              )
+                                            : Icon(
+                                                status.isWorking!
+                                                    ? Icons.check_circle
+                                                    : Icons.error,
+                                                color: status.isWorking!
+                                                    ? Colors.green
+                                                    : Colors.red,
+                                              ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              videoProviders[index].fullName,
+                                              style: const TextStyle(
+                                                fontFamily: 'FigtreeSB',
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            if (status.isWaiting!)
+                                              Text(
+                                                status.waitingMessage!,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.grey[400],
+                                                ),
+                                              )
+                                            else
+                                              Text(
+                                                status.resultMessage!,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: status.isWorking!
+                                                      ? Colors.green
+                                                      : Colors.red,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                      if (!status.isWaiting!)
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 12,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: _getLatencyColor(
+                                                    int.tryParse(
+                                                            status.ping!) ??
+                                                        0)
+                                                .withOpacity(0.2),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.speed,
+                                                size: 16,
+                                                color: _getLatencyColor(
+                                                    int.tryParse(
+                                                            status.ping!) ??
+                                                        0),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '${status.ping}ms',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: _getLatencyColor(
+                                                      int.tryParse(
+                                                              status.ping!) ??
+                                                          0),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            const Divider(
-                              thickness: 3,
-                            ),
-                          ],
+                          ),
                         );
                       })),
-                  Visibility(
-                    visible: !checking,
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 20,
+                  const SizedBox(height: 20),
+                  if (!checking)
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          checkServer();
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: Text(
+                          tr('check'),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        ElevatedButton(
-                            onPressed: () {
-                              checkServer();
-                            },
-                            child: Text(tr('check'))),
-                      ],
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                        ),
+                      ),
                     ),
-                  )
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
           ),
         ));
+  }
+
+  Color _getLatencyColor(int latency) {
+    if (latency < 3000) {
+      return Colors.green;
+    } else if (latency < 4000) {
+      return Colors.orange;
+    } else {
+      return Colors.red;
+    }
   }
 }
 
