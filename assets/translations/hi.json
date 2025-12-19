@@ -560,5 +560,12 @@
   "downloading_processing_subtitles": "{count} उपशीर्षक डाउनलोड और प्रोसेस हो रहे हैं...",
   "added_external_subtitles": "{count} बाहरी उपशीर्षक जोड़े गए। चयन करने के लिए उपशीर्षक मेनू देखें।",
   "all_subtitles_already_added": "सभी चयनित उपशीर्षक पहले से जोड़े जा चुके हैं।",
-  "failed_add_subtitles": "उपशीर्षक जोड़ने में विफल: {error}"
+  "failed_add_subtitles": "उपशीर्षक जोड़ने में विफल: {error}",
+  "switch_provider": "प्रदाता बदलें",
+  "select_provider": "वीडियो प्रदाता चुनें",
+  "currently_playing": "वर्तमान में चल रहा है",
+  "switched_to": "में स्विच किया गया",
+  "switch_provider_error": "प्रदाता बदलने में विफल",
+  "loading_video_sources": "वीडियो स्रोत लोड हो रहे हैं",
+  "finding_best_source": "कृपया प्रतीक्षा करें जब हम सर्वोत्तम स्रोत खोज रहे हैं"
 }

@@ -3,6 +3,7 @@ import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/functions/network.dart';
 import 'package:flixquest/functions/video_utils.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
+import 'package:flixquest/models/provider_video_source.dart';
 import 'package:flixquest/constants/app_constants.dart'
     show MediaType, StreamRoute;
 import 'package:flixquest/models/provider_load_state.dart';
@@ -62,6 +63,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
 
+  // Collect all working providers
+  List<ProviderVideoSource> availableProviders = [];
+
   late int foundIndex;
 
   @override
@@ -114,7 +118,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             tr('episode_may_not_be_available'), context);
       }
 
-      // Iterate through providers
+      // Iterate through providers - stop at FIRST working provider for fast loading
+      String? firstWorkingProviderCode;
       for (int i = 0; i < videoProviders.length; i++) {
         if (mounted) {
           setState(() {
@@ -155,20 +160,33 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 providerStates[i] = providerStates[i].copyWith(
                   status: ProviderStatus.success,
                 );
-                tvVideoLinks = result.videoLinks;
-                tvVideoSubs = result.subtitleLinks;
               });
             }
 
-            // Convert and process videos
-            videos = VideoUtils.convertVideoLinksToMap(tvVideoLinks!);
+            // Store the first working provider code
+            firstWorkingProviderCode = videoProviders[i].codeName;
 
-            // Process subtitles if available
-            if (tvVideoSubs != null && tvVideoSubs!.isNotEmpty) {
-              await _processSubtitles(tvVideoSubs!);
+            // Convert videos for this provider
+            videos = VideoUtils.convertVideoLinksToMap(result.videoLinks!);
+            tvVideoLinks = result.videoLinks;
+            tvVideoSubs = result.subtitleLinks;
+
+            // Process subtitles for this provider
+            if (result.subtitleLinks != null &&
+                result.subtitleLinks!.isNotEmpty) {
+              for (var subLink in result.subtitleLinks!) {
+                subs.add(
+                  BetterPlayerSubtitlesSource(
+                    type: BetterPlayerSubtitlesSourceType.network,
+                    urls: [subLink.url ?? ''],
+                    name: subLink.language ?? 'Unknown',
+                  ),
+                );
+              }
             }
 
-            break; // Found working provider, exit loop
+            // Stop at first working provider
+            break;
           } else {
             // Provider failed
             if (mounted) {
@@ -193,8 +211,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         }
       }
 
-      // Check if we found any working provider
-      if ((tvVideoLinks == null || tvVideoLinks!.isEmpty) && mounted) {
+      // Check if we found a working provider
+      if (firstWorkingProviderCode == null && mounted) {
         Navigator.pop(context);
         showModalBottomSheet(
             builder: (context) {
@@ -211,7 +229,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       Map<String, String> reversedVids =
           VideoUtils.reverseVideoQualityMap(videos);
 
-      if (tvVideoLinks != null && mounted) {
+      if (firstWorkingProviderCode != null && mounted) {
         final mixpanel =
             Provider.of<SettingsProvider>(context, listen: false).mixpanel;
         mixpanel.track('Most viewed TV series', properties: {
@@ -222,7 +240,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           'TV series episode number': '${widget.metadata.episodeNumber}'
         });
 
-        // Navigate to player
+        // Navigate to player with provider list for lazy loading
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -238,6 +256,10 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 settings: settings,
                 tvMetadata: widget.metadata,
                 tvRoute: widget.route,
+                availableProviders:
+                    videoProviders, // Pass provider list for lazy loading
+                currentProviderCode:
+                    firstWorkingProviderCode, // Current provider
                 subtitleStyle:
                     Provider.of<SettingsProvider>(context).subtitleTextStyle,
                 onEpisodeChange:

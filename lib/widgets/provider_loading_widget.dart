@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../models/provider_load_state.dart';
 
 class ProviderLoadingWidget extends StatefulWidget {
@@ -85,7 +86,7 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
 
           // Loading text
           Text(
-            'Loading Video Sources',
+            tr('loading_video_sources'),
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 18,
@@ -99,7 +100,7 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
 
           // Subtle hint text
           Text(
-            'Please wait while we find the best source',
+            tr('finding_best_source'),
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
               fontSize: 13,

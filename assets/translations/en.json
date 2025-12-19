@@ -560,5 +560,12 @@
   "downloading_processing_subtitles": "Downloading and processing {count} subtitle(s)...",
   "added_external_subtitles": "Added {count} external subtitle(s). Check subtitles menu to select.",
   "all_subtitles_already_added": "All selected subtitles were already added.",
-  "failed_add_subtitles": "Failed to add subtitles: {error}"
+  "failed_add_subtitles": "Failed to add subtitles: {error}",
+  "switch_provider": "Switch Provider",
+  "select_provider": "Select Video Provider",
+  "currently_playing": "Currently Playing",
+  "switched_to": "Switched to",
+  "switch_provider_error": "Failed to switch provider",
+  "loading_video_sources": "Loading Video Sources",
+  "finding_best_source": "Please wait while we find the best source"
 }

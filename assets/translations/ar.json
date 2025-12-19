@@ -560,5 +560,12 @@
   "downloading_processing_subtitles": "جاري تنزيل ومعالجة {count} ترجمة...",
   "added_external_subtitles": "تمت إضافة {count} ترجمة خارجية. تحقق من قائمة الترجمات للاختيار.",
   "all_subtitles_already_added": "تمت إضافة جميع الترجمات المحددة بالفعل.",
-  "failed_add_subtitles": "فشل في إضافة الترجمات: {error}"
+  "failed_add_subtitles": "فشل في إضافة الترجمات: {error}",
+  "switch_provider": "تبديل المزود",
+  "select_provider": "اختر مزود الفيديو",
+  "currently_playing": "قيد التشغيل حالياً",
+  "switched_to": "تم التبديل إلى",
+  "switch_provider_error": "فشل تبديل المزود",
+  "loading_video_sources": "جاري تحميل مصادر الفيديو",
+  "finding_best_source": "يرجى الانتظار بينما نبحث عن أفضل مصدر"
 }

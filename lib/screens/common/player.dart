@@ -5,6 +5,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
 
 import '../../models/movie_stream_metadata.dart';
+import '../../models/provider_video_source.dart';
+import '../../video_providers/names.dart';
+import '../../video_providers/provider_loader.dart';
+import '../../functions/video_utils.dart';
+import '../../provider/app_dependency_provider.dart';
 import '/constants/app_constants.dart';
 import '/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +37,8 @@ class PlayerOne extends StatefulWidget {
       required this.subtitleStyle,
       this.onEpisodeChange, // Callback for when user selects a different episode
       this.tvRoute, // StreamRoute for TV shows (needed for loading new episodes)
+      this.availableProviders, // Provider metadata for lazy loading
+      this.currentProviderCode, // Current provider code
       super.key});
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
@@ -44,6 +51,9 @@ class PlayerOne extends StatefulWidget {
   final Function(int episodeId, int episodeNumber, int seasonNumber)?
       onEpisodeChange;
   final StreamRoute? tvRoute;
+  final List<VideoProvider>?
+      availableProviders; // Changed to VideoProvider list
+  final String? currentProviderCode;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -79,9 +89,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   late SettingsProvider settings;
 
+  // Provider switching
+  bool _isSwitchingProvider = false;
+  late String? _currentProviderCode; // Track current provider
+  Map<String, ProviderVideoSource> _loadedProviders =
+      {}; // Cache loaded providers
+  Set<String> _loadingProviders = {}; // Track which providers are being loaded
+
   @override
   void initState() {
     settings = Provider.of<SettingsProvider>(context, listen: false);
+    _currentProviderCode = widget.currentProviderCode; // Initialize from widget
     super.initState();
 
     // Initialize episode selection with current season
@@ -197,6 +215,16 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               );
             },
           ),
+          // Add provider switcher if multiple providers are available
+          if (widget.availableProviders != null &&
+              widget.availableProviders!.length > 1)
+            BetterPlayerOverflowMenuItem(
+              Icons.swap_horiz_rounded,
+              tr('switch_provider'),
+              () {
+                _showProviderSwitcher();
+              },
+            ),
         ]);
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
@@ -511,6 +539,367 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       } else {
         debugPrint('No recommendations available for this movie');
       }
+    }
+  }
+
+  // Provider switching methods
+  void _showProviderSwitcher() {
+    if (widget.availableProviders == null ||
+        widget.availableProviders!.length <= 1) {
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return SafeArea(
+              child: DraggableScrollableSheet(
+                initialChildSize: 0.5,
+                minChildSize: 0.3,
+                maxChildSize: 0.9,
+                expand: false,
+                builder: (context, scrollController) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            tr('select_provider'),
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Flexible(
+                          child: ListView.builder(
+                            controller: scrollController,
+                            shrinkWrap: true,
+                            itemCount: widget.availableProviders!.length,
+                            itemBuilder: (context, index) {
+                              final provider =
+                                  widget.availableProviders![index];
+                              final isCurrentProvider =
+                                  _currentProviderCode == provider.codeName;
+
+                              final isLoading =
+                                  _loadingProviders.contains(provider.codeName);
+
+                              return ListTile(
+                                leading: Icon(
+                                  isCurrentProvider
+                                      ? Icons.check_circle
+                                      : Icons.circle_outlined,
+                                  color: isCurrentProvider
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                ),
+                                title: Text(
+                                  provider.fullName,
+                                  style: TextStyle(
+                                    fontWeight: isCurrentProvider
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    color: isCurrentProvider
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                  ),
+                                ),
+                                subtitle: isCurrentProvider
+                                    ? Text(
+                                        tr('currently_playing'),
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withOpacity(0.7),
+                                          fontSize: 12,
+                                        ),
+                                      )
+                                    : null,
+                                trailing: isLoading
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2),
+                                      )
+                                    : null,
+                                onTap: isCurrentProvider ||
+                                        _isSwitchingProvider ||
+                                        isLoading
+                                    ? null
+                                    : () {
+                                        _switchToProvider(
+                                            provider.codeName, setModalState);
+                                      },
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _switchToProvider(String providerCode,
+      [StateSetter? setModalState]) async {
+    if (_isSwitchingProvider || _currentProviderCode == providerCode) {
+      return;
+    }
+
+    setState(() {
+      _isSwitchingProvider = true;
+      _loadingProviders.add(providerCode);
+    });
+
+    // Also update modal state if provided
+    setModalState?.call(() {
+      _isSwitchingProvider = true;
+      _loadingProviders.add(providerCode);
+    });
+
+    try {
+      // Save current playback position
+      final currentPosition =
+          _betterPlayerController.videoPlayerController?.value.position ??
+              Duration.zero;
+
+      // Check if provider is already loaded
+      ProviderVideoSource? providerSource = _loadedProviders[providerCode];
+
+      // If not loaded, fetch it
+      if (providerSource == null) {
+        final appDep =
+            Provider.of<AppDependencyProvider>(context, listen: false);
+
+        // Load based on media type
+        if (widget.mediaType == MediaType.movie) {
+          final result = await ProviderLoader.loadMovieFromProvider(
+            providerCode: providerCode,
+            route: widget.tvRoute ?? StreamRoute.flixHQ,
+            movieId: widget.movieMetadata!.movieId!,
+            movieName: widget.movieMetadata!.movieName!,
+            releaseYear: widget.movieMetadata!.releaseYear?.toString(),
+            consumetUrl: appDep.consumetUrl,
+            newFlixHQUrl: appDep.newFlixHQUrl,
+            flixApiUrl: appDep.flixApiUrl,
+            newFlixhqServer: appDep.newFlixhqServer,
+            streamingServerFlixHQ: appDep.streamingServerFlixHQ,
+            gokuServer: appDep.gokuServer,
+            sflixServer: appDep.sflixServer,
+            himoviesServer: appDep.himoviesServer,
+            animekaiServer: appDep.animekaiServer,
+            hianimeServer: appDep.hianimeServer,
+          );
+
+          if (!result.success ||
+              result.videoLinks == null ||
+              result.videoLinks!.isEmpty) {
+            throw Exception(result.errorMessage ?? 'Failed to load video');
+          }
+
+          // Convert to ProviderVideoSource
+          Map<String, String> providerVideos =
+              VideoUtils.convertVideoLinksToMap(result.videoLinks!);
+          List<BetterPlayerSubtitlesSource> providerSubs = [];
+
+          if (result.subtitleLinks != null) {
+            for (var subLink in result.subtitleLinks!) {
+              providerSubs.add(
+                BetterPlayerSubtitlesSource(
+                  type: BetterPlayerSubtitlesSourceType.network,
+                  urls: [subLink.url ?? ''],
+                  name: subLink.language ?? 'Unknown',
+                ),
+              );
+            }
+          }
+
+          providerSource = ProviderVideoSource(
+            providerCode: providerCode,
+            providerName: widget.availableProviders!
+                .firstWhere((p) => p.codeName == providerCode)
+                .fullName,
+            videoSources: VideoUtils.reverseVideoQualityMap(providerVideos),
+            subtitles: providerSubs,
+          );
+        } else {
+          // TV Show
+          final result = await ProviderLoader.loadTVFromProvider(
+            providerCode: providerCode,
+            route: widget.tvRoute ?? StreamRoute.flixHQ,
+            tvId: widget.tvMetadata!.tvId!,
+            seriesName: widget.tvMetadata!.seriesName!,
+            seasonNumber: widget.tvMetadata!.seasonNumber!,
+            episodeNumber: widget.tvMetadata!.episodeNumber!,
+            consumetUrl: appDep.consumetUrl,
+            newFlixHQUrl: appDep.newFlixHQUrl,
+            flixApiUrl: appDep.flixApiUrl,
+            newFlixhqServer: appDep.newFlixhqServer,
+            streamingServerFlixHQ: appDep.streamingServerFlixHQ,
+            appLanguage: settings.appLanguage,
+            gokuServer: appDep.gokuServer,
+            sflixServer: appDep.sflixServer,
+            himoviesServer: appDep.himoviesServer,
+            animekaiServer: appDep.animekaiServer,
+            hianimeServer: appDep.hianimeServer,
+          );
+
+          if (!result.success ||
+              result.videoLinks == null ||
+              result.videoLinks!.isEmpty) {
+            throw Exception(result.errorMessage ?? 'Failed to load video');
+          }
+
+          // Convert to ProviderVideoSource
+          Map<String, String> providerVideos =
+              VideoUtils.convertVideoLinksToMap(result.videoLinks!);
+          List<BetterPlayerSubtitlesSource> providerSubs = [];
+
+          if (result.subtitleLinks != null) {
+            for (var subLink in result.subtitleLinks!) {
+              providerSubs.add(
+                BetterPlayerSubtitlesSource(
+                  type: BetterPlayerSubtitlesSourceType.network,
+                  urls: [subLink.url ?? ''],
+                  name: subLink.language ?? 'Unknown',
+                ),
+              );
+            }
+          }
+
+          providerSource = ProviderVideoSource(
+            providerCode: providerCode,
+            providerName: widget.availableProviders!
+                .firstWhere((p) => p.codeName == providerCode)
+                .fullName,
+            videoSources: VideoUtils.reverseVideoQualityMap(providerVideos),
+            subtitles: providerSubs,
+          );
+        }
+
+        // Cache the loaded provider
+        _loadedProviders[providerCode] = providerSource;
+      }
+
+      // Get the appropriate link based on quality setting
+      String keyToFind = widget.settings.defaultVideoResolution == 0
+          ? 'auto'
+          : widget.settings.defaultVideoResolution.toString();
+      String? link;
+
+      if (providerSource.videoSources.entries
+          .where((entry) => entry.key == keyToFind)
+          .isNotEmpty) {
+        link = providerSource.videoSources.entries
+            .where((entry) => entry.key == keyToFind)
+            .map((entry) => entry.value)
+            .first;
+      } else {
+        link = providerSource.videoSources.values.first;
+      }
+
+      // Create new data source
+      BetterPlayerDataSource dataSource = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        link,
+        resolutions: providerSource.videoSources,
+        subtitles: providerSource.subtitles,
+        cacheConfiguration: BetterPlayerCacheConfiguration(
+          useCache: true,
+          preCacheSize: 471859200 * 471859200,
+          maxCacheSize: 1073741824 * 1073741824,
+          maxCacheFileSize: 471859200 * 471859200,
+          key: generateCacheKey(),
+        ),
+        bufferingConfiguration: betterPlayerBufferingConfiguration,
+      );
+
+      // Setup new data source
+      await _betterPlayerController.setupDataSource(dataSource);
+
+      // Seek to saved position
+      await _betterPlayerController.videoPlayerController
+          ?.seekTo(currentPosition);
+
+      // Play if it was playing before
+      if (_betterPlayerController.isPlaying() != true) {
+        _betterPlayerController.play();
+      }
+
+      // Update current provider code
+      setState(() {
+        _currentProviderCode = providerCode;
+      });
+
+      // Also update modal state if provided
+      setModalState?.call(() {
+        _currentProviderCode = providerCode;
+      });
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${tr('switched_to')} ${providerSource.providerName}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${tr('switch_provider_error')}: $e',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } finally {
+      setState(() {
+        _isSwitchingProvider = false;
+        _loadingProviders.remove(providerCode);
+      });
+
+      // Also update modal state if provided
+      setModalState?.call(() {
+        _isSwitchingProvider = false;
+        _loadingProviders.remove(providerCode);
+      });
     }
   }
 

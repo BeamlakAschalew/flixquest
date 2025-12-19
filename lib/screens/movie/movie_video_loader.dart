@@ -3,6 +3,7 @@ import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/functions/network.dart';
 import 'package:flixquest/functions/video_utils.dart';
 import 'package:flixquest/models/movie_stream_metadata.dart';
+import 'package:flixquest/models/provider_video_source.dart';
 import 'package:flixquest/models/provider_load_state.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:flixquest/video_providers/provider_loader.dart';
@@ -62,6 +63,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
 
+  // Collect all working providers
+  List<ProviderVideoSource> availableProviders = [];
+
   late int foundIndex;
 
   @override
@@ -111,7 +115,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             tr('movie_may_not_be_available'), context);
       }
 
-      // Iterate through providers
+      // Iterate through providers - stop at FIRST working provider for fast loading
+      String? firstWorkingProviderCode;
       for (int i = 0; i < videoProviders.length; i++) {
         if (mounted) {
           setState(() {
@@ -150,20 +155,33 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 providerStates[i] = providerStates[i].copyWith(
                   status: ProviderStatus.success,
                 );
-                movieVideoLinks = result.videoLinks;
-                movieVideoSubs = result.subtitleLinks;
               });
             }
 
-            // Convert and process videos
-            videos = VideoUtils.convertVideoLinksToMap(movieVideoLinks!);
+            // Store the first working provider code
+            firstWorkingProviderCode = videoProviders[i].codeName;
 
-            // Process subtitles if available
-            if (movieVideoSubs != null && movieVideoSubs!.isNotEmpty) {
-              await _processSubtitles(movieVideoSubs!);
+            // Convert videos for this provider
+            videos = VideoUtils.convertVideoLinksToMap(result.videoLinks!);
+            movieVideoLinks = result.videoLinks;
+            movieVideoSubs = result.subtitleLinks;
+
+            // Process subtitles for this provider
+            if (result.subtitleLinks != null &&
+                result.subtitleLinks!.isNotEmpty) {
+              for (var subLink in result.subtitleLinks!) {
+                subs.add(
+                  BetterPlayerSubtitlesSource(
+                    type: BetterPlayerSubtitlesSourceType.network,
+                    urls: [subLink.url ?? ''],
+                    name: subLink.language ?? 'Unknown',
+                  ),
+                );
+              }
             }
 
-            break; // Found working provider, exit loop
+            // Stop at first working provider
+            break;
           } else {
             // Provider failed
             if (mounted) {
@@ -188,8 +206,8 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         }
       }
 
-      // Check if we found any working provider
-      if ((movieVideoLinks == null || movieVideoLinks!.isEmpty) && mounted) {
+      // Check if we found a working provider
+      if (firstWorkingProviderCode == null && mounted) {
         Navigator.pop(context);
         showModalBottomSheet(
             builder: (context) {
@@ -206,7 +224,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       Map<String, String> reversedVids =
           VideoUtils.reverseVideoQualityMap(videos);
 
-      if (movieVideoLinks != null && mounted) {
+      if (firstWorkingProviderCode != null && mounted) {
         final mixpanel =
             Provider.of<SettingsProvider>(context, listen: false).mixpanel;
         mixpanel.track('Most viewed movies', properties: {
@@ -215,7 +233,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           'Is Movie adult?': widget.metadata.isAdult ?? 'unknown',
         });
 
-        // Navigate to player
+        // Navigate to player with provider list for lazy loading
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -230,6 +248,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 ],
                 settings: settings,
                 movieMetadata: widget.metadata,
+                availableProviders:
+                    videoProviders, // Pass provider list for lazy loading
+                currentProviderCode:
+                    firstWorkingProviderCode, // Current provider
                 subtitleStyle:
                     Provider.of<SettingsProvider>(context).subtitleTextStyle,
               );

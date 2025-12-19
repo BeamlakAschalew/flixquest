@@ -558,7 +558,14 @@
   "subtitle_source": "Fuente: {source}",
   "failed_load_subtitles": "Error al cargar subtítulos: {error}",
   "downloading_processing_subtitles": "Descargando y procesando {count} subtítulo(s)...",
-  "added_external_subtitles": "Se agregaron {count} subtítulo(s) externo(s). Consulta el menú de subtítulos para seleccionar.",
+  "added_external_subtitles": "Se agregaron {count} subtítulo(s) externo(s). Verifique el menú de subtítulos para seleccionar.",
   "all_subtitles_already_added": "Todos los subtítulos seleccionados ya fueron agregados.",
-  "failed_add_subtitles": "Error al agregar subtítulos: {error}"
+  "failed_add_subtitles": "Error al agregar subtítulos: {error}",
+  "switch_provider": "Cambiar proveedor",
+  "select_provider": "Seleccionar proveedor de video",
+  "currently_playing": "Reproduciendo actualmente",
+  "switched_to": "Cambiado a",
+  "switch_provider_error": "Error al cambiar proveedor",
+  "loading_video_sources": "Cargando fuentes de video",
+  "finding_best_source": "Por favor espere mientras encontramos la mejor fuente"
 }

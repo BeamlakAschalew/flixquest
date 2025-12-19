@@ -565,5 +565,10 @@ abstract class  LocaleKeys {
   static const added_external_subtitles = 'added_external_subtitles';
   static const all_subtitles_already_added = 'all_subtitles_already_added';
   static const failed_add_subtitles = 'failed_add_subtitles';
+  static const switch_provider = 'switch_provider';
+  static const select_provider = 'select_provider';
+  static const currently_playing = 'currently_playing';
+  static const switched_to = 'switched_to';
+  static const switch_provider_error = 'switch_provider_error';
 
 }
