@@ -1,5 +1,6 @@
 import 'package:flixquest/api/endpoints.dart';
 import 'package:flixquest/controllers/live_tv_database_controller.dart';
+import 'package:flixquest/screens/common/live_player.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../provider/app_dependency_provider.dart';
@@ -401,7 +402,7 @@ class ChannelWidget extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => MediaKitLivePlayer(
+                builder: (context) => LivePlayer(
                   channelName: channel.name ?? 'Unknown Channel',
                   videoUrl: channel.directSource ?? channel.videoUrl ?? '',
                   autoFullScreen: autoFS,
