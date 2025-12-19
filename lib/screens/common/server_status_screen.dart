@@ -50,16 +50,16 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
             '${appDependency.newFlixHQUrl}movie/884605');
         videoLinks = result.videoLinks;
       } else if (provider.codeName == 'pstream') {
-        print('${appDependency.flixApiUrl}pstream/stream-movie?tmdbId=884605');
-        final result = await getMovieTVStreamLinksAndSubsFlixAPI(
+        final result = await getStreamLinksFlixAPIMulti(
             '${appDependency.flixApiUrl}pstream/stream-movie?tmdbId=884605');
-        print(result.success);
-        videoLinks = [
-          RegularVideoLinks(
-              url: result.stream!.playlist,
-              isM3U8: result.stream!.playlist!.endsWith('.m3u8'))
-        ];
-        print(videoLinks);
+        if (result.links != null && result.links!.isNotEmpty) {
+          final link = result.links!.first;
+          videoLinks = [
+            RegularVideoLinks(
+                url: link.url,
+                isM3U8: link.isM3U8 ?? link.url?.endsWith('.m3u8') ?? false)
+          ];
+        }
       } else if (provider.codeName == 'goku') {
         final result = await getMovieStreamLinksAndSubsGoku(
             '${appDependency.consumetUrl}movies/goku/watch?episodeId=1353085&mediaId=watch-movie/watch-no-hard-feelings-97708&server=${appDependency.gokuServer}');
@@ -72,6 +72,28 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         final result = await getMovieStreamLinksAndSubsHimovies(
             '${appDependency.consumetUrl}movies/himovies/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.himoviesServer}');
         videoLinks = result.videoLinks;
+      } else if (provider.codeName == 'vixsrc') {
+        final result = await getStreamLinksFlixAPIMulti(
+            '${appDependency.flixApiUrl}vixsrc/stream-movie?tmdbId=884605');
+        if (result.links != null && result.links!.isNotEmpty) {
+          final link = result.links!.first;
+          videoLinks = [
+            RegularVideoLinks(
+                url: link.url,
+                isM3U8: link.isM3U8 ?? link.url?.endsWith('.m3u8') ?? false)
+          ];
+        }
+      } else if (provider.codeName == 'showbox') {
+        final result = await getStreamLinksFlixAPIMulti(
+            '${appDependency.flixApiUrl}showbox/stream-movie?tmdbId=884605');
+        if (result.links != null && result.links!.isNotEmpty) {
+          final link = result.links!.first;
+          videoLinks = [
+            RegularVideoLinks(
+                url: link.url,
+                isM3U8: link.isM3U8 ?? link.url?.endsWith('.m3u8') ?? false)
+          ];
+        }
       }
     } catch (e) {
       // Error handling - server is down

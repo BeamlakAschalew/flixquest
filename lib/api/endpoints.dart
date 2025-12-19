@@ -485,4 +485,15 @@ class Endpoints {
     return '$baseUrl'
         '/stream-tv?tmdbId=$tmdbId&season=$seasonId&episode=$episodeId';
   }
+
+  // FlixAPI Multi-provider endpoints (vixsrc, pstream, showbox)
+  static String getMovieStreamLinkFlixAPIMulti(
+      String baseUrl, String provider, int movieId) {
+    return '$baseUrl/$provider/stream-movie?tmdbId=$movieId';
+  }
+
+  static String getTVStreamLinkFlixAPIMulti(String baseUrl, String provider,
+      int tmdbId, int episodeId, int seasonId) {
+    return '$baseUrl/$provider/stream-tv?tmdbId=$tmdbId&episode=$episodeId&season=$seasonId';
+  }
 }

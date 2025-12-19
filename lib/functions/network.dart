@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flixquest/models/custom_exceptions.dart';
 import 'package:flixquest/video_providers/common.dart';
 import 'package:flixquest/video_providers/flix_api.dart';
+import 'package:flixquest/video_providers/flixapi_multi.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
 import 'package:flixquest/video_providers/flixhq_new.dart';
 import 'package:flixquest/video_providers/goku.dart';
@@ -1549,4 +1550,48 @@ Future<FlixAPIResponse> getMovieTVStreamLinksAndSubsFlixAPI(String api) async {
   }
 
   return movieVideoSources;
+}
+
+/// Fetch stream links from FlixAPI multi-provider (vixsrc, pstream, showbox)
+Future<FlixAPIMultiResponse> getStreamLinksFlixAPIMulti(String api) async {
+  FlixAPIMultiResponse videoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('error') || decodeRes['success'] == false) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+
+    if (res.statusCode == 500) {
+      throw ServerDownException();
+    }
+    if (decodeRes.containsKey('error') || decodeRes['success'] == false) {
+      throw NotFoundException();
+    }
+
+    if (!decodeRes.containsKey('links') ||
+        decodeRes['links'] == null ||
+        (decodeRes['links'] as List).isEmpty) {
+      throw NotFoundException();
+    }
+    videoSources = FlixAPIMultiResponse.fromJson(decodeRes);
+
+    if (videoSources.links == null || videoSources.links!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return videoSources;
 }

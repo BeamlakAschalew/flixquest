@@ -63,9 +63,10 @@ class ProviderLoader {
           );
 
         case 'pstream':
-          return await _loadMovieFlixAPI(
+          return await _loadMovieFlixAPIMulti(
             movieId: movieId,
             flixApiUrl: flixApiUrl,
+            provider: 'pstream',
           );
 
         case 'goku':
@@ -93,6 +94,20 @@ class ProviderLoader {
             releaseYear: releaseYear,
             consumetUrl: consumetUrl,
             himoviesServer: himoviesServer,
+          );
+
+        case 'vixsrc':
+          return await _loadMovieFlixAPIMulti(
+            movieId: movieId,
+            flixApiUrl: flixApiUrl,
+            provider: 'vixsrc',
+          );
+
+        case 'showbox':
+          return await _loadMovieFlixAPIMulti(
+            movieId: movieId,
+            flixApiUrl: flixApiUrl,
+            provider: 'showbox',
           );
 
         default:
@@ -160,11 +175,12 @@ class ProviderLoader {
           );
 
         case 'pstream':
-          return await _loadTVFlixAPI(
+          return await _loadTVFlixAPIMulti(
             tvId: tvId,
             seasonNumber: seasonNumber,
             episodeNumber: episodeNumber,
             flixApiUrl: flixApiUrl,
+            provider: 'pstream',
           );
 
         case 'goku':
@@ -198,6 +214,24 @@ class ProviderLoader {
             consumetUrl: consumetUrl,
             himoviesServer: himoviesServer,
             appLanguage: appLanguage,
+          );
+
+        case 'vixsrc':
+          return await _loadTVFlixAPIMulti(
+            tvId: tvId,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            flixApiUrl: flixApiUrl,
+            provider: 'vixsrc',
+          );
+
+        case 'showbox':
+          return await _loadTVFlixAPIMulti(
+            tvId: tvId,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            flixApiUrl: flixApiUrl,
+            provider: 'showbox',
           );
 
         default:
@@ -276,44 +310,6 @@ class ProviderLoader {
         success: true,
         videoLinks: sources.videoLinks,
         subtitleLinks: sources.videoSubtitles,
-      );
-    }
-
-    return ProviderLoaderResult(
-      success: false,
-      errorMessage: 'No video sources found',
-    );
-  }
-
-  static Future<ProviderLoaderResult> _loadMovieFlixAPI({
-    required int movieId,
-    required String flixApiUrl,
-  }) async {
-    final sources = await getMovieTVStreamLinksAndSubsFlixAPI(
-      Endpoints.getMovieStreamLinkFlixAPI(flixApiUrl, movieId),
-    );
-
-    if (sources.success &&
-        sources.stream != null &&
-        sources.stream!.playlist != null) {
-      final videoLinks = [
-        RegularVideoLinks(
-          url: sources.stream!.playlist,
-          isM3U8: sources.stream!.playlist!.endsWith('.m3u8'),
-        ),
-      ];
-
-      final subtitleLinks = sources.stream!.captions
-          ?.map((caption) => RegularSubtitleLinks(
-                url: caption.url,
-                language: caption.language,
-              ))
-          .toList();
-
-      return ProviderLoaderResult(
-        success: true,
-        videoLinks: videoLinks,
-        subtitleLinks: subtitleLinks,
       );
     }
 
@@ -471,35 +467,78 @@ class ProviderLoader {
     );
   }
 
-  static Future<ProviderLoaderResult> _loadTVFlixAPI({
+  /// Load movie from FlixAPI Multi-provider (vixsrc, pstream, showbox)
+  static Future<ProviderLoaderResult> _loadMovieFlixAPIMulti({
+    required int movieId,
+    required String flixApiUrl,
+    required String provider,
+  }) async {
+    final sources = await getStreamLinksFlixAPIMulti(
+      Endpoints.getMovieStreamLinkFlixAPIMulti(flixApiUrl, provider, movieId),
+    );
+
+    if (sources.success && sources.links != null && sources.links!.isNotEmpty) {
+      final firstLink = sources.links!.first;
+
+      final videoLinks = [
+        RegularVideoLinks(
+          url: firstLink.url,
+          isM3U8: firstLink.isM3U8 ?? firstLink.url?.endsWith('.m3u8') ?? false,
+        ),
+      ];
+
+      final subtitleLinks = firstLink.subtitles
+          ?.map((subtitle) => RegularSubtitleLinks(
+                url: subtitle.file,
+                language: subtitle.label,
+              ))
+          .toList();
+
+      return ProviderLoaderResult(
+        success: true,
+        videoLinks: videoLinks,
+        subtitleLinks: subtitleLinks,
+      );
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  /// Load TV from FlixAPI Multi-provider (vixsrc, pstream, showbox)
+  static Future<ProviderLoaderResult> _loadTVFlixAPIMulti({
     required int tvId,
     required int seasonNumber,
     required int episodeNumber,
     required String flixApiUrl,
+    required String provider,
   }) async {
-    final sources = await getMovieTVStreamLinksAndSubsFlixAPI(
-      Endpoints.getTVStreamLinkFlixAPI(
+    final sources = await getStreamLinksFlixAPIMulti(
+      Endpoints.getTVStreamLinkFlixAPIMulti(
         flixApiUrl,
+        provider,
         tvId,
         episodeNumber,
         seasonNumber,
       ),
     );
 
-    if (sources.success &&
-        sources.stream != null &&
-        sources.stream!.playlist != null) {
+    if (sources.success && sources.links != null && sources.links!.isNotEmpty) {
+      final firstLink = sources.links!.first;
+
       final videoLinks = [
         RegularVideoLinks(
-          url: sources.stream!.playlist,
-          isM3U8: sources.stream!.playlist!.endsWith('.m3u8'),
+          url: firstLink.url,
+          isM3U8: firstLink.isM3U8 ?? firstLink.url?.endsWith('.m3u8') ?? false,
         ),
       ];
 
-      final subtitleLinks = sources.stream!.captions
-          ?.map((caption) => RegularSubtitleLinks(
-                url: caption.url,
-                language: caption.language,
+      final subtitleLinks = firstLink.subtitles
+          ?.map((subtitle) => RegularSubtitleLinks(
+                url: subtitle.file,
+                language: subtitle.label,
               ))
           .toList();
 
