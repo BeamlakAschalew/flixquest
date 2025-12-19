@@ -57,6 +57,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
 
   List<ProviderLoadState> providerStates = [];
   int currentProviderIndex = 0;
+  bool isFetchingSubtitles = false;
 
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
@@ -293,6 +294,8 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         child: ProviderLoadingWidget(
           providers: providerStates,
           currentIndex: currentProviderIndex,
+          additionalMessage:
+              isFetchingSubtitles ? 'Fetching subtitles...' : null,
         ),
       ),
     );
@@ -309,6 +312,12 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
     try {
       if (!appDep.fetchSubtitles) {
         return;
+      }
+
+      if (mounted) {
+        setState(() {
+          isFetchingSubtitles = true;
+        });
       }
 
       // Use the VideoUtils.parseSubtitles method
@@ -366,6 +375,12 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       }
     } on Exception catch (e) {
       GlobalMethods.showErrorScaffoldMessengerGeneral(e, context);
+    } finally {
+      if (mounted) {
+        setState(() {
+          isFetchingSubtitles = false;
+        });
+      }
     }
   }
 

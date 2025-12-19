@@ -4,10 +4,12 @@ import '../models/provider_load_state.dart';
 class ProviderLoadingWidget extends StatefulWidget {
   final List<ProviderLoadState> providers;
   final int currentIndex;
+  final String? additionalMessage;
 
   const ProviderLoadingWidget({
     required this.providers,
     required this.currentIndex,
+    this.additionalMessage,
     super.key,
   });
 
@@ -51,41 +53,35 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Theme.of(context).colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 20,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 40),
       constraints: const BoxConstraints(
-        maxWidth: 400,
+        maxWidth: 440,
         minHeight: 340,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Logo
+          // Logo with elegant glow
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
               shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  Theme.of(context).colorScheme.primary.withOpacity(0.18),
+                  Theme.of(context).colorScheme.primary.withOpacity(0.08),
+                  Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                ],
+              ),
             ),
             child: Image.asset(
               'assets/images/logo.png',
-              height: 80,
-              width: 80,
+              height: 72,
+              width: 72,
             ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 26),
 
           // Loading text
           Text(
@@ -93,21 +89,36 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 18,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'FigtreeBold',
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Figtree',
+              letterSpacing: 0.3,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 18),
+
+          // Subtle hint text
+          Text(
+            'Please wait while we find the best source',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              fontFamily: 'Figtree',
+              letterSpacing: 0.1,
             ),
           ),
           const SizedBox(height: 20),
 
           // Progress indicator
           SizedBox(
-            width: 280,
+            width: 320,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
-                minHeight: 8,
+                minHeight: 5,
                 backgroundColor:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                    Theme.of(context).colorScheme.primary.withOpacity(0.12),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   Theme.of(context).colorScheme.primary,
                 ),
@@ -121,6 +132,51 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
             opacity: _fadeAnimation,
             child: _buildProviderCarousel(),
           ),
+
+          // Additional message (e.g., subtitle fetching)
+          if (widget.additionalMessage != null) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Text(
+                      widget.additionalMessage!,
+                      style: TextStyle(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.8),
+                        fontSize: 13,
+                        fontFamily: 'Figtree',
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -166,40 +222,40 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
     bool isNext = false,
   }) {
     final bool isHighlighted = isCurrent;
-    final double opacity = isHighlighted ? 1.0 : 0.65;
-    final double fontSize = isHighlighted ? 17 : 14;
-    final double iconSize = isHighlighted ? 24 : 18;
+    final double opacity = isHighlighted ? 1.0 : 0.55;
+    final double fontSize = isHighlighted ? 16.5 : 13.5;
+    final double iconSize = isHighlighted ? 23 : 18;
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOutCubic,
+      margin: const EdgeInsets.symmetric(vertical: 5),
       child: Opacity(
         opacity: opacity,
         child: Container(
-          width: 280,
+          width: 320,
           padding: EdgeInsets.symmetric(
             horizontal: isHighlighted ? 20 : 16,
-            vertical: isHighlighted ? 14 : 10,
+            vertical: isHighlighted ? 13 : 10,
           ),
           decoration: BoxDecoration(
             color: isHighlighted
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.12)
-                : Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isHighlighted
-                  ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.2),
-              width: 1.5,
-            ),
+            border: isHighlighted
+                ? Border.all(
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.25),
+                    width: 1.2,
+                  )
+                : null,
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Status icon
               _buildStatusIcon(provider.status, iconSize),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
 
               // Provider name
               Expanded(
@@ -209,8 +265,9 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
                     color: Theme.of(context).colorScheme.onSurface,
                     fontSize: fontSize,
                     fontWeight:
-                        isHighlighted ? FontWeight.bold : FontWeight.w500,
-                    fontFamily: isHighlighted ? 'FigtreeBold' : 'FigtreeMedium',
+                        isHighlighted ? FontWeight.w600 : FontWeight.w500,
+                    fontFamily: 'Figtree',
+                    letterSpacing: 0.2,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -225,54 +282,33 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
   Widget _buildStatusIcon(ProviderStatus status, double iconSize) {
     switch (status) {
       case ProviderStatus.pending:
-        return Container(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.15),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.schedule,
-            size: iconSize,
-            color: Colors.grey[400],
-          ),
+        return Icon(
+          Icons.hourglass_empty,
+          size: iconSize,
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.35),
         );
       case ProviderStatus.loading:
         return SizedBox(
-          width: iconSize + 4,
-          height: iconSize + 4,
+          width: iconSize,
+          height: iconSize,
           child: CircularProgressIndicator(
-            strokeWidth: 2.5,
+            strokeWidth: 2.2,
             valueColor: AlwaysStoppedAnimation<Color>(
               Theme.of(context).colorScheme.primary,
             ),
           ),
         );
       case ProviderStatus.success:
-        return Container(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.15),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.check_circle,
-            size: iconSize,
-            color: Colors.green[400],
-          ),
+        return Icon(
+          Icons.check_circle_rounded,
+          size: iconSize,
+          color: const Color(0xFF4CAF50),
         );
       case ProviderStatus.failed:
-        return Container(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.15),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.error,
-            size: iconSize,
-            color: Colors.red[400],
-          ),
+        return Icon(
+          Icons.error_rounded,
+          size: iconSize,
+          color: const Color(0xFFEF5350),
         );
     }
   }
