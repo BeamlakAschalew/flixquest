@@ -65,8 +65,6 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getString('opensubtitles_key');
       appDependencyProvider.streamingServerFlixHQ =
           _remoteConfig.getString('streaming_server_flixhq');
-      appDependencyProvider.streamingServerDCVA =
-          _remoteConfig.getString('streaming_server_dcva');
       appDependencyProvider.enableADS = _remoteConfig.getBool('ads_enabled');
       appDependencyProvider.fetchRoute = _remoteConfig.getString('route_v241');
       appDependencyProvider.useExternalSubtitles =
@@ -79,8 +77,6 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getBool('enable_ott');
       appDependencyProvider.flixquestAPIURL =
           _remoteConfig.getString('flixquest_api_url');
-      appDependencyProvider.streamingServerZoro =
-          _remoteConfig.getString('streaming_server_zoro');
       appDependencyProvider.isForcedUpdate =
           _remoteConfig.getBool('forced_update');
       appDependencyProvider.flixhqZoeServer =
@@ -230,8 +226,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
       appDep.opensubtitlesKey = remoteConfig.getString('opensubtitles_key');
       appDep.streamingServerFlixHQ =
           remoteConfig.getString('streaming_server_flixhq');
-      appDep.streamingServerDCVA =
-          remoteConfig.getString('streaming_server_dcva');
       appDep.enableADS = remoteConfig.getBool('ads_enabled');
       appDep.fetchRoute = remoteConfig.getString('route_v241');
       appDep.useExternalSubtitles =
@@ -240,8 +234,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
       appDep.displayWatchNowButton = remoteConfig.getBool('enable_stream');
       appDep.displayOTTDrawer = remoteConfig.getBool('enable_ott');
       appDep.flixquestAPIURL = remoteConfig.getString('flixquest_api_url');
-      appDep.streamingServerZoro =
-          remoteConfig.getString('streaming_server_zoro');
       appDep.isForcedUpdate = remoteConfig.getBool('forced_update');
       appDep.flixhqZoeServer = remoteConfig.getString('flixhq_zoe_server');
       appDep.goMoviesServer = remoteConfig.getString('gomovies_server');

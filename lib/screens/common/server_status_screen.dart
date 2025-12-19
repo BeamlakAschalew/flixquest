@@ -126,47 +126,6 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
           GlobalMethods.showErrorScaffoldMessengerMediaLoad(
               e, context, 'ShowBox');
         }
-      } else if (videoProviders[i].codeName == 'dramacool') {
-        start = DateTime.now();
-        try {
-          await getMovieTVStreamLinksAndSubsDCVA(
-                  '${appDependency.consumetUrl}movies/dramacool/watch?id=drama-detail/a-different-girl&episodeId=a-different-girl-2021-episode-1&server=${appDependency.streamingServerDCVA}')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'Dramacool');
-        }
-      } else if (videoProviders[i].codeName == 'viewasian') {
-        start = DateTime.now();
-        try {
-          await getMovieTVStreamLinksAndSubsDCVA(
-                  '${appDependencyProvider.consumetUrl}movies/viewasian/watch?id=drama/tell-me-you-love-me&episodeId=/watch/tell-me-you-love-me/watching.html\$episode\$1&server=${appDependencyProvider.streamingServerDCVA}')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-              e, context, 'ViewAsian');
-        }
-      } else if (videoProviders[i].codeName == 'zoro') {
-        start = DateTime.now();
-        try {
-          await getMovieTVStreamLinksAndSubsZoro(
-                  '${appDependencyProvider.consumetUrl}anime/zoro/watch?episodeId=one-piece-movie-1-3096\$episode\$58122\$sub&server=${appDependencyProvider.streamingServerZoro}')
-              .then((value) {
-            if (mounted) {
-              videoLinks = value.videoLinks;
-            }
-          });
-        } on Exception catch (e) {
-          GlobalMethods.showErrorScaffoldMessengerMediaLoad(e, context, 'Zoro');
-        }
       } else if (videoProviders[i].codeName == 'flixhqS2') {
         start = DateTime.now();
         try {

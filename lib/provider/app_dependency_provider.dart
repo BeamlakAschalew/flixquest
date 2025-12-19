@@ -26,12 +26,6 @@ class AppDependencyProvider extends ChangeNotifier {
   String _streamingServerFlixHQ = STREAMING_SERVER_FLIXHQ;
   String get streamingServerFlixHQ => _streamingServerFlixHQ;
 
-  String _streamingServerDCVA = STREAMING_SERVER_DCVA;
-  String get streamingServerDCVA => _streamingServerDCVA;
-
-  String _streamingServerZoro = STREAMING_SERVER_ZORO;
-  String get streamingServerZoro => _streamingServerZoro;
-
   bool _enableADS = true;
   bool get enableADS => _enableADS;
 
@@ -141,26 +135,6 @@ class AppDependencyProvider extends ChangeNotifier {
   set streamingServerFlixHQ(String value) {
     _streamingServerFlixHQ = value;
     __appDependencies.setStreamServerFlixHQ(value);
-    notifyListeners();
-  }
-
-  Future<void> getStreamingServerDCVA() async {
-    streamingServerDCVA = await __appDependencies.getStreamServerDCVA();
-  }
-
-  set streamingServerDCVA(String value) {
-    _streamingServerDCVA = value;
-    __appDependencies.setStreamServerDCVA(value);
-    notifyListeners();
-  }
-
-  Future<void> getStreamingServerZoro() async {
-    streamingServerZoro = await __appDependencies.getStreamServerZoro();
-  }
-
-  set streamingServerZoro(String value) {
-    _streamingServerZoro = value;
-    __appDependencies.setStreamServerZoro(value);
     notifyListeners();
   }
 

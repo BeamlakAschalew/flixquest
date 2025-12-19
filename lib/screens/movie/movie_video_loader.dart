@@ -133,8 +133,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             flixApiUrl: appDep.flixApiUrl,
             newFlixhqServer: appDep.newFlixhqServer,
             streamingServerFlixHQ: appDep.streamingServerFlixHQ,
-            streamingServerDCVA: appDep.streamingServerDCVA,
-            streamingServerZoro: appDep.streamingServerZoro,
           );
 
           if (result.success &&

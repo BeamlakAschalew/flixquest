@@ -32,6 +32,8 @@ class ProviderLoader {
     required String flixApiUrl,
     required String newFlixhqServer,
     required String streamingServerFlixHQ,
+    required String streamingServerDCVA,
+    required String streamingServerZoro,
   }) async {
     try {
       switch (providerCode) {
@@ -65,6 +67,30 @@ class ProviderLoader {
             flixApiUrl: flixApiUrl,
           );
 
+        case 'dramacool':
+          return await _loadMovieDramacool(
+            movieId: movieId,
+            movieName: movieName,
+            consumetUrl: consumetUrl,
+            streamingServerDCVA: streamingServerDCVA,
+          );
+
+        case 'viewasian':
+          return await _loadMovieViewasian(
+            movieId: movieId,
+            movieName: movieName,
+            consumetUrl: consumetUrl,
+            streamingServerDCVA: streamingServerDCVA,
+          );
+
+        case 'zoro':
+          return await _loadMovieZoro(
+            movieId: movieId,
+            movieName: movieName,
+            consumetUrl: consumetUrl,
+            streamingServerZoro: streamingServerZoro,
+          );
+
         default:
           return ProviderLoaderResult(
             success: false,
@@ -92,6 +118,8 @@ class ProviderLoader {
     required String flixApiUrl,
     required String newFlixhqServer,
     required String streamingServerFlixHQ,
+    required String streamingServerDCVA,
+    required String streamingServerZoro,
     required String appLanguage,
   }) async {
     try {
@@ -132,6 +160,36 @@ class ProviderLoader {
             seasonNumber: seasonNumber,
             episodeNumber: episodeNumber,
             flixApiUrl: flixApiUrl,
+          );
+
+        case 'dramacool':
+          return await _loadTVDramacool(
+            tvId: tvId,
+            seriesName: seriesName,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            consumetUrl: consumetUrl,
+            streamingServerDCVA: streamingServerDCVA,
+          );
+
+        case 'viewasian':
+          return await _loadTVViewasian(
+            tvId: tvId,
+            seriesName: seriesName,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            consumetUrl: consumetUrl,
+            streamingServerDCVA: streamingServerDCVA,
+          );
+
+        case 'zoro':
+          return await _loadTVZoro(
+            tvId: tvId,
+            seriesName: seriesName,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            consumetUrl: consumetUrl,
+            streamingServerZoro: streamingServerZoro,
           );
 
         default:

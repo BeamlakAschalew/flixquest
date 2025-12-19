@@ -137,9 +137,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             flixApiUrl: appDep.flixApiUrl,
             newFlixhqServer: appDep.newFlixhqServer,
             streamingServerFlixHQ: appDep.streamingServerFlixHQ,
-            streamingServerDCVA: appDep.streamingServerDCVA,
-            streamingServerZoro: appDep.streamingServerZoro,
-            appLanguage: settings.appLanguage,
+            appLanguage: appDep.appLanguage,
           );
 
           if (result.success &&

@@ -85,8 +85,6 @@ Future<void> appInitialize() async {
   await appDependencyProvider.getFlixQuestLogo();
   await appDependencyProvider.getOpenSubKey();
   await appDependencyProvider.getStreamingServerFlixHQ();
-  await appDependencyProvider.getStreamingServerDCVA();
-  await appDependencyProvider.getStreamingServerZoro();
   await appDependencyProvider.getStreamRoute();
   await appDependencyProvider.getFQUrl();
   await appDependencyProvider.getTmdbProxy();

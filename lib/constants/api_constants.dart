@@ -27,5 +27,3 @@ String flixhqNewUrl = dotenv.env['FLIXHQ_NEW_URL']!;
 String flixAPIUrl = dotenv.env['FLIXAPI_URL']!;
 const String STREAMING_SERVER_FLIXHQ = 'vidcloud';
 const String STREAMING_SERVER_NEW_FLIXHQ = 'megacloud';
-const String STREAMING_SERVER_DCVA = 'asianload';
-const String STREAMING_SERVER_ZORO = 'vidcloud';
