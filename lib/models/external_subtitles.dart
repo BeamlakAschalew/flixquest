@@ -1,17 +1,53 @@
 class ExternalSubtitle {
-  ExternalSubtitle({required this.data});
-  List<SubtitleData>? data;
+  final String id;
+  final String url;
+  final String flagUrl;
+  final String format;
+  final String encoding;
+  final String display;
+  final String language;
+  final String media;
+  final bool isHearingImpaired;
+  final String source;
 
-  ExternalSubtitle.fromJson(Map<String, dynamic> json) {
-    if (json['data'] != null) {
-      data = [];
-      json['data'].forEach((v) {
-        data!.add(SubtitleData.fromJson(v));
-      });
+  ExternalSubtitle({
+    required this.id,
+    required this.url,
+    required this.flagUrl,
+    required this.format,
+    required this.encoding,
+    required this.display,
+    required this.language,
+    required this.media,
+    required this.isHearingImpaired,
+    required this.source,
+  });
+
+  factory ExternalSubtitle.fromJson(Map<String, dynamic> json) {
+    return ExternalSubtitle(
+      id: json['id']?.toString() ?? '',
+      url: json['url'] ?? '',
+      flagUrl: json['flagUrl'] ?? '',
+      format: json['format'] ?? 'srt',
+      encoding: json['encoding'] ?? 'UTF-8',
+      display: json['display'] ?? 'Unknown',
+      language: json['language'] ?? 'en',
+      media: json['media'] ?? '',
+      isHearingImpaired: json['isHearingImpaired'] ?? false,
+      source: json['source'] ?? 'opensubtitles',
+    );
+  }
+
+  String get displayName {
+    String name = display;
+    if (isHearingImpaired) {
+      name += ' (HI)';
     }
+    return '$name - $format';
   }
 }
 
+// Keep old models for backward compatibility if still used elsewhere
 class SubtitleData {
   SubtitleData({required this.attr});
 

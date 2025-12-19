@@ -4,9 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:retry/retry.dart';
 import '../functions/function.dart';
+import '../models/external_subtitles.dart';
 
 class ExternalSubtitleService {
-  static const String baseUrl = 'https://libre-subs.fifthwit.net';
+  static const String baseUrl = 'https://sub.wyzie.ru';
 
   /// Download subtitle file with proper encoding handling
   static Future<String> _downloadSubtitleWithEncoding(
@@ -147,54 +148,5 @@ class ExternalSubtitleService {
       content: processedContent,
       selectedByDefault: false,
     );
-  }
-}
-
-class ExternalSubtitle {
-  final String id;
-  final String url;
-  final String flagUrl;
-  final String format;
-  final String encoding;
-  final String display;
-  final String language;
-  final String media;
-  final bool isHearingImpaired;
-  final String source;
-
-  ExternalSubtitle({
-    required this.id,
-    required this.url,
-    required this.flagUrl,
-    required this.format,
-    required this.encoding,
-    required this.display,
-    required this.language,
-    required this.media,
-    required this.isHearingImpaired,
-    required this.source,
-  });
-
-  factory ExternalSubtitle.fromJson(Map<String, dynamic> json) {
-    return ExternalSubtitle(
-      id: json['id']?.toString() ?? '',
-      url: json['url'] ?? '',
-      flagUrl: json['flagUrl'] ?? '',
-      format: json['format'] ?? 'srt',
-      encoding: json['encoding'] ?? 'UTF-8',
-      display: json['display'] ?? 'Unknown',
-      language: json['language'] ?? 'en',
-      media: json['media'] ?? '',
-      isHearingImpaired: json['isHearingImpaired'] ?? false,
-      source: json['source'] ?? 'opensubtitles',
-    );
-  }
-
-  String get displayName {
-    String name = display;
-    if (isHearingImpaired) {
-      name += ' (HI)';
-    }
-    return '$name - $format';
   }
 }

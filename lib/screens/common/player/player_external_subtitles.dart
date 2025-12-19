@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
+import '../../../models/external_subtitles.dart';
 import '../../../models/movie_stream_metadata.dart';
 import '../../../models/tv_stream_metadata.dart';
 import '../../../services/external_subtitle_service.dart';

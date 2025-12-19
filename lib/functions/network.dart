@@ -14,7 +14,6 @@ import 'package:flixquest/video_providers/animekai.dart';
 import 'package:flixquest/video_providers/animepahe.dart';
 import 'package:flixquest/video_providers/hianime.dart';
 import 'package:retry/retry.dart';
-import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
 import '../video_providers/dramacool.dart';
 import '../video_providers/flixquest_api_source.dart';
@@ -1191,51 +1190,20 @@ Future<FlixHQTVInfoTMDBRoute> getTVStreamEpisodesTMDB(String api) async {
   return tvInfo;
 }
 
-Future<List<SubtitleData>> getExternalSubtitle(String api, String key) async {
-  ExternalSubtitle subData;
+// DEPRECATED: These functions are no longer used.
+// Use ExternalSubtitleService from services/external_subtitle_service.dart instead
+// which uses the new Wyzie Subs API (https://sub.wyzie.ru)
 
-  try {
-    var res = await retryOptions.retry(
-      () =>
-          http.get(Uri.parse(api), headers: {'Api-Key': key}).timeout(timeOut),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
+// Future<List<SubtitleData>> getExternalSubtitle(String api, String key) async {
+//   // This function used the old OpenSubtitles API which is no longer working
+//   throw UnimplementedError('Use ExternalSubtitleService.fetchMovieSubtitles() or fetchTVSubtitles() instead');
+// }
 
-    var decodeRes = jsonDecode(res.body);
-    if (decodeRes.containsKey('message') || res.statusCode != 200) {
-      throw ServerDownException();
-    }
-    subData = ExternalSubtitle.fromJson(decodeRes);
-  } catch (e) {
-    rethrow;
-  }
-
-  return subData.data ?? [];
-}
-
-Future<SubtitleDownload> downloadExternalSubtitle(
-    String api, int fileId, String key) async {
-  SubtitleDownload sub;
-  final Map<String, String> headers = {
-    'User-Agent': 'FlixQuest v2.4.0',
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-    'Api-Key': key
-  };
-  var body = '{"file_id":$fileId}';
-  try {
-    var response = await retryOptions.retry(
-      () => http.post(Uri.parse(api), headers: headers, body: body),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    var decodeRes = jsonDecode(response.body);
-    sub = SubtitleDownload.fromJson(decodeRes);
-  } finally {
-    client.close();
-  }
-
-  return sub;
-}
+// Future<SubtitleDownload> downloadExternalSubtitle(
+//     String api, int fileId, String key) async {
+//   // This function used the old OpenSubtitles API which is no longer working
+//   throw UnimplementedError('Use ExternalSubtitleService.convertToBetterPlayerSource() instead');
+// }
 
 Future<List<DCVASearchEntry>> fetchMovieTVForStreamDCVA(String api) async {
   DCVASearch dcvaStream;

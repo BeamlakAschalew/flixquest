@@ -5,6 +5,7 @@ import 'package:flixquest/functions/video_utils.dart';
 import 'package:flixquest/models/movie_stream_metadata.dart';
 import 'package:flixquest/models/provider_video_source.dart';
 import 'package:flixquest/models/provider_load_state.dart';
+import 'package:flixquest/services/external_subtitle_service.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:flixquest/video_providers/provider_loader.dart';
 import 'package:flixquest/widgets/provider_loading_widget.dart';
@@ -340,40 +341,33 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         });
       }
 
-      // Handle external subtitles if needed
+      // Handle external subtitles if needed - using new Wyzie Subs API
       if (parsedSubs.isEmpty && appDep.useExternalSubtitles) {
-        await fetchSocialLinks(
-          Endpoints.getExternalLinksForMovie(
-              widget.metadata.movieId!, settings.appLanguage),
-          isProxyEnabled,
-          appDep.tmdbProxy,
-        ).then((value) async {
-          if (value.imdbId != null) {
-            await getExternalSubtitle(
-                    Endpoints.searchExternalMovieSubtitles(value.imdbId!,
-                        supportedLanguages[foundIndex].languageCode),
-                    appDep.opensubtitlesKey)
-                .then((value) async {
-              if (value.isNotEmpty && value[0].attr!.files![0].fileId != null) {
-                await downloadExternalSubtitle(
-                        Endpoints.externalSubtitleDownload(),
-                        value[0].attr!.files![0].fileId!,
-                        appDep.opensubtitlesKey)
-                    .then((value) async {
-                  if (value.link != null) {
-                    subs.addAll({
-                      BetterPlayerSubtitlesSource(
-                          name: supportedLanguages[foundIndex].englishName,
-                          urls: [value.link],
-                          selectedByDefault: true,
-                          type: BetterPlayerSubtitlesSourceType.network)
-                    });
-                  }
-                });
-              }
-            });
+        try {
+          // Fetch subtitles using TMDB ID directly (no need for IMDB ID)
+          final externalSubs =
+              await ExternalSubtitleService.fetchMovieSubtitles(
+            widget.metadata.movieId!,
+          );
+
+          // Find a subtitle matching the user's preferred language
+          if (externalSubs.isNotEmpty) {
+            // Try to find a subtitle in the user's preferred language
+            var preferredSub = externalSubs.firstWhere(
+              (sub) => sub.language == settings.defaultSubtitleLanguage,
+              orElse: () => externalSubs.first,
+            );
+
+            // Download and add the subtitle
+            final betterPlayerSource =
+                await ExternalSubtitleService.convertToBetterPlayerSource(
+              preferredSub,
+            );
+            subs.add(betterPlayerSource);
           }
-        });
+        } catch (e) {
+          debugPrint('Error fetching external subtitles: $e');
+        }
       }
     } on Exception catch (e) {
       GlobalMethods.showErrorScaffoldMessengerGeneral(e, context);

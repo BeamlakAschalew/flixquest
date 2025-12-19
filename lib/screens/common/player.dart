@@ -39,6 +39,7 @@ class PlayerOne extends StatefulWidget {
       this.tvRoute, // StreamRoute for TV shows (needed for loading new episodes)
       this.availableProviders, // Provider metadata for lazy loading
       this.currentProviderCode, // Current provider code
+      this.initialPlaybackPosition, // For preserving position on provider switch
       super.key});
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
@@ -54,6 +55,7 @@ class PlayerOne extends StatefulWidget {
   final List<VideoProvider>?
       availableProviders; // Changed to VideoProvider list
   final String? currentProviderCode;
+  final Duration? initialPlaybackPosition;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -71,7 +73,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   final PlayerNextEpisodeWidget _nextEpisodeWidget = PlayerNextEpisodeWidget();
   late int duration;
 
-  final GlobalKey _betterPlayerKey = GlobalKey();
+  GlobalKey _betterPlayerKey = GlobalKey();
 
   int totalMinutesWatched = 0;
   bool isVideoPaused = false;
@@ -280,10 +282,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             bufferingConfiguration: betterPlayerBufferingConfiguration);
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(dataSource).then((value) {
-      _betterPlayerController.videoPlayerController!.seekTo(Duration(
-          seconds: widget.mediaType == MediaType.movie
-              ? widget.movieMetadata!.elapsed!
-              : widget.tvMetadata!.elapsed!));
+      // If initial playback position provided (from provider switch), seek to it
+      if (widget.initialPlaybackPosition != null) {
+        _betterPlayerController.videoPlayerController!
+            .seekTo(widget.initialPlaybackPosition!);
+      } else {
+        // Otherwise use the elapsed time from metadata
+        _betterPlayerController.videoPlayerController!.seekTo(Duration(
+            seconds: widget.mediaType == MediaType.movie
+                ? widget.movieMetadata!.elapsed!
+                : widget.tvMetadata!.elapsed!));
+      }
       duration = _betterPlayerController
           .videoPlayerController!.value.duration!.inSeconds;
     });
@@ -672,6 +681,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       return;
     }
 
+    if (!mounted) return;
+
     setState(() {
       _isSwitchingProvider = true;
       _loadingProviders.add(providerCode);
@@ -684,6 +695,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     });
 
     try {
+      // Pause the player first to avoid conflicts
+      if (_betterPlayerController.isPlaying() == true) {
+        _betterPlayerController.pause();
+      }
+
       // Save current playback position
       final currentPosition =
           _betterPlayerController.videoPlayerController?.value.position ??
@@ -807,74 +823,61 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         _loadedProviders[providerCode] = providerSource;
       }
 
-      // Get the appropriate link based on quality setting
-      String keyToFind = widget.settings.defaultVideoResolution == 0
-          ? 'auto'
-          : widget.settings.defaultVideoResolution.toString();
-      String? link;
-
-      if (providerSource.videoSources.entries
-          .where((entry) => entry.key == keyToFind)
-          .isNotEmpty) {
-        link = providerSource.videoSources.entries
-            .where((entry) => entry.key == keyToFind)
-            .map((entry) => entry.value)
-            .first;
-      } else {
-        link = providerSource.videoSources.values.first;
+      // Ensure we have valid video sources
+      if (providerSource.videoSources.isEmpty) {
+        throw Exception('No video sources available');
       }
 
-      // Create new data source
-      BetterPlayerDataSource dataSource = BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        link,
-        resolutions: providerSource.videoSources,
-        subtitles: providerSource.subtitles,
-        cacheConfiguration: BetterPlayerCacheConfiguration(
-          useCache: true,
-          preCacheSize: 471859200 * 471859200,
-          maxCacheSize: 1073741824 * 1073741824,
-          maxCacheFileSize: 471859200 * 471859200,
-          key: generateCacheKey(),
+      // Save providerSource in a final variable to avoid null issues
+      final selectedProvider = providerSource;
+
+      // providerSource.videoSources is already reversed (done during caching)
+      // Just use it directly for the new player screen
+
+      // Close any open modal/bottom sheet before navigation
+      Navigator.of(context).pop();
+
+      // Use Navigator.pushReplacement to create a fresh player screen
+      // This completely avoids Better Player's internal state issues
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PlayerOne(
+            sources: selectedProvider.videoSources, // Already reversed
+            subs: selectedProvider.subtitles,
+            colors: widget.colors,
+            settings: widget.settings,
+            movieMetadata: widget.movieMetadata,
+            tvMetadata: widget.tvMetadata,
+            mediaType: widget.mediaType,
+            subtitleStyle: widget.subtitleStyle,
+            tvRoute: widget.tvRoute,
+            availableProviders: widget.availableProviders,
+            currentProviderCode: providerCode,
+            initialPlaybackPosition:
+                currentPosition, // Preserve playback position
+          ),
         ),
-        bufferingConfiguration: betterPlayerBufferingConfiguration,
       );
 
-      // Setup new data source
-      await _betterPlayerController.setupDataSource(dataSource);
-
-      // Seek to saved position
-      await _betterPlayerController.videoPlayerController
-          ?.seekTo(currentPosition);
-
-      // Play if it was playing before
-      if (_betterPlayerController.isPlaying() != true) {
-        _betterPlayerController.play();
-      }
-
-      // Update current provider code
-      setState(() {
-        _currentProviderCode = providerCode;
-      });
-
-      // Also update modal state if provided
-      setModalState?.call(() {
-        _currentProviderCode = providerCode;
-      });
-
-      // Show success message
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${tr('switched_to')} ${providerSource.providerName}',
-              style: const TextStyle(color: Colors.white),
+      // Show success message after a brief delay
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${tr('switched_to')} ${selectedProvider.providerName}',
+                style:
+                    const TextStyle(color: Colors.white, fontFamily: 'Figtree'),
+              ),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
             ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+          );
+        }
+      });
     } catch (e) {
       // Show error message
       if (mounted) {
@@ -882,7 +885,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           SnackBar(
             content: Text(
               '${tr('switch_provider_error')}: $e',
-              style: const TextStyle(color: Colors.white),
+              style:
+                  const TextStyle(color: Colors.white, fontFamily: 'Figtree'),
             ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
@@ -890,16 +894,19 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         );
       }
     } finally {
-      setState(() {
-        _isSwitchingProvider = false;
-        _loadingProviders.remove(providerCode);
-      });
+      // Check mounted before calling setState in finally block
+      if (mounted) {
+        setState(() {
+          _isSwitchingProvider = false;
+          _loadingProviders.remove(providerCode);
+        });
 
-      // Also update modal state if provided
-      setModalState?.call(() {
-        _isSwitchingProvider = false;
-        _loadingProviders.remove(providerCode);
-      });
+        // Also update modal state if provided
+        setModalState?.call(() {
+          _isSwitchingProvider = false;
+          _loadingProviders.remove(providerCode);
+        });
+      }
     }
   }
 
