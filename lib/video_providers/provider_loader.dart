@@ -32,6 +32,9 @@ class ProviderLoader {
     required String flixApiUrl,
     required String newFlixhqServer,
     required String streamingServerFlixHQ,
+    required String gokuServer,
+    required String sflixServer,
+    required String himoviesServer,
   }) async {
     try {
       switch (providerCode) {
@@ -65,6 +68,33 @@ class ProviderLoader {
             flixApiUrl: flixApiUrl,
           );
 
+        case 'goku':
+          return await _loadMovieGoku(
+            movieId: movieId,
+            movieName: movieName,
+            releaseYear: releaseYear,
+            consumetUrl: consumetUrl,
+            gokuServer: gokuServer,
+          );
+
+        case 'sflix':
+          return await _loadMovieSflix(
+            movieId: movieId,
+            movieName: movieName,
+            releaseYear: releaseYear,
+            consumetUrl: consumetUrl,
+            sflixServer: sflixServer,
+          );
+
+        case 'himovies':
+          return await _loadMovieHimovies(
+            movieId: movieId,
+            movieName: movieName,
+            releaseYear: releaseYear,
+            consumetUrl: consumetUrl,
+            himoviesServer: himoviesServer,
+          );
+
         default:
           return ProviderLoaderResult(
             success: false,
@@ -93,6 +123,9 @@ class ProviderLoader {
     required String newFlixhqServer,
     required String streamingServerFlixHQ,
     required String appLanguage,
+    required String gokuServer,
+    required String sflixServer,
+    required String himoviesServer,
   }) async {
     try {
       switch (providerCode) {
@@ -132,6 +165,39 @@ class ProviderLoader {
             seasonNumber: seasonNumber,
             episodeNumber: episodeNumber,
             flixApiUrl: flixApiUrl,
+          );
+
+        case 'goku':
+          return await _loadTVGoku(
+            tvId: tvId,
+            seriesName: seriesName,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            consumetUrl: consumetUrl,
+            gokuServer: gokuServer,
+            appLanguage: appLanguage,
+          );
+
+        case 'sflix':
+          return await _loadTVSflix(
+            tvId: tvId,
+            seriesName: seriesName,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            consumetUrl: consumetUrl,
+            sflixServer: sflixServer,
+            appLanguage: appLanguage,
+          );
+
+        case 'himovies':
+          return await _loadTVHimovies(
+            tvId: tvId,
+            seriesName: seriesName,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            consumetUrl: consumetUrl,
+            himoviesServer: himoviesServer,
+            appLanguage: appLanguage,
           );
 
         default:
@@ -548,6 +614,486 @@ class ProviderLoader {
                   show.id!,
                   consumetUrl,
                   streamingServerFlixHQ,
+                ),
+              );
+
+              if (sources.messageExists == null &&
+                  sources.videoLinks != null &&
+                  sources.videoLinks!.isNotEmpty) {
+                return ProviderLoaderResult(
+                  success: true,
+                  videoLinks: sources.videoLinks,
+                  subtitleLinks: sources.videoSubtitles,
+                );
+              }
+              break;
+            }
+          }
+        }
+        break;
+      }
+    }
+
+    if (!entryFound) {
+      throw NotFoundException();
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  // ==================== GOKU PROVIDER METHODS ====================
+
+  static Future<ProviderLoaderResult> _loadMovieGoku({
+    required int movieId,
+    required String movieName,
+    required String? releaseYear,
+    required String consumetUrl,
+    required String gokuServer,
+  }) async {
+    final movies = await fetchMoviesForStreamGoku(
+      Endpoints.searchMovieTVForStreamGoku(
+        normalizeTitle(movieName).toLowerCase(),
+        consumetUrl,
+      ),
+    );
+
+    if (movies.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No results found',
+      );
+    }
+
+    bool entryFound = false;
+    for (final movie in movies) {
+      if (movie.releaseDate == releaseYear.toString() &&
+          movie.type == 'Movie' &&
+          (normalizeTitle(movie.title!)
+                  .toLowerCase()
+                  .contains(normalizeTitle(movieName).toLowerCase()) ||
+              movie.title!.contains(movieName))) {
+        entryFound = true;
+
+        final episodes = await getMovieStreamEpisodesGoku(
+          Endpoints.getMovieTVStreamInfoGoku(movie.id!, consumetUrl),
+        );
+
+        if (episodes.isNotEmpty) {
+          final sources = await getMovieStreamLinksAndSubsGoku(
+            Endpoints.getMovieTVStreamLinksGoku(
+              episodes[0].id!,
+              movie.id!,
+              consumetUrl,
+              gokuServer,
+            ),
+          );
+
+          if (sources.messageExists == null &&
+              sources.videoLinks != null &&
+              sources.videoLinks!.isNotEmpty) {
+            return ProviderLoaderResult(
+              success: true,
+              videoLinks: sources.videoLinks,
+              subtitleLinks: sources.videoSubtitles,
+            );
+          }
+        }
+        break;
+      }
+    }
+
+    if (!entryFound) {
+      throw NotFoundException();
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  static Future<ProviderLoaderResult> _loadTVGoku({
+    required int tvId,
+    required String seriesName,
+    required int seasonNumber,
+    required int episodeNumber,
+    required String consumetUrl,
+    required String gokuServer,
+    required String appLanguage,
+  }) async {
+    final isProxyEnabled = false;
+    final proxyUrl = '';
+
+    final tvDetails = await fetchTVDetails(
+      Endpoints.tvDetailsUrl(tvId, appLanguage),
+      isProxyEnabled,
+      proxyUrl,
+    );
+
+    final totalSeasons = tvDetails.numberOfSeasons!;
+
+    final shows = await fetchTVForStreamGoku(
+      Endpoints.searchMovieTVForStreamGoku(
+        normalizeTitle(seriesName).toLowerCase(),
+        consumetUrl,
+      ),
+    );
+
+    if (shows.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No results found',
+      );
+    }
+
+    bool entryFound = false;
+    for (final show in shows) {
+      if ((show.seasons == totalSeasons ||
+              show.seasons == (totalSeasons - 1)) &&
+          show.type == 'TV Series' &&
+          (normalizeTitle(show.title!)
+                  .toLowerCase()
+                  .contains(normalizeTitle(seriesName).toLowerCase()) ||
+              show.title!.contains(seriesName))) {
+        entryFound = true;
+
+        final tvInfo = await getTVStreamEpisodesGoku(
+          Endpoints.getMovieTVStreamInfoGoku(show.id!, consumetUrl),
+        );
+
+        if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
+          for (final episode in tvInfo.episodes!) {
+            if (episode.episode == episodeNumber &&
+                episode.season == seasonNumber) {
+              final sources = await getTVStreamLinksAndSubsGoku(
+                Endpoints.getMovieTVStreamLinksGoku(
+                  episode.id!,
+                  show.id!,
+                  consumetUrl,
+                  gokuServer,
+                ),
+              );
+
+              if (sources.messageExists == null &&
+                  sources.videoLinks != null &&
+                  sources.videoLinks!.isNotEmpty) {
+                return ProviderLoaderResult(
+                  success: true,
+                  videoLinks: sources.videoLinks,
+                  subtitleLinks: sources.videoSubtitles,
+                );
+              }
+              break;
+            }
+          }
+        }
+        break;
+      }
+    }
+
+    if (!entryFound) {
+      throw NotFoundException();
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  // ==================== SFLIX PROVIDER METHODS ====================
+
+  static Future<ProviderLoaderResult> _loadMovieSflix({
+    required int movieId,
+    required String movieName,
+    required String? releaseYear,
+    required String consumetUrl,
+    required String sflixServer,
+  }) async {
+    final movies = await fetchMoviesForStreamSflix(
+      Endpoints.searchMovieTVForStreamSflix(
+        normalizeTitle(movieName).toLowerCase(),
+        consumetUrl,
+      ),
+    );
+
+    if (movies.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No results found',
+      );
+    }
+
+    bool entryFound = false;
+    for (final movie in movies) {
+      if (movie.releaseDate == releaseYear.toString() &&
+          movie.type == 'Movie' &&
+          (normalizeTitle(movie.title!)
+                  .toLowerCase()
+                  .contains(normalizeTitle(movieName).toLowerCase()) ||
+              movie.title!.contains(movieName))) {
+        entryFound = true;
+
+        final episodes = await getMovieStreamEpisodesSflix(
+          Endpoints.getMovieTVStreamInfoSflix(movie.id!, consumetUrl),
+        );
+
+        if (episodes.isNotEmpty) {
+          final sources = await getMovieStreamLinksAndSubsSflix(
+            Endpoints.getMovieTVStreamLinksSflix(
+              episodes[0].id!,
+              movie.id!,
+              consumetUrl,
+              sflixServer,
+            ),
+          );
+
+          if (sources.messageExists == null &&
+              sources.videoLinks != null &&
+              sources.videoLinks!.isNotEmpty) {
+            return ProviderLoaderResult(
+              success: true,
+              videoLinks: sources.videoLinks,
+              subtitleLinks: sources.videoSubtitles,
+            );
+          }
+        }
+        break;
+      }
+    }
+
+    if (!entryFound) {
+      throw NotFoundException();
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  static Future<ProviderLoaderResult> _loadTVSflix({
+    required int tvId,
+    required String seriesName,
+    required int seasonNumber,
+    required int episodeNumber,
+    required String consumetUrl,
+    required String sflixServer,
+    required String appLanguage,
+  }) async {
+    final isProxyEnabled = false;
+    final proxyUrl = '';
+
+    final tvDetails = await fetchTVDetails(
+      Endpoints.tvDetailsUrl(tvId, appLanguage),
+      isProxyEnabled,
+      proxyUrl,
+    );
+
+    final totalSeasons = tvDetails.numberOfSeasons!;
+
+    final shows = await fetchTVForStreamSflix(
+      Endpoints.searchMovieTVForStreamSflix(
+        normalizeTitle(seriesName).toLowerCase(),
+        consumetUrl,
+      ),
+    );
+
+    if (shows.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No results found',
+      );
+    }
+
+    bool entryFound = false;
+    for (final show in shows) {
+      if ((show.seasons == totalSeasons ||
+              show.seasons == (totalSeasons - 1)) &&
+          show.type == 'TV Series' &&
+          (normalizeTitle(show.title!)
+                  .toLowerCase()
+                  .contains(normalizeTitle(seriesName).toLowerCase()) ||
+              show.title!.contains(seriesName))) {
+        entryFound = true;
+
+        final tvInfo = await getTVStreamEpisodesSflix(
+          Endpoints.getMovieTVStreamInfoSflix(show.id!, consumetUrl),
+        );
+
+        if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
+          for (final episode in tvInfo.episodes!) {
+            if (episode.episode == episodeNumber &&
+                episode.season == seasonNumber) {
+              final sources = await getTVStreamLinksAndSubsSflix(
+                Endpoints.getMovieTVStreamLinksSflix(
+                  episode.id!,
+                  show.id!,
+                  consumetUrl,
+                  sflixServer,
+                ),
+              );
+
+              if (sources.messageExists == null &&
+                  sources.videoLinks != null &&
+                  sources.videoLinks!.isNotEmpty) {
+                return ProviderLoaderResult(
+                  success: true,
+                  videoLinks: sources.videoLinks,
+                  subtitleLinks: sources.videoSubtitles,
+                );
+              }
+              break;
+            }
+          }
+        }
+        break;
+      }
+    }
+
+    if (!entryFound) {
+      throw NotFoundException();
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  // ==================== HIMOVIES PROVIDER METHODS ====================
+
+  static Future<ProviderLoaderResult> _loadMovieHimovies({
+    required int movieId,
+    required String movieName,
+    required String? releaseYear,
+    required String consumetUrl,
+    required String himoviesServer,
+  }) async {
+    final movies = await fetchMoviesForStreamHimovies(
+      Endpoints.searchMovieTVForStreamHimovies(
+        normalizeTitle(movieName).toLowerCase(),
+        consumetUrl,
+      ),
+    );
+
+    if (movies.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No results found',
+      );
+    }
+
+    bool entryFound = false;
+    for (final movie in movies) {
+      if (movie.releaseDate == releaseYear.toString() &&
+          movie.type == 'Movie' &&
+          (normalizeTitle(movie.title!)
+                  .toLowerCase()
+                  .contains(normalizeTitle(movieName).toLowerCase()) ||
+              movie.title!.contains(movieName))) {
+        entryFound = true;
+
+        final episodes = await getMovieStreamEpisodesHimovies(
+          Endpoints.getMovieTVStreamInfoHimovies(movie.id!, consumetUrl),
+        );
+
+        if (episodes.isNotEmpty) {
+          final sources = await getMovieStreamLinksAndSubsHimovies(
+            Endpoints.getMovieTVStreamLinksHimovies(
+              episodes[0].id!,
+              movie.id!,
+              consumetUrl,
+              himoviesServer,
+            ),
+          );
+
+          if (sources.messageExists == null &&
+              sources.videoLinks != null &&
+              sources.videoLinks!.isNotEmpty) {
+            return ProviderLoaderResult(
+              success: true,
+              videoLinks: sources.videoLinks,
+              subtitleLinks: sources.videoSubtitles,
+            );
+          }
+        }
+        break;
+      }
+    }
+
+    if (!entryFound) {
+      throw NotFoundException();
+    }
+
+    return ProviderLoaderResult(
+      success: false,
+      errorMessage: 'No video sources found',
+    );
+  }
+
+  static Future<ProviderLoaderResult> _loadTVHimovies({
+    required int tvId,
+    required String seriesName,
+    required int seasonNumber,
+    required int episodeNumber,
+    required String consumetUrl,
+    required String himoviesServer,
+    required String appLanguage,
+  }) async {
+    final isProxyEnabled = false;
+    final proxyUrl = '';
+
+    final tvDetails = await fetchTVDetails(
+      Endpoints.tvDetailsUrl(tvId, appLanguage),
+      isProxyEnabled,
+      proxyUrl,
+    );
+
+    final totalSeasons = tvDetails.numberOfSeasons!;
+
+    final shows = await fetchTVForStreamHimovies(
+      Endpoints.searchMovieTVForStreamHimovies(
+        normalizeTitle(seriesName).toLowerCase(),
+        consumetUrl,
+      ),
+    );
+
+    if (shows.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No results found',
+      );
+    }
+
+    bool entryFound = false;
+    for (final show in shows) {
+      if ((show.seasons == totalSeasons ||
+              show.seasons == (totalSeasons - 1)) &&
+          show.type == 'TV Series' &&
+          (normalizeTitle(show.title!)
+                  .toLowerCase()
+                  .contains(normalizeTitle(seriesName).toLowerCase()) ||
+              show.title!.contains(seriesName))) {
+        entryFound = true;
+
+        final tvInfo = await getTVStreamEpisodesHimovies(
+          Endpoints.getMovieTVStreamInfoHimovies(show.id!, consumetUrl),
+        );
+
+        if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
+          for (final episode in tvInfo.episodes!) {
+            if (episode.episode == episodeNumber &&
+                episode.season == seasonNumber) {
+              final sources = await getTVStreamLinksAndSubsHimovies(
+                Endpoints.getMovieTVStreamLinksHimovies(
+                  episode.id!,
+                  show.id!,
+                  consumetUrl,
+                  himoviesServer,
                 ),
               );
 

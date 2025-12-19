@@ -62,6 +62,15 @@ class AppDependencyProvider extends ChangeNotifier {
   String _vidSrcServer = 'vidsrcembed';
   String get vidSrcServer => _vidSrcServer;
 
+  String _gokuServer = 'upcloud';
+  String get gokuServer => _gokuServer;
+
+  String _sflixServer = 'upcloud';
+  String get sflixServer => _sflixServer;
+
+  String _himoviesServer = 'upcloud';
+  String get himoviesServer => _himoviesServer;
+
   String _tmdbProxy = '';
   String get tmdbProxy => _tmdbProxy;
 
@@ -200,6 +209,21 @@ class AppDependencyProvider extends ChangeNotifier {
 
   set vidSrcToServer(String value) {
     _vidSrcToServer = value;
+    notifyListeners();
+  }
+
+  set gokuServer(String value) {
+    _gokuServer = value;
+    notifyListeners();
+  }
+
+  set sflixServer(String value) {
+    _sflixServer = value;
+    notifyListeners();
+  }
+
+  set himoviesServer(String value) {
+    _himoviesServer = value;
     notifyListeners();
   }
 

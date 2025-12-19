@@ -95,6 +95,11 @@ class _FlixQuestState extends State<FlixQuest>
       appDependencyProvider.newFlixhqServer =
           _remoteConfig.getString('new_flixhq_server');
       appDependencyProvider.flixApiUrl = _remoteConfig.getString('flixapi_url');
+      appDependencyProvider.gokuServer = _remoteConfig.getString('goku_server');
+      appDependencyProvider.sflixServer =
+          _remoteConfig.getString('sflix_server');
+      appDependencyProvider.himoviesServer =
+          _remoteConfig.getString('himovies_server');
     }
     await requestNotificationPermissions();
   }
@@ -240,6 +245,9 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
       appDep.vidSrcServer = remoteConfig.getString('vidsrc_server');
       appDep.vidSrcToServer = remoteConfig.getString('vidsrcto_server');
       appDep.tmdbProxy = remoteConfig.getString('tmdb_proxy');
+      appDep.gokuServer = remoteConfig.getString('goku_server');
+      appDep.sflixServer = remoteConfig.getString('sflix_server');
+      appDep.himoviesServer = remoteConfig.getString('himovies_server');
     }
   }
 

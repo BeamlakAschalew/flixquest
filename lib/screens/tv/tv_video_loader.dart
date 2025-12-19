@@ -139,6 +139,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             newFlixhqServer: appDep.newFlixhqServer,
             streamingServerFlixHQ: appDep.streamingServerFlixHQ,
             appLanguage: settings.appLanguage,
+            gokuServer: appDep.gokuServer,
+            sflixServer: appDep.sflixServer,
+            himoviesServer: appDep.himoviesServer,
           );
 
           if (result.success &&

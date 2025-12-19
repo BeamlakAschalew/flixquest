@@ -183,7 +183,7 @@ class SettingsPreferences {
     return sharedPrefsSingleton.getInt(APP_COLOR_INDEX) ?? -1;
   }
 
-  static const PROVIDER_PRECEDENCE = 'providerPrecedence-v10';
+  static const PROVIDER_PRECEDENCE = 'providerPrecedence-v11';
 
   setProviderPrecedence(String pre) async {
     sharedPrefsSingleton.setString(PROVIDER_PRECEDENCE, pre);

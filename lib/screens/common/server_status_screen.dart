@@ -45,18 +45,33 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
         final result = await getMovieStreamLinksAndSubsFlixHQ(
             '${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServerFlixHQ}');
         videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'pstream') {
+      } else if (provider.codeName == 'myflixerz') {
         final result = await getMovieStreamLinksAndSubsFlixHQNew(
             '${appDependency.newFlixHQUrl}movie/884605');
         videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'myflixerz') {
+      } else if (provider.codeName == 'pstream') {
+        print('${appDependency.flixApiUrl}pstream/stream-movie?tmdbId=884605');
         final result = await getMovieTVStreamLinksAndSubsFlixAPI(
-            '${appDependency.flixApiUrl}/stream-movie?tmdbId=884605');
+            '${appDependency.flixApiUrl}pstream/stream-movie?tmdbId=884605');
+        print(result.success);
         videoLinks = [
           RegularVideoLinks(
               url: result.stream!.playlist,
               isM3U8: result.stream!.playlist!.endsWith('.m3u8'))
         ];
+        print(videoLinks);
+      } else if (provider.codeName == 'goku') {
+        final result = await getMovieStreamLinksAndSubsGoku(
+            '${appDependency.consumetUrl}movies/goku/watch?episodeId=1353085&mediaId=watch-movie/watch-no-hard-feelings-97708&server=${appDependency.gokuServer}');
+        videoLinks = result.videoLinks;
+      } else if (provider.codeName == 'sflix') {
+        final result = await getMovieStreamLinksAndSubsSflix(
+            '${appDependency.consumetUrl}movies/sflix/watch?episodeId=97708&mediaId=movie/free-no-hard-feelings-hd-97708&server=${appDependency.sflixServer}');
+        videoLinks = result.videoLinks;
+      } else if (provider.codeName == 'himovies') {
+        final result = await getMovieStreamLinksAndSubsHimovies(
+            '${appDependency.consumetUrl}movies/himovies/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.himoviesServer}');
+        videoLinks = result.videoLinks;
       }
     } catch (e) {
       // Error handling - server is down

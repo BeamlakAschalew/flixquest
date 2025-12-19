@@ -6,6 +6,9 @@ import 'package:flixquest/video_providers/common.dart';
 import 'package:flixquest/video_providers/flix_api.dart';
 import 'package:flixquest/video_providers/flixhq.dart';
 import 'package:flixquest/video_providers/flixhq_new.dart';
+import 'package:flixquest/video_providers/goku.dart';
+import 'package:flixquest/video_providers/sflix.dart';
+import 'package:flixquest/video_providers/himovies.dart';
 import 'package:retry/retry.dart';
 import '../models/external_subtitles.dart';
 import '../constants/app_constants.dart';
@@ -579,6 +582,487 @@ Future<FlixHQStreamSources> getTVStreamLinksAndSubsFlixHQ(String api) async {
       throw ServerDownException();
     }
     tvVideoSources = FlixHQStreamSources.fromJson(decodeRes);
+
+    if (tvVideoSources.videoLinks == null ||
+        tvVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return tvVideoSources;
+}
+
+// ==================== GOKU PROVIDER FUNCTIONS ====================
+
+Future<List<GokuSearchEntry>> fetchMoviesForStreamGoku(String api) async {
+  GokuSearch movieStream;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    movieStream = GokuSearch.fromJson(decodeRes);
+
+    if (movieStream.results == null || movieStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return movieStream.results ?? [];
+}
+
+Future<List<GokuSearchEntry>> fetchTVForStreamGoku(String api) async {
+  GokuSearch tvStream;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    tvStream = GokuSearch.fromJson(decodeRes);
+
+    if (tvStream.results == null || tvStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return tvStream.results ?? [];
+}
+
+Future<List<GokuInfoEntries>> getMovieStreamEpisodesGoku(String api) async {
+  GokuInfo movieInfo;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    movieInfo = GokuInfo.fromJson(decodeRes);
+
+    if (movieInfo.episodes == null || movieInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return movieInfo.episodes ?? [];
+}
+
+Future<GokuInfo> getTVStreamEpisodesGoku(String api) async {
+  GokuInfo tvInfo;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    tvInfo = GokuInfo.fromJson(decodeRes);
+
+    if (tvInfo.episodes == null || tvInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return tvInfo;
+}
+
+Future<GokuStreamSources> getMovieStreamLinksAndSubsGoku(String api) async {
+  GokuStreamSources movieVideoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    movieVideoSources = GokuStreamSources.fromJson(decodeRes);
+
+    if (movieVideoSources.videoLinks == null ||
+        movieVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return movieVideoSources;
+}
+
+Future<GokuStreamSources> getTVStreamLinksAndSubsGoku(String api) async {
+  GokuStreamSources tvVideoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    tvVideoSources = GokuStreamSources.fromJson(decodeRes);
+
+    if (tvVideoSources.videoLinks == null ||
+        tvVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return tvVideoSources;
+}
+
+// ==================== SFLIX PROVIDER FUNCTIONS ====================
+
+Future<List<SflixSearchEntry>> fetchMoviesForStreamSflix(String api) async {
+  SflixSearch movieStream;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    movieStream = SflixSearch.fromJson(decodeRes);
+
+    if (movieStream.results == null || movieStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return movieStream.results ?? [];
+}
+
+Future<List<SflixSearchEntry>> fetchTVForStreamSflix(String api) async {
+  SflixSearch tvStream;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    tvStream = SflixSearch.fromJson(decodeRes);
+
+    if (tvStream.results == null || tvStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return tvStream.results ?? [];
+}
+
+Future<List<SflixInfoEntries>> getMovieStreamEpisodesSflix(String api) async {
+  SflixInfo movieInfo;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    movieInfo = SflixInfo.fromJson(decodeRes);
+
+    if (movieInfo.episodes == null || movieInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return movieInfo.episodes ?? [];
+}
+
+Future<SflixInfo> getTVStreamEpisodesSflix(String api) async {
+  SflixInfo tvInfo;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    tvInfo = SflixInfo.fromJson(decodeRes);
+
+    if (tvInfo.episodes == null || tvInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return tvInfo;
+}
+
+Future<SflixStreamSources> getMovieStreamLinksAndSubsSflix(String api) async {
+  SflixStreamSources movieVideoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    movieVideoSources = SflixStreamSources.fromJson(decodeRes);
+
+    if (movieVideoSources.videoLinks == null ||
+        movieVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return movieVideoSources;
+}
+
+Future<SflixStreamSources> getTVStreamLinksAndSubsSflix(String api) async {
+  SflixStreamSources tvVideoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    tvVideoSources = SflixStreamSources.fromJson(decodeRes);
+
+    if (tvVideoSources.videoLinks == null ||
+        tvVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return tvVideoSources;
+}
+
+// ==================== HIMOVIES PROVIDER FUNCTIONS ====================
+
+Future<List<HimoviesSearchEntry>> fetchMoviesForStreamHimovies(
+    String api) async {
+  HimoviesSearch movieStream;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    movieStream = HimoviesSearch.fromJson(decodeRes);
+
+    if (movieStream.results == null || movieStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return movieStream.results ?? [];
+}
+
+Future<List<HimoviesSearchEntry>> fetchTVForStreamHimovies(String api) async {
+  HimoviesSearch tvStream;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    tvStream = HimoviesSearch.fromJson(decodeRes);
+
+    if (tvStream.results == null || tvStream.results!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+  return tvStream.results ?? [];
+}
+
+Future<List<HimoviesInfoEntries>> getMovieStreamEpisodesHimovies(
+    String api) async {
+  HimoviesInfo movieInfo;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    movieInfo = HimoviesInfo.fromJson(decodeRes);
+
+    if (movieInfo.episodes == null || movieInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return movieInfo.episodes ?? [];
+}
+
+Future<HimoviesInfo> getTVStreamEpisodesHimovies(String api) async {
+  HimoviesInfo tvInfo;
+  try {
+    var res = await retryOptionsStream.retry(
+      (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    var decodeRes = jsonDecode(res.body);
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw NotFoundException();
+    }
+    tvInfo = HimoviesInfo.fromJson(decodeRes);
+
+    if (tvInfo.episodes == null || tvInfo.episodes!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return tvInfo;
+}
+
+Future<HimoviesStreamSources> getMovieStreamLinksAndSubsHimovies(
+    String api) async {
+  HimoviesStreamSources movieVideoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    movieVideoSources = HimoviesStreamSources.fromJson(decodeRes);
+
+    if (movieVideoSources.videoLinks == null ||
+        movieVideoSources.videoLinks!.isEmpty) {
+      throw NotFoundException();
+    }
+  } catch (e) {
+    rethrow;
+  }
+
+  return movieVideoSources;
+}
+
+Future<HimoviesStreamSources> getTVStreamLinksAndSubsHimovies(
+    String api) async {
+  HimoviesStreamSources tvVideoSources;
+  int tries = 3;
+  dynamic decodeRes;
+  try {
+    dynamic res;
+    while (tries > 0) {
+      res = await retryOptionsStream.retry(
+        (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
+        retryIf: (e) => e is SocketException || e is TimeoutException,
+      );
+      decodeRes = jsonDecode(res.body);
+      if (decodeRes.containsKey('message')) {
+        --tries;
+      } else {
+        break;
+      }
+    }
+    if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      throw ServerDownException();
+    }
+    tvVideoSources = HimoviesStreamSources.fromJson(decodeRes);
 
     if (tvVideoSources.videoLinks == null ||
         tvVideoSources.videoLinks!.isEmpty) {

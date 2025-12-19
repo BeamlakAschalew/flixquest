@@ -319,6 +319,54 @@ class Endpoints {
         'movies/flixhq/watch?episodeId=$episodeId&mediaId=$mediaId&server=$server';
   }
 
+  /// Goku provider endpoints
+  static String searchMovieTVForStreamGoku(String titleName, String baseUrl) {
+    return '$baseUrl' 'movies/goku/$titleName';
+  }
+
+  static String getMovieTVStreamInfoGoku(String titleStreamId, String baseUrl) {
+    return '$baseUrl' 'movies/goku/info?id=$titleStreamId';
+  }
+
+  static String getMovieTVStreamLinksGoku(
+      String episodeId, String mediaId, String baseUrl, String server) {
+    return '$baseUrl'
+        'movies/goku/watch?episodeId=$episodeId&mediaId=$mediaId&server=$server';
+  }
+
+  /// Sflix provider endpoints
+  static String searchMovieTVForStreamSflix(String titleName, String baseUrl) {
+    return '$baseUrl' 'movies/sflix/$titleName';
+  }
+
+  static String getMovieTVStreamInfoSflix(
+      String titleStreamId, String baseUrl) {
+    return '$baseUrl' 'movies/sflix/info?id=$titleStreamId';
+  }
+
+  static String getMovieTVStreamLinksSflix(
+      String episodeId, String mediaId, String baseUrl, String server) {
+    return '$baseUrl'
+        'movies/sflix/watch?episodeId=$episodeId&mediaId=$mediaId&server=$server';
+  }
+
+  /// Himovies provider endpoints
+  static String searchMovieTVForStreamHimovies(
+      String titleName, String baseUrl) {
+    return '$baseUrl' 'movies/himovies/$titleName';
+  }
+
+  static String getMovieTVStreamInfoHimovies(
+      String titleStreamId, String baseUrl) {
+    return '$baseUrl' 'movies/himovies/info?id=$titleStreamId';
+  }
+
+  static String getMovieTVStreamLinksHimovies(
+      String episodeId, String mediaId, String baseUrl, String server) {
+    return '$baseUrl'
+        'movies/himovies/watch?episodeId=$episodeId&mediaId=$mediaId&server=$server';
+  }
+
   /// Movie/TV TMDB route endpoints
 
   static String getMovieTVStreamInfoTMDB(

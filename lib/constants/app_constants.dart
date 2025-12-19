@@ -95,7 +95,8 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-const providerPreference = 'myflixerz-MyFlixerz pstream-PStream flixhq-FlixHQ ';
+const providerPreference =
+    'myflixerz-MyFlixerz pstream-PStream flixhq-FlixHQ goku-Goku sflix-Sflix himovies-Himovies ';
 
 late SharedPreferences sharedPrefsSingleton;
 
