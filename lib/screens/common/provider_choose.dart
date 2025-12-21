@@ -13,10 +13,15 @@ class ProviderChooseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(tr('choose_provider_order')),
+        title: Text(
+          tr('choose_provider_order'),
+          style: const TextStyle(
+            fontFamily: 'FigtreeSB',
+          ),
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -24,29 +29,45 @@ class ProviderChooseScreen extends StatelessWidget {
             children: [
               const RearrangeableListView(),
               const SizedBox(
-                height: 50,
+                height: 24,
               ),
               Container(
-                height: 300,
+                padding: const EdgeInsets.all(24.0),
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(10)),
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
                 width: double.infinity,
-                child: Stack(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            tr('provider_precedence_help'),
-                            style: const TextStyle(fontSize: 15),
-                            textAlign: TextAlign.center,
-                          ),
-                        ]),
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 48,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      tr('provider_precedence_help'),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'Figtree',
+                        height: 1.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -100,17 +121,55 @@ class RearrangeableListViewState extends State<RearrangeableListView> {
         onReorderEnd: (index) {},
         children: [
           for (int index = 0; index < videoProviders.length; index++)
-            Column(
-              key: Key('${videoProviders[index].codeName}_column'),
-              children: [
-                ListTile(
-                  key: Key(videoProviders[index].codeName),
-                  title:
-                      Text('${index + 1}) ${videoProviders[index].fullName}'),
+            Container(
+              key: Key(videoProviders[index].codeName),
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
                 ),
-                if (index < videoProviders.length - 1)
-                  const Divider(thickness: 3),
-              ],
+                leading: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        fontFamily: 'FigtreeSB',
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ),
+                title: Text(
+                  videoProviders[index].fullName,
+                  style: const TextStyle(
+                    fontFamily: 'FigtreeSB',
+                    fontSize: 16,
+                  ),
+                ),
+                trailing: Icon(
+                  Icons.drag_handle_rounded,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
         ]);
   }
