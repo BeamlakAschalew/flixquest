@@ -601,12 +601,16 @@ Future<FlixHQStreamSources> getTVStreamLinksAndSubsFlixHQ(String api) async {
 Future<List<GokuSearchEntry>> fetchMoviesForStreamGoku(String api) async {
   GokuSearch movieStream;
   try {
+    print('[GOKU] Fetching movies - URL: $api');
     var res = await retryOptionsStream.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
+    print('[GOKU] Movies response - Status: ${res.statusCode}');
+    print('[GOKU] Movies response body: ${res.body}');
     var decodeRes = jsonDecode(res.body);
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print('[GOKU] Movies request failed - Message: ${decodeRes['message']}');
       throw NotFoundException();
     }
     movieStream = GokuSearch.fromJson(decodeRes);
@@ -623,12 +627,17 @@ Future<List<GokuSearchEntry>> fetchMoviesForStreamGoku(String api) async {
 Future<List<GokuSearchEntry>> fetchTVForStreamGoku(String api) async {
   GokuSearch tvStream;
   try {
+    print('[GOKU TV] Fetching TV shows - URL: $api');
     var res = await retryOptionsStream.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
+    print('[GOKU TV] TV shows response - Status: ${res.statusCode}');
+    print('[GOKU TV] TV shows response body: ${res.body}');
     var decodeRes = jsonDecode(res.body);
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print(
+          '[GOKU TV] TV shows request failed - Message: ${decodeRes['message']}');
       throw NotFoundException();
     }
     tvStream = GokuSearch.fromJson(decodeRes);
@@ -645,12 +654,17 @@ Future<List<GokuSearchEntry>> fetchTVForStreamGoku(String api) async {
 Future<List<GokuInfoEntries>> getMovieStreamEpisodesGoku(String api) async {
   GokuInfo movieInfo;
   try {
+    print('[GOKU] Fetching movie episodes - URL: $api');
     var res = await retryOptionsStream.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
+    print('[GOKU] Movie episodes response - Status: ${res.statusCode}');
+    print('[GOKU] Movie episodes response body: ${res.body}');
     var decodeRes = jsonDecode(res.body);
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print(
+          '[GOKU] Movie episodes request failed - Message: ${decodeRes['message']}');
       throw NotFoundException();
     }
     movieInfo = GokuInfo.fromJson(decodeRes);
@@ -668,12 +682,17 @@ Future<List<GokuInfoEntries>> getMovieStreamEpisodesGoku(String api) async {
 Future<GokuInfo> getTVStreamEpisodesGoku(String api) async {
   GokuInfo tvInfo;
   try {
+    print('[GOKU TV] Fetching TV episodes - URL: $api');
     var res = await retryOptionsStream.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
+    print('[GOKU TV] TV episodes response - Status: ${res.statusCode}');
+    print('[GOKU TV] TV episodes response body: ${res.body}');
     var decodeRes = jsonDecode(res.body);
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print(
+          '[GOKU TV] TV episodes request failed - Message: ${decodeRes['message']}');
       throw NotFoundException();
     }
     tvInfo = GokuInfo.fromJson(decodeRes);
@@ -693,20 +712,27 @@ Future<GokuStreamSources> getMovieStreamLinksAndSubsGoku(String api) async {
   int tries = 3;
   dynamic decodeRes;
   try {
+    print('[GOKU] Fetching movie stream links - URL: $api');
     dynamic res;
     while (tries > 0) {
+      print(
+          '[GOKU] Attempting to get movie stream links - Tries remaining: $tries');
       res = await retryOptionsStream.retry(
         (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
+      print('[GOKU] Movie stream response - Status: ${res.statusCode}');
+      print('[GOKU] Movie stream response body: ${res.body}');
       decodeRes = jsonDecode(res.body);
       if (decodeRes.containsKey('message')) {
+        print('[GOKU] Movie stream has message field, retrying...');
         --tries;
       } else {
         break;
       }
     }
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print('[GOKU] Movie stream request failed after all retries');
       throw ServerDownException();
     }
     movieVideoSources = GokuStreamSources.fromJson(decodeRes);
@@ -727,20 +753,27 @@ Future<GokuStreamSources> getTVStreamLinksAndSubsGoku(String api) async {
   int tries = 3;
   dynamic decodeRes;
   try {
+    print('[GOKU TV] Fetching TV stream links - URL: $api');
     dynamic res;
     while (tries > 0) {
+      print(
+          '[GOKU TV] Attempting to get TV stream links - Tries remaining: $tries');
       res = await retryOptionsStream.retry(
         (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
+      print('[GOKU TV] TV stream response - Status: ${res.statusCode}');
+      print('[GOKU TV] TV stream response body: ${res.body}');
       decodeRes = jsonDecode(res.body);
       if (decodeRes.containsKey('message')) {
+        print('[GOKU TV] TV stream has message field, retrying...');
         --tries;
       } else {
         break;
       }
     }
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print('[GOKU TV] TV stream request failed after all retries');
       throw ServerDownException();
     }
     tvVideoSources = GokuStreamSources.fromJson(decodeRes);
@@ -760,12 +793,16 @@ Future<GokuStreamSources> getTVStreamLinksAndSubsGoku(String api) async {
 Future<List<SflixSearchEntry>> fetchMoviesForStreamSflix(String api) async {
   SflixSearch movieStream;
   try {
+    print('[SFLIX] Fetching movies - URL: $api');
     var res = await retryOptionsStream.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
+    print('[SFLIX] Movies response - Status: ${res.statusCode}');
+    print('[SFLIX] Movies response body: ${res.body}');
     var decodeRes = jsonDecode(res.body);
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print('[SFLIX] Movies request failed - Message: ${decodeRes['message']}');
       throw NotFoundException();
     }
     movieStream = SflixSearch.fromJson(decodeRes);
@@ -782,12 +819,17 @@ Future<List<SflixSearchEntry>> fetchMoviesForStreamSflix(String api) async {
 Future<List<SflixSearchEntry>> fetchTVForStreamSflix(String api) async {
   SflixSearch tvStream;
   try {
+    print('[SFLIX TV] Fetching TV shows - URL: $api');
     var res = await retryOptionsStream.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
+    print('[SFLIX TV] TV shows response - Status: ${res.statusCode}');
+    print('[SFLIX TV] TV shows response body: ${res.body}');
     var decodeRes = jsonDecode(res.body);
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print(
+          '[SFLIX TV] TV shows request failed - Message: ${decodeRes['message']}');
       throw NotFoundException();
     }
     tvStream = SflixSearch.fromJson(decodeRes);
@@ -804,12 +846,17 @@ Future<List<SflixSearchEntry>> fetchTVForStreamSflix(String api) async {
 Future<List<SflixInfoEntries>> getMovieStreamEpisodesSflix(String api) async {
   SflixInfo movieInfo;
   try {
+    print('[SFLIX] Fetching movie episodes - URL: $api');
     var res = await retryOptionsStream.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
+    print('[SFLIX] Movie episodes response - Status: ${res.statusCode}');
+    print('[SFLIX] Movie episodes response body: ${res.body}');
     var decodeRes = jsonDecode(res.body);
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print(
+          '[SFLIX] Movie episodes request failed - Message: ${decodeRes['message']}');
       throw NotFoundException();
     }
     movieInfo = SflixInfo.fromJson(decodeRes);
@@ -827,12 +874,17 @@ Future<List<SflixInfoEntries>> getMovieStreamEpisodesSflix(String api) async {
 Future<SflixInfo> getTVStreamEpisodesSflix(String api) async {
   SflixInfo tvInfo;
   try {
+    print('[SFLIX TV] Fetching TV episodes - URL: $api');
     var res = await retryOptionsStream.retry(
       (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
       retryIf: (e) => e is SocketException || e is TimeoutException,
     );
+    print('[SFLIX TV] TV episodes response - Status: ${res.statusCode}');
+    print('[SFLIX TV] TV episodes response body: ${res.body}');
     var decodeRes = jsonDecode(res.body);
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print(
+          '[SFLIX TV] TV episodes request failed - Message: ${decodeRes['message']}');
       throw NotFoundException();
     }
     tvInfo = SflixInfo.fromJson(decodeRes);
@@ -852,20 +904,27 @@ Future<SflixStreamSources> getMovieStreamLinksAndSubsSflix(String api) async {
   int tries = 3;
   dynamic decodeRes;
   try {
+    print('[SFLIX] Fetching movie stream links - URL: $api');
     dynamic res;
     while (tries > 0) {
+      print(
+          '[SFLIX] Attempting to get movie stream links - Tries remaining: $tries');
       res = await retryOptionsStream.retry(
         (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
+      print('[SFLIX] Movie stream response - Status: ${res.statusCode}');
+      print('[SFLIX] Movie stream response body: ${res.body}');
       decodeRes = jsonDecode(res.body);
       if (decodeRes.containsKey('message')) {
+        print('[SFLIX] Movie stream has message field, retrying...');
         --tries;
       } else {
         break;
       }
     }
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print('[SFLIX] Movie stream request failed after all retries');
       throw ServerDownException();
     }
     movieVideoSources = SflixStreamSources.fromJson(decodeRes);
@@ -886,20 +945,27 @@ Future<SflixStreamSources> getTVStreamLinksAndSubsSflix(String api) async {
   int tries = 3;
   dynamic decodeRes;
   try {
+    print('[SFLIX TV] Fetching TV stream links - URL: $api');
     dynamic res;
     while (tries > 0) {
+      print(
+          '[SFLIX TV] Attempting to get TV stream links - Tries remaining: $tries');
       res = await retryOptionsStream.retry(
         (() => http.get(Uri.parse(api)).timeout(timeOutStream)),
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
+      print('[SFLIX TV] TV stream response - Status: ${res.statusCode}');
+      print('[SFLIX TV] TV stream response body: ${res.body}');
       decodeRes = jsonDecode(res.body);
       if (decodeRes.containsKey('message')) {
+        print('[SFLIX TV] TV stream has message field, retrying...');
         --tries;
       } else {
         break;
       }
     }
     if (decodeRes.containsKey('message') || res.statusCode != 200) {
+      print('[SFLIX TV] TV stream request failed after all retries');
       throw ServerDownException();
     }
     tvVideoSources = SflixStreamSources.fromJson(decodeRes);

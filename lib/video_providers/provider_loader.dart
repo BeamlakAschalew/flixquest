@@ -823,6 +823,7 @@ class ProviderLoader {
     );
 
     final totalSeasons = tvDetails.numberOfSeasons!;
+    print('[GOKU TV] Looking for: $seriesName with $totalSeasons seasons');
 
     final shows = await fetchTVForStreamGoku(
       Endpoints.searchMovieTVForStreamGoku(
@@ -838,49 +839,74 @@ class ProviderLoader {
       );
     }
 
+    print('[GOKU TV] Found ${shows.length} shows in search results');
     bool entryFound = false;
     for (final show in shows) {
-      if ((show.seasons == totalSeasons ||
-              show.seasons == (totalSeasons - 1)) &&
-          show.type == 'TV Series' &&
-          (normalizeTitle(show.title!)
-                  .toLowerCase()
-                  .contains(normalizeTitle(seriesName).toLowerCase()) ||
-              show.title!.contains(seriesName))) {
-        entryFound = true;
+      print(
+          '[GOKU TV] Checking: ${show.title} (${show.releaseDate}) - Type: ${show.type}, Seasons: ${show.seasons}');
 
-        final tvInfo = await getTVStreamEpisodesGoku(
-          Endpoints.getMovieTVStreamInfoGoku(show.id!, consumetUrl),
-        );
+      // Check type first
+      if (show.type != 'TV Series') {
+        print('[GOKU TV] Skipping - not a TV Series');
+        continue;
+      }
 
-        if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
-          for (final episode in tvInfo.episodes!) {
-            if (episode.episode == episodeNumber &&
-                episode.season == seasonNumber) {
-              final sources = await getTVStreamLinksAndSubsGoku(
-                Endpoints.getMovieTVStreamLinksGoku(
-                  episode.id!,
-                  show.id!,
-                  consumetUrl,
-                  gokuServer,
-                ),
+      // Check title match
+      final normalizedShowTitle = normalizeTitle(show.title!).toLowerCase();
+      final normalizedSeriesName = normalizeTitle(seriesName).toLowerCase();
+      final titleMatches = normalizedShowTitle.contains(normalizedSeriesName) ||
+          show.title!.toLowerCase().contains(seriesName.toLowerCase());
+
+      if (!titleMatches) {
+        print('[GOKU TV] Skipping - title does not match');
+        continue;
+      }
+
+      // Check seasons match (if seasons data is available)
+      final seasonsMatch = show.seasons == null ||
+          show.seasons == totalSeasons ||
+          show.seasons == (totalSeasons - 1);
+
+      if (!seasonsMatch) {
+        print(
+            '[GOKU TV] Skipping - seasons mismatch (show has ${show.seasons}, expected $totalSeasons)');
+        continue;
+      }
+
+      print('[GOKU TV] ✓ Match found! Using: ${show.title} (${show.id})');
+      entryFound = true;
+
+      final tvInfo = await getTVStreamEpisodesGoku(
+        Endpoints.getMovieTVStreamInfoGoku(show.id!, consumetUrl),
+      );
+
+      if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
+        for (final episode in tvInfo.episodes!) {
+          if (episode.episode == episodeNumber &&
+              episode.season == seasonNumber) {
+            final sources = await getTVStreamLinksAndSubsGoku(
+              Endpoints.getMovieTVStreamLinksGoku(
+                episode.id!,
+                show.id!,
+                consumetUrl,
+                gokuServer,
+              ),
+            );
+
+            if (sources.messageExists == null &&
+                sources.videoLinks != null &&
+                sources.videoLinks!.isNotEmpty) {
+              return ProviderLoaderResult(
+                success: true,
+                videoLinks: sources.videoLinks,
+                subtitleLinks: sources.videoSubtitles,
               );
-
-              if (sources.messageExists == null &&
-                  sources.videoLinks != null &&
-                  sources.videoLinks!.isNotEmpty) {
-                return ProviderLoaderResult(
-                  success: true,
-                  videoLinks: sources.videoLinks,
-                  subtitleLinks: sources.videoSubtitles,
-                );
-              }
-              break;
             }
+            break;
           }
         }
-        break;
       }
+      break;
     }
 
     if (!entryFound) {
@@ -983,6 +1009,7 @@ class ProviderLoader {
     );
 
     final totalSeasons = tvDetails.numberOfSeasons!;
+    print('[SFLIX TV] Looking for: $seriesName with $totalSeasons seasons');
 
     final shows = await fetchTVForStreamSflix(
       Endpoints.searchMovieTVForStreamSflix(
@@ -998,49 +1025,74 @@ class ProviderLoader {
       );
     }
 
+    print('[SFLIX TV] Found ${shows.length} shows in search results');
     bool entryFound = false;
     for (final show in shows) {
-      if ((show.seasons == totalSeasons ||
-              show.seasons == (totalSeasons - 1)) &&
-          show.type == 'TV Series' &&
-          (normalizeTitle(show.title!)
-                  .toLowerCase()
-                  .contains(normalizeTitle(seriesName).toLowerCase()) ||
-              show.title!.contains(seriesName))) {
-        entryFound = true;
+      print(
+          '[SFLIX TV] Checking: ${show.title} (${show.releaseDate}) - Type: ${show.type}, Seasons: ${show.seasons}');
 
-        final tvInfo = await getTVStreamEpisodesSflix(
-          Endpoints.getMovieTVStreamInfoSflix(show.id!, consumetUrl),
-        );
+      // Check type first
+      if (show.type != 'TV Series') {
+        print('[SFLIX TV] Skipping - not a TV Series');
+        continue;
+      }
 
-        if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
-          for (final episode in tvInfo.episodes!) {
-            if (episode.episode == episodeNumber &&
-                episode.season == seasonNumber) {
-              final sources = await getTVStreamLinksAndSubsSflix(
-                Endpoints.getMovieTVStreamLinksSflix(
-                  episode.id!,
-                  show.id!,
-                  consumetUrl,
-                  sflixServer,
-                ),
+      // Check title match
+      final normalizedShowTitle = normalizeTitle(show.title!).toLowerCase();
+      final normalizedSeriesName = normalizeTitle(seriesName).toLowerCase();
+      final titleMatches = normalizedShowTitle.contains(normalizedSeriesName) ||
+          show.title!.toLowerCase().contains(seriesName.toLowerCase());
+
+      if (!titleMatches) {
+        print('[SFLIX TV] Skipping - title does not match');
+        continue;
+      }
+
+      // Check seasons match (if seasons data is available)
+      final seasonsMatch = show.seasons == null ||
+          show.seasons == totalSeasons ||
+          show.seasons == (totalSeasons - 1);
+
+      if (!seasonsMatch) {
+        print(
+            '[SFLIX TV] Skipping - seasons mismatch (show has ${show.seasons}, expected $totalSeasons)');
+        continue;
+      }
+
+      print('[SFLIX TV] ✓ Match found! Using: ${show.title} (${show.id})');
+      entryFound = true;
+
+      final tvInfo = await getTVStreamEpisodesSflix(
+        Endpoints.getMovieTVStreamInfoSflix(show.id!, consumetUrl),
+      );
+
+      if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
+        for (final episode in tvInfo.episodes!) {
+          if (episode.episode == episodeNumber &&
+              episode.season == seasonNumber) {
+            final sources = await getTVStreamLinksAndSubsSflix(
+              Endpoints.getMovieTVStreamLinksSflix(
+                episode.id!,
+                show.id!,
+                consumetUrl,
+                sflixServer,
+              ),
+            );
+
+            if (sources.messageExists == null &&
+                sources.videoLinks != null &&
+                sources.videoLinks!.isNotEmpty) {
+              return ProviderLoaderResult(
+                success: true,
+                videoLinks: sources.videoLinks,
+                subtitleLinks: sources.videoSubtitles,
               );
-
-              if (sources.messageExists == null &&
-                  sources.videoLinks != null &&
-                  sources.videoLinks!.isNotEmpty) {
-                return ProviderLoaderResult(
-                  success: true,
-                  videoLinks: sources.videoLinks,
-                  subtitleLinks: sources.videoSubtitles,
-                );
-              }
-              break;
             }
+            break;
           }
         }
-        break;
       }
+      break;
     }
 
     if (!entryFound) {
