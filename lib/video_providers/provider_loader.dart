@@ -822,8 +822,20 @@ class ProviderLoader {
       proxyUrl,
     );
 
+    // Fetch TV object to get firstAirDate
+    final tvInfo = await getTV(
+      Endpoints.tvDetailsUrl(tvId, appLanguage),
+      isProxyEnabled,
+      proxyUrl,
+    );
+
     final totalSeasons = tvDetails.numberOfSeasons!;
-    print('[GOKU TV] Looking for: $seriesName with $totalSeasons seasons');
+    final releaseYear =
+        tvInfo.firstAirDate != null && tvInfo.firstAirDate!.length >= 4
+            ? tvInfo.firstAirDate!.substring(0, 4)
+            : null;
+    print(
+        '[GOKU TV] Looking for: $seriesName ($releaseYear) with $totalSeasons seasons');
 
     final shows = await fetchTVForStreamGoku(
       Endpoints.searchMovieTVForStreamGoku(
@@ -862,23 +874,26 @@ class ProviderLoader {
         continue;
       }
 
-      // Check seasons match (if seasons data is available)
-      final seasonsMatch = show.seasons == null ||
-          show.seasons == totalSeasons ||
-          show.seasons == (totalSeasons - 1);
+      // For Goku, fetch full info to get release date and verify
+      print('[GOKU TV] Fetching full info for: ${show.title}');
+      final tvInfo = await getTVStreamEpisodesGoku(
+        Endpoints.getMovieTVStreamInfoGoku(show.id!, consumetUrl),
+      );
 
-      if (!seasonsMatch) {
-        print(
-            '[GOKU TV] Skipping - seasons mismatch (show has ${show.seasons}, expected $totalSeasons)');
-        continue;
+      // Check release year from full info (if available)
+      if (releaseYear != null &&
+          tvInfo.releaseDate != null &&
+          tvInfo.releaseDate!.length >= 4) {
+        final showReleaseYear = tvInfo.releaseDate!.substring(0, 4);
+        if (showReleaseYear != releaseYear) {
+          print(
+              '[GOKU TV] Skipping - release year mismatch (show: $showReleaseYear, expected: $releaseYear)');
+          continue;
+        }
       }
 
       print('[GOKU TV] ✓ Match found! Using: ${show.title} (${show.id})');
       entryFound = true;
-
-      final tvInfo = await getTVStreamEpisodesGoku(
-        Endpoints.getMovieTVStreamInfoGoku(show.id!, consumetUrl),
-      );
 
       if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
         for (final episode in tvInfo.episodes!) {
@@ -1008,8 +1023,20 @@ class ProviderLoader {
       proxyUrl,
     );
 
+    // Fetch TV object to get firstAirDate
+    final tvInfo = await getTV(
+      Endpoints.tvDetailsUrl(tvId, appLanguage),
+      isProxyEnabled,
+      proxyUrl,
+    );
+
     final totalSeasons = tvDetails.numberOfSeasons!;
-    print('[SFLIX TV] Looking for: $seriesName with $totalSeasons seasons');
+    final releaseYear =
+        tvInfo.firstAirDate != null && tvInfo.firstAirDate!.length >= 4
+            ? tvInfo.firstAirDate!.substring(0, 4)
+            : null;
+    print(
+        '[SFLIX TV] Looking for: $seriesName ($releaseYear) with $totalSeasons seasons');
 
     final shows = await fetchTVForStreamSflix(
       Endpoints.searchMovieTVForStreamSflix(
@@ -1045,6 +1072,15 @@ class ProviderLoader {
 
       if (!titleMatches) {
         print('[SFLIX TV] Skipping - title does not match');
+        continue;
+      }
+
+      // Check release year match (if available)
+      if (releaseYear != null &&
+          show.releaseDate != null &&
+          show.releaseDate != releaseYear) {
+        print(
+            '[SFLIX TV] Skipping - release year mismatch (show: ${show.releaseDate}, expected: $releaseYear)');
         continue;
       }
 
