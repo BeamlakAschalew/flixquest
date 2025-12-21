@@ -307,7 +307,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   }
 
   Future<void> _processSubtitles(List<RegularSubtitleLinks> subtitles) async {
-    getAppLanguage();
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final appDep = Provider.of<AppDependencyProvider>(context, listen: false);
@@ -326,11 +325,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       // Use the VideoUtils.parseSubtitles method
       final parsedSubs = await VideoUtils.parseSubtitles(
         subtitles: subtitles,
-        defaultLanguage: settings.defaultSubtitleLanguage.isEmpty
-            ? ''
-            : supportedLanguages[foundIndex].englishName.isEmpty
-                ? ''
-                : supportedLanguages[foundIndex].languageCode,
+        defaultLanguage: settings.defaultSubtitleLanguage,
         fetchAllLanguages: settings.fetchSpecificLangSubs,
         getVttContent: (url) => getVttFileAsString(url),
       );

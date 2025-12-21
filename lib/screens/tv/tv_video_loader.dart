@@ -330,7 +330,6 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   }
 
   Future<void> _processSubtitles(List<RegularSubtitleLinks> subtitles) async {
-    getAppLanguage();
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
@@ -351,11 +350,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       // Use the VideoUtils.parseSubtitles method
       final parsedSubs = await VideoUtils.parseSubtitles(
         subtitles: subtitles,
-        defaultLanguage: settings.defaultSubtitleLanguage.isEmpty
-            ? ''
-            : supportedLanguages[foundIndex].englishName.isEmpty
-                ? ''
-                : supportedLanguages[foundIndex].languageCode,
+        defaultLanguage: settings.defaultSubtitleLanguage,
         fetchAllLanguages: settings.fetchSpecificLangSubs,
         getVttContent: (url) => getVttFileAsString(url),
       );
