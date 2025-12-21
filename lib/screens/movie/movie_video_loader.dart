@@ -170,12 +170,30 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             // Process subtitles for this provider
             if (result.subtitleLinks != null &&
                 result.subtitleLinks!.isNotEmpty) {
+              final preferredLang = settings.defaultSubtitleLanguage;
+
               for (var subLink in result.subtitleLinks!) {
+                final subLanguage = subLink.language ?? 'Unknown';
+                // Check if this subtitle matches the user's preferred language
+                final isPreferred = preferredLang.isNotEmpty &&
+                    (subLanguage
+                            .toLowerCase()
+                            .startsWith(preferredLang.toLowerCase()) ||
+                        subLanguage.toLowerCase() ==
+                            preferredLang.toLowerCase() ||
+                        // Also check for common English variants
+                        (preferredLang.toLowerCase() == 'en' &&
+                            (subLanguage == 'English' ||
+                                subLanguage == 'English - English' ||
+                                subLanguage == 'English - SDH' ||
+                                subLanguage.startsWith('English'))));
+
                 subs.add(
                   BetterPlayerSubtitlesSource(
                     type: BetterPlayerSubtitlesSourceType.network,
                     urls: [subLink.url ?? ''],
-                    name: subLink.language ?? 'Unknown',
+                    name: subLanguage,
+                    selectedByDefault: isPreferred,
                   ),
                 );
               }
