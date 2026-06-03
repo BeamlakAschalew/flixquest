@@ -2,12 +2,13 @@
 
 import 'package:flixquest/video_providers/common.dart';
 import 'package:provider/provider.dart';
-import '../../functions/function.dart';
 import '../../provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../functions/network.dart';
 import '../../provider/settings_provider.dart';
+import '../../constants/app_constants.dart' show StreamRoute;
+import '../../video_providers/provider_loader.dart';
 import '../../video_providers/names.dart';
 import '../../services/globle_method.dart';
 
@@ -75,16 +76,24 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
             '${appDependency.consumetUrl}movies/himovies/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.himoviesServer}');
         videoLinks = result.videoLinks;
       } else if (provider.codeName == 'vixsrc') {
-        final result = await getStreamLinksFlixAPIMulti(
-            '${appDependency.flixApiUrl}vixsrc/stream-movie?tmdbId=884605');
-        if (result.links != null && result.links!.isNotEmpty) {
-          final link = result.links!.first;
-          videoLinks = [
-            RegularVideoLinks(
-                url: link.url,
-                isM3U8: link.isM3U8 ?? link.url?.endsWith('.m3u8') ?? false)
-          ];
-        }
+        final result = await ProviderLoader.loadMovieFromProvider(
+          providerCode: 'vixsrc',
+          route: StreamRoute.tmDB,
+          movieId: 884605,
+          movieName: 'No Hard Feelings',
+          releaseYear: '2023',
+          consumetUrl: appDependency.consumetUrl,
+          newFlixHQUrl: appDependency.newFlixHQUrl,
+          flixApiUrl: appDependency.flixApiUrl,
+          newFlixhqServer: appDependency.newFlixhqServer,
+          streamingServerFlixHQ: appDependency.streamingServerFlixHQ,
+          gokuServer: appDependency.gokuServer,
+          sflixServer: appDependency.sflixServer,
+          himoviesServer: appDependency.himoviesServer,
+          animekaiServer: appDependency.animekaiServer,
+          hianimeServer: appDependency.hianimeServer,
+        );
+        videoLinks = result.videoLinks;
       } else if (provider.codeName == 'showbox') {
         final result = await getStreamLinksFlixAPIMulti(
             '${appDependency.flixApiUrl}showbox/stream-movie?tmdbId=884605');
@@ -186,10 +195,11 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
 
   @override
   void initState() {
-    videoProviders.addAll(
-        parseProviderPrecedenceString(prefString.proPreference)
-            .where((provider) => provider != null)
-            .cast<VideoProvider>());
+    // videoProviders.addAll(
+    //     parseProviderPrecedenceString(prefString.proPreference)
+    //         .where((provider) => provider != null)
+    //         .cast<VideoProvider>());
+    videoProviders.add(VideoProvider(fullName: 'VixSrc', codeName: 'vixsrc'));
 
     checkServer();
     super.initState();
