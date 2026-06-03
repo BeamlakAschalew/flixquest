@@ -42,7 +42,7 @@ const kTextSmallAboutBodyStyle = TextStyle(
 const kTableLeftStyle =
     TextStyle(overflow: TextOverflow.ellipsis, fontWeight: FontWeight.bold);
 
-const String currentAppVersion = '3.1.0';
+const String currentAppVersion = '3.2.0';
 
 final client = HttpClient();
 const retryOptions = RetryOptions(
@@ -95,8 +95,9 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-const providerPreference =
-    'flixhq-FlixHQ myflixerz-MyFlixerz himovies-Himovies goku-Goku sflix-Sflix showbox-ShowBox vixsrc-VixSrc ';
+// const providerPreference =
+//     'flixhq-FlixHQ myflixerz-MyFlixerz himovies-Himovies goku-Goku sflix-Sflix showbox-ShowBox vixsrc-VixSrc ';
+const providerPreference = 'vixsrc-VixSrc ';
 //animekai-AnimeKai animepahe-AnimePahe hianime-HiAnime
 
 late SharedPreferences sharedPrefsSingleton;

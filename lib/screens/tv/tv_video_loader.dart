@@ -72,10 +72,12 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   @override
   void initState() {
     super.initState();
-    videoProviders.addAll(
-        parseProviderPrecedenceString(prefString.proPreference)
-            .where((provider) => provider != null)
-            .cast<VideoProvider>());
+    // Temporarily disable broken providers; keep only VixSrc active.
+    // videoProviders.addAll(
+    //     parseProviderPrecedenceString(prefString.proPreference)
+    //         .where((provider) => provider != null)
+    //         .cast<VideoProvider>());
+    videoProviders.add(VideoProvider(fullName: 'VixSrc', codeName: 'vixsrc'));
 
     // Initialize provider states
     for (final provider in videoProviders) {

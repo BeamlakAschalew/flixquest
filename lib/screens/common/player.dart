@@ -217,16 +217,17 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               );
             },
           ),
-          // Add provider switcher if multiple providers are available
-          if (widget.availableProviders != null &&
-              widget.availableProviders!.length > 1)
-            BetterPlayerOverflowMenuItem(
-              Icons.swap_horiz_rounded,
-              tr('switch_provider'),
-              () {
-                _showProviderSwitcher();
-              },
-            ),
+          // Provider switching is temporarily disabled while VixSrc is the only
+          // working provider.
+          // if (widget.availableProviders != null &&
+          //     widget.availableProviders!.length > 1)
+          //   BetterPlayerOverflowMenuItem(
+          //     Icons.swap_horiz_rounded,
+          //     tr('switch_provider'),
+          //     () {
+          //       _showProviderSwitcher();
+          //     },
+          //   ),
         ]);
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
