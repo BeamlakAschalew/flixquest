@@ -197,7 +197,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         overflowModalColor: widget.colors.last,
         subtitlesIcon: Icons.closed_caption_rounded,
         qualitiesIcon: Icons.hd_rounded,
-        enableAudioTracks: false,
+        enableAudioTracks: true,
         controlBarHeight: 50,
         watchingText: tr('watching_text'),
         playerTimeMode: settings.playerTimeDisplay,
@@ -266,9 +266,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       link = widget.sources.values.first;
     }
 
+    final resolutions = widget.sources.length > 1 ? widget.sources : null;
+    final videoFormat = _inferVideoFormat(link);
+    final headers = _inferHeaders(link);
+
     BetterPlayerDataSource dataSource =
         BetterPlayerDataSource(BetterPlayerDataSourceType.network, link,
-            resolutions: widget.sources,
+            resolutions: resolutions,
+            videoFormat: videoFormat,
+            headers: headers,
             subtitles: widget.subs,
             cacheConfiguration: BetterPlayerCacheConfiguration(
               useCache: true,
@@ -407,6 +413,40 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         resetDurationTimer();
       });
     }
+  }
+
+  BetterPlayerVideoFormat? _inferVideoFormat(String? url) {
+    if (url == null || url.isEmpty) {
+      return null;
+    }
+
+    final uri = Uri.tryParse(url);
+    final path = uri?.path.toLowerCase() ?? url.toLowerCase();
+    if (path.endsWith('.m3u8') || path.contains('/playlist/')) {
+      return BetterPlayerVideoFormat.hls;
+    }
+
+    if (path.endsWith('.mpd')) {
+      return BetterPlayerVideoFormat.dash;
+    }
+
+    return null;
+  }
+
+  Map<String, String>? _inferHeaders(String? url) {
+    final host = Uri.tryParse(url ?? '')?.host.toLowerCase();
+    if (host == null || !host.endsWith('vixsrc.to')) {
+      return null;
+    }
+
+    return const {
+      'accept': '*/*',
+      'origin': 'https://vixsrc.to',
+      'referer': 'https://vixsrc.to/',
+      'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+              '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    };
   }
 
   void pauseDurationTimer() {

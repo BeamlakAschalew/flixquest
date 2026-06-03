@@ -7,7 +7,8 @@ import '../functions/function.dart';
 import '../models/external_subtitles.dart';
 
 class ExternalSubtitleService {
-  static const String baseUrl = 'https://sub.wyzie.ru';
+  static const String baseUrl = 'https://sub.wyzie.io';
+  static const String _wyzieApiKey = 'wyzie-nsh0kw4nuvy923x7ushch8b8c8ar75co';
 
   /// Download subtitle file with proper encoding handling
   static Future<String> _downloadSubtitleWithEncoding(
@@ -76,15 +77,19 @@ class ExternalSubtitleService {
   /// Fetch external subtitles for a movie using TMDB ID
   static Future<List<ExternalSubtitle>> fetchMovieSubtitles(int tmdbId) async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/search?id=$tmdbId'),
-      );
+      final uri = _buildSearchUri({
+        'id': tmdbId.toString(),
+      });
+
+      final response = await http.get(uri);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         return data.map((json) => ExternalSubtitle.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to load subtitles: ${response.statusCode}');
+        throw Exception(
+          'Failed to load subtitles: ${response.statusCode} ${response.body}',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching subtitles: $e');
@@ -98,21 +103,34 @@ class ExternalSubtitleService {
     int episodeNumber,
   ) async {
     try {
-      final response = await http.get(
-        Uri.parse(
-          '$baseUrl/search?id=$tmdbId&season=$seasonNumber&episode=$episodeNumber',
-        ),
-      );
+      final uri = _buildSearchUri({
+        'id': tmdbId.toString(),
+        'season': seasonNumber.toString(),
+        'episode': episodeNumber.toString(),
+      });
+
+      final response = await http.get(uri);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         return data.map((json) => ExternalSubtitle.fromJson(json)).toList();
       } else {
-        throw Exception('Failed to load subtitles: ${response.statusCode}');
+        throw Exception(
+          'Failed to load subtitles: ${response.statusCode} ${response.body}',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching subtitles: $e');
     }
+  }
+
+  static Uri _buildSearchUri(Map<String, String> queryParameters) {
+    return Uri.parse('$baseUrl/search').replace(
+      queryParameters: {
+        ...queryParameters,
+        'key': _wyzieApiKey,
+      },
+    );
   }
 
   /// Download and convert ExternalSubtitle to BetterPlayerSubtitlesSource with parsed content

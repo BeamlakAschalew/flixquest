@@ -12,6 +12,7 @@ class PlayerExternalSubtitles {
   List<ExternalSubtitle> _availableExternalSubtitles = [];
   final List<ExternalSubtitle> _selectedExternalSubtitles = [];
   bool _isLoadingExternalSubtitles = false;
+  bool _isExternalSubtitlesMenuOpen = false;
   final Set<String> _addedExternalSubtitleIds = {}; // Track added subtitle IDs
 
   /// Show external subtitles menu
@@ -23,6 +24,7 @@ class PlayerExternalSubtitles {
     TVStreamMetadata? tvMetadata,
     required BetterPlayerController betterPlayerController,
   }) {
+    _isExternalSubtitlesMenuOpen = true;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -141,16 +143,21 @@ class PlayerExternalSubtitles {
                             ),
                           )
                         : _availableExternalSubtitles.isEmpty
-                            ? Center(
+                            ? SingleChildScrollView(
+                                controller: scrollController,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
+                                    const SizedBox(height: 12),
                                     Icon(
                                       Icons.subtitles_off_outlined,
-                                      size: 64,
+                                      size: 56,
                                       color: Colors.grey[600],
                                     ),
-                                    SizedBox(height: 16),
+                                    SizedBox(height: 12),
                                     Text(
                                       tr('no_external_subtitles_found'),
                                       style: TextStyle(
@@ -158,15 +165,16 @@ class PlayerExternalSubtitles {
                                         color: Colors.grey[400],
                                       ),
                                     ),
-                                    SizedBox(height: 8),
+                                    SizedBox(height: 6),
                                     Text(
                                       tr('try_searching_for_subtitles'),
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey[500],
                                       ),
                                     ),
-                                    SizedBox(height: 24),
+                                    SizedBox(height: 16),
                                     ElevatedButton.icon(
                                       onPressed: () => _fetchExternalSubtitles(
                                         setBottomSheetState,
@@ -359,7 +367,9 @@ class PlayerExternalSubtitles {
           },
         ),
       ),
-    );
+    ).whenComplete(() {
+      _isExternalSubtitlesMenuOpen = false;
+    });
   }
 
   /// Fetch external subtitles from libre-subs API
@@ -372,7 +382,7 @@ class PlayerExternalSubtitles {
     List<Color> colors,
   ) async {
     _isLoadingExternalSubtitles = true;
-    setBottomSheetState(() {
+    _setBottomSheetStateIfOpen(setBottomSheetState, () {
       _isLoadingExternalSubtitles = true;
     });
 
@@ -395,7 +405,7 @@ class PlayerExternalSubtitles {
 
       _availableExternalSubtitles = subtitles;
       _isLoadingExternalSubtitles = false;
-      setBottomSheetState(() {
+      _setBottomSheetStateIfOpen(setBottomSheetState, () {
         _availableExternalSubtitles = subtitles;
         _isLoadingExternalSubtitles = false;
       });
@@ -413,7 +423,7 @@ class PlayerExternalSubtitles {
       }
     } catch (e) {
       _isLoadingExternalSubtitles = false;
-      setBottomSheetState(() {
+      _setBottomSheetStateIfOpen(setBottomSheetState, () {
         _isLoadingExternalSubtitles = false;
       });
 
@@ -428,6 +438,14 @@ class PlayerExternalSubtitles {
         );
       }
     }
+  }
+
+  void _setBottomSheetStateIfOpen(StateSetter setBottomSheetState, VoidCallback fn) {
+    if (!_isExternalSubtitlesMenuOpen) {
+      return;
+    }
+
+    setBottomSheetState(fn);
   }
 
   /// Toggle selection of an external subtitle

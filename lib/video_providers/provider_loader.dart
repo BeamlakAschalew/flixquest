@@ -99,10 +99,8 @@ class ProviderLoader {
           );
 
         case 'vixsrc':
-          return await _loadMovieFlixAPIMulti(
+          return await _loadMovieVixSrc(
             movieId: movieId,
-            flixApiUrl: flixApiUrl,
-            provider: 'vixsrc',
           );
 
         case 'showbox':
@@ -244,12 +242,10 @@ class ProviderLoader {
           );
 
         case 'vixsrc':
-          return await _loadTVFlixAPIMulti(
+          return await _loadTVVixSrc(
             tvId: tvId,
             seasonNumber: seasonNumber,
             episodeNumber: episodeNumber,
-            flixApiUrl: flixApiUrl,
-            provider: 'vixsrc',
           );
 
         case 'showbox':
@@ -299,6 +295,214 @@ class ProviderLoader {
   }
 
   // ==================== MOVIE PROVIDER METHODS ====================
+
+  static const String _vixSrcBaseUrl = 'https://vixsrc.to';
+
+  static Future<ProviderLoaderResult> _loadMovieVixSrc({
+    required int movieId,
+  }) async {
+    return _loadVixSrcFromApi('$_vixSrcBaseUrl/api/movie/$movieId');
+  }
+
+  static Future<ProviderLoaderResult> _loadTVVixSrc({
+    required int tvId,
+    required int seasonNumber,
+    required int episodeNumber,
+  }) async {
+    if (seasonNumber == 0) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'Invalid season number',
+      );
+    }
+
+    return _loadVixSrcFromApi(
+      '$_vixSrcBaseUrl/api/tv/$tvId/$seasonNumber/$episodeNumber',
+    );
+  }
+
+  static Future<ProviderLoaderResult> _loadVixSrcFromApi(String apiUrl) async {
+    String? embedHtml;
+    for (var attempt = 0; attempt < 2; attempt++) {
+      final embedSrc = await getVixSrcEmbedSrc(apiUrl);
+      embedHtml = await getVixSrcEmbedHtml(_absoluteVixSrcUrl(embedSrc));
+
+      if (embedHtml != null) {
+        break;
+      }
+    }
+
+    if (embedHtml == null) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'VixSrc embed token expired',
+      );
+    }
+
+    final masterPlaylistUrl = _extractVixSrcMasterPlaylist(embedHtml);
+    if (masterPlaylistUrl == null) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'VixSrc playlist metadata not found',
+      );
+    }
+
+    final playlist = await getVixSrcPlaylist(masterPlaylistUrl);
+    final videoLinks = _parseVixSrcVideoLinks(playlist, masterPlaylistUrl);
+    if (videoLinks.isEmpty) {
+      return ProviderLoaderResult(
+        success: false,
+        errorMessage: 'No VixSrc video sources found',
+      );
+    }
+
+    return ProviderLoaderResult(
+      success: true,
+      videoLinks: videoLinks,
+      subtitleLinks: await _parseVixSrcSubtitleLinks(playlist),
+    );
+  }
+
+  static String _absoluteVixSrcUrl(String url) {
+    final uri = Uri.parse(url);
+    if (uri.hasScheme) {
+      return url;
+    }
+    return '$_vixSrcBaseUrl${url.startsWith('/') ? '' : '/'}$url';
+  }
+
+  static String? _extractVixSrcMasterPlaylist(String html) {
+    final urlMatch = RegExp(
+      r"""window\.masterPlaylist\s*=\s*\{[\s\S]*?url:\s*['"]([^'"]+)['"]""",
+    ).firstMatch(html);
+    final tokenMatch =
+        RegExp(r"""['"]token['"]\s*:\s*['"]([^'"]+)['"]""").firstMatch(html);
+    final expiresMatch =
+        RegExp(r"""['"]expires['"]\s*:\s*['"]([^'"]+)['"]""").firstMatch(html);
+
+    if (urlMatch == null || tokenMatch == null || expiresMatch == null) {
+      return null;
+    }
+
+    final uri = Uri.parse(_absoluteVixSrcUrl(urlMatch.group(1)!));
+    final queryParameters = Map<String, String>.from(uri.queryParameters)
+      ..addAll({
+        'token': tokenMatch.group(1)!,
+        'expires': expiresMatch.group(1)!,
+        'h': '1',
+        'lang': 'en',
+      });
+
+    return uri.replace(queryParameters: queryParameters).toString();
+  }
+
+  static List<RegularVideoLinks> _parseVixSrcVideoLinks(
+    String playlist,
+    String masterPlaylistUrl,
+  ) {
+    final lines = playlist.split(RegExp(r'\r?\n'));
+    final qualities = <String>[];
+
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i].trim();
+      if (!line.startsWith('#EXT-X-STREAM-INF')) {
+        continue;
+      }
+
+      qualities.add(_extractVixSrcQuality(line));
+    }
+
+    if (qualities.isEmpty) {
+      return [];
+    }
+
+    return [
+      RegularVideoLinks(
+        url: masterPlaylistUrl,
+        quality: 'auto',
+        isM3U8: true,
+      ),
+    ];
+  }
+
+  static String _extractVixSrcQuality(String streamInfo) {
+    final resolutionMatch =
+        RegExp(r'RESOLUTION=\d+x(\d+)').firstMatch(streamInfo);
+    if (resolutionMatch != null) {
+      return '${resolutionMatch.group(1)}p';
+    }
+
+    return 'auto';
+  }
+
+  static Future<List<RegularSubtitleLinks>> _parseVixSrcSubtitleLinks(
+    String playlist,
+  ) async {
+    final subtitles = <RegularSubtitleLinks>[];
+
+    for (final line in playlist.split(RegExp(r'\r?\n'))) {
+      final trimmed = line.trim();
+      if (!trimmed.startsWith('#EXT-X-MEDIA') ||
+          !trimmed.contains('TYPE=SUBTITLES')) {
+        continue;
+      }
+
+      final attributes = _parseHlsAttributes(trimmed);
+      final url = attributes['URI'];
+      if (url == null || url.isEmpty) {
+        continue;
+      }
+      final absoluteUrl = _absoluteVixSrcUrl(url);
+
+      subtitles.add(
+        RegularSubtitleLinks(
+          url: await _resolveVixSrcSubtitleUrl(absoluteUrl),
+          language: attributes['NAME'] ?? attributes['LANGUAGE'] ?? 'Unknown',
+        ),
+      );
+    }
+
+    return subtitles;
+  }
+
+  static Future<String> _resolveVixSrcSubtitleUrl(String url) async {
+    final path = Uri.tryParse(url)?.path.toLowerCase() ?? url.toLowerCase();
+    if (path.endsWith('.vtt') || path.endsWith('.srt')) {
+      return url;
+    }
+
+    try {
+      final subtitlePlaylist = await getVixSrcPlaylist(url);
+      for (final line in subtitlePlaylist.split(RegExp(r'\r?\n'))) {
+        final trimmed = line.trim();
+        if (trimmed.isEmpty || trimmed.startsWith('#')) {
+          continue;
+        }
+
+        return _absoluteVixSrcUrl(trimmed);
+      }
+    } catch (_) {
+      return url;
+    }
+
+    return url;
+  }
+
+  static Map<String, String> _parseHlsAttributes(String line) {
+    final attributes = <String, String>{};
+    final attributeText = line.substring(line.indexOf(':') + 1);
+    final regex = RegExp(r'([A-Z0-9-]+)=("[^"]*"|[^,]*)');
+
+    for (final match in regex.allMatches(attributeText)) {
+      var value = match.group(2) ?? '';
+      if (value.startsWith('"') && value.endsWith('"') && value.length >= 2) {
+        value = value.substring(1, value.length - 1);
+      }
+      attributes[match.group(1)!] = value;
+    }
+
+    return attributes;
+  }
 
   static Future<ProviderLoaderResult> _loadMovieFlixHQTMDBRoute({
     required int movieId,

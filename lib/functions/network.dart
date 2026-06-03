@@ -1633,6 +1633,79 @@ Future<FlixAPIMultiResponse> getStreamLinksFlixAPIMulti(String api) async {
   return videoSources;
 }
 
+const Map<String, String> _vixSrcHeaders = {
+  'accept': '*/*',
+  'origin': 'https://vixsrc.to',
+  'referer': 'https://vixsrc.to/',
+  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+};
+
+Future<String> getVixSrcEmbedSrc(String api) async {
+  try {
+    final res = await retryOptionsStream.retry(
+      (() => http
+          .get(Uri.parse(api), headers: _vixSrcHeaders)
+          .timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+    final decodeRes = jsonDecode(res.body);
+
+    if (res.statusCode != 200 ||
+        decodeRes is! Map<String, dynamic> ||
+        decodeRes['src'] == null ||
+        decodeRes['src'].toString().isEmpty) {
+      throw NotFoundException();
+    }
+
+    return decodeRes['src'].toString();
+  } catch (e) {
+    rethrow;
+  }
+}
+
+Future<String?> getVixSrcEmbedHtml(String api) async {
+  try {
+    final res = await retryOptionsStream.retry(
+      (() => http
+          .get(Uri.parse(api), headers: _vixSrcHeaders)
+          .timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+
+    if (res.statusCode == 410) {
+      return null;
+    }
+
+    if (res.statusCode != 200) {
+      throw ServerDownException();
+    }
+
+    return res.body;
+  } catch (e) {
+    rethrow;
+  }
+}
+
+Future<String> getVixSrcPlaylist(String api) async {
+  try {
+    final res = await retryOptionsStream.retry(
+      (() => http
+          .get(Uri.parse(api), headers: _vixSrcHeaders)
+          .timeout(timeOutStream)),
+      retryIf: (e) => e is SocketException || e is TimeoutException,
+    );
+
+    if (res.statusCode != 200) {
+      throw ServerDownException();
+    }
+
+    return res.body;
+  } catch (e) {
+    rethrow;
+  }
+}
+
 // ===================== ANIMEKAI FUNCTIONS =====================
 
 Future<List<AnimeKaiSearchEntry>> fetchAnimeForStreamAnimeKai(
