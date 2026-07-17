@@ -6,6 +6,7 @@ import '../../constants/app_constants.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
   const DeleteAccountScreen({super.key});
@@ -142,117 +143,131 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
             ? const Center(
                 child: CircularProgressIndicator(),
               )
-            : Center(
+            : AppResponsiveContent(
+                maxWidth: 560,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SingleChildScrollView(
                     child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                    const SizedBox(
-                      height: 80,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        tr('delete_account'),
-                        style: const TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
+                      Container(
+                        width: 68,
+                        height: 68,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .error
+                              .withValues(alpha: .12),
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: Icon(Icons.delete_forever_rounded,
+                            size: 32,
+                            color: Theme.of(context).colorScheme.error),
                       ),
-                    ),
-                    Text(
-                      tr('delete_notice'),
-                      textAlign: TextAlign.center,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: TextFormField(
-                                key: const ValueKey('confirmation'),
-                                validator: (value) {
-                                  if (value != 'CONFIRM') {
-                                    return tr('del_input_err');
-                                  }
-                                  return null;
-                                },
-                                focusNode: deleteFN,
-                                textInputAction: TextInputAction.next,
-                                keyboardType: TextInputType.text,
-                                decoration: InputDecoration(
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          tr('delete_account'),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                  color: Theme.of(context).colorScheme.error),
+                        ),
+                      ),
+                      Text(
+                        tr('delete_notice'),
+                        textAlign: TextAlign.center,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: TextFormField(
+                                  key: const ValueKey('confirmation'),
+                                  validator: (value) {
+                                    if (value != 'CONFIRM') {
+                                      return tr('del_input_err');
+                                    }
+                                    return null;
+                                  },
+                                  focusNode: deleteFN,
+                                  textInputAction: TextInputAction.next,
+                                  keyboardType: TextInputType.text,
+                                  decoration: InputDecoration(
                                     errorMaxLines: 3,
-                                    border: const UnderlineInputBorder(),
                                     filled: true,
                                     prefixIcon:
                                         const Icon(Icons.text_fields_rounded),
                                     labelText: tr('type_confirm'),
-                                    fillColor:
-                                        Theme.of(context).colorScheme.surface),
-                                onSaved: (value) {
-                                  setState(() {
-                                    confirmationText = value!;
-                                  });
-                                },
-                                onChanged: (value) {
-                                  setState(() {
-                                    confirmationText = value;
-                                  });
-                                },
+                                  ),
+                                  onSaved: (value) {
+                                    setState(() {
+                                      confirmationText = value!;
+                                    });
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      confirmationText = value;
+                                    });
+                                  },
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 25),
-                              child: _isLoading
-                                  ? const CircularProgressIndicator()
-                                  : ElevatedButton(
-                                      style: ButtonStyle(
-                                          backgroundColor:
-                                              const WidgetStatePropertyAll(
-                                                  Colors.red),
-                                          minimumSize:
-                                              const WidgetStatePropertyAll(
-                                                  Size(200, 50)),
-                                          shape: WidgetStateProperty.all(
-                                            RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 25),
+                                child: _isLoading
+                                    ? const CircularProgressIndicator()
+                                    : ElevatedButton(
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                const WidgetStatePropertyAll(
+                                                    Colors.red),
+                                            minimumSize:
+                                                const WidgetStatePropertyAll(
+                                                    Size(200, 50)),
+                                            shape: WidgetStateProperty.all(
+                                              RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                            )),
+                                        onPressed: () {
+                                          _submitForm();
+                                        },
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              tr('delete_account'),
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 17),
                                             ),
-                                          )),
-                                      onPressed: () {
-                                        _submitForm();
-                                      },
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            tr('delete_account'),
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 17),
-                                          ),
-                                          const SizedBox(
-                                            width: 5,
-                                          ),
-                                          const Icon(
-                                            FontAwesomeIcons.trash,
-                                            size: 18,
-                                          )
-                                        ],
-                                      )),
-                            ),
-                          ],
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            const Icon(
+                                              FontAwesomeIcons.trash,
+                                              size: 18,
+                                            )
+                                          ],
+                                        )),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    )
-                  ]))));
+                      )
+                    ]))));
   }
 }

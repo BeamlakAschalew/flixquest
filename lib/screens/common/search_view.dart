@@ -19,6 +19,7 @@ import '/models/tv.dart';
 import '/screens/movie/movie_detail.dart';
 import '/screens/person/searchedperson.dart';
 import '/screens/tv/tv_detail.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class Search extends SearchDelegate<String> {
   final Mixpanel mixpanel;
@@ -46,6 +47,22 @@ class Search extends SearchDelegate<String> {
     _debounce = Timer(const Duration(seconds: 3), () {
       _settingsPreferences.addRecentSearch(searchQuery.trim());
     });
+  }
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    final theme = Theme.of(context);
+    return theme.copyWith(
+      appBarTheme: theme.appBarTheme.copyWith(
+        toolbarHeight: 76,
+        surfaceTintColor: Colors.transparent,
+      ),
+      inputDecorationTheme: theme.inputDecorationTheme.copyWith(
+        filled: true,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      ),
+    );
   }
 
   @override
@@ -96,38 +113,18 @@ class Search extends SearchDelegate<String> {
       child: Scaffold(
         body: Column(
           children: [
-            Container(
-              color: themeMode == 'dark' || themeMode == 'amoled'
-                  ? Colors.black
-                  : Colors.white,
+            AppResponsiveContent(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TabBar(
                 tabs: [
                   Tab(
-                    child: Text(tr('movies'),
-                        style: TextStyle(
-                          fontFamily: 'Figtree',
-                          color: themeMode == 'light'
-                              ? const Color(0xFF202124)
-                              : const Color(0xFFDFDEDE),
-                        )),
+                    child: Text(tr('movies')),
                   ),
                   Tab(
-                    child: Text(tr('tv_shows'),
-                        style: TextStyle(
-                          fontFamily: 'Figtree',
-                          color: themeMode == 'light'
-                              ? const Color(0xFF202124)
-                              : const Color(0xFFDFDEDE),
-                        )),
+                    child: Text(tr('tv_shows')),
                   ),
                   Tab(
-                    child: Text(tr('celebrities'),
-                        style: TextStyle(
-                          fontFamily: 'Figtree',
-                          color: themeMode == 'light'
-                              ? const Color(0xFF202124)
-                              : const Color(0xFFDFDEDE),
-                        )),
+                    child: Text(tr('celebrities')),
                   )
                 ],
               ),
@@ -360,39 +357,18 @@ class Search extends SearchDelegate<String> {
       });
 
   Widget errorMessageWidget(String themeMode) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('assets/images/404.png'),
-          Text(
-            tr('no_result'),
-            style: TextStyle(
-                fontFamily: 'Figtree',
-                color: themeMode == 'dark' || themeMode == 'amoled'
-                    ? Colors.white
-                    : Colors.black),
-          )
-        ],
-      ),
+    return AppEmptyState(
+      title: tr('no_result'),
+      message: tr('enter_word'),
+      icon: Icons.search_off_rounded,
     );
   }
 
   Widget searchATermWidget(String themeMode) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset('assets/images/search.png'),
-          const Padding(padding: EdgeInsets.only(top: 10, bottom: 5)),
-          Text(tr('enter_word'),
-              style: TextStyle(
-                  color: themeMode == 'dark' || themeMode == 'amoled'
-                      ? Colors.white
-                      : Colors.black,
-                  fontFamily: 'Figtree'))
-        ],
-      ),
+    return AppEmptyState(
+      title: tr('search'),
+      message: tr('enter_word'),
+      icon: Icons.manage_search_rounded,
     );
   }
 
@@ -599,26 +575,9 @@ class Search extends SearchDelegate<String> {
                                                 ? Colors.white
                                                 : Colors.black),
                                       ),
-                                      Row(
-                                        children: <Widget>[
-                                          const Icon(
-                                            Icons.star_rounded,
-                                          ),
-                                          Text(
-                                            moviesList[index].voteAverage ==
-                                                    null
-                                                ? 'NR'
-                                                : moviesList[index]
-                                                    .voteAverage!
-                                                    .toStringAsFixed(1),
-                                            style: TextStyle(
-                                                fontFamily: 'Figtree',
-                                                color: themeMode == 'dark' ||
-                                                        themeMode == 'amoled'
-                                                    ? Colors.white
-                                                    : Colors.black),
-                                          ),
-                                        ],
+                                      AppRatingBadge(
+                                        rating: moviesList[index].voteAverage,
+                                        compact: true,
                                       ),
                                     ],
                                   ),
@@ -750,25 +709,9 @@ class Search extends SearchDelegate<String> {
                                                 ? Colors.white
                                                 : Colors.black),
                                       ),
-                                      Row(
-                                        children: <Widget>[
-                                          const Icon(
-                                            Icons.star_rounded,
-                                          ),
-                                          Text(
-                                            tvList[index].voteAverage == null
-                                                ? 'NR'
-                                                : tvList[index]
-                                                    .voteAverage!
-                                                    .toStringAsFixed(1),
-                                            style: TextStyle(
-                                                fontFamily: 'Figtree',
-                                                color: themeMode == 'dark' ||
-                                                        themeMode == 'amoled'
-                                                    ? Colors.white
-                                                    : Colors.black),
-                                          ),
-                                        ],
+                                      AppRatingBadge(
+                                        rating: tvList[index].voteAverage,
+                                        compact: true,
                                       ),
                                     ],
                                   ),

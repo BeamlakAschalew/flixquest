@@ -6,7 +6,6 @@ import 'package:flixquest/services/globle_method.dart';
 import '../functions/function.dart';
 import '/provider/app_dependency_provider.dart';
 import '/screens/common/live_tv_screen.dart';
-import '/screens/common/server_status_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../constants/app_constants.dart';
@@ -15,16 +14,15 @@ import '../models/movie.dart';
 import '../models/watch_providers.dart';
 import '/screens/common/bookmark_screen.dart';
 import '/screens/common/settings.dart';
-import '/screens/common/update_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import '../constants/api_constants.dart';
 import '../provider/settings_provider.dart';
 import '../screens/common/about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
+import '../ui_components/app_ui_components.dart';
 //import '../screens/common/news_screen.dart';
 
 class DrawerWidget extends StatefulWidget {
@@ -46,14 +44,10 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   Widget build(BuildContext context) {
     final flixquestLogo =
         Provider.of<AppDependencyProvider>(context).flixQuestLogo;
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     AppDependencyProvider appDependencyProvider = AppDependencyProvider();
     return Drawer(
       child: Container(
-        color: themeMode == 'dark' || themeMode == 'amoled'
-            ? Colors.black
-            : Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,9 +58,11 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                     width: double.infinity,
                     child: DrawerHeader(
                       decoration: BoxDecoration(
-                          color: themeMode == 'dark' || themeMode == 'amoled'
-                              ? Colors.white
-                              : Colors.black),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: .09),
+                      ),
                       child: flixquestLogo == 'default'
                           ? Image.asset('assets/images/logo.png')
                           : CachedNetworkImage(
@@ -131,34 +127,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
 
                   ListTile(
                     leading: Icon(
-                      FontAwesomeIcons.server,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(tr('check_server')),
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const ServerStatusScreen();
-                      }));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(
-                      Icons.update_rounded,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(tr('check_for_update')),
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: ((context) {
-                        return const UpdateScreen(
-                          isForced: false,
-                        );
-                      })));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(
                       Icons.info_outline,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -168,19 +136,6 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                           MaterialPageRoute(builder: (context) {
                         return const AboutPage();
                       }));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(
-                      Icons.share_rounded,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(tr('shared_the_app')),
-                    onTap: () async {
-                      mixpanel.track('Share button data', properties: {
-                        'Share button click': 'Share',
-                      });
-                      await Share.share(tr('share_text'));
                     },
                   ),
                 ],
@@ -193,68 +148,12 @@ class _DrawerWidgetState extends State<DrawerWidget> {
   }
 }
 
-Widget scrollingMoviesAndTVShimmer(String themeMode) => Column(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        Expanded(
-          child: ShimmerBase(
-            themeMode: themeMode,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 20.0),
-                child: SizedBox(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        flex: 5,
-                        child: Container(
-                          width: 100.0,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.0),
-                              color: Colors.grey.shade600),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(top: 8.0, bottom: 20.0),
-                          child: Container(
-                            width: 100.0,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5.0),
-                                color: Colors.grey.shade600),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              itemCount: 10,
-            ),
-          ),
-        ),
-      ],
-    );
+Widget scrollingMoviesAndTVShimmer(String themeMode) =>
+    const AppMediaRowShimmer();
 
-Widget discoverMoviesAndTVShimmer(String themeMode) => ShimmerBase(
-      themeMode: themeMode,
-      child: CarouselSlider.builder(
-        options: CarouselOptions(
-          disableCenter: true,
-          viewportFraction: 0.6,
-          enlargeCenterPage: true,
-          autoPlay: true,
-        ),
-        itemBuilder: (context, index, pageViewIndex) => Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8.0),
-              color: Colors.grey.shade600),
-        ),
-        itemCount: 10,
+Widget discoverMoviesAndTVShimmer(String themeMode) => LayoutBuilder(
+      builder: (context, constraints) => AppHeroShimmer(
+        height: constraints.hasBoundedHeight ? constraints.maxHeight : 440,
       ),
     );
 
@@ -1373,59 +1272,8 @@ Widget personMoviesAndTVShowShimmer(String themeMode) => Column(
       ],
     );
 
-Widget moviesAndTVShowGridShimmer(String themeMode) => Container(
-      padding: const EdgeInsets.only(top: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: ShimmerBase(
-              themeMode: themeMode,
-              child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 150,
-                    childAspectRatio: 0.48,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 5,
-                  ),
-                  itemCount: 10,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(4.0),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            flex: 6,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  color: Colors.grey.shade600),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Expanded(
-                              flex: 2,
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Container(
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      color: Colors.grey.shade600),
-                                ),
-                              )),
-                        ],
-                      ),
-                    );
-                  }),
-            ),
-          ),
-        ],
-      ),
-    );
+Widget moviesAndTVShowGridShimmer(String themeMode) =>
+    const AppMediaGridShimmer();
 
 Widget personImageShimmer(String themeMode) => Row(
       children: [

@@ -4,6 +4,7 @@ import '../../constants/app_constants.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class PasswordChangeScreen extends StatefulWidget {
   const PasswordChangeScreen({super.key});
@@ -104,22 +105,34 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : Center(
+          : AppResponsiveContent(
+              maxWidth: 560,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(
-                      height: 80,
+                    Container(
+                      width: 68,
+                      height: 68,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: .12),
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: Icon(Icons.password_rounded,
+                          size: 32,
+                          color: Theme.of(context).colorScheme.primary),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         tr('password_change'),
-                        style: const TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
                     Padding(
@@ -156,24 +169,21 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 onEditingComplete: () => FocusScope.of(context)
                                     .requestFocus(_passwordVerifyFocusNode),
                                 decoration: InputDecoration(
-                                    errorMaxLines: 3,
-                                    border: const UnderlineInputBorder(),
-                                    filled: true,
-                                    prefixIcon:
-                                        const Icon(FontAwesomeIcons.lock),
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _obscureText = !_obscureText;
-                                        });
-                                      },
-                                      child: Icon(_obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off),
-                                    ),
-                                    labelText: tr('enter_new_pass'),
-                                    fillColor:
-                                        Theme.of(context).colorScheme.surface),
+                                  errorMaxLines: 3,
+                                  filled: true,
+                                  prefixIcon: const Icon(FontAwesomeIcons.lock),
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _obscureText = !_obscureText;
+                                      });
+                                    },
+                                    child: Icon(_obscureText
+                                        ? Icons.visibility
+                                        : Icons.visibility_off),
+                                  ),
+                                  labelText: tr('enter_new_pass'),
+                                ),
                                 onChanged: (value) {
                                   setState(() {
                                     newPassword = value;
@@ -199,24 +209,21 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 keyboardType: TextInputType.visiblePassword,
                                 obscureText: _obscureText,
                                 decoration: InputDecoration(
-                                    errorMaxLines: 3,
-                                    border: const UnderlineInputBorder(),
-                                    filled: true,
-                                    prefixIcon:
-                                        const Icon(FontAwesomeIcons.lock),
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _obscureText = !_obscureText;
-                                        });
-                                      },
-                                      child: Icon(_obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off),
-                                    ),
-                                    labelText: tr('repeat_new_password'),
-                                    fillColor:
-                                        Theme.of(context).colorScheme.surface),
+                                  errorMaxLines: 3,
+                                  filled: true,
+                                  prefixIcon: const Icon(FontAwesomeIcons.lock),
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _obscureText = !_obscureText;
+                                      });
+                                    },
+                                    child: Icon(_obscureText
+                                        ? Icons.visibility
+                                        : Icons.visibility_off),
+                                  ),
+                                  labelText: tr('repeat_new_password'),
+                                ),
                               ),
                             ),
                           ],

@@ -1,12 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import '../../constants/api_constants.dart';
-import '../../constants/app_constants.dart';
-import '../../models/choice_chip.dart';
 import '../../models/dropdown_select.dart';
-import '../../models/filter_chip.dart';
-import '../../widgets/common_widgets.dart';
+import '../../ui_components/app_ui_components.dart';
 import 'discover_tv_result.dart';
 
 class DiscoverTVTab extends StatefulWidget {
@@ -17,381 +14,274 @@ class DiscoverTVTab extends StatefulWidget {
 }
 
 class _DiscoverTVTabState extends State<DiscoverTVTab> {
-  YearDropdownData yearDropdownData = YearDropdownData();
-  int sortValue = 0;
-  int tvStatusValue = 0;
-  int adultValue = 1;
-  String tvSort = 'popularity.desc';
-  String tvSeriesStatusValue = '';
-  bool includeAdult = false;
-  String defaultMovieReleaseYear = '';
-  double tvTotalRatingSlider = 1;
-  bool enableOptionForSliderMovie = false;
-  String joinedIds = '';
-  String joinedProviderIds = '';
-  final List<String> genreNames = <String>[];
-  final List<String> genreIds = <String>[];
-  final List<String> providersName = <String>[];
-  final List<String> providersId = <String>[];
+  final YearDropdownData _years = YearDropdownData();
+  int _sortIndex = 0;
+  int _statusIndex = 0;
+  String _firstAirYear = '';
+  double _minimumRatings = 0;
+  bool _useMinimumRatings = false;
+  final Set<String> _genreIds = {};
+  final Set<String> _providerIds = {};
 
-  void setSliderValue(newValue) {
-    setState(() {
-      tvTotalRatingSlider = newValue;
-    });
-  }
+  List<({String label, String value})> _sortOptions() => [
+        (label: tr('popularity_descending'), value: 'popularity.desc'),
+        (label: tr('popularity_ascending'), value: 'popularity.asc'),
+        (label: tr('average_vote_descending'), value: 'vote_average.desc'),
+        (label: tr('average_vote_ascending'), value: 'vote_average.asc'),
+      ];
 
-  void joinGenreStrings() {
-    setState(() {
-      joinedIds = genreIds.join(',');
-    });
-  }
+  List<({String label, String value})> _statusOptions() => [
+        (label: tr('any'), value: ''),
+        (label: tr('returning_series'), value: '0'),
+        (label: tr('planned'), value: '1'),
+        (label: tr('in_production'), value: '2'),
+        (label: tr('ended'), value: '3'),
+        (label: tr('cancelled'), value: '4'),
+        (label: tr('pilot'), value: '5'),
+      ];
 
-  void joinProviderStrings() {
-    setState(() {
-      joinedProviderIds = providersId.join(',');
-    });
-  }
+  List<({String label, String value})> _genres() => [
+        (label: tr('action_and_adventure'), value: '10759'),
+        (label: tr('animation'), value: '16'),
+        (label: tr('comedy'), value: '35'),
+        (label: tr('crime'), value: '80'),
+        (label: tr('documentary'), value: '99'),
+        (label: tr('drama'), value: '18'),
+        (label: tr('family'), value: '10751'),
+        (label: tr('kids'), value: '10762'),
+        (label: tr('mystery'), value: '9648'),
+        (label: tr('news'), value: '10763'),
+        (label: tr('reality'), value: '10764'),
+        (label: tr('scifi_and_fantasy'), value: '10765'),
+        (label: tr('soap'), value: '10766'),
+        (label: tr('talk'), value: '10767'),
+        (label: tr('war_and_politics'), value: '10768'),
+        (label: tr('western'), value: '37'),
+      ];
+
+  static const _providers = [
+    (label: 'Netflix', value: '8'),
+    (label: 'Prime Video', value: '9'),
+    (label: 'Disney+', value: '337'),
+    (label: 'Hulu', value: '15'),
+    (label: 'Max', value: '384'),
+    (label: 'Apple TV+', value: '350'),
+    (label: 'Peacock', value: '387'),
+    (label: 'iTunes', value: '2'),
+    (label: 'YouTube', value: '188'),
+    (label: 'Paramount+', value: '531'),
+    (label: 'Netflix Kids', value: '175'),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final List<SortChoiceChipWidget> sortChoiceChip = <SortChoiceChipWidget>[
-      SortChoiceChipWidget(
-          name: tr('popularity_descending'),
-          value: 'popularity.desc',
-          index: 0),
-      SortChoiceChipWidget(
-          name: tr('popularity_ascending'), value: 'popularity.asc', index: 1),
-      SortChoiceChipWidget(
-          name: tr('average_vote_descending'),
-          value: 'vote_average.desc',
-          index: 2),
-      SortChoiceChipWidget(
-          name: tr('average_vote_ascending'),
-          value: 'vote_average.asc',
-          index: 3)
-    ];
-
-    final List<TVSeriesStatus> tvSeriesStatusList = <TVSeriesStatus>[
-      TVSeriesStatus(statusId: '', statusName: tr('any'), index: 0),
-      TVSeriesStatus(
-          statusId: '0', statusName: tr('returning_series'), index: 1),
-      TVSeriesStatus(statusId: '1', statusName: tr('planned'), index: 2),
-      TVSeriesStatus(statusId: '2', statusName: tr('in_production'), index: 3),
-      TVSeriesStatus(statusId: '3', statusName: tr('ended'), index: 4),
-      TVSeriesStatus(statusId: '4', statusName: tr('cancelled'), index: 5),
-      TVSeriesStatus(statusId: '5', statusName: tr('pilot'), index: 6),
-    ];
-
-    List<DropdownMenuItem<String>> getDropdownItems() {
-      List<DropdownMenuItem<String>> dropdownItems = [];
-      for (int i = 0; i < yearDropdownData.yearsList.length; i++) {
-        String years = yearDropdownData.yearsList[i];
-        var newItem = DropdownMenuItem(
-          value: years,
-          child: Text(years.isEmpty ? tr('any') : years),
-        );
-        dropdownItems.add(newItem);
-      }
-      return dropdownItems;
-    }
-
-    List<TVGenreFilterChipWidget> tvGenreList = <TVGenreFilterChipWidget>[
-      TVGenreFilterChipWidget(
-          genreName: tr('action_and_adventure'), genreValue: '10759'),
-      TVGenreFilterChipWidget(genreName: tr('animation'), genreValue: '16'),
-      TVGenreFilterChipWidget(genreName: tr('comedy'), genreValue: '35'),
-      TVGenreFilterChipWidget(genreName: tr('crime'), genreValue: '80'),
-      TVGenreFilterChipWidget(genreName: tr('documentary'), genreValue: '99'),
-      TVGenreFilterChipWidget(genreName: tr('drama'), genreValue: '18'),
-      TVGenreFilterChipWidget(genreName: tr('family'), genreValue: '10751'),
-      TVGenreFilterChipWidget(genreName: tr('kids'), genreValue: '10762'),
-      TVGenreFilterChipWidget(genreName: tr('mystery'), genreValue: '9648'),
-      TVGenreFilterChipWidget(genreName: tr('news'), genreValue: '10763'),
-      TVGenreFilterChipWidget(genreName: tr('reality'), genreValue: '10764'),
-      TVGenreFilterChipWidget(
-          genreName: tr('scifi_and_fantasy'), genreValue: '10765'),
-      TVGenreFilterChipWidget(genreName: tr('soap'), genreValue: '10766'),
-      TVGenreFilterChipWidget(genreName: tr('talk'), genreValue: '10767'),
-      TVGenreFilterChipWidget(
-          genreName: tr('war_and_politics'), genreValue: '10768'),
-      TVGenreFilterChipWidget(genreName: tr('western'), genreValue: '37'),
-    ];
-
-    List<WatchProvidersFilterChipWidget> providerFilterData =
-        <WatchProvidersFilterChipWidget>[
-      WatchProvidersFilterChipWidget(networkName: 'Netflix', networkId: '8'),
-      WatchProvidersFilterChipWidget(
-          networkName: 'Amazon Prime', networkId: '9'),
-      WatchProvidersFilterChipWidget(
-          networkName: 'Disney Plus', networkId: '337'),
-      WatchProvidersFilterChipWidget(networkName: 'hulu', networkId: '15'),
-      WatchProvidersFilterChipWidget(networkName: 'HBO Max', networkId: '384'),
-      WatchProvidersFilterChipWidget(
-          networkName: 'Apple TV plus', networkId: '350'),
-      WatchProvidersFilterChipWidget(networkName: 'Peacock', networkId: '387'),
-      WatchProvidersFilterChipWidget(networkName: 'iTunes', networkId: '2'),
-      WatchProvidersFilterChipWidget(
-          networkName: 'YouTube Premium', networkId: '188'),
-      WatchProvidersFilterChipWidget(
-          networkName: 'Paramount Plus', networkId: '531'),
-      WatchProvidersFilterChipWidget(
-          networkName: 'Netflix Kids', networkId: '175'),
-    ];
+    final sortOptions = _sortOptions();
+    final statusOptions = _statusOptions();
+    final genres = _genres();
+    final activeFilters = _genreIds.length +
+        _providerIds.length +
+        (_statusIndex == 0 ? 0 : 1) +
+        (_firstAirYear.isEmpty ? 0 : 1) +
+        (_useMinimumRatings ? 1 : 0);
 
     return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(top: 12, bottom: 120),
+      child: AppResponsiveContent(
+        maxWidth: 720,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const LeadingDot(),
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: .12),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(Icons.tune_rounded,
+                      color: Theme.of(context).colorScheme.primary),
+                ),
+                const SizedBox(width: 14),
                 Expanded(
-                  child: Text(
-                    tr('sort_by'),
-                    style: kTextHeaderStyle,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${tr('sort_by')} & ${tr('discover')}',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        activeFilters == 0
+                            ? tr('any')
+                            : '$activeFilters selected',
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            Wrap(
-              spacing: 3,
-              children: sortChoiceChip
-                  .map((SortChoiceChipWidget choiceChipWidget) => ChoiceChip(
-                        selectedColor: Theme.of(context).colorScheme.primary,
-                        label: Text(choiceChipWidget.name),
-                        selected: sortValue == choiceChipWidget.index,
-                        onSelected: (bool selected) {
-                          setState(() {
-                            sortValue =
-                                (selected ? choiceChipWidget.index : null)!;
-                            tvSort = choiceChipWidget.value;
-                          });
-                        },
-                      ))
-                  .toList(),
+            const SizedBox(height: 28),
+            AppFilterSection(
+              title: tr('sort_by'),
+              child: AppFilterRail(
+                children: [
+                  for (var i = 0; i < sortOptions.length; i++)
+                    AppFilterPill(
+                      label: sortOptions[i].label,
+                      selected: _sortIndex == i,
+                      onPressed: () => setState(() => _sortIndex = i),
+                    ),
+                ],
+              ),
             ),
-            Row(
-              children: [
-                const LeadingDot(),
-                Expanded(
-                  child: Text(
-                    tr('tv_series_status'),
-                    style: kTextHeaderStyle,
-                  ),
-                ),
-              ],
+            AppFilterSection(
+              title: tr('tv_series_status'),
+              child: AppFilterRail(
+                children: [
+                  for (var i = 0; i < statusOptions.length; i++)
+                    AppFilterPill(
+                      label: statusOptions[i].label,
+                      selected: _statusIndex == i,
+                      onPressed: () => setState(() => _statusIndex = i),
+                    ),
+                ],
+              ),
             ),
-            Wrap(
-              spacing: 3,
-              children: tvSeriesStatusList
-                  .map((TVSeriesStatus tvSeriesStatus) => ChoiceChip(
-                        selectedColor: Theme.of(context).colorScheme.primary,
-                        label: Text(tvSeriesStatus.statusName),
-                        selected: tvStatusValue == tvSeriesStatus.index,
-                        onSelected: (bool selected) {
-                          setState(() {
-                            tvStatusValue =
-                                (selected ? tvSeriesStatus.index : null)!;
-                            tvSeriesStatusValue = tvSeriesStatus.statusId;
-                          });
-                        },
-                      ))
-                  .toList(),
+            AppFilterSection(
+              title: tr('release_year'),
+              child: DropdownButtonFormField<String>(
+                key: ValueKey(_firstAirYear),
+                initialValue: _firstAirYear,
+                isExpanded: true,
+                decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.calendar_month_rounded)),
+                items: [
+                  for (final year in _years.yearsList)
+                    DropdownMenuItem(
+                      value: year,
+                      child: Text(year.isEmpty ? tr('any') : year),
+                    ),
+                ],
+                onChanged: (value) =>
+                    setState(() => _firstAirYear = value ?? ''),
+              ),
             ),
-            const Row(
-              children: [
-                LeadingDot(),
-                Expanded(
-                  child: Text(
-                    'First air year',
-                    style: kTextHeaderStyle,
-                  ),
-                ),
-              ],
-            ),
-            DropdownButton<String>(
-              items: getDropdownItems(),
-              onChanged: (value) {
-                setState(() {
-                  defaultMovieReleaseYear = value!;
-                });
-              },
-              value: defaultMovieReleaseYear,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
+            AppFilterSection(
+              title: tr('total_ratings'),
+              trailing: Switch.adaptive(
+                value: _useMinimumRatings,
+                onChanged: (value) =>
+                    setState(() => _useMinimumRatings = value),
+              ),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 8),
+                  child: Column(
+                    children: [
+                      Row(
                         children: [
-                          const LeadingDot(),
+                          Icon(Icons.people_alt_outlined,
+                              color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              tr('total_ratings'),
-                              style: kTextHeaderStyle,
+                              tr('ratings_count', namedArgs: {
+                                'r': _minimumRatings.round().toString()
+                              }),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    Checkbox(
-                      activeColor: Theme.of(context).colorScheme.primary,
-                      value: enableOptionForSliderMovie,
-                      onChanged: (newValue) {
-                        setState(() {
-                          enableOptionForSliderMovie = newValue!;
-                          tvTotalRatingSlider = 0;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                Slider(
-                  value: tvTotalRatingSlider,
-                  onChanged: enableOptionForSliderMovie
-                      ? (newValue) {
-                          setSliderValue(newValue);
-                        }
-                      : null,
-                  min: 0,
-                  max: 30000,
-                  label: '${tvTotalRatingSlider.toInt()}',
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30, 15),
-                  child: Text(
-                    tr('ratings_count', namedArgs: {
-                      'r': tvTotalRatingSlider.toInt().toString()
-                    }),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                const LeadingDot(),
-                Expanded(
-                  child: Text(
-                    tr('with_genres'),
-                    style: kTextHeaderStyle,
-                  ),
-                ),
-              ],
-            ),
-            Wrap(
-              spacing: 3,
-              children: tvGenreList
-                  .map((TVGenreFilterChipWidget tvGenreFilterChipWidget) =>
-                      FilterChip(
-                        selectedColor: Theme.of(context).colorScheme.primary,
-                        label: Text(tvGenreFilterChipWidget.genreName),
-                        selected: genreNames
-                            .contains(tvGenreFilterChipWidget.genreName),
-                        onSelected: (bool value) {
-                          setState(() {
-                            if (value) {
-                              genreNames.add(tvGenreFilterChipWidget.genreName);
-                              genreIds.add(tvGenreFilterChipWidget.genreValue);
-                              genreIds.join(',');
-                            } else {
-                              genreNames.removeWhere((String name) {
-                                return name ==
-                                    tvGenreFilterChipWidget.genreName;
-                              });
-                              genreIds.removeWhere((String value) {
-                                return value ==
-                                    tvGenreFilterChipWidget.genreValue;
-                              });
-                            }
-                          });
-                        },
-                      ))
-                  .toList(),
-            ),
-            Row(
-              children: [
-                const LeadingDot(),
-                Expanded(
-                  child: Text(
-                    tr('with_streaming_services'),
-                    style: kTextHeaderStyle,
-                  ),
-                ),
-              ],
-            ),
-            Wrap(
-              spacing: 3,
-              children: providerFilterData
-                  .map((WatchProvidersFilterChipWidget
-                          watchProvidersFilterChipWidget) =>
-                      FilterChip(
-                        selectedColor: Theme.of(context).colorScheme.primary,
-                        label: Text(watchProvidersFilterChipWidget.networkName),
-                        selected: providersName.contains(
-                            watchProvidersFilterChipWidget.networkName),
-                        onSelected: (bool value) {
-                          setState(() {
-                            if (value) {
-                              providersName.add(
-                                  watchProvidersFilterChipWidget.networkName);
-                              providersId.add(
-                                  watchProvidersFilterChipWidget.networkId);
-                            } else {
-                              providersName.removeWhere((String name) {
-                                return name ==
-                                    watchProvidersFilterChipWidget.networkName;
-                              });
-                              providersId.removeWhere((String value) {
-                                return value ==
-                                    watchProvidersFilterChipWidget.networkId;
-                              });
-                            }
-                          });
-                        },
-                      ))
-                  .toList(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton(
-                  style: ButtonStyle(
-                    minimumSize: WidgetStateProperty.all(
-                        const Size(double.infinity, 50)),
-                  ),
-                  onPressed: () {
-                    joinGenreStrings();
-                    joinProviderStrings();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return DiscoverTVResult(
-                        api:
-                            '$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY&sort_by=$tvSort&watch_region=US&with_status=$tvSeriesStatusValue&first_air_date_year=$defaultMovieReleaseYear&vote_count.gte=${tvTotalRatingSlider.toInt()}&with_genres=$joinedIds&with_watch_providers=$joinedProviderIds',
-                        page: 1,
-                      );
-                    }));
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Text(tr('discover')),
+                      Slider(
+                        value: _minimumRatings,
+                        min: 0,
+                        max: 30000,
+                        divisions: 30,
+                        onChanged: _useMinimumRatings
+                            ? (value) => setState(() => _minimumRatings = value)
+                            : null,
                       ),
-                      const Icon(FontAwesomeIcons.wandMagicSparkles)
                     ],
-                  )),
-            )
+                  ),
+                ),
+              ),
+            ),
+            AppFilterSection(
+              title: tr('with_genres'),
+              child: AppFilterRail(
+                children: [
+                  for (final genre in genres)
+                    AppFilterPill(
+                      label: genre.label,
+                      selected: _genreIds.contains(genre.value),
+                      onPressed: () => _toggle(_genreIds, genre.value),
+                    ),
+                ],
+              ),
+            ),
+            AppFilterSection(
+              title: tr('with_streaming_services'),
+              child: AppFilterRail(
+                children: [
+                  for (final provider in _providers)
+                    AppFilterPill(
+                      label: provider.label,
+                      selected: _providerIds.contains(provider.value),
+                      onPressed: () => _toggle(_providerIds, provider.value),
+                    ),
+                ],
+              ),
+            ),
+            const Divider(),
+            const SizedBox(height: 18),
+            AppFilterActions(
+              resetLabel: tr('clear'),
+              applyLabel: tr('apply'),
+              onReset: _reset,
+              onApply: () => _apply(
+                sort: sortOptions[_sortIndex].value,
+                status: statusOptions[_statusIndex].value,
+              ),
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  void _toggle(Set<String> values, String value) {
+    setState(() {
+      values.contains(value) ? values.remove(value) : values.add(value);
+    });
+  }
+
+  void _reset() {
+    setState(() {
+      _sortIndex = 0;
+      _statusIndex = 0;
+      _firstAirYear = '';
+      _minimumRatings = 0;
+      _useMinimumRatings = false;
+      _genreIds.clear();
+      _providerIds.clear();
+    });
+  }
+
+  void _apply({required String sort, required String status}) {
+    final api =
+        '$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY&sort_by=$sort&watch_region=US&with_status=$status&first_air_date_year=$_firstAirYear&vote_count.gte=${_useMinimumRatings ? _minimumRatings.round() : 0}&with_genres=${_genreIds.join(',')}&with_watch_providers=${_providerIds.join(',')}';
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => DiscoverTVResult(api: api, page: 1)),
     );
   }
 }

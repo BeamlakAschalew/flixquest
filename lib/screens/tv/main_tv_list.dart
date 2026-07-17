@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../functions/network.dart';
 import '../../widgets/common_widgets.dart';
+import '../../ui_components/app_ui_components.dart';
+import '../common/search_view.dart';
 
 class MainTVList extends StatefulWidget {
   final String api;
@@ -80,6 +82,12 @@ class MainTVListState extends State<MainTVList> {
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
@@ -87,6 +95,12 @@ class MainTVListState extends State<MainTVList> {
     return Scaffold(
       appBar: AppBar(
         title: Text(tr('genre_tv_title', namedArgs: {'g': widget.title})),
+        actions: [
+          IconButton(
+            onPressed: _openSearch,
+            icon: const Icon(Icons.search_rounded),
+          ),
+        ],
       ),
       body: tvList == null && viewType == 'grid'
           ? moviesAndTVShowGridShimmer(themeMode)
@@ -96,8 +110,10 @@ class MainTVListState extends State<MainTVList> {
                   isLoading: isLoading,
                   scrollController: _scrollController)
               : tvList!.isEmpty
-                  ? Center(
-                      child: Text(tr('tv_404')),
+                  ? AppEmptyState(
+                      title: tr('tv_404'),
+                      message: tr('no_result'),
+                      icon: Icons.live_tv_outlined,
                     )
                   : Column(
                       children: [
@@ -132,6 +148,18 @@ class MainTVListState extends State<MainTVList> {
                             )),
                       ],
                     ),
+    );
+  }
+
+  void _openSearch() {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    showSearch(
+      context: context,
+      delegate: Search(
+        mixpanel: settings.mixpanel,
+        includeAdult: settings.isAdult,
+        lang: settings.appLanguage,
+      ),
     );
   }
 }

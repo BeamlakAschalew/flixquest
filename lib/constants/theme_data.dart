@@ -830,12 +830,200 @@ class Styles {
       required ColorScheme? darkDynamicColor,
       required BuildContext context,
       required AppColor appColor}) {
-    return appThemeMode == 'dark'
+    final baseTheme = appThemeMode == 'dark'
         ? darkThemeData(isM3Enabled, darkDynamicColor, appColor)
         : appThemeMode == 'light'
             ? lightThemeData(isM3Enabled, lightDynamicColor, appColor)
             : appThemeMode == 'amoled'
                 ? lightsOutThemeData(isM3Enabled, darkDynamicColor, appColor)
                 : darkThemeData(isM3Enabled, darkDynamicColor, appColor);
+    return _applyFlixQuestUI(baseTheme);
   }
+}
+
+ThemeData _applyFlixQuestUI(ThemeData base) {
+  final colors = base.colorScheme;
+  final dark = colors.brightness == Brightness.dark;
+  final surface = dark
+      ? (base.scaffoldBackgroundColor == Colors.black
+          ? Colors.black
+          : const Color(0xFF111315))
+      : const Color(0xFFFCFCFD);
+  final softSurface = dark ? const Color(0xFF1D2023) : const Color(0xFFF3F3F5);
+  final outline = colors.onSurface.withValues(alpha: .12);
+  final roundedBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(15),
+    borderSide: BorderSide.none,
+  );
+
+  return base.copyWith(
+    scaffoldBackgroundColor: surface,
+    canvasColor: surface,
+    textTheme: base.textTheme.apply(fontFamily: 'Figtree').copyWith(
+          headlineLarge: base.textTheme.headlineLarge
+              ?.copyWith(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w700),
+          headlineMedium: base.textTheme.headlineMedium
+              ?.copyWith(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w700),
+          headlineSmall: base.textTheme.headlineSmall
+              ?.copyWith(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w700),
+          titleLarge: base.textTheme.titleLarge
+              ?.copyWith(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w700),
+          titleMedium: base.textTheme.titleMedium
+              ?.copyWith(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
+        ),
+    appBarTheme: AppBarTheme(
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      centerTitle: false,
+      backgroundColor: surface,
+      foregroundColor: colors.onSurface,
+      surfaceTintColor: Colors.transparent,
+      iconTheme: IconThemeData(color: colors.onSurface, size: 24),
+      titleTextStyle: TextStyle(
+        color: colors.onSurface,
+        fontFamily: 'FigtreeSB',
+        fontWeight: FontWeight.w700,
+        fontSize: 23,
+      ),
+    ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: softSurface,
+      surfaceTintColor: Colors.transparent,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: softSurface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      border: roundedBorder,
+      enabledBorder: roundedBorder,
+      focusedBorder: roundedBorder.copyWith(
+        borderSide: BorderSide(color: colors.primary, width: 1.5),
+      ),
+      errorBorder: roundedBorder.copyWith(
+        borderSide: BorderSide(color: colors.error),
+      ),
+      prefixIconColor: colors.onSurfaceVariant,
+      suffixIconColor: colors.primary,
+      hintStyle:
+          TextStyle(color: colors.onSurfaceVariant.withValues(alpha: .65)),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        backgroundColor: colors.primary,
+        foregroundColor: colors.onPrimary,
+        minimumSize: const Size(48, 48),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        textStyle: const TextStyle(fontFamily: 'FigtreeSB'),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        minimumSize: const Size(48, 48),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        textStyle: const TextStyle(fontFamily: 'FigtreeSB'),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: colors.primary,
+        minimumSize: const Size(48, 48),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+        side: BorderSide(color: colors.primary, width: 1.4),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        textStyle: const TextStyle(fontFamily: 'FigtreeSB'),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: colors.primary,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        textStyle: const TextStyle(fontFamily: 'FigtreeSB'),
+      ),
+    ),
+    chipTheme: base.chipTheme.copyWith(
+      backgroundColor: Colors.transparent,
+      selectedColor: colors.primary,
+      secondarySelectedColor: colors.primary,
+      labelStyle: TextStyle(color: colors.onSurface),
+      secondaryLabelStyle: TextStyle(color: colors.onPrimary),
+      side: BorderSide(color: colors.primary, width: 1.3),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+    ),
+    tabBarTheme: TabBarThemeData(
+      dividerColor: Colors.transparent,
+      indicatorColor: colors.primary,
+      labelColor: colors.primary,
+      unselectedLabelColor: colors.onSurfaceVariant,
+      labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontSize: 15),
+      indicatorSize: TabBarIndicatorSize.label,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      elevation: 0,
+      backgroundColor: surface,
+      indicatorColor: colors.primary.withValues(alpha: .12),
+      iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
+            color: states.contains(WidgetState.selected)
+                ? colors.primary
+                : colors.onSurfaceVariant,
+          )),
+      labelTextStyle: WidgetStateProperty.resolveWith((states) => TextStyle(
+            color: states.contains(WidgetState.selected)
+                ? colors.primary
+                : colors.onSurfaceVariant,
+            fontFamily:
+                states.contains(WidgetState.selected) ? 'FigtreeSB' : 'Figtree',
+            fontSize: 11,
+          )),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: surface,
+      surfaceTintColor: Colors.transparent,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+      titleTextStyle: base.textTheme.titleLarge?.copyWith(
+        color: colors.onSurface,
+        fontFamily: 'FigtreeSB',
+        fontWeight: FontWeight.w700,
+      ),
+      contentTextStyle: base.textTheme.bodyMedium?.copyWith(
+        color: colors.onSurfaceVariant,
+        height: 1.45,
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: dark ? const Color(0xFFF2F3F4) : const Color(0xFF1D2023),
+      contentTextStyle: TextStyle(
+        color: dark ? const Color(0xFF17191B) : Colors.white,
+        fontFamily: 'FigtreeSB',
+      ),
+      actionTextColor: colors.primary,
+      closeIconColor: dark ? const Color(0xFF17191B) : Colors.white,
+      showCloseIcon: true,
+      elevation: 8,
+      insetPadding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
+    dividerTheme: DividerThemeData(color: outline, space: 1, thickness: 1),
+    listTileTheme: ListTileThemeData(
+      iconColor: colors.onSurface,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+    ),
+  );
 }

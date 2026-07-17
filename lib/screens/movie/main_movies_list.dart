@@ -7,6 +7,8 @@ import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/movie_ui_components.dart';
 import '../../widgets/common_widgets.dart';
+import '../../ui_components/app_ui_components.dart';
+import '../common/search_view.dart';
 
 class MainMoviesList extends StatefulWidget {
   final String api;
@@ -91,6 +93,12 @@ class MainMoviesListState extends State<MainMoviesList> {
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
@@ -98,6 +106,12 @@ class MainMoviesListState extends State<MainMoviesList> {
     return Scaffold(
       appBar: AppBar(
         title: Text(tr('movie_type', namedArgs: {'t': widget.title})),
+        actions: [
+          IconButton(
+            onPressed: _openSearch,
+            icon: const Icon(Icons.search_rounded),
+          ),
+        ],
       ),
       body: moviesList == null && viewType == 'grid'
           ? moviesAndTVShowGridShimmer(themeMode)
@@ -107,8 +121,10 @@ class MainMoviesListState extends State<MainMoviesList> {
                   isLoading: isLoading,
                   scrollController: _scrollController)
               : moviesList!.isEmpty
-                  ? Center(
-                      child: Text(tr('movie_404')),
+                  ? AppEmptyState(
+                      title: tr('movie_404'),
+                      message: tr('no_result'),
+                      icon: Icons.movie_filter_outlined,
                     )
                   : Column(
                       children: [
@@ -141,6 +157,18 @@ class MainMoviesListState extends State<MainMoviesList> {
                             )),
                       ],
                     ),
+    );
+  }
+
+  void _openSearch() {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    showSearch(
+      context: context,
+      delegate: Search(
+        mixpanel: settings.mixpanel,
+        includeAdult: settings.isAdult,
+        lang: settings.appLanguage,
+      ),
     );
   }
 }

@@ -11,6 +11,7 @@ import '/api/endpoints.dart';
 import '/models/movie.dart';
 import '/widgets/movie_widgets.dart';
 import '../../controllers/bookmark_database_controller.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final Movie movie;
@@ -54,8 +55,6 @@ class MovieDetailPageState extends State<MovieDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-
     super.build(context);
     return Scaffold(
       body: CustomScrollView(
@@ -63,14 +62,9 @@ class MovieDetailPageState extends State<MovieDetailPage>
         slivers: [
           SliverAppBar(
             pinned: true,
-            elevation: 1,
-            shadowColor: themeMode == 'dark' || themeMode == 'amoled'
-                ? Colors.white
-                : Colors.black,
-            forceElevated: true,
-            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
-                ? Colors.black
-                : Colors.white,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
             leading: SABTN(
               onBack: () {
                 Navigator.pop(context);
@@ -104,9 +98,10 @@ class MovieDetailPageState extends State<MovieDetailPage>
           ),
 
           // body
-          SliverList(
-            delegate: SliverChildListDelegate.fixed(
-              [MovieAbout(movie: widget.movie)],
+          SliverToBoxAdapter(
+            child: AppResponsiveContent(
+              padding: EdgeInsets.zero,
+              child: MovieAbout(movie: widget.movie),
             ),
           ),
         ],

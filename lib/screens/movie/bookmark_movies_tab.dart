@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
 import '../../controllers/bookmark_database_controller.dart';
@@ -9,14 +10,12 @@ import '../../functions/function.dart';
 import '../../models/movie.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 import '../../widgets/common_widgets.dart';
 import 'movie_detail.dart';
 
 class MovieBookmark extends StatefulWidget {
-  const MovieBookmark({
-    super.key,
-    required this.movieList,
-  });
+  const MovieBookmark({required this.movieList, super.key});
 
   final List<Movie>? movieList;
 
@@ -25,399 +24,221 @@ class MovieBookmark extends StatefulWidget {
 }
 
 class _MovieBookmarkState extends State<MovieBookmark> {
-  int count = 0;
-  MovieDatabaseController movieDatabaseController = MovieDatabaseController();
-  final _scrollController = ScrollController();
+  final MovieDatabaseController _database = MovieDatabaseController();
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final viewType = Provider.of<SettingsProvider>(context).defaultView;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return widget.movieList == null && viewType == 'grid'
-        ? Container(child: moviesAndTVShowGridShimmer(themeMode))
-        : widget.movieList == null && viewType == 'list'
-            ? Container(
-                child: mainPageVerticalScrollShimmer(
-                    themeMode: themeMode,
-                    isLoading: false,
-                    scrollController: _scrollController))
-            : widget.movieList!.isEmpty
-                ? Center(
-                    child: Text(
-                      tr('no_movies_bookmarked'),
-                      textAlign: TextAlign.center,
-                      style: kTextSmallHeaderStyle,
-                      maxLines: 4,
+    final settings = Provider.of<SettingsProvider>(context);
+    final proxy = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+    final items = widget.movieList;
+    if (items == null) return moviesAndTVShowGridShimmer(settings.appTheme);
+    if (items.isEmpty) {
+      return AppEmptyState(
+        title: tr('bookmarks'),
+        message: tr('no_movies_bookmarked'),
+        icon: Icons.bookmark_add_outlined,
+      );
+    }
+    return settings.defaultView == 'list'
+        ? _buildList(context, items, settings, proxy)
+        : _buildGrid(context, items, settings, proxy);
+  }
+
+  Widget _buildGrid(BuildContext context, List<Movie> items,
+      SettingsProvider settings, String proxy) {
+    return GridView.builder(
+      padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context), 18, AppUI.pagePadding(context), 24),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: AppUI.mediaGridColumns(context),
+        childAspectRatio: .58,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: items.length,
+      itemBuilder: (_, index) => _MovieGridCard(
+        movie: items[index],
+        imageUrl: _imageUrl(context, items[index], settings, proxy),
+        onOpen: () => _open(items[index]),
+        onRemove: () => _remove(items, index),
+        themeMode: settings.appTheme,
+      ),
+    );
+  }
+
+  Widget _buildList(BuildContext context, List<Movie> items,
+      SettingsProvider settings, String proxy) {
+    return ListView.separated(
+      padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context), 16, AppUI.pagePadding(context), 24),
+      itemCount: items.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (_, index) {
+        final movie = items[index];
+        return Card(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => _open(movie),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: CachedNetworkImage(
+                      cacheManager: cacheProp(),
+                      imageUrl: _imageUrl(context, movie, settings, proxy),
+                      width: 92,
+                      height: 132,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) =>
+                          scrollingImageShimmer(settings.appTheme),
+                      errorWidget: (_, __, ___) => Image.asset(
+                        'assets/images/na_logo.png',
+                        width: 92,
+                        height: 132,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  )
-                : Column(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                  child: viewType == 'grid'
-                                      ? GridView.builder(
-                                          controller: _scrollController,
-                                          gridDelegate:
-                                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                                            maxCrossAxisExtent: 150,
-                                            childAspectRatio: 0.48,
-                                            crossAxisSpacing: 5,
-                                            mainAxisSpacing: 5,
-                                          ),
-                                          itemCount: widget.movieList!.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  return MovieDetailPage(
-                                                      movie: widget
-                                                          .movieList![index],
-                                                      heroId:
-                                                          '${widget.movieList![index].id}');
-                                                }));
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4.0),
-                                                child: Column(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 6,
-                                                      child: Hero(
-                                                        tag:
-                                                            '${widget.movieList![index].id}',
-                                                        child: Material(
-                                                          type: MaterialType
-                                                              .transparency,
-                                                          child: Stack(
-                                                            alignment: Alignment
-                                                                .center,
-                                                            children: [
-                                                              ClipRRect(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            8.0),
-                                                                child: widget
-                                                                            .movieList![
-                                                                                index]
-                                                                            .posterPath ==
-                                                                        null
-                                                                    ? Image.asset(
-                                                                        'assets/images/na_logo.png',
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                        height:
-                                                                            double.infinity)
-                                                                    : CachedNetworkImage(
-                                                                        cacheManager:
-                                                                            cacheProp(),
-                                                                        fadeOutDuration:
-                                                                            const Duration(milliseconds: 300),
-                                                                        fadeOutCurve:
-                                                                            Curves.easeOut,
-                                                                        fadeInDuration:
-                                                                            const Duration(milliseconds: 700),
-                                                                        fadeInCurve:
-                                                                            Curves.easeIn,
-                                                                        imageUrl: buildImageUrl(
-                                                                                TMDB_BASE_IMAGE_URL,
-                                                                                proxyUrl,
-                                                                                isProxyEnabled,
-                                                                                context) +
-                                                                            imageQuality +
-                                                                            widget.movieList![index].posterPath!,
-                                                                        imageBuilder:
-                                                                            (context, imageProvider) =>
-                                                                                Container(
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            image:
-                                                                                DecorationImage(
-                                                                              image: imageProvider,
-                                                                              fit: BoxFit.cover,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        placeholder:
-                                                                            (context, url) =>
-                                                                                scrollingImageShimmer(themeMode),
-                                                                        errorWidget: (context, url, error) => Image.asset(
-                                                                            'assets/images/na_logo.png',
-                                                                            fit:
-                                                                                BoxFit.cover,
-                                                                            height: double.infinity),
-                                                                      ),
-                                                              ),
-                                                              Positioned(
-                                                                top: 0,
-                                                                left: 0,
-                                                                child:
-                                                                    Container(
-                                                                  margin:
-                                                                      const EdgeInsets
-                                                                          .all(
-                                                                          3),
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .topLeft,
-                                                                  width: 50,
-                                                                  height: 25,
-                                                                  decoration: BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              8),
-                                                                      color: themeMode == 'dark' ||
-                                                                              themeMode ==
-                                                                                  'amoled'
-                                                                          ? Colors
-                                                                              .black45
-                                                                          : Colors
-                                                                              .white60),
-                                                                  child: Row(
-                                                                    children: [
-                                                                      const Icon(
-                                                                        Icons
-                                                                            .star,
-                                                                      ),
-                                                                      Text(widget
-                                                                          .movieList![
-                                                                              index]
-                                                                          .voteAverage!
-                                                                          .toStringAsFixed(
-                                                                              1))
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Positioned(
-                                                                top: -15,
-                                                                right: 8,
-                                                                child:
-                                                                    Container(
-                                                                        alignment:
-                                                                            Alignment
-                                                                                .topRight,
-                                                                        child:
-                                                                            IconButton(
-                                                                          alignment:
-                                                                              Alignment.topRight,
-                                                                          onPressed:
-                                                                              () async {
-                                                                            movieDatabaseController.deleteMovie(widget.movieList![index].id!);
-                                                                            //  movieList[index].favorite = false;
-                                                                            if (mounted) {
-                                                                              setState(() {
-                                                                                widget.movieList!.removeAt(index);
-                                                                              });
-                                                                            }
-                                                                          },
-                                                                          icon: const Icon(
-                                                                              Icons.bookmark_remove,
-                                                                              size: 60),
-                                                                        )),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    Expanded(
-                                                        flex: 2,
-                                                        child: Text(
-                                                          widget
-                                                              .movieList![index]
-                                                              .title!,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        )),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          })
-                                      : ListView.builder(
-                                          controller: _scrollController,
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          itemCount: widget.movieList!.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  return MovieDetailPage(
-                                                    movie: widget
-                                                        .movieList![index],
-                                                    heroId:
-                                                        '${widget.movieList![index].id}',
-                                                  );
-                                                }));
-                                              },
-                                              child: Container(
-                                                color: Colors.transparent,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                    top: 0.0,
-                                                    bottom: 3.0,
-                                                    left: 10,
-                                                  ),
-                                                  child: Column(
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    right:
-                                                                        10.0),
-                                                            child: SizedBox(
-                                                              width: 85,
-                                                              height: 130,
-                                                              child: Hero(
-                                                                tag:
-                                                                    '${widget.movieList![index].id}',
-                                                                child: Material(
-                                                                  type: MaterialType
-                                                                      .transparency,
-                                                                  child: ClipRRect(
-                                                                      borderRadius: BorderRadius.circular(10.0),
-                                                                      child: Stack(children: [
-                                                                        widget.movieList![index].posterPath ==
-                                                                                null
-                                                                            ? Image.asset('assets/images/na_rect.png',
-                                                                                fit: BoxFit.cover,
-                                                                                width: double.infinity)
-                                                                            : CachedNetworkImage(
-                                                                                cacheManager: cacheProp(),
-                                                                                fadeOutDuration: const Duration(milliseconds: 300),
-                                                                                fadeOutCurve: Curves.easeOut,
-                                                                                fadeInDuration: const Duration(milliseconds: 700),
-                                                                                fadeInCurve: Curves.easeIn,
-                                                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) + imageQuality + widget.movieList![index].posterPath!,
-                                                                                imageBuilder: (context, imageProvider) => Container(
-                                                                                  decoration: BoxDecoration(
-                                                                                    image: DecorationImage(
-                                                                                      image: imageProvider,
-                                                                                      fit: BoxFit.cover,
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                                placeholder: (context, url) => mainPageVerticalScrollImageShimmer(themeMode),
-                                                                                errorWidget: (context, url, error) => Image.asset(
-                                                                                  'assets/images/na_rect.png',
-                                                                                  fit: BoxFit.cover,
-                                                                                ),
-                                                                              ),
-                                                                        Positioned(
-                                                                          left:
-                                                                              -18,
-                                                                          top:
-                                                                              -15,
-                                                                          child: Container(
-                                                                              alignment: Alignment.topLeft,
-                                                                              child: IconButton(
-                                                                                onPressed: () async {
-                                                                                  movieDatabaseController.deleteMovie(widget.movieList![index].id!);
-                                                                                  //  movieList[index].favorite = false;
-                                                                                  if (mounted) {
-                                                                                    setState(() {
-                                                                                      widget.movieList!.removeAt(index);
-                                                                                    });
-                                                                                  }
-                                                                                },
-                                                                                icon: const Icon(Icons.bookmark_remove_rounded, size: 50),
-                                                                              )),
-                                                                        ),
-                                                                      ])),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  widget
-                                                                      .movieList![
-                                                                          index]
-                                                                      .title!,
-                                                                  style: const TextStyle(
-                                                                      fontFamily:
-                                                                          'FigtreeSB',
-                                                                      fontSize:
-                                                                          15,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis),
-                                                                ),
-                                                                Row(
-                                                                  children: <Widget>[
-                                                                    const Icon(
-                                                                      Icons
-                                                                          .star,
-                                                                    ),
-                                                                    Text(
-                                                                      widget
-                                                                          .movieList![
-                                                                              index]
-                                                                          .voteAverage!
-                                                                          .toStringAsFixed(
-                                                                              1),
-                                                                      style: const TextStyle(
-                                                                          fontFamily:
-                                                                              'Figtree'),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                      Divider(
-                                                        color: themeMode ==
-                                                                'light'
-                                                            ? Colors.black54
-                                                            : Colors.white54,
-                                                        thickness: 1,
-                                                        endIndent: 20,
-                                                        indent: 10,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          })),
-                            ],
-                          ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(movie.title ?? tr('not_available'),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 10),
+                        Row(children: [
+                          AppRatingBadge(
+                              rating: movie.voteAverage, compact: true),
+                          const SizedBox(width: 10),
+                          Text(_year(movie.releaseDate)),
+                        ]),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: tr('delete'),
+                    onPressed: () => _remove(items, index),
+                    icon: const Icon(Icons.bookmark_remove_rounded),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _imageUrl(BuildContext context, Movie movie, SettingsProvider settings,
+      String proxy) {
+    if (movie.posterPath == null) return '';
+    return buildImageUrl(
+            TMDB_BASE_IMAGE_URL, proxy, settings.enableProxy, context) +
+        settings.imageQuality +
+        movie.posterPath!;
+  }
+
+  String _year(String? value) =>
+      value != null && value.length >= 4 ? value.substring(0, 4) : '—';
+
+  void _open(Movie movie) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MovieDetailPage(movie: movie, heroId: '${movie.id}'),
+      ),
+    );
+  }
+
+  Future<void> _remove(List<Movie> items, int index) async {
+    final id = items[index].id;
+    if (id != null) await _database.deleteMovie(id);
+    if (!mounted) return;
+    setState(() => items.removeAt(index));
+  }
+}
+
+class _MovieGridCard extends StatelessWidget {
+  const _MovieGridCard({
+    required this.movie,
+    required this.imageUrl,
+    required this.onOpen,
+    required this.onRemove,
+    required this.themeMode,
+  });
+
+  final Movie movie;
+  final String imageUrl;
+  final VoidCallback onOpen;
+  final VoidCallback onRemove;
+  final String themeMode;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onOpen,
+      borderRadius: BorderRadius.circular(AppUI.cardRadius),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Hero(
+                    tag: '${movie.id}',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppUI.cardRadius),
+                      child: CachedNetworkImage(
+                        cacheManager: cacheProp(),
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) =>
+                            scrollingImageShimmer(themeMode),
+                        errorWidget: (_, __, ___) => Image.asset(
+                          'assets/images/na_logo.png',
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ],
-                  );
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 8,
+                  top: 8,
+                  child:
+                      AppRatingBadge(rating: movie.voteAverage, compact: true),
+                ),
+                Positioned(
+                  right: 6,
+                  top: 6,
+                  child: IconButton.filledTonal(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: tr('delete'),
+                    onPressed: onRemove,
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 9),
+          Text(
+            movie.title ?? tr('not_available'),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontFamily: 'FigtreeSB',
+                ),
+          ),
+        ],
+      ),
+    );
   }
 }

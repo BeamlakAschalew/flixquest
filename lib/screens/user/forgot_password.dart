@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -54,21 +55,32 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(tr('reset_password'))),
-      body: Center(
+      body: AppResponsiveContent(
+        maxWidth: 560,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-              height: 80,
+            Container(
+              width: 68,
+              height: 68,
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: .12),
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: Icon(Icons.mark_email_read_rounded,
+                  size: 32, color: Theme.of(context).colorScheme.primary),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 tr('forgot_password'),
-                style:
-                    const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
             Padding(
@@ -86,11 +98,10 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                      border: const UnderlineInputBorder(),
-                      filled: true,
-                      prefixIcon: const Icon(FontAwesomeIcons.envelope),
-                      labelText: tr('email_address'),
-                      fillColor: Theme.of(context).colorScheme.surface),
+                    filled: true,
+                    prefixIcon: const Icon(FontAwesomeIcons.envelope),
+                    labelText: tr('email_address'),
+                  ),
                   onSaved: (value) {
                     _emailAddress = value!;
                   },

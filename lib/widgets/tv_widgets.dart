@@ -18,6 +18,7 @@ import '../screens/tv/tvdetail_castandcrew.dart';
 import '../screens/tv/tvepisode_castandcrew.dart';
 import '../screens/tv/tvseason_castandcrew.dart';
 import '../ui_components/tv_ui_components.dart';
+import '../ui_components/app_ui_components.dart';
 import '/models/dropdown_select.dart';
 import '/models/filter_chip.dart';
 import '/provider/settings_provider.dart';
@@ -43,6 +44,7 @@ import '/screens/tv/streaming_services_tvshows.dart';
 import '/screens/tv/tv_detail.dart';
 import '/screens/tv/genre_tv.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/person/crew_detail.dart';
@@ -54,81 +56,150 @@ import '/widgets/common_widgets.dart';
 
 class MainTVDisplay extends StatefulWidget {
   const MainTVDisplay({
+    this.onMenuPressed,
+    this.onSearchPressed,
     super.key,
   });
+
+  final VoidCallback? onMenuPressed;
+  final VoidCallback? onSearchPressed;
 
   @override
   State<MainTVDisplay> createState() => _MainTVDisplayState();
 }
 
 class _MainTVDisplayState extends State<MainTVDisplay> {
+  final ScrollController _feedController = ScrollController();
+  bool _showCompactHeader = false;
+
   @override
   void initState() {
     super.initState();
+    _feedController.addListener(_updateCompactHeader);
+  }
+
+  void _updateCompactHeader() {
+    if (!mounted) return;
+    final heroHeight =
+        (MediaQuery.sizeOf(context).height * .48).clamp(410.0, 500.0);
+    final threshold = heroHeight - MediaQuery.paddingOf(context).top;
+    final shouldShow = _feedController.offset >= threshold;
+    if (shouldShow != _showCompactHeader) {
+      setState(() => _showCompactHeader = shouldShow);
+    }
+  }
+
+  @override
+  void dispose() {
+    _feedController
+      ..removeListener(_updateCompactHeader)
+      ..dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var rEpisodes = Provider.of<RecentProvider>(context).episodes;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
-    return Container(
-      child: ListView(
-        children: [
-          DiscoverTV(
-              discoverType: 'discover',
-              includeAdult: Provider.of<SettingsProvider>(context).isAdult),
-          ScrollingTV(
-            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr('popular'),
-            api: Endpoints.popularTVUrl(lang),
-            discoverType: 'popular',
-            isTrending: false,
+    return Stack(
+      children: [
+        CustomScrollView(
+          controller: _feedController,
+          slivers: [
+            SliverToBoxAdapter(
+              child: DiscoverTV(
+                discoverType: 'discover',
+                includeAdult: Provider.of<SettingsProvider>(context).isAdult,
+                onMenuPressed: widget.onMenuPressed,
+                onSearchPressed: widget.onSearchPressed,
+              ),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate.fixed([
+                ScrollingTV(
+                  includeAdult: Provider.of<SettingsProvider>(context).isAdult,
+                  title: tr('popular'),
+                  api: Endpoints.popularTVUrl(lang),
+                  discoverType: 'popular',
+                  isTrending: false,
+                ),
+                rEpisodes.isEmpty
+                    ? Container()
+                    : ScrollingRecentEpisodes(episodesList: rEpisodes),
+                ScrollingTV(
+                  includeAdult: Provider.of<SettingsProvider>(context).isAdult,
+                  title: tr('trending_this_week'),
+                  api: Endpoints.trendingTVUrl(lang),
+                  discoverType: 'trending',
+                  isTrending: true,
+                ),
+                ScrollingTV(
+                  includeAdult: Provider.of<SettingsProvider>(context).isAdult,
+                  title: tr('top_rated'),
+                  api: Endpoints.topRatedTVUrl(lang),
+                  discoverType: 'top_rated',
+                  isTrending: false,
+                ),
+                ScrollingTV(
+                  includeAdult: Provider.of<SettingsProvider>(context).isAdult,
+                  title: tr('airing_today'),
+                  api: Endpoints.airingTodayUrl(lang),
+                  discoverType: 'airing_today',
+                  isTrending: false,
+                ),
+                ScrollingTV(
+                  includeAdult: Provider.of<SettingsProvider>(context).isAdult,
+                  title: tr('on_the_air'),
+                  api: Endpoints.onTheAirUrl(lang),
+                  discoverType: 'on_the_air',
+                  isTrending: false,
+                ),
+                TVGenreListGrid(api: Endpoints.tvGenresUrl(lang)),
+                const TVShowsFromWatchProviders(),
+              ]),
+            ),
+          ],
+        ),
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: IgnorePointer(
+            ignoring: !_showCompactHeader,
+            child: AnimatedSlide(
+              offset: _showCompactHeader ? Offset.zero : const Offset(0, -1),
+              duration: const Duration(milliseconds: 240),
+              curve: Curves.easeOutCubic,
+              child: AnimatedOpacity(
+                opacity: _showCompactHeader ? 1 : 0,
+                duration: const Duration(milliseconds: 180),
+                child: AppFeedOverlayHeader(
+                  title: tr('tv_series'),
+                  onMenuPressed: widget.onMenuPressed,
+                  onSearchPressed: widget.onSearchPressed,
+                ),
+              ),
+            ),
           ),
-          rEpisodes.isEmpty
-              ? Container()
-              : ScrollingRecentEpisodes(episodesList: rEpisodes),
-          ScrollingTV(
-            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr('trending_this_week'),
-            api: Endpoints.trendingTVUrl(lang),
-            discoverType: 'trending',
-            isTrending: true,
-          ),
-          ScrollingTV(
-            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr('top_rated'),
-            api: Endpoints.topRatedTVUrl(lang),
-            discoverType: 'top_rated',
-            isTrending: false,
-          ),
-          ScrollingTV(
-            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr('airing_today'),
-            api: Endpoints.airingTodayUrl(lang),
-            discoverType: 'airing_today',
-            isTrending: false,
-          ),
-          ScrollingTV(
-            includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-            title: tr('on_the_air'),
-            api: Endpoints.onTheAirUrl(lang),
-            discoverType: 'on_the_air',
-            isTrending: false,
-          ),
-          TVGenreListGrid(api: Endpoints.tvGenresUrl(lang)),
-          const TVShowsFromWatchProviders(),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 class DiscoverTV extends StatefulWidget {
   final bool includeAdult;
-  const DiscoverTV(
-      {required this.includeAdult, required this.discoverType, super.key});
+  const DiscoverTV({
+    required this.includeAdult,
+    required this.discoverType,
+    this.onMenuPressed,
+    this.onSearchPressed,
+    super.key,
+  });
 
   final String discoverType;
+  final VoidCallback? onMenuPressed;
+  final VoidCallback? onSearchPressed;
   @override
   DiscoverTVState createState() => DiscoverTVState();
 }
@@ -140,11 +211,35 @@ class DiscoverTVState extends State<DiscoverTV>
   late double deviceAspectRatio;
   List<TV>? tvList;
   YearDropdownData yearDropdownData = YearDropdownData();
+  final TVDatabaseController _bookmarkController = TVDatabaseController();
+  final Set<int> _bookmarkedIds = <int>{};
 
   @override
   void initState() {
     super.initState();
     getData();
+    _loadBookmarks();
+  }
+
+  Future<void> _loadBookmarks() async {
+    final items = await _bookmarkController.getTVList();
+    if (!mounted) return;
+    setState(() {
+      _bookmarkedIds
+        ..clear()
+        ..addAll(items.map((item) => item.id).whereType<int>());
+    });
+  }
+
+  Future<void> _toggleBookmark(TV item) async {
+    final id = item.id;
+    if (id == null) return;
+    final saved = _bookmarkedIds.contains(id);
+    saved
+        ? await _bookmarkController.deleteTV(id)
+        : await _bookmarkController.insertTV(item);
+    if (!mounted) return;
+    setState(() => saved ? _bookmarkedIds.remove(id) : _bookmarkedIds.add(id));
   }
 
   List<TVGenreFilterChipWidget> tvGenreList = <TVGenreFilterChipWidget>[
@@ -174,12 +269,9 @@ class DiscoverTVState extends State<DiscoverTV>
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    List<String> years = yearDropdownData.yearsList.getRange(2, 28).toList();
-    List<TVGenreFilterChipWidget> genres = tvGenreList;
-    years.shuffle();
-    genres.shuffle();
-    fetchTV('$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY&sort_by=popularity.desc&watch_region=US&first_air_date_year=${years.first}&with_genres=${genres.first.genreValue}',
-            isProxyEnabled, proxyUrl)
+    final lang =
+        Provider.of<SettingsProvider>(context, listen: false).appLanguage;
+    fetchTV(Endpoints.trendingTVUrl(lang), isProxyEnabled, proxyUrl)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -194,117 +286,194 @@ class DiscoverTVState extends State<DiscoverTV>
     super.build(context);
     deviceHeight = MediaQuery.of(context).size.height;
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const LeadingDot(),
-                    Expanded(
-                      child: Text(
-                        tr('featured_tv_shows'),
-                        style: kTextHeaderStyle,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          width: double.infinity,
-          height: 350,
-          child: tvList == null
-              ? discoverMoviesAndTVShimmer(themeMode)
-              : tvList!.isEmpty
-                  ? Center(
-                      child: Text(
-                        tr('wow_odd'),
-                        style: kTextSmallBodyStyle,
-                      ),
-                    )
-                  : CarouselSlider.builder(
-                      options: CarouselOptions(
-                        disableCenter: true,
-                        viewportFraction: 0.6,
-                        enlargeCenterPage: true,
-                        autoPlay: true,
-                      ),
-                      itemBuilder:
-                          (BuildContext context, int index, pageViewIndex) {
-                        return Container(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => TVDetailPage(
-                                          tvSeries: tvList![index],
-                                          heroId:
-                                              '${tvList![index].id}-${widget.discoverType}')));
-                            },
-                            child: Hero(
-                              tag:
-                                  '${tvList![index].id}-${widget.discoverType}',
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: CachedNetworkImage(
-                                  cacheManager: cacheProp(),
-                                  fadeOutDuration:
-                                      const Duration(milliseconds: 300),
-                                  fadeOutCurve: Curves.easeOut,
-                                  fadeInDuration:
-                                      const Duration(milliseconds: 700),
-                                  fadeInCurve: Curves.easeIn,
-                                  imageUrl: tvList![index].posterPath == null
-                                      ? ''
-                                      : buildImageUrl(
-                                              TMDB_BASE_IMAGE_URL,
-                                              proxyUrl,
-                                              isProxyEnabled,
-                                              context) +
-                                          imageQuality +
-                                          tvList![index].posterPath!,
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
+    final heroHeight = (deviceHeight * .48).clamp(410.0, 500.0);
+    return SizedBox(
+      width: double.infinity,
+      height: heroHeight,
+      child: tvList == null
+          ? AppHeroShimmer(height: heroHeight)
+          : tvList!.isEmpty
+              ? Center(child: Text(tr('wow_odd'), style: kTextSmallBodyStyle))
+              : AppCrossfadeCarousel(
+                  itemCount: tvList!.take(8).length,
+                  itemBuilder: (context, index) {
+                    final item = tvList![index];
+                    final path = item.backdropPath ?? item.posterPath;
+                    final saved = _bookmarkedIds.contains(item.id);
+                    return Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        CachedNetworkImage(
+                          cacheManager: cacheProp(),
+                          imageUrl: path == null
+                              ? ''
+                              : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
+                                      isProxyEnabled, context) +
+                                  imageQuality +
+                                  path,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
+                          placeholder: (_, __) =>
+                              AppHeroShimmer(height: heroHeight),
+                          errorWidget: (_, __, ___) => Image.asset(
+                            'assets/images/na_logo.png',
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              stops: [0, .42, 1],
+                              colors: [
+                                Color(0x52000000),
+                                Color(0x15000000),
+                                Color(0xE6000000),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SafeArea(
+                          bottom: false,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                            child: Align(
+                              alignment: Alignment.topCenter,
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                    onTap: widget.onMenuPressed,
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: SvgPicture.asset(
+                                        'assets/images/fq_svg.svg',
+                                        width: 28,
+                                        height: 28,
+                                        colorFilter: ColorFilter.mode(
+                                          Theme.of(context).colorScheme.primary,
+                                          BlendMode.srcIn,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                  placeholder: (context, url) =>
-                                      discoverImageShimmer(themeMode),
-                                  errorWidget: (context, url, error) =>
-                                      Image.asset(
-                                    'assets/images/na_logo.png',
-                                    fit: BoxFit.cover,
+                                  const Spacer(),
+                                  _TVHeroIconButton(
+                                    icon: saved
+                                        ? Icons.bookmark_rounded
+                                        : Icons.bookmark_border_rounded,
+                                    onPressed: () => _toggleBookmark(item),
                                   ),
-                                ),
+                                  const SizedBox(width: 8),
+                                  _TVHeroIconButton(
+                                    icon: Icons.search_rounded,
+                                    onPressed: widget.onSearchPressed,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        );
-                      },
-                      itemCount: tvList!.length,
-                    ),
+                        ),
+                        Positioned(
+                          left: 24,
+                          right: 24,
+                          bottom: 28,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.name ?? '',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'FigtreeSB',
+                                  fontSize: 30,
+                                  height: 1.05,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                [
+                                  if ((item.firstAirDate ?? '').length >= 4)
+                                    item.firstAirDate!.substring(0, 4),
+                                  if (item.voteAverage != null)
+                                    '\u2605 ${item.voteAverage!.toStringAsFixed(1)}',
+                                  if ((item.originalLanguage ?? '').isNotEmpty)
+                                    item.originalLanguage!.toUpperCase(),
+                                ].join('  \u2022  '),
+                                style: const TextStyle(
+                                    color: Colors.white70, fontSize: 13),
+                              ),
+                              const SizedBox(height: 18),
+                              Row(
+                                children: [
+                                  FilledButton.icon(
+                                    onPressed: () => _openTV(item),
+                                    icon: const Icon(Icons.play_arrow_rounded),
+                                    label: Text(tr('watch_now')),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  OutlinedButton.icon(
+                                    onPressed: () => _toggleBookmark(item),
+                                    icon: Icon(saved
+                                        ? Icons.check_rounded
+                                        : Icons.add_rounded),
+                                    label: Text(tr('bookmarks')),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                      side: const BorderSide(
+                                          color: Colors.white70),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+    );
+  }
+
+  void _openTV(TV item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TVDetailPage(
+          tvSeries: item,
+          heroId: '${item.id}-${widget.discoverType}',
         ),
-      ],
+      ),
     );
   }
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class _TVHeroIconButton extends StatelessWidget {
+  const _TVHeroIconButton({required this.icon, required this.onPressed});
+
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black.withValues(alpha: .22),
+      shape: const CircleBorder(),
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(icon, color: Colors.white),
+      ),
+    );
+  }
 }
 
 class ScrollingTV extends StatefulWidget {
@@ -391,6 +560,7 @@ class ScrollingTVState extends State<ScrollingTV>
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+    final cardWidth = AppUI.horizontalCardWidth(context);
     return Column(
       children: <Widget>[
         Row(
@@ -398,13 +568,15 @@ class ScrollingTVState extends State<ScrollingTV>
           children: <Widget>[
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.fromLTRB(20, 22, 8, 8),
                 child: Row(
                   children: [
-                    const LeadingDot(),
                     Expanded(
                       child: Text(widget.title,
-                          style: kTextHeaderStyle,
+                          style: const TextStyle(
+                            fontFamily: 'FigtreeSB',
+                            fontSize: 21,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis),
                     ),
@@ -413,7 +585,7 @@ class ScrollingTVState extends State<ScrollingTV>
               ),
             ),
             Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.fromLTRB(0, 14, 12, 0),
                 child: TextButton(
                   onPressed: () {
                     Navigator.push(context,
@@ -441,7 +613,7 @@ class ScrollingTVState extends State<ScrollingTV>
         ),
         SizedBox(
           width: double.infinity,
-          height: 250,
+          height: cardWidth * 1.5 + 62,
           child: tvList == null
               ? scrollingMoviesAndTVShimmer(themeMode)
               : Row(
@@ -454,7 +626,12 @@ class ScrollingTVState extends State<ScrollingTV>
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
                           return Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: EdgeInsets.only(
+                              left:
+                                  index == 0 ? AppUI.pagePadding(context) : 10,
+                              top: 8,
+                              bottom: 8,
+                            ),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -466,11 +643,11 @@ class ScrollingTVState extends State<ScrollingTV>
                                                 '${tvList![index].id}${widget.title}-${widget.discoverType}')));
                               },
                               child: SizedBox(
-                                width: 100,
+                                width: cardWidth,
                                 child: Column(
                                   children: <Widget>[
-                                    Expanded(
-                                      flex: 6,
+                                    SizedBox(
+                                      height: cardWidth * 1.5,
                                       child: Hero(
                                         tag:
                                             '${tvList![index].id}${widget.title}-${widget.discoverType}',
@@ -481,7 +658,7 @@ class ScrollingTVState extends State<ScrollingTV>
                                             children: [
                                               ClipRRect(
                                                 borderRadius:
-                                                    BorderRadius.circular(8.0),
+                                                    BorderRadius.circular(13.0),
                                                 child: tvList![index]
                                                             .posterPath ==
                                                         null
@@ -549,31 +726,13 @@ class ScrollingTVState extends State<ScrollingTV>
                                               Positioned(
                                                 top: 0,
                                                 left: 0,
-                                                child: Container(
-                                                  margin:
-                                                      const EdgeInsets.all(3),
-                                                  alignment: Alignment.topLeft,
-                                                  width: 50,
-                                                  height: 25,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8),
-                                                      color:
-                                                          themeMode == 'dark' ||
-                                                                  themeMode ==
-                                                                      'amoled'
-                                                              ? Colors.black45
-                                                              : Colors.white60),
-                                                  child: Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.star_rounded,
-                                                      ),
-                                                      Text(tvList![index]
-                                                          .voteAverage!
-                                                          .toStringAsFixed(1))
-                                                    ],
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  child: AppRatingBadge(
+                                                    rating: tvList![index]
+                                                        .voteAverage,
+                                                    compact: true,
                                                   ),
                                                 ),
                                               ),
@@ -582,15 +741,20 @@ class ScrollingTVState extends State<ScrollingTV>
                                         ),
                                       ),
                                     ),
-                                    Expanded(
-                                      flex: 3,
+                                    SizedBox(
+                                      height: 46,
                                       child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.fromLTRB(
+                                            2, 10, 2, 0),
                                         child: Text(
                                           tvList![index].name!,
                                           maxLines: 2,
                                           textAlign: TextAlign.center,
                                           overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontFamily: 'FigtreeSB',
+                                            fontSize: 12,
+                                          ),
                                         ),
                                       ),
                                     )
@@ -605,19 +769,14 @@ class ScrollingTVState extends State<ScrollingTV>
                     Visibility(
                       visible: isLoading,
                       child: SizedBox(
-                        width: 110,
+                        width: cardWidth,
                         child: horizontalLoadMoreShimmer(themeMode),
                       ),
                     ),
                   ],
                 ),
         ),
-        Divider(
-          color: themeMode == 'light' ? Colors.black54 : Colors.white54,
-          thickness: 1,
-          endIndent: 20,
-          indent: 10,
-        ),
+        const SizedBox(height: 2),
       ],
     );
   }
@@ -638,8 +797,213 @@ class ScrollingRecentEpisodes extends StatefulWidget {
 
 class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
   final ScrollController _scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
+    final imageQuality = context.watch<SettingsProvider>().imageQuality;
+    final isProxyEnabled = context.watch<SettingsProvider>().enableProxy;
+    final proxyUrl = context.watch<AppDependencyProvider>().tmdbProxy;
+    final cardWidth =
+        (MediaQuery.sizeOf(context).width * .58).clamp(210.0, 270.0);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSectionHeader(title: tr('recently_watched')),
+        SizedBox(
+          height: cardWidth * .56 + 82,
+          child: ListView.separated(
+            controller: _scrollController,
+            padding:
+                EdgeInsets.symmetric(horizontal: AppUI.pagePadding(context)),
+            physics: const BouncingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            itemCount: widget.episodesList.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final episode = widget.episodesList[index];
+              final elapsed = (episode.elapsed ?? 0).toDouble();
+              final total = elapsed + (episode.remaining ?? 0).toDouble();
+              final episodeLabel =
+                  'S${episode.seasonNum.toString().padLeft(2, '0')} · E${episode.episodeNum.toString().padLeft(2, '0')}';
+              return SizedBox(
+                width: cardWidth,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(18),
+                  onLongPress: () => _deleteEpisode(episode),
+                  onTap: () => _openEpisode(episode),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              episode.posterPath == null
+                                  ? Image.asset('assets/images/na_logo.png',
+                                      fit: BoxFit.cover)
+                                  : CachedNetworkImage(
+                                      cacheManager: cacheProp(),
+                                      imageUrl: buildImageUrl(
+                                            TMDB_BASE_IMAGE_URL,
+                                            proxyUrl,
+                                            isProxyEnabled,
+                                            context,
+                                          ) +
+                                          imageQuality +
+                                          episode.posterPath!,
+                                      fit: BoxFit.cover,
+                                      placeholder: (_, __) =>
+                                          const AppShimmerBlock(),
+                                      errorWidget: (_, __, ___) => Image.asset(
+                                        'assets/images/na_logo.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                              const DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black54
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                left: 10,
+                                top: 10,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 9, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: .72),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    episodeLabel,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Center(
+                                child: Container(
+                                  width: 42,
+                                  height: 42,
+                                  decoration: const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle),
+                                  child: const Icon(Icons.play_arrow_rounded,
+                                      color: Colors.black, size: 30),
+                                ),
+                              ),
+                              Positioned(
+                                right: 8,
+                                top: 8,
+                                child: IconButton.filledTonal(
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () => _deleteEpisode(episode),
+                                  icon:
+                                      const Icon(Icons.close_rounded, size: 18),
+                                ),
+                              ),
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                child: LinearProgressIndicator(
+                                  minHeight: 4,
+                                  value: total > 0 ? elapsed / total : 0,
+                                  backgroundColor: Colors.white24,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        episode.seriesName ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        episode.episodeName ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _deleteEpisode(RecentEpisode episode) {
+    context.read<RecentProvider>().deleteEpisode(
+          episode.id!,
+          episode.episodeNum!,
+          episode.seasonNum!,
+        );
+  }
+
+  Future<void> _openEpisode(RecentEpisode episode) async {
+    final online = await checkConnection();
+    if (!mounted) return;
+    if (!online) {
+      GlobalMethods.showCustomScaffoldMessage(
+        SnackBar(content: Text(tr('check_connection'), maxLines: 3)),
+        context,
+      );
+      return;
+    }
+    final fetchRoute = context.read<AppDependencyProvider>().fetchRoute;
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TVVideoLoader(
+          download: false,
+          route: fetchRoute == 'flixHQ' ? StreamRoute.flixHQ : StreamRoute.tmDB,
+          metadata: TVStreamMetadata(
+            elapsed: episode.elapsed,
+            episodeId: episode.id,
+            episodeName: episode.episodeName,
+            episodeNumber: episode.episodeNum,
+            posterPath: episode.posterPath,
+            seasonNumber: episode.seasonNum,
+            seriesName: episode.seriesName,
+            tvId: episode.seriesId,
+            airDate: null,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Kept temporarily as a behavior reference while the refreshed rail settles.
+  // ignore: unused_element
+  Widget _legacyBuild(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
@@ -5081,6 +5445,63 @@ class TVGenreListGridState extends State<TVGenreListGrid>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSectionHeader(title: tr('genres')),
+        SizedBox(
+          height: 58,
+          child: genreList == null
+              ? ListView.separated(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: AppUI.pagePadding(context)),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 5,
+                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  itemBuilder: (_, __) => const SizedBox(
+                      width: 112, child: AppShimmerBlock(radius: 16)),
+                )
+              : ListView.separated(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: AppUI.pagePadding(context)),
+                  physics: const BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: genreList!.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  itemBuilder: (context, index) {
+                    final genre = genreList![index];
+                    return ActionChip(
+                      avatar: Icon(Icons.live_tv_rounded,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.primary),
+                      label: Text(genre.genreName ?? ''),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => TVGenre(genres: genre)),
+                      ),
+                      side: BorderSide(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .outlineVariant
+                              .withValues(alpha: .55)),
+                      backgroundColor:
+                          Theme.of(context).colorScheme.surfaceContainerHigh,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  // ignore: unused_element
+  Widget _legacyBuild(BuildContext context) {
+    super.build(context);
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Column(
       children: [
@@ -5170,6 +5591,71 @@ class TVShowsFromWatchProviders extends StatefulWidget {
 class TVShowsFromWatchProvidersState extends State<TVShowsFromWatchProviders> {
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSectionHeader(title: tr('streaming_services')),
+        SizedBox(
+          height: 112,
+          child: ListView(
+            padding:
+                EdgeInsets.symmetric(horizontal: AppUI.pagePadding(context)),
+            physics: const BouncingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            children: const [
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/netflix.png',
+                  title: 'Netflix',
+                  providerID: 8),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/amazon_prime.png',
+                  title: 'Prime Video',
+                  providerID: 9),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/disney_plus.png',
+                  title: 'Disney+',
+                  providerID: 337),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/hulu.png',
+                  title: 'Hulu',
+                  providerID: 15),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/hbo_max.png',
+                  title: 'Max',
+                  providerID: 384),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/apple_tv.png',
+                  title: 'Apple TV+',
+                  providerID: 350),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/peacock.png',
+                  title: 'Peacock',
+                  providerID: 387),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/itunes.png',
+                  title: 'iTunes',
+                  providerID: 2),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/youtube.png',
+                  title: 'YouTube',
+                  providerID: 188),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/paramount.png',
+                  title: 'Paramount+',
+                  providerID: 531),
+              TVStreamingServicesWidget(
+                  imagePath: 'assets/images/netflix.png',
+                  title: 'Netflix Kids',
+                  providerID: 175),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ignore: unused_element
+  Widget _legacyBuild(BuildContext context) {
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -5280,6 +5766,62 @@ class TVStreamingServicesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return SizedBox(
+      width: 92,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => StreamingServicesTVShows(
+              providerId: providerID,
+              providerName: title,
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outlineVariant
+                        .withValues(alpha: .45),
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(imagePath, fit: BoxFit.cover),
+                ),
+              ),
+              const SizedBox(height: 7),
+              Text(
+                title,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ignore: unused_element
+  Widget _legacyBuild(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {

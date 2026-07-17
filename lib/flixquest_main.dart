@@ -7,9 +7,6 @@ import 'package:flixquest/constants/app_constants.dart';
 import 'package:flixquest/models/app_colors.dart';
 import 'package:flixquest/screens/common/update_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'constants/theme_data.dart';
 import 'functions/function.dart';
@@ -18,6 +15,7 @@ import 'provider/app_dependency_provider.dart';
 import 'provider/recently_watched_provider.dart';
 import 'provider/settings_provider.dart';
 import 'screens/common/discover.dart';
+import 'screens/common/bookmark_screen.dart';
 import 'screens/common/search_view.dart';
 import 'screens/user/user_info.dart';
 import 'screens/user/user_state.dart';
@@ -261,7 +259,9 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     final defaultHome =
         Provider.of<SettingsProvider>(context, listen: false).defaultValue;
     setState(() {
-      selectedIndex = defaultHome;
+      // `3` was historically Profile. Keep existing saved preferences valid
+      // after inserting Bookmarks as the fourth navigation destination.
+      selectedIndex = defaultHome == 3 ? 4 : defaultHome;
     });
   }
 
@@ -286,118 +286,118 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
   Widget build(BuildContext context) {
     final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
         key: _scaffoldKey,
         drawer: const Drawer(child: DrawerWidget()),
-        appBar: AppBar(
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              FontAwesomeIcons.barsStaggered,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
-          ),
-          title: Row(
-            children: [
-              SvgPicture.asset(
-                'assets/images/fq_svg.svg',
-                width: 20,
-                height: 20,
-                colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primary,
-                  BlendMode.srcIn,
+        bottomNavigationBar: Align(
+          heightFactor: 1,
+          alignment: Alignment.bottomCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 760),
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(12, 0, 12, 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                color: Theme.of(context).scaffoldBackgroundColor,
+                border: Border.all(
+                  color: colorScheme.onSurface.withValues(alpha: 0.08),
                 ),
-              ),
-              Text(
-                tr('flixquest_appbar'),
-                style: TextStyle(
-                  fontFamily: 'FigtreeSB',
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          actions: [
-            IconButton(
-                color: Theme.of(context).primaryColor,
-                onPressed: () {
-                  showSearch(
-                      context: context,
-                      delegate: Search(
-                          mixpanel: mixpanel,
-                          includeAdult: Provider.of<SettingsProvider>(context,
-                                  listen: false)
-                              .isAdult,
-                          lang: lang));
-                },
-                icon: const Icon(FontAwesomeIcons.magnifyingGlass)),
-          ],
-        ),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-            color: Theme.of(context).colorScheme.primary,
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 20,
-                color: Colors.black.withValues(alpha: .1),
-              )
-            ],
-          ),
-          child: SafeArea(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 30.0, vertical: 7.5),
-              child: GNav(
-                rippleColor: Colors.grey[300]!,
-                hoverColor: Colors.grey[100]!,
-                activeColor: Colors.black,
-                iconSize: 35,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                duration: const Duration(milliseconds: 400),
-                tabBackgroundColor: Colors.grey[100]!,
-                color: Colors.black,
-                tabs: [
-                  GButton(
-                    icon: FontAwesomeIcons.clapperboard,
-                    iconColor: Theme.of(context).colorScheme.primaryContainer,
-                  ),
-                  GButton(
-                    icon: FontAwesomeIcons.tv,
-                    iconColor: Theme.of(context).colorScheme.primaryContainer,
-                  ),
-                  GButton(
-                    icon: FontAwesomeIcons.compass,
-                    iconColor: Theme.of(context).colorScheme.primaryContainer,
-                  ),
-                  GButton(
-                    icon: FontAwesomeIcons.user,
-                    iconColor: Theme.of(context).colorScheme.primaryContainer,
-                  ),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 28,
+                    offset: const Offset(0, 10),
+                    color: Colors.black.withValues(alpha: .18),
+                  )
                 ],
-                selectedIndex: selectedIndex,
-                onTabChange: (index) {
-                  setState(() {
-                    selectedIndex = index;
-                  });
-                },
+              ),
+              child: SafeArea(
+                minimum: const EdgeInsets.symmetric(vertical: 4),
+                child: NavigationBar(
+                  height: 66,
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  indicatorColor: colorScheme.primary.withValues(alpha: 0.14),
+                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  destinations: [
+                    NavigationDestination(
+                      icon: const Icon(Icons.home_outlined),
+                      selectedIcon:
+                          Icon(Icons.home_rounded, color: colorScheme.primary),
+                      label: tr('movies'),
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(Icons.live_tv_outlined),
+                      selectedIcon: Icon(Icons.live_tv_rounded,
+                          color: colorScheme.primary),
+                      label: tr('tv_series'),
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(Icons.explore_outlined),
+                      selectedIcon: Icon(Icons.explore_rounded,
+                          color: colorScheme.primary),
+                      label: tr('discover'),
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(Icons.bookmark_border_rounded),
+                      selectedIcon: Icon(Icons.bookmark_rounded,
+                          color: colorScheme.primary),
+                      label: tr('bookmarks'),
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(Icons.person_outline_rounded),
+                      selectedIcon: Icon(Icons.person_rounded,
+                          color: colorScheme.primary),
+                      label: tr('profile'),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ),
         body: IndexedStack(
           index: selectedIndex,
-          children: const <Widget>[
-            MainMoviesDisplay(),
-            MainTVDisplay(),
-            DiscoverPage(),
-            UserInfo()
+          children: <Widget>[
+            MainMoviesDisplay(
+              onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
+              onSearchPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: Search(
+                    mixpanel: mixpanel,
+                    includeAdult:
+                        Provider.of<SettingsProvider>(context, listen: false)
+                            .isAdult,
+                    lang: lang,
+                  ),
+                );
+              },
+            ),
+            MainTVDisplay(
+              onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
+              onSearchPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: Search(
+                    mixpanel: mixpanel,
+                    includeAdult:
+                        Provider.of<SettingsProvider>(context, listen: false)
+                            .isAdult,
+                    lang: lang,
+                  ),
+                );
+              },
+            ),
+            const DiscoverPage(),
+            const BookmarkScreen(embedded: true),
+            const UserInfo()
           ],
         ));
   }

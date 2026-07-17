@@ -1,19 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../functions/function.dart';
-import '../../provider/app_dependency_provider.dart';
-import '/screens/tv/tv_detail.dart';
-import '../../constants/api_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
 import '../../controllers/bookmark_database_controller.dart';
+import '../../functions/function.dart';
 import '../../models/tv.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 import '../../widgets/common_widgets.dart';
+import 'tv_detail.dart';
 
 class TVBookmark extends StatefulWidget {
-  const TVBookmark({super.key, required this.tvList});
+  const TVBookmark({required this.tvList, super.key});
 
   final List<TV>? tvList;
 
@@ -22,394 +24,221 @@ class TVBookmark extends StatefulWidget {
 }
 
 class _TVBookmarkState extends State<TVBookmark> {
-  int count = 0;
-  TVDatabaseController tvDatabaseController = TVDatabaseController();
-  final _scrollController = ScrollController();
+  final TVDatabaseController _database = TVDatabaseController();
 
   @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final viewType = Provider.of<SettingsProvider>(context).defaultView;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return widget.tvList == null && viewType == 'grid'
-        ? moviesAndTVShowGridShimmer(themeMode)
-        : widget.tvList == null && viewType == 'list'
-            ? mainPageVerticalScrollShimmer(
-                themeMode: themeMode,
-                scrollController: _scrollController,
-                isLoading: false)
-            : widget.tvList!.isEmpty
-                ? Center(
-                    child: Text(
-                      tr('no_tv_bookmarked'),
-                      textAlign: TextAlign.center,
-                      style: kTextSmallHeaderStyle,
-                      maxLines: 4,
+    final settings = Provider.of<SettingsProvider>(context);
+    final proxy = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+    final items = widget.tvList;
+    if (items == null) return moviesAndTVShowGridShimmer(settings.appTheme);
+    if (items.isEmpty) {
+      return AppEmptyState(
+        title: tr('bookmarks'),
+        message: tr('no_tv_bookmarked'),
+        icon: Icons.bookmark_add_outlined,
+      );
+    }
+    return settings.defaultView == 'list'
+        ? _buildList(context, items, settings, proxy)
+        : _buildGrid(context, items, settings, proxy);
+  }
+
+  Widget _buildGrid(BuildContext context, List<TV> items,
+      SettingsProvider settings, String proxy) {
+    return GridView.builder(
+      padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context), 18, AppUI.pagePadding(context), 24),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: AppUI.mediaGridColumns(context),
+        childAspectRatio: .58,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: items.length,
+      itemBuilder: (_, index) => _TVGridCard(
+        item: items[index],
+        imageUrl: _imageUrl(context, items[index], settings, proxy),
+        onOpen: () => _open(items[index]),
+        onRemove: () => _remove(items, index),
+        themeMode: settings.appTheme,
+      ),
+    );
+  }
+
+  Widget _buildList(BuildContext context, List<TV> items,
+      SettingsProvider settings, String proxy) {
+    return ListView.separated(
+      padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context), 16, AppUI.pagePadding(context), 24),
+      itemCount: items.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (_, index) {
+        final item = items[index];
+        return Card(
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () => _open(item),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: CachedNetworkImage(
+                      cacheManager: cacheProp(),
+                      imageUrl: _imageUrl(context, item, settings, proxy),
+                      width: 92,
+                      height: 132,
+                      fit: BoxFit.cover,
+                      placeholder: (_, __) =>
+                          scrollingImageShimmer(settings.appTheme),
+                      errorWidget: (_, __, ___) => Image.asset(
+                        'assets/images/na_logo.png',
+                        width: 92,
+                        height: 132,
+                        fit: BoxFit.cover,
+                      ),
                     ),
-                  )
-                : Column(
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                  child: viewType == 'grid'
-                                      ? GridView.builder(
-                                          controller: _scrollController,
-                                          gridDelegate:
-                                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                                            maxCrossAxisExtent: 150,
-                                            childAspectRatio: 0.48,
-                                            crossAxisSpacing: 5,
-                                            mainAxisSpacing: 5,
-                                          ),
-                                          itemCount: widget.tvList!.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  return TVDetailPage(
-                                                      tvSeries:
-                                                          widget.tvList![index],
-                                                      heroId:
-                                                          '${widget.tvList![index].id}');
-                                                }));
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(4.0),
-                                                child: Column(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 6,
-                                                      child: Hero(
-                                                        tag:
-                                                            '${widget.tvList![index].id}',
-                                                        child: Material(
-                                                          type: MaterialType
-                                                              .transparency,
-                                                          child: Stack(
-                                                            alignment: Alignment
-                                                                .center,
-                                                            children: [
-                                                              ClipRRect(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            8.0),
-                                                                child: widget
-                                                                            .tvList![
-                                                                                index]
-                                                                            .posterPath ==
-                                                                        null
-                                                                    ? Image.asset(
-                                                                        'assets/images/na_logo.png',
-                                                                        fit: BoxFit
-                                                                            .cover,
-                                                                        height:
-                                                                            double.infinity)
-                                                                    : CachedNetworkImage(
-                                                                        cacheManager:
-                                                                            cacheProp(),
-                                                                        fadeOutDuration:
-                                                                            const Duration(milliseconds: 300),
-                                                                        fadeOutCurve:
-                                                                            Curves.easeOut,
-                                                                        fadeInDuration:
-                                                                            const Duration(milliseconds: 700),
-                                                                        fadeInCurve:
-                                                                            Curves.easeIn,
-                                                                        imageUrl: buildImageUrl(
-                                                                                TMDB_BASE_IMAGE_URL,
-                                                                                proxyUrl,
-                                                                                isProxyEnabled,
-                                                                                context) +
-                                                                            imageQuality +
-                                                                            widget.tvList![index].posterPath!,
-                                                                        imageBuilder:
-                                                                            (context, imageProvider) =>
-                                                                                Container(
-                                                                          decoration:
-                                                                              BoxDecoration(
-                                                                            image:
-                                                                                DecorationImage(
-                                                                              image: imageProvider,
-                                                                              fit: BoxFit.cover,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        placeholder:
-                                                                            (context, url) =>
-                                                                                scrollingImageShimmer(themeMode),
-                                                                        errorWidget: (context, url, error) => Image.asset(
-                                                                            'assets/images/na_logo.png',
-                                                                            fit:
-                                                                                BoxFit.cover,
-                                                                            height: double.infinity),
-                                                                      ),
-                                                              ),
-                                                              Positioned(
-                                                                top: 0,
-                                                                left: 0,
-                                                                child:
-                                                                    Container(
-                                                                  margin:
-                                                                      const EdgeInsets
-                                                                          .all(
-                                                                          3),
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .topLeft,
-                                                                  width: 50,
-                                                                  height: 25,
-                                                                  decoration: BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              8),
-                                                                      color: themeMode == 'dark' ||
-                                                                              themeMode ==
-                                                                                  'amoled'
-                                                                          ? Colors
-                                                                              .black45
-                                                                          : Colors
-                                                                              .white60),
-                                                                  child: Row(
-                                                                    children: [
-                                                                      const Icon(
-                                                                        Icons
-                                                                            .star,
-                                                                      ),
-                                                                      Text(widget
-                                                                          .tvList![
-                                                                              index]
-                                                                          .voteAverage!
-                                                                          .toStringAsFixed(
-                                                                              1))
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              Positioned(
-                                                                top: -15,
-                                                                right: 8,
-                                                                child:
-                                                                    Container(
-                                                                        alignment:
-                                                                            Alignment
-                                                                                .topRight,
-                                                                        child:
-                                                                            IconButton(
-                                                                          alignment:
-                                                                              Alignment.topRight,
-                                                                          onPressed:
-                                                                              () async {
-                                                                            tvDatabaseController.deleteTV(widget.tvList![index].id!);
-                                                                            //  movieList[index].favorite = false;
-                                                                            if (mounted) {
-                                                                              setState(() {
-                                                                                widget.tvList!.removeAt(index);
-                                                                              });
-                                                                            }
-                                                                          },
-                                                                          icon: const Icon(
-                                                                              Icons.bookmark_remove,
-                                                                              size: 60),
-                                                                        )),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 5,
-                                                    ),
-                                                    Expanded(
-                                                        flex: 2,
-                                                        child: Text(
-                                                          widget.tvList![index]
-                                                              .name!,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          maxLines: 2,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        )),
-                                                  ],
-                                                ),
-                                              ),
-                                            );
-                                          })
-                                      : ListView.builder(
-                                          controller: _scrollController,
-                                          physics:
-                                              const BouncingScrollPhysics(),
-                                          itemCount: widget.tvList!.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  return TVDetailPage(
-                                                    tvSeries:
-                                                        widget.tvList![index],
-                                                    heroId:
-                                                        '${widget.tvList![index].id}',
-                                                  );
-                                                }));
-                                              },
-                                              child: Container(
-                                                color: Colors.transparent,
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                    top: 0.0,
-                                                    bottom: 3.0,
-                                                    left: 10,
-                                                  ),
-                                                  child: Column(
-                                                    children: [
-                                                      Row(
-                                                        children: [
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    right:
-                                                                        10.0),
-                                                            child: SizedBox(
-                                                              width: 85,
-                                                              height: 130,
-                                                              child: Hero(
-                                                                tag:
-                                                                    '${widget.tvList![index].id}',
-                                                                child: Material(
-                                                                  type: MaterialType
-                                                                      .transparency,
-                                                                  child: ClipRRect(
-                                                                      borderRadius: BorderRadius.circular(10.0),
-                                                                      child: Stack(children: [
-                                                                        widget.tvList![index].posterPath ==
-                                                                                null
-                                                                            ? Image.asset('assets/images/na_rect.png',
-                                                                                fit: BoxFit.cover,
-                                                                                width: double.infinity)
-                                                                            : CachedNetworkImage(
-                                                                                cacheManager: cacheProp(),
-                                                                                fadeOutDuration: const Duration(milliseconds: 300),
-                                                                                fadeOutCurve: Curves.easeOut,
-                                                                                fadeInDuration: const Duration(milliseconds: 700),
-                                                                                fadeInCurve: Curves.easeIn,
-                                                                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context) + imageQuality + widget.tvList![index].posterPath!,
-                                                                                imageBuilder: (context, imageProvider) => Container(
-                                                                                  decoration: BoxDecoration(
-                                                                                    image: DecorationImage(
-                                                                                      image: imageProvider,
-                                                                                      fit: BoxFit.cover,
-                                                                                    ),
-                                                                                  ),
-                                                                                ),
-                                                                                placeholder: (context, url) => mainPageVerticalScrollImageShimmer(themeMode),
-                                                                                errorWidget: (context, url, error) => Image.asset('assets/images/na_rect.png', fit: BoxFit.cover, width: double.infinity),
-                                                                              ),
-                                                                        Positioned(
-                                                                          left:
-                                                                              -18,
-                                                                          top:
-                                                                              -15,
-                                                                          child: Container(
-                                                                              alignment: Alignment.topLeft,
-                                                                              child: IconButton(
-                                                                                onPressed: () async {
-                                                                                  tvDatabaseController.deleteTV(widget.tvList![index].id!);
-                                                                                  //  movieList[index].favorite = false;
-                                                                                  if (mounted) {
-                                                                                    setState(() {
-                                                                                      widget.tvList!.removeAt(index);
-                                                                                    });
-                                                                                  }
-                                                                                },
-                                                                                icon: const Icon(Icons.bookmark_remove_rounded, size: 50),
-                                                                              )),
-                                                                        ),
-                                                                      ])),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  widget
-                                                                      .tvList![
-                                                                          index]
-                                                                      .name!,
-                                                                  style: const TextStyle(
-                                                                      fontFamily:
-                                                                          'FigtreeSB',
-                                                                      fontSize:
-                                                                          15,
-                                                                      overflow:
-                                                                          TextOverflow
-                                                                              .ellipsis),
-                                                                ),
-                                                                Row(
-                                                                  children: <Widget>[
-                                                                    const Icon(
-                                                                      Icons
-                                                                          .star,
-                                                                    ),
-                                                                    Text(
-                                                                      widget
-                                                                          .tvList![
-                                                                              index]
-                                                                          .voteAverage!
-                                                                          .toStringAsFixed(
-                                                                              1),
-                                                                      style: const TextStyle(
-                                                                          fontFamily:
-                                                                              'Figtree'),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                      Divider(
-                                                        color: themeMode ==
-                                                                'light'
-                                                            ? Colors.black54
-                                                            : Colors.white54,
-                                                        thickness: 1,
-                                                        endIndent: 20,
-                                                        indent: 10,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          })),
-                            ],
-                          ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item.name ?? tr('not_available'),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 10),
+                        Row(children: [
+                          AppRatingBadge(
+                              rating: item.voteAverage, compact: true),
+                          const SizedBox(width: 10),
+                          Text(_year(item.firstAirDate)),
+                        ]),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: tr('delete'),
+                    onPressed: () => _remove(items, index),
+                    icon: const Icon(Icons.bookmark_remove_rounded),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _imageUrl(
+      BuildContext context, TV item, SettingsProvider settings, String proxy) {
+    if (item.posterPath == null) return '';
+    return buildImageUrl(
+            TMDB_BASE_IMAGE_URL, proxy, settings.enableProxy, context) +
+        settings.imageQuality +
+        item.posterPath!;
+  }
+
+  String _year(String? value) =>
+      value != null && value.length >= 4 ? value.substring(0, 4) : '—';
+
+  void _open(TV item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TVDetailPage(tvSeries: item, heroId: '${item.id}'),
+      ),
+    );
+  }
+
+  Future<void> _remove(List<TV> items, int index) async {
+    final id = items[index].id;
+    if (id != null) await _database.deleteTV(id);
+    if (!mounted) return;
+    setState(() => items.removeAt(index));
+  }
+}
+
+class _TVGridCard extends StatelessWidget {
+  const _TVGridCard({
+    required this.item,
+    required this.imageUrl,
+    required this.onOpen,
+    required this.onRemove,
+    required this.themeMode,
+  });
+
+  final TV item;
+  final String imageUrl;
+  final VoidCallback onOpen;
+  final VoidCallback onRemove;
+  final String themeMode;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onOpen,
+      borderRadius: BorderRadius.circular(AppUI.cardRadius),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Hero(
+                    tag: '${item.id}',
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppUI.cardRadius),
+                      child: CachedNetworkImage(
+                        cacheManager: cacheProp(),
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) =>
+                            scrollingImageShimmer(themeMode),
+                        errorWidget: (_, __, ___) => Image.asset(
+                          'assets/images/na_logo.png',
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    ],
-                  );
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: 8,
+                  top: 8,
+                  child:
+                      AppRatingBadge(rating: item.voteAverage, compact: true),
+                ),
+                Positioned(
+                  right: 6,
+                  top: 6,
+                  child: IconButton.filledTonal(
+                    visualDensity: VisualDensity.compact,
+                    tooltip: tr('delete'),
+                    onPressed: onRemove,
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 9),
+          Text(
+            item.name ?? tr('not_available'),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontFamily: 'FigtreeSB',
+                ),
+          ),
+        ],
+      ),
+    );
   }
 }

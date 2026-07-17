@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../../services/globle_method.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -104,8 +105,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(tr('login'))),
-      body: Container(
-          padding: const EdgeInsets.all(8),
+      body: AppResponsiveContent(
+          maxWidth: 520,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Center(
             child: SingleChildScrollView(
               child: Column(
@@ -114,11 +116,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   Hero(
                       tag: 'logo_shadow',
                       child: SizedBox(
-                          height: 150,
-                          width: 150,
+                          height: 112,
+                          width: 112,
                           child: Image.asset('assets/images/logo.png'))),
-                  SingleChildScrollView(
-                    child: Center(
+                  const SizedBox(height: 20),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
                       child: Form(
                           key: formKey,
                           child: Column(
@@ -141,14 +145,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                           .requestFocus(passwordFocusNode),
                                   keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
-                                      border: const UnderlineInputBorder(),
-                                      filled: true,
                                       prefixIcon:
                                           const Icon(FontAwesomeIcons.envelope),
-                                      labelText: tr('email_address'),
-                                      fillColor: Theme.of(context)
-                                          .colorScheme
-                                          .surface),
+                                      labelText: tr('email_address')),
                                   onSaved: (value) {
                                     emailAddress = value!;
                                   },
@@ -167,8 +166,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   keyboardType: TextInputType.visiblePassword,
                                   focusNode: passwordFocusNode,
                                   decoration: InputDecoration(
-                                      border: const UnderlineInputBorder(),
-                                      filled: true,
                                       prefixIcon:
                                           const Icon(FontAwesomeIcons.lock),
                                       suffixIcon: GestureDetector(
@@ -181,10 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ? Icons.visibility
                                             : Icons.visibility_off),
                                       ),
-                                      labelText: tr('password'),
-                                      fillColor: Theme.of(context)
-                                          .colorScheme
-                                          .surface),
+                                      labelText: tr('password')),
                                   onSaved: (value) {
                                     password = value!;
                                   },

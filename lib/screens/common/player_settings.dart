@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../constants/app_constants.dart';
-import '../../widgets/common_widgets.dart';
 import '/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class PlayerSettings extends StatefulWidget {
   const PlayerSettings({super.key});
@@ -84,358 +84,397 @@ class _PlayerSettingsState extends State<PlayerSettings> {
           tr('player_settings'),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: AppResponsiveContent(
+        maxWidth: 760,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  const LeadingDot(),
-                  Expanded(
-                    child: Text(
-                      tr('subtitle'),
-                      style: kTextHeaderStyle,
-                    ),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 12, 4, 10),
+                child: Text(
+                  tr('subtitle'),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ),
-              Container(
-                margin: const EdgeInsets.only(left: 10, right: 10, bottom: 15),
-                height: 250,
-                child: Stack(
-                  alignment: AlignmentDirectional.bottomCenter,
-                  children: [
-                    Image.asset('assets/images/sample_frame.jpg'),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 15.0),
-                      child: Text(tr('sample_player_text'),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              backgroundColor: backgroundColor,
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 18),
+                        height: 250,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          alignment: AlignmentDirectional.bottomCenter,
+                          children: [
+                            Image.asset('assets/images/sample_frame.jpg',
+                                fit: BoxFit.cover),
+                            Positioned(
+                              left: 12,
+                              right: 12,
+                              bottom: 12,
+                              child: Text(tr('sample_player_text'),
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      backgroundColor: backgroundColor,
+                                      color: foregroundColor,
+                                      fontFamily: st == 'regular'
+                                          ? 'Figtree'
+                                          : st == 'bold'
+                                              ? 'FigtreeSB'
+                                              : 'FigtreeLight',
+                                      fontSize: settingValues.subtitleFontSize
+                                          .toDouble())),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tr('text_size'),
+                            style: kTextSmallBodyStyle,
+                          ),
+                          Text(
+                            settingValues.subtitleFontSize.toString(),
+                            style: kTextSmallBodyStyle,
+                          )
+                        ],
+                      ),
+                      Slider(
+                        value: settingValues.subtitleFontSize.toDouble(),
+                        onChanged: (value) {
+                          settingValues.subtitleFontSize = value.toInt();
+                        },
+                        min: 5,
+                        max: 30,
+                        label: '${settingValues.subtitleFontSize.toInt()}',
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tr('text_color'),
+                            style: kTextSmallBodyStyle,
+                          ),
+                          GestureDetector(
+                            onTap: () => colorPickerDialog(1),
+                            child: Container(
+                              height: 30,
+                              width: 60,
                               color: foregroundColor,
-                              fontFamily: st == 'regular'
-                                  ? 'Figtree'
-                                  : st == 'bold'
-                                      ? 'FigtreeSB'
-                                      : 'FigtreeLight',
-                              fontSize:
-                                  settingValues.subtitleFontSize.toDouble())),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            tr('background_color'),
+                            style: kTextSmallBodyStyle,
+                          ),
+                          GestureDetector(
+                            onTap: () => colorPickerDialog(2),
+                            child: Container(
+                              height: 30,
+                              width: 60,
+                              color: backgroundColor,
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      _PlayerChoiceTile<String>(
+                        title: tr('text_weight'),
+                        value: settingValues.subtitleTextStyle,
+                        options: {
+                          'light': tr('light'),
+                          'regular': tr('regular'),
+                          'bold': tr('bold'),
+                        },
+                        contentPadding: EdgeInsets.zero,
+                        onChanged: (value) => setState(
+                          () => settingValues.subtitleTextStyle = value,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 6,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 24, 4, 10),
+                child: Text(
+                  tr('general'),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              Card(
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    SwitchListTile(
+                      value: settingValues.defaultViewMode,
+                      inactiveThumbColor: Colors.white,
+                      inactiveTrackColor: const Color(0xFF9B9B9B),
+                      secondary: Icon(
+                        FontAwesomeIcons.expand,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(
+                        tr('auto_full_screen'),
+                      ),
+                      onChanged: ((value) {
+                        setState(() {
+                          settingValues.defaultViewMode = value;
+                        });
+                      }),
+                    ),
+                    _PlayerChoiceTile<int>(
+                      icon: FontAwesomeIcons.rotateRight,
+                      title: tr('seek_second'),
+                      value: settingValues.defaultSeekDuration,
+                      options: const {
+                        5: '5s',
+                        10: '10s',
+                        15: '15s',
+                        20: '20s',
+                        30: '30s',
+                      },
+                      onChanged: (value) => setState(
+                        () => settingValues.defaultSeekDuration = value,
+                      ),
+                    ),
+                    _PlayerChoiceTile<int>(
+                      icon: FontAwesomeIcons.spinner,
+                      title: tr('buffer_amount'),
+                      value: settingValues.defaultMaxBufferDuration,
+                      options: const {
+                        15000: '15s',
+                        30000: '30s',
+                        45000: '45s',
+                        60000: '60s',
+                        90000: '90s',
+                        120000: '120s',
+                        150000: '150s',
+                        180000: '180s',
+                        240000: '240s',
+                        300000: '300s',
+                        360000: '360s',
+                        420000: '420s',
+                        500000: '500s',
+                        600000: '600s',
+                      },
+                      onChanged: (value) => setState(
+                        () => settingValues.defaultMaxBufferDuration = value,
+                      ),
+                    ),
+                    _PlayerChoiceTile<int>(
+                      icon: FontAwesomeIcons.fileVideo,
+                      title: tr('video_resolution'),
+                      value: settingValues.defaultVideoResolution,
+                      options: {
+                        0: tr('auto'),
+                        360: '360p',
+                        720: '720p',
+                        1080: '1080p',
+                      },
+                      onChanged: (value) => setState(
+                        () => settingValues.defaultVideoResolution = value,
+                      ),
+                    ),
+                    _PlayerChoiceTile<int>(
+                      icon: FontAwesomeIcons.solidClock,
+                      title: tr('player_time_display'),
+                      value: settingValues.playerTimeDisplay,
+                      options: {
+                        1: tr('elapsed_total'),
+                        2: tr('elapsed_remaining'),
+                      },
+                      onChanged: (value) => setState(
+                        () => settingValues.playerTimeDisplay = value,
+                      ),
+                    ),
+                    SwitchListTile(
+                      inactiveThumbColor: Colors.white,
+                      inactiveTrackColor: const Color(0xFF9B9B9B),
+                      secondary: Icon(
+                        FontAwesomeIcons.language,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      value: settingValues.fetchSpecificLangSubs,
+                      title: Text(tr('fetch_all_subs')),
+                      onChanged: ((value) {
+                        setState(() {
+                          settingValues.fetchSpecificLangSubs = value;
+                        });
+                      }),
+                    ),
+                    SwitchListTile(
+                      inactiveThumbColor: Colors.white,
+                      inactiveTrackColor: const Color(0xFF9B9B9B),
+                      secondary: Icon(
+                        FontAwesomeIcons.forward,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      value: settingValues.enableNextEpisodeButton,
+                      title: Text(tr('enable_next_episode_button')),
+                      onChanged: ((value) {
+                        setState(() {
+                          settingValues.enableNextEpisodeButton = value;
+                        });
+                      }),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: ((context) {
+                          return const SubLangChoose();
+                        })));
+                      },
+                      leading: Icon(
+                        FontAwesomeIcons.closedCaptioning,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(
+                        tr('subtitle_language'),
+                      ),
+                    ),
+                    ListTile(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: ((context) {
+                          return const ProviderChooseScreen();
+                        })));
+                      },
+                      leading: Icon(
+                        FontAwesomeIcons.server,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(
+                        tr('provider_precedence'),
+                      ),
                     ),
                   ],
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    tr('text_size'),
-                    style: kTextSmallBodyStyle,
-                  ),
-                  Text(
-                    settingValues.subtitleFontSize.toString(),
-                    style: kTextSmallBodyStyle,
-                  )
-                ],
-              ),
-              Slider(
-                value: settingValues.subtitleFontSize.toDouble(),
-                onChanged: (value) {
-                  settingValues.subtitleFontSize = value.toInt();
-                },
-                min: 5,
-                max: 30,
-                label: '${settingValues.subtitleFontSize.toInt()}',
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    tr('text_color'),
-                    style: kTextSmallBodyStyle,
-                  ),
-                  GestureDetector(
-                    onTap: () => colorPickerDialog(1),
-                    child: Container(
-                      height: 30,
-                      width: 60,
-                      color: foregroundColor,
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    tr('background_color'),
-                    style: kTextSmallBodyStyle,
-                  ),
-                  GestureDetector(
-                    onTap: () => colorPickerDialog(2),
-                    child: Container(
-                      height: 30,
-                      width: 60,
-                      color: backgroundColor,
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    tr('text_weight'),
-                    style: kTextSmallBodyStyle,
-                  ),
-                  DropdownButton(
-                      value: settingValues.subtitleTextStyle,
-                      items: [
-                        DropdownMenuItem(
-                            value: 'light', child: Text(tr('light'))),
-                        DropdownMenuItem(
-                            value: 'regular', child: Text(tr('regular'))),
-                        DropdownMenuItem(
-                            value: 'bold', child: Text(tr('bold'))),
-                      ],
-                      onChanged: (String? value) {
-                        setState(() {
-                          settingValues.subtitleTextStyle = value!;
-                        });
-                      }),
-                ],
-              ),
-              const SizedBox(
-                height: 25,
-              ),
-              Row(
-                children: [
-                  const LeadingDot(),
-                  Expanded(
-                    child: Text(
-                      tr('general'),
-                      style: kTextHeaderStyle,
-                    ),
-                  ),
-                ],
-              ),
-              SwitchListTile(
-                value: settingValues.defaultViewMode,
-                inactiveThumbColor: Colors.white,
-                inactiveTrackColor: const Color(0xFF9B9B9B),
-                secondary: Icon(
-                  FontAwesomeIcons.expand,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                title: Text(
-                  tr('auto_full_screen'),
-                ),
-                onChanged: ((value) {
-                  setState(() {
-                    settingValues.defaultViewMode = value;
-                  });
-                }),
-              ),
-              ListTile(
-                leading: Icon(
-                  FontAwesomeIcons.rotateRight,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                title: Text(
-                  tr('seek_second'),
-                ),
-                trailing: DropdownButton(
-                    value: settingValues.defaultSeekDuration,
-                    items: const [
-                      DropdownMenuItem(value: 5, child: Text('5s')),
-                      DropdownMenuItem(value: 10, child: Text('10s')),
-                      DropdownMenuItem(value: 15, child: Text('15s')),
-                      DropdownMenuItem(value: 20, child: Text('20s')),
-                      DropdownMenuItem(value: 30, child: Text('30s'))
-                    ],
-                    onChanged: (int? value) {
-                      setState(() {
-                        settingValues.defaultSeekDuration = value!;
-                      });
-                    }),
-              ),
-              ListTile(
-                leading: Icon(
-                  FontAwesomeIcons.spinner,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                title: Text(
-                  tr('buffer_amount'),
-                ),
-                trailing: DropdownButton(
-                    value: settingValues.defaultMaxBufferDuration,
-                    items: [
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 15).inMilliseconds,
-                          child: const Text('15s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 30).inMilliseconds,
-                          child: const Text('30s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 45).inMilliseconds,
-                          child: const Text('45s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 60).inMilliseconds,
-                          child: const Text('60s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 90).inMilliseconds,
-                          child: const Text('90s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 120).inMilliseconds,
-                          child: const Text('120s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 150).inMilliseconds,
-                          child: const Text('150s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 180).inMilliseconds,
-                          child: const Text('180s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 240).inMilliseconds,
-                          child: const Text('240s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 300).inMilliseconds,
-                          child: const Text('300s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 360).inMilliseconds,
-                          child: const Text('360s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 420).inMilliseconds,
-                          child: const Text('420s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 500).inMilliseconds,
-                          child: const Text('500s')),
-                      DropdownMenuItem(
-                          value: const Duration(seconds: 600).inMilliseconds,
-                          child: const Text('600s')),
-                    ],
-                    onChanged: (int? value) {
-                      setState(() {
-                        settingValues.defaultMaxBufferDuration = value!;
-                      });
-                    }),
-              ),
-              ListTile(
-                leading: Icon(
-                  FontAwesomeIcons.fileVideo,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                title: Text(
-                  tr('video_resolution'),
-                ),
-                trailing: DropdownButton(
-                    value: settingValues.defaultVideoResolution,
-                    items: [
-                      DropdownMenuItem(
-                          value: 0,
-                          child: Text(
-                            tr('auto'),
-                          )),
-                      const DropdownMenuItem(value: 360, child: Text('360p')),
-                      const DropdownMenuItem(value: 720, child: Text('720p')),
-                      const DropdownMenuItem(value: 1080, child: Text('1080p')),
-                    ],
-                    onChanged: (int? value) {
-                      settingValues.defaultVideoResolution = value!;
-                    }),
-              ),
-              ListTile(
-                leading: Icon(
-                  FontAwesomeIcons.solidClock,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                title: Text(
-                  tr('player_time_display'),
-                ),
-                trailing: DropdownButton(
-                    value: settingValues.playerTimeDisplay,
-                    items: [
-                      DropdownMenuItem(
-                          value: 1, child: Text(tr('elapsed_total'))),
-                      DropdownMenuItem(
-                          value: 2, child: Text(tr('elapsed_remaining'))),
-                    ],
-                    onChanged: (int? value) {
-                      setState(() {
-                        settingValues.playerTimeDisplay = value!;
-                      });
-                    }),
-              ),
-              SwitchListTile(
-                inactiveThumbColor: Colors.white,
-                inactiveTrackColor: const Color(0xFF9B9B9B),
-                secondary: Icon(
-                  FontAwesomeIcons.language,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                value: settingValues.fetchSpecificLangSubs,
-                title: Text(tr('fetch_all_subs')),
-                onChanged: ((value) {
-                  setState(() {
-                    settingValues.fetchSpecificLangSubs = value;
-                  });
-                }),
-              ),
-              SwitchListTile(
-                inactiveThumbColor: Colors.white,
-                inactiveTrackColor: const Color(0xFF9B9B9B),
-                secondary: Icon(
-                  FontAwesomeIcons.forward,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                value: settingValues.enableNextEpisodeButton,
-                title: Text(tr('enable_next_episode_button')),
-                onChanged: ((value) {
-                  setState(() {
-                    settingValues.enableNextEpisodeButton = value;
-                  });
-                }),
-              ),
-              ListTile(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) {
-                    return const SubLangChoose();
-                  })));
-                },
-                leading: Icon(
-                  FontAwesomeIcons.closedCaptioning,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                title: Text(
-                  tr('subtitle_language'),
-                ),
-              ),
-              ListTile(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) {
-                    return const ProviderChooseScreen();
-                  })));
-                },
-                leading: Icon(
-                  FontAwesomeIcons.server,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                title: Text(
-                  tr('provider_precedence'),
-                ),
-              ),
+              const SizedBox(height: 36),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _PlayerChoiceTile<T> extends StatelessWidget {
+  const _PlayerChoiceTile({
+    required this.title,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+    this.icon,
+    this.contentPadding,
+  });
+
+  final IconData? icon;
+  final String title;
+  final T value;
+  final Map<T, String> options;
+  final ValueChanged<T> onChanged;
+  final EdgeInsetsGeometry? contentPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: contentPadding,
+      onTap: () => _showChoices(context),
+      leading: icon == null
+          ? null
+          : Icon(icon, color: Theme.of(context).colorScheme.primary),
+      title: Text(title),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 130),
+            child: Text(
+              options[value] ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          const SizedBox(width: 5),
+          const Icon(Icons.chevron_right_rounded),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showChoices(BuildContext context) async {
+    final selected = await showModalBottomSheet<T>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * .75,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+            ),
+            Flexible(
+              child: ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.only(bottom: 24),
+                children: [
+                  for (final option in options.entries)
+                    ListTile(
+                      title: Text(option.value),
+                      trailing: option.key == value
+                          ? Icon(
+                              Icons.check_rounded,
+                              color: Theme.of(context).colorScheme.primary,
+                            )
+                          : null,
+                      onTap: () => Navigator.pop(context, option.key),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (selected != null) onChanged(selected);
   }
 }

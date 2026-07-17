@@ -11,6 +11,7 @@ import '/widgets/tv_widgets.dart';
 import 'package:flutter/material.dart';
 import '/api/endpoints.dart';
 import '/widgets/movie_widgets.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class TVDetailPage extends StatefulWidget {
   final TV tvSeries;
@@ -52,21 +53,15 @@ class TVDetailPageState extends State<TVDetailPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     return Scaffold(
       body: CustomScrollView(
         controller: scrollController,
         slivers: [
           SliverAppBar(
             pinned: true,
-            elevation: 1,
-            shadowColor: themeMode == 'dark' || themeMode == 'amoled'
-                ? Colors.white
-                : Colors.black,
-            forceElevated: true,
-            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
-                ? Colors.black
-                : Colors.white,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            surfaceTintColor: Colors.transparent,
             leading: SABTN(
               onBack: () {
                 Navigator.pop(context);
@@ -94,9 +89,10 @@ class TVDetailPageState extends State<TVDetailPage>
               ),
             ),
           ),
-          SliverList(
-            delegate: SliverChildListDelegate.fixed(
-              [TVAbout(tvSeries: widget.tvSeries)],
+          SliverToBoxAdapter(
+            child: AppResponsiveContent(
+              padding: EdgeInsets.zero,
+              child: TVAbout(tvSeries: widget.tvSeries),
             ),
           ),
         ],

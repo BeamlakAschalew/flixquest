@@ -14,6 +14,7 @@ import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'player_settings.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -296,20 +297,16 @@ class _SettingsState extends State<Settings> {
 
     for (int i = 0; i < countries.length; i++) {
       if (countries[i].isoCode.contains(settingsValues.defaultCountry)) {
-        setState(() {
-          countryFlag = countries[i].flagPath;
-          countryName = countries[i].countryName;
-        });
+        countryFlag = countries[i].flagPath;
+        countryName = countries[i].countryName;
         break;
       }
     }
 
     for (int i = 0; i < langs.length; i++) {
       if (langs[i].languageCode.contains(settingsValues.appLanguage)) {
-        setState(() {
-          languageFlag = langs[i].languageFlag;
-          languageName = langs[i].languageName;
-        });
+        languageFlag = langs[i].languageFlag;
+        languageName = langs[i].languageName;
         break;
       }
     }
@@ -319,381 +316,420 @@ class _SettingsState extends State<Settings> {
           tr('settings'),
         ),
       ),
-      body: Column(
-        children: [
-          ListTile(
-            leading: Icon(
-              Icons.dark_mode_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr('theme_mode'),
-            ),
-            trailing: DropdownButton(
-                value: settingsValues.appTheme,
-                items: [
-                  DropdownMenuItem(
-                      value: 'dark',
-                      child: Text(
-                        tr('dark'),
-                      )),
-                  DropdownMenuItem(
-                      value: 'light',
-                      child: Text(
-                        tr('light'),
-                      )),
-                  DropdownMenuItem(
-                      value: 'amoled',
-                      child: Text(
-                        tr('amoled'),
-                      ))
-                ],
-                onChanged: (String? value) {
-                  setState(() {
-                    settingsValues.appTheme = value!;
-                  });
-                }),
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.play_arrow_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr('player_settings'),
-            ),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: ((context) {
-                return const PlayerSettings();
-              })));
-            },
-          ),
-          Visibility(
-            visible: !isBelow33,
-            child: SwitchListTile(
-              inactiveThumbColor: Colors.white,
-              inactiveTrackColor: const Color(0xFF9B9B9B),
-              subtitle: Text(
-                tr('android_12'),
-              ),
-              value: settingsValues.isMaterial3Enabled,
-              secondary: Icon(
-                Icons.color_lens_rounded,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              title: Text(
-                tr('material_theming'),
-              ),
-              onChanged: (bool value) {
-                setState(() {
-                  settingsValues.isMaterial3Enabled = value;
-                });
-              },
-            ),
-          ),
-          SwitchListTile(
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: const Color(0xFF9B9B9B),
-            subtitle: Text(
-              tr('enable_warning'),
-            ),
-            value: settingsValues.enableProxy,
-            secondary: Icon(
-              FontAwesomeIcons.networkWired,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr('use_proxy'),
-            ),
-            onChanged: (bool value) {
-              if (value) {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext ctx) {
-                      return AlertDialog(
-                        title: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(tr('use_proxy_title')),
-                        ),
-                        content: Text(tr('use_proxy_detail')),
-                        actions: [
-                          ElevatedButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                              },
-                              child: Text(tr('cancel'))),
-                          TextButton(
-                              onPressed: () async {
-                                setState(() {
-                                  settingsValues.enableProxy = value;
-                                });
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                tr('enable'),
-                              ))
-                        ],
-                      );
-                    });
-              } else {
-                setState(() {
-                  settingsValues.enableProxy = value;
-                });
-              }
-            },
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.image_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr('image_quality'),
-            ),
-            trailing: DropdownButton(
-                value: settingsValues.imageQuality,
-                items: [
-                  DropdownMenuItem(
-                      value: 'original/',
-                      child: Text(
-                        tr('high'),
-                      )),
-                  DropdownMenuItem(
-                      value: 'w600_and_h900_bestv2/',
-                      child: Text(
-                        tr('medium'),
-                      )),
-                  DropdownMenuItem(
-                      value: 'w500/',
-                      child: Text(
-                        tr('low'),
-                      ))
-                ],
-                onChanged: (String? value) {
-                  setState(() {
-                    settingsValues.imageQuality = value!;
-                  });
-                }),
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.view_list_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr('list_view_type'),
-            ),
-            trailing: DropdownButton(
-                value: settingsValues.defaultView,
-                items: [
-                  DropdownMenuItem(
-                      value: 'list',
-                      child: Wrap(spacing: 3, children: [
-                        Icon(
-                          Icons.list,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        Text(
-                          tr('list'),
-                        )
-                      ])),
-                  DropdownMenuItem(
-                    value: 'grid',
-                    child: Wrap(spacing: 3, children: [
-                      Icon(
-                        Icons.grid_view,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      Text(
-                        tr('grid'),
-                      )
-                    ]),
+      body: AppResponsiveContent(
+        padding: EdgeInsets.zero,
+        maxWidth: 760,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
+          children: [
+            const SizedBox(height: 12),
+            _SettingsGroup(
+              title: tr('appearance'),
+              children: [
+                _SettingsChoiceTile<String>(
+                  icon: Icons.dark_mode_rounded,
+                  title: tr('theme_mode'),
+                  value: settingsValues.appTheme,
+                  options: {
+                    'dark': tr('dark'),
+                    'light': tr('light'),
+                    'amoled': tr('amoled'),
+                  },
+                  onChanged: (value) =>
+                      setState(() => settingsValues.appTheme = value),
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.play_arrow_rounded,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
-                ],
-                onChanged: (String? value) {
-                  setState(() {
-                    settingsValues.defaultView = value!;
-                  });
-                }),
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.phone_android_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr('default_home_screen'),
-            ),
-            trailing: DropdownButton(
-                value: settingsValues.defaultValue,
-                items: [
-                  DropdownMenuItem(
-                      value: 0,
-                      child: Text(
-                        tr('movies'),
-                      )),
-                  DropdownMenuItem(
-                      value: 1,
-                      child: Text(
-                        tr('tv_shows'),
-                      )),
-                  DropdownMenuItem(
-                      value: 2,
-                      child: Text(
-                        tr('discover'),
-                      )),
-                  DropdownMenuItem(
-                      value: 3,
-                      child: Text(
-                        tr('profile'),
-                      ))
-                ],
-                onChanged: (int? value) {
-                  setState(() {
-                    settingsValues.defaultValue = value!;
-                  });
-                }),
-          ),
-          ListTile(
-            onTap: (() {
-              Navigator.push(context, MaterialPageRoute(builder: ((context) {
-                return const AppLanguageChoose();
-              })));
-            }),
-            leading: Icon(
-              FontAwesomeIcons.language,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr('app_language'),
-            ),
-            trailing: Wrap(
-                spacing: 10,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Image.asset(
-                    languageFlag!,
-                    height: 25,
-                    width: 25,
+                  title: Text(
+                    tr('player_settings'),
                   ),
-                  Text(languageName!)
-                ]),
-          ),
-          ListTile(
-            onTap: (() {
-              Navigator.push(context, MaterialPageRoute(builder: ((context) {
-                return const CountryChoose();
-              })));
-            }),
-            leading: Icon(
-              FontAwesomeIcons.earthAmericas,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(
-              tr('watch_country'),
-            ),
-            trailing: Wrap(
-                spacing: 10,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Image.asset(
-                    countryFlag!,
-                    height: 25,
-                    width: 25,
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return const PlayerSettings();
+                    })));
+                  },
+                ),
+                Visibility(
+                  visible: !isBelow33,
+                  child: SwitchListTile(
+                    inactiveThumbColor: Colors.white,
+                    inactiveTrackColor: const Color(0xFF9B9B9B),
+                    subtitle: Text(
+                      tr('android_12'),
+                    ),
+                    value: settingsValues.isMaterial3Enabled,
+                    secondary: Icon(
+                      Icons.color_lens_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(
+                      tr('material_theming'),
+                    ),
+                    onChanged: (bool value) {
+                      setState(() {
+                        settingsValues.isMaterial3Enabled = value;
+                      });
+                    },
                   ),
-                  Text(countryName!)
-                ]),
-          ),
-          ListTile(
-            leading: Icon(
-              FontAwesomeIcons.eraser,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(tr('clear_cache')),
-            trailing: ElevatedButton(
-                onPressed: () async {
-                  await clearCache().then((value) {
-                    if (!context.mounted) {
-                      return;
-                    }
-                    GlobalMethods.showCustomScaffoldMessage(
-                        SnackBar(
-                            duration:
-                                const Duration(seconds: 1, milliseconds: 500),
-                            content: Text(value
-                                ? tr('cleared_cache')
-                                : tr('cache_doesnt_exist'))),
-                        context);
-                  });
-                  await clearTempCache().then((value) {
-                    if (!context.mounted) {
-                      return;
-                    }
-                    GlobalMethods.showCustomScaffoldMessage(
-                        SnackBar(
-                            duration:
-                                const Duration(seconds: 1, milliseconds: 500),
-                            content: Text(value
-                                ? tr('cleared_cache')
-                                : tr('cache_doesnt_exist'))),
-                        context);
-                  });
-                },
-                child: Text(tr('clear'))),
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.format_color_fill_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            title: Text(tr('custom_color')),
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: appColors
-                    .appColors(settingsValues.appTheme == 'dark' ||
-                            settingsValues.appTheme == 'amoled'
-                        ? true
-                        : false)
-                    .map((AppColor appColor) => ChoiceChip(
-                          backgroundColor: Colors.transparent,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(150))),
-                          selectedColor: Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withValues(alpha: 0.35),
-                          showCheckmark: true,
-                          label: ClipRRect(
-                            borderRadius: BorderRadius.circular(200),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: appColor.cs.primary,
+                ),
+                SwitchListTile(
+                  inactiveThumbColor: Colors.white,
+                  inactiveTrackColor: const Color(0xFF9B9B9B),
+                  subtitle: Text(
+                    tr('enable_warning'),
+                  ),
+                  value: settingsValues.enableProxy,
+                  secondary: Icon(
+                    FontAwesomeIcons.networkWired,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(
+                    tr('use_proxy'),
+                  ),
+                  onChanged: (bool value) {
+                    if (value) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext ctx) {
+                            return AlertDialog(
+                              title: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(tr('use_proxy_title')),
                               ),
-                              height: 45,
-                              width: 45,
+                              content: Text(tr('use_proxy_detail')),
+                              actions: [
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(tr('cancel'))),
+                                TextButton(
+                                    onPressed: () async {
+                                      setState(() {
+                                        settingsValues.enableProxy = value;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text(
+                                      tr('enable'),
+                                    ))
+                              ],
+                            );
+                          });
+                    } else {
+                      setState(() {
+                        settingsValues.enableProxy = value;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _SettingsGroup(
+              title: tr('content_preferences'),
+              children: [
+                _SettingsChoiceTile<String>(
+                  icon: Icons.image_rounded,
+                  title: tr('image_quality'),
+                  value: settingsValues.imageQuality,
+                  options: {
+                    'original/': tr('high'),
+                    'w600_and_h900_bestv2/': tr('medium'),
+                    'w500/': tr('low'),
+                  },
+                  onChanged: (value) =>
+                      setState(() => settingsValues.imageQuality = value),
+                ),
+                _SettingsChoiceTile<String>(
+                  icon: Icons.view_list_rounded,
+                  title: tr('list_view_type'),
+                  value: settingsValues.defaultView,
+                  options: {'list': tr('list'), 'grid': tr('grid')},
+                  onChanged: (value) =>
+                      setState(() => settingsValues.defaultView = value),
+                ),
+                _SettingsChoiceTile<int>(
+                  icon: Icons.phone_android_rounded,
+                  title: tr('default_home_screen'),
+                  value: settingsValues.defaultValue,
+                  options: {
+                    0: tr('movies'),
+                    1: tr('tv_shows'),
+                    2: tr('discover'),
+                    3: tr('profile'),
+                  },
+                  onChanged: (value) =>
+                      setState(() => settingsValues.defaultValue = value),
+                ),
+                ListTile(
+                  onTap: (() {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return const AppLanguageChoose();
+                    })));
+                  }),
+                  leading: Icon(
+                    FontAwesomeIcons.language,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(
+                    tr('app_language'),
+                  ),
+                  trailing: Wrap(
+                      spacing: 10,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        if (languageFlag != null)
+                          Image.asset(languageFlag!, height: 25, width: 25),
+                        Text(languageName ?? settingsValues.appLanguage)
+                      ]),
+                ),
+                ListTile(
+                  onTap: (() {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return const CountryChoose();
+                    })));
+                  }),
+                  leading: Icon(
+                    FontAwesomeIcons.earthAmericas,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(
+                    tr('watch_country'),
+                  ),
+                  trailing: Wrap(
+                      spacing: 10,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        if (countryFlag != null)
+                          Image.asset(countryFlag!, height: 25, width: 25),
+                        Text(countryName ?? settingsValues.defaultCountry)
+                      ]),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _SettingsGroup(
+              title: tr('storage'),
+              children: [
+                ListTile(
+                  leading: Icon(
+                    FontAwesomeIcons.eraser,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(tr('clear_cache')),
+                  trailing: ElevatedButton(
+                      onPressed: () async {
+                        await clearCache().then((value) {
+                          if (!context.mounted) {
+                            return;
+                          }
+                          GlobalMethods.showCustomScaffoldMessage(
+                              SnackBar(
+                                  duration: const Duration(
+                                      seconds: 1, milliseconds: 500),
+                                  content: Text(value
+                                      ? tr('cleared_cache')
+                                      : tr('cache_doesnt_exist'))),
+                              context);
+                        });
+                        await clearTempCache().then((value) {
+                          if (!context.mounted) {
+                            return;
+                          }
+                          GlobalMethods.showCustomScaffoldMessage(
+                              SnackBar(
+                                  duration: const Duration(
+                                      seconds: 1, milliseconds: 500),
+                                  content: Text(value
+                                      ? tr('cleared_cache')
+                                      : tr('cache_doesnt_exist'))),
+                              context);
+                        });
+                      },
+                      child: Text(tr('clear'))),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _SettingsGroup(
+              title: tr('custom_color'),
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  height: 68,
+                  child: ListView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      scrollDirection: Axis.horizontal,
+                      children: appColors
+                          .appColors(settingsValues.appTheme == 'dark' ||
+                                  settingsValues.appTheme == 'amoled'
+                              ? true
+                              : false)
+                          .map((AppColor appColor) {
+                        final selected =
+                            settingsValues.appColorIndex == appColor.index;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 14),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: () => setState(() {
+                              settingsValues.appColorIndex =
+                                  selected ? -1 : appColor.index;
+                            }),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 180),
+                              width: 50,
+                              height: 50,
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: selected
+                                      ? appColor.cs.primary
+                                      : Colors.transparent,
+                                  width: 2.5,
+                                ),
+                              ),
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                    color: appColor.cs.primary,
+                                    shape: BoxShape.circle),
+                                child: selected
+                                    ? Icon(Icons.check_rounded,
+                                        color: appColor.cs.onPrimary)
+                                    : null,
+                              ),
                             ),
                           ),
-                          selected:
-                              settingsValues.appColorIndex == appColor.index,
-                          onSelected: (bool? selected) {
-                            setState(() {
-                              settingsValues.appColorIndex =
-                                  (selected != null || selected!
-                                      ? appColor.index
-                                      : null)!;
-                            });
-                          },
-                        ))
-                    .toList()),
-          )
+                        );
+                      }).toList()),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsGroup extends StatelessWidget {
+  const _SettingsGroup({
+    required this.title,
+    required this.children,
+  });
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 0, 4, 10),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
+        Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              for (var i = 0; i < children.length; i++) ...[
+                children[i],
+                if (i != children.length - 1) const Divider(),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SettingsChoiceTile<T> extends StatelessWidget {
+  const _SettingsChoiceTile({
+    required this.icon,
+    required this.title,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  final IconData icon;
+  final String title;
+  final T value;
+  final Map<T, String> options;
+  final ValueChanged<T> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: () => _showChoices(context),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
+      title: Text(title),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 130),
+            child: Text(
+              options[value] ?? '',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+            ),
+          ),
+          const SizedBox(width: 5),
+          const Icon(Icons.chevron_right_rounded),
         ],
       ),
     );
+  }
+
+  Future<void> _showChoices(BuildContext context) async {
+    final selected = await showModalBottomSheet<T>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.only(bottom: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 4, 24, 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child:
+                    Text(title, style: Theme.of(context).textTheme.titleLarge),
+              ),
+            ),
+            for (final option in options.entries)
+              ListTile(
+                title: Text(option.value),
+                trailing: option.key == value
+                    ? Icon(Icons.check_rounded,
+                        color: Theme.of(context).colorScheme.primary)
+                    : null,
+                onTap: () => Navigator.pop(context, option.key),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (selected != null) onChanged(selected);
   }
 }

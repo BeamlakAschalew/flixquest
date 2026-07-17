@@ -73,7 +73,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   final PlayerNextEpisodeWidget _nextEpisodeWidget = PlayerNextEpisodeWidget();
   late int duration;
 
-  GlobalKey _betterPlayerKey = GlobalKey();
+  final GlobalKey _betterPlayerKey = GlobalKey();
 
   int totalMinutesWatched = 0;
   bool isVideoPaused = false;
@@ -94,9 +94,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   // Provider switching
   bool _isSwitchingProvider = false;
   late String? _currentProviderCode; // Track current provider
-  Map<String, ProviderVideoSource> _loadedProviders =
+  final Map<String, ProviderVideoSource> _loadedProviders =
       {}; // Cache loaded providers
-  Set<String> _loadingProviders = {}; // Track which providers are being loaded
+  final Set<String> _loadingProviders =
+      {}; // Track which providers are being loaded
 
   @override
   void initState() {
@@ -170,7 +171,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             : '${widget.tvMetadata!.seriesName!} - ${widget.tvMetadata!.episodeName!} | ${episodeSeasonFormatter(widget.tvMetadata!.episodeNumber!, widget.tvMetadata!.seasonNumber!)}',
         backgroundColor: Colors.black,
         progressBarBackgroundColor: Colors.white,
-        controlBarColor: Colors.black.withValues(alpha: 0.3),
+        controlBarColor: Colors.black.withValues(alpha: 0.48),
         muteIcon: Icons.volume_off_rounded,
         unMuteIcon: Icons.volume_up_rounded,
         pauseIcon: Icons.pause_rounded,
@@ -198,7 +199,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         subtitlesIcon: Icons.closed_caption_rounded,
         qualitiesIcon: Icons.hd_rounded,
         enableAudioTracks: true,
-        controlBarHeight: 50,
+        controlBarHeight: 56,
         watchingText: tr('watching_text'),
         playerTimeMode: settings.playerTimeDisplay,
         // Add custom overflow menu item for external subtitles
@@ -593,6 +594,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   // Provider switching methods
+  // ignore: unused_element
   void _showProviderSwitcher() {
     if (widget.availableProviders == null ||
         widget.availableProviders!.length <= 1) {
@@ -786,7 +788,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           List<BetterPlayerSubtitlesSource> providerSubs = [];
 
           if (result.subtitleLinks != null) {
-            for (var subLink in result.subtitleLinks!) {
+            for (final subLink in result.subtitleLinks!) {
               providerSubs.add(
                 BetterPlayerSubtitlesSource(
                   type: BetterPlayerSubtitlesSourceType.network,
@@ -839,7 +841,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           List<BetterPlayerSubtitlesSource> providerSubs = [];
 
           if (result.subtitleLinks != null) {
-            for (var subLink in result.subtitleLinks!) {
+            for (final subLink in result.subtitleLinks!) {
               providerSubs.add(
                 BetterPlayerSubtitlesSource(
                   type: BetterPlayerSubtitlesSourceType.network,
@@ -875,12 +877,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       // providerSource.videoSources is already reversed (done during caching)
       // Just use it directly for the new player screen
 
-      // Close any open modal/bottom sheet before navigation
-      Navigator.of(context).pop();
-
-      // Use Navigator.pushReplacement to create a fresh player screen
-      // This completely avoids Better Player's internal state issues
       if (!mounted) return;
+
+      // Close any open modal/bottom sheet before navigation.
+      Navigator.of(context).pop();
 
       Navigator.pushReplacement(
         context,

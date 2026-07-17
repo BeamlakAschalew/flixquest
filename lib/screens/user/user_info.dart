@@ -1,11 +1,18 @@
-import 'package:easy_localization/easy_localization.dart';
-import '/screens/user/edit_profile.dart';
-import '/constants/app_constants.dart';
-import '/screens/common/landing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
+import '../common/about.dart';
+import '../common/landing_screen.dart';
+import '../common/server_status_screen.dart';
+import '../common/settings.dart' as app_settings;
+import '../common/update_screen.dart';
+import 'edit_profile.dart';
 
 class UserInfo extends StatefulWidget {
   const UserInfo({super.key});
@@ -18,281 +25,385 @@ class _UserInfoState extends State<UserInfo> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String? uid;
   bool? userAnonymous;
-  DocumentSnapshot? userDoc;
-  String? month;
-  int? year;
 
   @override
   void initState() {
-    getData();
-    rtData();
     super.initState();
+    _loadUser();
   }
 
-  void getData() async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      uid = user.uid;
-    }
-
-    if (user != null && user.isAnonymous) {
-      if (mounted) {
-        setState(() {
-          userAnonymous = true;
-        });
-      }
-    } else {
-      if (user != null) {
-        userDoc =
-            await FirebaseFirestore.instance.collection('users').doc(uid).get();
-        if (mounted) {
-          setState(() {
-            userAnonymous = false;
-          });
-        }
-      }
-    }
-  }
-
-  void rtData() {
-    // FirebaseFirestore.instance
-    //     .collection('Users')
-    //     .doc(uid)
-    //     .snapshots()
-    //     .listen((DocumentSnapshot documentSnapshot) {
-    //   Map<String, dynamic> firestoreInfo =
-    //       documentSnapshot as Map<String, dynamic>;
-
-    //   setState(() {
-    //     String money = firestoreInfo['earnings'];
-    //     print(money);
-    //   });
-    // }).onError((e) => print(e));
+  void _loadUser() {
+    final user = _auth.currentUser;
+    uid = user?.uid;
+    userAnonymous = user?.isAnonymous ?? true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return userAnonymous == null
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
-        : userAnonymous == true
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      tr('current_account_anonymous'),
-                      textAlign: TextAlign.center,
-                    ),
-                    ElevatedButton(
-                        onPressed: () async {
-                          await _auth.currentUser!.delete().then((value) async {
-                            await _auth.signOut().then((value) {
-                              if (!context.mounted) {
-                                return;
-                              }
-                              Navigator.pushReplacement(context,
-                                  MaterialPageRoute(builder: ((context) {
-                                return const LandingScreen();
-                              })));
-                            });
-                          });
-                        },
-                        child: Text(tr('login_signup')))
-                  ],
-                ),
-              )
-            : StreamBuilder<DocumentSnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(uid)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    Center(
-                      child: Text(tr('error_occured')),
-                    );
-                  }
-                  return Container(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              ClipRRect(
-                                  borderRadius: BorderRadius.circular(80),
-                                  child: snapshot.data!['profileId'] == null
-                                      ? Image.asset(
-                                          'assets/images/profiles/0.png',
-                                          width: 80,
-                                          height: 80,
-                                        )
-                                      : Image.asset(
-                                          'assets/images/profiles/${snapshot.data!['profileId']}.png',
-                                          width: 80,
-                                          height: 80,
-                                        )),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Wrap(
-                                      spacing: 5,
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      children: [
-                                        Text(
-                                          snapshot.data!['name'] ??
-                                              tr('not_available'),
-                                          style: kTextHeaderStyle,
-                                        ),
-                                        Visibility(
-                                            visible:
-                                                snapshot.data!['verified'] ??
-                                                    false,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              child: SvgPicture.asset(
-                                                'assets/images/checkmark.svg',
-                                                width: 20,
-                                                height: 20,
-                                                colorFilter: ColorFilter.mode(
-                                                    Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                    BlendMode.srcIn),
-                                              ),
-                                            ))
-                                      ]),
-                                  Text(
-                                      '@${snapshot.data!['username'] ?? 'username'}')
-                                ],
-                              )
-                            ],
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(top: 15.0, bottom: 10),
-                            child: ElevatedButton(
-                                style: const ButtonStyle(
-                                    minimumSize:
-                                        WidgetStatePropertyAll(Size(250, 45))),
-                                onPressed: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return const ProfileEdit();
-                                  }));
-                                },
-                                child: Text(tr('edit_profile'))),
-                          ),
-                          const Divider(
-                            thickness: 1,
-                            color: Colors.grey,
-                          ),
-                          userListTile(tr('email'),
-                              snapshot.data!['email'] ?? '', 0, context),
-                          userListTile(
-                              tr('joined'),
-                              '${DateFormat('MMMM').format(DateTime(0, DateTime.parse(snapshot.data!['joinedAt']).month))} ${DateTime.parse(snapshot.data!['joinedAt']).year}',
-                              3,
-                              context),
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              splashColor: Theme.of(context).splashColor,
-                              child: ListTile(
-                                onTap: () async {
-                                  // Navigator.canPop(context)? Navigator.pop(context):null;
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext ctx) {
-                                        return AlertDialog(
-                                          title: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(tr('sign_out')),
-                                          ),
-                                          content: Text(tr('want_to_sign_out')),
-                                          actions: [
-                                            ElevatedButton(
-                                                onPressed: () async {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: Text(tr('cancel'))),
-                                            TextButton(
-                                                onPressed: () async {
-                                                  await _auth
-                                                      .signOut()
-                                                      .then((value) {
-                                                    if (!context.mounted) {
-                                                      return;
-                                                    }
-                                                    Navigator.pushReplacement(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder:
-                                                                ((context) {
-                                                      return const LandingScreen();
-                                                    })));
-                                                  });
-                                                },
-                                                child: Text(
-                                                  tr('ok'),
-                                                  style: const TextStyle(
-                                                      color: Colors.red),
-                                                ))
-                                          ],
-                                        );
-                                      });
-                                },
-                                title: Text(tr('logout')),
-                                leading: Icon(
-                                  Icons.exit_to_app_rounded,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ));
-                },
-              );
+    if (userAnonymous == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (userAnonymous!) return _anonymousProfile();
+    return StreamBuilder<DocumentSnapshot>(
+      stream:
+          FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError || !snapshot.hasData || !snapshot.data!.exists) {
+          return AppEmptyState(
+            title: tr('error_occured'),
+            message: tr('not_available'),
+            icon: Icons.person_off_outlined,
+          );
+        }
+        final data = snapshot.data!.data() as Map<String, dynamic>? ?? {};
+        return _profile(data);
+      },
+    );
   }
 
-  final List<IconData> _userTileIcons = [
-    Icons.email,
-    Icons.phone,
-    Icons.local_shipping,
-    Icons.watch_later,
-    Icons.exit_to_app_rounded
-  ];
-
-  Widget userListTile(
-      String title, String subTitle, int index, BuildContext context) {
-    return ListTile(
-      title: Text(title),
-      subtitle: Text(subTitle),
-      leading: Icon(
-        _userTileIcons[index],
-        color: Theme.of(context).colorScheme.primary,
+  Widget _anonymousProfile() {
+    return SafeArea(
+      bottom: false,
+      child: AppResponsiveContent(
+        padding: EdgeInsets.zero,
+        maxWidth: 760,
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            AppUI.pagePadding(context),
+            20,
+            AppUI.pagePadding(context),
+            30,
+          ),
+          children: [
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset('assets/images/logo.png',
+                      width: 34, height: 34),
+                ),
+                const SizedBox(width: 12),
+                Text(tr('profile'),
+                    style: Theme.of(context).textTheme.headlineSmall),
+              ],
+            ),
+            const SizedBox(height: 30),
+            Center(
+              child: Container(
+                width: 112,
+                height: 112,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: .12),
+                ),
+                child: Icon(
+                  Icons.person_outline_rounded,
+                  size: 54,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              tr('current_account_anonymous'),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              tr('bookmark_feature_notice'),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Center(
+              child: FilledButton.icon(
+                onPressed: _leaveAnonymousSession,
+                icon: const Icon(Icons.login_rounded),
+                label: Text(tr('login_signup')),
+              ),
+            ),
+            const SizedBox(height: 28),
+            _profileActions(authenticated: false),
+          ],
+        ),
       ),
     );
   }
 
-  Widget userTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.all(14.0),
-      child: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
+  Widget _profile(Map<String, dynamic> data) {
+    final colors = Theme.of(context).colorScheme;
+    final profileId = data['profileId'] ?? 0;
+    final name = data['name']?.toString() ?? tr('not_available');
+    final username = data['username']?.toString() ?? 'username';
+    final email = data['email']?.toString() ?? '';
+    final joinedAt = DateTime.tryParse(data['joinedAt']?.toString() ?? '');
+    final joined = joinedAt == null
+        ? tr('not_available')
+        : DateFormat('MMMM yyyy').format(joinedAt);
+
+    return SafeArea(
+      bottom: false,
+      child: AppResponsiveContent(
+        padding: EdgeInsets.zero,
+        maxWidth: 760,
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+              AppUI.pagePadding(context), 20, AppUI.pagePadding(context), 30),
+          children: [
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset('assets/images/logo.png',
+                      width: 34, height: 34),
+                ),
+                const SizedBox(width: 12),
+                Text(tr('profile'),
+                    style: Theme.of(context).textTheme.headlineSmall),
+              ],
+            ),
+            const SizedBox(height: 28),
+            Center(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: colors.primary.withValues(alpha: .28),
+                          width: 2),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/profiles/$profileId.png',
+                        width: 112,
+                        height: 112,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Image.asset(
+                          'assets/images/profiles/0.png',
+                          width: 112,
+                          height: 112,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: -2,
+                    bottom: 2,
+                    child: IconButton.filled(
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () => _push(const ProfileEdit()),
+                      icon: const Icon(Icons.edit_rounded, size: 18),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              name,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              email,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '@$username',
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: colors.onSurfaceVariant),
+            ),
+            // const SizedBox(height: 24),
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            //   decoration: BoxDecoration(
+            //     border: Border.all(color: colors.primary, width: 1.6),
+            //     borderRadius: BorderRadius.circular(24),
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       Container(
+            //         width: 48,
+            //         height: 48,
+            //         decoration: BoxDecoration(
+            //           color: colors.primary.withValues(alpha: .12),
+            //           borderRadius: BorderRadius.circular(16),
+            //         ),
+            //         child:
+            //             Icon(Icons.auto_awesome_rounded, color: colors.primary),
+            //       ),
+            //       // const SizedBox(width: 15),
+            //       // Expanded(
+            //       //   child: Column(
+            //       //     crossAxisAlignment: CrossAxisAlignment.start,
+            //       //     children: [
+            //       //       Text('FlixQuest',
+            //       //           style: Theme.of(context)
+            //       //               .textTheme
+            //       //               .titleMedium
+            //       //               ?.copyWith(color: colors.primary)),
+            //       //       const SizedBox(height: 3),
+            //       //       Text('${tr('joined')} $joined',
+            //       //           style: Theme.of(context).textTheme.bodySmall),
+            //       //     ],
+            //       //   ),
+            //       // ),
+            //     ],
+            //   ),
+            // ),
+            const SizedBox(height: 10),
+            _profileActions(authenticated: true),
+          ],
+        ),
       ),
+    );
+  }
+
+  Future<void> _leaveAnonymousSession() async {
+    await _auth.currentUser?.delete();
+    await _auth.signOut();
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LandingScreen()),
+    );
+  }
+
+  Widget _profileActions({required bool authenticated}) {
+    final actions = <Widget>[
+      if (authenticated)
+        _ProfileAction(
+          icon: Icons.person_outline_rounded,
+          title: tr('edit_profile'),
+          onTap: () => _push(const ProfileEdit()),
+        ),
+      _ProfileAction(
+        icon: Icons.tune_rounded,
+        title: tr('settings'),
+        onTap: () => _push(const app_settings.Settings()),
+      ),
+      _ProfileAction(
+        icon: Icons.dns_outlined,
+        title: tr('check_server'),
+        onTap: () => _push(const ServerStatusScreen()),
+      ),
+      _ProfileAction(
+        icon: Icons.system_update_alt_rounded,
+        title: tr('check_for_update'),
+        onTap: () => _push(const UpdateScreen(isForced: false)),
+      ),
+      _ProfileAction(
+        icon: Icons.share_outlined,
+        title: tr('shared_the_app'),
+        onTap: _shareApp,
+      ),
+      _ProfileAction(
+        icon: Icons.info_outline_rounded,
+        title: tr('about'),
+        onTap: () => _push(const AboutPage()),
+      ),
+      if (authenticated)
+        _ProfileAction(
+          icon: Icons.logout_rounded,
+          title: tr('logout'),
+          destructive: true,
+          onTap: _confirmSignOut,
+        ),
+    ];
+    return Card(
+      color: Colors.transparent,
+      child: Column(
+        children: [
+          for (var i = 0; i < actions.length; i++) ...[
+            actions[i],
+            if (i != actions.length - 1) const Divider(indent: 58),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _shareApp() async {
+    final mixpanel = context.read<SettingsProvider>().mixpanel;
+    mixpanel.track('Share button data', properties: {
+      'Share button click': 'Share',
+    });
+    await Share.share(tr('share_text'));
+  }
+
+  Future<void> _confirmSignOut() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(tr('sign_out')),
+        content: Text(tr('want_to_sign_out')),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(tr('cancel'))),
+          FilledButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(tr('ok'))),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await _auth.signOut();
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LandingScreen()),
+    );
+  }
+
+  void _push(Widget page) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+  }
+}
+
+class _ProfileAction extends StatelessWidget {
+  const _ProfileAction({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    this.destructive = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+  final bool destructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = destructive
+        ? Theme.of(context).colorScheme.error
+        : Theme.of(context).colorScheme.onSurface;
+    return ListTile(
+      onTap: onTap,
+      leading: Icon(icon, color: color),
+      title: Text(title, style: TextStyle(color: color)),
+      trailing: const Icon(Icons.chevron_right_rounded),
     );
   }
 }

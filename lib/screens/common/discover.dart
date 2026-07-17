@@ -2,8 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 import '../movie/discover_movies_tab.dart';
 import '../tv/discover_tv_tab.dart';
+import 'search_view.dart';
 
 class DiscoverPage extends StatefulWidget {
   const DiscoverPage({
@@ -27,71 +29,76 @@ class _DiscoverPageState extends State<DiscoverPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    return Column(
-      children: [
-        Container(
-          color: Colors.grey,
-          width: double.infinity,
-          child: TabBar(
-            tabs: [
-              Tab(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 8.0),
-                    child: Icon(Icons.movie_creation_rounded),
-                  ),
-                  Expanded(
-                    child: Text(
-                      tr('movies'),
-                      overflow: TextOverflow.ellipsis,
+    final settings = Provider.of<SettingsProvider>(context);
+    final colors = Theme.of(context).colorScheme;
+    return SafeArea(
+      bottom: false,
+      child: Column(
+        children: [
+          AppResponsiveContent(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Material(
+                    color: colors.onSurface.withValues(alpha: .06),
+                    borderRadius: BorderRadius.circular(15),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(15),
+                      onTap: () => _openSearch(settings),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
+                        child: Row(
+                          children: [
+                            Icon(Icons.search_rounded,
+                                color: colors.onSurfaceVariant),
+                            const SizedBox(width: 12),
+                            Text(
+                              tr('search'),
+                              style: TextStyle(
+                                color: colors.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ],
-              )),
-              Tab(
-                  child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Icon(Icons.live_tv_rounded)),
-                  Expanded(
-                    child: Text(
-                      tr('tv_series'),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ))
-            ],
-            indicatorColor: themeMode == 'dark' || themeMode == 'amoled'
-                ? Colors.white
-                : Colors.black,
-            indicatorWeight: 3,
-            //isScrollable: true,
-            labelStyle: const TextStyle(
-              fontFamily: 'FigtreeSB',
-              color: Colors.black,
-              fontSize: 17,
+                ),
+              ],
             ),
-            unselectedLabelStyle:
-                const TextStyle(fontFamily: 'Figtree', color: Colors.black87),
-            labelColor: Colors.black,
-            controller: tabController,
-            indicatorSize: TabBarIndicatorSize.tab,
           ),
-        ),
-        Expanded(
-          child: TabBarView(
-            controller: tabController,
-            children: const [DiscoverMoviesTab(), DiscoverTVTab()],
+          AppResponsiveContent(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: TabBar(
+              controller: tabController,
+              tabs: [
+                Tab(text: tr('movies')),
+                Tab(text: tr('tv_series')),
+              ],
+            ),
           ),
-        )
-      ],
+          const SizedBox(height: 6),
+          Expanded(
+            child: TabBarView(
+              controller: tabController,
+              children: const [DiscoverMoviesTab(), DiscoverTVTab()],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openSearch(SettingsProvider settings) {
+    showSearch(
+      context: context,
+      delegate: Search(
+        mixpanel: settings.mixpanel,
+        includeAdult: settings.isAdult,
+        lang: settings.appLanguage,
+      ),
     );
   }
 

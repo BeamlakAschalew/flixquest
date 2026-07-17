@@ -5,6 +5,7 @@ import '../../constants/app_constants.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class EmailChangeScreen extends StatefulWidget {
   const EmailChangeScreen({super.key});
@@ -144,22 +145,34 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : Center(
+          : AppResponsiveContent(
+              maxWidth: 560,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(
-                      height: 80,
+                    Container(
+                      width: 68,
+                      height: 68,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: .12),
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: Icon(Icons.alternate_email_rounded,
+                          size: 32,
+                          color: Theme.of(context).colorScheme.primary),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         tr('change_email'),
-                        style: const TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
                     Padding(
@@ -191,14 +204,12 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                     .requestFocus(_emailVerifyFocusNode),
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
-                                    errorMaxLines: 3,
-                                    border: const UnderlineInputBorder(),
-                                    filled: true,
-                                    prefixIcon:
-                                        const Icon(FontAwesomeIcons.envelope),
-                                    labelText: tr('new_email_address'),
-                                    fillColor:
-                                        Theme.of(context).colorScheme.surface),
+                                  errorMaxLines: 3,
+                                  filled: true,
+                                  prefixIcon:
+                                      const Icon(FontAwesomeIcons.envelope),
+                                  labelText: tr('new_email_address'),
+                                ),
                                 onSaved: (value) {
                                   newEmail = value!;
                                 },
@@ -220,14 +231,12 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
-                                    errorMaxLines: 3,
-                                    border: const UnderlineInputBorder(),
-                                    filled: true,
-                                    prefixIcon:
-                                        const Icon(FontAwesomeIcons.envelope),
-                                    labelText: tr('repeat_new_email'),
-                                    fillColor:
-                                        Theme.of(context).colorScheme.surface),
+                                  errorMaxLines: 3,
+                                  filled: true,
+                                  prefixIcon:
+                                      const Icon(FontAwesomeIcons.envelope),
+                                  labelText: tr('repeat_new_email'),
+                                ),
                               ),
                             ),
                           ],

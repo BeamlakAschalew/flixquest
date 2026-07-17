@@ -70,13 +70,13 @@ class PlayerNextEpisodeWidget {
             }
           },
           child: Container(
-            width: 200,
+            width: (MediaQuery.sizeOf(context).width * .44).clamp(190.0, 280.0),
             decoration: BoxDecoration(
               color: Colors.black.withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: colors.first,
-                width: 2,
+                width: 1,
               ),
               boxShadow: [
                 BoxShadow(

@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import '../../constants/app_constants.dart';
 import '../../models/profile_image_list.dart';
 import '../../services/globle_method.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class ProfileEdit extends StatefulWidget {
   const ProfileEdit({super.key});
@@ -185,8 +186,9 @@ class _ProfileEditState extends State<ProfileEdit> {
       appBar: AppBar(
         title: Text(tr('edit_profile')),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(8),
+      body: AppResponsiveContent(
+        maxWidth: 680,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: userAnonymous == null
             ? const Center(
                 child: CircularProgressIndicator(),
@@ -199,58 +201,106 @@ class _ProfileEditState extends State<ProfileEdit> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(tr('profile_picture'),
+                              style: Theme.of(context).textTheme.titleLarge),
+                          const SizedBox(height: 8),
                           Text(
-                            tr('profile_picture'),
-                            style: const TextStyle(
-                              fontFamily: 'FigtreeSB',
-                              fontSize: 20,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            tr('choose_profile'),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
                           ),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 100,
-                            child: ListView(
-                                scrollDirection: Axis.horizontal,
+                          const SizedBox(height: 16),
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Wrap(
+                                spacing: 14,
+                                runSpacing: 14,
                                 children: profileImages
                                     .profile()
-                                    .map((Profile profile) => ChoiceChip(
-                                          backgroundColor: Colors.transparent,
-                                          shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(150))),
-                                          selectedColor: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          label: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(200),
-                                            child: Container(
-                                              // margin: EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                                color: Colors.black,
-                                              ),
-                                              height: 60,
-                                              width: 60,
+                                    .map((Profile profile) {
+                                  final selected = profileId == profile.index;
+                                  return Semantics(
+                                    selected: selected,
+                                    button: true,
+                                    child: InkWell(
+                                      customBorder: const CircleBorder(),
+                                      onTap: () => setState(() {
+                                        profileId = profile.index;
+                                        selectedProfile = profile.index;
+                                      }),
+                                      child: AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 180),
+                                        width: 72,
+                                        height: 72,
+                                        padding:
+                                            EdgeInsets.all(selected ? 3 : 0),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: selected
+                                              ? Border.all(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary,
+                                                  width: 3,
+                                                )
+                                              : null,
+                                        ),
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            ClipOval(
                                               child: Image.asset(
-                                                  'assets/images/profiles/${profile.index}.png',
-                                                  fit: BoxFit.cover),
+                                                'assets/images/profiles/${profile.index}.png',
+                                                width: 66,
+                                                height: 66,
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
-                                          ),
-                                          selected: profileId == profile.index,
-                                          onSelected: (bool selected) {
-                                            setState(() {
-                                              profileId = (selected
-                                                  ? profile.index
-                                                  : null)!;
-                                              selectedProfile = profile.index;
-                                            });
-                                          },
-                                        ))
-                                    .toList()),
+                                            if (selected)
+                                              Positioned(
+                                                right: -3,
+                                                bottom: -3,
+                                                child: Container(
+                                                  width: 24,
+                                                  height: 24,
+                                                  decoration: BoxDecoration(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                    shape: BoxShape.circle,
+                                                    border: Border.all(
+                                                      color: Theme.of(context)
+                                                          .scaffoldBackgroundColor,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.check_rounded,
+                                                    size: 15,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimary,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
                           ),
+                          const SizedBox(height: 12),
                           Padding(
                             padding: const EdgeInsets.all(12.0),
                             child: TextFormField(
@@ -271,12 +321,9 @@ class _ProfileEditState extends State<ProfileEdit> {
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 errorMaxLines: 3,
-                                border: const UnderlineInputBorder(),
                                 filled: true,
                                 prefixIcon: const Icon(FontAwesomeIcons.user),
                                 labelText: tr('full_name'),
-                                fillColor:
-                                    Theme.of(context).colorScheme.surface,
                               ),
                               onSaved: (value) {
                                 _fullName = value!;
@@ -310,13 +357,11 @@ class _ProfileEditState extends State<ProfileEdit> {
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
-                                  errorMaxLines: 3,
-                                  border: const UnderlineInputBorder(),
-                                  filled: true,
-                                  prefixIcon: const Icon(FontAwesomeIcons.at),
-                                  labelText: tr('username'),
-                                  fillColor:
-                                      Theme.of(context).colorScheme.surface),
+                                errorMaxLines: 3,
+                                filled: true,
+                                prefixIcon: const Icon(FontAwesomeIcons.at),
+                                labelText: tr('username'),
+                              ),
                               onSaved: (value) {
                                 _userName = value!;
                               },

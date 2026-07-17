@@ -4,6 +4,7 @@ import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -14,137 +15,130 @@ class AboutPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(tr('about')),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(40.0),
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          height: 100,
-                          width: 100,
-                        ),
-                      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: 40),
+        child: AppResponsiveContent(
+          maxWidth: 680,
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 112,
+                height: 112,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: .18),
+                      blurRadius: 28,
+                      offset: const Offset(0, 12),
                     ),
                   ],
                 ),
-                Text(
-                  tr('app_version', namedArgs: {'version': currentAppVersion}),
-                  style: const TextStyle(
-                    fontSize: 27.0,
-                  ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(23),
+                  child: Image.asset('assets/images/logo.png'),
                 ),
-                Text(
-                  tr('endorsment'),
-                  maxLines: 5,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 20.0, overflow: TextOverflow.visible),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    launchUrl(
-                        Uri.parse(
-                          'https://themoviedb.org',
+              ),
+              const SizedBox(height: 18),
+              Text('FlixQuest',
+                  style: Theme.of(context).textTheme.headlineMedium),
+              const SizedBox(height: 5),
+              Text(
+                tr('app_version', namedArgs: {'version': currentAppVersion}),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+              ),
+              const SizedBox(height: 26),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(22),
+                  child: Column(
+                    children: [
+                      Text(
+                        tr('endorsment'),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(height: 1.5),
+                      ),
+                      const SizedBox(height: 18),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () => launchUrl(
+                            Uri.parse('https://themoviedb.org'),
+                            mode: LaunchMode.externalApplication),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Image.asset('assets/images/tmdb_logo.png',
+                              height: 42),
                         ),
-                        mode: LaunchMode.externalApplication);
-                  },
-                  child: SizedBox(
-                    height: 100,
-                    width: 100,
-                    child: Image.asset('assets/images/tmdb_logo.png'),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    child: Text(
-                      tr('bug_notice'), // Translate "Noticed any bugs? Inform me on Telegram, click here"
-                      maxLines: 5,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        decoration: TextDecoration.underline,
-                        decorationStyle: TextDecorationStyle.solid,
                       ),
-                    ),
-                    onTap: () {
-                      launchUrl(Uri.parse('https://t.me/flixquestcommunity'),
-                          mode: LaunchMode.externalApplication);
-                    },
+                    ],
                   ),
                 ),
-                Column(
+              ),
+              const SizedBox(height: 14),
+              Card(
+                child: Column(
                   children: [
-                    Text(
-                      tr('follow_cinemax'),
-                      maxLines: 5,
-                      textAlign: TextAlign.center,
-                      style: kTextSmallHeaderStyle,
+                    ListTile(
+                      leading: const Icon(Icons.bug_report_rounded),
+                      title: Text(tr('bug_notice')),
+                      trailing: const Icon(Icons.open_in_new_rounded, size: 18),
+                      onTap: () => launchUrl(
+                          Uri.parse('https://t.me/flixquestcommunity'),
+                          mode: LaunchMode.externalApplication),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.black26,
-                      ),
-                      padding: const EdgeInsets.all(10),
-                      child: const Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
+                    const Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(18),
+                      child: Column(
                         children: [
-                          SocialIconContainer(
-                            platformIcon: FontAwesomeIcons.instagram,
-                            uri: 'https://instagram.com/flixquestapp',
+                          Text(tr('follow_cinemax'),
+                              style: Theme.of(context).textTheme.titleMedium),
+                          const SizedBox(height: 14),
+                          const Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: [
+                              SocialIconContainer(
+                                  platformIcon: FontAwesomeIcons.instagram,
+                                  uri: 'https://instagram.com/flixquestapp'),
+                              SocialIconContainer(
+                                  platformIcon: FontAwesomeIcons.telegram,
+                                  uri: 'https://t.me/flixquestapp'),
+                              SocialIconContainer(
+                                  platformIcon: FontAwesomeIcons.github,
+                                  uri:
+                                      'https://github.com/beamlakaschalew/cinemax'),
+                              SocialIconContainer(
+                                  platformIcon: Icons.mail_rounded,
+                                  uri: 'mailto:flixquestapp@gmail.com'),
+                            ],
                           ),
-                          SocialIconContainer(
-                            platformIcon: FontAwesomeIcons.telegram,
-                            uri: 'https://t.me/flixquestapp',
-                          ),
-                          SocialIconContainer(
-                            platformIcon: FontAwesomeIcons.github,
-                            uri: 'https://github.com/beamlakaschalew/cinemax',
-                          ),
-                          SocialIconContainer(
-                              platformIcon: Icons.mail,
-                              uri: 'mailto:flixquestapp@gmail.com'),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 30,
-                    left: 7.0,
-                    right: 7.0,
-                  ),
-                  child: Text(
-                    tr('made_with'), // Translate "Made with ❤️ by Beamlak Aschalew"
-                    maxLines: 5,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 20.0),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(tr('year_range', namedArgs: {
-                    'startYear': '2018',
-                    'endYear': '2025'
-                  })), // Translate "2015 EC, 2023 GC"
-                )
-              ],
-            ),
+              ),
+              const SizedBox(height: 26),
+              Text(tr('made_with'),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 6),
+              Text(tr('year_range',
+                  namedArgs: {'startYear': '2018', 'endYear': '2026'})),
+            ],
           ),
         ),
       ),
@@ -165,10 +159,11 @@ class SocialIconContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(5),
+      width: 48,
+      height: 48,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
       ),
       child: PlatformIcon(platformIcon: platformIcon, uri: uri),
     );

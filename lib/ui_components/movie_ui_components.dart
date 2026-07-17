@@ -9,6 +9,7 @@ import '../provider/app_dependency_provider.dart';
 import '../provider/settings_provider.dart';
 import '../screens/movie/movie_detail.dart';
 import '../widgets/common_widgets.dart';
+import 'app_ui_components.dart';
 
 class HorizontalScrollingMoviesList extends StatelessWidget {
   const HorizontalScrollingMoviesList({
@@ -328,11 +329,13 @@ class MovieGridView extends StatelessWidget {
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return GridView.builder(
         controller: _scrollController,
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 150,
-          childAspectRatio: 0.48,
-          crossAxisSpacing: 5,
-          mainAxisSpacing: 5,
+        padding: EdgeInsets.fromLTRB(
+            AppUI.pagePadding(context), 12, AppUI.pagePadding(context), 24),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: AppUI.mediaGridColumns(context),
+          childAspectRatio: 0.58,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 16,
         ),
         itemCount: moviesList!.length,
         itemBuilder: (BuildContext context, int index) {
@@ -345,7 +348,7 @@ class MovieGridView extends StatelessWidget {
               }));
             },
             child: Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: EdgeInsets.zero,
               child: Column(
                 children: [
                   Expanded(
@@ -358,7 +361,8 @@ class MovieGridView extends StatelessWidget {
                           alignment: Alignment.center,
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
+                              borderRadius:
+                                  BorderRadius.circular(AppUI.cardRadius),
                               child: moviesList![index].posterPath == null
                                   ? Image.asset('assets/images/na_logo.png',
                                       fit: BoxFit.cover,
@@ -399,35 +403,11 @@ class MovieGridView extends StatelessWidget {
                                     ),
                             ),
                             Positioned(
-                              top: 0,
-                              left: 0,
-                              child: Container(
-                                margin: const EdgeInsets.all(3),
-                                alignment: Alignment.topLeft,
-                                padding: EdgeInsets.symmetric(horizontal: 3),
-                                height: 25,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: themeMode == 'dark' ||
-                                            themeMode == 'amoled'
-                                        ? Colors.black45
-                                        : Colors.white60),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.star_rounded,
-                                    ),
-                                    Text(
-                                        moviesList![index].voteAverage! % 1 == 0
-                                            ? moviesList![index]
-                                                .voteAverage!
-                                                .toInt()
-                                                .toString()
-                                            : moviesList![index]
-                                                .voteAverage!
-                                                .toStringAsFixed(1))
-                                  ],
-                                ),
+                              top: 8,
+                              left: 8,
+                              child: AppRatingBadge(
+                                rating: moviesList![index].voteAverage,
+                                compact: true,
                               ),
                             ),
                           ],
@@ -435,9 +415,7 @@ class MovieGridView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 9),
                   Expanded(
                       flex: 2,
                       child: Text(
@@ -445,6 +423,9 @@ class MovieGridView extends StatelessWidget {
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontFamily: 'FigtreeSB',
+                            ),
                       )),
                 ],
               ),
