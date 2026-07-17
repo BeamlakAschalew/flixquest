@@ -37,11 +37,11 @@ class Endpoints {
         '&language=$l';
   }
 
-  static String trendingMoviesUrl(bool includeAdult, String l) {
+  static String trendingMoviesUrl(String l) {
     return '$TMDB_API_BASE_URL'
         '/trending/movie/week?api_key='
         '$TMDB_API_KEY'
-        '&include_adult=$includeAdult&language=$l';
+        '&language=$l';
   }
 
   static String upcomingMoviesUrl(String l) {

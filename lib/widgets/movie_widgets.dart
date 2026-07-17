@@ -77,7 +77,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
               : ScrollingRecentMovies(moviesList: rMovies),
           ScrollingMovies(
             title: tr('trending_this_week'),
-            api: Endpoints.trendingMoviesUrl(includeAdult, lang),
+            api: Endpoints.trendingMoviesUrl(lang),
             discoverType: 'Trending',
             isTrending: true,
             includeAdult: includeAdult,
@@ -324,6 +324,20 @@ class ScrollingMoviesState extends State<ScrollingMovies>
   int pageNum = 2;
   bool isLoading = false;
 
+  String _requestUrl({int? page}) {
+    final uri = Uri.parse(widget.api);
+    final queryParameters = Map<String, String>.from(uri.queryParameters);
+
+    if (!widget.isTrending && widget.includeAdult != null) {
+      queryParameters['include_adult'] = widget.includeAdult.toString();
+    }
+    if (page != null) {
+      queryParameters['page'] = page.toString();
+    }
+
+    return uri.replace(queryParameters: queryParameters).toString();
+  }
+
   void getMoreData() async {
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
@@ -336,10 +350,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
           isLoading = true;
         });
         if (mounted) {
-          fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum',
-                  isProxyEnabled,
-                  proxyUrl)
+          fetchMovies(_requestUrl(page: pageNum), isProxyEnabled, proxyUrl)
               .then((value) {
             if (mounted) {
               setState(() {
@@ -361,9 +372,7 @@ class ScrollingMoviesState extends State<ScrollingMovies>
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchMovies('${widget.api}&include_adult=${widget.includeAdult}',
-            isProxyEnabled, proxyUrl)
-        .then((value) {
+    fetchMovies(_requestUrl(), isProxyEnabled, proxyUrl).then((value) {
       if (mounted) {
         setState(() {
           moviesList = value;

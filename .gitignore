@@ -60,3 +60,6 @@ android/app/google-services.json
 *.keystore
 /android/key.properties
 /android/app/key.properties
+
+# FVM Version Cache
+.fvm/
