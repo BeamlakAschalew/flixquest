@@ -51,8 +51,8 @@ class _TVBookmarkState extends State<TVBookmark> {
           AppUI.pagePadding(context), 18, AppUI.pagePadding(context), 24),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: AppUI.mediaGridColumns(context),
-        childAspectRatio: .58,
-        crossAxisSpacing: 12,
+        childAspectRatio: AppUI.mediaGridChildAspectRatio(context),
+        crossAxisSpacing: AppUI.mediaGridCrossAxisSpacing,
         mainAxisSpacing: 16,
       ),
       itemCount: items.length,
@@ -186,7 +186,8 @@ class _TVGridCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
+          AspectRatio(
+            aspectRatio: AppUI.posterAspectRatio,
             child: Stack(
               children: [
                 Positioned.fill(
@@ -227,15 +228,19 @@ class _TVGridCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 9),
-          Text(
-            item.name ?? tr('not_available'),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontFamily: 'FigtreeSB',
-                ),
+          const SizedBox(height: AppUI.mediaGridTitleGap),
+          SizedBox(
+            width: double.infinity,
+            height: AppUI.mediaGridTitleHeight,
+            child: Text(
+              item.name ?? tr('not_available'),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontFamily: 'FigtreeSB',
+                  ),
+            ),
           ),
         ],
       ),

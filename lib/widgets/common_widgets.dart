@@ -884,114 +884,15 @@ Widget watchProvidersImageShimmer(String themeMode) => ShimmerBase(
 
 Widget mainPageVerticalScrollShimmer(
         {required String themeMode, isLoading, scrollController}) =>
-    Container(
-      child: Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                        controller: scrollController,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: 10,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            child: ShimmerBase(
-                              themeMode: themeMode,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 0.0,
-                                  bottom: 3.0,
-                                  left: 10,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 10.0),
-                                          child: SizedBox(
-                                            width: 85,
-                                            height: 130,
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey.shade600,
-                                                borderRadius:
-                                                    BorderRadius.circular(10.0),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 8.0),
-                                                child: Container(
-                                                  width: 150,
-                                                  height: 20,
-                                                  color: Colors.grey.shade600,
-                                                ),
-                                              ),
-                                              Row(
-                                                children: <Widget>[
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 1.0),
-                                                    child: Container(
-                                                      height: 20,
-                                                      width: 20,
-                                                      color:
-                                                          Colors.grey.shade600,
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    width: 30,
-                                                    height: 20,
-                                                    color: Colors.grey.shade600,
-                                                  )
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Divider(
-                                      color: themeMode == 'light'
-                                          ? Colors.black54
-                                          : Colors.white54,
-                                      thickness: 1,
-                                      endIndent: 20,
-                                      indent: 10,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                  ),
-                ],
-              ),
-            ),
+    Column(
+      children: [
+        const Expanded(child: AppMediaListShimmer()),
+        if (isLoading == true)
+          const Padding(
+            padding: EdgeInsets.all(8),
+            child: LinearProgressIndicator(),
           ),
-          Visibility(
-              visible: isLoading,
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Center(child: LinearProgressIndicator()),
-              )),
-        ],
-      ),
+      ],
     );
 
 Widget mainPageVerticalScrollImageShimmer(String themeMode) => ShimmerBase(

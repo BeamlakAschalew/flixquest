@@ -177,135 +177,73 @@ class MovieListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return ListView.builder(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        itemCount: moviesList!.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return MovieDetailPage(
-                  movie: moviesList![index],
-                  heroId: '${moviesList![index].id}',
-                );
-              }));
-            },
-            child: Container(
-              color: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 0.0,
-                  bottom: 3.0,
-                  left: 10,
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10.0),
-                          child: SizedBox(
-                            width: 85,
-                            height: 130,
-                            child: Hero(
-                              tag: '${moviesList![index].id}',
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10.0),
-                                child: moviesList![index].posterPath == null
-                                    ? Image.asset(
-                                        'assets/images/na_logo.png',
-                                        fit: BoxFit.cover,
-                                      )
-                                    : CachedNetworkImage(
-                                        cacheManager: cacheProp(),
-                                        fadeOutDuration:
-                                            const Duration(milliseconds: 300),
-                                        fadeOutCurve: Curves.easeOut,
-                                        fadeInDuration:
-                                            const Duration(milliseconds: 700),
-                                        fadeInCurve: Curves.easeIn,
-                                        imageUrl: buildImageUrl(
-                                                TMDB_BASE_IMAGE_URL,
-                                                proxyUrl,
-                                                isProxyEnabled,
-                                                context) +
-                                            imageQuality +
-                                            moviesList![index].posterPath!,
-                                        imageBuilder:
-                                            (context, imageProvider) =>
-                                                Container(
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: imageProvider,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        placeholder: (context, url) =>
-                                            mainPageVerticalScrollImageShimmer(
-                                                themeMode),
-                                        errorWidget: (context, url, error) =>
-                                            Image.asset(
-                                          'assets/images/na_logo.png',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                moviesList![index].title!,
-                                style: const TextStyle(
-                                    fontFamily: 'FigtreeSB',
-                                    fontSize: 15,
-                                    overflow: TextOverflow.ellipsis),
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  const Icon(
-                                    Icons.star_rounded,
-                                  ),
-                                  Text(
-                                    moviesList![index].voteAverage! % 1 == 0
-                                        ? moviesList![index]
-                                            .voteAverage!
-                                            .toInt()
-                                            .toString()
-                                        : moviesList![index]
-                                            .voteAverage!
-                                            .toStringAsFixed(1),
-                                    style:
-                                        const TextStyle(fontFamily: 'Figtree'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                    Divider(
-                      color: themeMode == 'light'
-                          ? Colors.black54
-                          : Colors.white54,
-                      thickness: 1,
-                      endIndent: 20,
-                      indent: 10,
-                    ),
-                  ],
-                ),
+    final isProxyEnabled = context.watch<SettingsProvider>().enableProxy;
+    final proxyUrl = context.watch<AppDependencyProvider>().tmdbProxy;
+
+    return ListView.separated(
+      controller: _scrollController,
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+        AppUI.pagePadding(context),
+        12,
+        AppUI.pagePadding(context),
+        24,
+      ),
+      itemCount: moviesList!.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final movie = moviesList![index];
+        return AppMediaListCard(
+          title: movie.title ?? movie.originalTitle ?? '',
+          date: movie.releaseDate,
+          language: movie.originalLanguage,
+          overview: movie.overview,
+          rating: movie.voteAverage,
+          voteCount: movie.voteCount,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => MovieDetailPage(
+                movie: movie,
+                heroId: '${movie.id}',
               ),
             ),
-          );
-        });
+          ),
+          poster: Hero(
+            tag: '${movie.id}',
+            child: Material(
+              color: Colors.transparent,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: movie.posterPath == null
+                    ? Image.asset(
+                        'assets/images/na_logo.png',
+                        fit: BoxFit.cover,
+                      )
+                    : CachedNetworkImage(
+                        cacheManager: cacheProp(),
+                        imageUrl: buildImageUrl(
+                              TMDB_BASE_IMAGE_URL,
+                              proxyUrl,
+                              isProxyEnabled,
+                              context,
+                            ) +
+                            imageQuality +
+                            movie.posterPath!,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) =>
+                            scrollingImageShimmer(themeMode),
+                        errorWidget: (_, __, ___) => Image.asset(
+                          'assets/images/na_logo.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -333,8 +271,8 @@ class MovieGridView extends StatelessWidget {
             AppUI.pagePadding(context), 12, AppUI.pagePadding(context), 24),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: AppUI.mediaGridColumns(context),
-          childAspectRatio: 0.58,
-          crossAxisSpacing: 12,
+          childAspectRatio: AppUI.mediaGridChildAspectRatio(context),
+          crossAxisSpacing: AppUI.mediaGridCrossAxisSpacing,
           mainAxisSpacing: 16,
         ),
         itemCount: moviesList!.length,
@@ -351,8 +289,8 @@ class MovieGridView extends StatelessWidget {
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
-                  Expanded(
-                    flex: 6,
+                  AspectRatio(
+                    aspectRatio: AppUI.posterAspectRatio,
                     child: Hero(
                       tag: '${moviesList![index].id}',
                       child: Material(
@@ -415,9 +353,10 @@ class MovieGridView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 9),
-                  Expanded(
-                      flex: 2,
+                  const SizedBox(height: AppUI.mediaGridTitleGap),
+                  SizedBox(
+                      width: double.infinity,
+                      height: AppUI.mediaGridTitleHeight,
                       child: Text(
                         moviesList![index].title!,
                         textAlign: TextAlign.center,

@@ -9,6 +9,10 @@ abstract final class AppUI {
   static const double tabletPadding = 28;
   static const double contentMaxWidth = 1180;
   static const double cardRadius = 14;
+  static const double mediaGridCrossAxisSpacing = 12;
+  static const double mediaGridTitleGap = 9;
+  static const double mediaGridTitleHeight = 36;
+  static const double posterAspectRatio = 2 / 3;
 
   static double pagePadding(BuildContext context) {
     return MediaQuery.sizeOf(context).width >= 700
@@ -22,6 +26,19 @@ abstract final class AppUI {
     if (width >= 900) return 5;
     if (width >= 650) return 4;
     return 3;
+  }
+
+  /// Sizes a grid tile around a true 2:3 poster plus its title area.
+  static double mediaGridChildAspectRatio(BuildContext context) {
+    final columns = mediaGridColumns(context);
+    final gridWidth = MediaQuery.sizeOf(context).width -
+        (pagePadding(context) * 2) -
+        (mediaGridCrossAxisSpacing * (columns - 1));
+    final itemWidth = gridWidth / columns;
+    final itemHeight = (itemWidth / posterAspectRatio) +
+        mediaGridTitleGap +
+        mediaGridTitleHeight;
+    return itemWidth / itemHeight;
   }
 
   static double horizontalCardWidth(BuildContext context) {
@@ -593,16 +610,16 @@ class AppMediaGridShimmer extends StatelessWidget {
             AppUI.pagePadding(context), 12, AppUI.pagePadding(context), 24),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: AppUI.mediaGridColumns(context),
-          childAspectRatio: .58,
-          crossAxisSpacing: 12,
+          childAspectRatio: AppUI.mediaGridChildAspectRatio(context),
+          crossAxisSpacing: AppUI.mediaGridCrossAxisSpacing,
           mainAxisSpacing: 16,
         ),
         itemCount: AppUI.mediaGridColumns(context) * 4,
         itemBuilder: (_, __) => Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
-              flex: 6,
+            AspectRatio(
+              aspectRatio: AppUI.posterAspectRatio,
               child: _ShimmerBlock(
                 width: double.infinity,
                 height: double.infinity,
@@ -610,19 +627,248 @@ class AppMediaGridShimmer extends StatelessWidget {
                 radius: AppUI.cardRadius,
               ),
             ),
-            const SizedBox(height: 9),
-            Expanded(
-              flex: 2,
+            const SizedBox(height: AppUI.mediaGridTitleGap),
+            SizedBox(
+              height: AppUI.mediaGridTitleHeight,
               child: Column(
                 children: [
-                  _ShimmerBlock(
-                      width: double.infinity, height: 13, color: base),
+                  FractionallySizedBox(
+                    widthFactor: .84,
+                    child: _ShimmerBlock(
+                      width: double.infinity,
+                      height: 13,
+                      color: base,
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   _ShimmerBlock(width: 54, height: 11, color: base),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class AppMediaListCard extends StatelessWidget {
+  const AppMediaListCard({
+    required this.poster,
+    required this.title,
+    required this.onTap,
+    this.date,
+    this.language,
+    this.overview,
+    this.rating,
+    this.voteCount,
+    super.key,
+  });
+
+  final Widget poster;
+  final String title;
+  final VoidCallback onTap;
+  final String? date;
+  final String? language;
+  final String? overview;
+  final num? rating;
+  final int? voteCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final wide = MediaQuery.sizeOf(context).width >= 700;
+    final posterWidth = wide ? 112.0 : 96.0;
+    final posterHeight = posterWidth * 1.5;
+    final year =
+        date != null && date!.length >= 4 ? date!.substring(0, 4) : null;
+    final summary = overview?.trim() ?? '';
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: SizedBox(
+            height: posterHeight,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                    width: posterWidth, height: posterHeight, child: poster),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    height: 1.15,
+                                  ),
+                        ),
+                        if (year != null ||
+                            (language?.isNotEmpty ?? false)) ...[
+                          const SizedBox(height: 7),
+                          Wrap(
+                            spacing: 7,
+                            runSpacing: 5,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              if (year != null)
+                                Text(year,
+                                    style: TextStyle(
+                                        color: colors.onSurfaceVariant)),
+                              if (year != null &&
+                                  (language?.isNotEmpty ?? false))
+                                Text('•',
+                                    style: TextStyle(color: colors.outline)),
+                              if (language?.isNotEmpty ?? false)
+                                Text(
+                                  language!.toUpperCase(),
+                                  style: TextStyle(
+                                    color: colors.onSurfaceVariant,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: .5,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                        if (summary.isNotEmpty) ...[
+                          const SizedBox(height: 9),
+                          Expanded(
+                            child: Text(
+                              summary,
+                              maxLines: wide ? 4 : 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: colors.onSurfaceVariant,
+                                    height: 1.4,
+                                  ),
+                            ),
+                          ),
+                        ] else
+                          const Spacer(),
+                        Row(
+                          children: [
+                            AppRatingBadge(rating: rating, compact: true),
+                            if (voteCount != null) ...[
+                              const SizedBox(width: 10),
+                              Icon(Icons.people_outline_rounded,
+                                  size: 15, color: colors.onSurfaceVariant),
+                              const SizedBox(width: 4),
+                              Text(
+                                _compactCount(voteCount!),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelSmall
+                                    ?.copyWith(
+                                      color: colors.onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
+                            const Spacer(),
+                            Icon(Icons.chevron_right_rounded,
+                                color: colors.onSurfaceVariant),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _compactCount(int value) {
+    if (value >= 1000000) {
+      return '${(value / 1000000).toStringAsFixed(1)}M';
+    }
+    if (value >= 1000) {
+      return '${(value / 1000).toStringAsFixed(value >= 10000 ? 0 : 1)}K';
+    }
+    return value.toString();
+  }
+}
+
+class AppMediaListShimmer extends StatelessWidget {
+  const AppMediaListShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final base = dark ? const Color(0xFF202124) : const Color(0xFFE7E7E9);
+    final highlight = dark ? const Color(0xFF303236) : const Color(0xFFF5F5F6);
+    final wide = MediaQuery.sizeOf(context).width >= 700;
+    final posterWidth = wide ? 112.0 : 96.0;
+    final posterHeight = posterWidth * 1.5;
+    return Shimmer.fromColors(
+      baseColor: base,
+      highlightColor: highlight,
+      child: ListView.separated(
+        padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context),
+          12,
+          AppUI.pagePadding(context),
+          24,
+        ),
+        itemCount: 6,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (_, __) => Card(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: SizedBox(
+              height: posterHeight,
+              child: Row(
+                children: [
+                  _ShimmerBlock(
+                      width: posterWidth,
+                      height: posterHeight,
+                      color: base,
+                      radius: 12),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 6),
+                        _ShimmerBlock(width: 190, height: 17, color: base),
+                        const SizedBox(height: 9),
+                        _ShimmerBlock(width: 88, height: 11, color: base),
+                        const SizedBox(height: 13),
+                        _ShimmerBlock(
+                            width: double.infinity, height: 10, color: base),
+                        const SizedBox(height: 7),
+                        _ShimmerBlock(
+                            width: double.infinity, height: 10, color: base),
+                        const SizedBox(height: 7),
+                        _ShimmerBlock(width: 140, height: 10, color: base),
+                        const Spacer(),
+                        _ShimmerBlock(
+                            width: 54, height: 24, color: base, radius: 7),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
