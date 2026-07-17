@@ -175,7 +175,6 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
                 duration: const Duration(milliseconds: 180),
                 child: AppFeedOverlayHeader(
                   title: tr('tv_series'),
-                  onMenuPressed: widget.onMenuPressed,
                   onSearchPressed: widget.onSearchPressed,
                 ),
               ),

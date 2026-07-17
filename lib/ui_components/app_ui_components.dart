@@ -146,13 +146,11 @@ class _AppCrossfadeCarouselState extends State<AppCrossfadeCarousel> {
 class AppFeedOverlayHeader extends StatelessWidget {
   const AppFeedOverlayHeader({
     required this.title,
-    required this.onMenuPressed,
     required this.onSearchPressed,
     super.key,
   });
 
   final String title;
-  final VoidCallback? onMenuPressed;
   final VoidCallback? onSearchPressed;
 
   @override
@@ -173,13 +171,6 @@ class AppFeedOverlayHeader extends StatelessWidget {
             ),
             child: Row(
               children: [
-                IconButton(
-                  tooltip:
-                      MaterialLocalizations.of(context).openAppDrawerTooltip,
-                  onPressed: onMenuPressed,
-                  icon: const Icon(Icons.menu_rounded),
-                ),
-                const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     title,

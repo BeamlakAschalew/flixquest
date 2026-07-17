@@ -170,7 +170,6 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
                 duration: const Duration(milliseconds: 180),
                 child: AppFeedOverlayHeader(
                   title: tr('movies'),
-                  onMenuPressed: widget.onMenuPressed,
                   onSearchPressed: widget.onSearchPressed,
                 ),
               ),
