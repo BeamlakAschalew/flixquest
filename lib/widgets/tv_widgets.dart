@@ -284,7 +284,6 @@ class DiscoverTVState extends State<DiscoverTV>
   Widget build(BuildContext context) {
     super.build(context);
     deviceHeight = MediaQuery.of(context).size.height;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     final heroHeight = (deviceHeight * .48).clamp(410.0, 500.0);
@@ -292,7 +291,7 @@ class DiscoverTVState extends State<DiscoverTV>
       width: double.infinity,
       height: heroHeight,
       child: tvList == null
-          ? AppHeroShimmer(height: heroHeight)
+          ? const AppShimmerBlock(radius: 0)
           : tvList!.isEmpty
               ? Center(child: Text(tr('wow_odd'), style: kTextSmallBodyStyle))
               : AppCrossfadeCarousel(
@@ -308,14 +307,11 @@ class DiscoverTVState extends State<DiscoverTV>
                           cacheManager: cacheProp(),
                           imageUrl: path == null
                               ? ''
-                              : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
-                                      isProxyEnabled, context) +
-                                  imageQuality +
-                                  path,
+                              : '${buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context)}original$path',
                           fit: BoxFit.cover,
                           alignment: Alignment.topCenter,
                           placeholder: (_, __) =>
-                              AppHeroShimmer(height: heroHeight),
+                              const AppShimmerBlock(radius: 0),
                           errorWidget: (_, __, ___) => Image.asset(
                             'assets/images/na_logo.png',
                             fit: BoxFit.cover,
@@ -421,7 +417,7 @@ class DiscoverTVState extends State<DiscoverTV>
                                     icon: Icon(saved
                                         ? Icons.check_rounded
                                         : Icons.add_rounded),
-                                    label: Text(tr('bookmarks')),
+                                    label: Text(tr('bookmark_home')),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: Colors.white,
                                       side: const BorderSide(
@@ -5449,50 +5445,37 @@ class TVGenreListGridState extends State<TVGenreListGrid>
       children: [
         AppSectionHeader(title: tr('genres')),
         SizedBox(
-          height: 58,
-          child: genreList == null
-              ? ListView.separated(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: AppUI.pagePadding(context)),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 5,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  itemBuilder: (_, __) => const SizedBox(
-                      width: 112, child: AppShimmerBlock(radius: 16)),
-                )
-              : ListView.separated(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: AppUI.pagePadding(context)),
-                  physics: const BouncingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: genreList!.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  itemBuilder: (context, index) {
-                    final genre = genreList![index];
-                    return ActionChip(
-                      avatar: Icon(Icons.live_tv_rounded,
-                          size: 18,
-                          color: Theme.of(context).colorScheme.primary),
-                      label: Text(genre.genreName ?? ''),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => TVGenre(genres: genre)),
-                      ),
-                      side: BorderSide(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outlineVariant
-                              .withValues(alpha: .55)),
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainerHigh,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                    );
-                  },
+          height: 126,
+          child: GridView.builder(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppUI.pagePadding(context),
+            ),
+            physics: const BouncingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisExtent: 184,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+            ),
+            itemCount: genreList?.length ?? 8,
+            itemBuilder: (context, index) {
+              if (genreList == null) {
+                return const AppShimmerBlock(radius: 17);
+              }
+              final genre = genreList![index];
+              return AppGenreTile(
+                icon: Icons.live_tv_rounded,
+                label: genre.genreName ?? '',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TVGenre(genres: genre),
+                  ),
                 ),
+              );
+            },
+          ),
         ),
       ],
     );

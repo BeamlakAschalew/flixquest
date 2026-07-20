@@ -65,6 +65,214 @@ class AppCrossfadeCarousel extends StatefulWidget {
   State<AppCrossfadeCarousel> createState() => _AppCrossfadeCarouselState();
 }
 
+/// The shared tonal transition between detail-page artwork and its content.
+///
+/// Keep the stops here so movie, TV, season, and episode pages always blend in
+/// exactly the same way. The small intermediate steps avoid a visible dark
+/// band while retaining enough contrast for artwork and carousel indicators.
+class AppDetailHeroGradient extends StatelessWidget {
+  const AppDetailHeroGradient({super.key});
+
+  static const List<double> stops = <double>[0, .38, .67, .84, 1];
+  static const List<Color> colors = <Color>[
+    Color(0x30000000),
+    Color(0x08000000),
+    Color(0x12000000),
+    Color(0x68000000),
+    Color(0xD9000000),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return const IgnorePointer(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: stops,
+            colors: colors,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A richer, compact entry point for the horizontally browsable genre rails.
+class AppGenreTile extends StatelessWidget {
+  const AppGenreTile({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    super.key,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.surfaceContainerHigh.withValues(alpha: .78),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(17),
+        side: BorderSide(
+          color: colors.outlineVariant.withValues(alpha: .55),
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: Icon(icon, size: 18, color: colors.primary),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontFamily: 'FigtreeSB',
+                      ),
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 12,
+                color: colors.onSurfaceVariant.withValues(alpha: .75),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A user-draggable, auto-advancing media pager for detail-page artwork.
+class AppSwipeCarousel extends StatefulWidget {
+  const AppSwipeCarousel({
+    required this.itemCount,
+    required this.itemBuilder,
+    this.interval = const Duration(seconds: 6),
+    this.indicatorBottom = 16,
+    super.key,
+  });
+
+  final int itemCount;
+  final IndexedWidgetBuilder itemBuilder;
+  final Duration interval;
+  final double indicatorBottom;
+
+  @override
+  State<AppSwipeCarousel> createState() => _AppSwipeCarouselState();
+}
+
+class _AppSwipeCarouselState extends State<AppSwipeCarousel> {
+  late final PageController _controller;
+  Timer? _timer;
+  int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController();
+    _restartTimer();
+  }
+
+  @override
+  void didUpdateWidget(covariant AppSwipeCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_index >= widget.itemCount) _index = 0;
+    if (oldWidget.itemCount != widget.itemCount ||
+        oldWidget.interval != widget.interval) {
+      _restartTimer();
+    }
+  }
+
+  void _restartTimer() {
+    _timer?.cancel();
+    if (widget.itemCount <= 1) return;
+    _timer = Timer.periodic(widget.interval, (_) {
+      if (!mounted || !_controller.hasClients) return;
+      _controller.animateToPage(
+        (_index + 1) % widget.itemCount,
+        duration: const Duration(milliseconds: 620),
+        curve: Curves.easeInOutCubic,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.itemCount <= 0) return const SizedBox.shrink();
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        PageView.builder(
+          controller: _controller,
+          itemCount: widget.itemCount,
+          pageSnapping: true,
+          allowImplicitScrolling: true,
+          physics: const PageScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          onPageChanged: (index) {
+            setState(() => _index = index);
+            _restartTimer();
+          },
+          itemBuilder: widget.itemBuilder,
+        ),
+        if (widget.itemCount > 1)
+          PositionedDirectional(
+            end: 16,
+            bottom: widget.indicatorBottom,
+            child: IgnorePointer(
+              child: Row(
+                children: List.generate(
+                  widget.itemCount,
+                  (index) => AnimatedContainer(
+                    duration: const Duration(milliseconds: 220),
+                    width: index == _index ? 18 : 5,
+                    height: 5,
+                    margin: const EdgeInsetsDirectional.only(start: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(
+                        alpha: index == _index ? .95 : .45,
+                      ),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+}
+
 class _AppCrossfadeCarouselState extends State<AppCrossfadeCarousel> {
   int _index = 0;
   Timer? _timer;
@@ -971,8 +1179,8 @@ class AppShimmerBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
     return Shimmer.fromColors(
-      baseColor: dark ? const Color(0xFF202124) : const Color(0xFFE7E7E9),
-      highlightColor: dark ? const Color(0xFF303236) : const Color(0xFFF7F7F8),
+      baseColor: dark ? const Color(0xFF30343A) : const Color(0xFFE9EBEF),
+      highlightColor: dark ? const Color(0xFF444950) : const Color(0xFFFAFAFB),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: Colors.white,

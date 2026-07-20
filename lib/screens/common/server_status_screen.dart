@@ -41,8 +41,6 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
     List<RegularVideoLinks>? videoLinks;
     DateTime start = DateTime.now();
 
-    print(provider.codeName);
-
     try {
       if (provider.codeName == 'flixhq') {
         final result = await getMovieStreamLinksAndSubsFlixHQ(
@@ -106,24 +104,18 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
           ];
         }
       } else if (provider.codeName == 'animekai') {
-        print(
-            '${appDependency.consumetUrl}anime/animekai/watch/one-piece-100?server=${appDependency.animekaiServer}');
         // Test with a popular anime - One Piece
         final result = await getAnimeStreamAnimeKai(
             '${appDependency.consumetUrl}anime/animekai/watch/one-piece-100?server=${appDependency.animekaiServer}');
 
         videoLinks = result.videoLinks;
       } else if (provider.codeName == 'animepahe') {
-        print(
-            '${appDependency.consumetUrl}anime/animepahe/watch?episodeId=one-piece-1');
         // Test with a popular anime
         final result = await getAnimeStreamAnimePahe(
             '${appDependency.consumetUrl}anime/animepahe/watch?episodeId=one-piece-1');
 
         videoLinks = result.videoLinks;
       } else if (provider.codeName == 'hianime') {
-        print(
-            '${appDependency.consumetUrl}anime/hianime/watch/one-piece-100?server=${appDependency.hianimeServer}');
         // Test with a popular anime - One Piece
         final result = await getAnimeStreamHiAnime(
             '${appDependency.consumetUrl}anime/hianime/watch/one-piece-100?server=${appDependency.hianimeServer}');

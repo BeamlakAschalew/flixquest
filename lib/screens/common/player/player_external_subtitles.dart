@@ -440,7 +440,8 @@ class PlayerExternalSubtitles {
     }
   }
 
-  void _setBottomSheetStateIfOpen(StateSetter setBottomSheetState, VoidCallback fn) {
+  void _setBottomSheetStateIfOpen(
+      StateSetter setBottomSheetState, VoidCallback fn) {
     if (!_isExternalSubtitlesMenuOpen) {
       return;
     }

@@ -1639,11 +1639,11 @@ class ShimmerBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
       baseColor: themeMode == 'dark' || themeMode == 'amoled'
-          ? Colors.grey.shade900
-          : Colors.grey.shade300,
+          ? const Color(0xFF30343A)
+          : const Color(0xFFE9EBEF),
       highlightColor: themeMode == 'dark' || themeMode == 'amoled'
-          ? Colors.grey.shade800.withValues(alpha: 0.1)
-          : Colors.grey.shade200,
+          ? const Color(0xFF444950)
+          : const Color(0xFFFAFAFB),
       child: child,
     );
   }

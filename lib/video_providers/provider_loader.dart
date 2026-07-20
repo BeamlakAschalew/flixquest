@@ -1038,8 +1038,6 @@ class ProviderLoader {
         tvInfo.firstAirDate != null && tvInfo.firstAirDate!.length >= 4
             ? tvInfo.firstAirDate!.substring(0, 4)
             : null;
-    print(
-        '[GOKU TV] Looking for: $seriesName ($releaseYear) with $totalSeasons seasons');
 
     final shows = await fetchTVForStreamGoku(
       Endpoints.searchMovieTVForStreamGoku(
@@ -1055,15 +1053,10 @@ class ProviderLoader {
       );
     }
 
-    print('[GOKU TV] Found ${shows.length} shows in search results');
     bool entryFound = false;
     for (final show in shows) {
-      print(
-          '[GOKU TV] Checking: ${show.title} (${show.releaseDate}) - Type: ${show.type}, Seasons: ${show.seasons}');
-
       // Check type first
       if (show.type != 'TV Series') {
-        print('[GOKU TV] Skipping - not a TV Series');
         continue;
       }
 
@@ -1074,12 +1067,10 @@ class ProviderLoader {
           show.title!.toLowerCase().contains(seriesName.toLowerCase());
 
       if (!titleMatches) {
-        print('[GOKU TV] Skipping - title does not match');
         continue;
       }
 
       // For Goku, fetch full info to get release date and verify
-      print('[GOKU TV] Fetching full info for: ${show.title}');
       final tvInfo = await getTVStreamEpisodesGoku(
         Endpoints.getMovieTVStreamInfoGoku(show.id!, consumetUrl),
       );
@@ -1090,13 +1081,10 @@ class ProviderLoader {
           tvInfo.releaseDate!.length >= 4) {
         final showReleaseYear = tvInfo.releaseDate!.substring(0, 4);
         if (showReleaseYear != releaseYear) {
-          print(
-              '[GOKU TV] Skipping - release year mismatch (show: $showReleaseYear, expected: $releaseYear)');
           continue;
         }
       }
 
-      print('[GOKU TV] ✓ Match found! Using: ${show.title} (${show.id})');
       entryFound = true;
 
       if (tvInfo.episodes != null && tvInfo.episodes!.isNotEmpty) {
@@ -1239,8 +1227,6 @@ class ProviderLoader {
         tvInfo.firstAirDate != null && tvInfo.firstAirDate!.length >= 4
             ? tvInfo.firstAirDate!.substring(0, 4)
             : null;
-    print(
-        '[SFLIX TV] Looking for: $seriesName ($releaseYear) with $totalSeasons seasons');
 
     final shows = await fetchTVForStreamSflix(
       Endpoints.searchMovieTVForStreamSflix(
@@ -1256,15 +1242,10 @@ class ProviderLoader {
       );
     }
 
-    print('[SFLIX TV] Found ${shows.length} shows in search results');
     bool entryFound = false;
     for (final show in shows) {
-      print(
-          '[SFLIX TV] Checking: ${show.title} (${show.releaseDate}) - Type: ${show.type}, Seasons: ${show.seasons}');
-
       // Check type first
       if (show.type != 'TV Series') {
-        print('[SFLIX TV] Skipping - not a TV Series');
         continue;
       }
 
@@ -1275,7 +1256,6 @@ class ProviderLoader {
           show.title!.toLowerCase().contains(seriesName.toLowerCase());
 
       if (!titleMatches) {
-        print('[SFLIX TV] Skipping - title does not match');
         continue;
       }
 
@@ -1283,8 +1263,6 @@ class ProviderLoader {
       if (releaseYear != null &&
           show.releaseDate != null &&
           show.releaseDate != releaseYear) {
-        print(
-            '[SFLIX TV] Skipping - release year mismatch (show: ${show.releaseDate}, expected: $releaseYear)');
         continue;
       }
 
@@ -1294,12 +1272,9 @@ class ProviderLoader {
           show.seasons == (totalSeasons - 1);
 
       if (!seasonsMatch) {
-        print(
-            '[SFLIX TV] Skipping - seasons mismatch (show has ${show.seasons}, expected $totalSeasons)');
         continue;
       }
 
-      print('[SFLIX TV] ✓ Match found! Using: ${show.title} (${show.id})');
       entryFound = true;
 
       final tvInfo = await getTVStreamEpisodesSflix(

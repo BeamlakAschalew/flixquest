@@ -851,12 +851,24 @@ ThemeData _applyFlixQuestUI(ThemeData base) {
       : const Color(0xFFFCFCFD);
   final softSurface = dark ? const Color(0xFF1D2023) : const Color(0xFFF3F3F5);
   final outline = colors.onSurface.withValues(alpha: .12);
+  final primaryIsDark =
+      ThemeData.estimateBrightnessForColor(colors.primary) == Brightness.dark;
+  final solidButtonForeground =
+      primaryIsDark ? Colors.white : Colors.black.withValues(alpha: .88);
+  final actionButtonForeground =
+      !dark && colors.primary.computeLuminance() > .45
+          ? Color.alphaBlend(
+              Colors.black.withValues(alpha: .38),
+              colors.primary,
+            )
+          : colors.primary;
   final roundedBorder = OutlineInputBorder(
     borderRadius: BorderRadius.circular(15),
     borderSide: BorderSide.none,
   );
 
   return base.copyWith(
+    colorScheme: colors.copyWith(onPrimary: solidButtonForeground),
     scaffoldBackgroundColor: surface,
     canvasColor: surface,
     textTheme: base.textTheme.apply(fontFamily: 'Figtree').copyWith(
@@ -914,7 +926,7 @@ ThemeData _applyFlixQuestUI(ThemeData base) {
       style: ElevatedButton.styleFrom(
         elevation: 0,
         backgroundColor: colors.primary,
-        foregroundColor: colors.onPrimary,
+        foregroundColor: solidButtonForeground,
         minimumSize: const Size(48, 48),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -923,6 +935,8 @@ ThemeData _applyFlixQuestUI(ThemeData base) {
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
+        backgroundColor: colors.primary,
+        foregroundColor: solidButtonForeground,
         minimumSize: const Size(48, 48),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -931,17 +945,17 @@ ThemeData _applyFlixQuestUI(ThemeData base) {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: colors.primary,
+        foregroundColor: actionButtonForeground,
         minimumSize: const Size(48, 48),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
-        side: BorderSide(color: colors.primary, width: 1.4),
+        side: BorderSide(color: actionButtonForeground, width: 1.4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         textStyle: const TextStyle(fontFamily: 'FigtreeSB'),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        foregroundColor: colors.primary,
+        foregroundColor: actionButtonForeground,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         textStyle: const TextStyle(fontFamily: 'FigtreeSB'),
@@ -956,6 +970,29 @@ ThemeData _applyFlixQuestUI(ThemeData base) {
       side: BorderSide(color: colors.primary, width: 1.3),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return colors.onSurface.withValues(alpha: .28);
+        }
+        return states.contains(WidgetState.selected)
+            ? solidButtonForeground
+            : colors.onSurfaceVariant;
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return colors.onSurface.withValues(alpha: .10);
+        }
+        return states.contains(WidgetState.selected)
+            ? colors.primary
+            : colors.onSurface.withValues(alpha: dark ? .22 : .16);
+      }),
+      trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+        return states.contains(WidgetState.selected)
+            ? Colors.transparent
+            : colors.outline.withValues(alpha: .7);
+      }),
     ),
     tabBarTheme: TabBarThemeData(
       dividerColor: Colors.transparent,

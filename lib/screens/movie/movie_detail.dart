@@ -235,7 +235,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
   Widget build(BuildContext context) {
     super.build(context);
     final size = MediaQuery.sizeOf(context);
-    final heroHeight = (size.height * .55).clamp(280.0, 470.0);
+    final heroHeight = (size.height * .32).clamp(220.0, 320.0);
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -249,9 +249,35 @@ class MovieDetailPageState extends State<MovieDetailPage>
             toolbarHeight: 64,
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             surfaceTintColor: Colors.transparent,
+            titleSpacing: 4,
+            title: AnimatedBuilder(
+              animation: _scrollController,
+              builder: (context, _) {
+                final collapseAt = heroHeight -
+                    kToolbarHeight -
+                    MediaQuery.paddingOf(context).top -
+                    12;
+                final visible = _scrollController.hasClients &&
+                    _scrollController.offset >= collapseAt;
+                return AnimatedOpacity(
+                  opacity: visible ? 1 : 0,
+                  duration: const Duration(milliseconds: 160),
+                  child: Text(
+                    _releaseYear == null
+                        ? _displayTitle
+                        : '$_displayTitle  •  $_releaseYear',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontFamily: 'FigtreeSB',
+                        ),
+                  ),
+                );
+              },
+            ),
             leadingWidth: 68,
             leading: Padding(
-              padding: const EdgeInsetsDirectional.only(start: 12, top: 8),
+              padding: const EdgeInsetsDirectional.only(start: 12),
               child: _HeroIconButton(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                 onPressed: () => Navigator.pop(context),
@@ -259,17 +285,18 @@ class MovieDetailPageState extends State<MovieDetailPage>
               ),
             ),
             actions: [
-              _HeroIconButton(
-                tooltip: tr('watch_providers'),
-                onPressed: _showWatchProviders,
-                icon: Icons.cast_rounded,
-              ),
+              // Casting/provider controls belong in the content actions, not on
+              // top of the artwork.
+              // _HeroIconButton(...),
               const SizedBox(width: 12),
             ],
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.parallax,
               stretchModes: const [StretchMode.zoomBackground],
-              background: _MovieBackdrop(movie: widget.movie),
+              background: _MovieBackdrop(
+                movie: widget.movie,
+                images: _images,
+              ),
             ),
           ),
           SliverToBoxAdapter(
@@ -390,57 +417,66 @@ class MovieDetailPageState extends State<MovieDetailPage>
 }
 
 class _MovieBackdrop extends StatelessWidget {
-  const _MovieBackdrop({required this.movie});
+  const _MovieBackdrop({required this.movie, required this.images});
 
   final Movie movie;
+  final Future<Images> images;
 
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<SettingsProvider>(context);
     final dependencies = Provider.of<AppDependencyProvider>(context);
-    final colors = Theme.of(context).colorScheme;
-    final path = movie.backdropPath;
-
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        if (path == null || path.isEmpty)
-          Image.asset('assets/images/na_logo.png', fit: BoxFit.cover)
-        else
-          CachedNetworkImage(
-            cacheManager: cacheProp(),
-            imageUrl:
-                '${buildImageUrl(TMDB_BASE_IMAGE_URL, dependencies.tmdbProxy, settings.enableProxy, context)}original$path',
-            fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
-            placeholder: (_, __) => const AppShimmerBlock(radius: 0),
-            errorWidget: (_, __, ___) =>
-                Image.asset('assets/images/na_logo.png', fit: BoxFit.cover),
-          ),
-        const DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0, .55, 1],
-              colors: [Color(0x42000000), Color(0x08000000), Color(0xD9000000)],
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            height: 72,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.transparent, colors.surface],
+    // final colors = Theme.of(context).colorScheme;
+    return FutureBuilder<Images>(
+      future: images,
+      builder: (context, snapshot) {
+        final paths = <String>{
+          if ((movie.backdropPath ?? '').isNotEmpty) movie.backdropPath!,
+          ...?snapshot.data?.backdrop
+              ?.map((image) => image.filePath)
+              .whereType<String>()
+              .where((path) => path.isNotEmpty),
+        }.take(8).toList();
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            if (paths.isEmpty)
+              Image.asset('assets/images/na_logo.png', fit: BoxFit.cover)
+            else
+              AppSwipeCarousel(
+                itemCount: paths.length,
+                indicatorBottom: 15,
+                itemBuilder: (context, index) => CachedNetworkImage(
+                  cacheManager: cacheProp(),
+                  imageUrl:
+                      '${buildImageUrl(TMDB_BASE_IMAGE_URL, dependencies.tmdbProxy, settings.enableProxy, context)}original${paths[index]}',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  placeholder: (_, __) => const AppShimmerBlock(radius: 0),
+                  errorWidget: (_, __, ___) => Image.asset(
+                      'assets/images/na_logo.png',
+                      fit: BoxFit.cover),
+                ),
               ),
-            ),
-          ),
-        ),
-      ],
+            // const AppDetailHeroGradient(),
+            // IgnorePointer(
+            //   child: Align(
+            //     alignment: Alignment.bottomCenter,
+            //     child: Container(
+            //       height: 72,
+            //       decoration: BoxDecoration(
+            //         gradient: LinearGradient(
+            //           begin: Alignment.topCenter,
+            //           end: Alignment.bottomCenter,
+            //           colors: [Colors.transparent, colors.surface],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ],
+        );
+      },
     );
   }
 }
@@ -458,19 +494,19 @@ class _HeroIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
+    return Center(
       child: SizedBox.square(
-        dimension: 44,
+        dimension: 42,
         child: Material(
-          color: Colors.black.withValues(alpha: .42),
+          color: Colors.black.withValues(alpha: .38),
           shape: const CircleBorder(),
           clipBehavior: Clip.antiAlias,
           child: IconButton(
             tooltip: tooltip,
             onPressed: onPressed,
             color: Colors.white,
-            icon: Icon(icon, size: 22),
+            padding: EdgeInsets.zero,
+            icon: Icon(icon, size: 21),
           ),
         ),
       ),
@@ -547,8 +583,61 @@ class _MovieSummary extends StatelessWidget {
                   Expanded(child: content),
                 ],
               )
-            else
-              content,
+            else ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(width: 108, child: _poster(context)),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _titleRow(context, compact: true),
+                        const SizedBox(height: 12),
+                        _metadata(context),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            _SummaryAction(
+                              tooltip: tr('bookmarks'),
+                              onPressed: isBookmarked == null || bookmarkBusy
+                                  ? null
+                                  : onBookmark,
+                              child: bookmarkBusy || isBookmarked == null
+                                  ? const SizedBox.square(
+                                      dimension: 18,
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2),
+                                    )
+                                  : Icon(
+                                      isBookmarked!
+                                          ? Icons.bookmark_rounded
+                                          : Icons.bookmark_border_rounded,
+                                    ),
+                            ),
+                            const SizedBox(width: 4),
+                            _SummaryAction(
+                              tooltip: tr('shared_the_app'),
+                              onPressed: onShare,
+                              child: const Icon(Icons.share_rounded),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 18),
+              _genres(),
+              const SizedBox(height: 16),
+              _overview(context),
+              const SizedBox(height: 14),
+              _releaseDate(context),
+              const SizedBox(height: 20),
+              _actions(context),
+            ],
             const SizedBox(height: 28),
             _CastRail(credits: credits, onRetry: onRetryCredits),
             const SizedBox(height: 22),
@@ -594,7 +683,7 @@ class _MovieSummary extends StatelessWidget {
     );
   }
 
-  Widget _titleRow(BuildContext context) {
+  Widget _titleRow(BuildContext context, {bool compact = false}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -602,31 +691,34 @@ class _MovieSummary extends StatelessWidget {
           child: Text(
             displayTitle,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontSize: 27,
+                  fontSize: compact ? 23 : 27,
                   height: 1.12,
+                  fontFamily: 'FigtreeSB',
                 ),
           ),
         ),
         const SizedBox(width: 8),
-        _SummaryAction(
-          tooltip: tr('bookmarks'),
-          onPressed: isBookmarked == null || bookmarkBusy ? null : onBookmark,
-          child: bookmarkBusy || isBookmarked == null
-              ? const SizedBox.square(
-                  dimension: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Icon(
-                  isBookmarked!
-                      ? Icons.bookmark_rounded
-                      : Icons.bookmark_border_rounded,
-                ),
-        ),
-        _SummaryAction(
-          tooltip: tr('shared_the_app'),
-          onPressed: onShare,
-          child: const Icon(Icons.share_rounded),
-        ),
+        if (!compact)
+          _SummaryAction(
+            tooltip: tr('bookmarks'),
+            onPressed: isBookmarked == null || bookmarkBusy ? null : onBookmark,
+            child: bookmarkBusy || isBookmarked == null
+                ? const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(
+                    isBookmarked!
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_border_rounded,
+                  ),
+          ),
+        if (!compact)
+          _SummaryAction(
+            tooltip: tr('shared_the_app'),
+            onPressed: onShare,
+            child: const Icon(Icons.share_rounded),
+          ),
       ],
     );
   }
@@ -681,8 +773,22 @@ class _MovieSummary extends StatelessWidget {
           children: items
               .map(
                 (genre) => ActionChip(
-                  avatar: const Icon(Icons.local_movies_outlined, size: 17),
-                  label: Text(genre.genreName ?? tr('genres')),
+                  label: Text(
+                    genre.genreName ?? tr('genres'),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontFamily: 'FigtreeSB',
+                        ),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  visualDensity: VisualDensity.compact,
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  backgroundColor: Colors.transparent,
                   onPressed: genre.genreID == null
                       ? null
                       : () => Navigator.push(
@@ -753,11 +859,8 @@ class _MovieSummary extends StatelessWidget {
             icon: const Icon(Icons.play_circle_fill_rounded),
             label: Text(tr('watch_now')),
           ),
-        OutlinedButton.icon(
-          onPressed: onProviders,
-          icon: const Icon(Icons.cast_rounded),
-          label: Text(tr('watch_providers')),
-        ),
+        // "Where to watch" is intentionally hidden from the primary actions.
+        // OutlinedButton.icon(...),
       ],
     );
   }
@@ -971,10 +1074,10 @@ class _MovieTabHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Color dividerColor;
 
   @override
-  double get minExtent => 58;
+  double get minExtent => 68;
 
   @override
-  double get maxExtent => 58;
+  double get maxExtent => 68;
 
   @override
   Widget build(
@@ -987,22 +1090,31 @@ class _MovieTabHeaderDelegate extends SliverPersistentHeaderDelegate {
       elevation: overlapsContent ? 1 : 0,
       shadowColor: Colors.black.withValues(alpha: .12),
       child: AppResponsiveContent(
-        padding: EdgeInsets.symmetric(horizontal: AppUI.pagePadding(context)),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: dividerColor)),
-          ),
-          child: TabBar(
-            controller: controller,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            dividerColor: Colors.transparent,
-            indicatorWeight: 3,
-            indicatorSize: TabBarIndicatorSize.tab,
-            tabs: [
-              Tab(text: tr('videos')),
-              Tab(text: tr('movie_recommendations')),
-              Tab(text: tr('movie_info')),
+        padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context),
+          0,
+          AppUI.pagePadding(context),
+          0,
+        ),
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) => Row(
+            children: [
+              _MovieTabButton(
+                label: tr('videos'),
+                selected: controller.index == 0,
+                onTap: () => controller.animateTo(0),
+              ),
+              _MovieTabButton(
+                label: tr('movie_recommendations'),
+                selected: controller.index == 1,
+                onTap: () => controller.animateTo(1),
+              ),
+              _MovieTabButton(
+                label: tr('movie_info'),
+                selected: controller.index == 2,
+                onTap: () => controller.animateTo(2),
+              ),
             ],
           ),
         ),
@@ -1015,6 +1127,59 @@ class _MovieTabHeaderDelegate extends SliverPersistentHeaderDelegate {
     return oldDelegate.controller != controller ||
         oldDelegate.backgroundColor != backgroundColor ||
         oldDelegate.dividerColor != dividerColor;
+  }
+}
+
+class _MovieTabButton extends StatelessWidget {
+  const _MovieTabButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final color = selected ? colors.primary : colors.onSurfaceVariant;
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(4, 7, 4, 5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                label,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: color,
+                      height: 1.05,
+                      fontFamily: selected ? 'FigtreeSB' : null,
+                    ),
+              ),
+              const SizedBox(height: 9),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOutCubic,
+                width: selected ? 34 : 0,
+                height: 3,
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -1052,26 +1217,19 @@ class _MediaTab extends StatelessWidget {
                 message: tr('no_video_movie'),
               );
             }
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                final columns = constraints.maxWidth >= 900
-                    ? 3
-                    : constraints.maxWidth >= 580
-                        ? 2
-                        : 1;
-                final width =
-                    (constraints.maxWidth - (columns - 1) * 14) / columns;
-                return Wrap(
-                  spacing: 14,
-                  runSpacing: 18,
-                  children: items
-                      .map((video) => SizedBox(
-                            width: width,
-                            child: _VideoCard(video: video),
-                          ))
-                      .toList(),
-                );
-              },
+            return SizedBox(
+              height: 218,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsetsDirectional.only(end: 8),
+                itemCount: items.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 14),
+                itemBuilder: (context, index) => SizedBox(
+                  width: MediaQuery.sizeOf(context).width >= 700 ? 310 : 272,
+                  child: _VideoCard(video: items[index]),
+                ),
+              ),
             );
           },
         ),
@@ -1374,6 +1532,7 @@ class _MovieRail extends StatefulWidget {
 }
 
 class _MovieRailState extends State<_MovieRail> {
+  static final Map<String, _MovieRailCache> _cache = {};
   final ScrollController _controller = ScrollController();
   List<Movie>? _movies;
   Object? _error;
@@ -1385,7 +1544,27 @@ class _MovieRailState extends State<_MovieRail> {
   void initState() {
     super.initState();
     _controller.addListener(_onScroll);
-    _load(reset: true);
+    final cached = _cache[_cacheKey];
+    if (cached == null) {
+      _load(reset: true);
+    } else {
+      _movies = List<Movie>.of(cached.movies);
+      _nextPage = cached.nextPage;
+      _hasMore = cached.hasMore;
+    }
+  }
+
+  String get _cacheKey =>
+      '${widget.movieId}_${widget.recommendations}_${widget.includeAdult}';
+
+  void _saveCache() {
+    final movies = _movies;
+    if (movies == null) return;
+    _cache[_cacheKey] = _MovieRailCache(
+      movies: List<Movie>.of(movies),
+      nextPage: _nextPage,
+      hasMore: _hasMore,
+    );
   }
 
   String _api(int page, String language) {
@@ -1429,6 +1608,7 @@ class _MovieRailState extends State<_MovieRail> {
         _hasMore = items.isNotEmpty;
         _error = null;
       });
+      _saveCache();
     } catch (error) {
       if (mounted) setState(() => _error = error);
     } finally {
@@ -1452,7 +1632,7 @@ class _MovieRailState extends State<_MovieRail> {
         _SectionHeading(title: widget.title),
         const SizedBox(height: 14),
         if (_movies == null && _error == null)
-          const SizedBox(height: 246, child: AppMediaRowShimmer(itemWidth: 132))
+          const _MovieRailShimmer()
         else if (_movies == null)
           _InlineError(onRetry: () => _load(reset: true))
         else if (_movies!.isEmpty)
@@ -1489,10 +1669,64 @@ class _MovieRailState extends State<_MovieRail> {
 
   @override
   void dispose() {
+    _saveCache();
     _controller
       ..removeListener(_onScroll)
       ..dispose();
     super.dispose();
+  }
+}
+
+class _MovieRailCache {
+  const _MovieRailCache({
+    required this.movies,
+    required this.nextPage,
+    required this.hasMore,
+  });
+
+  final List<Movie> movies;
+  final int nextPage;
+  final bool hasMore;
+}
+
+class _MovieRailShimmer extends StatelessWidget {
+  const _MovieRailShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 246,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 5,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (_, __) => const SizedBox(
+          width: 132,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: AppUI.posterAspectRatio,
+                child: AppShimmerBlock(),
+              ),
+              SizedBox(height: 9),
+              SizedBox(
+                width: 118,
+                height: 13,
+                child: AppShimmerBlock(radius: 4),
+              ),
+              SizedBox(height: 6),
+              SizedBox(
+                width: 76,
+                height: 13,
+                child: AppShimmerBlock(radius: 4),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -2254,35 +2488,33 @@ class _VideoShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 580 ? 2 : 1;
-        final width = (constraints.maxWidth - (columns - 1) * 14) / columns;
-        return Wrap(
-          spacing: 14,
-          runSpacing: 18,
-          children: List.generate(
-            columns * 2,
-            (_) => SizedBox(
-              width: width,
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: AppShimmerBlock(),
-                  ),
-                  SizedBox(height: 10),
-                  SizedBox(
-                      width: 180,
-                      height: 16,
-                      child: AppShimmerBlock(radius: 4)),
-                ],
+    final cardWidth = MediaQuery.sizeOf(context).width >= 700 ? 310.0 : 272.0;
+    return SizedBox(
+      height: 218,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: 4,
+        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        itemBuilder: (_, __) => SizedBox(
+          width: cardWidth,
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: AppShimmerBlock(),
               ),
-            ),
+              SizedBox(height: 10),
+              SizedBox(
+                width: 180,
+                height: 16,
+                child: AppShimmerBlock(radius: 4),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
@@ -2295,9 +2527,18 @@ class _GalleryShimmer extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < 580) {
-          return const AspectRatio(
-            aspectRatio: 16 / 9,
-            child: AppShimmerBlock(),
+          return const Column(
+            children: [
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: AppShimmerBlock(),
+              ),
+              SizedBox(height: 14),
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: AppShimmerBlock(),
+              ),
+            ],
           );
         }
         return const Row(
@@ -2337,12 +2578,13 @@ class _InfoShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width = (constraints.maxWidth - 12) / 2;
+        final columns = constraints.maxWidth >= 820 ? 3 : 2;
+        final width = (constraints.maxWidth - (columns - 1) * 12) / columns;
         return Wrap(
           spacing: 12,
           runSpacing: 12,
           children: List.generate(
-            8,
+            9,
             (_) => SizedBox(
               width: width,
               height: 94,

@@ -179,7 +179,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                 result.subtitleLinks!.isNotEmpty) {
               final preferredLang = settings.defaultSubtitleLanguage;
 
-              for (var subLink in result.subtitleLinks!) {
+              for (final subLink in result.subtitleLinks!) {
                 final subLanguage = subLink.language ?? 'Unknown';
                 // Check if this subtitle matches the user's preferred language
                 final isPreferred = preferredLang.isNotEmpty &&
