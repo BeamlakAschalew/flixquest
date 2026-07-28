@@ -1,4 +1,5 @@
-// import 'package:flutter/material.dart';
+// import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:flutter/material.dart';
 // import 'package:flutter/services.dart';
 // import 'package:media_kit/media_kit.dart';
 // import 'package:media_kit_video/media_kit_video.dart';
@@ -206,7 +207,7 @@
 //                             mainAxisSize: MainAxisSize.min,
 //                             children: [
 //                               Icon(
-//                                 Icons.live_tv_rounded,
+//                                 PhosphorIcons.television(),
 //                                 color: widget.colors.first,
 //                                 size: 20,
 //                               ),
@@ -322,7 +323,7 @@
 //                             mainAxisSize: MainAxisSize.min,
 //                             children: [
 //                               Icon(
-//                                 Icons.live_tv_rounded,
+//                                 PhosphorIcons.television(),
 //                                 color: widget.colors.first,
 //                                 size: 20,
 //                               ),
@@ -433,7 +434,7 @@
 //                               color: widget.colors.first.withValues(alpha: 0.2),
 //                             ),
 //                             child: Icon(
-//                               Icons.error_outline_rounded,
+//                               PhosphorIcons.warningCircle(),
 //                               color: widget.colors.first,
 //                               size: 48,
 //                             ),
@@ -470,7 +471,7 @@
 //                           const SizedBox(height: 20),
 //                           ElevatedButton.icon(
 //                             onPressed: _retryStream,
-//                             icon: const Icon(Icons.refresh_rounded),
+//                             icon: Icon(PhosphorIcons.arrowsClockwise()),
 //                             label: const Text(
 //                               'Retry Stream',
 //                               style: TextStyle(
@@ -538,7 +539,7 @@
 //                           mainAxisSize: MainAxisSize.min,
 //                           children: [
 //                             Icon(
-//                               Icons.live_tv_rounded,
+//                               PhosphorIcons.television(),
 //                               color: widget.colors.first,
 //                               size: 16,
 //                             ),

@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
@@ -69,8 +70,7 @@ class Search extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: const Icon(
-          Icons.clear,
+        icon: Icon(PhosphorIcons.x(),
         ),
         onPressed: () {
           query = '';
@@ -82,8 +82,7 @@ class Search extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: const Icon(
-        Icons.arrow_back,
+      icon: Icon(PhosphorIcons.caretLeft(),
       ),
       onPressed: () {
         close(context, '');
@@ -360,7 +359,7 @@ class Search extends SearchDelegate<String> {
     return AppEmptyState(
       title: tr('no_result'),
       message: tr('enter_word'),
-      icon: Icons.search_off_rounded,
+      icon: PhosphorIcons.magnifyingGlassMinus(),
     );
   }
 
@@ -368,7 +367,7 @@ class Search extends SearchDelegate<String> {
     return AppEmptyState(
       title: tr('search'),
       message: tr('enter_word'),
-      icon: Icons.manage_search_rounded,
+      icon: PhosphorIcons.magnifyingGlassPlus(),
     );
   }
 
@@ -425,7 +424,7 @@ class Search extends SearchDelegate<String> {
                   final searchTerm = recentSearches[index];
                   return ListTile(
                     leading: Icon(
-                      Icons.history,
+                      PhosphorIcons.clockCounterClockwise(),
                       color: themeMode == 'dark' || themeMode == 'amoled'
                           ? Colors.white70
                           : Colors.black54,
@@ -441,7 +440,7 @@ class Search extends SearchDelegate<String> {
                     ),
                     trailing: IconButton(
                       icon: Icon(
-                        Icons.close,
+                        PhosphorIcons.x(),
                         color: themeMode == 'dark' || themeMode == 'amoled'
                             ? Colors.white70
                             : Colors.black54,

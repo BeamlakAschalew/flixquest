@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../models/provider_load_state.dart';
@@ -284,7 +285,7 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
     switch (status) {
       case ProviderStatus.pending:
         return Icon(
-          Icons.hourglass_empty,
+          PhosphorIcons.hourglass(),
           size: iconSize,
           color: Theme.of(context).colorScheme.onSurface.withOpacity(0.35),
         );
@@ -301,13 +302,13 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
         );
       case ProviderStatus.success:
         return Icon(
-          Icons.check_circle_rounded,
+          PhosphorIcons.checkCircle(),
           size: iconSize,
           color: const Color(0xFF4CAF50),
         );
       case ProviderStatus.failed:
         return Icon(
-          Icons.error_rounded,
+          PhosphorIcons.warningCircle(),
           size: iconSize,
           color: const Color(0xFFEF5350),
         );

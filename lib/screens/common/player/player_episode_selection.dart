@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +78,7 @@ class PlayerEpisodeSelection {
                           if (tvMetadata.allSeasons != null &&
                               tvMetadata.allSeasons!.length > 1)
                             IconButton(
-                              icon: Icon(Icons.arrow_back),
+                              icon: Icon(PhosphorIcons.caretLeft()),
                               onPressed: () {
                                 Navigator.pop(context);
                                 showSeasonSelectionBottomSheet(
@@ -107,7 +108,7 @@ class PlayerEpisodeSelection {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.close),
+                            icon: Icon(PhosphorIcons.x()),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ],
@@ -265,7 +266,7 @@ class PlayerEpisodeSelection {
                             ),
                             errorWidget: (context, url, error) => Center(
                               child: Icon(
-                                Icons.movie,
+                                PhosphorIcons.filmStrip(),
                                 color: Colors.grey[600],
                                 size: 32,
                               ),
@@ -274,7 +275,7 @@ class PlayerEpisodeSelection {
                         )
                       : Center(
                           child: Icon(
-                            Icons.movie,
+                            PhosphorIcons.filmStrip(),
                             color: Colors.grey[600],
                             size: 32,
                           ),
@@ -365,7 +366,7 @@ class PlayerEpisodeSelection {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
-                                Icons.star_rounded,
+                                PhosphorIcons.star(PhosphorIconsStyle.fill),
                                 size: 14,
                                 color: colors.first,
                               ),
@@ -482,7 +483,7 @@ class PlayerEpisodeSelection {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.close),
+                            icon: Icon(PhosphorIcons.x()),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ],
@@ -632,7 +633,7 @@ class PlayerEpisodeSelection {
                     ),
                     errorWidget: (context, url, error) => Center(
                       child: Icon(
-                        Icons.tv,
+                        PhosphorIcons.television(),
                         color: Colors.grey[600],
                         size: 32,
                       ),
@@ -650,7 +651,7 @@ class PlayerEpisodeSelection {
                 ),
                 child: Center(
                   child: Icon(
-                    Icons.tv,
+                    PhosphorIcons.television(),
                     color: Colors.grey[600],
                     size: 32,
                   ),
@@ -698,7 +699,7 @@ class PlayerEpisodeSelection {
             ),
             if (isCurrentSeason)
               Icon(
-                Icons.check_circle,
+                PhosphorIcons.checkCircle(),
                 color: colors.first,
                 size: 24,
               ),

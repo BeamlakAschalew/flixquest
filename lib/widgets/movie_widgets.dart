@@ -358,13 +358,13 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                   const Spacer(),
                                   _HeroIconButton(
                                     icon: isBookmarked
-                                        ? Icons.bookmark_rounded
-                                        : Icons.bookmark_border_rounded,
+                                        ? PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)
+                                        : PhosphorIcons.bookmarkSimple(),
                                     onPressed: () => _toggleBookmark(movie),
                                   ),
                                   const SizedBox(width: 8),
                                   _HeroIconButton(
-                                    icon: Icons.search_rounded,
+                                    icon: PhosphorIcons.magnifyingGlass(),
                                     onPressed: widget.onSearchPressed,
                                   ),
                                 ],
@@ -410,7 +410,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                 children: [
                                   FilledButton.icon(
                                     onPressed: () => _openMovie(movie),
-                                    icon: const Icon(Icons.play_arrow_rounded),
+                                    icon: Icon(PhosphorIcons.play()),
                                     label: Text(tr('watch_now')),
                                     style: FilledButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
@@ -421,8 +421,8 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                   OutlinedButton.icon(
                                     onPressed: () => _toggleBookmark(movie),
                                     icon: Icon(isBookmarked
-                                        ? Icons.check_rounded
-                                        : Icons.add_rounded),
+                                        ? PhosphorIcons.check()
+                                        : PhosphorIcons.plus()),
                                     label: Text(tr('bookmark_home')),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: Colors.white,
@@ -901,7 +901,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                     color: Colors.white,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(Icons.play_arrow_rounded,
+                                  child: Icon(PhosphorIcons.play(),
                                       color: Colors.black, size: 30),
                                 ),
                               ),
@@ -914,7 +914,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                       .read<RecentProvider>()
                                       .deleteMovie(movie.id!),
                                   icon:
-                                      const Icon(Icons.close_rounded, size: 18),
+                                      Icon(PhosphorIcons.x(), size: 18),
                                 ),
                               ),
                               Positioned(
@@ -1192,8 +1192,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                 prv.deleteMovie(widget
                                                     .moviesList[index].id!);
                                               },
-                                              icon: const Icon(
-                                                  Icons.bookmark_remove,
+                                              icon: Icon(PhosphorIcons.bookmarkSimple(),
                                                   size: 60),
                                             )),
                                       ),
@@ -1298,7 +1297,7 @@ class _SABTNState extends State<SABTN> {
                   : Colors.white38),
           child: IconButton(
             icon: Icon(
-              Icons.arrow_back,
+              PhosphorIcons.caretLeft(),
               color: Theme.of(context).colorScheme.onSurface,
             ),
             onPressed: () {
@@ -1742,8 +1741,8 @@ class _MovieDetailOptionsState extends State<MovieDetailOptions> {
                   child: Row(
                     children: [
                       isBookmarked == false
-                          ? const Icon(Icons.bookmark_add)
-                          : const Icon(Icons.bookmark_remove),
+                          ? Icon(PhosphorIcons.bookmarkSimple())
+                          : Icon(PhosphorIcons.bookmarkSimple()),
                       Visibility(
                           visible: visible,
                           child: const CircularProgressIndicator())
@@ -1998,10 +1997,10 @@ class DownloadMovie extends StatelessWidget {
         },
         child: Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.only(right: 10),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
               child: Icon(
-                Icons.download_rounded,
+                PhosphorIcons.downloadSimple(),
                 color: Colors.white,
               ),
             ),
@@ -2831,8 +2830,7 @@ class PartsListState extends State<PartsList> {
                                                               : Colors.white60),
                                                   child: Row(
                                                     children: [
-                                                      const Icon(
-                                                        Icons.star_rounded,
+                                                      Icon(PhosphorIcons.star(PhosphorIconsStyle.fill),
                                                       ),
                                                       Text(collectionMovieList![
                                                               index]
@@ -3432,11 +3430,11 @@ class MovieVideosState extends State<MovieVideosDisplay> {
                                                   Visibility(
                                                     visible:
                                                         playButtonVisibility,
-                                                    child: const SizedBox(
+                                                    child: SizedBox(
                                                       height: 90,
                                                       width: 90,
                                                       child: Icon(
-                                                        Icons.play_arrow,
+                                                        PhosphorIcons.play(),
                                                         size: 90,
                                                       ),
                                                     ),
@@ -3586,7 +3584,7 @@ class WatchNowButtonState extends State<WatchNowButton> {
               ),
               child: Row(children: [
                 Icon(
-                  Icons.play_circle_fill_rounded,
+                  PhosphorIcons.playCircle(PhosphorIconsStyle.fill),
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
                 const SizedBox(width: 6),
@@ -5005,7 +5003,7 @@ class GenreListGridState extends State<GenreListGrid>
               }
               final genre = genreList![index];
               return AppGenreTile(
-                icon: Icons.movie_filter_rounded,
+                icon: PhosphorIcons.filmStrip(),
                 label: genre.genreName ?? '',
                 onTap: () => Navigator.push(
                   context,
@@ -5531,8 +5529,7 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                                   style: const TextStyle(
                                                       fontFamily: 'Figtree'),
                                                 ),
-                                                const Icon(
-                                                  Icons.star_rounded,
+                                                Icon(PhosphorIcons.star(PhosphorIconsStyle.fill),
                                                 ),
                                               ],
                                             ),

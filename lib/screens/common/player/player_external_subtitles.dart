@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -97,7 +98,7 @@ class PlayerExternalSubtitles {
                                 children: [
                                   if (_availableExternalSubtitles.isNotEmpty)
                                     IconButton(
-                                      icon: Icon(Icons.refresh),
+                                      icon: Icon(PhosphorIcons.arrowsClockwise()),
                                       onPressed: () => _fetchExternalSubtitles(
                                         setBottomSheetState,
                                         context,
@@ -109,7 +110,7 @@ class PlayerExternalSubtitles {
                                       tooltip: tr('refresh'),
                                     ),
                                   IconButton(
-                                    icon: Icon(Icons.close),
+                                    icon: Icon(PhosphorIcons.x()),
                                     onPressed: () => Navigator.pop(context),
                                   ),
                                 ],
@@ -153,7 +154,7 @@ class PlayerExternalSubtitles {
                                   children: [
                                     const SizedBox(height: 12),
                                     Icon(
-                                      Icons.subtitles_off_outlined,
+                                      PhosphorIcons.closedCaptioning(),
                                       size: 56,
                                       color: Colors.grey[600],
                                     ),
@@ -184,7 +185,7 @@ class PlayerExternalSubtitles {
                                         tvMetadata,
                                         colors,
                                       ),
-                                      icon: Icon(Icons.search),
+                                      icon: Icon(PhosphorIcons.magnifyingGlass()),
                                       label: Text(tr('search_subtitles')),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: colors.first,
@@ -242,14 +243,14 @@ class PlayerExternalSubtitles {
                                                 errorWidget:
                                                     (context, url, error) =>
                                                         Icon(
-                                                  Icons.flag,
+                                                  PhosphorIcons.flag(),
                                                   color: Colors.grey[600],
                                                   size: 24,
                                                 ),
                                               )
                                             else
                                               Icon(
-                                                Icons.flag,
+                                                PhosphorIcons.flag(),
                                                 color: Colors.grey[600],
                                                 size: 24,
                                               ),
@@ -290,13 +291,13 @@ class PlayerExternalSubtitles {
                                             // Selection indicator
                                             if (isSelected)
                                               Icon(
-                                                Icons.check_circle,
+                                                PhosphorIcons.checkCircle(),
                                                 color: colors.first,
                                                 size: 24,
                                               )
                                             else
                                               Icon(
-                                                Icons.circle_outlined,
+                                                PhosphorIcons.circle(),
                                                 color: Colors.grey[600],
                                                 size: 24,
                                               ),

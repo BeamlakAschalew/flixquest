@@ -1,4 +1,5 @@
-// import 'package:better_player/better_player.dart';
+// import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:better_player_plus/better_player.dart';
 // import 'package:cinemax/constants/app_constants.dart';
 // import 'package:cinemax/controllers/recently_watched_database_controller.dart';
 // import 'package:cinemax/models/recently_watched.dart';
@@ -46,19 +47,19 @@
 //       enablePip: true,
 //       progressBarBackgroundColor: Colors.white,
 //       muteIcon: Icons.volume_mute_rounded,
-//       unMuteIcon: Icons.volume_off_rounded,
-//       pauseIcon: Icons.pause_rounded,
-//       pipMenuIcon: Icons.picture_in_picture_rounded,
-//       playIcon: Icons.play_arrow_rounded,
+//       unMuteIcon: PhosphorIcons.speakerSimpleSlash(),
+//       pauseIcon: PhosphorIcons.pause(),
+//       pipMenuIcon: PhosphorIcons.pictureInPicture(),
+//       playIcon: PhosphorIcons.play(),
 //       showControlsOnInitialize: false,
 //       progressBarBufferedColor: Colors.black45,
-//       skipForwardIcon: Icons.forward_10_rounded,
-//       skipBackIcon: Icons.replay_10_rounded,
-//       fullscreenEnableIcon: Icons.fullscreen_rounded,
-//       fullscreenDisableIcon: Icons.fullscreen_exit_rounded,
-//       overflowMenuIcon: Icons.menu_rounded,
-//       subtitlesIcon: Icons.closed_caption_rounded,
-//       qualitiesIcon: Icons.hd_rounded,
+//       skipForwardIcon: PhosphorIcons.arrowsClockwise(),
+//       skipBackIcon: PhosphorIcons.arrowsCounterClockwise(),
+//       fullscreenEnableIcon: PhosphorIcons.cornersOut(),
+//       fullscreenDisableIcon: PhosphorIcons.cornersIn(),
+//       overflowMenuIcon: PhosphorIcons.list(),
+//       subtitlesIcon: PhosphorIcons.closedCaptioning(),
+//       qualitiesIcon: PhosphorIcons.highDefinition(),
 //       enableAudioTracks: false,
 //     );
 

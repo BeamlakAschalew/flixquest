@@ -172,11 +172,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         backgroundColor: Colors.black,
         progressBarBackgroundColor: Colors.white,
         controlBarColor: Colors.black.withValues(alpha: 0.48),
-        muteIcon: Icons.volume_off_rounded,
-        unMuteIcon: Icons.volume_up_rounded,
-        pauseIcon: Icons.pause_rounded,
-        pipMenuIcon: Icons.picture_in_picture_rounded,
-        playIcon: Icons.play_arrow_rounded,
+        muteIcon: PhosphorIcons.speakerSimpleSlash(),
+        unMuteIcon: PhosphorIcons.speakerHigh(),
+        pauseIcon: PhosphorIcons.pause(),
+        pipMenuIcon: PhosphorIcons.appWindow(),
+        playIcon: PhosphorIcons.play(),
         showControlsOnInitialize: false,
         loadingColor: widget.colors.first,
         iconsColor: widget.colors.first,
@@ -196,8 +196,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         overflowMenuIconsColor: widget.colors.first,
         overflowModalTextColor: widget.colors.first,
         overflowModalColor: widget.colors.last,
-        subtitlesIcon: Icons.closed_caption_rounded,
-        qualitiesIcon: Icons.hd_rounded,
+        subtitlesIcon: PhosphorIcons.closedCaptioning(),
+        qualitiesIcon: PhosphorIcons.highDefinition(),
         enableAudioTracks: true,
         controlBarHeight: 56,
         watchingText: tr('watching_text'),
@@ -205,7 +205,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         // Add custom overflow menu item for external subtitles
         overflowMenuCustomItems: [
           BetterPlayerOverflowMenuItem(
-            Icons.subtitles_outlined,
+            PhosphorIcons.closedCaptioning(),
             tr('external_subtitles'),
             () {
               _externalSubtitles.showExternalSubtitlesMenu(
@@ -653,8 +653,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                               return ListTile(
                                 leading: Icon(
                                   isCurrentProvider
-                                      ? Icons.check_circle
-                                      : Icons.circle_outlined,
+                                      ? PhosphorIcons.checkCircle()
+                                      : PhosphorIcons.circle(),
                                   color: isCurrentProvider
                                       ? Theme.of(context).colorScheme.primary
                                       : Theme.of(context)

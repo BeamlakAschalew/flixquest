@@ -1,4 +1,5 @@
-// import 'dart:async';
+// import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'dart:async';
 // import 'dart:io';
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -40,7 +41,7 @@
 //             'News',
 //           ),
 //           leading: IconButton(
-//             icon: const Icon(Icons.arrow_back, color: Colors.black),
+//             icon: Icon(PhosphorIcons.caretLeft(), color: Colors.black),
 //             onPressed: () {
 //               Navigator.pop(context);
 //             },
@@ -79,7 +80,7 @@
 //                     children: [
 //                       Padding(
 //                         padding: EdgeInsets.only(right: 8.0),
-//                         child: Icon(Icons.movie_creation_rounded),
+//                         child: Icon(PhosphorIcons.filmStrip()),
 //                       ),
 //                       Text(
 //                         'Movie news',
@@ -92,7 +93,7 @@
 //                     children: [
 //                       Padding(
 //                           padding: EdgeInsets.only(right: 8.0),
-//                           child: Icon(Icons.live_tv_rounded)),
+//                           child: Icon(PhosphorIcons.television())),
 //                       Text(
 //                         'TV news',
 //                       ),

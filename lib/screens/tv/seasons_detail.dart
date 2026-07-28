@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
@@ -199,7 +200,7 @@ class _SeasonHeroButton extends StatelessWidget {
             onPressed: onPressed,
             padding: EdgeInsets.zero,
             color: Colors.white,
-            icon: const Icon(Icons.arrow_back_rounded, size: 21),
+            icon: Icon(PhosphorIcons.caretLeft(), size: 21),
           ),
         ),
       ),
@@ -346,11 +347,11 @@ class _SeasonContent extends StatelessWidget {
                     children: [
                       if (year != null)
                         _SeasonMetadataPill(
-                          icon: Icons.calendar_today_rounded,
+                          icon: PhosphorIcons.calendar(),
                           label: '$year',
                         ),
                       _SeasonMetadataPill(
-                        icon: Icons.playlist_play_rounded,
+                        icon: PhosphorIcons.playlist(),
                         label: tr(
                           'episodes_count',
                           namedArgs: {
@@ -571,7 +572,7 @@ class _EpisodeRailCard extends StatelessWidget {
                               ],
                             ),
                             child: Icon(
-                              Icons.play_arrow_rounded,
+                              PhosphorIcons.play(),
                               color: colors.onPrimary,
                             ),
                           ),
@@ -603,7 +604,7 @@ class _EpisodeRailCard extends StatelessWidget {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.star_rounded,
+                              Icon(PhosphorIcons.star(PhosphorIconsStyle.fill),
                                   size: 15, color: colors.primary),
                               const SizedBox(width: 3),
                               Text(
@@ -856,7 +857,7 @@ class _SeasonMedia extends StatelessWidget {
                                             ],
                                           ),
                                           child: Icon(
-                                            Icons.play_arrow_rounded,
+                                            PhosphorIcons.play(),
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .onPrimary,
@@ -960,8 +961,7 @@ class _SeasonMedia extends StatelessWidget {
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(
-                                      Icons.photo_rounded,
+                                    Icon(PhosphorIcons.image(),
                                       color: Colors.white,
                                       size: 15,
                                     ),
@@ -1103,7 +1103,7 @@ class _SeasonError extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.cloud_off_rounded),
+            Icon(PhosphorIcons.cloudSlash()),
             const SizedBox(width: 10),
             Expanded(child: Text(tr('check_connection'))),
             TextButton(onPressed: onRetry, child: Text(tr('retry'))),

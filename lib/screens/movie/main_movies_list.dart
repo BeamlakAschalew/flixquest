@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -109,7 +110,7 @@ class MainMoviesListState extends State<MainMoviesList> {
         actions: [
           IconButton(
             onPressed: _openSearch,
-            icon: const Icon(Icons.search_rounded),
+            icon: Icon(PhosphorIcons.magnifyingGlass()),
           ),
         ],
       ),
@@ -124,7 +125,7 @@ class MainMoviesListState extends State<MainMoviesList> {
                   ? AppEmptyState(
                       title: tr('movie_404'),
                       message: tr('no_result'),
-                      icon: Icons.movie_filter_outlined,
+                      icon: PhosphorIcons.filmStrip(),
                     )
                   : Column(
                       children: [

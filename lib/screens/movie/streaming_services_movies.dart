@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '/provider/settings_provider.dart';
@@ -23,8 +24,7 @@ class StreamingServicesMovies extends StatelessWidget {
           tr('streaming_service_movie', namedArgs: {'provider': providerName}),
         ),
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
+          icon: Icon(PhosphorIcons.caretLeft(),
           ),
           onPressed: () {
             Navigator.pop(context);

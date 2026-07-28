@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '/widgets/movie_widgets.dart';
@@ -37,8 +38,7 @@ class _MovieCastAndCrewState extends State<MovieCastAndCrew>
               tr('cast_and_crew'),
             ),
             leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back,
+              icon: Icon(PhosphorIcons.caretLeft(),
               ),
               onPressed: () {
                 Navigator.pop(context);

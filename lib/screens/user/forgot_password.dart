@@ -73,7 +73,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     .withValues(alpha: .12),
                 borderRadius: BorderRadius.circular(22),
               ),
-              child: Icon(Icons.mark_email_read_rounded,
+              child: Icon(PhosphorIcons.envelopeOpen(),
                   size: 32, color: Theme.of(context).colorScheme.primary),
             ),
             Padding(
@@ -136,8 +136,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           const SizedBox(
                             width: 5,
                           ),
-                          const Icon(
-                            Icons.refresh_outlined,
+                          Icon(PhosphorIcons.arrowsClockwise(),
                             size: 18,
                           )
                         ],

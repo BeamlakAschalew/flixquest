@@ -1,4 +1,5 @@
-// import 'dart:async';
+// import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'dart:async';
 // import 'dart:io';
 // import 'package:flutter/material.dart';
 // import 'package:provider/provider.dart';
@@ -104,7 +105,7 @@
 //                               // mainAxisAlignment: MainAxisAlignment.center,
 //                               crossAxisAlignment: CrossAxisAlignment.center,
 //                               children: [
-//                                 const Icon(Icons.star_rounded),
+//                                 Icon(PhosphorIcons.star(PhosphorIconsStyle.fill)),
 //                                 const SizedBox(
 //                                   width: 5,
 //                                 ),

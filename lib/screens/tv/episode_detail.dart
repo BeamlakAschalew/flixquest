@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers, use_build_context_synchronously
 
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -240,7 +241,7 @@ class _EpisodeBackButton extends StatelessWidget {
               onPressed: onPressed,
               padding: EdgeInsets.zero,
               color: Colors.white,
-              icon: const Icon(Icons.arrow_back_rounded, size: 21),
+              icon: Icon(PhosphorIcons.caretLeft(), size: 21),
             ),
           ),
         ),
@@ -370,12 +371,12 @@ class _EpisodeContent extends StatelessWidget {
             ),
             if (airDate != null)
               _EpisodeMetadataPill(
-                icon: Icons.calendar_today_rounded,
+                icon: PhosphorIcons.calendar(),
                 label:
                     DateFormat.yMMMd(context.locale.toString()).format(airDate),
               ),
             _EpisodeMetadataPill(
-              icon: Icons.people_outline_rounded,
+              icon: PhosphorIcons.users(),
               label: '${episodeList.voteCount ?? 0} ${tr('total_ratings')}',
             ),
           ],
@@ -387,7 +388,7 @@ class _EpisodeContent extends StatelessWidget {
               Expanded(
                 child: FilledButton.icon(
                   onPressed: onWatch,
-                  icon: const Icon(Icons.play_circle_fill_rounded),
+                  icon: Icon(PhosphorIcons.playCircle(PhosphorIconsStyle.fill)),
                   label: Text(tr('watch_now')),
                 ),
               ),
@@ -395,7 +396,7 @@ class _EpisodeContent extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: onShare,
-                icon: const Icon(Icons.share_rounded),
+                icon: Icon(PhosphorIcons.shareNetwork()),
                 label: Text(tr('share')),
               ),
             ),

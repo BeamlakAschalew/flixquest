@@ -282,7 +282,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
               child: _HeroIconButton(
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                 onPressed: () => Navigator.pop(context),
-                icon: Icons.arrow_back_rounded,
+                icon: PhosphorIcons.caretLeft(),
               ),
             ),
             actions: [
@@ -613,15 +613,15 @@ class _MovieSummary extends StatelessWidget {
                                     )
                                   : Icon(
                                       isBookmarked!
-                                          ? Icons.bookmark_rounded
-                                          : Icons.bookmark_border_rounded,
+                                          ? PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)
+                                          : PhosphorIcons.bookmarkSimple(),
                                     ),
                             ),
                             const SizedBox(width: 4),
                             _SummaryAction(
                               tooltip: tr('shared_the_app'),
                               onPressed: onShare,
-                              child: const Icon(Icons.share_rounded),
+                              child: Icon(PhosphorIcons.shareNetwork()),
                             ),
                           ],
                         ),
@@ -710,15 +710,15 @@ class _MovieSummary extends StatelessWidget {
                   )
                 : Icon(
                     isBookmarked!
-                        ? Icons.bookmark_rounded
-                        : Icons.bookmark_border_rounded,
+                        ? PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)
+                        : PhosphorIcons.bookmarkSimple(),
                   ),
           ),
         if (!compact)
           _SummaryAction(
             tooltip: tr('shared_the_app'),
             onPressed: onShare,
-            child: const Icon(Icons.share_rounded),
+            child: Icon(PhosphorIcons.shareNetwork()),
           ),
       ],
     );
@@ -741,14 +741,14 @@ class _MovieSummary extends StatelessWidget {
         ),
         if (releaseYear != null)
           _MetadataPill(
-              icon: Icons.calendar_today_rounded, label: releaseYear!),
+              icon: PhosphorIcons.calendar(), label: releaseYear!),
         if ((movie.originalLanguage ?? '').isNotEmpty)
           _MetadataPill(
-            icon: Icons.translate_rounded,
+            icon: PhosphorIcons.translate(),
             label: movie.originalLanguage!.toUpperCase(),
           ),
         _MetadataPill(
-          icon: Icons.people_outline_rounded,
+          icon: PhosphorIcons.users(),
           label:
               '${_compactCount(movie.voteCount ?? 0)} ${tr('total_ratings')}',
         ),
@@ -836,7 +836,7 @@ class _MovieSummary extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(
-          Icons.event_available_rounded,
+          PhosphorIcons.calendarCheck(),
           size: 19,
           color: Theme.of(context).colorScheme.primary,
         ),
@@ -857,7 +857,7 @@ class _MovieSummary extends StatelessWidget {
         if (canWatch)
           FilledButton.icon(
             onPressed: onWatch,
-            icon: const Icon(Icons.play_circle_fill_rounded),
+            icon: Icon(PhosphorIcons.playCircle(PhosphorIconsStyle.fill)),
             label: Text(tr('watch_now')),
           ),
         // "Where to watch" is intentionally hidden from the primary actions.
@@ -961,7 +961,7 @@ class _CastRail extends StatelessWidget {
               _InlineError(onRetry: onRetry)
             else if ((data?.cast ?? []).isEmpty)
               _CompactEmpty(
-                icon: Icons.groups_outlined,
+                icon: PhosphorIcons.users(),
                 message: tr('no_cast_movie'),
               )
             else
@@ -1214,7 +1214,7 @@ class _MediaTab extends StatelessWidget {
             final items = snapshot.data?.result ?? const <Results>[];
             if (items.isEmpty) {
               return _CompactEmpty(
-                icon: Icons.video_library_outlined,
+                icon: PhosphorIcons.filmStrip(),
                 message: tr('no_video_movie'),
               );
             }
@@ -1319,7 +1319,7 @@ class _VideoCard extends StatelessWidget {
                         ],
                       ),
                       child: Icon(
-                        Icons.play_arrow_rounded,
+                        PhosphorIcons.play(),
                         color: colors.onPrimary,
                         size: 32,
                       ),
@@ -1354,7 +1354,7 @@ class _GalleryPreview extends StatelessWidget {
     final backdrops = images.backdrop ?? const <Backdrops>[];
     if (posters.isEmpty && backdrops.isEmpty) {
       return _CompactEmpty(
-        icon: Icons.photo_library_outlined,
+        icon: PhosphorIcons.images(),
         message: tr('not_available'),
       );
     }
@@ -1488,7 +1488,7 @@ class _GalleryCard extends StatelessWidget {
                 bottom: 12,
                 child: Row(
                   children: [
-                    const Icon(Icons.photo_library_rounded,
+                    Icon(PhosphorIcons.images(),
                         size: 19, color: Colors.white),
                     const SizedBox(width: 8),
                     Expanded(
@@ -1638,7 +1638,7 @@ class _MovieRailState extends State<_MovieRail> {
           _InlineError(onRetry: () => _load(reset: true))
         else if (_movies!.isEmpty)
           _CompactEmpty(
-            icon: Icons.movie_filter_outlined,
+            icon: PhosphorIcons.filmStrip(),
             message: widget.emptyMessage,
           )
         else
@@ -1965,7 +1965,7 @@ class _CollectionBanner extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Icon(Icons.arrow_forward_rounded,
+                    Icon(PhosphorIcons.caretRight(),
                         color: Colors.white),
                   ],
                 ),
@@ -1988,45 +1988,45 @@ class _MovieInfoGrid extends StatelessWidget {
     final currency = NumberFormat.simpleCurrency();
     final rows = <(IconData, String, String)>[
       (
-        Icons.title_rounded,
+        PhosphorIcons.textT(),
         tr('original_title'),
         _value(details.originalTitle)
       ),
-      (Icons.flag_outlined, tr('status'), _value(details.status)),
+      (PhosphorIcons.flag(), tr('status'), _value(details.status)),
       (
-        Icons.schedule_rounded,
+        PhosphorIcons.clock(),
         tr('runtime'),
         details.runtime == null || details.runtime == 0
             ? tr('not_available')
             : tr('runtime_mins', namedArgs: {'mins': '${details.runtime}'})
       ),
       (
-        Icons.translate_rounded,
+        PhosphorIcons.translate(),
         tr('spoken_language'),
         _joined(details.spokenLanguages?.map((item) => item.englishName))
       ),
       (
-        Icons.account_balance_wallet_outlined,
+        PhosphorIcons.wallet(),
         tr('budget'),
         details.budget == null || details.budget == 0
             ? tr('not_available')
             : currency.format(details.budget)
       ),
       (
-        Icons.trending_up_rounded,
+        PhosphorIcons.trendUp(),
         tr('revenue'),
         details.revenue == null || details.revenue == 0
             ? tr('not_available')
             : currency.format(details.revenue)
       ),
-      (Icons.format_quote_rounded, tr('tagline'), _value(details.tagline)),
+      (PhosphorIcons.quotes(), tr('tagline'), _value(details.tagline)),
       (
-        Icons.apartment_rounded,
+        PhosphorIcons.buildings(),
         tr('production_companies'),
         _joined(details.productionCompanies?.map((item) => item.name))
       ),
       (
-        Icons.public_rounded,
+        PhosphorIcons.globe(),
         tr('production_countries'),
         _joined(details.productionCountries?.map((item) => item.name))
       ),
@@ -2167,7 +2167,7 @@ class _SocialLinks extends StatelessWidget {
                 Uri.parse(item.$3),
                 mode: LaunchMode.externalApplication,
               ),
-              icon: FaIcon(item.$1, size: 17),
+              icon: Icon(item.$1, size: 17),
               label: Text(item.$2),
             ),
           )
@@ -2286,7 +2286,7 @@ class _ProviderGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     if (providers == null || providers!.isEmpty) {
       return _CompactEmpty(
-        icon: Icons.live_tv_outlined,
+        icon: PhosphorIcons.television(),
         message: emptyMessage,
       );
     }
@@ -2389,7 +2389,7 @@ class _InlineError extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.cloud_off_rounded,
+          Icon(PhosphorIcons.cloudSlash(),
               color: Theme.of(context).colorScheme.error),
           const SizedBox(width: 12),
           Expanded(child: Text(tr('check_connection'))),

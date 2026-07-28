@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -626,7 +627,7 @@ class _CategorizedBackdropCard extends StatelessWidget {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.star_rounded, color: Colors.white, size: 12),
+                                Icon(PhosphorIcons.star(PhosphorIconsStyle.fill), color: Colors.white, size: 12),
                                 const SizedBox(width: 4),
                                 Text(
                                   item.voteAverage.toStringAsFixed(1),

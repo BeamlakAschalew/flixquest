@@ -360,13 +360,13 @@ class DiscoverTVState extends State<DiscoverTV>
                                   const Spacer(),
                                   _TVHeroIconButton(
                                     icon: saved
-                                        ? Icons.bookmark_rounded
-                                        : Icons.bookmark_border_rounded,
+                                        ? PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)
+                                        : PhosphorIcons.bookmarkSimple(),
                                     onPressed: () => _toggleBookmark(item),
                                   ),
                                   const SizedBox(width: 8),
                                   _TVHeroIconButton(
-                                    icon: Icons.search_rounded,
+                                    icon: PhosphorIcons.magnifyingGlass(),
                                     onPressed: widget.onSearchPressed,
                                   ),
                                 ],
@@ -410,15 +410,15 @@ class DiscoverTVState extends State<DiscoverTV>
                                 children: [
                                   FilledButton.icon(
                                     onPressed: () => _openTV(item),
-                                    icon: const Icon(Icons.play_arrow_rounded),
+                                    icon: Icon(PhosphorIcons.play()),
                                     label: Text(tr('watch_now')),
                                   ),
                                   const SizedBox(width: 12),
                                   OutlinedButton.icon(
                                     onPressed: () => _toggleBookmark(item),
                                     icon: Icon(saved
-                                        ? Icons.check_rounded
-                                        : Icons.add_rounded),
+                                        ? PhosphorIcons.check()
+                                        : PhosphorIcons.plus()),
                                     label: Text(tr('bookmark_home')),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: Colors.white,
@@ -899,7 +899,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                   decoration: const BoxDecoration(
                                       color: Colors.white,
                                       shape: BoxShape.circle),
-                                  child: const Icon(Icons.play_arrow_rounded,
+                                  child: Icon(PhosphorIcons.play(),
                                       color: Colors.black, size: 30),
                                 ),
                               ),
@@ -910,7 +910,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                   visualDensity: VisualDensity.compact,
                                   onPressed: () => _deleteEpisode(episode),
                                   icon:
-                                      const Icon(Icons.close_rounded, size: 18),
+                                      Icon(PhosphorIcons.x(), size: 18),
                                 ),
                               ),
                               Positioned(
@@ -3169,11 +3169,11 @@ class TVVideosDisplayState extends State<TVVideosDisplay> {
                                                   Visibility(
                                                     visible:
                                                         playButtonVisibility,
-                                                    child: const SizedBox(
+                                                    child: SizedBox(
                                                       height: 90,
                                                       width: 90,
                                                       child: Icon(
-                                                        Icons.play_arrow,
+                                                        PhosphorIcons.play(),
                                                         size: 90,
                                                       ),
                                                     ),
@@ -5177,11 +5177,11 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                   ),
                                                 ),
                                                 Row(children: [
-                                                  const Padding(
-                                                    padding: EdgeInsets.only(
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(
                                                         right: 3.0),
                                                     child: Icon(
-                                                      Icons.star_rounded,
+                                                      PhosphorIcons.star(PhosphorIconsStyle.fill),
                                                       size: 20,
                                                     ),
                                                   ),
@@ -5467,7 +5467,7 @@ class TVGenreListGridState extends State<TVGenreListGrid>
               }
               final genre = genreList![index];
               return AppGenreTile(
-                icon: Icons.live_tv_rounded,
+                icon: PhosphorIcons.television(),
                 label: genre.genreName ?? '',
                 onTap: () => Navigator.push(
                   context,
@@ -6756,8 +6756,8 @@ class _TVDetailOptionsState extends State<TVDetailOptions> {
                 child: Row(
                   children: [
                     isBookmarked == false
-                        ? const Icon(Icons.bookmark_add_rounded)
-                        : const Icon(Icons.bookmark_remove_rounded),
+                        ? Icon(PhosphorIcons.bookmarkSimple())
+                        : Icon(PhosphorIcons.bookmarkSimple()),
                     Visibility(
                         visible: visible,
                         child: const CircularProgressIndicator())
@@ -7437,7 +7437,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
             ),
             child: Row(children: [
               Icon(
-                Icons.play_circle_fill_rounded,
+                PhosphorIcons.playCircle(PhosphorIconsStyle.fill),
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
               const SizedBox(width: 6),

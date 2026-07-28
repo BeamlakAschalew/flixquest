@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
@@ -41,8 +42,7 @@ class _TVStreamSelectState extends State<TVStreamSelect> {
           ', ${widget.episodeName}',
         ),
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
+          icon: Icon(PhosphorIcons.caretLeft(),
           ),
           onPressed: () {
             Navigator.pop(context);
@@ -174,7 +174,7 @@ class StreamListWidget extends StatelessWidget {
         children: <Widget>[
           Row(
             children: [
-              const Icon(Icons.play_circle_rounded),
+              Icon(PhosphorIcons.playCircle()),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8.0),

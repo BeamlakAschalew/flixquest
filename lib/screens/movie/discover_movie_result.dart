@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -92,8 +93,7 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
             tr('discover_movies'),
           ),
           leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
+            icon: Icon(PhosphorIcons.caretLeft(),
             ),
             onPressed: () {
               Navigator.pop(context);

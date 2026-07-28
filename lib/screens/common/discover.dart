@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +52,7 @@ class _DiscoverPageState extends State<DiscoverPage>
                             horizontal: 16, vertical: 16),
                         child: Row(
                           children: [
-                            Icon(Icons.search_rounded,
+                            Icon(PhosphorIcons.magnifyingGlass(),
                                 color: colors.onSurfaceVariant),
                             const SizedBox(width: 12),
                             Text(

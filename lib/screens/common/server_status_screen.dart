@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flixquest/video_providers/common.dart';
 import 'package:provider/provider.dart';
 import '../../provider/app_dependency_provider.dart';
@@ -305,8 +306,8 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
                                               )
                                             : Icon(
                                                 status.isWorking!
-                                                    ? Icons.check_circle
-                                                    : Icons.error,
+                                                    ? PhosphorIcons.checkCircle()
+                                                    : PhosphorIcons.warningCircle(),
                                                 color: status.isWorking!
                                                     ? Colors.green
                                                     : Colors.red,
@@ -366,7 +367,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
                                           child: Row(
                                             children: [
                                               Icon(
-                                                Icons.speed,
+                                                PhosphorIcons.gauge(),
                                                 size: 16,
                                                 color: _getLatencyColor(
                                                     int.tryParse(
@@ -405,7 +406,7 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
                         onPressed: () {
                           checkServer();
                         },
-                        icon: const Icon(Icons.refresh),
+                        icon: Icon(PhosphorIcons.arrowsClockwise()),
                         label: Text(
                           tr('check'),
                           style: const TextStyle(

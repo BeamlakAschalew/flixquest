@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -151,7 +152,7 @@ class AppGenreTile extends StatelessWidget {
                 ),
               ),
               Icon(
-                Icons.arrow_forward_ios_rounded,
+                PhosphorIcons.caretRight(),
                 size: 12,
                 color: colors.onSurfaceVariant.withValues(alpha: .75),
               ),
@@ -388,7 +389,7 @@ class AppFeedOverlayHeader extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: onSearchPressed,
-                  icon: const Icon(Icons.search_rounded),
+                  icon: Icon(PhosphorIcons.magnifyingGlass()),
                 ),
               ],
             ),
@@ -965,7 +966,7 @@ class AppMediaListCard extends StatelessWidget {
                             AppRatingBadge(rating: rating, compact: true),
                             if (voteCount != null) ...[
                               const SizedBox(width: 10),
-                              Icon(Icons.people_outline_rounded,
+                              Icon(PhosphorIcons.users(),
                                   size: 15, color: colors.onSurfaceVariant),
                               const SizedBox(width: 4),
                               Text(
@@ -979,7 +980,7 @@ class AppMediaListCard extends StatelessWidget {
                               ),
                             ],
                             const Spacer(),
-                            Icon(Icons.chevron_right_rounded,
+                            Icon(PhosphorIcons.caretRight(),
                                 color: colors.onSurfaceVariant),
                           ],
                         ),
@@ -1078,19 +1079,20 @@ class AppEmptyState extends StatelessWidget {
   const AppEmptyState({
     required this.title,
     required this.message,
-    this.icon = Icons.movie_filter_outlined,
+    this.icon,
     this.action,
     super.key,
   });
 
   final String title;
   final String message;
-  final IconData icon;
+  final IconData? icon;
   final Widget? action;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final effectiveIcon = icon ?? PhosphorIcons.filmStrip();
     return AppResponsiveContent(
       child: Center(
         child: ConstrainedBox(
@@ -1105,7 +1107,7 @@ class AppEmptyState extends StatelessWidget {
                   color: colors.primary.withValues(alpha: .09),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 52, color: colors.primary),
+                child: Icon(effectiveIcon, size: 52, color: colors.primary),
               ),
               const SizedBox(height: 28),
               Text(

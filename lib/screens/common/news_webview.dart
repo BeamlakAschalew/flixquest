@@ -1,5 +1,6 @@
 // // ignore_for_file: avoid_print
-// import 'dart:io';
+// import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'dart:io';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 // import 'package:share_plus/share_plus.dart';
@@ -74,7 +75,7 @@
 //                   await Share.share(
 //                       '${widget.articleName} \n${widget.articleUrl}');
 //                 },
-//                 icon: const Icon(Icons.share))
+//                 icon: Icon(PhosphorIcons.shareNetwork()))
 //           ],
 //         ),
 //         body: SafeArea(

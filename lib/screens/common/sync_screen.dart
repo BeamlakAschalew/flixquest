@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -425,9 +426,9 @@ class _SyncScreenState extends State<SyncScreen>
                           child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.only(right: 8.0),
-                            child: Icon(Icons.movie_creation_rounded),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Icon(PhosphorIcons.filmStrip()),
                           ),
                           Text(
                             tr('movies'),
@@ -438,9 +439,9 @@ class _SyncScreenState extends State<SyncScreen>
                           child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Padding(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child: Icon(Icons.live_tv_rounded)),
+                          Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Icon(PhosphorIcons.television())),
                           Text(
                             tr('tv_series'),
                           ),
@@ -851,8 +852,7 @@ class _SyncScreenState extends State<SyncScreen>
                                   onPressed: () {
                                     deleteTVFromFirebase(index);
                                   },
-                                  icon: const Icon(
-                                    Icons.bookmark_remove,
+                                  icon: Icon(PhosphorIcons.bookmarkSimple(),
                                     size: 50,
                                   ),
                                 )),
@@ -968,8 +968,7 @@ class _SyncScreenState extends State<SyncScreen>
                                   onPressed: () {
                                     deleteMovieFromFirebase(index);
                                   },
-                                  icon: const Icon(
-                                    Icons.bookmark_remove,
+                                  icon: Icon(PhosphorIcons.bookmarkSimple(),
                                     size: 50,
                                   ),
                                 )),

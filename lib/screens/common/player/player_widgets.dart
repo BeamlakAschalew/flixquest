@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -122,7 +123,7 @@ class PlayerNextEpisodeWidget {
                                 color: Colors.grey[800],
                                 child: Center(
                                   child: Icon(
-                                    Icons.movie,
+                                    PhosphorIcons.filmStrip(),
                                     color: Colors.grey[600],
                                     size: 40,
                                   ),
@@ -144,7 +145,7 @@ class PlayerNextEpisodeWidget {
                                 ),
                                 child: Center(
                                   child: Icon(
-                                    Icons.play_circle_filled,
+                                    PhosphorIcons.playCircle(PhosphorIconsStyle.fill),
                                     color: colors.first,
                                     size: 50,
                                   ),
@@ -206,7 +207,7 @@ class PlayerNextEpisodeWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.close,
+                        PhosphorIcons.x(),
                         color: Colors.white,
                         size: 18,
                       ),

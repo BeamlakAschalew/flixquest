@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -55,7 +56,7 @@ class _UserInfoState extends State<UserInfo> {
           return AppEmptyState(
             title: tr('error_occured'),
             message: tr('not_available'),
-            icon: Icons.person_off_outlined,
+            icon: PhosphorIcons.userMinus(),
           );
         }
         final data = snapshot.data!.data() as Map<String, dynamic>? ?? {};
@@ -103,7 +104,7 @@ class _UserInfoState extends State<UserInfo> {
                       .withValues(alpha: .12),
                 ),
                 child: Icon(
-                  Icons.person_outline_rounded,
+                  PhosphorIcons.user(),
                   size: 54,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -128,7 +129,7 @@ class _UserInfoState extends State<UserInfo> {
             Center(
               child: FilledButton.icon(
                 onPressed: _leaveAnonymousSession,
-                icon: const Icon(Icons.login_rounded),
+                icon: Icon(PhosphorIcons.signIn()),
                 label: Text(tr('login_signup')),
               ),
             ),
@@ -206,7 +207,7 @@ class _UserInfoState extends State<UserInfo> {
                     child: IconButton.filled(
                       visualDensity: VisualDensity.compact,
                       onPressed: () => _push(const ProfileEdit()),
-                      icon: const Icon(Icons.edit_rounded, size: 18),
+                      icon: Icon(PhosphorIcons.pencilSimple(), size: 18),
                     ),
                   ),
                 ],
@@ -293,38 +294,38 @@ class _UserInfoState extends State<UserInfo> {
     final actions = <Widget>[
       if (authenticated)
         _ProfileAction(
-          icon: Icons.person_outline_rounded,
+          icon: PhosphorIcons.user(),
           title: tr('edit_profile'),
           onTap: () => _push(const ProfileEdit()),
         ),
       _ProfileAction(
-        icon: Icons.tune_rounded,
+        icon: PhosphorIcons.sliders(),
         title: tr('settings'),
         onTap: () => _push(const app_settings.Settings()),
       ),
       _ProfileAction(
-        icon: Icons.dns_outlined,
+        icon: PhosphorIcons.database(),
         title: tr('check_server'),
         onTap: () => _push(const ServerStatusScreen()),
       ),
       _ProfileAction(
-        icon: Icons.system_update_alt_rounded,
+        icon: PhosphorIcons.arrowsDownUp(),
         title: tr('check_for_update'),
         onTap: () => _push(const UpdateScreen(isForced: false)),
       ),
       _ProfileAction(
-        icon: Icons.share_outlined,
+        icon: PhosphorIcons.shareNetwork(),
         title: tr('shared_the_app'),
         onTap: _shareApp,
       ),
       _ProfileAction(
-        icon: Icons.info_outline_rounded,
+        icon: PhosphorIcons.info(),
         title: tr('about'),
         onTap: () => _push(const AboutPage()),
       ),
       if (authenticated)
         _ProfileAction(
-          icon: Icons.logout_rounded,
+          icon: PhosphorIcons.signOut(),
           title: tr('logout'),
           destructive: true,
           onTap: _confirmSignOut,
@@ -403,7 +404,7 @@ class _ProfileAction extends StatelessWidget {
       onTap: onTap,
       leading: Icon(icon, color: color),
       title: Text(title, style: TextStyle(color: color)),
-      trailing: const Icon(Icons.chevron_right_rounded),
+      trailing: Icon(PhosphorIcons.caretRight()),
     );
   }
 }

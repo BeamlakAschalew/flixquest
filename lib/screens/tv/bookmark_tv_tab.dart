@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class _TVBookmarkState extends State<TVBookmark> {
       return AppEmptyState(
         title: tr('bookmarks'),
         message: tr('no_tv_bookmarked'),
-        icon: Icons.bookmark_add_outlined,
+        icon: PhosphorIcons.bookmarkSimple(),
       );
     }
     return settings.defaultView == 'list'
@@ -123,7 +124,7 @@ class _TVBookmarkState extends State<TVBookmark> {
                   IconButton(
                     tooltip: tr('delete'),
                     onPressed: () => _remove(items, index),
-                    icon: const Icon(Icons.bookmark_remove_rounded),
+                    icon: Icon(PhosphorIcons.bookmarkSimple()),
                   ),
                 ],
               ),
@@ -222,7 +223,7 @@ class _TVGridCard extends StatelessWidget {
                     visualDensity: VisualDensity.compact,
                     tooltip: tr('delete'),
                     onPressed: onRemove,
-                    icon: const Icon(Icons.close_rounded, size: 18),
+                    icon: Icon(PhosphorIcons.x(), size: 18),
                   ),
                 ),
               ],

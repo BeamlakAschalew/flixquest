@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -119,8 +120,7 @@ class HorizontalScrollingMoviesList extends StatelessWidget {
                                         : Colors.white60),
                                 child: Row(
                                   children: [
-                                    const Icon(
-                                      Icons.star_rounded,
+                                    Icon(PhosphorIcons.star(PhosphorIconsStyle.fill),
                                     ),
                                     Text(movieList![index].voteAverage! % 1 == 0
                                         ? movieList![index]

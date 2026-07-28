@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -133,7 +134,7 @@ class PlayerMovieRecommendations {
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.close),
+                            icon: Icon(PhosphorIcons.x()),
                             onPressed: () => Navigator.pop(context),
                           ),
                         ],
@@ -202,7 +203,7 @@ class PlayerMovieRecommendations {
                                           errorWidget: (context, url, error) =>
                                               Center(
                                             child: Icon(
-                                              Icons.movie,
+                                              PhosphorIcons.filmStrip(),
                                               color: Colors.grey[600],
                                               size: 40,
                                             ),
@@ -211,7 +212,7 @@ class PlayerMovieRecommendations {
                                       )
                                     : Center(
                                         child: Icon(
-                                          Icons.movie,
+                                          PhosphorIcons.filmStrip(),
                                           color: Colors.grey[600],
                                           size: 40,
                                         ),
@@ -255,7 +256,7 @@ class PlayerMovieRecommendations {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Icon(
-                                                  Icons.star_rounded,
+                                                  PhosphorIcons.star(PhosphorIconsStyle.fill),
                                                   size: 14,
                                                   color: colors.first,
                                                 ),
@@ -395,7 +396,7 @@ class PlayerMovieRecommendations {
                                   color: Colors.grey[800],
                                   child: Center(
                                     child: Icon(
-                                      Icons.movie,
+                                      PhosphorIcons.filmStrip(),
                                       color: Colors.grey[600],
                                       size: 40,
                                     ),
@@ -437,7 +438,7 @@ class PlayerMovieRecommendations {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Icon(
-                                            Icons.star_rounded,
+                                            PhosphorIcons.star(PhosphorIconsStyle.fill),
                                             size: 14,
                                             color: colors.first,
                                           ),
@@ -551,7 +552,7 @@ class PlayerMovieRecommendations {
                                                   width: 100,
                                                   color: Colors.grey[800],
                                                   child: Icon(
-                                                    Icons.movie,
+                                                    PhosphorIcons.filmStrip(),
                                                     color: Colors.grey[600],
                                                     size: 30,
                                                   ),
@@ -562,7 +563,7 @@ class PlayerMovieRecommendations {
                                                 width: 100,
                                                 color: Colors.grey[800],
                                                 child: Icon(
-                                                  Icons.movie,
+                                                  PhosphorIcons.filmStrip(),
                                                   color: Colors.grey[600],
                                                   size: 30,
                                                 ),

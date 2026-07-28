@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../ui_components/tv_ui_components.dart';
@@ -79,8 +80,7 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
             tr('discover_tv_series'),
           ),
           leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
+            icon: Icon(PhosphorIcons.caretLeft(),
             ),
             onPressed: () {
               Navigator.pop(context);

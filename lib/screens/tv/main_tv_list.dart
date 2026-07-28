@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../provider/app_dependency_provider.dart';
@@ -98,7 +99,7 @@ class MainTVListState extends State<MainTVList> {
         actions: [
           IconButton(
             onPressed: _openSearch,
-            icon: const Icon(Icons.search_rounded),
+            icon: Icon(PhosphorIcons.magnifyingGlass()),
           ),
         ],
       ),
@@ -113,7 +114,7 @@ class MainTVListState extends State<MainTVList> {
                   ? AppEmptyState(
                       title: tr('tv_404'),
                       message: tr('no_result'),
-                      icon: Icons.live_tv_outlined,
+                      icon: PhosphorIcons.television(),
                     )
                   : Column(
                       children: [

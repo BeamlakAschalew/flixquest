@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flixquest/api/endpoints.dart';
 import 'package:flixquest/controllers/live_tv_database_controller.dart';
 import 'package:flixquest/screens/common/live_player.dart';
@@ -209,7 +210,7 @@ class _ChannelListState extends State<ChannelList> {
         actions: [
           if (!isLoading && channels.isNotEmpty)
             IconButton(
-              icon: const Icon(Icons.refresh_rounded),
+              icon: Icon(PhosphorIcons.arrowsClockwise()),
               tooltip: tr('refresh'),
               onPressed: _clearCacheAndRefresh,
             ),
@@ -236,7 +237,7 @@ class _ChannelListState extends State<ChannelList> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.link_off_rounded, size: 35),
+            Icon(PhosphorIcons.linkBreak(), size: 35),
             const SizedBox(width: 25),
             Text(
               tr('channels_fetch_failed'),
@@ -302,11 +303,11 @@ class _ChannelListState extends State<ChannelList> {
                 ),
                 if (isSearching)
                   IconButton(
-                    icon: const Icon(Icons.clear),
+                    icon: Icon(PhosphorIcons.x()),
                     onPressed: _clearSearch,
                   )
                 else
-                  const Icon(Icons.search),
+                  Icon(PhosphorIcons.magnifyingGlass()),
               ],
             ),
           ),
@@ -434,13 +435,13 @@ class ChannelWidget extends StatelessWidget {
                         width: 48,
                         height: 48,
                         color: Theme.of(context).cardColor,
-                        child: const Icon(Icons.live_tv_rounded, size: 24),
+                        child: Icon(PhosphorIcons.television(), size: 24),
                       ),
                       errorWidget: (context, url, error) => Container(
                         width: 48,
                         height: 48,
                         color: Theme.of(context).cardColor,
-                        child: const Icon(Icons.live_tv_rounded, size: 24),
+                        child: Icon(PhosphorIcons.television(), size: 24),
                       ),
                     ),
                   )
@@ -452,7 +453,7 @@ class ChannelWidget extends StatelessWidget {
                       color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    child: const Icon(Icons.live_tv_rounded, size: 24),
+                    child: Icon(PhosphorIcons.television(), size: 24),
                   ),
 
                 const SizedBox(width: 12),
@@ -467,7 +468,7 @@ class ChannelWidget extends StatelessWidget {
                   ),
                 ),
 
-                const Icon(Icons.play_circle_outline_rounded, size: 28),
+                Icon(PhosphorIcons.playCircle(), size: 28),
               ],
             ),
           ),

@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import '../../api/endpoints.dart';
@@ -42,8 +43,7 @@ class _TVDetailCastAndCrewState extends State<TVDetailCastAndCrew>
               tr('cast_and_crew'),
             ),
             leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back,
+              icon: Icon(PhosphorIcons.caretLeft(),
               ),
               onPressed: () {
                 Navigator.pop(context);

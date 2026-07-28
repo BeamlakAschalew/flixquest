@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flixquest/provider/settings_provider.dart';
 import 'package:flixquest/video_providers/names.dart';
@@ -50,7 +51,7 @@ class ProviderChooseScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.info_outline_rounded,
+                      PhosphorIcons.info(),
                       size: 48,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -166,7 +167,7 @@ class RearrangeableListViewState extends State<RearrangeableListView> {
                   ),
                 ),
                 trailing: Icon(
-                  Icons.drag_handle_rounded,
+                  PhosphorIcons.equals(),
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),

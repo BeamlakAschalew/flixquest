@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_unnecessary_containers
 
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -155,7 +156,7 @@ class TVDetailPageState extends State<TVDetailPage>
             leading: Padding(
               padding: const EdgeInsetsDirectional.only(start: 12),
               child: _TVHeroButton(
-                icon: Icons.arrow_back_rounded,
+                icon: PhosphorIcons.caretLeft(),
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -502,16 +503,16 @@ class _TVSummary extends StatelessWidget {
                       ),
                       if (year != null)
                         _TVMetadataPill(
-                          icon: Icons.calendar_today_rounded,
+                          icon: PhosphorIcons.calendar(),
                           label: '$year',
                         ),
                       if ((tv.originalLanguage ?? '').isNotEmpty)
                         _TVMetadataPill(
-                          icon: Icons.translate_rounded,
+                          icon: PhosphorIcons.translate(),
                           label: tv.originalLanguage!.toUpperCase(),
                         ),
                       _TVMetadataPill(
-                        icon: Icons.people_outline_rounded,
+                        icon: PhosphorIcons.users(),
                         label: '${tv.voteCount ?? 0} ${tr('total_ratings')}',
                       ),
                     ],
@@ -532,15 +533,15 @@ class _TVSummary extends StatelessWidget {
                               )
                             : Icon(
                                 isBookmarked!
-                                    ? Icons.bookmark_rounded
-                                    : Icons.bookmark_border_rounded,
+                                    ? PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)
+                                    : PhosphorIcons.bookmarkSimple(),
                               ),
                       ),
                       const SizedBox(width: 6),
                       IconButton.filledTonal(
                         tooltip: tr('shared_the_app'),
                         onPressed: onShare,
-                        icon: const Icon(Icons.share_rounded),
+                        icon: Icon(PhosphorIcons.shareNetwork()),
                       ),
                     ],
                   ),
@@ -1064,7 +1065,7 @@ class _TVMediaTab extends StatelessWidget {
             final items = snapshot.data?.result ?? const <Results>[];
             if (items.isEmpty) {
               return _TVEmpty(
-                icon: Icons.video_library_outlined,
+                icon: PhosphorIcons.filmStrip(),
                 message: tr('not_available'),
               );
             }
@@ -1103,7 +1104,7 @@ class _TVMediaTab extends StatelessWidget {
             ];
             if (paths.isEmpty) {
               return _TVEmpty(
-                icon: Icons.photo_library_outlined,
+                icon: PhosphorIcons.images(),
                 message: tr('not_available'),
               );
             }
@@ -1176,7 +1177,7 @@ class _TVVideoCard extends StatelessWidget {
                         ],
                       ),
                       child: Icon(
-                        Icons.play_arrow_rounded,
+                        PhosphorIcons.play(),
                         color: Theme.of(context).colorScheme.onPrimary,
                         size: 31,
                       ),
@@ -1301,7 +1302,7 @@ class _TVRailState extends State<_TVRail> {
         else if (_items == null)
           _TVInlineError(onRetry: _load)
         else if (_items!.isEmpty)
-          _TVEmpty(icon: Icons.tv_off_outlined, message: widget.emptyMessage)
+          _TVEmpty(icon: PhosphorIcons.televisionSimple(), message: widget.emptyMessage)
         else
           SizedBox(
             height: 246,
@@ -1416,33 +1417,33 @@ class _TVInfoTab extends StatelessWidget {
             _TVSectionHeading(title: tr('tv_series_info')),
             const SizedBox(height: 14),
             _TVInfoRow(
-              icon: Icons.info_outline_rounded,
+              icon: PhosphorIcons.info(),
               label: tr('status'),
               value: value.status ?? tr('not_available'),
             ),
             _TVInfoRow(
-              icon: Icons.video_library_outlined,
+              icon: PhosphorIcons.filmStrip(),
               label: tr('seasons'),
               value: (value.numberOfSeasons ?? 0).toString(),
             ),
             _TVInfoRow(
-              icon: Icons.playlist_play_rounded,
+              icon: PhosphorIcons.playlist(),
               label: tr('episodes'),
               value: (value.numberOfEpisodes ?? 0).toString(),
             ),
             _TVInfoRow(
-              icon: Icons.translate_rounded,
+              icon: PhosphorIcons.translate(),
               label: tr('original_language'),
               value: (tv.originalLanguage ?? tr('not_available')).toUpperCase(),
             ),
             _TVInfoRow(
-              icon: Icons.calendar_month_rounded,
+              icon: PhosphorIcons.calendar(),
               label: tr('first_episode_air'),
               value: tv.firstAirDate ?? tr('not_available'),
             ),
             if ((value.tagline ?? '').isNotEmpty)
               _TVInfoRow(
-                icon: Icons.format_quote_rounded,
+                icon: PhosphorIcons.quotes(),
                 label: tr('tagline'),
                 value: value.tagline!,
               ),
@@ -1545,7 +1546,7 @@ class _TVInlineError extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.cloud_off_rounded,
+          Icon(PhosphorIcons.cloudSlash(),
               color: Theme.of(context).colorScheme.error),
           const SizedBox(width: 12),
           Expanded(child: Text(tr('check_connection'))),

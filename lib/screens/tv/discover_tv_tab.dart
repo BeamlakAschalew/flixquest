@@ -1,3 +1,4 @@
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -103,7 +104,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                         .withValues(alpha: .12),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Icon(Icons.tune_rounded,
+                  child: Icon(PhosphorIcons.sliders(),
                       color: Theme.of(context).colorScheme.primary),
                 ),
                 const SizedBox(width: 14),
@@ -162,8 +163,8 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                 key: ValueKey(_firstAirYear),
                 initialValue: _firstAirYear,
                 isExpanded: true,
-                decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.calendar_month_rounded)),
+                decoration: InputDecoration(
+                    prefixIcon: Icon(PhosphorIcons.calendar())),
                 items: [
                   for (final year in _years.yearsList)
                     DropdownMenuItem(
@@ -189,7 +190,7 @@ class _DiscoverTVTabState extends State<DiscoverTVTab> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.people_alt_outlined,
+                          Icon(PhosphorIcons.users(),
                               color: Theme.of(context).colorScheme.primary),
                           const SizedBox(width: 10),
                           Expanded(
