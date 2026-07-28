@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:readmore/readmore.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '/provider/settings_provider.dart';
@@ -24,6 +25,7 @@ import '../../models/images.dart';
 import '../../models/videos.dart';
 import '../../models/genres.dart';
 import '../person/cast_detail.dart';
+import 'genre_tv.dart';
 import 'seasons_detail.dart';
 import 'tvdetail_castandcrew.dart';
 
@@ -548,17 +550,6 @@ class _TVSummary extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 18),
-        if ((tv.overview ?? '').isNotEmpty)
-          ReadMoreText(
-            tv.overview!,
-            trimLines: 4,
-            trimMode: TrimMode.Line,
-            trimCollapsedText: ' ${tr('read_more')}',
-            trimExpandedText: ' ${tr('read_less')}',
-            colorClickableText: Theme.of(context).colorScheme.primary,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.5),
-          ),
-        const SizedBox(height: 16),
         FutureBuilder<List<Genres>>(
           future: genres,
           builder: (context, snapshot) {
@@ -572,19 +563,48 @@ class _TVSummary extends StatelessWidget {
               runSpacing: 8,
               children: items
                   .map(
-                    (genre) => Chip(
-                      label: Text(genre.genreName ?? tr('genres')),
+                    (genre) => ActionChip(
+                      label: Text(
+                        genre.genreName ?? tr('genres'),
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontFamily: 'FigtreeSB',
+                            ),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      visualDensity: VisualDensity.compact,
                       side: BorderSide(
                         color: Theme.of(context).colorScheme.outlineVariant,
                       ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(9),
+                      ),
                       backgroundColor: Colors.transparent,
-                      visualDensity: VisualDensity.compact,
+                      onPressed: genre.genreID == null
+                          ? null
+                          : () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => TVGenre(genres: genre),
+                                ),
+                              ),
                     ),
                   )
                   .toList(),
             );
           },
         ),
+        const SizedBox(height: 16),
+        if ((tv.overview ?? '').isNotEmpty)
+          ReadMoreText(
+            tv.overview!,
+            trimLines: 4,
+            trimMode: TrimMode.Line,
+            trimCollapsedText: ' ${tr('read_more')}',
+            trimExpandedText: ' ${tr('read_less')}',
+            colorClickableText: Theme.of(context).colorScheme.primary,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.5),
+          ),
         const SizedBox(height: 18),
         // "Where to watch" is intentionally hidden from the primary actions.
         // OutlinedButton.icon(...),
@@ -1568,16 +1588,43 @@ class _TVGenreShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      height: 34,
-      child: Row(
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return Shimmer.fromColors(
+      baseColor: dark ? const Color(0xFF30343A) : const Color(0xFFE9EBEF),
+      highlightColor: dark ? const Color(0xFF444950) : const Color(0xFFFAFAFB),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
-          SizedBox(width: 88, child: AppShimmerBlock(radius: 10)),
-          SizedBox(width: 8),
-          SizedBox(width: 112, child: AppShimmerBlock(radius: 10)),
-          SizedBox(width: 8),
-          SizedBox(width: 78, child: AppShimmerBlock(radius: 10)),
+          _buildFakeChip(context, 68),
+          _buildFakeChip(context, 85),
+          _buildFakeChip(context, 55),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFakeChip(BuildContext context, double width) {
+    return IgnorePointer(
+      child: ActionChip(
+        label: Container(
+          width: width,
+          height: 14,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        visualDensity: VisualDensity.compact,
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(9),
+        ),
+        backgroundColor: Colors.transparent,
+        onPressed: () {},
       ),
     );
   }

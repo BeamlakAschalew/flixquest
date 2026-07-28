@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../api/endpoints.dart';
@@ -2436,16 +2437,43 @@ class _GenreShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      height: 34,
-      child: Row(
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return Shimmer.fromColors(
+      baseColor: dark ? const Color(0xFF30343A) : const Color(0xFFE9EBEF),
+      highlightColor: dark ? const Color(0xFF444950) : const Color(0xFFFAFAFB),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
         children: [
-          SizedBox(width: 88, child: AppShimmerBlock(radius: 10)),
-          SizedBox(width: 8),
-          SizedBox(width: 112, child: AppShimmerBlock(radius: 10)),
-          SizedBox(width: 8),
-          SizedBox(width: 78, child: AppShimmerBlock(radius: 10)),
+          _buildFakeChip(context, 68),
+          _buildFakeChip(context, 85),
+          _buildFakeChip(context, 55),
         ],
+      ),
+    );
+  }
+
+  Widget _buildFakeChip(BuildContext context, double width) {
+    return IgnorePointer(
+      child: ActionChip(
+        label: Container(
+          width: width,
+          height: 14,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        visualDensity: VisualDensity.compact,
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(9),
+        ),
+        backgroundColor: Colors.transparent,
+        onPressed: () {},
       ),
     );
   }

@@ -45,6 +45,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '/screens/movie/main_movies_list.dart';
 import 'package:provider/provider.dart';
+import 'categorized_feed.dart';
 import 'common_widgets.dart';
 
 class MainMoviesDisplay extends StatefulWidget {
@@ -150,6 +151,7 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
                   includeAdult: includeAdult,
                 ),
                 GenreListGrid(api: Endpoints.movieGenresUrl(lang)),
+                const RandomCategorizedFeed(isTv: false),
                 const MoviesFromWatchProviders(),
               ]),
             ),

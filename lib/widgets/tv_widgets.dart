@@ -43,6 +43,7 @@ import '/screens/tv/seasons_detail.dart';
 import '/screens/tv/streaming_services_tvshows.dart';
 import '/screens/tv/tv_detail.dart';
 import '/screens/tv/genre_tv.dart';
+import 'categorized_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -155,6 +156,7 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
                   isTrending: false,
                 ),
                 TVGenreListGrid(api: Endpoints.tvGenresUrl(lang)),
+                const RandomCategorizedFeed(isTv: true),
                 const TVShowsFromWatchProviders(),
               ]),
             ),

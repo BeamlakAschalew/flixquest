@@ -13,7 +13,11 @@ class UserState extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, userSnapshot) {
           if (userSnapshot.connectionState == ConnectionState.waiting) {
-            return const FlixQuestHomePage();
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           } else if (userSnapshot.connectionState == ConnectionState.active) {
             if (userSnapshot.hasData) {
               return const FlixQuestHomePage();
