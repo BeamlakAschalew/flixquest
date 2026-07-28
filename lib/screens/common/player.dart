@@ -14,7 +14,7 @@ import '/constants/app_constants.dart';
 import '/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import '../../functions/function.dart';
@@ -188,11 +188,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 .inMilliseconds,
         progressBarPlayedColor: widget.colors.first,
         progressBarBufferedColor: Colors.black45,
-        skipForwardIcon: FontAwesomeIcons.rotateRight,
-        skipBackIcon: FontAwesomeIcons.rotateLeft,
-        fullscreenEnableIcon: Icons.fullscreen_rounded,
-        fullscreenDisableIcon: Icons.fullscreen_exit_rounded,
-        overflowMenuIcon: Icons.menu_rounded,
+        skipForwardIcon: PhosphorIcons.arrowsClockwise(),
+        skipBackIcon: PhosphorIcons.arrowsCounterClockwise(),
+        fullscreenEnableIcon: PhosphorIcons.cornersOut(),
+        fullscreenDisableIcon: PhosphorIcons.cornersIn(),
+        overflowMenuIcon: PhosphorIcons.dotsThreeVertical(),
         overflowMenuIconsColor: widget.colors.first,
         overflowModalTextColor: widget.colors.first,
         overflowModalColor: widget.colors.last,
@@ -995,7 +995,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     context: context);
               }
             },
-            child: const Icon(FontAwesomeIcons.arrowUpRightFromSquare)),
+            child: Icon(PhosphorIcons.arrowSquareOut())),
       ),
     );
   }

@@ -14,7 +14,7 @@ import '../models/movie.dart';
 import '../models/watch_providers.dart';
 import '/screens/common/bookmark_screen.dart';
 import '/screens/common/settings.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../constants/api_constants.dart';
@@ -72,7 +72,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   ),
                   ListTile(
                     leading: Icon(
-                      FontAwesomeIcons.bookmark,
+                      PhosphorIcons.bookmarkSimple(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(tr('bookmarks')),
@@ -86,7 +86,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   appDependencyProvider.displayOTTDrawer
                       ? ListTile(
                           leading: Icon(
-                            FontAwesomeIcons.tv,
+                            PhosphorIcons.television(),
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           title: Text(tr('live_tv')),
@@ -113,7 +113,7 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                   // ),
                   ListTile(
                     leading: Icon(
-                      Icons.settings_rounded,
+                      PhosphorIcons.gear(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(tr('settings')),
@@ -124,10 +124,9 @@ class _DrawerWidgetState extends State<DrawerWidget> {
                       })));
                     },
                   ),
-
                   ListTile(
                     leading: Icon(
-                      Icons.info_outline,
+                      PhosphorIcons.info(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(tr('about')),
@@ -1693,7 +1692,7 @@ class ReportErrorWidget extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Icon(FontAwesomeIcons.telegram),
+                            Icon(PhosphorIcons.telegramLogo()),
                             const SizedBox(
                               width: 10,
                             ),

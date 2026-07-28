@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../ui_components/app_ui_components.dart';
 
@@ -90,12 +90,15 @@ class AboutPage extends StatelessWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.bug_report_rounded),
-                      title: Text(tr('bug_notice')),
-                      trailing: const Icon(Icons.open_in_new_rounded, size: 18),
-                      onTap: () => launchUrl(
-                          Uri.parse('https://t.me/flixquestcommunity'),
-                          mode: LaunchMode.externalApplication),
+                      leading: Icon(PhosphorIcons.bug()),
+                      title: Text(tr('report_issue')),
+                      trailing: Icon(PhosphorIcons.arrowSquareOut(), size: 18),
+                      onTap: () {
+                        launchUrl(
+                          Uri.parse(
+                              'https://github.com/beamlakaschalew/cinemax/issues/new/choose'),
+                        );
+                      },
                     ),
                     const Divider(),
                     Padding(
@@ -105,23 +108,23 @@ class AboutPage extends StatelessWidget {
                           Text(tr('follow_cinemax'),
                               style: Theme.of(context).textTheme.titleMedium),
                           const SizedBox(height: 14),
-                          const Wrap(
+                          Wrap(
                             alignment: WrapAlignment.center,
                             spacing: 12,
                             runSpacing: 12,
                             children: [
                               SocialIconContainer(
-                                  platformIcon: FontAwesomeIcons.instagram,
+                                  platformIcon: PhosphorIcons.instagramLogo(),
                                   uri: 'https://instagram.com/flixquestapp'),
                               SocialIconContainer(
-                                  platformIcon: FontAwesomeIcons.telegram,
+                                  platformIcon: PhosphorIcons.telegramLogo(),
                                   uri: 'https://t.me/flixquestapp'),
                               SocialIconContainer(
-                                  platformIcon: FontAwesomeIcons.github,
+                                  platformIcon: PhosphorIcons.githubLogo(),
                                   uri:
                                       'https://github.com/beamlakaschalew/cinemax'),
                               SocialIconContainer(
-                                  platformIcon: Icons.mail_rounded,
+                                  platformIcon: PhosphorIcons.envelopeSimple(),
                                   uri: 'mailto:flixquestapp@gmail.com'),
                             ],
                           ),

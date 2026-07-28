@@ -46,7 +46,7 @@ import '/screens/tv/genre_tv.dart';
 import 'categorized_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/person/crew_detail.dart';
 import '/screens/common/photoview.dart';
@@ -4609,9 +4609,9 @@ class TVSocialLinksState extends State<TVSocialLinks> {
                                 url: externalLinks?.imdbId == null
                                     ? ''
                                     : IMDB_BASE_URL + externalLinks!.imdbId!,
-                                icon: const Center(
-                                  child: FaIcon(
-                                    FontAwesomeIcons.imdb,
+                                icon: Center(
+                                  child: Icon(
+                                    PhosphorIcons.filmSlate(),
                                     size: 30,
                                   ),
                                 ),

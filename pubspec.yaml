@@ -40,7 +40,7 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   flutter_localization: ^0.2.2
   flutter_svg: ^2.0.10+1
-  font_awesome_flutter: ^10.7.0
+  phosphor_flutter: ^2.1.0
   google_nav_bar: ^5.0.6
   http: ^1.2.2
   intl: ^0.20.2

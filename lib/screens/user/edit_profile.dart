@@ -1,5 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '/screens/user/delete_account.dart';
 import '/screens/user/email_change.dart';
 import '/screens/user/password_change.dart';
@@ -283,7 +283,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                                                     ),
                                                   ),
                                                   child: Icon(
-                                                    Icons.check_rounded,
+                                                    PhosphorIcons.check(),
                                                     size: 15,
                                                     color: Theme.of(context)
                                                         .colorScheme
@@ -322,7 +322,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                               decoration: InputDecoration(
                                 errorMaxLines: 3,
                                 filled: true,
-                                prefixIcon: const Icon(FontAwesomeIcons.user),
+                                prefixIcon: Icon(PhosphorIcons.user()),
                                 labelText: tr('full_name'),
                               ),
                               onSaved: (value) {
@@ -359,7 +359,7 @@ class _ProfileEditState extends State<ProfileEdit> {
                               decoration: InputDecoration(
                                 errorMaxLines: 3,
                                 filled: true,
-                                prefixIcon: const Icon(FontAwesomeIcons.at),
+                                prefixIcon: Icon(PhosphorIcons.at()),
                                 labelText: tr('username'),
                               ),
                               onSaved: (value) {

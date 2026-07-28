@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'dart:isolate';
@@ -163,9 +163,9 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(right: 8.0),
-                        child: Icon(FontAwesomeIcons.solidFloppyDisk),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: Icon(PhosphorIcons.floppyDisk(PhosphorIconsStyle.fill)),
                       ),
                       Text(tr('download')),
                     ],

@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../constants/app_constants.dart';
 import '../../controllers/bookmark_database_controller.dart';
@@ -80,14 +80,14 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: const Icon(Icons.arrow_back_rounded)),
+                  icon: Icon(PhosphorIcons.caretLeft())),
               title: Text(tr('bookmarks')),
               actions: [
                   IconButton(
                       onPressed: () {
                         _syncBookmarks();
                       },
-                      icon: const Icon(FontAwesomeIcons.rotate))
+                      icon: Icon(PhosphorIcons.arrowsClockwise()))
                 ]),
       body: SafeArea(
         bottom: false,
@@ -115,7 +115,7 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                     IconButton.filledTonal(
                       tooltip: tr('sync'),
                       onPressed: _syncBookmarks,
-                      icon: const Icon(FontAwesomeIcons.rotate, size: 18),
+                      icon: Icon(PhosphorIcons.arrowsClockwise(), size: 18),
                     ),
                   ],
                 ),
@@ -144,7 +144,7 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(FontAwesomeIcons.clapperboard, size: 16),
+                          Icon(PhosphorIcons.filmStrip(), size: 16),
                           const SizedBox(width: 8),
                           Flexible(
                             child: Text(
@@ -160,7 +160,7 @@ class _BookmarkScreenState extends State<BookmarkScreen>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.live_tv_rounded, size: 18),
+                          Icon(PhosphorIcons.television(), size: 18),
                           const SizedBox(width: 8),
                           Flexible(
                             child: Text(

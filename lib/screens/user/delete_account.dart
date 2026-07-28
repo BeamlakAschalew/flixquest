@@ -1,7 +1,7 @@
 import '/screens/common/landing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../constants/app_constants.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -162,24 +162,23 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                               .withValues(alpha: .12),
                           borderRadius: BorderRadius.circular(22),
                         ),
-                        child: Icon(Icons.delete_forever_rounded,
+                        child: Icon(PhosphorIcons.trash(),
                             size: 32,
-                            color: Theme.of(context).colorScheme.error),
+                            color: Theme.of(context).colorScheme.primary),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           tr('delete_account'),
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall
-                              ?.copyWith(
-                                  color: Theme.of(context).colorScheme.error),
+                          style: Theme.of(context).textTheme.headlineSmall,
                         ),
                       ),
-                      Text(
-                        tr('delete_notice'),
-                        textAlign: TextAlign.center,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          tr('delete_notice'),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(12.0),
@@ -190,33 +189,20 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                               Padding(
                                 padding: const EdgeInsets.all(12.0),
                                 child: TextFormField(
-                                  key: const ValueKey('confirmation'),
+                                  key: const ValueKey('deleteText'),
                                   validator: (value) {
-                                    if (value != 'CONFIRM') {
-                                      return tr('del_input_err');
+                                    if (value != 'DELETE' &&
+                                        value != 'delete') {
+                                      return tr('must_type_delete');
                                     }
                                     return null;
                                   },
-                                  focusNode: deleteFN,
-                                  textInputAction: TextInputAction.next,
-                                  keyboardType: TextInputType.text,
                                   decoration: InputDecoration(
-                                    errorMaxLines: 3,
-                                    filled: true,
-                                    prefixIcon:
-                                        const Icon(Icons.text_fields_rounded),
-                                    labelText: tr('type_confirm'),
-                                  ),
-                                  onSaved: (value) {
-                                    setState(() {
-                                      confirmationText = value!;
-                                    });
-                                  },
-                                  onChanged: (value) {
-                                    setState(() {
-                                      confirmationText = value;
-                                    });
-                                  },
+                                      errorMaxLines: 3,
+                                      filled: true,
+                                      prefixIcon:
+                                          Icon(PhosphorIcons.textT()),
+                                      labelText: tr('type_delete')),
                                 ),
                               ),
                               const SizedBox(
@@ -230,8 +216,15 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                     : ElevatedButton(
                                         style: ButtonStyle(
                                             backgroundColor:
-                                                const WidgetStatePropertyAll(
-                                                    Colors.red),
+                                                WidgetStatePropertyAll(
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .error),
+                                            foregroundColor:
+                                                WidgetStatePropertyAll(
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .onError),
                                             minimumSize:
                                                 const WidgetStatePropertyAll(
                                                     Size(200, 50)),
@@ -257,8 +250,8 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                             const SizedBox(
                                               width: 5,
                                             ),
-                                            const Icon(
-                                              FontAwesomeIcons.trash,
+                                            Icon(
+                                              PhosphorIcons.trash(),
                                               size: 18,
                                             )
                                           ],

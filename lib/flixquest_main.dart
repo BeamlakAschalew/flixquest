@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
@@ -327,32 +328,32 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                   },
                   destinations: [
                     NavigationDestination(
-                      icon: const Icon(Icons.home_outlined),
+                      icon: Icon(PhosphorIcons.house()),
                       selectedIcon:
-                          Icon(Icons.home_rounded, color: colorScheme.primary),
+                          Icon(PhosphorIcons.house(PhosphorIconsStyle.fill), color: colorScheme.primary),
                       label: tr('movies'),
                     ),
                     NavigationDestination(
-                      icon: const Icon(Icons.live_tv_outlined),
-                      selectedIcon: Icon(Icons.live_tv_rounded,
+                      icon: Icon(PhosphorIcons.television()),
+                      selectedIcon: Icon(PhosphorIcons.television(PhosphorIconsStyle.fill),
                           color: colorScheme.primary),
                       label: tr('tv_series'),
                     ),
                     NavigationDestination(
-                      icon: const Icon(Icons.explore_outlined),
-                      selectedIcon: Icon(Icons.explore_rounded,
+                      icon: Icon(PhosphorIcons.compass()),
+                      selectedIcon: Icon(PhosphorIcons.compass(PhosphorIconsStyle.fill),
                           color: colorScheme.primary),
                       label: tr('discover'),
                     ),
                     NavigationDestination(
-                      icon: const Icon(Icons.bookmark_border_rounded),
-                      selectedIcon: Icon(Icons.bookmark_rounded,
+                      icon: Icon(PhosphorIcons.bookmarkSimple()),
+                      selectedIcon: Icon(PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill),
                           color: colorScheme.primary),
                       label: tr('bookmarks'),
                     ),
                     NavigationDestination(
-                      icon: const Icon(Icons.person_outline_rounded),
-                      selectedIcon: Icon(Icons.person_rounded,
+                      icon: Icon(PhosphorIcons.user()),
+                      selectedIcon: Icon(PhosphorIcons.user(PhosphorIconsStyle.fill),
                           color: colorScheme.primary),
                       label: tr('profile'),
                     ),

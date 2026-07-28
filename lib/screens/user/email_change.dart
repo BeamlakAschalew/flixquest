@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../constants/app_constants.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -164,7 +164,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                             .withValues(alpha: .12),
                         borderRadius: BorderRadius.circular(22),
                       ),
-                      child: Icon(Icons.alternate_email_rounded,
+                      child: Icon(PhosphorIcons.at(),
                           size: 32,
                           color: Theme.of(context).colorScheme.primary),
                     ),
@@ -207,7 +207,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                   errorMaxLines: 3,
                                   filled: true,
                                   prefixIcon:
-                                      const Icon(FontAwesomeIcons.envelope),
+                                      Icon(PhosphorIcons.envelopeSimple()),
                                   labelText: tr('new_email_address'),
                                 ),
                                 onSaved: (value) {
@@ -234,7 +234,7 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                   errorMaxLines: 3,
                                   filled: true,
                                   prefixIcon:
-                                      const Icon(FontAwesomeIcons.envelope),
+                                      Icon(PhosphorIcons.envelopeSimple()),
                                   labelText: tr('repeat_new_email'),
                                 ),
                               ),
@@ -274,8 +274,8 @@ class EmailChangeScreenState extends State<EmailChangeScreen> {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  const Icon(
-                                    Icons.refresh_outlined,
+                                  Icon(
+                                    PhosphorIcons.arrowsClockwise(),
                                     size: 18,
                                   )
                                 ],

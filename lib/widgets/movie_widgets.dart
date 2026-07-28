@@ -41,7 +41,7 @@ import '/screens/person/crew_detail.dart';
 import '/models/images.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '/screens/movie/genremovies.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '/screens/movie/main_movies_list.dart';
 import 'package:provider/provider.dart';
@@ -2378,9 +2378,9 @@ class MovieSocialLinksState extends State<MovieSocialLinks> {
                                 url: externalLinks?.imdbId == null
                                     ? ''
                                     : IMDB_BASE_URL + externalLinks!.imdbId!,
-                                icon: const Center(
-                                  child: FaIcon(
-                                    FontAwesomeIcons.imdb,
+                                icon: Center(
+                                  child: Icon(
+                                    PhosphorIcons.filmSlate(),
                                     size: 30,
                                   ),
                                 ),

@@ -9,7 +9,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '/models/watchprovider_countries.dart';
 import '/screens/common/country_choose.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -327,7 +327,7 @@ class _SettingsState extends State<Settings> {
               title: tr('appearance'),
               children: [
                 _SettingsChoiceTile<String>(
-                  icon: Icons.dark_mode_rounded,
+                  icon: PhosphorIcons.moon(),
                   title: tr('theme_mode'),
                   value: settingsValues.appTheme,
                   options: {
@@ -340,7 +340,7 @@ class _SettingsState extends State<Settings> {
                 ),
                 ListTile(
                   leading: Icon(
-                    Icons.play_arrow_rounded,
+                    PhosphorIcons.play(),
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: Text(
@@ -363,7 +363,7 @@ class _SettingsState extends State<Settings> {
                     ),
                     value: settingsValues.isMaterial3Enabled,
                     secondary: Icon(
-                      Icons.color_lens_rounded,
+                      PhosphorIcons.palette(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(
@@ -384,7 +384,7 @@ class _SettingsState extends State<Settings> {
                   ),
                   value: settingsValues.enableProxy,
                   secondary: Icon(
-                    FontAwesomeIcons.networkWired,
+                    PhosphorIcons.globe(),
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: Text(
@@ -434,7 +434,7 @@ class _SettingsState extends State<Settings> {
               title: tr('content_preferences'),
               children: [
                 _SettingsChoiceTile<String>(
-                  icon: Icons.image_rounded,
+                  icon: PhosphorIcons.image(),
                   title: tr('image_quality'),
                   value: settingsValues.imageQuality,
                   options: {
@@ -446,7 +446,7 @@ class _SettingsState extends State<Settings> {
                       setState(() => settingsValues.imageQuality = value),
                 ),
                 _SettingsChoiceTile<String>(
-                  icon: Icons.view_list_rounded,
+                  icon: PhosphorIcons.list(),
                   title: tr('list_view_type'),
                   value: settingsValues.defaultView,
                   options: {'list': tr('list'), 'grid': tr('grid')},
@@ -454,7 +454,7 @@ class _SettingsState extends State<Settings> {
                       setState(() => settingsValues.defaultView = value),
                 ),
                 _SettingsChoiceTile<int>(
-                  icon: Icons.phone_android_rounded,
+                  icon: PhosphorIcons.deviceMobile(),
                   title: tr('default_home_screen'),
                   value: settingsValues.defaultValue,
                   options: {
@@ -474,7 +474,7 @@ class _SettingsState extends State<Settings> {
                     })));
                   }),
                   leading: Icon(
-                    FontAwesomeIcons.language,
+                    PhosphorIcons.translate(),
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: Text(
@@ -497,7 +497,7 @@ class _SettingsState extends State<Settings> {
                     })));
                   }),
                   leading: Icon(
-                    FontAwesomeIcons.earthAmericas,
+                    PhosphorIcons.globeHemisphereWest(),
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: Text(
@@ -520,7 +520,7 @@ class _SettingsState extends State<Settings> {
               children: [
                 ListTile(
                   leading: Icon(
-                    FontAwesomeIcons.eraser,
+                    PhosphorIcons.eraser(),
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: Text(tr('clear_cache')),
@@ -603,7 +603,7 @@ class _SettingsState extends State<Settings> {
                                     color: appColor.cs.primary,
                                     shape: BoxShape.circle),
                                 child: selected
-                                    ? Icon(Icons.check_rounded,
+                                    ? Icon(PhosphorIcons.check(),
                                         color: appColor.cs.onPrimary)
                                     : null,
                               ),
@@ -693,7 +693,7 @@ class _SettingsChoiceTile<T> extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 5),
-          const Icon(Icons.chevron_right_rounded),
+          Icon(PhosphorIcons.caretRight()),
         ],
       ),
     );
@@ -721,7 +721,7 @@ class _SettingsChoiceTile<T> extends StatelessWidget {
               ListTile(
                 title: Text(option.value),
                 trailing: option.key == value
-                    ? Icon(Icons.check_rounded,
+                    ? Icon(PhosphorIcons.check(),
                         color: Theme.of(context).colorScheme.primary)
                     : null,
                 onTap: () => Navigator.pop(context, option.key),

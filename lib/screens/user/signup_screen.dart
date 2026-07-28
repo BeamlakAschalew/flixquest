@@ -2,7 +2,7 @@
 import '/flixquest_main.dart';
 import '/functions/function.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '/constants/app_constants.dart';
 import '/models/profile_image_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -328,7 +328,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 decoration: InputDecoration(
                                   errorMaxLines: 3,
                                   filled: true,
-                                  prefixIcon: const Icon(FontAwesomeIcons.user),
+                                  prefixIcon: Icon(PhosphorIcons.user()),
                                   labelText: tr('full_name'),
                                 ),
                                 onSaved: (value) {
@@ -358,7 +358,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     errorMaxLines: 3,
                                     filled: true,
                                     prefixIcon:
-                                        const Icon(FontAwesomeIcons.envelope),
+                                        Icon(PhosphorIcons.envelopeSimple()),
                                     labelText: tr('email_address')),
                                 onSaved: (value) {
                                   _emailAddress = value!;
@@ -396,7 +396,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 decoration: InputDecoration(
                                     errorMaxLines: 3,
                                     filled: true,
-                                    prefixIcon: const Icon(FontAwesomeIcons.at),
+                                    prefixIcon: Icon(PhosphorIcons.at()),
                                     labelText: tr('username')),
                                 onSaved: (value) {
                                   _userName = value!;
@@ -428,8 +428,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 decoration: InputDecoration(
                                     errorMaxLines: 3,
                                     filled: true,
-                                    prefixIcon:
-                                        const Icon(FontAwesomeIcons.lock),
+                                    prefixIcon: Icon(PhosphorIcons.lock()),
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {
@@ -437,8 +436,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                         });
                                       },
                                       child: Icon(_obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off),
+                                          ? PhosphorIcons.eye()
+                                          : PhosphorIcons.eyeSlash()),
                                     ),
                                     labelText: tr('enter_password')),
                                 onSaved: (value) {
@@ -465,8 +464,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 decoration: InputDecoration(
                                     errorMaxLines: 3,
                                     filled: true,
-                                    prefixIcon:
-                                        const Icon(FontAwesomeIcons.lock),
+                                    prefixIcon: Icon(PhosphorIcons.lock()),
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {
@@ -474,8 +472,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                         });
                                       },
                                       child: Icon(_obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off),
+                                          ? PhosphorIcons.eye()
+                                          : PhosphorIcons.eyeSlash()),
                                     ),
                                     labelText: tr('repeat_password')),
                                 // onSaved: (value) {

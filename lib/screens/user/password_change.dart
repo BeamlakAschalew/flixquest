@@ -1,5 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../constants/app_constants.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -124,14 +124,14 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             .withValues(alpha: .12),
                         borderRadius: BorderRadius.circular(22),
                       ),
-                      child: Icon(Icons.password_rounded,
+                      child: Icon(PhosphorIcons.lockKey(),
                           size: 32,
                           color: Theme.of(context).colorScheme.primary),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        tr('password_change'),
+                        tr('change_password'),
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                     ),
@@ -155,8 +155,9 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 validator: (value) {
                                   if (value!.isEmpty || value.length < 7) {
                                     return tr('weak_password');
-                                  } else if (value == '12345678' ||
-                                      value == 'qwertyuiop' ||
+                                  }
+                                  if (value == '123456' ||
+                                      value == '12345678' ||
                                       value == 'password') {
                                     return tr('lame_password');
                                   }
@@ -171,7 +172,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 decoration: InputDecoration(
                                   errorMaxLines: 3,
                                   filled: true,
-                                  prefixIcon: const Icon(FontAwesomeIcons.lock),
+                                  prefixIcon: Icon(PhosphorIcons.lock()),
                                   suffixIcon: GestureDetector(
                                     onTap: () {
                                       setState(() {
@@ -179,8 +180,8 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                       });
                                     },
                                     child: Icon(_obscureText
-                                        ? Icons.visibility
-                                        : Icons.visibility_off),
+                                        ? PhosphorIcons.eye()
+                                        : PhosphorIcons.eyeSlash()),
                                   ),
                                   labelText: tr('enter_new_pass'),
                                 ),
@@ -211,7 +212,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 decoration: InputDecoration(
                                   errorMaxLines: 3,
                                   filled: true,
-                                  prefixIcon: const Icon(FontAwesomeIcons.lock),
+                                  prefixIcon: Icon(PhosphorIcons.lock()),
                                   suffixIcon: GestureDetector(
                                     onTap: () {
                                       setState(() {
@@ -219,8 +220,8 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                       });
                                     },
                                     child: Icon(_obscureText
-                                        ? Icons.visibility
-                                        : Icons.visibility_off),
+                                        ? PhosphorIcons.eye()
+                                        : PhosphorIcons.eyeSlash()),
                                   ),
                                   labelText: tr('repeat_new_password'),
                                 ),
@@ -253,7 +254,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    tr('reset_password'),
+                                    tr('change_password'),
                                     style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 17),
@@ -261,8 +262,8 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                                   const SizedBox(
                                     width: 5,
                                   ),
-                                  const Icon(
-                                    Icons.refresh_outlined,
+                                  Icon(
+                                    PhosphorIcons.arrowsClockwise(),
                                     size: 18,
                                   )
                                 ],

@@ -7,7 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -163,7 +163,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                     '${currentIndex + 1}',
                     themeMode);
               },
-              icon: const Icon(FontAwesomeIcons.download),
+              icon: Icon(PhosphorIcons.downloadSimple()),
             )
           ]),
       body: Container(

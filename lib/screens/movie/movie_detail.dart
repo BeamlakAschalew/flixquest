@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import 'package:share_plus/share_plus.dart';
@@ -2132,28 +2132,28 @@ class _SocialLinks extends StatelessWidget {
     final items = <(IconData, String, String)>[
       if (links.facebookUsername != null)
         (
-          FontAwesomeIcons.facebookF,
+          PhosphorIcons.facebookLogo(),
           'Facebook',
           '$FACEBOOK_BASE_URL${links.facebookUsername}'
         ),
       if (links.instagramUsername != null)
         (
-          FontAwesomeIcons.instagram,
+          PhosphorIcons.instagramLogo(),
           'Instagram',
           '$INSTAGRAM_BASE_URL${links.instagramUsername}'
         ),
       if (links.twitterUsername != null)
         (
-          FontAwesomeIcons.xTwitter,
+          PhosphorIcons.twitterLogo(),
           'X',
           '$TWITTER_BASE_URL${links.twitterUsername}'
         ),
       if (links.imdbId != null)
-        (FontAwesomeIcons.imdb, 'IMDb', '$IMDB_BASE_URL${links.imdbId}'),
+        (PhosphorIcons.filmSlate(), 'IMDb', '$IMDB_BASE_URL${links.imdbId}'),
     ];
     if (items.isEmpty) {
       return _CompactEmpty(
-        icon: Icons.link_off_rounded,
+        icon: PhosphorIcons.linkBreak(),
         message: tr('no_social_link_movie'),
       );
     }

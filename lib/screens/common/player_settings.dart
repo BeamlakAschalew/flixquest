@@ -4,7 +4,7 @@ import '../../screens/common/sublanguage_choose.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../constants/app_constants.dart';
 import '/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
@@ -233,7 +233,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       inactiveThumbColor: Colors.white,
                       inactiveTrackColor: const Color(0xFF9B9B9B),
                       secondary: Icon(
-                        FontAwesomeIcons.expand,
+                        PhosphorIcons.arrowsOut(),
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       title: Text(
@@ -246,7 +246,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       }),
                     ),
                     _PlayerChoiceTile<int>(
-                      icon: FontAwesomeIcons.rotateRight,
+                      icon: PhosphorIcons.arrowsClockwise(),
                       title: tr('seek_second'),
                       value: settingValues.defaultSeekDuration,
                       options: const {
@@ -261,7 +261,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       ),
                     ),
                     _PlayerChoiceTile<int>(
-                      icon: FontAwesomeIcons.spinner,
+                      icon: PhosphorIcons.spinner(),
                       title: tr('buffer_amount'),
                       value: settingValues.defaultMaxBufferDuration,
                       options: const {
@@ -285,7 +285,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       ),
                     ),
                     _PlayerChoiceTile<int>(
-                      icon: FontAwesomeIcons.fileVideo,
+                      icon: PhosphorIcons.filmStrip(),
                       title: tr('video_resolution'),
                       value: settingValues.defaultVideoResolution,
                       options: {
@@ -299,7 +299,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       ),
                     ),
                     _PlayerChoiceTile<int>(
-                      icon: FontAwesomeIcons.solidClock,
+                      icon: PhosphorIcons.clock(PhosphorIconsStyle.fill),
                       title: tr('player_time_display'),
                       value: settingValues.playerTimeDisplay,
                       options: {
@@ -314,7 +314,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       inactiveThumbColor: Colors.white,
                       inactiveTrackColor: const Color(0xFF9B9B9B),
                       secondary: Icon(
-                        FontAwesomeIcons.language,
+                        PhosphorIcons.translate(),
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       value: settingValues.fetchSpecificLangSubs,
@@ -329,7 +329,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       inactiveThumbColor: Colors.white,
                       inactiveTrackColor: const Color(0xFF9B9B9B),
                       secondary: Icon(
-                        FontAwesomeIcons.forward,
+                        PhosphorIcons.fastForward(),
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       value: settingValues.enableNextEpisodeButton,
@@ -348,7 +348,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                         })));
                       },
                       leading: Icon(
-                        FontAwesomeIcons.closedCaptioning,
+                        PhosphorIcons.closedCaptioning(),
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       title: Text(
@@ -363,7 +363,7 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                         })));
                       },
                       leading: Icon(
-                        FontAwesomeIcons.server,
+                        PhosphorIcons.hardDrive(),
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       title: Text(
@@ -423,7 +423,7 @@ class _PlayerChoiceTile<T> extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 5),
-          const Icon(Icons.chevron_right_rounded),
+          Icon(PhosphorIcons.caretRight()),
         ],
       ),
     );
@@ -462,7 +462,7 @@ class _PlayerChoiceTile<T> extends StatelessWidget {
                       title: Text(option.value),
                       trailing: option.key == value
                           ? Icon(
-                              Icons.check_rounded,
+                              PhosphorIcons.check(),
                               color: Theme.of(context).colorScheme.primary,
                             )
                           : null,

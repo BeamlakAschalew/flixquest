@@ -1,5 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../flixquest_main.dart';
 import '../../constants/app_constants.dart';
 import '../../functions/function.dart';
@@ -146,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
                                       prefixIcon:
-                                          const Icon(FontAwesomeIcons.envelope),
+                                          Icon(PhosphorIcons.envelopeSimple()),
                                       labelText: tr('email_address')),
                                   onSaved: (value) {
                                     emailAddress = value!;
@@ -167,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   focusNode: passwordFocusNode,
                                   decoration: InputDecoration(
                                       prefixIcon:
-                                          const Icon(FontAwesomeIcons.lock),
+                                          Icon(PhosphorIcons.lock()),
                                       suffixIcon: GestureDetector(
                                         onTap: () {
                                           setState(() {
@@ -175,8 +175,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           });
                                         },
                                         child: Icon(obscureText
-                                            ? Icons.visibility
-                                            : Icons.visibility_off),
+                                            ? PhosphorIcons.eye()
+                                            : PhosphorIcons.eyeSlash()),
                                       ),
                                       labelText: tr('password')),
                                   onSaved: (value) {

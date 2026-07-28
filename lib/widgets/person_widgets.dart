@@ -27,7 +27,7 @@ import '/screens/movie/movie_detail.dart';
 import '/widgets/movie_widgets.dart';
 import '/screens/tv/tv_detail.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:readmore/readmore.dart';
 import '/models/credits.dart' as cre;
 
@@ -956,9 +956,9 @@ class PersonSocialLinksState extends State<PersonSocialLinks> {
                                 url: externalLinks?.imdbId == null
                                     ? ''
                                     : IMDB_BASE_URL + externalLinks!.imdbId!,
-                                icon: const Center(
-                                  child: FaIcon(
-                                    FontAwesomeIcons.imdb,
+                                icon: Center(
+                                  child: Icon(
+                                    PhosphorIcons.filmSlate(),
                                     size: 30,
                                   ),
                                 ),
