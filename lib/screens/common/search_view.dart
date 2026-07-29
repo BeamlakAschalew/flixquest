@@ -1,6 +1,7 @@
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shimmer/shimmer.dart';
 import 'dart:async';
 import '../../constants/app_constants.dart';
 import '../../functions/function.dart';
@@ -8,7 +9,6 @@ import '../../provider/app_dependency_provider.dart';
 import '../../preferences/setting_preferences.dart';
 import '/api/endpoints.dart';
 import '../../functions/network.dart';
-import '/widgets/common_widgets.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
@@ -70,7 +70,8 @@ class Search extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(PhosphorIcons.x(),
+        icon: Icon(
+          PhosphorIcons.x(),
         ),
         onPressed: () {
           query = '';
@@ -82,7 +83,8 @@ class Search extends SearchDelegate<String> {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(PhosphorIcons.caretLeft(),
+      icon: Icon(
+        PhosphorIcons.caretLeft(),
       ),
       onPressed: () {
         close(context, '');
@@ -97,7 +99,6 @@ class Search extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
 
@@ -130,6 +131,7 @@ class Search extends SearchDelegate<String> {
             ),
             Expanded(
                 child: TabBarView(children: [
+              // ── Movies tab ──
               FutureBuilder<List<Movie>>(
                 future: Future.delayed(const Duration(milliseconds: 700))
                     .then((value) async {
@@ -144,22 +146,23 @@ class Search extends SearchDelegate<String> {
                 }),
                 builder: (context, snapshot) {
                   if (query.isEmpty) {
-                    return recentSearchesWidget(context, themeMode);
+                    return _recentSearchesWidget(context);
                   }
 
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return searchSuggestionVerticalScrollShimmer(themeMode);
+                      return const AppMediaGridShimmer();
                     default:
                       if (snapshot.hasError || snapshot.data!.isEmpty) {
-                        return errorMessageWidget(themeMode);
+                        return _errorMessageWidget();
                       } else {
-                        return activeMovieSearch(
-                            snapshot.data!, themeMode, context);
+                        return _activeMovieSearch(snapshot.data!, context);
                       }
                   }
                 },
               ),
+
+              // ── TV tab ──
               FutureBuilder<List<TV>>(
                 future: Future.delayed(const Duration(milliseconds: 700)).then(
                     (value) async => await fetchTV(
@@ -168,22 +171,23 @@ class Search extends SearchDelegate<String> {
                         proxyUrl)),
                 builder: (context, snapshot) {
                   if (query.isEmpty) {
-                    return recentSearchesWidget(context, themeMode);
+                    return _recentSearchesWidget(context);
                   }
 
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return searchSuggestionVerticalScrollShimmer(themeMode);
+                      return const AppMediaGridShimmer();
                     default:
                       if (snapshot.hasError || snapshot.data!.isEmpty) {
-                        return errorMessageWidget(themeMode);
+                        return _errorMessageWidget();
                       } else {
-                        return activeTVSearch(
-                            snapshot.data!, themeMode, context);
+                        return _activeTVSearch(snapshot.data!, context);
                       }
                   }
                 },
               ),
+
+              // ── Celebrities tab ──
               FutureBuilder<List<Person>>(
                 future: Future.delayed(const Duration(milliseconds: 700)).then(
                     (value) async => await fetchPerson(
@@ -192,17 +196,16 @@ class Search extends SearchDelegate<String> {
                         proxyUrl)),
                 builder: (context, snapshot) {
                   if (query.isEmpty) {
-                    return recentSearchesWidget(context, themeMode);
+                    return _recentSearchesWidget(context);
                   }
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return searchedPersonShimmer(themeMode);
+                      return _personShimmer(context);
                     default:
                       if (snapshot.hasError || snapshot.data!.isEmpty) {
-                        return errorMessageWidget(themeMode);
+                        return _errorMessageWidget();
                       } else {
-                        return activePersonSearch(
-                            snapshot.data!, themeMode, context);
+                        return _activePersonSearch(snapshot.data!, context);
                       }
                   }
                 },
@@ -214,148 +217,11 @@ class Search extends SearchDelegate<String> {
     );
   }
 
-  Widget searchSuggestionVerticalScrollShimmer(String themeMode) => Column(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: 10,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(
-                        top: 0.0,
-                        bottom: 3.0,
-                        left: 10,
-                      ),
-                      child: Column(
-                        children: [
-                          ShimmerBase(
-                            themeMode: themeMode,
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 10.0),
-                                  child: SizedBox(
-                                    width: 85,
-                                    height: 130,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          color: Colors.grey.shade600),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 8.0),
-                                        child: Container(
-                                            height: 20,
-                                            width: 150,
-                                            color: Colors.grey.shade600),
-                                      ),
-                                      Row(
-                                        children: <Widget>[
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 1.0),
-                                            child: Container(
-                                              height: 20,
-                                              width: 20,
-                                              color: Colors.grey.shade600,
-                                            ),
-                                          ),
-                                          Container(
-                                              height: 20,
-                                              width: 30,
-                                              color: Colors.grey.shade600),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          Divider(
-                            color: themeMode == 'light'
-                                ? Colors.black54
-                                : Colors.white54,
-                            thickness: 1,
-                            endIndent: 20,
-                            indent: 10,
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-            ),
-          ),
-        ],
-      );
+  // ─────────────────────────────────────────────────────────────────────────
+  // Empty / Error states
+  // ─────────────────────────────────────────────────────────────────────────
 
-  Widget searchedPersonShimmer(String themeMode) => ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return Padding(
-          padding: const EdgeInsets.only(
-            top: 3.0,
-            bottom: 3.0,
-            left: 15,
-          ),
-          child: Column(
-            children: [
-              ShimmerBase(
-                themeMode: themeMode,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100.0),
-                              color: Colors.grey.shade600),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: 20,
-                            width: 140,
-                            color: Colors.grey.shade600,
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Divider(
-                color: themeMode == 'light' ? Colors.black54 : Colors.white54,
-                thickness: 1,
-                endIndent: 20,
-                indent: 10,
-              ),
-            ],
-          ),
-        );
-      });
-
-  Widget errorMessageWidget(String themeMode) {
+  Widget _errorMessageWidget() {
     return AppEmptyState(
       title: tr('no_result'),
       message: tr('enter_word'),
@@ -363,7 +229,7 @@ class Search extends SearchDelegate<String> {
     );
   }
 
-  Widget searchATermWidget(String themeMode) {
+  Widget _searchATermWidget() {
     return AppEmptyState(
       title: tr('search'),
       message: tr('enter_word'),
@@ -371,34 +237,36 @@ class Search extends SearchDelegate<String> {
     );
   }
 
-  Widget recentSearchesWidget(BuildContext context, String themeMode) {
+  // ─────────────────────────────────────────────────────────────────────────
+  // Recent searches
+  // ─────────────────────────────────────────────────────────────────────────
+
+  Widget _recentSearchesWidget(BuildContext context) {
     return FutureBuilder<List<String>>(
       future: _settingsPreferences.getRecentSearches(),
       builder: (context, snapshot) {
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return searchATermWidget(themeMode);
+          return _searchATermWidget();
         }
 
         final recentSearches = snapshot.data!;
+        final colors = Theme.of(context).colorScheme;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: EdgeInsets.fromLTRB(
+                  AppUI.pagePadding(context), 16, AppUI.pagePadding(context), 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     tr('recent_searches'),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Figtree',
-                      color: themeMode == 'dark' || themeMode == 'amoled'
-                          ? Colors.white
-                          : Colors.black,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontFamily: 'FigtreeSB',
+                          fontWeight: FontWeight.w700,
+                        ),
                   ),
                   TextButton(
                     onPressed: () async {
@@ -408,9 +276,6 @@ class Search extends SearchDelegate<String> {
                     },
                     child: Text(
                       tr('clear_all'),
-                      style: const TextStyle(
-                        fontFamily: 'Figtree',
-                      ),
                     ),
                   ),
                 ],
@@ -423,27 +288,19 @@ class Search extends SearchDelegate<String> {
                 itemBuilder: (context, index) {
                   final searchTerm = recentSearches[index];
                   return ListTile(
+                    contentPadding: EdgeInsets.symmetric(
+                        horizontal: AppUI.pagePadding(context)),
                     leading: Icon(
                       PhosphorIcons.clockCounterClockwise(),
-                      color: themeMode == 'dark' || themeMode == 'amoled'
-                          ? Colors.white70
-                          : Colors.black54,
+                      color: colors.onSurfaceVariant,
                     ),
                     title: Text(
                       searchTerm,
-                      style: TextStyle(
-                        fontFamily: 'Figtree',
-                        color: themeMode == 'dark' || themeMode == 'amoled'
-                            ? Colors.white
-                            : Colors.black,
-                      ),
                     ),
                     trailing: IconButton(
                       icon: Icon(
                         PhosphorIcons.x(),
-                        color: themeMode == 'dark' || themeMode == 'amoled'
-                            ? Colors.white70
-                            : Colors.black54,
+                        color: colors.onSurfaceVariant,
                       ),
                       onPressed: () async {
                         await _settingsPreferences
@@ -466,391 +323,418 @@ class Search extends SearchDelegate<String> {
     );
   }
 
-  Widget activeMovieSearch(
-      List<Movie> moviesList, String themeMode, BuildContext context) {
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return Column(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: moviesList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return MovieDetailPage(
-                          movie: moviesList[index],
-                          heroId: '${moviesList[index].id}',
-                        );
-                      }));
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 0.0,
-                          bottom: 3.0,
-                          left: 10,
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 10.0),
-                                  child: SizedBox(
-                                    width: 85,
-                                    height: 130,
-                                    child: Hero(
-                                      tag: '${moviesList[index].id}',
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        child: moviesList[index].posterPath ==
-                                                null
-                                            ? Image.asset(
-                                                'assets/images/na_logo.png',
-                                                fit: BoxFit.cover,
-                                              )
-                                            : CachedNetworkImage(
-                                                cacheManager: cacheProp(),
-                                                fadeOutDuration: const Duration(
-                                                    milliseconds: 300),
-                                                fadeOutCurve: Curves.easeOut,
-                                                fadeInDuration: const Duration(
-                                                    milliseconds: 700),
-                                                fadeInCurve: Curves.easeIn,
-                                                imageUrl: buildImageUrl(
-                                                        TMDB_BASE_IMAGE_URL,
-                                                        proxyUrl,
-                                                        isProxyEnabled,
-                                                        context) +
-                                                    imageQuality +
-                                                    moviesList[index]
-                                                        .posterPath!,
-                                                imageBuilder:
-                                                    (context, imageProvider) =>
-                                                        Container(
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ),
-                                                placeholder: (context, url) =>
-                                                    scrollingImageShimmer(
-                                                        themeMode),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Image.asset(
-                                                  'assets/images/na_logo.png',
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${moviesList[index].title!} ${moviesList[index].releaseDate == null || moviesList[index].releaseDate == '' ? '' : '(${DateTime.parse(moviesList[index].releaseDate!).year})'}',
-                                        style: TextStyle(
-                                            fontFamily: 'FigtreeSB',
-                                            fontSize: 15,
-                                            overflow: TextOverflow.ellipsis,
-                                            color: themeMode == 'dark' ||
-                                                    themeMode == 'amoled'
-                                                ? Colors.white
-                                                : Colors.black),
-                                      ),
-                                      AppRatingBadge(
-                                        rating: moviesList[index].voteAverage,
-                                        compact: true,
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                            Divider(
-                              color: themeMode == 'light'
-                                  ? Colors.black54
-                                  : Colors.white54,
-                              thickness: 1,
-                              endIndent: 20,
-                              indent: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-          ),
-        ),
-      ],
-    );
-  }
+  // ─────────────────────────────────────────────────────────────────────────
+  // Movie search results — poster grid
+  // ─────────────────────────────────────────────────────────────────────────
 
-  Widget activeTVSearch(
-      List<TV> tvList, String themeMode, BuildContext context) {
+  Widget _activeMovieSearch(List<Movie> moviesList, BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return Column(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: tvList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return TVDetailPage(
-                            tvSeries: tvList[index],
-                            heroId: '${tvList[index].id}');
-                      }));
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 0.0,
-                          bottom: 3.0,
-                          left: 10,
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 10.0),
-                                  child: SizedBox(
-                                    width: 85,
-                                    height: 130,
-                                    child: Hero(
-                                      tag: '${tvList[index].id}',
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        child: tvList[index].posterPath == null
-                                            ? Image.asset(
-                                                'assets/images/na_logo.png',
-                                                fit: BoxFit.cover,
-                                              )
-                                            : CachedNetworkImage(
-                                                cacheManager: cacheProp(),
-                                                fadeOutDuration: const Duration(
-                                                    milliseconds: 300),
-                                                fadeOutCurve: Curves.easeOut,
-                                                fadeInDuration: const Duration(
-                                                    milliseconds: 700),
-                                                fadeInCurve: Curves.easeIn,
-                                                imageUrl: buildImageUrl(
-                                                        TMDB_BASE_IMAGE_URL,
-                                                        proxyUrl,
-                                                        isProxyEnabled,
-                                                        context) +
-                                                    imageQuality +
-                                                    tvList[index].posterPath!,
-                                                imageBuilder:
-                                                    (context, imageProvider) =>
-                                                        Container(
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ),
-                                                placeholder: (context, url) =>
-                                                    scrollingImageShimmer(
-                                                        themeMode),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Image.asset(
-                                                  'assets/images/na_logo.png',
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${tvList[index].name!} ${tvList[index].firstAirDate == null ? '' : tvList[index].firstAirDate == "" ? '' : '(${DateTime.parse(tvList[index].firstAirDate!).year})'}',
-                                        style: TextStyle(
-                                            fontFamily: 'FigtreeSB',
-                                            fontSize: 15,
-                                            overflow: TextOverflow.ellipsis,
-                                            color: themeMode == 'dark' ||
-                                                    themeMode == 'amoled'
-                                                ? Colors.white
-                                                : Colors.black),
-                                      ),
-                                      AppRatingBadge(
-                                        rating: tvList[index].voteAverage,
-                                        compact: true,
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                            Divider(
-                              color: themeMode == 'light'
-                                  ? Colors.black54
-                                  : Colors.white54,
-                              thickness: 1,
-                              endIndent: 20,
-                              indent: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-          ),
-        ),
-      ],
-    );
-  }
 
-  Widget activePersonSearch(
-      List<Person>? personList, String themeMode, BuildContext context) {
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        itemCount: personList!.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return SearchedPersonDetailPage(
-                    person: personList[index],
-                    heroId: '${personList[index].id}');
-              }));
-            },
-            child: Container(
-              color: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 3.0,
-                  bottom: 3.0,
-                  left: 15,
-                ),
-                child: Column(
-                  children: [
-                    Row(
+    return GridView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context), 12, AppUI.pagePadding(context), 24),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: AppUI.mediaGridColumns(context),
+        childAspectRatio: AppUI.mediaGridChildAspectRatio(context),
+        crossAxisSpacing: AppUI.mediaGridCrossAxisSpacing,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: moviesList.length,
+      itemBuilder: (BuildContext context, int index) {
+        final movie = moviesList[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return MovieDetailPage(
+                movie: movie,
+                heroId: '${movie.id}',
+              );
+            }));
+          },
+          child: Column(
+            children: [
+              AspectRatio(
+                aspectRatio: AppUI.posterAspectRatio,
+                child: Hero(
+                  tag: '${movie.id}',
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Stack(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: SizedBox(
-                            width: 80,
-                            height: 80,
-                            child: Hero(
-                              tag: '${personList[index].id}',
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(100.0),
-                                child: personList[index].profilePath == null
-                                    ? Image.asset(
-                                        'assets/images/na_rect.png',
-                                        fit: BoxFit.cover,
-                                      )
-                                    : CachedNetworkImage(
-                                        cacheManager: cacheProp(),
-                                        fadeOutDuration:
-                                            const Duration(milliseconds: 300),
-                                        fadeOutCurve: Curves.easeOut,
-                                        fadeInDuration:
-                                            const Duration(milliseconds: 700),
-                                        fadeInCurve: Curves.easeIn,
-                                        imageUrl: buildImageUrl(
-                                                TMDB_BASE_IMAGE_URL,
-                                                proxyUrl,
-                                                isProxyEnabled,
-                                                context) +
-                                            imageQuality +
-                                            personList[index].profilePath!,
-                                        imageBuilder:
-                                            (context, imageProvider) =>
-                                                Container(
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: imageProvider,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        placeholder: (context, url) =>
-                                            detailCastImageShimmer(themeMode),
-                                        errorWidget: (context, url, error) =>
-                                            Image.asset(
-                                          'assets/images/na_rect.png',
+                        Positioned.fill(
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(AppUI.cardRadius),
+                            child: movie.posterPath == null
+                                ? Image.asset('assets/images/na_logo.png',
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity)
+                                : CachedNetworkImage(
+                                    cacheManager: cacheProp(),
+                                    fadeOutDuration:
+                                        const Duration(milliseconds: 300),
+                                    fadeOutCurve: Curves.easeOut,
+                                    fadeInDuration:
+                                        const Duration(milliseconds: 700),
+                                    fadeInCurve: Curves.easeIn,
+                                    imageUrl: buildImageUrl(
+                                            TMDB_BASE_IMAGE_URL,
+                                            proxyUrl,
+                                            isProxyEnabled,
+                                            context) +
+                                        imageQuality +
+                                        movie.posterPath!,
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: imageProvider,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
-                              ),
-                            ),
+                                    ),
+                                    placeholder: (context, url) =>
+                                        const AppShimmerBlock(),
+                                    errorWidget: (context, url, error) =>
+                                        Image.asset(
+                                            'assets/images/na_logo.png',
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity),
+                                  ),
                           ),
                         ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                personList[index].name!,
-                                style: TextStyle(
-                                    fontFamily: 'FigtreeSB',
-                                    fontSize: 17,
-                                    color: themeMode == 'dark' ||
-                                            themeMode == 'amoled'
-                                        ? Colors.white
-                                        : Colors.black),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          child: AppRatingBadge(
+                            rating: movie.voteAverage,
+                            compact: true,
                           ),
-                        )
+                        ),
                       ],
                     ),
-                    Divider(
-                      color: themeMode == 'light'
-                          ? Colors.black54
-                          : Colors.white54,
-                      thickness: 1,
-                      endIndent: 20,
-                      indent: 10,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppUI.mediaGridTitleGap),
+              SizedBox(
+                width: double.infinity,
+                height: AppUI.mediaGridTitleHeight,
+                child: Text(
+                  movie.title ?? '',
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontFamily: 'FigtreeSB',
+                      ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // TV search results — poster grid
+  // ─────────────────────────────────────────────────────────────────────────
+
+  Widget _activeTVSearch(List<TV> tvList, BuildContext context) {
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+
+    return GridView.builder(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context), 12, AppUI.pagePadding(context), 24),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: AppUI.mediaGridColumns(context),
+        childAspectRatio: AppUI.mediaGridChildAspectRatio(context),
+        crossAxisSpacing: AppUI.mediaGridCrossAxisSpacing,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: tvList.length,
+      itemBuilder: (BuildContext context, int index) {
+        final show = tvList[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return TVDetailPage(
+                tvSeries: show,
+                heroId: '${show.id}',
+              );
+            }));
+          },
+          child: Column(
+            children: [
+              AspectRatio(
+                aspectRatio: AppUI.posterAspectRatio,
+                child: Hero(
+                  tag: '${show.id}',
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(AppUI.cardRadius),
+                            child: show.posterPath == null
+                                ? Image.asset('assets/images/na_logo.png',
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity)
+                                : CachedNetworkImage(
+                                    cacheManager: cacheProp(),
+                                    fadeOutDuration:
+                                        const Duration(milliseconds: 300),
+                                    fadeOutCurve: Curves.easeOut,
+                                    fadeInDuration:
+                                        const Duration(milliseconds: 700),
+                                    fadeInCurve: Curves.easeIn,
+                                    imageUrl: buildImageUrl(
+                                            TMDB_BASE_IMAGE_URL,
+                                            proxyUrl,
+                                            isProxyEnabled,
+                                            context) +
+                                        imageQuality +
+                                        show.posterPath!,
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    placeholder: (context, url) =>
+                                        const AppShimmerBlock(),
+                                    errorWidget: (context, url, error) =>
+                                        Image.asset(
+                                            'assets/images/na_logo.png',
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity),
+                                  ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 8,
+                          left: 8,
+                          child: AppRatingBadge(
+                            rating: show.voteAverage,
+                            compact: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppUI.mediaGridTitleGap),
+              SizedBox(
+                width: double.infinity,
+                height: AppUI.mediaGridTitleHeight,
+                child: Text(
+                  show.name ?? '',
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontFamily: 'FigtreeSB',
+                      ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Person search results — card-based list
+  // ─────────────────────────────────────────────────────────────────────────
+
+  Widget _activePersonSearch(List<Person> personList, BuildContext context) {
+    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
+    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+    final colors = Theme.of(context).colorScheme;
+
+    return ListView.separated(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context), 12, AppUI.pagePadding(context), 24),
+      itemCount: personList.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (BuildContext context, int index) {
+        final person = personList[index];
+        return Card(
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return SearchedPersonDetailPage(
+                    person: person, heroId: '${person.id}');
+              }));
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 64,
+                    height: 64,
+                    child: Hero(
+                      tag: '${person.id}',
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100.0),
+                        child: person.profilePath == null
+                            ? Image.asset(
+                                'assets/images/na_rect.png',
+                                fit: BoxFit.cover,
+                              )
+                            : CachedNetworkImage(
+                                cacheManager: cacheProp(),
+                                fadeOutDuration:
+                                    const Duration(milliseconds: 300),
+                                fadeOutCurve: Curves.easeOut,
+                                fadeInDuration:
+                                    const Duration(milliseconds: 700),
+                                fadeInCurve: Curves.easeIn,
+                                imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL,
+                                        proxyUrl, isProxyEnabled, context) +
+                                    imageQuality +
+                                    person.profilePath!,
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                placeholder: (context, url) =>
+                                    const AppShimmerBlock(radius: 100),
+                                errorWidget: (context, url, error) =>
+                                    Image.asset(
+                                  'assets/images/na_rect.png',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          person.name ?? '',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (person.department != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            person.department!,
+                            style: TextStyle(
+                              color: colors.onSurfaceVariant,
+                              fontSize: 13,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Icon(PhosphorIcons.caretRight(),
+                      color: colors.onSurfaceVariant),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Person shimmer
+  // ─────────────────────────────────────────────────────────────────────────
+
+  Widget _personShimmer(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final base = dark ? const Color(0xFF202124) : const Color(0xFFE7E7E9);
+    final highlight = dark ? const Color(0xFF303236) : const Color(0xFFF5F5F6);
+
+    return Shimmer.fromColors(
+      baseColor: base,
+      highlightColor: highlight,
+      child: ListView.separated(
+        padding: EdgeInsets.fromLTRB(
+            AppUI.pagePadding(context), 12, AppUI.pagePadding(context), 24),
+        itemCount: 8,
+        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        itemBuilder: (_, __) => Card(
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: base,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 16,
+                      width: 140,
+                      decoration: BoxDecoration(
+                        color: base,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 12,
+                      width: 90,
+                      decoration: BoxDecoration(
+                        color: base,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
-          );
-        });
+          ),
+        ),
+      ),
+    );
   }
 
   Widget buildSuggestionsSuccess(List<TV> moviesList) {

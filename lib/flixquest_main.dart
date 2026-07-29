@@ -2,7 +2,6 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flixquest/constants/app_constants.dart';
 import 'package:flixquest/models/app_colors.dart';
@@ -23,6 +22,7 @@ import 'screens/user/user_state.dart';
 import 'widgets/common_widgets.dart';
 import 'widgets/movie_widgets.dart';
 import 'widgets/tv_widgets.dart';
+import 'services/in_app_messaging_service.dart';
 
 class FlixQuest extends StatefulWidget {
   const FlixQuest(
@@ -112,8 +112,7 @@ class _FlixQuestState extends State<FlixQuest>
     super.initState();
     _initConfig();
     fileDelete();
-    FirebaseMessaging.onMessage.listen((RemoteMessage event) {});
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {});
+    InAppMessagingService.initialize();
   }
 
   @override
@@ -167,6 +166,7 @@ class _FlixQuestState extends State<FlixQuest>
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
                     return MaterialApp(
+                      navigatorKey: InAppMessagingService.navigatorKey,
                       localizationsDelegates: context.localizationDelegates,
                       supportedLocales: context.supportedLocales,
                       locale: context.locale,
