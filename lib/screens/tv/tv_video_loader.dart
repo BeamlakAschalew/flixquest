@@ -338,12 +338,28 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ProviderLoadingWidget(
-          providers: providerStates,
-          currentIndex: currentProviderIndex,
-          additionalMessage:
-              isFetchingSubtitles ? 'Fetching subtitles...' : null,
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: Alignment.topCenter,
+            radius: 1.2,
+            colors: [
+              Theme.of(context).colorScheme.primary.withValues(alpha: .12),
+              Theme.of(context).scaffoldBackgroundColor,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              child: ProviderLoadingWidget(
+                providers: providerStates,
+                currentIndex: currentProviderIndex,
+                additionalMessage:
+                    isFetchingSubtitles ? tr('loading_video_sources') : null,
+              ),
+            ),
+          ),
         ),
       ),
     );

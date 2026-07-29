@@ -1,14 +1,13 @@
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../provider/app_dependency_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 import '../../ui_components/tv_ui_components.dart';
-import '/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../functions/network.dart';
 import '../../models/tv.dart';
 import '../../provider/settings_provider.dart';
-import '../../widgets/common_widgets.dart';
 
 class DiscoverTVResult extends StatefulWidget {
   const DiscoverTVResult({required this.api, required this.page, super.key});
@@ -24,49 +23,67 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
+  Object? error;
 
-  void getMoreData() async {
-    final isProxyEnabled =
-        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl =
-        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    _scrollController.addListener(() async {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        setState(() {
-          isLoading = true;
-        });
+  Future<void> _loadMore() async {
+    if (isLoading || tvList == null) return;
+    setState(() => isLoading = true);
+    final settings = context.read<SettingsProvider>();
+    final dependencies = context.read<AppDependencyProvider>();
+    try {
+      final value = await fetchTV(
+        '${widget.api}&page=$pageNum',
+        settings.enableProxy,
+        dependencies.tmdbProxy,
+      );
+      if (!mounted) return;
+      setState(() {
+        tvList!.addAll(value);
+        isLoading = false;
+        pageNum++;
+      });
+    } catch (exception) {
+      if (!mounted) return;
+      setState(() {
+        error = exception;
+        isLoading = false;
+      });
+    }
+  }
 
-        fetchTV('${widget.api}&page=$pageNum', isProxyEnabled, proxyUrl)
-            .then((value) {
-          if (mounted) {
-            setState(() {
-              tvList!.addAll(value);
-              isLoading = false;
-              pageNum++;
-            });
-          }
-        });
-      }
-    });
+  void _onScroll() {
+    if (_scrollController.position.extentAfter < 320) _loadMore();
+  }
+
+  Future<void> _loadInitial() async {
+    final settings = context.read<SettingsProvider>();
+    final dependencies = context.read<AppDependencyProvider>();
+    try {
+      final value = await fetchTV(
+        '${widget.api}&page=${widget.page}',
+        settings.enableProxy,
+        dependencies.tmdbProxy,
+      );
+      if (mounted) setState(() => tvList = value);
+    } catch (exception) {
+      if (mounted) setState(() => error = exception);
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled =
-        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl =
-        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchTV('${widget.api}&page=${widget.page}}', isProxyEnabled, proxyUrl)
-        .then((value) {
-      if (mounted) {
-        setState(() {
-          tvList = value;
-        });
-      }
-    });
-    getMoreData();
+    pageNum = widget.page + 1;
+    _scrollController.addListener(_onScroll);
+    _loadInitial();
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
   }
 
   @override
@@ -75,73 +92,56 @@ class _DiscoverTVResultState extends State<DiscoverTVResult> {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            tr('discover_tv_series'),
-          ),
-          leading: IconButton(
-            icon: Icon(PhosphorIcons.caretLeft(),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+      appBar: AppBar(
+        title: Text(tr('discover_tv_series')),
+        leading: IconButton(
+          icon: Icon(PhosphorIcons.caretLeft()),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: Container(
-            child: tvList == null && viewType == 'grid'
-                ? moviesAndTVShowGridShimmer(themeMode)
-                : tvList == null && viewType == 'list'
-                    ? Container(
-                        child: mainPageVerticalScrollShimmer(
-                            themeMode: themeMode,
-                            isLoading: isLoading,
-                            scrollController: _scrollController))
-                    : tvList!.isEmpty
-                        ? Container(
-                            padding: const EdgeInsets.all(8),
-                            child: Center(
-                              child: Text(
-                                tr('parameter_tv_404'),
-                                style: kTextHeaderStyle,
-                                textAlign: TextAlign.center,
-                              ),
+      ),
+      body: error != null && tvList == null
+          ? AppEmptyState(
+              icon: PhosphorIcons.cloudSlash(),
+              title: tr('error_occured'),
+              message: tr('check_connection'),
+              action: FilledButton(
+                onPressed: () {
+                  setState(() => error = null);
+                  _loadInitial();
+                },
+                child: Text(tr('retry')),
+              ),
+            )
+          : tvList == null && viewType == 'grid'
+              ? const AppMediaGridShimmer()
+              : tvList == null
+                  ? const AppMediaListShimmer()
+                  : tvList!.isEmpty
+                      ? AppEmptyState(
+                          icon: PhosphorIcons.televisionSimple(),
+                          title: tr('discover_tv_series'),
+                          message: tr('parameter_tv_404'),
+                        )
+                      : Column(
+                          children: [
+                            Expanded(
+                              child: viewType == 'grid'
+                                  ? TVGridView(
+                                      tvList: tvList,
+                                      imageQuality: imageQuality,
+                                      themeMode: themeMode,
+                                      scrollController: _scrollController,
+                                    )
+                                  : TVListView(
+                                      scrollController: _scrollController,
+                                      tvList: tvList,
+                                      themeMode: themeMode,
+                                      imageQuality: imageQuality,
+                                    ),
                             ),
-                          )
-                        : Column(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                        child: viewType == 'grid'
-                                            ? TVGridView(
-                                                tvList: tvList,
-                                                imageQuality: imageQuality,
-                                                themeMode: themeMode,
-                                                scrollController:
-                                                    _scrollController,
-                                              )
-                                            : TVListView(
-                                                scrollController:
-                                                    _scrollController,
-                                                tvList: tvList,
-                                                themeMode: themeMode,
-                                                imageQuality: imageQuality),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Visibility(
-                                  visible: isLoading,
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Center(
-                                        child: LinearProgressIndicator()),
-                                  )),
-                            ],
-                          )));
+                            AppLoadingFooter(visible: isLoading),
+                          ],
+                        ),
+    );
   }
 }

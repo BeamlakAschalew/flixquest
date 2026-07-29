@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_unnecessary_containers
-
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -25,19 +23,18 @@ class TVGenre extends StatelessWidget {
           namedArgs: {'g': genres.genreName ?? 'Null'},
         )),
         leading: IconButton(
-          icon: Icon(PhosphorIcons.caretLeft(),
+          icon: Icon(
+            PhosphorIcons.caretLeft(),
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
-      body: Container(
-        child: ParticularGenreTV(
-          includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-          genreId: genres.genreID!,
-          api: Endpoints.getTVShowsForGenre(genres.genreID!, 1, lang),
-        ),
+      body: ParticularGenreTV(
+        includeAdult: Provider.of<SettingsProvider>(context).isAdult,
+        genreId: genres.genreID!,
+        api: Endpoints.getTVShowsForGenre(genres.genreID!, 1, lang),
       ),
     );
   }

@@ -1,202 +1,136 @@
-// ignore_for_file: avoid_unnecessary_containers
-
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../provider/settings_provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-class TVStreamSelect extends StatefulWidget {
-  final String tvSeriesName;
-  final int tvSeriesId;
-  final String? tvSeriesImdbId;
-  final int seasonNumber;
-  final String episodeName;
-  final int episodeNumber;
+import '../../ui_components/app_ui_components.dart';
+
+class TVStreamSelect extends StatelessWidget {
   const TVStreamSelect({
-    super.key,
     required this.tvSeriesName,
     required this.tvSeriesId,
     required this.episodeName,
     this.tvSeriesImdbId,
     required this.episodeNumber,
     required this.seasonNumber,
+    super.key,
   });
 
-  @override
-  State<TVStreamSelect> createState() => _TVStreamSelectState();
-}
+  final String tvSeriesName;
+  final int tvSeriesId;
+  final String? tvSeriesImdbId;
+  final int seasonNumber;
+  final String episodeName;
+  final int episodeNumber;
 
-class _TVStreamSelectState extends State<TVStreamSelect> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  String get _episodeCode => 'S${seasonNumber.toString().padLeft(2, '0')} · '
+      'E${episodeNumber.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
+    final sources = <String>[
+      'Stream one (multiple player options)',
+      if (tvSeriesImdbId != null) 'Stream two (multiple player options)',
+      'Stream three (multiple player options)',
+      'Stream four (multiple player options)',
+      'Stream five (multiple player options)',
+      'Stream six (multiple player options)',
+      'Stream seven (multiple player options)',
+      'Stream eight (multiple player options)',
+      'Stream nine (multiple player options)',
+      'Stream ten (multiple player options)',
+      'Stream eleven (360p)',
+      'Stream twelve (multiple player options)',
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Watch: ${widget.tvSeriesName} ${widget.seasonNumber <= 9 ? 'S0${widget.seasonNumber}' : 'S${widget.seasonNumber}'} | '
-          '${widget.episodeNumber <= 9 ? 'E0${widget.episodeNumber}' : 'E${widget.episodeNumber}'}'
-          ', ${widget.episodeName}',
-        ),
+        title: Text('$tvSeriesName · $_episodeCode'),
         leading: IconButton(
-          icon: Icon(PhosphorIcons.caretLeft(),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: Icon(PhosphorIcons.caretLeft()),
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Container(
-        child: Column(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      StreamListWidget(
-                        streamName: 'Stream one (multiple player options)',
-                        streamLink:
-                            'https://2embed.biz/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      Visibility(
-                        visible: widget.tvSeriesImdbId == null ? false : true,
-                        child: StreamListWidget(
-                          streamName: 'Stream two (multiple player options)',
-                          streamLink:
-                              'https://api.123movie.cc/tmdb_api.php?se=${widget.seasonNumber}&ep=${widget.episodeNumber}&tmdb=${widget.tvSeriesId}&server_name=vcu',
-                          tvSeriesName: widget.tvSeriesName,
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).colorScheme.primary.withValues(alpha: .08),
+              Colors.transparent,
+            ],
+          ),
+        ),
+        child: AppResponsiveContent(
+          maxWidth: 760,
+          padding: EdgeInsets.fromLTRB(
+            AppUI.pagePadding(context),
+            18,
+            AppUI.pagePadding(context),
+            24 + MediaQuery.paddingOf(context).bottom,
+          ),
+          child: ListView.separated(
+            physics: const BouncingScrollPhysics(),
+            itemCount: sources.length + 1,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: .12),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Icon(
+                          PhosphorIcons.broadcast(),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                      StreamListWidget(
-                        streamName: 'Stream three (multiple player options)',
-                        streamLink:
-                            'https://www.2embed.to/embed/tmdb/tv?id=${widget.tvSeriesId}&s=${widget.seasonNumber}&e=${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      StreamListWidget(
-                        streamName: 'Stream four (multiple player options)',
-                        streamLink:
-                            'https://onionflix.org/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      StreamListWidget(
-                        streamName: 'Stream five (multiple player options)',
-                        streamLink:
-                            'https://hub.smashystream.com/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      StreamListWidget(
-                        streamName: 'Stream six (multiple player options)',
-                        streamLink:
-                            'https://embedworld.xyz/public/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      StreamListWidget(
-                        streamName: 'Stream seven (multiple player options)',
-                        streamLink:
-                            'https://cinedb.top/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      StreamListWidget(
-                        streamName: 'Stream eight (multiple player options)',
-                        streamLink:
-                            'https://fembed.ro/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      StreamListWidget(
-                        streamName: 'Stream nine (multiple player options)',
-                        streamLink:
-                            'https://moviehab.com/embed/series?tmdb=${widget.tvSeriesId}&sea=${widget.seasonNumber}&epi=${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      StreamListWidget(
-                        streamName: 'Stream ten (multiple player options)',
-                        streamLink:
-                            'https://vidsrc.me/embed/${widget.tvSeriesId}/${widget.seasonNumber}-${widget.episodeNumber}/',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      StreamListWidget(
-                        streamName: 'Stream eleven (360p)',
-                        streamLink:
-                            'https://databasegdriveplayer.us/player.php?type=series&tmdb=${widget.tvSeriesId}&season=${widget.seasonNumber}&episode=${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
-                      ),
-                      StreamListWidget(
-                        streamName: 'Stream twelve (multiple player options)',
-                        streamLink:
-                            'https://openvids.io/tmdb/episode/${widget.tvSeriesId}-${widget.seasonNumber}-${widget.episodeNumber}',
-                        tvSeriesName: widget.tvSeriesName,
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              episodeName,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              '$tvSeriesName · $_episodeCode',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class StreamListWidget extends StatelessWidget {
-  final String streamName;
-  final String streamLink;
-  final String tvSeriesName;
-  const StreamListWidget({
-    super.key,
-    required this.streamName,
-    required this.streamLink,
-    required this.tvSeriesName,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    return GestureDetector(
-      onTap: () {
-        // Navigator.push(context, MaterialPageRoute(builder: (context) {
-        //   return TVStream(
-        //     streamUrl: streamLink,
-        //     tvSeriesName: tvSeriesName,
-        //   );
-        // }));
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: [
-              Icon(PhosphorIcons.playCircle()),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: Container(
-                    child: Text(
-                      streamName,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      style:
-                          const TextStyle(fontFamily: 'Figtree', fontSize: 15),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+                );
+              }
+              return AppStreamSourceTile(
+                index: index,
+                title: sources[index - 1],
+                subtitle: 'TMDB $tvSeriesId · $_episodeCode',
+              );
+            },
           ),
-          Divider(
-            color: themeMode == 'dark' || themeMode == 'amoled'
-                ? Colors.white54
-                : Colors.black54,
-          )
-        ],
+        ),
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class AppLanguageChoose extends StatefulWidget {
   const AppLanguageChoose({super.key});
@@ -38,38 +39,42 @@ class _AppLanguageChooseState extends State<AppLanguageChoose> {
     ];
 
     return Scaffold(
-        appBar: AppBar(title: Text(tr('choose_language'))),
-        body: SingleChildScrollView(
-          child: Center(
-              child: Column(
-                  children: langs
-                      .map(
-                        (AppLanguages langs) => ListTile(
-                          title: Text(langs.languageName),
-                          leading: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              Radio(
-                                value: langs.languageCode,
-                                groupValue: languageChange.appLanguage,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    languageChange.appLanguage = value!;
-                                  });
-                                  EasyLocalization.of(context)!.setLocale(
-                                      Locale(languageChange.appLanguage));
-                                },
-                              ),
-                              Image.asset(
-                                langs.languageFlag,
-                                width: 25,
-                                height: 25,
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                      .toList())),
-        ));
+      appBar: AppBar(title: Text(tr('choose_language'))),
+      body: AppResponsiveContent(
+        maxWidth: 640,
+        padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context),
+          16,
+          AppUI.pagePadding(context),
+          24,
+        ),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          itemCount: langs.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          itemBuilder: (context, index) {
+            final language = langs[index];
+            return AppSelectionTile(
+              title: language.languageName,
+              selected: languageChange.appLanguage == language.languageCode,
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(7),
+                child: Image.asset(
+                  language.languageFlag,
+                  width: 32,
+                  height: 24,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              onTap: () {
+                languageChange.appLanguage = language.languageCode;
+                EasyLocalization.of(context)!
+                    .setLocale(Locale(language.languageCode));
+              },
+            );
+          },
+        ),
+      ),
+    );
   }
 }

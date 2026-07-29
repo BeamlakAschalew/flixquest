@@ -613,7 +613,8 @@ class _MovieSummary extends StatelessWidget {
                                     )
                                   : Icon(
                                       isBookmarked!
-                                          ? PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)
+                                          ? PhosphorIcons.bookmarkSimple(
+                                              PhosphorIconsStyle.fill)
                                           : PhosphorIcons.bookmarkSimple(),
                                     ),
                             ),
@@ -740,8 +741,7 @@ class _MovieSummary extends StatelessWidget {
               ),
         ),
         if (releaseYear != null)
-          _MetadataPill(
-              icon: PhosphorIcons.calendar(), label: releaseYear!),
+          _MetadataPill(icon: PhosphorIcons.calendar(), label: releaseYear!),
         if ((movie.originalLanguage ?? '').isNotEmpty)
           _MetadataPill(
             icon: PhosphorIcons.translate(),
@@ -1008,7 +1008,7 @@ class _CastCard extends StatelessWidget {
         child: Column(
           children: [
             Hero(
-              tag: '${cast.id}',
+              tag: '${cast.id}${cast.creditId}',
               child: SizedBox.square(
                 dimension: 72,
                 child: ClipOval(
@@ -1488,8 +1488,7 @@ class _GalleryCard extends StatelessWidget {
                 bottom: 12,
                 child: Row(
                   children: [
-                    Icon(PhosphorIcons.images(),
-                        size: 19, color: Colors.white),
+                    Icon(PhosphorIcons.images(), size: 19, color: Colors.white),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -1965,8 +1964,7 @@ class _CollectionBanner extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Icon(PhosphorIcons.caretRight(),
-                        color: Colors.white),
+                    Icon(PhosphorIcons.caretRight(), color: Colors.white),
                   ],
                 ),
               ),

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../functions/function.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class ProviderChooseScreen extends StatelessWidget {
   const ProviderChooseScreen({super.key});
@@ -21,9 +22,11 @@ class ProviderChooseScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: AppResponsiveContent(
+          maxWidth: 720,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,11 +38,14 @@ class ProviderChooseScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(24.0),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(16),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primaryContainer
+                      .withValues(alpha: .45),
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -124,51 +130,47 @@ class RearrangeableListViewState extends State<RearrangeableListView> {
           for (int index = 0; index < videoProviders.length; index++)
             Container(
               key: Key(videoProviders[index].codeName),
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+              margin: const EdgeInsets.only(bottom: 10),
+              child: Card(
+                margin: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                leading: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(8),
+                clipBehavior: Clip.antiAlias,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
                   ),
-                  child: Center(
-                    child: Text(
-                      '${index + 1}',
-                      style: TextStyle(
-                        fontFamily: 'FigtreeSB',
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary,
+                  leading: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          fontFamily: 'FigtreeSB',
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                title: Text(
-                  videoProviders[index].fullName,
-                  style: const TextStyle(
-                    fontFamily: 'FigtreeSB',
-                    fontSize: 16,
+                  title: Text(
+                    videoProviders[index].fullName,
+                    style: const TextStyle(
+                      fontFamily: 'FigtreeSB',
+                      fontSize: 16,
+                    ),
                   ),
-                ),
-                trailing: Icon(
-                  PhosphorIcons.equals(),
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  trailing: Icon(
+                    PhosphorIcons.dotsSixVertical(),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ),
             ),

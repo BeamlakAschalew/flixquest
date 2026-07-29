@@ -358,7 +358,8 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                                   const Spacer(),
                                   _HeroIconButton(
                                     icon: isBookmarked
-                                        ? PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)
+                                        ? PhosphorIcons.bookmarkSimple(
+                                            PhosphorIconsStyle.fill)
                                         : PhosphorIcons.bookmarkSimple(),
                                     onPressed: () => _toggleBookmark(movie),
                                   ),
@@ -913,8 +914,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                   onPressed: () => context
                                       .read<RecentProvider>()
                                       .deleteMovie(movie.id!),
-                                  icon:
-                                      Icon(PhosphorIcons.x(), size: 18),
+                                  icon: Icon(PhosphorIcons.x(), size: 18),
                                 ),
                               ),
                               Positioned(
@@ -1192,7 +1192,9 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                                 prv.deleteMovie(widget
                                                     .moviesList[index].id!);
                                               },
-                                              icon: Icon(PhosphorIcons.bookmarkSimple(),
+                                              icon: Icon(
+                                                  PhosphorIcons
+                                                      .bookmarkSimple(),
                                                   size: 60),
                                             )),
                                       ),
@@ -2544,335 +2546,6 @@ class BelongsToCollectionWidgetState extends State<BelongsToCollectionWidget> {
   }
 }
 
-class CollectionOverviewWidget extends StatefulWidget {
-  final String? api;
-  const CollectionOverviewWidget({super.key, this.api});
-
-  @override
-  CollectionOverviewWidgetState createState() =>
-      CollectionOverviewWidgetState();
-}
-
-class CollectionOverviewWidgetState extends State<CollectionOverviewWidget> {
-  CollectionDetails? collectionDetails;
-
-  @override
-  void initState() {
-    super.initState();
-    final isProxyEnabled =
-        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl =
-        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchCollectionDetails(widget.api!, isProxyEnabled, proxyUrl).then((value) {
-      if (mounted) {
-        setState(() {
-          collectionDetails = value;
-        });
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    return Container(
-      child: collectionDetails == null
-          ? ShimmerBase(
-              themeMode: themeMode,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Container(
-                        color: Colors.grey.shade600,
-                        width: double.infinity,
-                        height: 20),
-                  ),
-                  Container(
-                      color: Colors.grey.shade600,
-                      width: double.infinity,
-                      height: 20)
-                ],
-              ),
-            )
-          : Text(collectionDetails!.overview!),
-    );
-  }
-}
-
-class PartsList extends StatefulWidget {
-  final String? api;
-  final String? title;
-  const PartsList({super.key, this.api, this.title});
-
-  @override
-  PartsListState createState() => PartsListState();
-}
-
-class PartsListState extends State<PartsList> {
-  List<Movie>? collectionMovieList;
-  @override
-  void initState() {
-    super.initState();
-    final isProxyEnabled =
-        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl =
-        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchCollectionMovies(widget.api!, isProxyEnabled, proxyUrl).then((value) {
-      if (mounted) {
-        setState(() {
-          collectionMovieList = value;
-        });
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const LeadingDot(),
-                    Expanded(
-                      child: Text(
-                        widget.title!,
-                        style: kTextHeaderStyle,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(
-          width: double.infinity,
-          height: 250,
-          child: collectionMovieList == null
-              ? Row(
-                  children: [
-                    Expanded(
-                      child: ShimmerBase(
-                        themeMode: themeMode,
-                        child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: 3,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SizedBox(
-                                width: 105,
-                                child: Column(
-                                  children: <Widget>[
-                                    Expanded(
-                                      flex: 6,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey.shade600,
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            0, 5, 0, 30),
-                                        child: Container(
-                                          width: 110.0,
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(5.0),
-                                              color: Colors.grey.shade600),
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : Row(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: collectionMovieList!.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MovieDetailPage(
-                                            movie: collectionMovieList![index],
-                                            heroId:
-                                                '${collectionMovieList![index].id}')));
-                              },
-                              child: SizedBox(
-                                width: 105,
-                                child: Column(
-                                  children: <Widget>[
-                                    Expanded(
-                                      flex: 6,
-                                      child: Hero(
-                                        tag:
-                                            '${collectionMovieList![index].id}',
-                                        child: Material(
-                                          type: MaterialType.transparency,
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                child: collectionMovieList![
-                                                                index]
-                                                            .posterPath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                        width: double.infinity,
-                                                        height: double.infinity)
-                                                    : CachedNetworkImage(
-                                                        cacheManager:
-                                                            cacheProp(),
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl: buildImageUrl(
-                                                                TMDB_BASE_IMAGE_URL,
-                                                                proxyUrl,
-                                                                isProxyEnabled,
-                                                                context) +
-                                                            imageQuality +
-                                                            collectionMovieList![
-                                                                    index]
-                                                                .posterPath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            scrollingImageShimmer(
-                                                                themeMode),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                                'assets/images/na_logo.png',
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                                width: double
-                                                                    .infinity,
-                                                                height: double
-                                                                    .infinity),
-                                                      ),
-                                              ),
-                                              Positioned(
-                                                top: 0,
-                                                left: 0,
-                                                child: Container(
-                                                  margin:
-                                                      const EdgeInsets.all(3),
-                                                  alignment: Alignment.topLeft,
-                                                  width: 50,
-                                                  height: 25,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8),
-                                                      color:
-                                                          themeMode == 'dark' ||
-                                                                  themeMode ==
-                                                                      'amoled'
-                                                              ? Colors.black45
-                                                              : Colors.white60),
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(PhosphorIcons.star(PhosphorIconsStyle.fill),
-                                                      ),
-                                                      Text(collectionMovieList![
-                                                              index]
-                                                          .voteAverage!
-                                                          .toStringAsFixed(1))
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 3,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          collectionMovieList![index].title!,
-                                          maxLines: 2,
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-      ],
-    );
-  }
-}
-
 class SocialIconWidget extends StatelessWidget {
   const SocialIconWidget({
     super.key,
@@ -3955,179 +3628,54 @@ class CastTabState extends State<CastTab>
     with AutomaticKeepAliveClientMixin<CastTab> {
   @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     super.build(context);
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return widget.credits.cast!.isEmpty
-        ? Container(
-            child: Center(
-              child: Text(tr('no_cast_movie')),
+    final cast = widget.credits.cast ?? const <Cast>[];
+    if (cast.isEmpty) {
+      return AppEmptyState(
+        icon: PhosphorIcons.usersThree(),
+        title: tr('cast'),
+        message: tr('no_cast_movie'),
+      );
+    }
+    return ListView.separated(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+        AppUI.pagePadding(context),
+        12,
+        AppUI.pagePadding(context),
+        24,
+      ),
+      itemCount: cast.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final person = cast[index];
+        final roles = person.roles;
+        final episodeCount =
+            roles == null || roles.isEmpty ? null : roles.first.episodeCount;
+        return AppPersonTile(
+          name: person.name ?? tr('not_available'),
+          subtitle: (person.character ?? '').isEmpty
+              ? tr('as_empty')
+              : tr('as', namedArgs: {'character': person.character!}),
+          detail: episodeCount == null
+              ? null
+              : episodeCount == 1
+                  ? tr('single_episode', namedArgs: {'count': '$episodeCount'})
+                  : tr('multi_episode', namedArgs: {'count': '$episodeCount'}),
+          avatar: Hero(
+            tag: '${person.creditId}',
+            child: PersonAvatar(profilePath: person.profilePath),
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  CastDetailPage(cast: person, heroId: '${person.creditId}'),
             ),
-          )
-        : Container(
-            padding: const EdgeInsets.only(top: 8),
-            child: ListView.builder(
-                shrinkWrap: false,
-                physics: const BouncingScrollPhysics(),
-                itemCount: widget.credits.cast!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return CastDetailPage(
-                            cast: widget.credits.cast![index],
-                            heroId: '${widget.credits.cast![index].creditId}');
-                      }));
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 0.0,
-                          bottom: 5.0,
-                          left: 10,
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              // crossAxisAlignment:
-                              //     CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 20.0, left: 10),
-                                  child: SizedBox(
-                                    width: 80,
-                                    height: 80,
-                                    child: Hero(
-                                      tag:
-                                          '${widget.credits.cast![index].creditId}',
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100.0),
-                                        child: widget.credits.cast![index]
-                                                    .profilePath ==
-                                                null
-                                            ? Image.asset(
-                                                'assets/images/na_rect.png',
-                                                fit: BoxFit.cover,
-                                              )
-                                            : CachedNetworkImage(
-                                                cacheManager: cacheProp(),
-                                                fadeOutDuration: const Duration(
-                                                    milliseconds: 300),
-                                                fadeOutCurve: Curves.easeOut,
-                                                fadeInDuration: const Duration(
-                                                    milliseconds: 700),
-                                                fadeInCurve: Curves.easeIn,
-                                                imageUrl: buildImageUrl(
-                                                        TMDB_BASE_IMAGE_URL,
-                                                        proxyUrl,
-                                                        isProxyEnabled,
-                                                        context) +
-                                                    imageQuality +
-                                                    widget.credits.cast![index]
-                                                        .profilePath!,
-                                                imageBuilder:
-                                                    (context, imageProvider) =>
-                                                        Container(
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ),
-                                                placeholder: (context, url) =>
-                                                    castAndCrewTabImageShimmer(
-                                                        themeMode),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Image.asset(
-                                                  'assets/images/na_rect.png',
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        widget.credits.cast![index].name!,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                            fontFamily: 'FigtreeSB',
-                                            fontSize: 20),
-                                      ),
-                                      Text(widget.credits.cast![index]
-                                              .character!.isEmpty
-                                          ? tr('as_empty')
-                                          : tr('as', namedArgs: {
-                                              'character': widget.credits
-                                                  .cast![index].character!
-                                            })),
-                                      Visibility(
-                                        visible:
-                                            widget.credits.cast![0].roles ==
-                                                    null
-                                                ? false
-                                                : true,
-                                        child: Text(
-                                          widget.credits.cast![0].roles == null
-                                              ? ''
-                                              : widget
-                                                          .credits
-                                                          .cast![index]
-                                                          .roles![0]
-                                                          .episodeCount! ==
-                                                      1
-                                                  ? tr('single_episode',
-                                                      namedArgs: {
-                                                          'count': widget
-                                                              .credits
-                                                              .cast![index]
-                                                              .roles![0]
-                                                              .episodeCount!
-                                                              .toString()
-                                                        })
-                                                  : tr('multi_episode',
-                                                      namedArgs: {
-                                                          'count': widget
-                                                              .credits
-                                                              .cast![index]
-                                                              .roles![0]
-                                                              .episodeCount!
-                                                              .toString()
-                                                        }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                            Divider(
-                              color: themeMode == 'light'
-                                  ? Colors.black54
-                                  : Colors.white54,
-                              thickness: 1,
-                              endIndent: 20,
-                              indent: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }));
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -4148,144 +3696,45 @@ class CrewTabState extends State<CrewTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return widget.credits.crew!.isEmpty
-        ? Center(
-            child: Text(
-              tr('no_crew_movie'),
-              textAlign: TextAlign.center,
+    final crew = widget.credits.crew ?? const <Crew>[];
+    if (crew.isEmpty) {
+      return AppEmptyState(
+        icon: PhosphorIcons.wrench(),
+        title: tr('crew'),
+        message: tr('no_crew_movie'),
+      );
+    }
+    return ListView.separated(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+        AppUI.pagePadding(context),
+        12,
+        AppUI.pagePadding(context),
+        24,
+      ),
+      itemCount: crew.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final person = crew[index];
+        return AppPersonTile(
+          name: person.name ?? tr('not_available'),
+          subtitle: (person.department ?? '').isEmpty
+              ? tr('job_empty')
+              : tr('job', namedArgs: {'job': person.department!}),
+          avatar: Hero(
+            tag: '${person.creditId}',
+            child: PersonAvatar(profilePath: person.profilePath),
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  CrewDetailPage(crew: person, heroId: '${person.creditId}'),
             ),
-          )
-        : Container(
-            padding: const EdgeInsets.only(top: 8),
-            child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: widget.credits.crew!.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return CrewDetailPage(
-                            crew: widget.credits.crew![index],
-                            heroId: '${widget.credits.crew![index].creditId}');
-                      }));
-                    },
-                    child: Container(
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 0.0,
-                          bottom: 5.0,
-                          left: 10,
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              // crossAxisAlignment:
-                              //     CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 20.0, left: 10),
-                                  child: SizedBox(
-                                    width: 80,
-                                    height: 80,
-                                    child: Hero(
-                                      tag:
-                                          '${widget.credits.crew![index].creditId}',
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100.0),
-                                        child: widget.credits.crew![index]
-                                                    .profilePath ==
-                                                null
-                                            ? Image.asset(
-                                                'assets/images/na_rect.png',
-                                                fit: BoxFit.cover,
-                                              )
-                                            : CachedNetworkImage(
-                                                cacheManager: cacheProp(),
-                                                fadeOutDuration: const Duration(
-                                                    milliseconds: 300),
-                                                fadeOutCurve: Curves.easeOut,
-                                                fadeInDuration: const Duration(
-                                                    milliseconds: 700),
-                                                fadeInCurve: Curves.easeIn,
-                                                imageUrl: buildImageUrl(
-                                                        TMDB_BASE_IMAGE_URL,
-                                                        proxyUrl,
-                                                        isProxyEnabled,
-                                                        context) +
-                                                    imageQuality +
-                                                    widget.credits.crew![index]
-                                                        .profilePath!,
-                                                imageBuilder:
-                                                    (context, imageProvider) =>
-                                                        Container(
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ),
-                                                placeholder: (context, url) =>
-                                                    castAndCrewTabImageShimmer(
-                                                        themeMode),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Image.asset(
-                                                  'assets/images/na_rect.png',
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        widget.credits.crew![index].name!,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                            fontFamily: 'FigtreeSB',
-                                            fontSize: 20),
-                                      ),
-                                      Text(widget.credits.crew![index]
-                                              .department!.isEmpty
-                                          ? tr('job_empty')
-                                          : tr('job', namedArgs: {
-                                              'job': widget.credits.crew![index]
-                                                  .department!
-                                            })),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
-                            Divider(
-                              color: themeMode == 'light'
-                                  ? Colors.black54
-                                  : Colors.white54,
-                              thickness: 1,
-                              endIndent: 20,
-                              indent: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-          );
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -4658,51 +4107,33 @@ class ParticularGenreMoviesState extends State<ParticularGenreMovies> {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return moviesList == null && viewType == 'grid'
-        ? moviesAndTVShowGridShimmer(themeMode)
+        ? const AppMediaGridShimmer()
         : moviesList == null && viewType == 'list'
-            ? mainPageVerticalScrollShimmer(
-                themeMode: themeMode,
-                isLoading: isLoading,
-                scrollController: _scrollController)
+            ? const AppMediaListShimmer()
             : moviesList!.isEmpty
-                ? Container(
-                    child: Center(
-                      child: Text(tr('no_genre_movie')),
-                    ),
+                ? AppEmptyState(
+                    icon: PhosphorIcons.filmSlate(),
+                    title: tr('movies'),
+                    message: tr('no_genre_movie'),
                   )
-                : Container(
-                    child: Column(
+                : Column(
                     children: [
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: viewType == 'grid'
-                                    ? MovieGridView(
-                                        scrollController: _scrollController,
-                                        moviesList: moviesList,
-                                        imageQuality: imageQuality,
-                                        themeMode: themeMode)
-                                    : MovieListView(
-                                        scrollController: _scrollController,
-                                        moviesList: moviesList,
-                                        themeMode: themeMode,
-                                        imageQuality: imageQuality),
-                              ),
-                            ],
-                          ),
-                        ),
+                        child: viewType == 'grid'
+                            ? MovieGridView(
+                                scrollController: _scrollController,
+                                moviesList: moviesList,
+                                imageQuality: imageQuality,
+                                themeMode: themeMode)
+                            : MovieListView(
+                                scrollController: _scrollController,
+                                moviesList: moviesList,
+                                themeMode: themeMode,
+                                imageQuality: imageQuality),
                       ),
-                      Visibility(
-                          visible: isLoading,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Center(child: LinearProgressIndicator()),
-                          )),
+                      AppLoadingFooter(visible: isLoading),
                     ],
-                  ));
+                  );
   }
 }
 
@@ -4785,50 +4216,33 @@ class ParticularStreamingServiceMoviesState
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return moviesList == null && viewType == 'grid'
-        ? moviesAndTVShowGridShimmer(themeMode)
+        ? const AppMediaGridShimmer()
         : moviesList == null && viewType == 'list'
-            ? mainPageVerticalScrollShimmer(
-                themeMode: themeMode,
-                isLoading: isLoading,
-                scrollController: _scrollController)
+            ? const AppMediaListShimmer()
             : moviesList!.isEmpty
-                ? Container(
-                    child: Center(
-                      child: Text(tr('no_watchprovider_movie')),
-                    ),
+                ? AppEmptyState(
+                    icon: PhosphorIcons.playCircle(),
+                    title: tr('streaming_services'),
+                    message: tr('no_watchprovider_movie'),
                   )
-                : Container(
-                    child: Column(
+                : Column(
                     children: [
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                  child: viewType == 'grid'
-                                      ? MovieGridView(
-                                          scrollController: _scrollController,
-                                          moviesList: moviesList,
-                                          imageQuality: imageQuality,
-                                          themeMode: themeMode)
-                                      : MovieListView(
-                                          scrollController: _scrollController,
-                                          moviesList: moviesList,
-                                          themeMode: themeMode,
-                                          imageQuality: imageQuality)),
-                            ],
-                          ),
-                        ),
+                        child: viewType == 'grid'
+                            ? MovieGridView(
+                                scrollController: _scrollController,
+                                moviesList: moviesList,
+                                imageQuality: imageQuality,
+                                themeMode: themeMode)
+                            : MovieListView(
+                                scrollController: _scrollController,
+                                moviesList: moviesList,
+                                themeMode: themeMode,
+                                imageQuality: imageQuality),
                       ),
-                      Visibility(
-                          visible: isLoading,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Center(child: LinearProgressIndicator()),
-                          )),
+                      AppLoadingFooter(visible: isLoading),
                     ],
-                  ));
+                  );
   }
 }
 
@@ -5529,7 +4943,9 @@ class CollectionMoviesState extends State<CollectionMovies> {
                                                   style: const TextStyle(
                                                       fontFamily: 'Figtree'),
                                                 ),
-                                                Icon(PhosphorIcons.star(PhosphorIconsStyle.fill),
+                                                Icon(
+                                                  PhosphorIcons.star(
+                                                      PhosphorIconsStyle.fill),
                                                 ),
                                               ],
                                             ),

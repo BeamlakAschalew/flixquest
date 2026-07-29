@@ -360,7 +360,8 @@ class DiscoverTVState extends State<DiscoverTV>
                                   const Spacer(),
                                   _TVHeroIconButton(
                                     icon: saved
-                                        ? PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)
+                                        ? PhosphorIcons.bookmarkSimple(
+                                            PhosphorIconsStyle.fill)
                                         : PhosphorIcons.bookmarkSimple(),
                                     onPressed: () => _toggleBookmark(item),
                                   ),
@@ -909,8 +910,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                 child: IconButton.filledTonal(
                                   visualDensity: VisualDensity.compact,
                                   onPressed: () => _deleteEpisode(episode),
-                                  icon:
-                                      Icon(PhosphorIcons.x(), size: 18),
+                                  icon: Icon(PhosphorIcons.x(), size: 18),
                                 ),
                               ),
                               Positioned(
@@ -3222,194 +3222,93 @@ class TVCastTab extends StatefulWidget {
 class TVCastTabState extends State<TVCastTab>
     with AutomaticKeepAliveClientMixin<TVCastTab> {
   Credits? credits;
+  Object? error;
 
   @override
   void initState() {
     super.initState();
+    _load();
+  }
+
+  void _load() {
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
-      if (mounted) {
-        setState(() {
-          credits = value;
-        });
-      }
+      if (mounted) setState(() => credits = value);
+    }).onError((Object e, _) {
+      if (mounted) setState(() => error = e);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return credits == null
-        ? Container(child: tvCastAndCrewTabShimmer(themeMode))
-        : credits!.cast!.isEmpty
-            ? Center(
-                child: Text(
-                  tr('no_cast_tv'),
-                  style: kTextSmallHeaderStyle,
-                  textAlign: TextAlign.center,
-                ),
-              )
-            : Container(
-                child: ListView.builder(
-                    itemCount: credits!.cast!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CastDetailPage(
-                                cast: credits!.cast![index],
-                                heroId: '${credits!.cast![index].name}');
-                          }));
-                        },
-                        child: Container(
-                          color: Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 8.0,
-                              bottom: 5.0,
-                              left: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  // crossAxisAlignment:
-                                  //     CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 20.0, left: 10),
-                                      child: SizedBox(
-                                        width: 80,
-                                        height: 80,
-                                        child: Hero(
-                                          tag: '${credits!.cast![index].name}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            child: credits!.cast![index]
-                                                        .profilePath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_rect.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    cacheManager: cacheProp(),
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration:
-                                                        const Duration(
-                                                            milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl: buildImageUrl(
-                                                            TMDB_BASE_IMAGE_URL,
-                                                            proxyUrl,
-                                                            isProxyEnabled,
-                                                            context) +
-                                                        imageQuality +
-                                                        credits!.cast![index]
-                                                            .profilePath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        castAndCrewTabImageShimmer(
-                                                            themeMode),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_rect.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            credits!.cast![index].name!,
-                                            style: const TextStyle(
-                                                fontFamily: 'FigtreeSB',
-                                                fontSize: 20),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(credits!.cast![index].roles![0]
-                                                  .character!.isEmpty
-                                              ? tr('as_empty')
-                                              : tr('as', namedArgs: {
-                                                  'character': credits!
-                                                      .cast![index]
-                                                      .roles![0]
-                                                      .character!
-                                                })),
-                                          Text(
-                                            credits!.cast![0].roles == null
-                                                ? ''
-                                                : credits!
-                                                            .cast![index]
-                                                            .roles![0]
-                                                            .episodeCount! ==
-                                                        1
-                                                    ? tr('single_episode',
-                                                        namedArgs: {
-                                                            'count': credits!
-                                                                .cast![index]
-                                                                .roles![0]
-                                                                .episodeCount!
-                                                                .toString()
-                                                          })
-                                                    : tr('multi_episode',
-                                                        namedArgs: {
-                                                            'count': credits!
-                                                                .cast![index]
-                                                                .roles![0]
-                                                                .episodeCount!
-                                                                .toString()
-                                                          }),
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Divider(
-                                  color: themeMode == 'light'
-                                      ? Colors.black54
-                                      : Colors.white54,
-                                  thickness: 1,
-                                  endIndent: 20,
-                                  indent: 10,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }));
+    if (error != null) {
+      return AppEmptyState(
+        icon: PhosphorIcons.cloudSlash(),
+        title: tr('error_occured'),
+        message: tr('check_connection'),
+        action: FilledButton(
+          onPressed: () => setState(() {
+            error = null;
+            _load();
+          }),
+          child: Text(tr('retry')),
+        ),
+      );
+    }
+    if (credits == null) return const AppPersonListShimmer();
+    final cast = credits!.cast ?? const <Cast>[];
+    if (cast.isEmpty) {
+      return AppEmptyState(
+        icon: PhosphorIcons.usersThree(),
+        title: tr('cast'),
+        message: tr('no_cast_tv'),
+      );
+    }
+    return ListView.separated(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+        AppUI.pagePadding(context),
+        12,
+        AppUI.pagePadding(context),
+        24,
+      ),
+      itemCount: cast.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final person = cast[index];
+        final roles = person.roles;
+        final episodeCount =
+            roles == null || roles.isEmpty ? null : roles.first.episodeCount;
+        return AppPersonTile(
+          name: person.name ?? tr('not_available'),
+          subtitle: (person.character ?? '').isEmpty
+              ? tr('as_empty')
+              : tr('as', namedArgs: {'character': person.character!}),
+          detail: episodeCount == null
+              ? null
+              : episodeCount == 1
+                  ? tr('single_episode', namedArgs: {'count': '$episodeCount'})
+                  : tr('multi_episode', namedArgs: {'count': '$episodeCount'}),
+          avatar: Hero(
+            tag: 'tv_cast_${person.creditId}',
+            child: PersonAvatar(profilePath: person.profilePath),
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CastDetailPage(
+                cast: person,
+                heroId: 'tv_cast_${person.creditId}',
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -3623,170 +3522,86 @@ class TVCrewTab extends StatefulWidget {
 class TVCrewTabState extends State<TVCrewTab>
     with AutomaticKeepAliveClientMixin<TVCrewTab> {
   Credits? credits;
+  Object? error;
 
   @override
   void initState() {
     super.initState();
+    _load();
+  }
+
+  void _load() {
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
-      if (mounted) {
-        setState(() {
-          credits = value;
-        });
-      }
+      if (mounted) setState(() => credits = value);
+    }).onError((Object e, _) {
+      if (mounted) setState(() => error = e);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return credits == null
-        ? Container(
-            padding: const EdgeInsets.only(top: 8),
-            child: movieCastAndCrewTabShimmer(themeMode))
-        : credits!.crew!.isEmpty
-            ? Center(
-                child: Text(
-                  tr('no_cast_tv'),
-                  style: kTextSmallHeaderStyle,
-                  textAlign: TextAlign.center,
-                  maxLines: 4,
-                ),
-              )
-            : Container(
-                child: ListView.builder(
-                    itemCount: credits!.crew!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CrewDetailPage(
-                                crew: credits!.crew![index],
-                                heroId: '${credits!.crew![index].name}');
-                          }));
-                        },
-                        child: Container(
-                          color: Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 8.0,
-                              bottom: 5.0,
-                              left: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  // crossAxisAlignment:
-                                  //     CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 20.0, left: 10),
-                                      child: SizedBox(
-                                        width: 80,
-                                        height: 80,
-                                        child: Hero(
-                                          tag: '${credits!.crew![index].name}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            child: credits!.crew![index]
-                                                        .profilePath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_rect.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    cacheManager: cacheProp(),
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration:
-                                                        const Duration(
-                                                            milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl: buildImageUrl(
-                                                            TMDB_BASE_IMAGE_URL,
-                                                            proxyUrl,
-                                                            isProxyEnabled,
-                                                            context) +
-                                                        imageQuality +
-                                                        credits!.crew![index]
-                                                            .profilePath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        castAndCrewTabImageShimmer(
-                                                            themeMode),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_rect.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            credits!.crew![index].name!,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                                fontFamily: 'FigtreeSB',
-                                                fontSize: 20),
-                                          ),
-                                          Text(credits!.crew![index].department!
-                                                  .isEmpty
-                                              ? tr('job_empty')
-                                              : tr('job', namedArgs: {
-                                                  'job': credits!
-                                                      .crew![index].department!
-                                                })),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Divider(
-                                  color: themeMode == 'light'
-                                      ? Colors.black54
-                                      : Colors.white54,
-                                  thickness: 1,
-                                  endIndent: 20,
-                                  indent: 10,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }));
+    if (error != null) {
+      return AppEmptyState(
+        icon: PhosphorIcons.cloudSlash(),
+        title: tr('error_occured'),
+        message: tr('check_connection'),
+        action: FilledButton(
+          onPressed: () => setState(() {
+            error = null;
+            _load();
+          }),
+          child: Text(tr('retry')),
+        ),
+      );
+    }
+    if (credits == null) return const AppPersonListShimmer();
+    final crew = credits!.crew ?? const <Crew>[];
+    if (crew.isEmpty) {
+      return AppEmptyState(
+        icon: PhosphorIcons.wrench(),
+        title: tr('crew'),
+        message: tr('no_crew_movie'),
+      );
+    }
+    return ListView.separated(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+        AppUI.pagePadding(context),
+        12,
+        AppUI.pagePadding(context),
+        24,
+      ),
+      itemCount: crew.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final person = crew[index];
+        return AppPersonTile(
+          name: person.name ?? tr('not_available'),
+          subtitle: (person.department ?? '').isEmpty
+              ? tr('job_empty')
+              : tr('job', namedArgs: {'job': person.department!}),
+          detail: (person.job ?? '').isEmpty ? null : person.job,
+          avatar: Hero(
+            tag: 'tv_crew_${person.creditId}',
+            child: PersonAvatar(profilePath: person.profilePath),
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CrewDetailPage(
+                crew: person,
+                heroId: 'tv_crew_${person.creditId}',
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -4236,52 +4051,34 @@ class ParticularGenreTVState extends State<ParticularGenreTV> {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return tvList == null && viewType == 'grid'
-        ? moviesAndTVShowGridShimmer(themeMode)
+        ? const AppMediaGridShimmer()
         : tvList == null && viewType == 'list'
-            ? mainPageVerticalScrollShimmer(
-                themeMode: themeMode,
-                isLoading: isLoading,
-                scrollController: _scrollController)
+            ? const AppMediaListShimmer()
             : tvList!.isEmpty
-                ? Container(
-                    child: Center(
-                      child: Text(tr('no_genre_tv')),
-                    ),
+                ? AppEmptyState(
+                    icon: PhosphorIcons.televisionSimple(),
+                    title: tr('tv_series'),
+                    message: tr('no_genre_tv'),
                   )
-                : Container(
-                    child: Column(
+                : Column(
                     children: [
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: viewType == 'grid'
-                                    ? TVGridView(
-                                        tvList: tvList,
-                                        imageQuality: imageQuality,
-                                        themeMode: themeMode,
-                                        scrollController: _scrollController,
-                                      )
-                                    : TVListView(
-                                        scrollController: _scrollController,
-                                        tvList: tvList,
-                                        themeMode: themeMode,
-                                        imageQuality: imageQuality),
-                              ),
-                            ],
-                          ),
-                        ),
+                        child: viewType == 'grid'
+                            ? TVGridView(
+                                tvList: tvList,
+                                imageQuality: imageQuality,
+                                themeMode: themeMode,
+                                scrollController: _scrollController,
+                              )
+                            : TVListView(
+                                scrollController: _scrollController,
+                                tvList: tvList,
+                                themeMode: themeMode,
+                                imageQuality: imageQuality),
                       ),
-                      Visibility(
-                          visible: isLoading,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Center(child: LinearProgressIndicator()),
-                          )),
+                      AppLoadingFooter(visible: isLoading),
                     ],
-                  ));
+                  );
   }
 }
 
@@ -5178,10 +4975,13 @@ class EpisodeListWidgetState extends State<EpisodeListWidget>
                                                 ),
                                                 Row(children: [
                                                   Padding(
-                                                    padding: const EdgeInsets.only(
-                                                        right: 3.0),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 3.0),
                                                     child: Icon(
-                                                      PhosphorIcons.star(PhosphorIconsStyle.fill),
+                                                      PhosphorIcons.star(
+                                                          PhosphorIconsStyle
+                                                              .fill),
                                                       size: 20,
                                                     ),
                                                   ),
@@ -5923,52 +5723,34 @@ class ParticularStreamingServiceTVShowsState
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return tvList == null && viewType == 'grid'
-        ? moviesAndTVShowGridShimmer(themeMode)
+        ? const AppMediaGridShimmer()
         : tvList == null && viewType == 'list'
-            ? mainPageVerticalScrollShimmer(
-                themeMode: themeMode,
-                isLoading: isLoading,
-                scrollController: _scrollController)
+            ? const AppMediaListShimmer()
             : tvList!.isEmpty
-                ? Container(
-                    child: Center(
-                      child: Text(tr('no_watchprovider_tv')),
-                    ),
+                ? AppEmptyState(
+                    icon: PhosphorIcons.playCircle(),
+                    title: tr('streaming_services'),
+                    message: tr('no_watchprovider_tv'),
                   )
-                : Container(
-                    child: Column(
+                : Column(
                     children: [
                       Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: viewType == 'grid'
-                                    ? TVGridView(
-                                        tvList: tvList,
-                                        imageQuality: imageQuality,
-                                        themeMode: themeMode,
-                                        scrollController: _scrollController,
-                                      )
-                                    : TVListView(
-                                        scrollController: _scrollController,
-                                        tvList: tvList,
-                                        themeMode: themeMode,
-                                        imageQuality: imageQuality),
-                              ),
-                            ],
-                          ),
-                        ),
+                        child: viewType == 'grid'
+                            ? TVGridView(
+                                tvList: tvList,
+                                imageQuality: imageQuality,
+                                themeMode: themeMode,
+                                scrollController: _scrollController,
+                              )
+                            : TVListView(
+                                scrollController: _scrollController,
+                                tvList: tvList,
+                                themeMode: themeMode,
+                                imageQuality: imageQuality),
                       ),
-                      Visibility(
-                          visible: isLoading,
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Center(child: LinearProgressIndicator()),
-                          )),
+                      AppLoadingFooter(visible: isLoading),
                     ],
-                  ));
+                  );
   }
 }
 
@@ -5983,182 +5765,85 @@ class TVEpisodeCastTab extends StatefulWidget {
 class TVEpisodeCastTabState extends State<TVEpisodeCastTab>
     with AutomaticKeepAliveClientMixin<TVEpisodeCastTab> {
   Credits? credits;
+  Object? error;
+
   @override
   void initState() {
     super.initState();
+    _load();
+  }
+
+  void _load() {
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
-      if (mounted) {
-        setState(() {
-          credits = value;
-        });
-      }
+      if (mounted) setState(() => credits = value);
+    }).onError((Object e, _) {
+      if (mounted) setState(() => error = e);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return credits == null
-        ? Container(
-            padding: const EdgeInsets.only(top: 8),
-            child: movieCastAndCrewTabShimmer(themeMode))
-        : credits!.cast!.isEmpty
-            ? Center(
-                child: Text(
-                  tr('no_cast'),
-                  style: kTextSmallHeaderStyle,
-                  textAlign: TextAlign.center,
-                  maxLines: 4,
-                ),
-              )
-            : Container(
-                child: ListView.builder(
-                    itemCount: credits!.cast!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CastDetailPage(
-                                cast: credits!.cast![index],
-                                heroId: '${credits!.cast![index].name}');
-                          }));
-                        },
-                        child: Container(
-                          color: Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 8.0,
-                              bottom: 5.0,
-                              left: 10,
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  // crossAxisAlignment:
-                                  //     CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 20.0, left: 10),
-                                      child: SizedBox(
-                                        width: 80,
-                                        height: 80,
-                                        child: Hero(
-                                          tag: '${credits!.cast![index].name}',
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            child: credits!.cast![index]
-                                                        .profilePath ==
-                                                    null
-                                                ? Image.asset(
-                                                    'assets/images/na_rect.png',
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CachedNetworkImage(
-                                                    cacheManager: cacheProp(),
-                                                    fadeOutDuration:
-                                                        const Duration(
-                                                            milliseconds: 300),
-                                                    fadeOutCurve:
-                                                        Curves.easeOut,
-                                                    fadeInDuration:
-                                                        const Duration(
-                                                            milliseconds: 700),
-                                                    fadeInCurve: Curves.easeIn,
-                                                    imageUrl: buildImageUrl(
-                                                            TMDB_BASE_IMAGE_URL,
-                                                            proxyUrl,
-                                                            isProxyEnabled,
-                                                            context) +
-                                                        imageQuality +
-                                                        credits!.cast![index]
-                                                            .profilePath!,
-                                                    imageBuilder: (context,
-                                                            imageProvider) =>
-                                                        Container(
-                                                      decoration: BoxDecoration(
-                                                        image: DecorationImage(
-                                                          image: imageProvider,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        castAndCrewTabImageShimmer(
-                                                            themeMode),
-                                                    errorWidget:
-                                                        (context, url, error) =>
-                                                            Image.asset(
-                                                      'assets/images/na_rect.png',
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            credits!.cast![index].name!,
-                                            style: const TextStyle(
-                                                fontFamily: 'FigtreeSB',
-                                                fontSize: 20),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(credits!.cast![index].character!
-                                                  .isEmpty
-                                              ? tr('as_empty')
-                                              : tr('as', namedArgs: {
-                                                  'character': credits!
-                                                      .cast![index].character!
-                                                })),
-                                          // Text(
-                                          //   credits!.cast![index].roles![0]
-                                          //               .episodeCount! ==
-                                          //           1
-                                          //       ? credits!.cast![index]
-                                          //               .roles![0].episodeCount!
-                                          //               .toString() +
-                                          //           ' episode'
-                                          //       : credits!.cast![index]
-                                          //               .roles![0].episodeCount!
-                                          //               .toString() +
-                                          //           ' episodes',
-                                          // ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                Divider(
-                                  color: themeMode == 'light'
-                                      ? Colors.black54
-                                      : Colors.white54,
-                                  thickness: 1,
-                                  endIndent: 20,
-                                  indent: 10,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }));
+    if (error != null) {
+      return AppEmptyState(
+        icon: PhosphorIcons.cloudSlash(),
+        title: tr('error_occured'),
+        message: tr('check_connection'),
+        action: FilledButton(
+          onPressed: () => setState(() {
+            error = null;
+            _load();
+          }),
+          child: Text(tr('retry')),
+        ),
+      );
+    }
+    if (credits == null) return const AppPersonListShimmer();
+    final cast = credits!.cast ?? const <Cast>[];
+    if (cast.isEmpty) {
+      return AppEmptyState(
+        icon: PhosphorIcons.usersThree(),
+        title: tr('cast'),
+        message: tr('no_cast_episode'),
+      );
+    }
+    return ListView.separated(
+      physics: const BouncingScrollPhysics(),
+      padding: EdgeInsets.fromLTRB(
+        AppUI.pagePadding(context),
+        12,
+        AppUI.pagePadding(context),
+        24,
+      ),
+      itemCount: cast.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final person = cast[index];
+        return AppPersonTile(
+          name: person.name ?? tr('not_available'),
+          subtitle: (person.character ?? '').isEmpty
+              ? tr('as_empty')
+              : tr('as', namedArgs: {'character': person.character!}),
+          avatar: Hero(
+            tag: 'episode_cast_tab_${person.creditId}',
+            child: PersonAvatar(profilePath: person.profilePath),
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CastDetailPage(
+                cast: person,
+                heroId: 'episode_cast_tab_${person.creditId}',
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -6176,229 +5861,86 @@ class TVEpisodeGuestStarsTab extends StatefulWidget {
 class TVEpisodeGuestStarsTabState extends State<TVEpisodeGuestStarsTab>
     with AutomaticKeepAliveClientMixin<TVEpisodeGuestStarsTab> {
   Credits? credits;
+  Object? error;
+
   @override
   void initState() {
     super.initState();
+    _load();
+  }
+
+  void _load() {
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     fetchCredits(widget.api!, isProxyEnabled, proxyUrl).then((value) {
-      if (mounted) {
-        setState(() {
-          credits = value;
-        });
-      }
+      if (mounted) setState(() => credits = value);
+    }).onError((Object e, _) {
+      if (mounted) setState(() => error = e);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return credits == null
-        ? Container(
-            padding: const EdgeInsets.all(8),
-            child: searchedPersonShimmer(themeMode))
-        : credits!.episodeGuestStars!.isEmpty
-            ? Center(
-                child: Text(
-                  tr('no_guest_episode'),
-                  style: kTextSmallHeaderStyle,
-                  textAlign: TextAlign.center,
-                  maxLines: 4,
-                ),
-              )
-            : Container(
-                child: ListView.builder(
-                    itemCount: credits!.episodeGuestStars!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                          onTap: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return GuestStarDetailPage(
-                                  cast: credits!.episodeGuestStars![index],
-                                  heroId:
-                                      '${credits!.episodeGuestStars![index].creditId}');
-                            }));
-                          },
-                          child: Container(
-                              color: Colors.transparent,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 8.0,
-                                  bottom: 5.0,
-                                  left: 10,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 20.0, left: 10),
-                                          child: SizedBox(
-                                            width: 80,
-                                            height: 80,
-                                            child: Hero(
-                                              tag:
-                                                  '${credits!.episodeGuestStars![index].name}',
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        100.0),
-                                                child: credits!
-                                                            .episodeGuestStars![
-                                                                index]
-                                                            .profilePath ==
-                                                        null
-                                                    ? Image.asset(
-                                                        'assets/images/na_rect.png',
-                                                        fit: BoxFit.cover,
-                                                      )
-                                                    : CachedNetworkImage(
-                                                        cacheManager:
-                                                            cacheProp(),
-                                                        fadeOutDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    300),
-                                                        fadeOutCurve:
-                                                            Curves.easeOut,
-                                                        fadeInDuration:
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    700),
-                                                        fadeInCurve:
-                                                            Curves.easeIn,
-                                                        imageUrl: buildImageUrl(
-                                                                TMDB_BASE_IMAGE_URL,
-                                                                proxyUrl,
-                                                                isProxyEnabled,
-                                                                context) +
-                                                            imageQuality +
-                                                            credits!
-                                                                .episodeGuestStars![
-                                                                    index]
-                                                                .profilePath!,
-                                                        imageBuilder: (context,
-                                                                imageProvider) =>
-                                                            Container(
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            image:
-                                                                DecorationImage(
-                                                              image:
-                                                                  imageProvider,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        placeholder: (context,
-                                                                url) =>
-                                                            castAndCrewTabImageShimmer(
-                                                                themeMode),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            Image.asset(
-                                                          'assets/images/na_rect.png',
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                credits!
-                                                    .episodeGuestStars![index]
-                                                    .name!,
-                                                style: const TextStyle(
-                                                    fontFamily: 'FigtreeSB',
-                                                    fontSize: 20),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Divider(
-                                      color: themeMode == 'light'
-                                          ? Colors.black54
-                                          : Colors.white54,
-                                      thickness: 1,
-                                      endIndent: 20,
-                                      indent: 10,
-                                    ),
-                                  ],
-                                ),
-                              )));
-                    }));
-  }
-
-  Widget searchedPersonShimmer(String themeMode) => ListView.builder(
+    if (error != null) {
+      return AppEmptyState(
+        icon: PhosphorIcons.cloudSlash(),
+        title: tr('error_occured'),
+        message: tr('check_connection'),
+        action: FilledButton(
+          onPressed: () => setState(() {
+            error = null;
+            _load();
+          }),
+          child: Text(tr('retry')),
+        ),
+      );
+    }
+    if (credits == null) return const AppPersonListShimmer();
+    final guests = credits!.episodeGuestStars ?? const <TVEpisodeGuestStars>[];
+    if (guests.isEmpty) {
+      return AppEmptyState(
+        icon: PhosphorIcons.star(),
+        title: tr('guest_stars'),
+        message: tr('no_guest_episode'),
+      );
+    }
+    return ListView.separated(
       physics: const BouncingScrollPhysics(),
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return Padding(
-          padding: const EdgeInsets.only(
-            top: 3.0,
-            bottom: 3.0,
-            left: 15,
+      padding: EdgeInsets.fromLTRB(
+        AppUI.pagePadding(context),
+        12,
+        AppUI.pagePadding(context),
+        24,
+      ),
+      itemCount: guests.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (context, index) {
+        final person = guests[index];
+        return AppPersonTile(
+          name: person.name ?? tr('not_available'),
+          subtitle: (person.character ?? '').isEmpty
+              ? tr('as_empty')
+              : tr('as', namedArgs: {'character': person.character!}),
+          avatar: Hero(
+            tag: 'guest_star_${person.creditId}',
+            child: PersonAvatar(profilePath: person.profilePath),
           ),
-          child: Column(
-            children: [
-              ShimmerBase(
-                themeMode: themeMode,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: SizedBox(
-                        width: 80,
-                        height: 80,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100.0),
-                              color: Colors.grey.shade600),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            height: 20,
-                            width: 140,
-                            color: Colors.grey.shade600,
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => GuestStarDetailPage(
+                cast: person,
+                heroId: 'guest_star_${person.creditId}',
               ),
-              Divider(
-                color: themeMode == 'light' ? Colors.black54 : Colors.white54,
-                thickness: 1,
-                endIndent: 20,
-                indent: 10,
-              ),
-            ],
+            ),
           ),
         );
-      });
+      },
+    );
+  }
 
   @override
   bool get wantKeepAlive => true;

@@ -5,6 +5,7 @@ import '/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class SubLangChoose extends StatefulWidget {
   const SubLangChoose({super.key});
@@ -134,35 +135,35 @@ class _SubLangChooseState extends State<SubLangChoose> {
   Widget build(BuildContext context) {
     final languageChange = Provider.of<SettingsProvider>(context);
     return Scaffold(
-        appBar: AppBar(title: Text(tr('choose_subtitle_language'))),
-        body: SingleChildScrollView(
-          child: Center(
-              child: Column(
-                  children: supportedLanguages
-                      .map(
-                        (SubLanguages languages) => ListTile(
-                          title: Text(languages.languageName == ''
-                              ? tr('any')
-                              : languages.languageName),
-                          leading: Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            children: [
-                              Radio(
-                                value: languages.languageCode,
-                                groupValue:
-                                    languageChange.defaultSubtitleLanguage,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    languageChange.defaultSubtitleLanguage =
-                                        value!;
-                                  });
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                      .toList())),
-        ));
+      appBar: AppBar(title: Text(tr('choose_subtitle_language'))),
+      body: AppResponsiveContent(
+        maxWidth: 680,
+        padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context),
+          16,
+          AppUI.pagePadding(context),
+          24,
+        ),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          itemCount: supportedLanguages.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          itemBuilder: (context, index) {
+            final language = supportedLanguages[index];
+            return AppSelectionTile(
+              title: language.languageName.isEmpty
+                  ? tr('any')
+                  : language.languageName,
+              subtitle:
+                  language.languageCode.isEmpty ? null : language.englishName,
+              selected: languageChange.defaultSubtitleLanguage ==
+                  language.languageCode,
+              onTap: () => languageChange.defaultSubtitleLanguage =
+                  language.languageCode,
+            );
+          },
+        ),
+      ),
+    );
   }
 }

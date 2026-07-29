@@ -2,13 +2,12 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../constants/app_constants.dart';
 import '../../functions/network.dart';
 import '../../models/movie.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 import '../../ui_components/movie_ui_components.dart';
-import '../../widgets/common_widgets.dart';
 
 class DiscoverMovieResult extends StatefulWidget {
   const DiscoverMovieResult(
@@ -29,57 +28,78 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
   final _scrollController = ScrollController();
   int pageNum = 2;
   bool isLoading = false;
+  Object? error;
 
-  void getMoreData() async {
-    final isProxyEnabled =
-        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl =
-        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    _scrollController.addListener(() async {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        setState(() {
-          isLoading = true;
-        });
+  String _requestUrl(int page) {
+    final uri = Uri.parse(widget.api);
+    return uri.replace(
+      queryParameters: {
+        ...uri.queryParameters,
+        'include_adult': '${widget.includeAdult ?? false}',
+        'page': '$page',
+      },
+    ).toString();
+  }
 
-        if (mounted) {
-          fetchMovies(
-                  '${widget.api}&include_adult=${widget.includeAdult}&page=$pageNum',
-                  isProxyEnabled,
-                  proxyUrl)
-              .then((value) {
-            if (mounted) {
-              setState(() {
-                moviesList!.addAll(value);
-                isLoading = false;
-                pageNum++;
-              });
-            }
-          });
-        }
-      }
-    });
+  Future<void> _loadMore() async {
+    if (isLoading || moviesList == null) return;
+    setState(() => isLoading = true);
+    final settings = context.read<SettingsProvider>();
+    final dependencies = context.read<AppDependencyProvider>();
+    try {
+      final value = await fetchMovies(
+        _requestUrl(pageNum),
+        settings.enableProxy,
+        dependencies.tmdbProxy,
+      );
+      if (!mounted) return;
+      setState(() {
+        moviesList!.addAll(value);
+        isLoading = false;
+        pageNum++;
+      });
+    } catch (exception) {
+      if (!mounted) return;
+      setState(() {
+        error = exception;
+        isLoading = false;
+      });
+    }
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.extentAfter < 320) _loadMore();
+  }
+
+  Future<void> _loadInitial() async {
+    final settings = context.read<SettingsProvider>();
+    final dependencies = context.read<AppDependencyProvider>();
+    try {
+      final value = await fetchMovies(
+        _requestUrl(widget.page),
+        settings.enableProxy,
+        dependencies.tmdbProxy,
+      );
+      if (mounted) setState(() => moviesList = value);
+    } catch (exception) {
+      if (mounted) setState(() => error = exception);
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    final isProxyEnabled =
-        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final proxyUrl =
-        Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchMovies(
-            '${widget.api}&page=${widget.page}&include_adult=${widget.includeAdult}',
-            isProxyEnabled,
-            proxyUrl)
-        .then((value) {
-      if (mounted) {
-        setState(() {
-          moviesList = value;
-        });
-      }
-    });
-    getMoreData();
+    pageNum = widget.page + 1;
+    _scrollController.addListener(_onScroll);
+    _loadInitial();
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
   }
 
   @override
@@ -88,71 +108,56 @@ class _DiscoverMovieResultState extends State<DiscoverMovieResult> {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final viewType = Provider.of<SettingsProvider>(context).defaultView;
     return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            tr('discover_movies'),
-          ),
-          leading: IconButton(
-            icon: Icon(PhosphorIcons.caretLeft(),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+      appBar: AppBar(
+        title: Text(tr('discover_movies')),
+        leading: IconButton(
+          icon: Icon(PhosphorIcons.caretLeft()),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: Container(
-            child: moviesList == null && viewType == 'grid'
-                ? moviesAndTVShowGridShimmer(themeMode)
-                : moviesList == null && viewType == 'list'
-                    ? Container(
-                        child: mainPageVerticalScrollShimmer(
-                            themeMode: themeMode,
-                            isLoading: isLoading,
-                            scrollController: _scrollController))
-                    : moviesList!.isEmpty
-                        ? Container(
-                            padding: const EdgeInsets.all(8),
-                            child: Center(
-                              child: Text(
-                                tr('parameter_movie_404'),
-                                style: kTextHeaderStyle,
-                                textAlign: TextAlign.center,
-                              ),
+      ),
+      body: error != null && moviesList == null
+          ? AppEmptyState(
+              icon: PhosphorIcons.cloudSlash(),
+              title: tr('error_occured'),
+              message: tr('check_connection'),
+              action: FilledButton(
+                onPressed: () {
+                  setState(() => error = null);
+                  _loadInitial();
+                },
+                child: Text(tr('retry')),
+              ),
+            )
+          : moviesList == null && viewType == 'grid'
+              ? const AppMediaGridShimmer()
+              : moviesList == null
+                  ? const AppMediaListShimmer()
+                  : moviesList!.isEmpty
+                      ? AppEmptyState(
+                          icon: PhosphorIcons.filmSlate(),
+                          title: tr('discover_movies'),
+                          message: tr('parameter_movie_404'),
+                        )
+                      : Column(
+                          children: [
+                            Expanded(
+                              child: viewType == 'grid'
+                                  ? MovieGridView(
+                                      scrollController: _scrollController,
+                                      moviesList: moviesList,
+                                      imageQuality: imageQuality,
+                                      themeMode: themeMode,
+                                    )
+                                  : MovieListView(
+                                      scrollController: _scrollController,
+                                      moviesList: moviesList,
+                                      themeMode: themeMode,
+                                      imageQuality: imageQuality,
+                                    ),
                             ),
-                          )
-                        : Column(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: Column(
-                                    children: [
-                                      Expanded(
-                                          child: viewType == 'grid'
-                                              ? MovieGridView(
-                                                  scrollController:
-                                                      _scrollController,
-                                                  moviesList: moviesList,
-                                                  imageQuality: imageQuality,
-                                                  themeMode: themeMode)
-                                              : MovieListView(
-                                                  scrollController:
-                                                      _scrollController,
-                                                  moviesList: moviesList,
-                                                  themeMode: themeMode,
-                                                  imageQuality: imageQuality)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Visibility(
-                                  visible: isLoading,
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Center(
-                                        child: LinearProgressIndicator()),
-                                  )),
-                            ],
-                          )));
+                            AppLoadingFooter(visible: isLoading),
+                          ],
+                        ),
+    );
   }
 }

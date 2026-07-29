@@ -54,11 +54,25 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
+      margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 40),
       constraints: const BoxConstraints(
         maxWidth: 440,
         minHeight: 340,
+      ),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest.withValues(alpha: .42),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: colors.outline.withValues(alpha: .16)),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: .08),
+            blurRadius: 34,
+            offset: const Offset(0, 16),
+          ),
+        ],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -71,9 +85,9 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  Theme.of(context).colorScheme.primary.withOpacity(0.18),
-                  Theme.of(context).colorScheme.primary.withOpacity(0.08),
-                  Theme.of(context).colorScheme.primary.withOpacity(0.02),
+                  colors.primary.withValues(alpha: 0.18),
+                  colors.primary.withValues(alpha: 0.08),
+                  colors.primary.withValues(alpha: 0.02),
                 ],
               ),
             ),
@@ -103,7 +117,7 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
           Text(
             tr('finding_best_source'),
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: colors.onSurface.withValues(alpha: 0.5),
               fontSize: 13,
               fontWeight: FontWeight.w400,
               fontFamily: 'Figtree',
@@ -119,8 +133,7 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
                 minHeight: 5,
-                backgroundColor:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.12),
+                backgroundColor: colors.primary.withValues(alpha: 0.12),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   Theme.of(context).colorScheme.primary,
                 ),
@@ -144,7 +157,7 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
                 color: Theme.of(context)
                     .colorScheme
                     .primaryContainer
-                    .withOpacity(0.3),
+                    .withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -168,7 +181,7 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.8),
+                            .withValues(alpha: 0.8),
                         fontSize: 13,
                         fontFamily: 'Figtree',
                       ),
@@ -242,13 +255,15 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
           ),
           decoration: BoxDecoration(
             color: isHighlighted
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             border: isHighlighted
                 ? Border.all(
-                    color:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.25),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.25),
                     width: 1.2,
                   )
                 : null,
@@ -287,7 +302,8 @@ class _ProviderLoadingWidgetState extends State<ProviderLoadingWidget>
         return Icon(
           PhosphorIcons.hourglass(),
           size: iconSize,
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.35),
+          color:
+              Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.35),
         );
       case ProviderStatus.loading:
         return SizedBox(

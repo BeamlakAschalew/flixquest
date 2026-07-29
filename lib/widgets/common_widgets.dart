@@ -1628,6 +1628,38 @@ class _WatchProvidersDetailsState extends State<WatchProvidersDetails>
   }
 }
 
+/// A profile photo sized for [AppPersonTile] and the cast rails.
+class PersonAvatar extends StatelessWidget {
+  const PersonAvatar({required this.profilePath, super.key});
+
+  final String? profilePath;
+
+  @override
+  Widget build(BuildContext context) {
+    const fallback = 'assets/images/na_rect.png';
+    if (profilePath == null || profilePath!.isEmpty) {
+      return Image.asset(fallback, fit: BoxFit.cover);
+    }
+    final settings = Provider.of<SettingsProvider>(context);
+    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+    return CachedNetworkImage(
+      cacheManager: cacheProp(),
+      fadeInDuration: const Duration(milliseconds: 400),
+      imageUrl: buildImageUrl(
+            TMDB_BASE_IMAGE_URL,
+            proxyUrl,
+            settings.enableProxy,
+            context,
+          ) +
+          settings.imageQuality +
+          profilePath!,
+      fit: BoxFit.cover,
+      placeholder: (_, __) => const AppShimmerBlock(radius: 100),
+      errorWidget: (_, __, ___) => Image.asset(fallback, fit: BoxFit.cover),
+    );
+  }
+}
+
 class ShimmerBase extends StatelessWidget {
   const ShimmerBase({super.key, required this.child, required this.themeMode});
 

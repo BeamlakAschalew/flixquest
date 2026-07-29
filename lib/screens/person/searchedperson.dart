@@ -1,10 +1,8 @@
-// ignore_for_file: avoid_unnecessary_containers
-
-import 'package:provider/provider.dart';
-import '../../provider/settings_provider.dart';
-import '../../widgets/movie_widgets.dart';
-import '/models/person.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '/models/person.dart';
+import '/provider/settings_provider.dart';
 import '/widgets/person_widgets.dart';
 
 class SearchedPersonDetailPage extends StatefulWidget {
@@ -16,21 +14,17 @@ class SearchedPersonDetailPage extends StatefulWidget {
     this.person,
     required this.heroId,
   });
+
   @override
   SearchedPersonDetailPageState createState() =>
       SearchedPersonDetailPageState();
 }
 
 class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
-    with
-        SingleTickerProviderStateMixin,
-        AutomaticKeepAliveClientMixin<SearchedPersonDetailPage> {
-  late TabController tabController;
-
+    with AutomaticKeepAliveClientMixin<SearchedPersonDetailPage> {
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 3, vsync: this);
     mixpanelUpload(context);
   }
 
@@ -44,65 +38,16 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
     });
   }
 
-  int selectedIndex = 0;
-  final scrollController = ScrollController();
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    return Scaffold(
-      body: CustomScrollView(
-        controller: scrollController,
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            elevation: 1,
-            shadowColor: themeMode == 'dark' || themeMode == 'amoled'
-                ? Colors.white
-                : Colors.black,
-            forceElevated: true,
-            backgroundColor: themeMode == 'dark' || themeMode == 'amoled'
-                ? Colors.black
-                : Colors.white,
-            leading: SABTN(
-              onBack: () {
-                Navigator.pop(context);
-              },
-            ),
-            title: SABT(
-                child: Text(
-              widget.person!.name!,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            )),
-            expandedHeight: 210,
-            flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.pin,
-              background: Column(
-                children: [
-                  SearchedPersonQuickInfo(
-                    widget: widget,
-                    imageQuality: imageQuality,
-                  )
-                ],
-              ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate.fixed(
-              [
-                SearchedPersonAbout(
-                    person: widget.person,
-                    selectedIndex: selectedIndex,
-                    tabController: tabController)
-              ],
-            ),
-          )
-        ],
-      ),
+    return PersonDetailView(
+      personId: widget.person!.id!,
+      name: widget.person!.name ?? '',
+      subtitle: widget.person!.department,
+      profilePath: widget.person!.profilePath,
+      heroId: widget.heroId,
+      isPersonAdult: widget.person!.adult,
     );
   }
 

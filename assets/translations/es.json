@@ -416,6 +416,8 @@
   "person_tv_count": "{count} programas de TV",
   "no_biography_person": "No tenemos una biografía para esta persona",
   "no_social_link_person": "Esta persona no tiene enlaces a redes sociales proporcionados :(",
+  "no_movies_person": "Esta persona no tiene películas en la lista",
+  "no_tv_person": "Esta persona no tiene series de TV en la lista",
   "died_aged": "Fallecido a la edad de",
   "age": "Edad",
   "born_on": "Nacido el",

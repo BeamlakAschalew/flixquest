@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_unnecessary_containers
-
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -23,20 +21,19 @@ class GenreMovies extends StatelessWidget {
           tr('genre_movie_title', namedArgs: {'g': genres.genreName ?? 'Null'}),
         ),
         leading: IconButton(
-          icon: Icon(PhosphorIcons.caretLeft(),
+          icon: Icon(
+            PhosphorIcons.caretLeft(),
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
-      body: Container(
-        child: ParticularGenreMovies(
-          includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-          genreId: genres.genreID!,
-          api: Endpoints.getMoviesForGenre(genres.genreID!, 1, lang),
-          watchRegion: Provider.of<SettingsProvider>(context).defaultCountry,
-        ),
+      body: ParticularGenreMovies(
+        includeAdult: Provider.of<SettingsProvider>(context).isAdult,
+        genreId: genres.genreID!,
+        api: Endpoints.getMoviesForGenre(genres.genreID!, 1, lang),
+        watchRegion: Provider.of<SettingsProvider>(context).defaultCountry,
       ),
     );
   }

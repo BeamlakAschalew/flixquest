@@ -69,7 +69,7 @@ Future<List<Movie>> fetchCollectionMovies(
   return collectionMovieList.movies ?? [];
 }
 
-Future fetchCollectionDetails(
+Future<CollectionDetails> fetchCollectionDetails(
     String api, bool isProxyEnabled, String proxyUrl) async {
   CollectionDetails collectionDetails;
   try {

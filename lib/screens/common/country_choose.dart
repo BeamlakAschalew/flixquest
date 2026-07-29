@@ -5,6 +5,7 @@ import '/models/watchprovider_countries.dart';
 import '/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class CountryChoose extends StatefulWidget {
   const CountryChoose({super.key});
@@ -250,43 +251,45 @@ class _CountryChooseState extends State<CountryChoose> {
   @override
   Widget build(BuildContext context) {
     final countryChange = Provider.of<SettingsProvider>(context);
-    List<WatchProviderCountries> count = countries;
+    final count = [...countries];
     count.sort(
       (a, b) => a.countryName.compareTo(b.countryName),
     );
 
     return Scaffold(
-        appBar: AppBar(title: Text(tr('choose_country'))),
-        body: SingleChildScrollView(
-          child: Center(
-              child: Column(
-            children: count
-                .map(
-                  (WatchProviderCountries countries) => ListTile(
-                    title: Text(countries.countryName),
-                    leading: Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Radio<String>(
-                          value: countries.isoCode,
-                          groupValue: countryChange.defaultCountry,
-                          onChanged: (String? value) {
-                            if (value != null) {
-                              countryChange.defaultCountry = value;
-                            }
-                          },
-                        ),
-                        Image.asset(
-                          countries.flagPath,
-                          width: 25,
-                          height: 25,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                .toList(),
-          )),
-        ));
+      appBar: AppBar(title: Text(tr('choose_country'))),
+      body: AppResponsiveContent(
+        maxWidth: 720,
+        padding: EdgeInsets.fromLTRB(
+          AppUI.pagePadding(context),
+          16,
+          AppUI.pagePadding(context),
+          24 + MediaQuery.paddingOf(context).bottom,
+        ),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          itemCount: count.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          itemBuilder: (context, index) {
+            final country = count[index];
+            return AppSelectionTile(
+              title: country.countryName,
+              subtitle: country.isoCode,
+              selected: countryChange.defaultCountry == country.isoCode,
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(7),
+                child: Image.asset(
+                  country.flagPath,
+                  width: 32,
+                  height: 24,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              onTap: () => countryChange.defaultCountry = country.isoCode,
+            );
+          },
+        ),
+      ),
+    );
   }
 }

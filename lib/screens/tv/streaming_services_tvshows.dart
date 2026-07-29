@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_unnecessary_containers
-
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -23,19 +21,18 @@ class StreamingServicesTVShows extends StatelessWidget {
         title: Text(
             tr('streaming_service_tv', namedArgs: {'provider': providerName})),
         leading: IconButton(
-          icon: Icon(PhosphorIcons.caretLeft(),
+          icon: Icon(
+            PhosphorIcons.caretLeft(),
           ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
-      body: Container(
-        child: ParticularStreamingServiceTVShows(
-          includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-          providerID: providerId,
-          api: Endpoints.watchProvidersTVShows(providerId, 1, lang),
-        ),
+      body: ParticularStreamingServiceTVShows(
+        includeAdult: Provider.of<SettingsProvider>(context).isAdult,
+        providerID: providerId,
+        api: Endpoints.watchProvidersTVShows(providerId, 1, lang),
       ),
     );
   }

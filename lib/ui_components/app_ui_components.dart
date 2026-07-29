@@ -400,6 +400,211 @@ class AppFeedOverlayHeader extends StatelessWidget {
   }
 }
 
+/// One entry in an [AppSegmentedTabs] control.
+class AppSegmentedTab {
+  const AppSegmentedTab({required this.label, this.icon});
+
+  final String label;
+  final IconData? icon;
+}
+
+/// The pill-shaped segmented control used wherever a screen splits its body
+/// into a small, fixed set of tabs (bookmarks, cast & crew, …).
+class AppSegmentedTabs extends StatelessWidget {
+  const AppSegmentedTabs({
+    required this.controller,
+    required this.tabs,
+    super.key,
+  });
+
+  final TabController controller;
+  final List<AppSegmentedTab> tabs;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: colors.onSurface.withValues(alpha: .06),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: TabBar(
+        controller: controller,
+        dividerColor: Colors.transparent,
+        indicatorSize: TabBarIndicatorSize.tab,
+        indicator: BoxDecoration(
+          color: colors.primary,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        labelColor: colors.onPrimary,
+        unselectedLabelColor: colors.onSurfaceVariant,
+        labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+        tabs: [
+          for (final tab in tabs)
+            Tab(
+              height: 44,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (tab.icon != null) ...[
+                    Icon(tab.icon, size: 17),
+                    const SizedBox(width: 8),
+                  ],
+                  Flexible(
+                    child: Text(
+                      tab.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A person row — cast, crew, guest star — rendered as a tappable card.
+class AppPersonTile extends StatelessWidget {
+  const AppPersonTile({
+    required this.avatar,
+    required this.name,
+    required this.onTap,
+    this.subtitle,
+    this.detail,
+    super.key,
+  });
+
+  final Widget avatar;
+  final String name;
+  final VoidCallback onTap;
+  final String? subtitle;
+  final String? detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              SizedBox.square(
+                dimension: 62,
+                child: ClipOval(child: avatar),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    if (subtitle != null && subtitle!.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                      ),
+                    ],
+                    if (detail != null && detail!.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        detail!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: colors.onSurfaceVariant
+                                  .withValues(alpha: .85),
+                            ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                PhosphorIcons.caretRight(),
+                size: 16,
+                color: colors.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Loading state for a list of [AppPersonTile]s.
+class AppPersonListShimmer extends StatelessWidget {
+  const AppPersonListShimmer({this.itemCount = 8, super.key});
+
+  final int itemCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: EdgeInsets.fromLTRB(
+        AppUI.pagePadding(context),
+        12,
+        AppUI.pagePadding(context),
+        24,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: itemCount,
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
+      itemBuilder: (_, __) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              const SizedBox.square(
+                dimension: 62,
+                child: AppShimmerBlock(radius: 31),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 15,
+                      width: 160,
+                      child: AppShimmerBlock(radius: 6),
+                    ),
+                    const SizedBox(height: 9),
+                    const SizedBox(
+                      height: 12,
+                      width: 100,
+                      child: AppShimmerBlock(radius: 6),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class AppResponsiveContent extends StatelessWidget {
   const AppResponsiveContent({
     required this.child,
@@ -421,6 +626,222 @@ class AppResponsiveContent extends StatelessWidget {
           padding: padding ??
               EdgeInsets.symmetric(horizontal: AppUI.pagePadding(context)),
           child: child,
+        ),
+      ),
+    );
+  }
+}
+
+/// A responsive, card-based row for single-choice settings and utilities.
+class AppSelectionTile extends StatelessWidget {
+  const AppSelectionTile({
+    required this.title,
+    required this.selected,
+    required this.onTap,
+    this.leading,
+    this.subtitle,
+    this.trailing,
+    super.key,
+  });
+
+  final String title;
+  final String? subtitle;
+  final bool selected;
+  final VoidCallback onTap;
+  final Widget? leading;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      color: selected
+          ? colors.primaryContainer.withValues(alpha: .55)
+          : colors.surfaceContainerHighest.withValues(alpha: .45),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: selected
+              ? colors.primary.withValues(alpha: .7)
+              : colors.outline.withValues(alpha: .16),
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(
+            children: [
+              if (leading != null) ...[
+                SizedBox.square(dimension: 36, child: Center(child: leading)),
+                const SizedBox(width: 13),
+              ],
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontFamily: 'FigtreeSB',
+                          ),
+                    ),
+                    if (subtitle != null && subtitle!.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              trailing ??
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    width: 25,
+                    height: 25,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: selected ? colors.primary : Colors.transparent,
+                      border: Border.all(
+                        color: selected ? colors.primary : colors.outline,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: selected
+                        ? Icon(
+                            PhosphorIcons.check(),
+                            size: 15,
+                            color: colors.onPrimary,
+                          )
+                        : null,
+                  ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A subtle bottom progress treatment used by paginated media screens.
+class AppLoadingFooter extends StatelessWidget {
+  const AppLoadingFooter({required this.visible, super.key});
+
+  final bool visible;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 180),
+      child: visible
+          ? SafeArea(
+              top: false,
+              minimum: EdgeInsets.fromLTRB(
+                AppUI.pagePadding(context),
+                6,
+                AppUI.pagePadding(context),
+                10,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(99),
+                child: const LinearProgressIndicator(minHeight: 4),
+              ),
+            )
+          : const SizedBox.shrink(),
+    );
+  }
+}
+
+/// A numbered source card used by legacy/manual stream-selection surfaces.
+class AppStreamSourceTile extends StatelessWidget {
+  const AppStreamSourceTile({
+    required this.index,
+    required this.title,
+    this.subtitle,
+    this.onTap,
+    super.key,
+  });
+
+  final int index;
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(17),
+        side: BorderSide(color: colors.outline.withValues(alpha: .14)),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(13),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(13),
+                ),
+                child: Center(
+                  child: Text(
+                    index.toString().padLeft(2, '0'),
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: colors.primary,
+                          fontFamily: 'FigtreeSB',
+                        ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontFamily: 'FigtreeSB',
+                          ),
+                    ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                            ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Icon(
+                PhosphorIcons.playCircle(),
+                color: onTap == null
+                    ? colors.onSurfaceVariant.withValues(alpha: .45)
+                    : colors.primary,
+              ),
+            ],
+          ),
         ),
       ),
     );

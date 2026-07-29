@@ -416,6 +416,8 @@
   "person_tv_count": "{count} TV Shows",
   "no_biography_person": "We don't have a biography for this person",
   "no_social_link_person": "This person doesn't have social media links provided :(",
+  "no_movies_person": "This person doesn't have any movies listed",
+  "no_tv_person": "This person doesn't have any TV shows listed",
   "died_aged": "Died aged",
   "age": "Age",
   "born_on": "Born on",
