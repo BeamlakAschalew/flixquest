@@ -1,35 +1,23 @@
 import '../functions/network.dart';
 import 'common.dart';
 
-class VixSrcResult {
-  const VixSrcResult({
-    this.videoLinks,
-    this.subtitleLinks,
-    this.success = false,
-    this.errorMessage,
-  });
-
-  final List<RegularVideoLinks>? videoLinks;
-  final List<RegularSubtitleLinks>? subtitleLinks;
-  final bool success;
-  final String? errorMessage;
-}
+typedef VixSrcResult = ProviderLoadResult;
 
 abstract final class VixSrc {
   static const String _baseUrl = 'https://vixsrc.to';
 
-  static Future<VixSrcResult> loadMovie(int movieId) {
+  static Future<ProviderLoadResult> loadMovie(int movieId) {
     return _load('$_baseUrl/api/movie/$movieId');
   }
 
-  static Future<VixSrcResult> loadEpisode({
+  static Future<ProviderLoadResult> loadEpisode({
     required int tvId,
     required int seasonNumber,
     required int episodeNumber,
   }) {
     if (seasonNumber <= 0) {
       return Future.value(
-        const VixSrcResult(
+        const ProviderLoadResult(
           errorMessage: 'Invalid season number',
         ),
       );
@@ -39,7 +27,7 @@ abstract final class VixSrc {
     );
   }
 
-  static Future<VixSrcResult> _load(String apiUrl) async {
+  static Future<ProviderLoadResult> _load(String apiUrl) async {
     try {
       String? embedHtml;
       for (var attempt = 0; attempt < 2; attempt++) {
@@ -49,26 +37,26 @@ abstract final class VixSrc {
       }
 
       if (embedHtml == null) {
-        return const VixSrcResult(
+        return const ProviderLoadResult(
           errorMessage: 'VixSrc embed token expired',
         );
       }
 
       final playlistUrl = _extractMasterPlaylist(embedHtml);
       if (playlistUrl == null) {
-        return const VixSrcResult(
+        return const ProviderLoadResult(
           errorMessage: 'VixSrc playlist metadata not found',
         );
       }
 
       final playlist = await getVixSrcPlaylist(playlistUrl);
       if (!_containsVideoStream(playlist)) {
-        return const VixSrcResult(
+        return const ProviderLoadResult(
           errorMessage: 'No VixSrc video sources found',
         );
       }
 
-      return VixSrcResult(
+      return ProviderLoadResult(
         success: true,
         videoLinks: [
           RegularVideoLinks(
@@ -80,7 +68,7 @@ abstract final class VixSrc {
         subtitleLinks: await _parseSubtitles(playlist, playlistUrl),
       );
     } catch (error) {
-      return VixSrcResult(errorMessage: error.toString());
+      return ProviderLoadResult(errorMessage: error.toString());
     }
   }
 

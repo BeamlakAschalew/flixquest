@@ -20,6 +20,26 @@ class VideoUtils {
     return videos;
   }
 
+  /// Preserve the stream type supplied by the scraper API. Its proxy URLs do
+  /// not always end in `.m3u8` or `.mpd`, so URL inference alone is not enough
+  /// for Better Player to choose HLS/DASH playback correctly.
+  static Map<String, BetterPlayerVideoFormat?> convertVideoFormatsToMap(
+    List<RegularVideoLinks> vids,
+  ) {
+    final formats = <String, BetterPlayerVideoFormat?>{};
+    for (var index = 0; index < vids.length; index++) {
+      final key = vids[index].quality == 'unknown quality'
+          ? '${vids[index].quality} $index'
+          : vids[index].quality!;
+      formats[key] = vids[index].isM3U8 == true
+          ? BetterPlayerVideoFormat.hls
+          : vids[index].isDash == true
+              ? BetterPlayerVideoFormat.dash
+              : null;
+    }
+    return formats;
+  }
+
   /// Process VTT file timestamps to fix formatting issues
   static String processVttFileTimestamps(String vttContent) {
     final lines = vttContent.split('\n');
@@ -151,9 +171,8 @@ class VideoUtils {
   }
 
   /// Reverse video quality map for player (highest quality first)
-  static Map<String, String> reverseVideoQualityMap(
-      Map<String, String> videos) {
-    List<MapEntry<String, String>> reversedVideoList =
+  static Map<String, T> reverseVideoQualityMap<T>(Map<String, T> videos) {
+    List<MapEntry<String, T>> reversedVideoList =
         videos.entries.toList().reversed.toList();
     return Map.fromEntries(reversedVideoList);
   }

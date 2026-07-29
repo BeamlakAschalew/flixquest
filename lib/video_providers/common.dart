@@ -2,8 +2,14 @@ class RegularVideoLinks {
   String? url;
   String? quality;
   bool? isM3U8;
+  bool? isDash;
 
-  RegularVideoLinks({this.url, this.quality = 'unknown quality', this.isM3U8});
+  RegularVideoLinks({
+    this.url,
+    this.quality = 'unknown quality',
+    this.isM3U8,
+    this.isDash,
+  });
 
   RegularVideoLinks.fromJson(Map<String, dynamic> json) {
     url = json['url'];
@@ -13,7 +19,26 @@ class RegularVideoLinks {
       quality = 'unknown quality';
     }
     isM3U8 = json['isM3U8'];
+    isDash = json['isDASH'];
   }
+}
+
+/// The normalized result returned by every in-app stream provider.
+///
+/// Keeping this independent of a specific provider lets the player use direct
+/// sources (such as VixSrc) and scraper API sources through the same contract.
+class ProviderLoadResult {
+  const ProviderLoadResult({
+    this.videoLinks,
+    this.subtitleLinks,
+    this.success = false,
+    this.errorMessage,
+  });
+
+  final List<RegularVideoLinks>? videoLinks;
+  final List<RegularSubtitleLinks>? subtitleLinks;
+  final bool success;
+  final String? errorMessage;
 }
 
 class RegularSubtitleLinks {

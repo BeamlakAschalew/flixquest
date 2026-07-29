@@ -5,12 +5,14 @@ class ProviderVideoSource {
   final String providerCode;
   final String providerName;
   final Map<String, String> videoSources; // Quality -> URL
+  final Map<String, BetterPlayerVideoFormat?> videoFormats;
   final List<BetterPlayerSubtitlesSource> subtitles;
 
   ProviderVideoSource({
     required this.providerCode,
     required this.providerName,
     required this.videoSources,
+    required this.videoFormats,
     required this.subtitles,
   });
 }

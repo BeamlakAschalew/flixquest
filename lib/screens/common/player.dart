@@ -40,6 +40,9 @@ class PlayerOne extends StatefulWidget {
       this.availableProviders, // Provider metadata for lazy loading
       this.currentProviderCode, // Current provider code
       this.initialPlaybackPosition, // For preserving position on provider switch
+      this.scraperApiUrl = '',
+      this.videoFormats,
+      this.prefetchedProviderResults = const {},
       super.key});
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
@@ -55,6 +58,9 @@ class PlayerOne extends StatefulWidget {
       availableProviders; // Changed to VideoProvider list
   final String? currentProviderCode;
   final Duration? initialPlaybackPosition;
+  final String scraperApiUrl;
+  final Map<String, BetterPlayerVideoFormat?>? videoFormats;
+  final Map<String, Future<ProviderLoaderResult>> prefetchedProviderResults;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -95,6 +101,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   late String? _currentProviderCode; // Track current provider
   final Map<String, ProviderVideoSource> _loadedProviders =
       {}; // Cache loaded providers
+  late final Map<String, Future<ProviderLoaderResult>> _providerResults;
+  late Map<String, String> _activeSources;
+  late List<BetterPlayerSubtitlesSource> _activeSubtitles;
+  late Map<String, BetterPlayerVideoFormat?>? _activeVideoFormats;
   final Set<String> _loadingProviders =
       {}; // Track which providers are being loaded
   final Map<String, String> _providerErrors = {};
@@ -103,6 +113,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   void initState() {
     settings = Provider.of<SettingsProvider>(context, listen: false);
     _currentProviderCode = widget.currentProviderCode; // Initialize from widget
+    _providerResults = Map.of(widget.prefetchedProviderResults);
+    _activeSources = Map.of(widget.sources);
+    _activeSubtitles = List.of(widget.subs);
+    _activeVideoFormats =
+        widget.videoFormats == null ? null : Map.of(widget.videoFormats!);
     super.initState();
 
     // Initialize episode selection with current season
@@ -252,42 +267,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 outlineEnabled: false,
                 fontSize: widget.settings.subtitleFontSize.toDouble()));
 
-    String keyToFind = widget.settings.defaultVideoResolution == 0
-        ? 'auto'
-        : widget.settings.defaultVideoResolution.toString();
-    String? link;
-
-    if (widget.sources.entries
-        .where((entry) => entry.key == keyToFind)
-        .isNotEmpty) {
-      link = widget.sources.entries
-          .where((entry) => entry.key == keyToFind)
-          .map((entry) => entry.value)
-          .first;
-    } else {
-      link = widget.sources.values.first;
-    }
-
-    final resolutions = widget.sources.length > 1 ? widget.sources : null;
-    final videoFormat = _inferVideoFormat(link);
-    final headers = _inferHeaders(link);
-
-    BetterPlayerDataSource dataSource =
-        BetterPlayerDataSource(BetterPlayerDataSourceType.network, link,
-            resolutions: resolutions,
-            videoFormat: videoFormat,
-            headers: headers,
-            subtitles: widget.subs,
-            cacheConfiguration: BetterPlayerCacheConfiguration(
-              useCache: true,
-              preCacheSize: 471859200 * 471859200,
-              maxCacheSize: 1073741824 * 1073741824,
-              maxCacheFileSize: 471859200 * 471859200,
-
-              ///Android only option to use cached video between app sessions
-              key: generateCacheKey(),
-            ),
-            bufferingConfiguration: betterPlayerBufferingConfiguration);
+    final dataSource = _buildDataSource(
+      sources: _activeSources,
+      subtitles: _activeSubtitles,
+      videoFormats: _activeVideoFormats,
+    );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(dataSource).then((value) {
       // If initial playback position provided (from provider switch), seek to it
@@ -414,6 +398,40 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         resetDurationTimer();
       });
     }
+  }
+
+  BetterPlayerDataSource _buildDataSource({
+    required Map<String, String> sources,
+    required List<BetterPlayerSubtitlesSource> subtitles,
+    required Map<String, BetterPlayerVideoFormat?>? videoFormats,
+  }) {
+    final preferredQuality = widget.settings.defaultVideoResolution == 0
+        ? 'auto'
+        : widget.settings.defaultVideoResolution.toString();
+    final selectedSource = sources.entries.firstWhere(
+      (entry) => entry.key == preferredQuality,
+      orElse: () => sources.entries.first,
+    );
+    final link = selectedSource.value;
+
+    return BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
+      link,
+      resolutions: sources.length > 1 ? sources : null,
+      videoFormat: videoFormats?[selectedSource.key] ?? _inferVideoFormat(link),
+      headers: _inferHeaders(link),
+      subtitles: subtitles,
+      cacheConfiguration: BetterPlayerCacheConfiguration(
+        useCache: true,
+        preCacheSize: 471859200 * 471859200,
+        maxCacheSize: 1073741824 * 1073741824,
+        maxCacheFileSize: 471859200 * 471859200,
+
+        ///Android only option to use cached video between app sessions
+        key: generateCacheKey(),
+      ),
+      bufferingConfiguration: betterPlayerBufferingConfiguration,
+    );
   }
 
   BetterPlayerVideoFormat? _inferVideoFormat(String? url) {
@@ -601,9 +619,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       isScrollControlled: true,
       builder: (sheetContext) => StatefulBuilder(
         builder: (context, setSheetState) {
-          return FractionallySizedBox(
-            heightFactor: .72,
-            child: AppResponsiveContent(
+          return DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: .72,
+            minChildSize: .45,
+            maxChildSize: .96,
+            snap: true,
+            builder: (context, scrollController) => AppResponsiveContent(
               maxWidth: 680,
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
               child: Column(
@@ -656,6 +678,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   const SizedBox(height: 20),
                   Expanded(
                     child: ListView.separated(
+                      controller: scrollController,
                       itemCount: providers.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 4),
                       itemBuilder: (context, index) {
@@ -666,7 +689,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                             _loadingProviders.contains(provider.codeName);
                         final error = _providerErrors[provider.codeName];
                         return AppSelectionTile(
-                          title: provider.fullName,
+                          title: provider.displayName,
                           selected: selected,
                           subtitle: loading
                               ? tr('loading_video_sources')
@@ -744,22 +767,35 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     final position =
         _betterPlayerController.videoPlayerController?.value.position ??
             Duration.zero;
+    final wasPlaying =
+        _betterPlayerController.videoPlayerController?.value.isPlaying == true;
+    final previousDataSource = _betterPlayerController.betterPlayerDataSource;
+    var replacementStarted = false;
     try {
       await _betterPlayerController.pause();
       var source = _loadedProviders[providerCode];
       if (source == null) {
-        final result = widget.mediaType == MediaType.movie
-            ? await ProviderLoader.loadMovieFromProvider(
-                providerCode: providerCode,
-                movieId: widget.movieMetadata!.movieId!,
-              )
-            : await ProviderLoader.loadTVFromProvider(
-                providerCode: providerCode,
-                tvId: widget.tvMetadata!.tvId!,
-                seasonNumber: widget.tvMetadata!.seasonNumber!,
-                episodeNumber: widget.tvMetadata!.episodeNumber!,
-              );
+        final provider = widget.availableProviders!.firstWhere(
+          (candidate) => candidate.codeName == providerCode,
+        );
+        final resultFuture = _providerResults[providerCode] ??=
+            widget.mediaType == MediaType.movie
+                ? ProviderLoader.loadMovieFromProvider(
+                    provider: provider,
+                    movieId: widget.movieMetadata!.movieId!,
+                    scraperApiUrl: widget.scraperApiUrl,
+                  )
+                : ProviderLoader.loadTVFromProvider(
+                    provider: provider,
+                    tvId: widget.tvMetadata!.tvId!,
+                    seasonNumber: widget.tvMetadata!.seasonNumber!,
+                    episodeNumber: widget.tvMetadata!.episodeNumber!,
+                    scraperApiUrl: widget.scraperApiUrl,
+                  );
+        final result = await resultFuture;
         if (!result.success || result.videoLinks?.isEmpty != false) {
+          // Failed futures are not cached, allowing a later explicit retry.
+          _providerResults.remove(providerCode);
           throw Exception(result.errorMessage ?? tr('movie_vid_404'));
         }
 
@@ -771,14 +807,14 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               name: subtitle.language ?? tr('not_available'),
             ),
         ];
-        final providerName = widget.availableProviders!
-            .firstWhere((provider) => provider.codeName == providerCode)
-            .fullName;
         source = ProviderVideoSource(
           providerCode: providerCode,
-          providerName: providerName,
+          providerName: provider.displayName,
           videoSources: VideoUtils.reverseVideoQualityMap(
             VideoUtils.convertVideoLinksToMap(result.videoLinks!),
+          ),
+          videoFormats: VideoUtils.reverseVideoQualityMap(
+            VideoUtils.convertVideoFormatsToMap(result.videoLinks!),
           ),
           subtitles: subtitles,
         );
@@ -786,27 +822,42 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       }
 
       if (!mounted) return;
-      if (sheetContext.mounted) Navigator.pop(sheetContext);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => PlayerOne(
-            sources: source!.videoSources,
-            subs: source.subtitles,
-            colors: widget.colors,
-            settings: widget.settings,
-            movieMetadata: widget.movieMetadata,
-            tvMetadata: widget.tvMetadata,
-            mediaType: widget.mediaType,
-            subtitleStyle: widget.subtitleStyle,
-            availableProviders: widget.availableProviders,
-            currentProviderCode: providerCode,
-            initialPlaybackPosition: position,
-          ),
+      final nextSource = source;
+      replacementStarted = true;
+      await _betterPlayerController.setupDataSource(
+        _buildDataSource(
+          sources: nextSource.videoSources,
+          subtitles: nextSource.subtitles,
+          videoFormats: nextSource.videoFormats,
         ),
       );
+      await _betterPlayerController.seekTo(position);
+      if (!wasPlaying) await _betterPlayerController.pause();
+
+      if (!mounted) return;
+      setState(() {
+        _currentProviderCode = providerCode;
+        _activeSources = Map.of(nextSource.videoSources);
+        _activeSubtitles = List.of(nextSource.subtitles);
+        _activeVideoFormats = Map.of(nextSource.videoFormats);
+        final switchedDuration = _betterPlayerController
+            .videoPlayerController?.value.duration?.inSeconds;
+        if (switchedDuration != null) duration = switchedDuration;
+      });
+      if (sheetContext.mounted) Navigator.pop(sheetContext);
     } catch (error) {
       if (!mounted) return;
+      if (replacementStarted && previousDataSource != null) {
+        try {
+          await _betterPlayerController.setupDataSource(previousDataSource);
+          await _betterPlayerController.seekTo(position);
+          if (!wasPlaying) await _betterPlayerController.pause();
+        } catch (restoreError) {
+          debugPrint('Unable to restore provider after switch: $restoreError');
+        }
+      } else if (wasPlaying) {
+        await _betterPlayerController.play();
+      }
       setState(() => _providerErrors[providerCode] = error.toString());
       if (sheetContext.mounted) setSheetState(() {});
     } finally {
@@ -870,8 +921,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         maxWidth: 680,
         padding: EdgeInsets.zero,
         child: ExternalPlay(
-          videoSources: widget.sources,
-          subtitleSources: widget.subs,
+          videoSources: _activeSources,
+          subtitleSources: _activeSubtitles,
         ),
       ),
     );

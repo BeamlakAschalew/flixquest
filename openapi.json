@@ -1,0 +1,770 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FlixQuest Scraper API",
+    "version": "2.0.0",
+    "description": "Exhaustive OpenAPI specification for FlixQuest Scraper API v2, designed for integration with Flutter applications."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Development Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Providers",
+      "description": "Operations for listing and managing scraper provider states."
+    },
+    {
+      "name": "Streams",
+      "description": "Operations for scraping movie and TV episode stream links."
+    },
+    {
+      "name": "Proxy",
+      "description": "Stream proxy pass-through endpoint for video playback."
+    }
+  ],
+  "paths": {
+    "/api/v2/providers": {
+      "get": {
+        "summary": "List Available Providers",
+        "description": "Retrieves the list of active (and optionally disabled) video scraper providers.",
+        "operationId": "getProviders",
+        "tags": [
+          "Providers"
+        ],
+        "parameters": [
+          {
+            "name": "all",
+            "in": "query",
+            "required": false,
+            "description": "Set to 'true' to include disabled providers in the response.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "includeDisabled",
+            "in": "query",
+            "required": false,
+            "description": "Alias for 'all'. Set to 'true' to include disabled providers.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "fProxy",
+            "in": "query",
+            "required": false,
+            "description": "Forward proxy configuration mode or proxy URL.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Provider list retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/providers/{id}": {
+      "patch": {
+        "summary": "Update Provider Enabled State",
+        "description": "Enables or disables a specific scraper provider by ID.",
+        "operationId": "updateProviderStatus",
+        "tags": [
+          "Providers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The unique provider identifier (e.g. 'vixsrc').",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProviderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Provider status successfully updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProviderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Provider not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/providers/{id}/toggle": {
+      "post": {
+        "summary": "Toggle Provider Status",
+        "description": "Toggles the enabled status of a provider, or sets it explicitly if provided in the body.",
+        "operationId": "toggleProviderStatus",
+        "tags": [
+          "Providers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The unique provider identifier.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToggleProviderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Provider status successfully toggled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateProviderResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Provider not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/stream-movie": {
+      "get": {
+        "summary": "Get Movie Stream Links",
+        "description": "Fetches validated playback stream links for a movie by TMDB ID using a selected provider.",
+        "operationId": "getMovieStream",
+        "tags": [
+          "Streams"
+        ],
+        "parameters": [
+          {
+            "name": "tmdbId",
+            "in": "query",
+            "required": true,
+            "description": "The TMDB ID of the movie (e.g. '556574').",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "required": true,
+            "description": "The provider identifier to scrape streams from (e.g. 'vixsrc').",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "proxy",
+            "in": "query",
+            "required": false,
+            "description": "Set to 'false' or '0' to disable proxying and retrieve raw URLs when possible.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "noProxy",
+            "in": "query",
+            "required": false,
+            "description": "Set to 'true' or '1' to bypass stream URL proxying.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fProxy",
+            "in": "query",
+            "required": false,
+            "description": "Forward proxy setting (boolean or HTTP proxy string).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stream links retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid tmdbId or provider parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Provider not found, disabled, or no streams found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server or scraping error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/stream-tv": {
+      "get": {
+        "summary": "Get TV Episode Stream Links",
+        "description": "Fetches validated playback stream links for a TV episode by TMDB ID, season, and episode using a selected provider.",
+        "operationId": "getTVStream",
+        "tags": [
+          "Streams"
+        ],
+        "parameters": [
+          {
+            "name": "tmdbId",
+            "in": "query",
+            "required": true,
+            "description": "The TMDB ID of the TV show (e.g. '2316').",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "season",
+            "in": "query",
+            "required": true,
+            "description": "Season number (positive integer).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "episode",
+            "in": "query",
+            "required": true,
+            "description": "Episode number (positive integer).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "required": true,
+            "description": "The provider identifier to scrape streams from (e.g. 'vixsrc').",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "proxy",
+            "in": "query",
+            "required": false,
+            "description": "Set to 'false' or '0' to disable stream proxying.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "noProxy",
+            "in": "query",
+            "required": false,
+            "description": "Set to 'true' or '1' to bypass stream URL proxying.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fProxy",
+            "in": "query",
+            "required": false,
+            "description": "Forward proxy setting (boolean or HTTP proxy string).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stream links retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid query parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Provider not found, disabled, or no streams found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server or scraping error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/proxy": {
+      "get": {
+        "summary": "Proxy Video Stream",
+        "description": "Proxies video files, HLS manifests/segments, or DASH manifests using a signed JWT/HMAC token to pass required custom headers.",
+        "operationId": "proxyStream",
+        "tags": [
+          "Proxy"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "description": "Signed base64url token containing stream URL, headers, expiration, and HLS/DASH filter directives.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Video stream content (M3U8, MPD, TS segment, or MP4 video).",
+            "content": {
+              "application/x-mpegURL": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "video/MP2T": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "video/mp4": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              },
+              "application/dash+xml": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed or expired proxy token.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden destination protocol or address.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Upstream server communication error.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProviderInfo": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "alias",
+          "enabled"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "vixsrc"
+          },
+          "name": {
+            "type": "string",
+            "example": "VixSrc"
+          },
+          "alias": {
+            "type": "string",
+            "example": "VixSrc"
+          },
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ProviderListResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "providers"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "providers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProviderInfo"
+            }
+          }
+        }
+      },
+      "UpdateProviderRequest": {
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "True to enable provider, false to disable.",
+            "example": true
+          }
+        }
+      },
+      "ToggleProviderRequest": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "Optional boolean to set status. If omitted, status will be toggled.",
+            "example": true
+          }
+        }
+      },
+      "UpdateProviderResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "provider"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Provider 'vixsrc' has been enabled"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ProviderInfo"
+          }
+        }
+      },
+      "MediaInfo": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "releaseYear",
+          "tmdbId"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "movie",
+              "show"
+            ],
+            "example": "movie"
+          },
+          "title": {
+            "type": "string",
+            "example": "Hamilton"
+          },
+          "releaseYear": {
+            "type": "integer",
+            "example": 2020
+          },
+          "tmdbId": {
+            "type": "string",
+            "example": "556574"
+          }
+        }
+      },
+      "Subtitle": {
+        "type": "object",
+        "required": [
+          "file",
+          "label",
+          "kind"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com/subs/en.vtt"
+          },
+          "label": {
+            "type": "string",
+            "example": "English"
+          },
+          "kind": {
+            "type": "string",
+            "example": "captions"
+          },
+          "default": {
+            "type": "boolean",
+            "example": true
+          },
+          "s": {
+            "type": "string",
+            "description": "Subtitle identifier code if present.",
+            "example": "en"
+          }
+        }
+      },
+      "ProviderLink": {
+        "type": "object",
+        "required": [
+          "server",
+          "url",
+          "isM3U8",
+          "quality",
+          "subtitles"
+        ],
+        "properties": {
+          "server": {
+            "type": "string",
+            "example": "vixsrc"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "http://localhost:3000/proxy?token=eyJ..."
+          },
+          "isM3U8": {
+            "type": "boolean",
+            "example": true
+          },
+          "isDASH": {
+            "type": "boolean",
+            "example": false
+          },
+          "quality": {
+            "type": "string",
+            "example": "1080p"
+          },
+          "subtitles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Subtitle"
+            }
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Custom HTTP headers required when bypassing the stream proxy."
+          },
+          "hlsVariant": {
+            "type": "string",
+            "description": "Internal proxy instruction for HLS master playlist variant filtering."
+          },
+          "hlsAudioLanguage": {
+            "type": "string",
+            "description": "Internal proxy instruction for default HLS audio language selection."
+          },
+          "dashVideoHeight": {
+            "type": "integer",
+            "description": "Internal proxy instruction for DASH video height filtering."
+          },
+          "requiresProxy": {
+            "type": "boolean",
+            "description": "Indicates whether anti-hotlink restrictions force this stream through the proxy.",
+            "example": false
+          }
+        }
+      },
+      "ProviderResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "provider"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "provider": {
+            "type": "string",
+            "example": "vixsrc"
+          },
+          "media": {
+            "$ref": "#/components/schemas/MediaInfo"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProviderLink"
+            }
+          },
+          "error": {
+            "type": "string"
+          },
+          "details": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "error"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "example": "Missing or invalid tmdbId parameter"
+          },
+          "details": {
+            "type": "string",
+            "example": "Available providers: vixsrc, vidsrc, notorrent, ..."
+          }
+        }
+      }
+    }
+  }
+}

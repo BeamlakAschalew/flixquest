@@ -8,6 +8,7 @@ import 'package:flixquest/constants/app_constants.dart' show MediaType;
 import 'package:flixquest/models/provider_load_state.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:flixquest/video_providers/provider_loader.dart';
+import 'package:flixquest/video_providers/scraper_api.dart';
 import 'package:flixquest/widgets/provider_loading_widget.dart';
 import '../../controllers/recently_watched_database_controller.dart';
 import '../../provider/recently_watched_provider.dart';
@@ -48,6 +49,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   List<VideoProvider> videoProviders = [];
   List<ProviderLoadState> providerStates = [];
   int currentProviderIndex = 0;
+  String _scraperApiUrl = '';
 
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
@@ -60,22 +62,38 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   @override
   void initState() {
     super.initState();
-    videoProviders.add(VideoProvider(fullName: 'VixSrc', codeName: 'vixsrc'));
+    loadVideo();
+  }
 
-    // Initialize provider states
-    for (final provider in videoProviders) {
-      providerStates.add(ProviderLoadState(
-        codeName: provider.codeName,
-        fullName: provider.fullName,
-        status: ProviderStatus.pending,
-      ));
+  Future<void> _loadProviders() async {
+    _scraperApiUrl = Provider.of<AppDependencyProvider>(context, listen: false)
+        .flixquestAPIURL;
+    final providers = <VideoProvider>[];
+    try {
+      providers.addAll(await ScraperApi(_scraperApiUrl).getProviders());
+    } catch (error) {
+      debugPrint('Unable to load scraper providers: $error');
     }
 
-    loadVideo();
+    providers.add(VideoProvider.directVixSrc);
+    if (!mounted) return;
+    setState(() {
+      videoProviders = providers;
+      providerStates = providers
+          .map(
+            (provider) => ProviderLoadState(
+              codeName: provider.codeName,
+              fullName: provider.displayName,
+              status: ProviderStatus.pending,
+            ),
+          )
+          .toList();
+    });
   }
 
   void loadVideo() async {
     try {
+      await _loadProviders();
       // Fetch season episodes first
       await _fetchSeasonEpisodes();
 
@@ -104,102 +122,59 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             tr('episode_may_not_be_available'), context);
       }
 
-      // Iterate through providers - stop at FIRST working provider for fast loading
-      String? firstWorkingProviderCode;
-      for (int i = 0; i < videoProviders.length; i++) {
-        if (mounted) {
-          setState(() {
-            currentProviderIndex = i;
-            providerStates[i] = providerStates[i].copyWith(
+      if (mounted) {
+        setState(() {
+          for (var index = 0; index < providerStates.length; index++) {
+            providerStates[index] = providerStates[index].copyWith(
               status: ProviderStatus.loading,
             );
-          });
-        }
+          }
+        });
+      }
 
-        try {
-          final result = await ProviderLoader.loadTVFromProvider(
-            providerCode: videoProviders[i].codeName,
+      final selection = await ProviderLoader.loadFirstSuccessful(
+        providers: videoProviders,
+        load: (provider) {
+          debugPrint(
+            '[TVVideoLoader] Request provider=${provider.displayName} '
+            '(${provider.codeName}), tmdbId=${widget.metadata.tvId}, '
+            'season=${widget.metadata.seasonNumber}, episode=${widget.metadata.episodeNumber}',
+          );
+          return ProviderLoader.loadTVFromProvider(
+            provider: provider,
             tvId: widget.metadata.tvId!,
             seasonNumber: widget.metadata.seasonNumber!,
             episodeNumber: widget.metadata.episodeNumber!,
+            scraperApiUrl: _scraperApiUrl,
           );
-
-          if (result.success &&
-              result.videoLinks != null &&
-              result.videoLinks!.isNotEmpty) {
-            // Success! Mark provider as successful
-            if (mounted) {
-              setState(() {
-                providerStates[i] = providerStates[i].copyWith(
-                  status: ProviderStatus.success,
-                );
-              });
-            }
-
-            // Store the first working provider code
-            firstWorkingProviderCode = videoProviders[i].codeName;
-
-            // Convert videos for this provider
-            videos = VideoUtils.convertVideoLinksToMap(result.videoLinks!);
-            tvVideoLinks = result.videoLinks;
-            tvVideoSubs = result.subtitleLinks;
-
-            // Process subtitles for this provider
-            if (result.subtitleLinks != null &&
-                result.subtitleLinks!.isNotEmpty) {
-              final preferredLang = settings.defaultSubtitleLanguage;
-
-              for (final subLink in result.subtitleLinks!) {
-                final subLanguage = subLink.language ?? 'Unknown';
-                // Check if this subtitle matches the user's preferred language
-                final isPreferred = preferredLang.isNotEmpty &&
-                    (subLanguage
-                            .toLowerCase()
-                            .startsWith(preferredLang.toLowerCase()) ||
-                        subLanguage.toLowerCase() ==
-                            preferredLang.toLowerCase() ||
-                        // Also check for common English variants
-                        (preferredLang.toLowerCase() == 'en' &&
-                            (subLanguage == 'English' ||
-                                subLanguage == 'English - English' ||
-                                subLanguage == 'English - SDH' ||
-                                subLanguage.startsWith('English'))));
-
-                subs.add(
-                  BetterPlayerSubtitlesSource(
-                    type: BetterPlayerSubtitlesSourceType.network,
-                    urls: [subLink.url ?? ''],
-                    name: subLanguage,
-                    selectedByDefault: isPreferred,
-                  ),
-                );
-              }
-            }
-
-            // Stop at first working provider
-            break;
-          } else {
-            // Provider failed
-            if (mounted) {
-              setState(() {
-                providerStates[i] = providerStates[i].copyWith(
-                  status: ProviderStatus.failed,
-                  errorMessage: result.errorMessage ?? 'No video sources found',
-                );
-              });
-            }
-          }
-        } catch (e) {
-          // Provider error
+        },
+        onResult: (index, provider, result) {
+          debugPrint(
+            '[TVVideoLoader] Response provider=${provider.displayName} '
+            'success=${result.success}, links=${result.videoLinks?.length ?? 0}, '
+            'subtitles=${result.subtitleLinks?.length ?? 0}, error=${result.errorMessage}',
+          );
           if (mounted) {
             setState(() {
-              providerStates[i] = providerStates[i].copyWith(
-                status: ProviderStatus.failed,
-                errorMessage: e.toString(),
+              currentProviderIndex = index;
+              providerStates[index] = providerStates[index].copyWith(
+                status: result.success && result.videoLinks?.isNotEmpty == true
+                    ? ProviderStatus.success
+                    : ProviderStatus.failed,
+                errorMessage: result.errorMessage,
               );
             });
           }
-        }
+        },
+      );
+
+      final firstWorkingProviderCode = selection?.provider.codeName;
+      if (selection != null) {
+        final result = selection.result;
+        videos = VideoUtils.convertVideoLinksToMap(result.videoLinks!);
+        tvVideoLinks = result.videoLinks;
+        tvVideoSubs = result.subtitleLinks;
+        _addSubtitles(result.subtitleLinks);
       }
 
       // Check if we found a working provider
@@ -219,6 +194,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       // Prepare final video map (reversed for quality ordering)
       Map<String, String> reversedVids =
           VideoUtils.reverseVideoQualityMap(videos);
+      final videoFormats = VideoUtils.reverseVideoQualityMap(
+        VideoUtils.convertVideoFormatsToMap(tvVideoLinks ?? const []),
+      );
 
       if (firstWorkingProviderCode != null && mounted) {
         final mixpanel =
@@ -250,6 +228,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                     videoProviders, // Pass provider list for lazy loading
                 currentProviderCode:
                     firstWorkingProviderCode, // Current provider
+                scraperApiUrl: _scraperApiUrl,
+                videoFormats: videoFormats,
+                prefetchedProviderResults: selection?.batchResults ?? const {},
                 subtitleStyle:
                     Provider.of<SettingsProvider>(context).subtitleTextStyle,
                 onEpisodeChange:
@@ -291,6 +272,29 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             },
             context: context);
       }
+    }
+  }
+
+  void _addSubtitles(List<RegularSubtitleLinks>? subtitleLinks) {
+    if (subtitleLinks == null || subtitleLinks.isEmpty) return;
+    final preferredLang = settings.defaultSubtitleLanguage.toLowerCase();
+
+    for (final subLink in subtitleLinks) {
+      final subLanguage = subLink.language ?? 'Unknown';
+      final normalizedLanguage = subLanguage.toLowerCase();
+      final isPreferred = preferredLang.isNotEmpty &&
+          (normalizedLanguage.startsWith(preferredLang) ||
+              normalizedLanguage == preferredLang ||
+              (preferredLang == 'en' &&
+                  normalizedLanguage.startsWith('english')));
+      subs.add(
+        BetterPlayerSubtitlesSource(
+          type: BetterPlayerSubtitlesSourceType.network,
+          urls: [subLink.url ?? ''],
+          name: subLanguage,
+          selectedByDefault: isPreferred,
+        ),
+      );
     }
   }
 

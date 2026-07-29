@@ -63,7 +63,7 @@ class _FlixQuestState extends State<FlixQuest>
       appDependencyProvider.displayOTTDrawer =
           _remoteConfig.getBool('enable_ott');
       appDependencyProvider.flixquestAPIURL =
-          _remoteConfig.getString('flixquest_api_url');
+          _remoteConfig.getString('flixquest_api_url_v2');
       appDependencyProvider.isForcedUpdate =
           _remoteConfig.getBool('forced_update');
       appDependencyProvider.tmdbProxy = _remoteConfig.getString('tmdb_proxy');
@@ -196,7 +196,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
       appDep.flixQuestLogo = remoteConfig.getString('cinemax_logo');
       appDep.displayWatchNowButton = remoteConfig.getBool('enable_stream');
       appDep.displayOTTDrawer = remoteConfig.getBool('enable_ott');
-      appDep.flixquestAPIURL = remoteConfig.getString('flixquest_api_url');
+      appDep.flixquestAPIURL = remoteConfig.getString('flixquest_api_url_v2');
       appDep.isForcedUpdate = remoteConfig.getBool('forced_update');
       appDep.tmdbProxy = remoteConfig.getString('tmdb_proxy');
     }

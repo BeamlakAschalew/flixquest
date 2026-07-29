@@ -3,9 +3,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 
+import '../../provider/app_dependency_provider.dart';
 import '../../ui_components/app_ui_components.dart';
-import '../../video_providers/vixsrc.dart';
+import '../../video_providers/names.dart';
+import '../../video_providers/provider_loader.dart';
+import '../../video_providers/scraper_api.dart';
 
 class ServerStatusScreen extends StatefulWidget {
   const ServerStatusScreen({super.key});
@@ -16,9 +20,8 @@ class ServerStatusScreen extends StatefulWidget {
 
 class _ServerStatusScreenState extends State<ServerStatusScreen> {
   bool _checking = true;
-  bool _working = false;
-  Duration? _latency;
-  String? _error;
+  String? _discoveryError;
+  List<_ProviderStatus> _providers = const [];
 
   @override
   void initState() {
@@ -27,20 +30,59 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
   }
 
   Future<void> _checkServer() async {
+    final scraperApiUrl = context.read<AppDependencyProvider>().flixquestAPIURL;
+    if (mounted) {
+      setState(() {
+        _checking = true;
+        _discoveryError = null;
+      });
+    }
+
+    final providers = <VideoProvider>[];
+    String? discoveryError;
+    try {
+      providers.addAll(await ScraperApi(scraperApiUrl).getProviders());
+    } catch (error) {
+      discoveryError = error.toString();
+    }
+    providers.add(VideoProvider.directVixSrc);
+
+    if (!mounted) return;
     setState(() {
-      _checking = true;
-      _error = null;
+      _providers = providers.map(_ProviderStatus.checking).toList();
+      _discoveryError = discoveryError;
     });
-    final stopwatch = Stopwatch()..start();
-    final result = await VixSrc.loadMovie(884605);
-    stopwatch.stop();
+
+    final results = await Future.wait(
+      providers.map(
+        (provider) => _checkProvider(provider, scraperApiUrl),
+      ),
+    );
     if (!mounted) return;
     setState(() {
       _checking = false;
-      _working = result.success && (result.videoLinks?.isNotEmpty ?? false);
-      _latency = stopwatch.elapsed;
-      _error = result.errorMessage;
+      _providers = results;
     });
+  }
+
+  Future<_ProviderStatus> _checkProvider(
+    VideoProvider provider,
+    String scraperApiUrl,
+  ) async {
+    final stopwatch = Stopwatch()..start();
+    final result = await ProviderLoader.loadMovieFromProvider(
+      provider: provider,
+      movieId: 884605,
+      scraperApiUrl: scraperApiUrl,
+    );
+    stopwatch.stop();
+    return _ProviderStatus(
+      provider: provider,
+      checking: false,
+      working: result.success && (result.videoLinks?.isNotEmpty ?? false),
+      latency: stopwatch.elapsed,
+      error: result.errorMessage,
+    );
   }
 
   @override
@@ -50,81 +92,26 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
       appBar: AppBar(title: Text(tr('check_server'))),
       body: AppResponsiveContent(
         maxWidth: 680,
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 28),
         child: Column(
           children: [
-            const SizedBox(height: 20),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: (_checking
-                                ? colors.primary
-                                : _working
-                                    ? colors.tertiary
-                                    : colors.error)
-                            .withValues(alpha: .12),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: _checking
-                          ? const Padding(
-                              padding: EdgeInsets.all(15),
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Icon(
-                              _working
-                                  ? PhosphorIcons.checkCircle()
-                                  : PhosphorIcons.warningCircle(),
-                              color: _working ? colors.tertiary : colors.error,
-                            ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'VixSrc',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _checking
-                                ? tr('checking_server')
-                                : _working
-                                    ? tr('server_working')
-                                    : tr('server_down'),
-                            style: TextStyle(
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ),
-                          if (!_checking && _latency != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              '${_latency!.inMilliseconds} ms',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (!_checking && !_working && _error != null)
+            if (_discoveryError != null)
               Padding(
-                padding: const EdgeInsets.fromLTRB(8, 12, 8, 0),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: Text(
-                  _error!,
+                  _discoveryError!,
                   textAlign: TextAlign.center,
                   style: TextStyle(color: colors.onSurfaceVariant),
                 ),
               ),
+            Expanded(
+              child: ListView.separated(
+                itemCount: _providers.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (context, index) =>
+                    _buildProviderCard(_providers[index], colors),
+              ),
+            ),
             const SizedBox(height: 20),
             FilledButton.icon(
               onPressed: _checking ? null : _checkServer,
@@ -136,4 +123,100 @@ class _ServerStatusScreenState extends State<ServerStatusScreen> {
       ),
     );
   }
+
+  Widget _buildProviderCard(_ProviderStatus status, ColorScheme colors) {
+    final color = status.checking
+        ? colors.primary
+        : status.working
+            ? colors.tertiary
+            : colors.error;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: .12),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: status.checking
+                  ? const Padding(
+                      padding: EdgeInsets.all(15),
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
+                      status.working
+                          ? PhosphorIcons.checkCircle()
+                          : PhosphorIcons.warningCircle(),
+                      color: color,
+                    ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // The API alias is the user-facing name everywhere.
+                  Text(
+                    status.provider.displayName,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    status.checking
+                        ? tr('checking_server')
+                        : status.working
+                            ? tr('server_working')
+                            : tr('server_down'),
+                    style: TextStyle(color: colors.onSurfaceVariant),
+                  ),
+                  if (!status.checking && status.latency != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '${status.latency!.inMilliseconds} ms',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                  if (!status.checking &&
+                      !status.working &&
+                      status.error != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      status.error!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colors.error,
+                          ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ProviderStatus {
+  const _ProviderStatus({
+    required this.provider,
+    required this.checking,
+    this.working = false,
+    this.latency,
+    this.error,
+  });
+
+  factory _ProviderStatus.checking(VideoProvider provider) {
+    return _ProviderStatus(provider: provider, checking: true);
+  }
+
+  final VideoProvider provider;
+  final bool checking;
+  final bool working;
+  final Duration? latency;
+  final String? error;
 }
