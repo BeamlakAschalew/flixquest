@@ -5,6 +5,7 @@ class TVStreamMetadata {
   int? episodeNumber;
   int? seasonNumber;
   String? posterPath;
+  String? backdropPath;
   int? elapsed;
   int? tvId;
   String? airDate;
@@ -24,6 +25,7 @@ class TVStreamMetadata {
     required this.seriesName,
     required this.tvId,
     required this.airDate,
+    this.backdropPath,
     this.seasonEpisodes,
     this.allSeasons,
     this.onSeasonChange,

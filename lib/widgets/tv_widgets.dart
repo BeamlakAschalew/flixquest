@@ -828,6 +828,8 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                 width: cardWidth,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(18),
+                  overlayColor:
+                      const WidgetStatePropertyAll(Colors.transparent),
                   onLongPress: () => _deleteEpisode(episode),
                   onTap: () => _openEpisode(episode),
                   child: Column(
@@ -840,7 +842,8 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              episode.posterPath == null
+                              (episode.backdropPath ?? episode.posterPath) ==
+                                      null
                                   ? Image.asset('assets/images/na_logo.png',
                                       fit: BoxFit.cover)
                                   : CachedNetworkImage(
@@ -852,7 +855,8 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                             context,
                                           ) +
                                           imageQuality +
-                                          episode.posterPath!,
+                                          (episode.backdropPath ??
+                                              episode.posterPath)!,
                                       fit: BoxFit.cover,
                                       placeholder: (_, __) =>
                                           const AppShimmerBlock(),
@@ -901,7 +905,9 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                                       color: Colors.white,
                                       shape: BoxShape.circle),
                                   child: Icon(PhosphorIcons.play(),
-                                      color: Colors.black, size: 30),
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      size: 30),
                                 ),
                               ),
                               Positioned(
@@ -986,6 +992,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
             episodeName: episode.episodeName,
             episodeNumber: episode.episodeNum,
             posterPath: episode.posterPath,
+            backdropPath: episode.backdropPath,
             seasonNumber: episode.seasonNum,
             seriesName: episode.seriesName,
             tvId: episode.seriesId,
@@ -6444,6 +6451,7 @@ class _WatchNowButtonState extends State<WatchNowButton> {
                                 episodeName: widget.episode.name,
                                 episodeNumber: widget.episode.episodeNumber!,
                                 posterPath: widget.posterPath,
+                                backdropPath: widget.episode.stillPath,
                                 seasonNumber: widget.episode.seasonNumber!,
                                 seriesName: widget.seriesName,
                                 tvId: widget.tvId,

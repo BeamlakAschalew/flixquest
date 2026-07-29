@@ -120,6 +120,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
             episodeName: widget.episodeList.name,
             episodeNumber: widget.episodeList.episodeNumber!,
             posterPath: widget.posterPath!,
+            backdropPath: widget.episodeList.stillPath,
             seasonNumber: widget.episodeList.seasonNumber!,
             seriesName: widget.seriesName ?? '',
             tvId: widget.tvId!,

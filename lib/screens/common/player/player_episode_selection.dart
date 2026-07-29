@@ -79,7 +79,7 @@ class PlayerEpisodeSelection {
               controller: scrollController,
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
               itemCount: episodes.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (_, __) => const SizedBox(height: 4),
               itemBuilder: (context, index) {
                 final episode = episodes[index];
                 final current =
@@ -118,6 +118,8 @@ class PlayerEpisodeSelection {
                                   episodeName: episode.episodeName,
                                   episodeNumber: episode.episodeNumber,
                                   posterPath: tvMetadata.posterPath,
+                                  backdropPath: episode.stillPath ??
+                                      tvMetadata.backdropPath,
                                   seasonNumber: episode.seasonNumber,
                                   seriesName: tvMetadata.seriesName,
                                   tvId: tvMetadata.tvId,
@@ -214,7 +216,7 @@ class PlayerEpisodeSelection {
             controller: scrollController,
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
             itemCount: seasons.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            separatorBuilder: (_, __) => const SizedBox(height: 4),
             itemBuilder: (context, index) {
               final season = seasons[index];
               final current = season.seasonNumber == tvMetadata.seasonNumber;

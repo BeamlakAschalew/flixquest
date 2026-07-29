@@ -187,8 +187,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 .inMilliseconds,
         progressBarPlayedColor: widget.colors.first,
         progressBarBufferedColor: Colors.black45,
-        skipForwardIcon: PhosphorIcons.arrowsClockwise(),
-        skipBackIcon: PhosphorIcons.arrowsCounterClockwise(),
+        skipForwardIcon: PhosphorIcons.fastForward(),
+        skipBackIcon: PhosphorIcons.rewind(),
         fullscreenEnableIcon: PhosphorIcons.cornersOut(),
         fullscreenDisableIcon: PhosphorIcons.cornersIn(),
         overflowMenuIcon: PhosphorIcons.dotsThreeVertical(),
@@ -657,7 +657,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   Expanded(
                     child: ListView.separated(
                       itemCount: providers.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      separatorBuilder: (_, __) => const SizedBox(height: 4),
                       itemBuilder: (context, index) {
                         final provider = providers[index];
                         final selected =
@@ -912,7 +912,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
             itemCount: subtitles.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            separatorBuilder: (_, __) => const SizedBox(height: 4),
             itemBuilder: (context, index) {
               final source = subtitles[index];
               final isOff = source.type == BetterPlayerSubtitlesSourceType.none;

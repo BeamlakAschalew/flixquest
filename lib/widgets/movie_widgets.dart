@@ -848,6 +848,8 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                 width: cardWidth,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(18),
+                  overlayColor:
+                      const WidgetStatePropertyAll(Colors.transparent),
                   onLongPress: () =>
                       context.read<RecentProvider>().deleteMovie(movie.id!),
                   onTap: () => _openMovie(movie),
@@ -861,7 +863,7 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              movie.posterPath == null
+                              (movie.backdropPath ?? movie.posterPath) == null
                                   ? Image.asset('assets/images/na_logo.png',
                                       fit: BoxFit.cover)
                                   : CachedNetworkImage(
@@ -873,7 +875,8 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                             context,
                                           ) +
                                           imageQuality +
-                                          movie.posterPath!,
+                                          (movie.backdropPath ??
+                                              movie.posterPath)!,
                                       fit: BoxFit.cover,
                                       placeholder: (_, __) =>
                                           const AppShimmerBlock(),
@@ -903,7 +906,9 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(PhosphorIcons.play(),
-                                      color: Colors.black, size: 30),
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      size: 30),
                                 ),
                               ),
                               Positioned(

@@ -154,7 +154,7 @@ class PlayerNextEpisodeWidget {
                                 .colorScheme
                                 .primary
                                 .withValues(alpha: .12),
-                            borderRadius: BorderRadius.circular(15),
+                            shape: BoxShape.circle,
                           ),
                           child: Icon(
                             PhosphorIcons.skipForward(
@@ -249,6 +249,7 @@ class PlayerNextEpisodeWidget {
       episodeName: episode.episodeName,
       episodeNumber: episode.episodeNumber,
       posterPath: current.posterPath,
+      backdropPath: episode.stillPath ?? current.backdropPath,
       seasonNumber: episode.seasonNumber,
       seriesName: current.seriesName,
       tvId: current.tvId,

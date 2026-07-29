@@ -82,11 +82,23 @@ class PlayerDataManagement {
       prv = Provider.of<RecentProvider>(context, listen: false);
     }
 
+    String? backdropPath = tvMetadata.backdropPath;
+    if (backdropPath == null) {
+      for (final episode
+          in tvMetadata.seasonEpisodes ?? const <EpisodeMetadata>[]) {
+        if (episode.episodeId == tvMetadata.episodeId) {
+          backdropPath = episode.stillPath;
+          break;
+        }
+      }
+    }
+
     RecentEpisode rEpisode = RecentEpisode(
         dateTime: dt,
         elapsed: elapsed,
         id: tvMetadata.episodeId!,
         posterPath: tvMetadata.posterPath!,
+        backdropPath: backdropPath ?? tvMetadata.posterPath,
         remaining: remaining,
         seriesName: tvMetadata.seriesName!,
         episodeName: tvMetadata.episodeName!,

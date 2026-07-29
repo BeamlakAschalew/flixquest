@@ -89,7 +89,7 @@ class PlayerExternalSubtitles {
                 controller: scrollController,
                 padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                 itemCount: _availableExternalSubtitles.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, __) => const SizedBox(height: 4),
                 itemBuilder: (context, index) {
                   final subtitle = _availableExternalSubtitles[index];
                   final selected = _selectedExternalSubtitles

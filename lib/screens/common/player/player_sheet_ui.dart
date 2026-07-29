@@ -34,11 +34,11 @@ class PlayerSheetScaffold extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  width: 46,
-                  height: 46,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: colors.primary.withValues(alpha: .12),
-                    borderRadius: BorderRadius.circular(15),
+                    shape: BoxShape.circle,
                   ),
                   child: Icon(icon, color: colors.primary),
                 ),
@@ -105,24 +105,15 @@ class PlayerChoiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return Card(
-      margin: EdgeInsets.zero,
+    return Material(
+      color:
+          selected ? colors.primary.withValues(alpha: .1) : Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
-      color: selected
-          ? colors.primaryContainer.withValues(alpha: .5)
-          : colors.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(17),
-        side: BorderSide(
-          color: selected
-              ? colors.primary.withValues(alpha: .55)
-              : colors.outlineVariant.withValues(alpha: .45),
-        ),
-      ),
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -226,14 +217,6 @@ class PlayerSheetFooter extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
-        border: Border(
-          top: BorderSide(
-            color: Theme.of(context)
-                .colorScheme
-                .outlineVariant
-                .withValues(alpha: .45),
-          ),
-        ),
       ),
       child: SafeArea(
         top: false,

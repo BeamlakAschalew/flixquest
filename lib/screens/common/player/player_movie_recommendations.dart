@@ -106,7 +106,7 @@ class PlayerMovieRecommendations {
             controller: scrollController,
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
             itemCount: recommendations.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            separatorBuilder: (_, __) => const SizedBox(height: 4),
             itemBuilder: (context, index) {
               final movie = recommendations[index];
               return PlayerChoiceCard(
@@ -114,9 +114,9 @@ class PlayerMovieRecommendations {
                 subtitle: _movieSubtitle(movie),
                 description: movie.overview,
                 thumbnail: _RecommendationThumbnail(
-                  path: movie.posterPath,
-                  width: 72,
-                  height: 108,
+                  path: movie.backdropPath ?? movie.posterPath,
+                  width: 112,
+                  height: 68,
                 ),
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -173,7 +173,7 @@ class PlayerMovieRecommendations {
                                 .colorScheme
                                 .primary
                                 .withValues(alpha: .12),
-                            borderRadius: BorderRadius.circular(15),
+                            shape: BoxShape.circle,
                           ),
                           child: Icon(
                             PhosphorIcons.sparkle(),
@@ -200,9 +200,9 @@ class PlayerMovieRecommendations {
                       description: selected.overview,
                       selected: true,
                       thumbnail: _RecommendationThumbnail(
-                        path: selected.posterPath,
-                        width: 92,
-                        height: 138,
+                        path: selected.backdropPath ?? selected.posterPath,
+                        width: 128,
+                        height: 76,
                       ),
                       trailing: Icon(
                         PhosphorIcons.playCircle(
@@ -224,8 +224,7 @@ class PlayerMovieRecommendations {
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: recommendations.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(width: 10),
+                          separatorBuilder: (_, __) => const SizedBox(width: 6),
                           itemBuilder: (context, index) {
                             final movie = recommendations[index];
                             final isSelected = index == selectedIndex;
@@ -250,9 +249,10 @@ class PlayerMovieRecommendations {
                                     child: Row(
                                       children: [
                                         _RecommendationThumbnail(
-                                          path: movie.posterPath,
-                                          width: 64,
-                                          height: 96,
+                                          path: movie.backdropPath ??
+                                              movie.posterPath,
+                                          width: 96,
+                                          height: 58,
                                         ),
                                         const SizedBox(width: 10),
                                         Expanded(

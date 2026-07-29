@@ -109,6 +109,7 @@ class RecentlyWatchedEpisodeController {
   String colEpisodeNum = 'episode_num';
   String colSeasonNum = 'season_num';
   String colPosterPath = 'poster_path';
+  String colBackdropPath = 'backdrop_path';
   String colElapsed = 'elapsed';
   String colRemaining = 'remaining';
   String colDateAdded = 'date_added';
@@ -123,8 +124,18 @@ class RecentlyWatchedEpisodeController {
   Future<Database> initializeDatabase() async {
     Directory directory = await getApplicationDocumentsDirectory();
     String path = '${directory.path}recent_episodes_v2.db';
-    var episodesDatabase =
-        await openDatabase(path, version: 1, onCreate: _createDb);
+    var episodesDatabase = await openDatabase(
+      path,
+      version: 2,
+      onCreate: _createDb,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute(
+            'ALTER TABLE $tableName ADD COLUMN $colBackdropPath TEXT',
+          );
+        }
+      },
+    );
     return episodesDatabase;
   }
 
@@ -135,7 +146,7 @@ class RecentlyWatchedEpisodeController {
 
   void _createDb(Database db, int newVersion) async {
     await db.execute(
-        'CREATE TABLE $tableName($colId INTEGER PRIMARY KEY, $colSeriesId INTEGER, $colTitle TEXT, $colEpisodeTitle TEXT, $colEpisodeNum INTEGER, $colSeasonNum INTEGER, $colElapsed NUMERIC, $colRemaining NUMERIC, $colPosterPath TEXT, $colDateAdded TEXT)');
+        'CREATE TABLE $tableName($colId INTEGER PRIMARY KEY, $colSeriesId INTEGER, $colTitle TEXT, $colEpisodeTitle TEXT, $colEpisodeNum INTEGER, $colSeasonNum INTEGER, $colElapsed NUMERIC, $colRemaining NUMERIC, $colPosterPath TEXT, $colBackdropPath TEXT, $colDateAdded TEXT)');
   }
 
   //this function will return all the tv in the database.

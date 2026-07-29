@@ -54,6 +54,7 @@ class RecentEpisode {
   int? elapsed;
   int? remaining;
   int? seriesId;
+  String? backdropPath;
 
   RecentEpisode(
       {required this.dateTime,
@@ -65,7 +66,8 @@ class RecentEpisode {
       required this.remaining,
       required this.seasonNum,
       required this.seriesName,
-      required this.seriesId});
+      required this.seriesId,
+      this.backdropPath});
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{};
@@ -75,6 +77,7 @@ class RecentEpisode {
     map['episode_num'] = episodeNum;
     map['season_num'] = seasonNum;
     map['poster_path'] = posterPath;
+    map['backdrop_path'] = backdropPath;
     map['elapsed'] = elapsed;
     map['remaining'] = remaining;
     map['date_added'] = dateTime;
@@ -89,6 +92,7 @@ class RecentEpisode {
     episodeNum = map['episode_num'];
     seasonNum = map['season_num'];
     posterPath = map['poster_path'];
+    backdropPath = map['backdrop_path'];
     elapsed = map['elapsed'];
     remaining = map['remaining'];
     dateTime = map['date_added'];
