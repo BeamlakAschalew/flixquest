@@ -18,6 +18,7 @@ import '../../functions/function.dart';
 import '../../models/images.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class HeroPhotoView extends StatefulWidget {
   const HeroPhotoView(
@@ -130,79 +131,73 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   }
 
   @override
+  void dispose() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    _port.close();
+    super.dispose();
+  }
+
+  String _imagePathAt(int index) {
+    if (widget.imageType == 'backdrop') {
+      return widget.backdrops![index].filePath!;
+    }
+    if (widget.imageType == 'poster') {
+      return widget.posters![index].posterPath!;
+    }
+    return widget.stills![index].stillPath!;
+  }
+
+  int get _itemCount => widget.imageType == 'backdrop'
+      ? widget.backdrops!.length
+      : widget.imageType == 'poster'
+          ? widget.posters!.length
+          : widget.stills!.length;
+
+  @override
   Widget build(BuildContext context) {
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
     return Scaffold(
-      appBar: AppBar(
-          title: Text(widget.imageType == 'backdrop'
-              ? '${currentIndex + 1} / ${widget.backdrops!.length}'
-              : widget.imageType == 'still'
-                  ? '${currentIndex + 1} / ${widget.stills!.length}'
-                  : '${currentIndex + 1} / ${widget.posters!.length}'),
-          actions: [
-            IconButton(
-              onPressed: () async {
-                _download(
-                    widget.imageType == 'backdrop'
-                        ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
-                                isProxyEnabled, context) +
-                            imageQuality +
-                            widget.backdrops![currentIndex].filePath!
-                        : widget.imageType == 'poster'
-                            ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
-                                    isProxyEnabled, context) +
-                                imageQuality +
-                                widget.posters![currentIndex].posterPath!
-                            : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
-                                    isProxyEnabled, context) +
-                                imageQuality +
-                                widget.stills![currentIndex].stillPath!,
-                    '${currentIndex + 1}',
-                    themeMode);
-              },
-              icon: Icon(PhosphorIcons.downloadSimple()),
-            )
-          ]),
-      body: Container(
-          child: Stack(alignment: Alignment.bottomRight, children: [
-        PhotoViewGallery.builder(
-          allowImplicitScrolling: true,
-          gaplessPlayback: true,
-          wantKeepAlive: true,
-          enableRotation: true,
-          scrollPhysics: const BouncingScrollPhysics(),
-          builder: (BuildContext context, int index) {
-            return PhotoViewGalleryPageOptions(
-              imageProvider: CachedNetworkImageProvider(
-                widget.imageType == 'backdrop'
-                    ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
-                            isProxyEnabled, context) +
-                        imageQuality +
-                        widget.backdrops![currentIndex].filePath!
-                    : widget.imageType == 'poster'
-                        ? buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
-                                isProxyEnabled, context) +
-                            imageQuality +
-                            widget.posters![currentIndex].posterPath!
-                        : buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl,
-                                isProxyEnabled, context) +
-                            imageQuality +
-                            widget.stills![currentIndex].stillPath!,
-              ),
-              initialScale: PhotoViewComputedScale.contained * 0.95,
-            );
+      appBar:
+          AppBar(title: Text('${currentIndex + 1} / $_itemCount'), actions: [
+        IconButton(
+          onPressed: () async {
+            _download(
+                buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled,
+                        context) +
+                    imageQuality +
+                    _imagePathAt(currentIndex),
+                '${currentIndex + 1}',
+                themeMode);
           },
-          itemCount: widget.imageType == 'backdrop'
-              ? widget.backdrops!.length
-              : widget.imageType == 'poster'
-                  ? widget.posters!.length
-                  : widget.stills!.length,
-          onPageChanged: onPageChanged,
-          loadingBuilder: (context, event) => Container(
-            child: Center(
+          icon: Icon(PhosphorIcons.downloadSimple()),
+        )
+      ]),
+      body: ColoredBox(
+        color: Colors.black,
+        child: Stack(alignment: Alignment.bottomCenter, children: [
+          PhotoViewGallery.builder(
+            allowImplicitScrolling: true,
+            gaplessPlayback: true,
+            wantKeepAlive: true,
+            enableRotation: true,
+            scrollPhysics: const BouncingScrollPhysics(),
+            builder: (BuildContext context, int index) {
+              return PhotoViewGalleryPageOptions(
+                imageProvider: CachedNetworkImageProvider(
+                  buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled,
+                          context) +
+                      imageQuality +
+                      _imagePathAt(index),
+                ),
+                initialScale: PhotoViewComputedScale.contained * 0.95,
+              );
+            },
+            itemCount: _itemCount,
+            onPageChanged: onPageChanged,
+            loadingBuilder: (context, event) => Center(
               child: SizedBox(
                 width: 50.0,
                 height: 50.0,
@@ -214,22 +209,24 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
               ),
             ),
           ),
-        ),
-        Container(
-          padding: const EdgeInsets.all(20.0),
-          child: Text(
-            tr('image_index',
-                namedArgs: {'index': (currentIndex + 1).toString()}),
-            style: TextStyle(
-              color: themeMode == 'dark' || themeMode == 'amoled'
-                  ? Colors.white
-                  : Colors.black,
-              fontSize: 17.0,
-              decoration: null,
+          Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: .66),
+              borderRadius: BorderRadius.circular(AppUI.cardRadius),
             ),
-          ),
-        )
-      ])),
+            child: Text(
+              tr('image_index',
+                  namedArgs: {'index': (currentIndex + 1).toString()}),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 17.0,
+              ),
+            ),
+          )
+        ]),
+      ),
     );
   }
 }

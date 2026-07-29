@@ -962,13 +962,11 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
       );
       return;
     }
-    final fetchRoute = context.read<AppDependencyProvider>().fetchRoute;
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => MovieVideoLoader(
           download: false,
-          route: fetchRoute == 'flixHQ' ? StreamRoute.flixHQ : StreamRoute.tmDB,
           metadata: MovieStreamMetadata(
             backdropPath: movie.backdropPath,
             elapsed: movie.elapsed,
@@ -986,251 +984,6 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
 
   // Kept temporarily as a behavior reference while the refreshed rail settles.
   // ignore: unused_element
-  Widget _legacyBuild(BuildContext context) {
-    final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
-    final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
-    final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const LeadingDot(),
-                    Expanded(
-                      child: Text(
-                        tr('recently_watched'),
-                        style: kTextHeaderStyle,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            // Padding(
-            //     padding: const EdgeInsets.all(8),
-            //     child: TextButton(
-            //       onPressed: () {
-            //         Navigator.push(context,
-            //             MaterialPageRoute(builder: (context) {
-            //           return const MovieVideoLoader(
-            //               download: false, metadata: []);
-            //         }));
-            //       },
-            //       style: ButtonStyle(
-            //           maximumSize:
-            //               WidgetStateProperty.all(const Size(200, 60)),
-            //           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-            //               RoundedRectangleBorder(
-            //             borderRadius: BorderRadius.circular(20.0),
-            //           ))),
-            //       child: const Padding(
-            //         padding: EdgeInsets.only(left: 8.0, right: 8.0),
-            //         child: Text('View all'),
-            //       ),
-            //     )),
-          ],
-        ),
-        SizedBox(
-          width: double.infinity,
-          height: 250,
-          child: Row(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: widget.moviesList.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) {
-                    final prv =
-                        Provider.of<RecentProvider>(context, listen: false);
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(
-                        onLongPress: () {
-                          prv.deleteMovie(widget.moviesList[index].id!);
-                        },
-                        onTap: () async {
-                          await checkConnection().then((value) {
-                            value
-                                ? Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MovieVideoLoader(
-                                            download: false,
-                                            /* return to fetchRoute instead of hard text*/ route:
-                                                fetchRoute == 'flixHQ'
-                                                    ? StreamRoute.flixHQ
-                                                    : StreamRoute.tmDB,
-                                            metadata: MovieStreamMetadata(
-                                                backdropPath: widget
-                                                    .moviesList[index]
-                                                    .backdropPath,
-                                                elapsed: widget
-                                                    .moviesList[index].elapsed,
-                                                isAdult: null,
-                                                movieId:
-                                                    widget.moviesList[index].id,
-                                                movieName: widget
-                                                    .moviesList[index].title,
-                                                posterPath: widget
-                                                    .moviesList[index]
-                                                    .posterPath,
-                                                releaseYear: widget
-                                                    .moviesList[index]
-                                                    .releaseYear,
-                                                releaseDate: null))))
-                                : GlobalMethods.showCustomScaffoldMessage(
-                                    SnackBar(
-                                      content: Text(
-                                        tr('check_connection'),
-                                        maxLines: 3,
-                                        style: kTextSmallBodyStyle,
-                                      ),
-                                      duration: const Duration(seconds: 3),
-                                    ),
-                                    context);
-                          });
-                        },
-                        child: SizedBox(
-                          width: 100,
-                          child: Column(
-                            children: <Widget>[
-                              Material(
-                                type: MaterialType.transparency,
-                                child: SizedBox(
-                                  height: 155,
-                                  child: Stack(
-                                    alignment: Alignment.bottomCenter,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: widget.moviesList[index]
-                                                    .posterPath ==
-                                                null
-                                            ? Image.asset(
-                                                'assets/images/na_logo.png',
-                                                fit: BoxFit.cover,
-                                                width: double.infinity,
-                                                height: double.infinity)
-                                            : CachedNetworkImage(
-                                                cacheManager: cacheProp(),
-                                                fadeOutDuration: const Duration(
-                                                    milliseconds: 300),
-                                                fadeOutCurve: Curves.easeOut,
-                                                fadeInDuration: const Duration(
-                                                    milliseconds: 700),
-                                                fadeInCurve: Curves.easeIn,
-                                                imageUrl: widget
-                                                            .moviesList[index]
-                                                            .posterPath ==
-                                                        null
-                                                    ? ''
-                                                    : buildImageUrl(
-                                                            TMDB_BASE_IMAGE_URL,
-                                                            proxyUrl,
-                                                            isProxyEnabled,
-                                                            context) +
-                                                        imageQuality +
-                                                        widget.moviesList[index]
-                                                            .posterPath!,
-                                                imageBuilder:
-                                                    (context, imageProvider) =>
-                                                        Container(
-                                                  decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ),
-                                                placeholder: (context, url) =>
-                                                    scrollingImageShimmer(
-                                                        themeMode),
-                                                errorWidget: (context, url,
-                                                        error) =>
-                                                    Image.asset(
-                                                        'assets/images/na_logo.png',
-                                                        fit: BoxFit.cover,
-                                                        width: double.infinity,
-                                                        height:
-                                                            double.infinity),
-                                              ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                        child: ClipRRect(
-                                          borderRadius: const BorderRadius.only(
-                                              bottomLeft: Radius.circular(8),
-                                              bottomRight: Radius.circular(8)),
-                                          child: LinearProgressIndicator(
-                                            value: (widget.moviesList[index]
-                                                    .elapsed! /
-                                                (widget.moviesList[index]
-                                                        .remaining! +
-                                                    widget.moviesList[index]
-                                                        .elapsed!)),
-                                          ),
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: -15,
-                                        right: 8,
-                                        child: Container(
-                                            alignment: Alignment.topRight,
-                                            child: IconButton(
-                                              alignment: Alignment.topRight,
-                                              onPressed: () async {
-                                                prv.deleteMovie(widget
-                                                    .moviesList[index].id!);
-                                              },
-                                              icon: Icon(
-                                                  PhosphorIcons
-                                                      .bookmarkSimple(),
-                                                  size: 60),
-                                            )),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  widget.moviesList[index].title!,
-                                  maxLines: 3,
-                                  textAlign: TextAlign.center,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-        Divider(
-          color: themeMode == 'light' ? Colors.black54 : Colors.white54,
-          thickness: 1,
-          endIndent: 20,
-          indent: 10,
-        ),
-      ],
-    );
-  }
 }
 
 class SABTN extends StatefulWidget {
@@ -3200,7 +2953,6 @@ class WatchNowButtonState extends State<WatchNowButton> {
 
   @override
   Widget build(BuildContext context) {
-    final fetchRoute = Provider.of<AppDependencyProvider>(context).fetchRoute;
     return AnimatedContainer(
         duration: const Duration(seconds: 1),
         decoration: BoxDecoration(
@@ -3222,9 +2974,6 @@ class WatchNowButtonState extends State<WatchNowButton> {
                   ? Navigator.push(context,
                       MaterialPageRoute(builder: ((context) {
                       return MovieVideoLoader(
-                        route: fetchRoute == 'flixHQ'
-                            ? StreamRoute.flixHQ
-                            : StreamRoute.tmDB,
                         download: false,
                         metadata: MovieStreamMetadata(
                             backdropPath: widget.backdropPath,
@@ -4314,48 +4063,6 @@ class StreamingServicesWidget extends StatelessWidget {
   }
 
   // ignore: unused_element
-  Widget _legacyBuild(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return StreamingServicesMovies(
-            providerId: providerID,
-            providerName: title,
-          );
-        }));
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          height: 60,
-          width: 200,
-          decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(15)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image(
-                image: AssetImage(imagePath),
-                height: 50,
-                width: 50,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 class GenreListGrid extends StatefulWidget {
@@ -4434,87 +4141,6 @@ class GenreListGridState extends State<GenreListGrid>
   }
 
   // ignore: unused_element
-  Widget _legacyBuild(BuildContext context) {
-    super.build(context);
-    final themeMode = Provider.of<SettingsProvider>(context).appTheme;
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const LeadingDot(),
-                    Expanded(
-                      child: Text(
-                        tr('genres'),
-                        style: kTextHeaderStyle,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 10.0),
-          child: SizedBox(
-            width: double.infinity,
-            height: 80,
-            child: genreList == null
-                ? genreListGridShimmer(themeMode)
-                : Row(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: genreList!.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return GenreMovies(
-                                        genres: genreList![index]);
-                                  }));
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    width: 125,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primaryContainer,
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                    child: Text(
-                                      genreList![index].genreName ?? 'Null',
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryContainer,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }),
-                      ),
-                    ],
-                  ),
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   bool get wantKeepAlive => true;
 }
@@ -4696,102 +4322,6 @@ class MoviesFromWatchProvidersState extends State<MoviesFromWatchProviders> {
   }
 
   // ignore: unused_element
-  Widget _legacyBuild(BuildContext context) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      const LeadingDot(),
-                      Expanded(
-                        child: Text(
-                          tr('streaming_services'),
-                          style: kTextHeaderStyle,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            width: double.infinity,
-            height: 75,
-            child: Row(
-              children: [
-                Expanded(
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: const [
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/netflix.png',
-                        title: 'Netflix',
-                        providerID: 8,
-                      ),
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/amazon_prime.png',
-                        title: 'Amazon Prime',
-                        providerID: 9,
-                      ),
-                      StreamingServicesWidget(
-                          imagePath: 'assets/images/disney_plus.png',
-                          title: 'Disney plus',
-                          providerID: 337),
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/hulu.png',
-                        title: 'hulu',
-                        providerID: 15,
-                      ),
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/hbo_max.png',
-                        title: 'HBO Max',
-                        providerID: 384,
-                      ),
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/apple_tv.png',
-                        title: 'Apple TV plus',
-                        providerID: 350,
-                      ),
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/peacock.png',
-                        title: 'Peacock',
-                        providerID: 387,
-                      ),
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/itunes.png',
-                        title: 'iTunes',
-                        providerID: 2,
-                      ),
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/youtube.png',
-                        title: 'YouTube Premium',
-                        providerID: 188,
-                      ),
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/paramount.png',
-                        title: 'Paramount Plus',
-                        providerID: 531,
-                      ),
-                      StreamingServicesWidget(
-                        imagePath: 'assets/images/netflix.png',
-                        title: 'Netflix Kids',
-                        providerID: 175,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ]);
-  }
 }
 
 class CollectionMovies extends StatefulWidget {

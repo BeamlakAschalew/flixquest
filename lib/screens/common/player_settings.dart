@@ -1,5 +1,3 @@
-import 'package:flixquest/screens/common/provider_choose.dart';
-
 import '../../screens/common/sublanguage_choose.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -353,21 +351,6 @@ class _PlayerSettingsState extends State<PlayerSettings> {
                       ),
                       title: Text(
                         tr('subtitle_language'),
-                      ),
-                    ),
-                    ListTile(
-                      onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: ((context) {
-                          return const ProviderChooseScreen();
-                        })));
-                      },
-                      leading: Icon(
-                        PhosphorIcons.hardDrive(),
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      title: Text(
-                        tr('provider_precedence'),
                       ),
                     ),
                   ],

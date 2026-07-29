@@ -1762,66 +1762,74 @@ class ExternalPlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final entries = videoSources.entries.toList();
     return Padding(
-      padding: const EdgeInsets.all(20),
-      child: SizedBox(
-        height: 200,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Open in external player',
-              style: Theme.of(context).textTheme.headlineSmall,
-              maxLines: 3,
-              textAlign: TextAlign.center,
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  PhosphorIcons.arrowSquareOut(),
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Open in external player',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    Text(
+                      tr('video_source'),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          for (var index = 0; index < entries.length; index++) ...[
+            AppStreamSourceTile(
+              index: index + 1,
+              title: entries[index].key,
+              subtitle: tr('video_source'),
+              onTap: () => _openExternally(context, entries[index].value),
             ),
-            const SizedBox(
-              height: 10,
-            ),
-            //  Text('Copy video:'),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ListView.builder(
-                  itemCount: videoSources.entries.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: ((context, index) {
-                    final url = Uri.encodeFull(
-                        videoSources.entries.elementAt(index).value);
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextButton(
-                          onPressed: () async {
-                            if (await canLaunchUrl(Uri.parse(url))) {
-                              await launchUrl(
-                                  Uri.parse(videoSources.entries
-                                      .elementAt(index)
-                                      .value),
-                                  mode:
-                                      LaunchMode.externalNonBrowserApplication);
-                            }
-                          },
-                          onLongPress: () async {
-                            FlutterClipboard.copy(
-                                    videoSources.entries.elementAt(index).value)
-                                .then((value) {
-                              if (!context.mounted) {
-                                return;
-                              }
-                              GlobalMethods.showScaffoldMessage(
-                                  tr('video_link_copied'), context);
-                              Navigator.pop(context);
-                            });
-                          },
-                          child:
-                              Text(videoSources.entries.elementAt(index).key)),
-                    );
-                  })),
-            ),
+            if (index != entries.length - 1) const SizedBox(height: 10),
           ],
-        ),
+        ],
       ),
     );
+  }
+
+  Future<void> _openExternally(BuildContext context, String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalNonBrowserApplication);
+      return;
+    }
+    await FlutterClipboard.copy(url);
+    if (!context.mounted) return;
+    GlobalMethods.showScaffoldMessage(tr('video_link_copied'), context);
   }
 }
 

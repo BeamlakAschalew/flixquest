@@ -84,8 +84,6 @@ CacheManager cacheProp() {
 
 enum MediaType { movie, tvShow }
 
-enum StreamRoute { flixHQ, tmDB }
-
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -94,11 +92,6 @@ class MyHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
-
-// const providerPreference =
-//     'flixhq-FlixHQ myflixerz-MyFlixerz himovies-Himovies goku-Goku sflix-Sflix showbox-ShowBox vixsrc-VixSrc ';
-const providerPreference = 'vixsrc-VixSrc ';
-//animekai-AnimeKai animepahe-AnimePahe hianime-HiAnime
 
 late SharedPreferences sharedPrefsSingleton;
 

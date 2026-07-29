@@ -1,4 +1,3 @@
-import 'package:flixquest/constants/app_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import '../constants/api_constants.dart';
@@ -68,9 +67,6 @@ class SettingsProvider with ChangeNotifier {
 
   int _appColorIndex = -1;
   int get appColorIndex => _appColorIndex;
-
-  String _proPrecedence = providerPreference;
-  String get proPreference => _proPrecedence;
 
   bool _enableProxy = false;
   bool get enableProxy => _enableProxy;
@@ -293,16 +289,6 @@ class SettingsProvider with ChangeNotifier {
   set playerTimeDisplay(int value) {
     _playerTimeDisplay = value;
     _settingsPreferences.setPlayerStyleIndex(value);
-    notifyListeners();
-  }
-
-  Future<void> getProviderPrecedence() async {
-    proPreference = await _settingsPreferences.getProviderPrecedence();
-  }
-
-  set proPreference(String value) {
-    _proPrecedence = value;
-    _settingsPreferences.setProviderPrecedence(value);
     notifyListeners();
   }
 

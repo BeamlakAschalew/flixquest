@@ -1,42 +1,16 @@
-import '../constants/api_constants.dart';
 import 'package:flutter/material.dart';
+
+import '../constants/api_constants.dart';
 import '../preferences/app_dependency_preferences.dart';
 
 class AppDependencyProvider extends ChangeNotifier {
-  final AppDependencies __appDependencies = AppDependencies();
-
-  String _consumetUrl = CONSUMET_API;
-  String get consumetUrl => _consumetUrl;
-
-  String _newFlixHQUrl = flixhqNewUrl;
-  String get newFlixHQUrl => _newFlixHQUrl;
-
-  String _flixApiUrl = flixAPIUrl;
-  String get flixApiUrl => _flixApiUrl;
+  final AppDependencies _preferences = AppDependencies();
 
   String _flixquestAPIUrl = flixquestApiUrl;
   String get flixquestAPIURL => _flixquestAPIUrl;
 
   String _flixQuestLogo = 'default';
   String get flixQuestLogo => _flixQuestLogo;
-
-  String _opensubtitlesKey = openSubtitlesKey;
-  String get opensubtitlesKey => _opensubtitlesKey;
-
-  String _streamingServerFlixHQ = STREAMING_SERVER_FLIXHQ;
-  String get streamingServerFlixHQ => _streamingServerFlixHQ;
-
-  bool _enableADS = true;
-  bool get enableADS => _enableADS;
-
-  String _fetchRoute = 'flixHQ';
-  String get fetchRoute => _fetchRoute;
-
-  bool _useExternalSubtitles = false;
-  bool get useExternalSubtitles => _useExternalSubtitles;
-
-  bool _enableOTTADS = true;
-  bool get enableOTTADS => _enableOTTADS;
 
   bool _displayWatchNowButton = true;
   bool get displayWatchNowButton => _displayWatchNowButton;
@@ -47,134 +21,26 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _isForcedUpdate = false;
   bool get isForcedUpdate => _isForcedUpdate;
 
-  String _flixhqZoeServer = 'vidcloud';
-  String get flixhqZoeServer => _flixhqZoeServer;
-
-  String _newFlixhqServer = 'megacloud';
-  String get newFlixhqServer => _newFlixhqServer;
-
-  String _goMoviesServer = 'upcloud';
-  String get goMoviesServer => _goMoviesServer;
-
-  String _vidSrcToServer = 'vidplay';
-  String get vidSrcToServer => _vidSrcToServer;
-
-  String _vidSrcServer = 'vidsrcembed';
-  String get vidSrcServer => _vidSrcServer;
-
-  String _gokuServer = 'upcloud';
-  String get gokuServer => _gokuServer;
-
-  String _sflixServer = 'upcloud';
-  String get sflixServer => _sflixServer;
-
-  String _himoviesServer = 'upcloud';
-  String get himoviesServer => _himoviesServer;
-
-  String _animekaiServer = 'megacloud';
-  String get animekaiServer => _animekaiServer;
-
-  String _hianimeServer = 'megacloud';
-  String get hianimeServer => _hianimeServer;
-
   String _tmdbProxy = '';
   String get tmdbProxy => _tmdbProxy;
 
-  bool _fetchSubtitles = true;
-  bool get fetchSubtitles => _fetchSubtitles;
-
-  Future<void> getConsumetUrl() async {
-    consumetUrl = await __appDependencies.getConsumetUrl();
-  }
-
-  set consumetUrl(String value) {
-    _consumetUrl = value;
-    __appDependencies.setConsumetUrl(value);
-    notifyListeners();
-  }
-
-  Future<void> getNewFlixHQUrl() async {
-    newFlixHQUrl = await __appDependencies.getNewFlixHQUrl();
-  }
-
-  set newFlixHQUrl(String value) {
-    _newFlixHQUrl = value;
-    __appDependencies.setNewFlixHQUrl(value);
-    notifyListeners();
-  }
-
-  Future<void> getFlixApiUrl() async {
-    flixApiUrl = await __appDependencies.getFlixApiUrl();
-  }
-
-  set flixApiUrl(String value) {
-    _flixApiUrl = value;
-    __appDependencies.setFlixApiUrl(value);
-    notifyListeners();
-  }
-
   Future<void> getFQUrl() async {
-    flixquestAPIURL = await __appDependencies.getFQURL();
+    flixquestAPIURL = await _preferences.getFQURL();
   }
 
   set flixquestAPIURL(String value) {
     _flixquestAPIUrl = value;
-    __appDependencies.setFlixquestAPIUrl(value);
+    _preferences.setFlixquestAPIUrl(value);
     notifyListeners();
   }
 
   Future<void> getFlixQuestLogo() async {
-    flixQuestLogo = await __appDependencies.getFlixQuestLogo();
+    flixQuestLogo = await _preferences.getFlixQuestLogo();
   }
 
   set flixQuestLogo(String value) {
     _flixQuestLogo = value;
-    __appDependencies.setFlixQuestUrl(value);
-    notifyListeners();
-  }
-
-  Future<void> getOpenSubKey() async {
-    opensubtitlesKey = await __appDependencies.getOpenSubtitlesKey();
-  }
-
-  set opensubtitlesKey(String value) {
-    _opensubtitlesKey = value;
-    __appDependencies.setOpenSubKey(value);
-    notifyListeners();
-  }
-
-  Future<void> getStreamingServerFlixHQ() async {
-    streamingServerFlixHQ = await __appDependencies.getStreamServerFlixHQ();
-  }
-
-  set streamingServerFlixHQ(String value) {
-    _streamingServerFlixHQ = value;
-    __appDependencies.setStreamServerFlixHQ(value);
-    notifyListeners();
-  }
-
-  set enableADS(bool value) {
-    _enableADS = value;
-    notifyListeners();
-  }
-
-  Future<void> getStreamRoute() async {
-    fetchRoute = await __appDependencies.getStreamRoute();
-  }
-
-  set fetchRoute(String value) {
-    _fetchRoute = value;
-    __appDependencies.setStreamRoute(value);
-    notifyListeners();
-  }
-
-  set useExternalSubtitles(bool value) {
-    _useExternalSubtitles = value;
-    notifyListeners();
-  }
-
-  set enableOTTADS(bool value) {
-    _enableOTTADS = value;
+    _preferences.setFlixQuestUrl(value);
     notifyListeners();
   }
 
@@ -193,68 +59,13 @@ class AppDependencyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  set goMoviesServer(String value) {
-    _goMoviesServer = value;
-    notifyListeners();
-  }
-
-  set flixhqZoeServer(String value) {
-    _flixhqZoeServer = value;
-    notifyListeners();
-  }
-
-  set newFlixhqServer(String value) {
-    _newFlixhqServer = value;
-    notifyListeners();
-  }
-
-  set vidSrcServer(String value) {
-    _vidSrcServer = value;
-    notifyListeners();
-  }
-
-  set vidSrcToServer(String value) {
-    _vidSrcToServer = value;
-    notifyListeners();
-  }
-
-  set gokuServer(String value) {
-    _gokuServer = value;
-    notifyListeners();
-  }
-
-  set sflixServer(String value) {
-    _sflixServer = value;
-    notifyListeners();
-  }
-
-  set himoviesServer(String value) {
-    _himoviesServer = value;
-    notifyListeners();
-  }
-
-  set animekaiServer(String value) {
-    _animekaiServer = value;
-    notifyListeners();
-  }
-
-  set hianimeServer(String value) {
-    _hianimeServer = value;
-    notifyListeners();
-  }
-
-  set fetchSubtitles(bool value) {
-    _fetchSubtitles = value;
-    notifyListeners();
-  }
-
   Future<void> getTmdbProxy() async {
-    tmdbProxy = await __appDependencies.getTmdbProxy();
+    tmdbProxy = await _preferences.getTmdbProxy();
   }
 
   set tmdbProxy(String value) {
     _tmdbProxy = value;
-    __appDependencies.setTmdbProxy(value);
+    _preferences.setTmdbProxy(value);
     notifyListeners();
   }
 }

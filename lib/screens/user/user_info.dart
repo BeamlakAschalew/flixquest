@@ -147,11 +147,6 @@ class _UserInfoState extends State<UserInfo> {
     final name = data['name']?.toString() ?? tr('not_available');
     final username = data['username']?.toString() ?? 'username';
     final email = data['email']?.toString() ?? '';
-    final joinedAt = DateTime.tryParse(data['joinedAt']?.toString() ?? '');
-    final joined = joinedAt == null
-        ? tr('not_available')
-        : DateFormat('MMMM yyyy').format(joinedAt);
-
     return SafeArea(
       bottom: false,
       child: AppResponsiveContent(

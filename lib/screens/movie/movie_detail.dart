@@ -190,13 +190,10 @@ class MovieDetailPageState extends State<MovieDetailPage>
       return;
     }
     if (!mounted) return;
-    final route =
-        Provider.of<AppDependencyProvider>(context, listen: false).fetchRoute;
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => MovieVideoLoader(
-          route: route == 'flixHQ' ? StreamRoute.flixHQ : StreamRoute.tmDB,
           download: false,
           metadata: MovieStreamMetadata(
             backdropPath: widget.movie.backdropPath,

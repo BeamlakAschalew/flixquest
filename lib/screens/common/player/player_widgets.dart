@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../models/tv_stream_metadata.dart';
 import '../../tv/tv_video_loader.dart';
+import 'player_sheet_ui.dart';
 
 class PlayerNextEpisodeWidget {
   Widget buildNextEpisodeFloatingButton({
@@ -15,206 +16,74 @@ class PlayerNextEpisodeWidget {
     required List<Color> colors,
     required Function() onSaveProgress,
     required Function() closePlayer,
-    required StreamRoute? tvRoute,
   }) {
-    if (tvMetadata.seasonEpisodes == null) {
-      return SizedBox.shrink();
-    }
-
-    final currentIndex = tvMetadata.seasonEpisodes!.indexWhere(
-      (e) => e.episodeNumber == tvMetadata.episodeNumber,
+    final episodes = tvMetadata.seasonEpisodes;
+    if (episodes == null) return const SizedBox.shrink();
+    final currentIndex = episodes.indexWhere(
+      (episode) =>
+          episode.episodeNumber == tvMetadata.episodeNumber &&
+          episode.seasonNumber == tvMetadata.seasonNumber,
     );
-
-    if (currentIndex == -1 ||
-        currentIndex >= tvMetadata.seasonEpisodes!.length - 1) {
-      return SizedBox.shrink();
+    if (currentIndex < 0 || currentIndex >= episodes.length - 1) {
+      return const SizedBox.shrink();
     }
-
-    final nextEpisode = tvMetadata.seasonEpisodes![currentIndex + 1];
+    final nextEpisode = episodes[currentIndex + 1];
+    final navigator = Navigator.of(context);
 
     return Positioned(
-      bottom: 100, // Increased padding to not cover progress bar
       right: 16,
-      child: AnimatedOpacity(
-        opacity: showNextEpisodeButton ? 1.0 : 0.0,
-        duration: Duration(milliseconds: 300),
-        child: GestureDetector(
-          onTap: () async {
-            // Save progress and send analytics before switching
-            onSaveProgress();
-
-            if (context.mounted) {
-              closePlayer();
-              // Use pushReplacement to replace Player with VideoLoader
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TVVideoLoader(
-                    download: false,
-                    route: tvRoute ?? StreamRoute.flixHQ,
-                    metadata: TVStreamMetadata(
-                      elapsed: null,
-                      episodeId: nextEpisode.episodeId,
-                      episodeName: nextEpisode.episodeName,
-                      episodeNumber: nextEpisode.episodeNumber,
-                      posterPath: tvMetadata.posterPath,
-                      seasonNumber: nextEpisode.seasonNumber,
-                      seriesName: tvMetadata.seriesName,
-                      tvId: tvMetadata.tvId,
-                      airDate: nextEpisode.airDate,
-                      seasonEpisodes: tvMetadata.seasonEpisodes,
-                      allSeasons: tvMetadata.allSeasons,
-                    ),
-                  ),
+      bottom: 92,
+      child: IgnorePointer(
+        ignoring: !showNextEpisodeButton,
+        child: AnimatedSlide(
+          offset: showNextEpisodeButton ? Offset.zero : const Offset(.2, 0),
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOutCubic,
+          child: AnimatedOpacity(
+            opacity: showNextEpisodeButton ? 1 : 0,
+            duration: const Duration(milliseconds: 220),
+            child: SizedBox(
+              width:
+                  (MediaQuery.sizeOf(context).width * .48).clamp(220.0, 330.0),
+              child: PlayerChoiceCard(
+                title:
+                    '${nextEpisode.episodeNumber}. ${nextEpisode.episodeName}',
+                subtitle: tr('next_episode'),
+                description: nextEpisode.overview,
+                thumbnail: PlayerThumbnail(
+                  width: 108,
+                  height: 68,
+                  child: nextEpisode.stillPath == null
+                      ? Icon(PhosphorIcons.filmStrip())
+                      : CachedNetworkImage(
+                          cacheManager: cacheProp(),
+                          imageUrl:
+                              'https://image.tmdb.org/t/p/w300${nextEpisode.stillPath}',
+                          fit: BoxFit.cover,
+                          errorWidget: (_, __, ___) =>
+                              Icon(PhosphorIcons.filmStrip()),
+                        ),
                 ),
-              );
-            }
-          },
-          child: Container(
-            width: (MediaQuery.sizeOf(context).width * .44).clamp(190.0, 280.0),
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: colors.first,
-                width: 1,
+                trailing: Icon(
+                  PhosphorIcons.playCircle(PhosphorIconsStyle.fill),
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                onTap: () {
+                  onSaveProgress();
+                  closePlayer();
+                  navigator.pushReplacement(
+                    MaterialPageRoute(
+                      builder: (_) => TVVideoLoader(
+                        download: false,
+                        metadata: _metadataForEpisode(
+                          nextEpisode,
+                          tvMetadata,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Episode thumbnail
-                    if (nextEpisode.stillPath != null)
-                      ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(6),
-                          topRight: Radius.circular(6),
-                        ),
-                        child: Stack(
-                          children: [
-                            CachedNetworkImage(
-                              cacheManager: cacheProp(),
-                              imageUrl:
-                                  'https://image.tmdb.org/t/p/w300${nextEpisode.stillPath}',
-                              height: 110,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(
-                                height: 110,
-                                color: Colors.grey[800],
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: colors.first,
-                                  ),
-                                ),
-                              ),
-                              errorWidget: (context, url, error) => Container(
-                                height: 110,
-                                color: Colors.grey[800],
-                                child: Center(
-                                  child: Icon(
-                                    PhosphorIcons.filmStrip(),
-                                    color: Colors.grey[600],
-                                    size: 40,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Play icon overlay
-                            Positioned.fill(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black.withValues(alpha: 0.7),
-                                    ],
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    PhosphorIcons.playCircle(PhosphorIconsStyle.fill),
-                                    color: colors.first,
-                                    size: 50,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    // Episode info
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            tr('next_episode'),
-                            style: TextStyle(
-                              color: colors.first,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'FigtreeBold',
-                              letterSpacing: 0.5,
-                              decoration:
-                                  TextDecoration.none, // Remove any decoration
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            '${nextEpisode.episodeNumber}. ${nextEpisode.episodeName}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'FigtreeSB',
-                              decoration:
-                                  TextDecoration.none, // Remove any decoration
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                // Close button at top right
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: GestureDetector(
-                    onTap: () {
-                      // This is handled in the parent by hideNextEpisodeOverlay callback
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.6),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        PhosphorIcons.x(),
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
         ),
@@ -227,186 +96,165 @@ class PlayerNextEpisodeWidget {
     required EpisodeMetadata nextEpisode,
     required List<Color> colors,
     required TVStreamMetadata tvMetadata,
-    required StreamRoute? tvRoute,
     required Function() onSaveProgress,
     required Function() closePlayer,
   }) {
-    int countdown = 10; // 10 second countdown
-    Timer? countdownTimer;
-    bool dismissed = false;
+    var countdown = 10;
+    Timer? timer;
+    var dismissed = false;
+    final navigator = Navigator.of(context);
 
-    showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            // Only create timer once, not on every rebuild
-            if (countdownTimer == null && !dismissed) {
-              countdownTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-                if (countdown > 0 && !dismissed) {
-                  setDialogState(() {
-                    countdown--;
-                  });
-                } else if (countdown == 0 && !dismissed) {
-                  timer.cancel();
-                  if (Navigator.canPop(dialogContext)) {
-                    Navigator.of(dialogContext).pop();
-                  }
-
-                  // Save progress and send analytics before switching
-                  onSaveProgress();
-
-                  // Pop current player, then push new video loader
-                  if (context.mounted) {
-                    closePlayer();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TVVideoLoader(
-                          download: false,
-                          route: tvRoute ?? StreamRoute.flixHQ,
-                          metadata: TVStreamMetadata(
-                            elapsed: null,
-                            episodeId: nextEpisode.episodeId,
-                            episodeName: nextEpisode.episodeName,
-                            episodeNumber: nextEpisode.episodeNumber,
-                            posterPath: tvMetadata.posterPath,
-                            seasonNumber: nextEpisode.seasonNumber,
-                            seriesName: tvMetadata.seriesName,
-                            tvId: tvMetadata.tvId,
-                            airDate: nextEpisode.airDate,
-                            seasonEpisodes: tvMetadata.seasonEpisodes,
-                            allSeasons: tvMetadata.allSeasons,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                }
-              });
-            }
-
-            return AlertDialog(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: Text(
-                tr('next_episode'),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${nextEpisode.episodeNumber}. ${nextEpisode.episodeName}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                      if (nextEpisode.overview != null &&
-                          nextEpisode.overview!.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            nextEpisode.overview!,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey[400],
-                            ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      SizedBox(height: 16),
-                      Center(
-                        child: Text(
-                          tr('playing_in_seconds',
-                              namedArgs: {'seconds': countdown.toString()}),
-                          style: TextStyle(
-                            color: colors.first,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    dismissed = true;
-                    countdownTimer?.cancel();
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child: Text(
-                    tr('cancel'),
-                    style: TextStyle(color: Colors.grey[400]),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    dismissed = true;
-                    countdownTimer?.cancel();
-                    Navigator.of(dialogContext).pop();
-                    // Save progress and send analytics before switching
-                    onSaveProgress();
-                    // Pop current player, then push new video loader
-                    if (context.mounted) {
-                      closePlayer();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TVVideoLoader(
-                            download: false,
-                            route: tvRoute ?? StreamRoute.flixHQ,
-                            metadata: TVStreamMetadata(
-                              elapsed: null,
-                              episodeId: nextEpisode.episodeId,
-                              episodeName: nextEpisode.episodeName,
-                              episodeNumber: nextEpisode.episodeNumber,
-                              posterPath: tvMetadata.posterPath,
-                              seasonNumber: nextEpisode.seasonNumber,
-                              seriesName: tvMetadata.seriesName,
-                              tvId: tvMetadata.tvId,
-                              airDate: nextEpisode.airDate,
-                              seasonEpisodes: tvMetadata.seasonEpisodes,
-                              allSeasons: tvMetadata.allSeasons,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.first,
-                  ),
-                  child: Text(
-                    tr('play_now'),
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    ).then((_) {
-      // Dialog dismissed, cancel timer
+    void play(BuildContext dialogContext) {
+      if (dismissed) return;
       dismissed = true;
-      countdownTimer?.cancel();
+      timer?.cancel();
+      if (Navigator.canPop(dialogContext)) Navigator.pop(dialogContext);
+      onSaveProgress();
+      closePlayer();
+      navigator.pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => TVVideoLoader(
+            download: false,
+            metadata: _metadataForEpisode(nextEpisode, tvMetadata),
+          ),
+        ),
+      );
+    }
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          timer ??= Timer.periodic(const Duration(seconds: 1), (_) {
+            if (dismissed) return;
+            if (countdown <= 1) {
+              play(dialogContext);
+            } else if (dialogContext.mounted) {
+              setDialogState(() => countdown--);
+            }
+          });
+          return Dialog(
+            insetPadding: const EdgeInsets.all(20),
+            clipBehavior: Clip.antiAlias,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: .12),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Icon(
+                            PhosphorIcons.skipForward(
+                              PhosphorIconsStyle.fill,
+                            ),
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 13),
+                        Expanded(
+                          child: Text(
+                            tr('next_episode'),
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    PlayerChoiceCard(
+                      title:
+                          '${nextEpisode.episodeNumber}. ${nextEpisode.episodeName}',
+                      subtitle: tr(
+                        'playing_in_seconds',
+                        namedArgs: {'seconds': '$countdown'},
+                      ),
+                      description: nextEpisode.overview,
+                      selected: true,
+                      onTap: null,
+                      thumbnail: PlayerThumbnail(
+                        width: 112,
+                        height: 70,
+                        child: nextEpisode.stillPath == null
+                            ? Icon(PhosphorIcons.filmStrip())
+                            : CachedNetworkImage(
+                                cacheManager: cacheProp(),
+                                imageUrl:
+                                    'https://image.tmdb.org/t/p/w300${nextEpisode.stillPath}',
+                                fit: BoxFit.cover,
+                                errorWidget: (_, __, ___) =>
+                                    Icon(PhosphorIcons.filmStrip()),
+                              ),
+                      ),
+                      trailing: SizedBox(
+                        width: 38,
+                        height: 38,
+                        child: CircularProgressIndicator(
+                          value: countdown / 10,
+                          strokeWidth: 4,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            dismissed = true;
+                            timer?.cancel();
+                            Navigator.pop(dialogContext);
+                          },
+                          child: Text(tr('cancel')),
+                        ),
+                        const SizedBox(width: 8),
+                        FilledButton.icon(
+                          onPressed: () => play(dialogContext),
+                          icon: Icon(PhosphorIcons.play()),
+                          label: Text(tr('play_now')),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    ).whenComplete(() {
+      dismissed = true;
+      timer?.cancel();
     });
+  }
+
+  TVStreamMetadata _metadataForEpisode(
+    EpisodeMetadata episode,
+    TVStreamMetadata current,
+  ) {
+    return TVStreamMetadata(
+      elapsed: null,
+      episodeId: episode.episodeId,
+      episodeName: episode.episodeName,
+      episodeNumber: episode.episodeNumber,
+      posterPath: current.posterPath,
+      seasonNumber: episode.seasonNumber,
+      seriesName: current.seriesName,
+      tvId: current.tvId,
+      airDate: episode.airDate,
+      seasonEpisodes: current.seasonEpisodes,
+      allSeasons: current.allSeasons,
+    );
   }
 }

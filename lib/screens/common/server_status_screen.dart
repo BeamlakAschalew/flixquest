@@ -1,17 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:flixquest/video_providers/common.dart';
-import 'package:provider/provider.dart';
-import '../../provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import '../../functions/network.dart';
-import '../../provider/settings_provider.dart';
-import '../../constants/app_constants.dart' show StreamRoute;
-import '../../video_providers/provider_loader.dart';
-import '../../video_providers/names.dart';
-import '../../services/globle_method.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../ui_components/app_ui_components.dart';
+import '../../video_providers/vixsrc.dart';
 
 class ServerStatusScreen extends StatefulWidget {
   const ServerStatusScreen({super.key});
@@ -21,445 +15,125 @@ class ServerStatusScreen extends StatefulWidget {
 }
 
 class _ServerStatusScreenState extends State<ServerStatusScreen> {
-  List<RegularVideoLinks>? videoLinks;
-  List<VideoStatusCheck> videoProvidersCheck = [];
-  String ping = '';
-  DateTime? start;
-  DateTime? end;
-  bool checking = false;
-
-  List<VideoProvider> videoProviders = [];
-  List<String> messageStrings = [];
-
-  late SettingsProvider prefString =
-      Provider.of<SettingsProvider>(context, listen: false);
-
-  late AppDependencyProvider appDependency =
-      Provider.of<AppDependencyProvider>(context, listen: false);
-
-  Future<void> _checkSingleServer(int index) async {
-    final provider = videoProviders[index];
-    List<RegularVideoLinks>? videoLinks;
-    DateTime start = DateTime.now();
-
-    try {
-      if (provider.codeName == 'flixhq') {
-        final result = await getMovieStreamLinksAndSubsFlixHQ(
-            '${appDependency.consumetUrl}movies/flixhq/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.streamingServerFlixHQ}');
-        videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'myflixerz') {
-        final result = await getMovieStreamLinksAndSubsFlixHQNew(
-            '${appDependency.newFlixHQUrl}movie/884605');
-        videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'pstream') {
-        final result = await getStreamLinksFlixAPIMulti(
-            '${appDependency.flixApiUrl}pstream/stream-movie?tmdbId=884605');
-        if (result.links != null && result.links!.isNotEmpty) {
-          final link = result.links!.first;
-          videoLinks = [
-            RegularVideoLinks(
-                url: link.url,
-                isM3U8: link.isM3U8 ?? link.url?.endsWith('.m3u8') ?? false)
-          ];
-        }
-      } else if (provider.codeName == 'goku') {
-        final result = await getMovieStreamLinksAndSubsGoku(
-            '${appDependency.consumetUrl}movies/goku/watch?episodeId=1353085&mediaId=watch-movie/watch-no-hard-feelings-97708&server=${appDependency.gokuServer}');
-        videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'sflix') {
-        final result = await getMovieStreamLinksAndSubsSflix(
-            '${appDependency.consumetUrl}movies/sflix/watch?episodeId=97708&mediaId=movie/free-no-hard-feelings-hd-97708&server=${appDependency.sflixServer}');
-        videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'himovies') {
-        final result = await getMovieStreamLinksAndSubsHimovies(
-            '${appDependency.consumetUrl}movies/himovies/watch?episodeId=97708&mediaId=movie/watch-no-hard-feelings-97708&server=${appDependency.himoviesServer}');
-        videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'vixsrc') {
-        final result = await ProviderLoader.loadMovieFromProvider(
-          providerCode: 'vixsrc',
-          route: StreamRoute.tmDB,
-          movieId: 884605,
-          movieName: 'No Hard Feelings',
-          releaseYear: '2023',
-          consumetUrl: appDependency.consumetUrl,
-          newFlixHQUrl: appDependency.newFlixHQUrl,
-          flixApiUrl: appDependency.flixApiUrl,
-          newFlixhqServer: appDependency.newFlixhqServer,
-          streamingServerFlixHQ: appDependency.streamingServerFlixHQ,
-          gokuServer: appDependency.gokuServer,
-          sflixServer: appDependency.sflixServer,
-          himoviesServer: appDependency.himoviesServer,
-          animekaiServer: appDependency.animekaiServer,
-          hianimeServer: appDependency.hianimeServer,
-        );
-        videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'showbox') {
-        final result = await getStreamLinksFlixAPIMulti(
-            '${appDependency.flixApiUrl}showbox/stream-movie?tmdbId=884605');
-        if (result.links != null && result.links!.isNotEmpty) {
-          final link = result.links!.first;
-          videoLinks = [
-            RegularVideoLinks(
-                url: link.url,
-                isM3U8: link.isM3U8 ?? link.url?.endsWith('.m3u8') ?? false)
-          ];
-        }
-      } else if (provider.codeName == 'animekai') {
-        // Test with a popular anime - One Piece
-        final result = await getAnimeStreamAnimeKai(
-            '${appDependency.consumetUrl}anime/animekai/watch/one-piece-100?server=${appDependency.animekaiServer}');
-
-        videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'animepahe') {
-        // Test with a popular anime
-        final result = await getAnimeStreamAnimePahe(
-            '${appDependency.consumetUrl}anime/animepahe/watch?episodeId=one-piece-1');
-
-        videoLinks = result.videoLinks;
-      } else if (provider.codeName == 'hianime') {
-        // Test with a popular anime - One Piece
-        final result = await getAnimeStreamHiAnime(
-            '${appDependency.consumetUrl}anime/hianime/watch/one-piece-100?server=${appDependency.hianimeServer}');
-
-        videoLinks = result.videoLinks;
-      }
-    } catch (e) {
-      // Error handling - server is down
-      if (mounted) {
-        GlobalMethods.showErrorScaffoldMessengerMediaLoad(
-            e as Exception, context, provider.fullName);
-      }
-    }
-
-    DateTime end = DateTime.now();
-    String ping = end.difference(start).inMilliseconds.toString();
-
-    if (mounted) {
-      setState(() {
-        videoProvidersCheck[index].ping = ping;
-        videoProvidersCheck[index].isWaiting = false;
-
-        if (videoLinks == null || videoLinks.isEmpty) {
-          videoProvidersCheck[index].isWorking = false;
-          videoProvidersCheck[index].resultMessage =
-              "${provider.fullName} ${tr("server_down")}";
-        } else {
-          videoProvidersCheck[index].isWorking = true;
-          videoProvidersCheck[index].resultMessage =
-              '${provider.fullName} ${tr("server_working")}';
-        }
-      });
-    }
-  }
-
-  void checkServer() async {
-    setState(() {
-      checking = true;
-      videoProvidersCheck = [];
-    });
-
-    // Initialize all providers
-    for (int i = 0; i < videoProviders.length; i++) {
-      videoProvidersCheck.add(VideoStatusCheck(
-          codeName: videoProviders[i].codeName,
-          fullName: videoProviders[i].fullName,
-          end: null,
-          isWaiting: true,
-          isWorking: false,
-          ping: '',
-          resultMessage: '',
-          start: null,
-          waitingMessage:
-              '${tr("checking_server")} ${videoProviders[i].fullName}'));
-    }
-
-    // Check all servers simultaneously
-    await Future.wait(
-      List.generate(
-        videoProviders.length,
-        (index) => _checkSingleServer(index),
-      ),
-    );
-
-    setState(() {
-      checking = false;
-    });
-  }
+  bool _checking = true;
+  bool _working = false;
+  Duration? _latency;
+  String? _error;
 
   @override
   void initState() {
-    // videoProviders.addAll(
-    //     parseProviderPrecedenceString(prefString.proPreference)
-    //         .where((provider) => provider != null)
-    //         .cast<VideoProvider>());
-    videoProviders.add(VideoProvider(fullName: 'VixSrc', codeName: 'vixsrc'));
-
-    checkServer();
     super.initState();
+    _checkServer();
+  }
+
+  Future<void> _checkServer() async {
+    setState(() {
+      _checking = true;
+      _error = null;
+    });
+    final stopwatch = Stopwatch()..start();
+    final result = await VixSrc.loadMovie(884605);
+    stopwatch.stop();
+    if (!mounted) return;
+    setState(() {
+      _checking = false;
+      _working = result.success && (result.videoLinks?.isNotEmpty ?? false);
+      _latency = stopwatch.elapsed;
+      _error = result.errorMessage;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
-        appBar: AppBar(
-          title: Text(tr('check_server')),
-          elevation: 0,
-        ),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.of(context).primaryColor.withOpacity(0.1),
-                Colors.transparent,
-              ],
-            ),
-          ),
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  if (checking)
-                    Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+      appBar: AppBar(title: Text(tr('check_server'))),
+      body: AppResponsiveContent(
+        maxWidth: 680,
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: (_checking
+                                ? colors.primary
+                                : _working
+                                    ? colors.tertiary
+                                    : colors.error)
+                            .withValues(alpha: .12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
+                      child: _checking
+                          ? const Padding(
+                              padding: EdgeInsets.all(15),
                               child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Icon(
+                              _working
+                                  ? PhosphorIcons.checkCircle()
+                                  : PhosphorIcons.warningCircle(),
+                              color: _working ? colors.tertiary : colors.error,
                             ),
-                            const SizedBox(width: 16),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'VixSrc',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _checking
+                                ? tr('checking_server')
+                                : _working
+                                    ? tr('server_working')
+                                    : tr('server_down'),
+                            style: TextStyle(
+                              color: colors.onSurfaceVariant,
+                            ),
+                          ),
+                          if (!_checking && _latency != null) ...[
+                            const SizedBox(height: 4),
                             Text(
-                              tr('checking_server'),
-                              style: const TextStyle(
-                                fontFamily: 'FigtreeSB',
-                                fontSize: 16,
-                              ),
+                              '${_latency!.inMilliseconds} ms',
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
-                        ),
+                        ],
                       ),
                     ),
-                  const SizedBox(height: 16),
-                  ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: videoProviders.length,
-                      itemBuilder: ((context, index) {
-                        final status = videoProvidersCheck[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12.0),
-                          child: Card(
-                            elevation: 3,
-                            color: status.isWaiting!
-                                ? Colors.yellow.withOpacity(0.15)
-                                : status.isWorking!
-                                    ? Colors.green.withOpacity(0.15)
-                                    : Colors.red.withOpacity(0.15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(
-                                color: status.isWaiting!
-                                    ? Colors.yellow.withOpacity(0.3)
-                                    : status.isWorking!
-                                        ? Colors.green.withOpacity(0.5)
-                                        : Colors.red.withOpacity(0.5),
-                                width: 2,
-                              ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: status.isWaiting!
-                                              ? Colors.grey.withOpacity(0.2)
-                                              : status.isWorking!
-                                                  ? Colors.green
-                                                      .withOpacity(0.2)
-                                                  : Colors.red.withOpacity(0.2),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: status.isWaiting!
-                                            ? const Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  strokeWidth: 2,
-                                                ),
-                                              )
-                                            : Icon(
-                                                status.isWorking!
-                                                    ? PhosphorIcons.checkCircle()
-                                                    : PhosphorIcons.warningCircle(),
-                                                color: status.isWorking!
-                                                    ? Colors.green
-                                                    : Colors.red,
-                                              ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              videoProviders[index].fullName,
-                                              style: const TextStyle(
-                                                fontFamily: 'FigtreeSB',
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            if (status.isWaiting!)
-                                              Text(
-                                                status.waitingMessage!,
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.grey[400],
-                                                ),
-                                              )
-                                            else
-                                              Text(
-                                                status.resultMessage!,
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: status.isWorking!
-                                                      ? Colors.green
-                                                      : Colors.red,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (!status.isWaiting!)
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: _getLatencyColor(
-                                                    int.tryParse(
-                                                            status.ping!) ??
-                                                        0)
-                                                .withOpacity(0.2),
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                PhosphorIcons.gauge(),
-                                                size: 16,
-                                                color: _getLatencyColor(
-                                                    int.tryParse(
-                                                            status.ping!) ??
-                                                        0),
-                                              ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                '${status.ping}ms',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: _getLatencyColor(
-                                                      int.tryParse(
-                                                              status.ping!) ??
-                                                          0),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      })),
-                  const SizedBox(height: 20),
-                  if (!checking)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          checkServer();
-                        },
-                        icon: Icon(PhosphorIcons.arrowsClockwise()),
-                        label: Text(
-                          tr('check'),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 4,
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 20),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ));
+            if (!_checking && !_working && _error != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 12, 8, 0),
+                child: Text(
+                  _error!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colors.onSurfaceVariant),
+                ),
+              ),
+            const SizedBox(height: 20),
+            FilledButton.icon(
+              onPressed: _checking ? null : _checkServer,
+              icon: Icon(PhosphorIcons.arrowsClockwise()),
+              label: Text(tr('check_server')),
+            ),
+          ],
+        ),
+      ),
+    );
   }
-
-  Color _getLatencyColor(int latency) {
-    if (latency < 3000) {
-      return Colors.green;
-    } else if (latency < 4000) {
-      return Colors.orange;
-    } else {
-      return Colors.red;
-    }
-  }
-}
-
-class VideoStatusCheck {
-  String? waitingMessage;
-  String? codeName;
-  String? fullName;
-  bool? isWorking;
-  DateTime? start;
-  DateTime? end;
-  String? ping;
-  String? resultMessage;
-  bool? isWaiting;
-
-  VideoStatusCheck(
-      {required this.codeName,
-      required this.fullName,
-      required this.end,
-      required this.isWaiting,
-      required this.isWorking,
-      required this.ping,
-      required this.resultMessage,
-      required this.start,
-      required this.waitingMessage});
 }

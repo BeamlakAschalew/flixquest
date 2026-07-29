@@ -5,7 +5,6 @@ import 'package:flixquest/functions/video_utils.dart';
 import 'package:flixquest/models/movie_stream_metadata.dart';
 import 'package:flixquest/models/provider_video_source.dart';
 import 'package:flixquest/models/provider_load_state.dart';
-import 'package:flixquest/services/external_subtitle_service.dart';
 import 'package:flixquest/services/globle_method.dart';
 import 'package:flixquest/video_providers/provider_loader.dart';
 import 'package:flixquest/widgets/provider_loading_widget.dart';
@@ -19,24 +18,18 @@ import '/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:better_player_plus/better_player.dart';
-import '../../models/sub_languages.dart';
 import '../../widgets/common_widgets.dart';
-import 'package:flixquest/constants/app_constants.dart'
-    show MediaType, StreamRoute;
+import 'package:flixquest/constants/app_constants.dart' show MediaType;
 
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
 
 class MovieVideoLoader extends StatefulWidget {
   const MovieVideoLoader(
-      {required this.download,
-      required this.metadata,
-      required this.route,
-      super.key});
+      {required this.download, required this.metadata, super.key});
 
   final bool download;
   final MovieStreamMetadata metadata;
-  final StreamRoute route;
 
   @override
   State<MovieVideoLoader> createState() => _MovieVideoLoaderState();
@@ -51,15 +44,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
   late SettingsProvider settings =
       Provider.of<SettingsProvider>(context, listen: false);
-  late AppDependencyProvider appDep =
-      Provider.of<AppDependencyProvider>(context, listen: false);
   List<VideoProvider> videoProviders = [];
-  late SettingsProvider prefString =
-      Provider.of<SettingsProvider>(context, listen: false);
-
   List<ProviderLoadState> providerStates = [];
   int currentProviderIndex = 0;
-  bool isFetchingSubtitles = false;
 
   Map<String, String> videos = {};
   List<BetterPlayerSubtitlesSource> subs = [];
@@ -72,11 +59,6 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   @override
   void initState() {
     super.initState();
-    // Temporarily disable broken providers; keep only VixSrc active.
-    // videoProviders.addAll(
-    //     parseProviderPrecedenceString(prefString.proPreference)
-    //         .where((provider) => provider != null)
-    //         .cast<VideoProvider>());
     videoProviders.add(VideoProvider(fullName: 'VixSrc', codeName: 'vixsrc'));
 
     // Initialize provider states
@@ -133,20 +115,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         try {
           final result = await ProviderLoader.loadMovieFromProvider(
             providerCode: videoProviders[i].codeName,
-            route: widget.route,
             movieId: widget.metadata.movieId!,
-            movieName: widget.metadata.movieName!,
-            releaseYear: widget.metadata.releaseYear?.toString(),
-            consumetUrl: appDep.consumetUrl,
-            newFlixHQUrl: appDep.newFlixHQUrl,
-            flixApiUrl: appDep.flixApiUrl,
-            newFlixhqServer: appDep.newFlixhqServer,
-            streamingServerFlixHQ: appDep.streamingServerFlixHQ,
-            gokuServer: appDep.gokuServer,
-            sflixServer: appDep.sflixServer,
-            himoviesServer: appDep.himoviesServer,
-            animekaiServer: appDep.animekaiServer,
-            hianimeServer: appDep.hianimeServer,
           );
 
           if (result.success &&
@@ -332,93 +301,12 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               child: ProviderLoadingWidget(
                 providers: providerStates,
                 currentIndex: currentProviderIndex,
-                additionalMessage:
-                    isFetchingSubtitles ? tr('loading_video_sources') : null,
               ),
             ),
           ),
         ),
       ),
     );
-  }
-
-  Future<void> _processSubtitles(List<RegularSubtitleLinks> subtitles) async {
-    final isProxyEnabled =
-        Provider.of<SettingsProvider>(context, listen: false).enableProxy;
-    final appDep = Provider.of<AppDependencyProvider>(context, listen: false);
-
-    try {
-      if (!appDep.fetchSubtitles) {
-        return;
-      }
-
-      if (mounted) {
-        setState(() {
-          isFetchingSubtitles = true;
-        });
-      }
-
-      // Use the VideoUtils.parseSubtitles method
-      final parsedSubs = await VideoUtils.parseSubtitles(
-        subtitles: subtitles,
-        defaultLanguage: settings.defaultSubtitleLanguage,
-        fetchAllLanguages: settings.fetchSpecificLangSubs,
-        getVttContent: (url) => getVttFileAsString(url),
-      );
-
-      if (mounted) {
-        setState(() {
-          subs.addAll(parsedSubs);
-        });
-      }
-
-      // Handle external subtitles if needed - using new Wyzie Subs API
-      if (parsedSubs.isEmpty && appDep.useExternalSubtitles) {
-        try {
-          // Fetch subtitles using TMDB ID directly (no need for IMDB ID)
-          final externalSubs =
-              await ExternalSubtitleService.fetchMovieSubtitles(
-            widget.metadata.movieId!,
-          );
-
-          // Find a subtitle matching the user's preferred language
-          if (externalSubs.isNotEmpty) {
-            // Try to find a subtitle in the user's preferred language
-            var preferredSub = externalSubs.firstWhere(
-              (sub) => sub.language == settings.defaultSubtitleLanguage,
-              orElse: () => externalSubs.first,
-            );
-
-            // Download and add the subtitle
-            final betterPlayerSource =
-                await ExternalSubtitleService.convertToBetterPlayerSource(
-              preferredSub,
-            );
-            subs.add(betterPlayerSource);
-          }
-        } catch (e) {
-          debugPrint('Error fetching external subtitles: $e');
-        }
-      }
-    } on Exception catch (e) {
-      GlobalMethods.showErrorScaffoldMessengerGeneral(e, context);
-    } finally {
-      if (mounted) {
-        setState(() {
-          isFetchingSubtitles = false;
-        });
-      }
-    }
-  }
-
-  void getAppLanguage() {
-    for (int i = 0; i < supportedLanguages.length; i++) {
-      if (supportedLanguages[i].languageCode ==
-          settings.defaultSubtitleLanguage) {
-        foundIndex = i;
-        break;
-      }
-    }
   }
 
   Future<void> _fetchMovieRecommendations() async {

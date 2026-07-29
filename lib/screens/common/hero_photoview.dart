@@ -12,6 +12,7 @@ import 'dart:ui';
 import 'package:provider/provider.dart';
 import '../../functions/function.dart';
 import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class HeroPhotoView extends StatefulWidget {
   const HeroPhotoView(
@@ -95,6 +96,7 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
   @override
   void dispose() {
     IsolateNameServer.removePortNameMapping('downloader_send_port');
+    _port.close();
     super.dispose();
   }
 
@@ -140,36 +142,33 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
                 : tr('singular_person_image',
                     namedArgs: {'name': widget.name})),
           ),
-          body: Column(
+          body: Stack(
+            fit: StackFit.expand,
             children: [
-              Expanded(
-                flex: 10,
+              ColoredBox(
+                color: Colors.black,
                 child: PhotoView(
                   imageProvider: widget.imageProvider,
                   enableRotation: true,
                   heroAttributes: PhotoViewHeroAttributes(tag: widget.heroId),
                 ),
               ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    _download(
-                        widget.heroId, '${widget.currentIndex + 1}', themeMode);
-                  },
-                  style: ButtonStyle(
-                    minimumSize: WidgetStateProperty.all(
-                        const Size(double.infinity, 50)),
+              Positioned(
+                left: AppUI.phonePadding,
+                right: AppUI.phonePadding,
+                bottom: 20,
+                child: FilledButton.icon(
+                  onPressed: () => _download(
+                    widget.heroId,
+                    '${widget.currentIndex + 1}',
+                    themeMode,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Icon(PhosphorIcons.floppyDisk(PhosphorIconsStyle.fill)),
-                      ),
-                      Text(tr('download')),
-                    ],
+                  icon: Icon(
+                    PhosphorIcons.downloadSimple(
+                      PhosphorIconsStyle.fill,
+                    ),
                   ),
+                  label: Text(tr('download')),
                 ),
               ),
             ],

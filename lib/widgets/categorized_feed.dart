@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../api/endpoints.dart';
 import '../constants/api_constants.dart';
@@ -198,11 +197,13 @@ class _CategorySectionState extends State<_CategorySection>
 
     try {
       if (widget.isTv) {
-        final tvs = await fetchTV(url, settings.enableProxy, dependencies.tmdbProxy);
+        final tvs =
+            await fetchTV(url, settings.enableProxy, dependencies.tmdbProxy);
         if (mounted) {
           setState(() {
             _items = tvs.map((tv) {
-              final year = DateTime.tryParse(tv.firstAirDate ?? '')?.year.toString();
+              final year =
+                  DateTime.tryParse(tv.firstAirDate ?? '')?.year.toString();
               return CategorizedFeedItem(
                 id: tv.id ?? 0,
                 title: tv.name ?? tr('not_available'),
@@ -229,12 +230,13 @@ class _CategorySectionState extends State<_CategorySection>
           });
         }
       } else {
-        final movies =
-            await fetchMovies(url, settings.enableProxy, dependencies.tmdbProxy);
+        final movies = await fetchMovies(
+            url, settings.enableProxy, dependencies.tmdbProxy);
         if (mounted) {
           setState(() {
             _items = movies.map((movie) {
-              final year = DateTime.tryParse(movie.releaseDate ?? '')?.year.toString();
+              final year =
+                  DateTime.tryParse(movie.releaseDate ?? '')?.year.toString();
               return CategorizedFeedItem(
                 id: movie.id ?? 0,
                 title: movie.title ?? tr('not_available'),
@@ -485,7 +487,8 @@ class _CategorizedPosterCard extends StatelessWidget {
                 child: Hero(
                   tag: item.heroId,
                   child: item.posterPath == null
-                      ? Image.asset('assets/images/na_logo.png', fit: BoxFit.cover)
+                      ? Image.asset('assets/images/na_logo.png',
+                          fit: BoxFit.cover)
                       : CachedNetworkImage(
                           imageUrl: buildImageUrl(
                                 TMDB_BASE_IMAGE_URL,
@@ -498,8 +501,9 @@ class _CategorizedPosterCard extends StatelessWidget {
                           fit: BoxFit.cover,
                           placeholder: (context, url) =>
                               scrollingImageShimmer(settings.appTheme),
-                          errorWidget: (_, __, ___) =>
-                              Image.asset('assets/images/na_logo.png', fit: BoxFit.cover),
+                          errorWidget: (_, __, ___) => Image.asset(
+                              'assets/images/na_logo.png',
+                              fit: BoxFit.cover),
                         ),
                 ),
               ),
@@ -531,13 +535,10 @@ class _CategorizedBackdropCard extends StatelessWidget {
   final CategorizedFeedItem item;
   final double width;
   final double height;
-  final bool showRating;
-
   const _CategorizedBackdropCard({
     required this.item,
     required this.width,
     required this.height,
-    this.showRating = true,
   });
 
   @override
@@ -558,21 +559,21 @@ class _CategorizedBackdropCard extends StatelessWidget {
               Hero(
                 tag: item.heroId,
                 child: item.backdropPath == null
-                    ? Image.asset('assets/images/na_logo.png', fit: BoxFit.cover)
+                    ? Image.asset('assets/images/na_logo.png',
+                        fit: BoxFit.cover)
                     : CachedNetworkImage(
-                        imageUrl: buildImageUrl(
-                              TMDB_BASE_IMAGE_URL,
-                              dependencies.tmdbProxy,
-                              settings.enableProxy,
-                              context,
-                            ) +
-                            'w780' +
-                            item.backdropPath!,
+                        imageUrl: '${buildImageUrl(
+                          TMDB_BASE_IMAGE_URL,
+                          dependencies.tmdbProxy,
+                          settings.enableProxy,
+                          context,
+                        )}w780${item.backdropPath!}',
                         fit: BoxFit.cover,
                         placeholder: (context, url) =>
                             scrollingImageShimmer(settings.appTheme),
-                        errorWidget: (_, __, ___) =>
-                            Image.asset('assets/images/na_logo.png', fit: BoxFit.cover),
+                        errorWidget: (_, __, ___) => Image.asset(
+                            'assets/images/na_logo.png',
+                            fit: BoxFit.cover),
                       ),
               ),
               Container(
@@ -618,24 +619,26 @@ class _CategorizedBackdropCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                         ],
-                        if (showRating)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(PhosphorIcons.star(PhosphorIconsStyle.fill), color: Colors.white, size: 12),
-                                const SizedBox(width: 4),
-                                Text(
-                                  item.voteAverage.toStringAsFixed(1),
-                                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                                ),
-                              ],
-                            ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(4),
                           ),
+                          child: Row(
+                            children: [
+                              Icon(PhosphorIcons.star(PhosphorIconsStyle.fill),
+                                  color: Colors.white, size: 12),
+                              const SizedBox(width: 4),
+                              Text(
+                                item.voteAverage.toStringAsFixed(1),
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -724,7 +727,7 @@ class _DoublePosterLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final cardWidth = AppUI.horizontalCardWidth(context);
     final cardHeight = cardWidth * 1.5 + 46; // Poster + text
-    
+
     return SizedBox(
       height: cardHeight * 2 + 16, // Two rows + spacing
       child: ListView.builder(
@@ -735,16 +738,22 @@ class _DoublePosterLayout extends StatelessWidget {
         itemBuilder: (context, index) {
           final firstIndex = index * 2;
           final secondIndex = firstIndex + 1;
-          
+
           return Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: Column(
               children: [
                 if (firstIndex < items.length)
-                  _CategorizedPosterCard(item: firstIndex < items.length ? items[firstIndex] : items.first),
+                  _CategorizedPosterCard(
+                      item: firstIndex < items.length
+                          ? items[firstIndex]
+                          : items.first),
                 const SizedBox(height: 16),
                 if (secondIndex < items.length)
-                  _CategorizedPosterCard(item: secondIndex < items.length ? items[secondIndex] : items.first),
+                  _CategorizedPosterCard(
+                      item: secondIndex < items.length
+                          ? items[secondIndex]
+                          : items.first),
               ],
             ),
           );
@@ -787,8 +796,9 @@ class _SinglePosterLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardWidth = AppUI.horizontalCardWidth(context);
-    final cardHeight = cardWidth * 1.5 + 46; // Roughly poster height + text height
-    
+    final cardHeight =
+        cardWidth * 1.5 + 46; // Roughly poster height + text height
+
     return SizedBox(
       height: cardHeight,
       child: ListView.separated(

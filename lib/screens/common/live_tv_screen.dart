@@ -9,9 +9,9 @@ import '/models/live_tv.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../constants/app_constants.dart';
 import '../../functions/network.dart';
 import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class ChannelList extends StatefulWidget {
   const ChannelList({super.key});
@@ -216,8 +216,8 @@ class _ChannelListState extends State<ChannelList> {
             ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: AppResponsiveContent(
+        maxWidth: 840,
         child: enableRetry
             ? _buildRetryWidget()
             : isLoading
@@ -230,50 +230,32 @@ class _ChannelListState extends State<ChannelList> {
   }
 
   Widget _buildRetryWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(PhosphorIcons.linkBreak(), size: 35),
-            const SizedBox(width: 25),
-            Text(
-              tr('channels_fetch_failed'),
-              style: const TextStyle(fontSize: 20),
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
-        ElevatedButton(
-          onPressed: _loadChannelsWithCache,
-          child: Text(tr('retry')),
-        ),
-      ],
+    return AppEmptyState(
+      icon: PhosphorIcons.linkBreak(),
+      title: tr('channels_fetch_failed'),
+      message: tr('check_connection'),
+      action: FilledButton.icon(
+        icon: Icon(PhosphorIcons.arrowsClockwise()),
+        label: Text(tr('retry')),
+        onPressed: _loadChannelsWithCache,
+      ),
     );
   }
 
   Widget _buildLoadingWidget() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          SizedBox(height: 16),
-          Text('Loading channels...'),
-        ],
-      ),
+    return AppEmptyState(
+      icon: PhosphorIcons.television(),
+      title: tr('channels'),
+      message: tr('loading_video_sources'),
+      action: const CircularProgressIndicator(),
     );
   }
 
   Widget _buildEmptyWidget() {
-    return Center(
-      child: Text(
-        tr('no_channels'),
-        style: kTextHeaderStyle,
-        textAlign: TextAlign.center,
-      ),
+    return AppEmptyState(
+      icon: PhosphorIcons.televisionSimple(),
+      title: tr('channels'),
+      message: tr('no_channels'),
     );
   }
 
@@ -281,70 +263,49 @@ class _ChannelListState extends State<ChannelList> {
     return Column(
       children: [
         // Search bar
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              children: [
-                const SizedBox(width: 8.0),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: _performSearch,
-                    decoration: InputDecoration(
-                      hintText: tr('search'),
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-                if (isSearching)
-                  IconButton(
+        TextField(
+          controller: _searchController,
+          onChanged: _performSearch,
+          decoration: InputDecoration(
+            hintText: tr('search'),
+            prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
+            suffixIcon: isSearching
+                ? IconButton(
                     icon: Icon(PhosphorIcons.x()),
                     onPressed: _clearSearch,
                   )
-                else
-                  Icon(PhosphorIcons.magnifyingGlass()),
+                : null,
+          ),
+        ),
+        if (lastCacheUpdate != null || isSearching)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    isSearching
+                        ? '${tr('showing')} ${filteredChannels.length} ${tr('results')}'
+                        : '${tr('total_channels')}: $totalChannels',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+                if (lastCacheUpdate != null)
+                  Text(
+                    _formatCacheTime(lastCacheUpdate!),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
               ],
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-
-        // Cache info
-        if (lastCacheUpdate != null)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Text(
-              '${tr('total_channels')}: $totalChannels • ${tr('last_updated')}: ${_formatCacheTime(lastCacheUpdate!)}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-
-        // Results info
-        if (isSearching)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Text(
-              '${tr('showing')} ${filteredChannels.length} ${tr('results')}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-
-        const SizedBox(height: 8),
-
-        // Channel list
         Expanded(
           child: filteredChannels.isEmpty
-              ? Center(
-                  child: Text(
-                    tr('no_channels_found'),
-                    style: kTextHeaderStyle,
-                    textAlign: TextAlign.center,
-                  ),
+              ? AppEmptyState(
+                  icon: PhosphorIcons.magnifyingGlass(),
+                  title: tr('search'),
+                  message: tr('no_channels_found'),
                 )
               : ListView.builder(
                   controller: _scrollController,
@@ -385,96 +346,92 @@ class ChannelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        InkWell(
-          onTap: () {
-            final mixpanel =
-                Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-            final autoFS = Provider.of<SettingsProvider>(context, listen: false)
-                .defaultViewMode;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () {
+          final mixpanel =
+              Provider.of<SettingsProvider>(context, listen: false).mixpanel;
+          final autoFS = Provider.of<SettingsProvider>(context, listen: false)
+              .defaultViewMode;
 
-            mixpanel.track('Most viewed TV channels', properties: {
-              'TV Channel name': channel.name ?? 'N/A',
-              'Stream ID': channel.streamId ?? 'N/A',
-            });
+          mixpanel.track('Most viewed TV channels', properties: {
+            'TV Channel name': channel.name ?? 'N/A',
+            'Stream ID': channel.streamId ?? 'N/A',
+          });
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LivePlayer(
-                  channelName: channel.name ?? 'Unknown Channel',
-                  videoUrl: channel.directSource ?? channel.videoUrl ?? '',
-                  autoFullScreen: autoFS,
-                  streamIcon: channel.streamIcon,
-                  colors: [
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).colorScheme.surface,
-                  ],
-                ),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LivePlayer(
+                channelName: channel.name ?? 'Unknown Channel',
+                videoUrl: channel.directSource ?? channel.videoUrl ?? '',
+                autoFullScreen: autoFS,
+                streamIcon: channel.streamIcon,
+                colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).colorScheme.surface,
+                ],
               ),
-            );
-          },
-          child: Container(
-            width: double.infinity,
-            padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-            child: Row(
-              children: [
-                // Channel icon
-                if (channel.streamIcon != null &&
-                    channel.streamIcon!.isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: CachedNetworkImage(
-                      imageUrl: channel.streamIcon!,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.contain,
-                      placeholder: (context, url) => Container(
-                        width: 48,
-                        height: 48,
-                        color: Theme.of(context).cardColor,
-                        child: Icon(PhosphorIcons.television(), size: 24),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        width: 48,
-                        height: 48,
-                        color: Theme.of(context).cardColor,
-                        child: Icon(PhosphorIcons.television(), size: 24),
-                      ),
-                    ),
-                  )
-                else
-                  Container(
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              // Channel icon
+              if (channel.streamIcon != null && channel.streamIcon!.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: CachedNetworkImage(
+                    imageUrl: channel.streamIcon!,
                     width: 48,
                     height: 48,
-                    decoration: BoxDecoration(
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => Container(
+                      width: 48,
+                      height: 48,
                       color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(8.0),
+                      child: Icon(PhosphorIcons.television(), size: 24),
                     ),
-                    child: Icon(PhosphorIcons.television(), size: 24),
+                    errorWidget: (context, url, error) => Container(
+                      width: 48,
+                      height: 48,
+                      color: Theme.of(context).cardColor,
+                      child: Icon(PhosphorIcons.television(), size: 24),
+                    ),
                   ),
-
-                const SizedBox(width: 12),
-
-                // Channel name
-                Expanded(
-                  child: Text(
-                    channel.name ?? 'Unknown Channel',
-                    style: const TextStyle(fontSize: 15),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                )
+              else
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
+                  child: Icon(PhosphorIcons.television(), size: 24),
                 ),
 
-                Icon(PhosphorIcons.playCircle(), size: 28),
-              ],
-            ),
+              const SizedBox(width: 12),
+
+              // Channel name
+              Expanded(
+                child: Text(
+                  channel.name ?? 'Unknown Channel',
+                  style: const TextStyle(fontSize: 15),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+
+              Icon(PhosphorIcons.playCircle(), size: 28),
+            ],
           ),
         ),
-        const Divider(thickness: 1, height: 1),
-      ],
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../models/movie_stream_metadata.dart';
 import '../../movie/movie_video_loader.dart';
+import 'player_sheet_ui.dart';
 
 class PlayerMovieRecommendations {
   Future<void> loadRecommendedMovie({
@@ -50,7 +51,6 @@ class PlayerMovieRecommendations {
             builder: (context) => MovieVideoLoader(
               download: false,
               metadata: newMetadata,
-              route: StreamRoute.flixHQ,
             ),
           ),
         );
@@ -76,244 +76,60 @@ class PlayerMovieRecommendations {
     required Function() onSaveProgress,
     required Function() closePlayer,
   }) {
-    if (movieMetadata.recommendations == null ||
-        movieMetadata.recommendations!.isEmpty) {
-      return;
-    }
+    final recommendations = movieMetadata.recommendations;
+    if (recommendations == null || recommendations.isEmpty) return;
+    final playerContext = context;
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
+      useSafeArea: true,
+      showDragHandle: true,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: .8,
+        minChildSize: .55,
+        maxChildSize: .95,
         expand: false,
         snap: true,
-        snapSizes: [0.5, 0.7, 0.95],
-        builder: (context, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
+        snapSizes: const [.55, .8, .95],
+        builder: (context, scrollController) => PlayerSheetScaffold(
+          icon: PhosphorIcons.sparkle(),
+          title: tr('recommended_movies'),
+          subtitle: tr('more_recommendations'),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.pop(sheetContext),
+              icon: Icon(PhosphorIcons.x()),
             ),
-          ),
-          child: Column(
-            children: [
-              // Draggable Header
-              SingleChildScrollView(
-                controller: scrollController,
-                physics: ClampingScrollPhysics(),
-                child: Column(
-                  children: [
-                    // Drag handle
-                    Container(
-                      margin: EdgeInsets.only(top: 8, bottom: 4),
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[600],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    // Header
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            tr('recommended_movies'),
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(PhosphorIcons.x()),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Divider(height: 1),
-                  ],
+          ],
+          child: ListView.separated(
+            controller: scrollController,
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+            itemCount: recommendations.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final movie = recommendations[index];
+              return PlayerChoiceCard(
+                title: movie.title,
+                subtitle: _movieSubtitle(movie),
+                description: movie.overview,
+                thumbnail: _RecommendationThumbnail(
+                  path: movie.posterPath,
+                  width: 72,
+                  height: 108,
                 ),
-              ),
-              // Movie List
-              Expanded(
-                child: ListView.builder(
-                  itemCount: movieMetadata.recommendations!.length,
-                  itemBuilder: (context, index) {
-                    final movie = movieMetadata.recommendations![index];
-
-                    return InkWell(
-                      onTap: () {
-                        // Close the bottom sheet
-                        Navigator.pop(context);
-                        // Load the selected movie
-                        loadRecommendedMovie(
-                          context: context,
-                          movieId: movie.movieId,
-                          movieMetadata: movieMetadata,
-                          onSaveProgress: onSaveProgress,
-                          closePlayer: closePlayer,
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Theme.of(context).dividerColor,
-                              width: 0.5,
-                            ),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Movie poster
-                              Container(
-                                width: 100,
-                                height: 150,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: Colors.grey[800],
-                                ),
-                                child: movie.posterPath != null
-                                    ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: CachedNetworkImage(
-                                          cacheManager: cacheProp(),
-                                          imageUrl:
-                                              'https://image.tmdb.org/t/p/w300${movie.posterPath}',
-                                          fit: BoxFit.cover,
-                                          placeholder: (context, url) => Center(
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              color: colors.first,
-                                            ),
-                                          ),
-                                          errorWidget: (context, url, error) =>
-                                              Center(
-                                            child: Icon(
-                                              PhosphorIcons.filmStrip(),
-                                              color: Colors.grey[600],
-                                              size: 40,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : Center(
-                                        child: Icon(
-                                          PhosphorIcons.filmStrip(),
-                                          color: Colors.grey[600],
-                                          size: 40,
-                                        ),
-                                      ),
-                              ),
-                              SizedBox(width: 12),
-                              // Movie info
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      movie.title,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        fontFamily: 'FigtreeSB',
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    // Rating and release year row
-                                    Row(
-                                      children: [
-                                        if (movie.voteAverage != null &&
-                                            movie.voteAverage! > 0)
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 6,
-                                              vertical: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: colors.first
-                                                  .withValues(alpha: 0.2),
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(
-                                                  PhosphorIcons.star(PhosphorIconsStyle.fill),
-                                                  size: 14,
-                                                  color: colors.first,
-                                                ),
-                                                SizedBox(width: 2),
-                                                Text(
-                                                  '${movie.voteAverage!.toStringAsFixed(1)}/10',
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: colors.first,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        if (movie.voteAverage != null &&
-                                            movie.voteAverage! > 0 &&
-                                            movie.releaseDate != null)
-                                          SizedBox(width: 8),
-                                        if (movie.releaseDate != null)
-                                          Text(
-                                            movie.releaseDate!.split('-')[0],
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey[400],
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    if (movie.overview != null &&
-                                        movie.overview!.isNotEmpty)
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 8.0),
-                                        child: Text(
-                                          movie.overview!,
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontFamily: 'Figtree',
-                                            color: Colors.grey[500],
-                                          ),
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  loadRecommendedMovie(
+                    context: playerContext,
+                    movieId: movie.movieId,
+                    movieMetadata: movieMetadata,
+                    onSaveProgress: onSaveProgress,
+                    closePlayer: closePlayer,
+                  );
+                },
+              );
+            },
           ),
         ),
       ),
@@ -327,324 +143,219 @@ class PlayerMovieRecommendations {
     required Function() onSaveProgress,
     required Function() closePlayer,
   }) {
-    if (movieMetadata.recommendations == null ||
-        movieMetadata.recommendations!.isEmpty) {
-      return;
-    }
+    final recommendations = movieMetadata.recommendations;
+    if (recommendations == null || recommendations.isEmpty) return;
+    var selectedIndex = 0;
 
-    int selectedIndex = 0; // Track which movie is selected
-
-    showDialog(
+    showDialog<void>(
       context: context,
-      barrierDismissible: true,
-      builder: (BuildContext dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            final currentMovie = movieMetadata.recommendations![selectedIndex];
-
-            return AlertDialog(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: Text(
-                tr('recommended_movies'),
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'FigtreeBold',
-                ),
-              ),
-              content: Container(
-                width: double.maxFinite,
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.6,
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Movie poster and info in a row
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Movie poster on the left
-                          if (currentMovie.posterPath != null)
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: CachedNetworkImage(
-                                cacheManager: cacheProp(),
-                                imageUrl:
-                                    'https://image.tmdb.org/t/p/w500${currentMovie.posterPath}',
-                                width: 120,
-                                height: 180,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Container(
-                                  width: 120,
-                                  height: 180,
-                                  color: Colors.grey[800],
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: colors.first,
-                                    ),
-                                  ),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          final selected = recommendations[selectedIndex];
+          return Dialog(
+            insetPadding: const EdgeInsets.all(20),
+            clipBehavior: Clip.antiAlias,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: .12),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Icon(
+                            PhosphorIcons.sparkle(),
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 13),
+                        Expanded(
+                          child: Text(
+                            tr('recommended_movies'),
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          icon: Icon(PhosphorIcons.x()),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    PlayerChoiceCard(
+                      title: selected.title,
+                      subtitle: _movieSubtitle(selected),
+                      description: selected.overview,
+                      selected: true,
+                      thumbnail: _RecommendationThumbnail(
+                        path: selected.posterPath,
+                        width: 92,
+                        height: 138,
+                      ),
+                      trailing: Icon(
+                        PhosphorIcons.playCircle(
+                          PhosphorIconsStyle.fill,
+                        ),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      onTap: null,
+                    ),
+                    if (recommendations.length > 1) ...[
+                      const SizedBox(height: 20),
+                      Text(
+                        tr('more_recommendations'),
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 122,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: recommendations.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 10),
+                          itemBuilder: (context, index) {
+                            final movie = recommendations[index];
+                            final isSelected = index == selectedIndex;
+                            return Material(
+                              color: isSelected
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(14),
+                              clipBehavior: Clip.antiAlias,
+                              child: InkWell(
+                                onTap: () => setDialogState(
+                                  () => selectedIndex = index,
                                 ),
-                                errorWidget: (context, url, error) => Container(
-                                  width: 120,
-                                  height: 180,
-                                  color: Colors.grey[800],
-                                  child: Center(
-                                    child: Icon(
-                                      PhosphorIcons.filmStrip(),
-                                      color: Colors.grey[600],
-                                      size: 40,
+                                child: SizedBox(
+                                  width: 210,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Row(
+                                      children: [
+                                        _RecommendationThumbnail(
+                                          path: movie.posterPath,
+                                          width: 64,
+                                          height: 96,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            movie.title,
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall
+                                                ?.copyWith(
+                                                  color: isSelected
+                                                      ? Theme.of(context)
+                                                          .colorScheme
+                                                          .primary
+                                                      : null,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          SizedBox(width: 12),
-                          // Movie info on the right
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  currentMovie.title,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'FigtreeSB',
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
-                                  ),
-                                ),
-                                if (currentMovie.voteAverage != null &&
-                                    currentMovie.voteAverage! > 0)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 8.0),
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                        vertical: 2,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            colors.first.withValues(alpha: 0.2),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            PhosphorIcons.star(PhosphorIconsStyle.fill),
-                                            size: 14,
-                                            color: colors.first,
-                                          ),
-                                          SizedBox(width: 2),
-                                          Text(
-                                            '${currentMovie.voteAverage!.toStringAsFixed(1)}/10',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              color: colors.first,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                if (currentMovie.overview != null &&
-                                    currentMovie.overview!.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 8.0),
-                                    child: Text(
-                                      currentMovie.overview!,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontFamily: 'Figtree',
-                                        color: Colors.grey[400],
-                                      ),
-                                      maxLines: 6,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      // Show other recommendations
-                      if (movieMetadata.recommendations!.length > 1) ...[
-                        SizedBox(height: 16),
-                        Divider(),
-                        SizedBox(height: 8),
-                        Text(
-                          tr('more_recommendations'),
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'FigtreeSB',
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                            );
+                          },
                         ),
-                        SizedBox(height: 12),
-                        SizedBox(
-                          height: 160,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: movieMetadata.recommendations!.length,
-                            itemBuilder: (context, index) {
-                              final movie =
-                                  movieMetadata.recommendations![index];
-                              final isSelected = index == selectedIndex;
-
-                              return GestureDetector(
-                                onTap: () {
-                                  setDialogState(() {
-                                    selectedIndex = index;
-                                  });
-                                },
-                                child: Container(
-                                  width: 100,
-                                  margin: EdgeInsets.only(right: 8),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: isSelected
-                                        ? Border.all(
-                                            color: colors.first,
-                                            width: 2,
-                                          )
-                                        : null,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(3),
-                                        child: movie.posterPath != null
-                                            ? CachedNetworkImage(
-                                                cacheManager: cacheProp(),
-                                                imageUrl:
-                                                    'https://image.tmdb.org/t/p/w185${movie.posterPath}',
-                                                height: 130,
-                                                width: 100,
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    Container(
-                                                  height: 130,
-                                                  width: 100,
-                                                  color: Colors.grey[800],
-                                                  child: Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                      color: colors.first,
-                                                    ),
-                                                  ),
-                                                ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Container(
-                                                  height: 130,
-                                                  width: 100,
-                                                  color: Colors.grey[800],
-                                                  child: Icon(
-                                                    PhosphorIcons.filmStrip(),
-                                                    color: Colors.grey[600],
-                                                    size: 30,
-                                                  ),
-                                                ),
-                                              )
-                                            : Container(
-                                                height: 130,
-                                                width: 100,
-                                                color: Colors.grey[800],
-                                                child: Icon(
-                                                  PhosphorIcons.filmStrip(),
-                                                  color: Colors.grey[600],
-                                                  size: 30,
-                                                ),
-                                              ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 2, vertical: 5.0),
-                                          child: Text(
-                                            movie.title,
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontFamily: 'Figtree',
-                                              color: isSelected
-                                                  ? colors.first
-                                                  : Colors.grey[300],
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          child: Text(tr('cancel')),
+                        ),
+                        const SizedBox(width: 8),
+                        FilledButton.icon(
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
+                            loadRecommendedMovie(
+                              context: context,
+                              movieId: selected.movieId,
+                              movieMetadata: movieMetadata,
+                              onSaveProgress: onSaveProgress,
+                              closePlayer: closePlayer,
+                            );
+                          },
+                          icon: Icon(PhosphorIcons.play()),
+                          label: Text(tr('play_now')),
                         ),
                       ],
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child: Text(
-                    tr('cancel'),
-                    style: TextStyle(
-                      color: Colors.grey[400],
-                      fontFamily: 'Figtree',
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                    // Load selected movie immediately
-                    if (context.mounted) {
-                      final selectedMovie =
-                          movieMetadata.recommendations![selectedIndex];
-                      loadRecommendedMovie(
-                        context: context,
-                        movieId: selectedMovie.movieId,
-                        movieMetadata: movieMetadata,
-                        onSaveProgress: onSaveProgress,
-                        closePlayer: closePlayer,
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.first,
-                  ),
-                  child: Text(
-                    tr('play_now'),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'FigtreeSB',
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  String _movieSubtitle(MovieRecommendation movie) {
+    final values = <String>[];
+    if (movie.releaseDate?.isNotEmpty == true) {
+      values.add(movie.releaseDate!.split('-').first);
+    }
+    if (movie.voteAverage != null && movie.voteAverage! > 0) {
+      values.add('★ ${movie.voteAverage!.toStringAsFixed(1)}');
+    }
+    return values.join('  •  ');
+  }
+}
+
+class _RecommendationThumbnail extends StatelessWidget {
+  const _RecommendationThumbnail({
+    required this.path,
+    required this.width,
+    required this.height,
+  });
+
+  final String? path;
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return PlayerThumbnail(
+      width: width,
+      height: height,
+      child: path == null
+          ? Icon(PhosphorIcons.filmStrip())
+          : CachedNetworkImage(
+              cacheManager: cacheProp(),
+              imageUrl: 'https://image.tmdb.org/t/p/w300$path',
+              fit: BoxFit.cover,
+              placeholder: (_, __) => const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              errorWidget: (_, __, ___) => Icon(PhosphorIcons.filmStrip()),
+            ),
     );
   }
 }

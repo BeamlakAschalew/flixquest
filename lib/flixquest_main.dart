@@ -56,20 +56,8 @@ class _FlixQuestState extends State<FlixQuest>
   Future _fetchConfig() async {
     await _remoteConfig.fetchAndActivate();
     if (mounted) {
-      appDependencyProvider.consumetUrl =
-          _remoteConfig.getString('consumet_url');
       appDependencyProvider.flixQuestLogo =
           _remoteConfig.getString('cinemax_logo');
-      appDependencyProvider.opensubtitlesKey =
-          _remoteConfig.getString('opensubtitles_key');
-      appDependencyProvider.streamingServerFlixHQ =
-          _remoteConfig.getString('streaming_server_flixhq');
-      appDependencyProvider.enableADS = _remoteConfig.getBool('ads_enabled');
-      appDependencyProvider.fetchRoute = _remoteConfig.getString('route_v241');
-      appDependencyProvider.useExternalSubtitles =
-          _remoteConfig.getBool('use_external_subtitles');
-      appDependencyProvider.enableOTTADS =
-          _remoteConfig.getBool('ott_ads_enabled');
       appDependencyProvider.displayWatchNowButton =
           _remoteConfig.getBool('enable_stream');
       appDependencyProvider.displayOTTDrawer =
@@ -78,31 +66,7 @@ class _FlixQuestState extends State<FlixQuest>
           _remoteConfig.getString('flixquest_api_url');
       appDependencyProvider.isForcedUpdate =
           _remoteConfig.getBool('forced_update');
-      appDependencyProvider.flixhqZoeServer =
-          _remoteConfig.getString('flixhq_zoe_server');
-      appDependencyProvider.goMoviesServer =
-          _remoteConfig.getString('gomovies_server');
-      appDependencyProvider.vidSrcServer =
-          _remoteConfig.getString('vidsrc_server');
-      appDependencyProvider.vidSrcToServer =
-          _remoteConfig.getString('vidsrcto_server');
       appDependencyProvider.tmdbProxy = _remoteConfig.getString('tmdb_proxy');
-      appDependencyProvider.fetchSubtitles =
-          _remoteConfig.getBool('fetch_subtitles');
-      appDependencyProvider.newFlixHQUrl =
-          _remoteConfig.getString('new_flixhq_url');
-      appDependencyProvider.newFlixhqServer =
-          _remoteConfig.getString('new_flixhq_server');
-      appDependencyProvider.flixApiUrl = _remoteConfig.getString('flixapi_url');
-      appDependencyProvider.gokuServer = _remoteConfig.getString('goku_server');
-      appDependencyProvider.sflixServer =
-          _remoteConfig.getString('sflix_server');
-      appDependencyProvider.himoviesServer =
-          _remoteConfig.getString('himovies_server');
-      appDependencyProvider.animekaiServer =
-          _remoteConfig.getString('animekai_server');
-      appDependencyProvider.hianimeServer =
-          _remoteConfig.getString('hianime_server');
     }
     await requestNotificationPermissions();
   }
@@ -229,30 +193,12 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     await remoteConfig.activate();
     if (mounted) {
       final appDep = Provider.of<AppDependencyProvider>(context, listen: false);
-      appDep.consumetUrl = remoteConfig.getString('consumet_url');
       appDep.flixQuestLogo = remoteConfig.getString('cinemax_logo');
-      appDep.opensubtitlesKey = remoteConfig.getString('opensubtitles_key');
-      appDep.streamingServerFlixHQ =
-          remoteConfig.getString('streaming_server_flixhq');
-      appDep.enableADS = remoteConfig.getBool('ads_enabled');
-      appDep.fetchRoute = remoteConfig.getString('route_v241');
-      appDep.useExternalSubtitles =
-          remoteConfig.getBool('use_external_subtitles');
-      appDep.enableOTTADS = remoteConfig.getBool('ott_ads_enabled');
       appDep.displayWatchNowButton = remoteConfig.getBool('enable_stream');
       appDep.displayOTTDrawer = remoteConfig.getBool('enable_ott');
       appDep.flixquestAPIURL = remoteConfig.getString('flixquest_api_url');
       appDep.isForcedUpdate = remoteConfig.getBool('forced_update');
-      appDep.flixhqZoeServer = remoteConfig.getString('flixhq_zoe_server');
-      appDep.goMoviesServer = remoteConfig.getString('gomovies_server');
-      appDep.vidSrcServer = remoteConfig.getString('vidsrc_server');
-      appDep.vidSrcToServer = remoteConfig.getString('vidsrcto_server');
       appDep.tmdbProxy = remoteConfig.getString('tmdb_proxy');
-      appDep.gokuServer = remoteConfig.getString('goku_server');
-      appDep.sflixServer = remoteConfig.getString('sflix_server');
-      appDep.himoviesServer = remoteConfig.getString('himovies_server');
-      appDep.animekaiServer = remoteConfig.getString('animekai_server');
-      appDep.hianimeServer = remoteConfig.getString('hianime_server');
     }
   }
 
@@ -329,31 +275,36 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                   destinations: [
                     NavigationDestination(
                       icon: Icon(PhosphorIcons.house()),
-                      selectedIcon:
-                          Icon(PhosphorIcons.house(PhosphorIconsStyle.fill), color: colorScheme.primary),
+                      selectedIcon: Icon(
+                          PhosphorIcons.house(PhosphorIconsStyle.fill),
+                          color: colorScheme.primary),
                       label: tr('movies'),
                     ),
                     NavigationDestination(
                       icon: Icon(PhosphorIcons.television()),
-                      selectedIcon: Icon(PhosphorIcons.television(PhosphorIconsStyle.fill),
+                      selectedIcon: Icon(
+                          PhosphorIcons.television(PhosphorIconsStyle.fill),
                           color: colorScheme.primary),
                       label: tr('tv_series'),
                     ),
                     NavigationDestination(
                       icon: Icon(PhosphorIcons.compass()),
-                      selectedIcon: Icon(PhosphorIcons.compass(PhosphorIconsStyle.fill),
+                      selectedIcon: Icon(
+                          PhosphorIcons.compass(PhosphorIconsStyle.fill),
                           color: colorScheme.primary),
                       label: tr('discover'),
                     ),
                     NavigationDestination(
                       icon: Icon(PhosphorIcons.bookmarkSimple()),
-                      selectedIcon: Icon(PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill),
+                      selectedIcon: Icon(
+                          PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill),
                           color: colorScheme.primary),
                       label: tr('bookmarks'),
                     ),
                     NavigationDestination(
                       icon: Icon(PhosphorIcons.user()),
-                      selectedIcon: Icon(PhosphorIcons.user(PhosphorIconsStyle.fill),
+                      selectedIcon: Icon(
+                          PhosphorIcons.user(PhosphorIconsStyle.fill),
                           color: colorScheme.primary),
                       label: tr('profile'),
                     ),

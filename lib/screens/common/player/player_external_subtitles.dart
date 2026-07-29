@@ -8,6 +8,8 @@ import '../../../models/external_subtitles.dart';
 import '../../../models/movie_stream_metadata.dart';
 import '../../../models/tv_stream_metadata.dart';
 import '../../../services/external_subtitle_service.dart';
+import '../../../ui_components/app_ui_components.dart';
+import 'player_sheet_ui.dart';
 
 class PlayerExternalSubtitles {
   List<ExternalSubtitle> _availableExternalSubtitles = [];
@@ -26,344 +28,153 @@ class PlayerExternalSubtitles {
     required BetterPlayerController betterPlayerController,
   }) {
     _isExternalSubtitlesMenuOpen = true;
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
+      useSafeArea: true,
+      showDragHandle: true,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
       builder: (bottomSheetContext) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
+        initialChildSize: .78,
+        minChildSize: .52,
+        maxChildSize: .95,
         expand: false,
         snap: true,
-        snapSizes: [0.5, 0.7, 0.95],
+        snapSizes: const [.52, .78, .95],
         builder: (context, scrollController) => StatefulBuilder(
           builder: (context, setBottomSheetState) {
-            // Auto-load subtitles when menu is first opened if not already loaded
             if (_availableExternalSubtitles.isEmpty &&
-                !_isLoadingExternalSubtitles &&
-                context.mounted) {
-              Future.microtask(() => _fetchExternalSubtitles(
+                !_isLoadingExternalSubtitles) {
+              _isLoadingExternalSubtitles = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+                _fetchExternalSubtitles(
+                  setBottomSheetState,
+                  context,
+                  mediaType,
+                  movieMetadata,
+                  tvMetadata,
+                  colors,
+                );
+              });
+            }
+
+            final Widget content;
+            if (_isLoadingExternalSubtitles) {
+              content = AppEmptyState(
+                icon: PhosphorIcons.closedCaptioning(),
+                title: tr('searching_for_subtitles'),
+                message: tr('loading_video_sources'),
+                action: const CircularProgressIndicator(),
+              );
+            } else if (_availableExternalSubtitles.isEmpty) {
+              content = AppEmptyState(
+                icon: PhosphorIcons.closedCaptioning(),
+                title: tr('no_external_subtitles_found'),
+                message: tr('try_searching_for_subtitles'),
+                action: FilledButton.icon(
+                  onPressed: () => _fetchExternalSubtitles(
                     setBottomSheetState,
                     context,
                     mediaType,
                     movieMetadata,
                     tvMetadata,
                     colors,
-                  ));
+                  ),
+                  icon: Icon(PhosphorIcons.magnifyingGlass()),
+                  label: Text(tr('search_subtitles')),
+                ),
+              );
+            } else {
+              content = ListView.separated(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                itemCount: _availableExternalSubtitles.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final subtitle = _availableExternalSubtitles[index];
+                  final selected = _selectedExternalSubtitles
+                      .any((item) => item.id == subtitle.id);
+                  return PlayerChoiceCard(
+                    title: subtitle.displayName,
+                    subtitle: tr(
+                      'subtitle_source',
+                      namedArgs: {'source': subtitle.source},
+                    ),
+                    selected: selected,
+                    onTap: () => _toggleExternalSubtitle(
+                      subtitle,
+                      setBottomSheetState,
+                    ),
+                    thumbnail: PlayerThumbnail(
+                      width: 48,
+                      height: 34,
+                      child: subtitle.flagUrl.isEmpty
+                          ? Icon(PhosphorIcons.flag())
+                          : CachedNetworkImage(
+                              imageUrl: subtitle.flagUrl,
+                              fit: BoxFit.cover,
+                              errorWidget: (_, __, ___) =>
+                                  Icon(PhosphorIcons.flag()),
+                            ),
+                    ),
+                  );
+                },
+              );
             }
 
-            return Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+            return PlayerSheetScaffold(
+              icon: PhosphorIcons.closedCaptioning(),
+              title: tr('external_subtitles'),
+              subtitle: _availableExternalSubtitles.isEmpty
+                  ? tr('search_subtitles')
+                  : tr(
+                      'found_external_subtitles',
+                      namedArgs: {
+                        'count': '${_availableExternalSubtitles.length}',
+                      },
+                    ),
+              actions: [
+                if (_availableExternalSubtitles.isNotEmpty)
+                  IconButton(
+                    tooltip: tr('refresh'),
+                    onPressed: _isLoadingExternalSubtitles
+                        ? null
+                        : () => _fetchExternalSubtitles(
+                              setBottomSheetState,
+                              context,
+                              mediaType,
+                              movieMetadata,
+                              tvMetadata,
+                              colors,
+                            ),
+                    icon: Icon(PhosphorIcons.arrowsClockwise()),
+                  ),
+                IconButton(
+                  onPressed: () => Navigator.pop(bottomSheetContext),
+                  icon: Icon(PhosphorIcons.x()),
                 ),
-              ),
-              child: Column(
-                children: [
-                  // Draggable Header
-                  SingleChildScrollView(
-                    controller: scrollController,
-                    physics: ClampingScrollPhysics(),
-                    child: Column(
-                      children: [
-                        // Drag handle
-                        Container(
-                          margin: EdgeInsets.only(top: 8, bottom: 4),
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[600],
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        // Header
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                tr('external_subtitles'),
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  if (_availableExternalSubtitles.isNotEmpty)
-                                    IconButton(
-                                      icon: Icon(PhosphorIcons.arrowsClockwise()),
-                                      onPressed: () => _fetchExternalSubtitles(
-                                        setBottomSheetState,
-                                        context,
-                                        mediaType,
-                                        movieMetadata,
-                                        tvMetadata,
-                                        colors,
-                                      ),
-                                      tooltip: tr('refresh'),
-                                    ),
-                                  IconButton(
-                                    icon: Icon(PhosphorIcons.x()),
-                                    onPressed: () => Navigator.pop(context),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Divider(height: 1),
-                      ],
-                    ),
-                  ),
-                  // Content
-                  Expanded(
-                    child: _isLoadingExternalSubtitles
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(
-                                  color: colors.first,
-                                ),
-                                SizedBox(height: 16),
-                                Text(
-                                  tr('searching_for_subtitles'),
-                                  style: TextStyle(
-                                    color: Colors.grey[400],
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : _availableExternalSubtitles.isEmpty
-                            ? SingleChildScrollView(
-                                controller: scrollController,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Column(
-                                  children: [
-                                    const SizedBox(height: 12),
-                                    Icon(
-                                      PhosphorIcons.closedCaptioning(),
-                                      size: 56,
-                                      color: Colors.grey[600],
-                                    ),
-                                    SizedBox(height: 12),
-                                    Text(
-                                      tr('no_external_subtitles_found'),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey[400],
-                                      ),
-                                    ),
-                                    SizedBox(height: 6),
-                                    Text(
-                                      tr('try_searching_for_subtitles'),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey[500],
-                                      ),
-                                    ),
-                                    SizedBox(height: 16),
-                                    ElevatedButton.icon(
-                                      onPressed: () => _fetchExternalSubtitles(
-                                        setBottomSheetState,
-                                        context,
-                                        mediaType,
-                                        movieMetadata,
-                                        tvMetadata,
-                                        colors,
-                                      ),
-                                      icon: Icon(PhosphorIcons.magnifyingGlass()),
-                                      label: Text(tr('search_subtitles')),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: colors.first,
-                                        foregroundColor: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : ListView.builder(
-                                itemCount: _availableExternalSubtitles.length,
-                                itemBuilder: (context, index) {
-                                  final subtitle =
-                                      _availableExternalSubtitles[index];
-                                  final isSelected = _selectedExternalSubtitles
-                                      .any((s) => s.id == subtitle.id);
-
-                                  return InkWell(
-                                    onTap: () => _toggleExternalSubtitle(
-                                        subtitle, setBottomSheetState),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? colors.first
-                                                .withValues(alpha: 0.1)
-                                            : null,
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color:
-                                                Theme.of(context).dividerColor,
-                                            width: 0.5,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0,
-                                          vertical: 12.0,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            // Flag icon
-                                            if (subtitle.flagUrl.isNotEmpty)
-                                              CachedNetworkImage(
-                                                imageUrl: subtitle.flagUrl,
-                                                width: 32,
-                                                height: 24,
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) =>
-                                                    Container(
-                                                  width: 32,
-                                                  height: 24,
-                                                  color: Colors.grey[800],
-                                                ),
-                                                errorWidget:
-                                                    (context, url, error) =>
-                                                        Icon(
-                                                  PhosphorIcons.flag(),
-                                                  color: Colors.grey[600],
-                                                  size: 24,
-                                                ),
-                                              )
-                                            else
-                                              Icon(
-                                                PhosphorIcons.flag(),
-                                                color: Colors.grey[600],
-                                                size: 24,
-                                              ),
-                                            SizedBox(width: 16),
-                                            // Subtitle info
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    subtitle.displayName,
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                      fontWeight: isSelected
-                                                          ? FontWeight.bold
-                                                          : FontWeight.w600,
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onSurface,
-                                                    ),
-                                                  ),
-                                                  SizedBox(height: 4),
-                                                  Text(
-                                                    tr('subtitle_source',
-                                                        namedArgs: {
-                                                          'source':
-                                                              subtitle.source
-                                                        }),
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey[500],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            // Selection indicator
-                                            if (isSelected)
-                                              Icon(
-                                                PhosphorIcons.checkCircle(),
-                                                color: colors.first,
-                                                size: 24,
-                                              )
-                                            else
-                                              Icon(
-                                                PhosphorIcons.circle(),
-                                                color: Colors.grey[600],
-                                                size: 24,
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                  ),
-                  // Footer with selected count
-                  if (_selectedExternalSubtitles.isNotEmpty)
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        border: Border(
-                          top: BorderSide(
-                            color: Theme.of(context).dividerColor,
-                            width: 1,
-                          ),
-                        ),
+              ],
+              footer: _selectedExternalSubtitles.isEmpty
+                  ? null
+                  : PlayerSheetFooter(
+                      label: tr(
+                        'subtitles_selected',
+                        namedArgs: {
+                          'count': '${_selectedExternalSubtitles.length}',
+                        },
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            tr('subtitles_selected', namedArgs: {
-                              'count': '${_selectedExternalSubtitles.length}'
-                            }),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              // Store the navigator context before closing
-                              final navigatorContext = Navigator.of(context);
-                              final scaffoldMessenger =
-                                  ScaffoldMessenger.of(context);
-
-                              // Close the bottom sheet
-                              navigatorContext.pop();
-
-                              // Apply subtitles with scaffold messenger
-                              await _applyExternalSubtitlesWithMessenger(
-                                scaffoldMessenger,
-                                colors,
-                                betterPlayerController,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: colors.first,
-                            ),
-                            child: Text(
-                              tr('apply'),
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
-                      ),
+                      actionLabel: tr('apply'),
+                      onPressed: () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        Navigator.pop(bottomSheetContext);
+                        await _applyExternalSubtitlesWithMessenger(
+                          messenger,
+                          colors,
+                          betterPlayerController,
+                        );
+                      },
                     ),
-                ],
-              ),
+              child: content,
             );
           },
         ),

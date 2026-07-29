@@ -109,14 +109,11 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
       return;
     }
     if (!mounted || widget.tvId == null || widget.posterPath == null) return;
-    final route =
-        Provider.of<AppDependencyProvider>(context, listen: false).fetchRoute;
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => TVVideoLoader(
           download: false,
-          route: route == 'flixHQ' ? StreamRoute.flixHQ : StreamRoute.tmDB,
           metadata: TVStreamMetadata(
             elapsed: null,
             episodeId: widget.episodeList.episodeId,

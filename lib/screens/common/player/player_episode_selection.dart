@@ -12,6 +12,7 @@ import '../../../provider/settings_provider.dart';
 import '../../../api/endpoints.dart';
 import '../../../functions/network.dart';
 import '../../tv/tv_video_loader.dart';
+import 'player_sheet_ui.dart';
 
 class PlayerEpisodeSelection {
   int? _browsedSeasonNumber;
@@ -22,195 +23,115 @@ class PlayerEpisodeSelection {
     required BuildContext context,
     required List<Color> colors,
     required TVStreamMetadata tvMetadata,
-    required StreamRoute? tvRoute,
     required Function() onSaveProgress,
     required Function() closePlayer,
   }) {
-    if (tvMetadata.seasonEpisodes == null ||
-        tvMetadata.seasonEpisodes!.isEmpty) {
-      return;
-    }
+    final episodes = tvMetadata.seasonEpisodes;
+    if (episodes == null || episodes.isEmpty) return;
+    final playerContext = context;
+    final seasonNumber = _browsedSeasonNumber ?? tvMetadata.seasonNumber ?? 0;
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
+      useSafeArea: true,
+      showDragHandle: true,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: .82,
+        minChildSize: .55,
+        maxChildSize: .95,
         expand: false,
         snap: true,
-        snapSizes: [0.5, 0.7, 0.95],
-        builder: (context, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
+        snapSizes: const [.55, .82, .95],
+        builder: (context, scrollController) => PlayerSheetScaffold(
+          icon: PhosphorIcons.playlist(),
+          title: tr(
+            'season_episodes',
+            namedArgs: {'season': '$seasonNumber'},
           ),
-          child: Column(
-            children: [
-              // Draggable Header
-              SingleChildScrollView(
-                controller: scrollController,
-                physics: ClampingScrollPhysics(),
-                child: Column(
-                  children: [
-                    // Drag handle
-                    Container(
-                      margin: EdgeInsets.only(top: 8, bottom: 4),
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[600],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    // Header
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          // Back button to season selector (if multiple seasons available)
-                          if (tvMetadata.allSeasons != null &&
-                              tvMetadata.allSeasons!.length > 1)
-                            IconButton(
-                              icon: Icon(PhosphorIcons.caretLeft()),
-                              onPressed: () {
-                                Navigator.pop(context);
-                                showSeasonSelectionBottomSheet(
-                                  context: context,
-                                  colors: colors,
-                                  tvMetadata: tvMetadata,
-                                  tvRoute: tvRoute,
-                                  onSaveProgress: onSaveProgress,
-                                  closePlayer: closePlayer,
-                                );
-                              },
-                            )
-                          else
-                            SizedBox(width: 60),
-                          Expanded(
-                            child: Text(
-                              tr('season_episodes', namedArgs: {
-                                'season':
-                                    '${_browsedSeasonNumber ?? tvMetadata.seasonNumber}'
-                              }),
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurface,
+          subtitle: tr(
+            'episodes_count',
+            namedArgs: {'count': '${episodes.length}'},
+          ),
+          actions: [
+            if ((tvMetadata.allSeasons?.length ?? 0) > 1)
+              IconButton(
+                tooltip: tr('select_season'),
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  showSeasonSelectionBottomSheet(
+                    context: playerContext,
+                    colors: colors,
+                    tvMetadata: tvMetadata,
+                    onSaveProgress: onSaveProgress,
+                    closePlayer: closePlayer,
+                  );
+                },
+                icon: Icon(PhosphorIcons.stack()),
+              ),
+            IconButton(
+              onPressed: () => Navigator.pop(sheetContext),
+              icon: Icon(PhosphorIcons.x()),
+            ),
+          ],
+          child: Consumer<RecentProvider>(
+            builder: (context, recentProvider, _) => ListView.separated(
+              controller: scrollController,
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+              itemCount: episodes.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final episode = episodes[index];
+                final current =
+                    episode.episodeNumber == tvMetadata.episodeNumber &&
+                        episode.seasonNumber == tvMetadata.seasonNumber;
+                final recent =
+                    recentProvider.episodes.cast<RecentEpisode?>().firstWhere(
+                          (item) => item?.id == episode.episodeId,
+                          orElse: () => null,
+                        );
+                final total = (recent?.elapsed ?? 0) + (recent?.remaining ?? 0);
+                final progress = total <= 0
+                    ? null
+                    : (recent!.elapsed! / total).clamp(0.0, 1.0);
+                return _buildEpisodeListItem(
+                  context,
+                  episode,
+                  current,
+                  progress != null,
+                  (progress ?? 0) * 100,
+                  colors,
+                  current
+                      ? null
+                      : () {
+                          onSaveProgress();
+                          Navigator.pop(sheetContext);
+                          closePlayer();
+                          Navigator.pushReplacement(
+                            playerContext,
+                            MaterialPageRoute(
+                              builder: (_) => TVVideoLoader(
+                                download: false,
+                                metadata: TVStreamMetadata(
+                                  elapsed: null,
+                                  episodeId: episode.episodeId,
+                                  episodeName: episode.episodeName,
+                                  episodeNumber: episode.episodeNumber,
+                                  posterPath: tvMetadata.posterPath,
+                                  seasonNumber: episode.seasonNumber,
+                                  seriesName: tvMetadata.seriesName,
+                                  tvId: tvMetadata.tvId,
+                                  airDate: episode.airDate,
+                                  seasonEpisodes: episodes,
+                                  allSeasons: tvMetadata.allSeasons,
+                                ),
                               ),
-                              textAlign: TextAlign.start,
                             ),
-                          ),
-                          IconButton(
-                            icon: Icon(PhosphorIcons.x()),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Divider(height: 1),
-                  ],
-                ),
-              ),
-              // Episode List
-              Expanded(
-                child: Consumer<RecentProvider>(
-                  builder: (context, recentProvider, child) {
-                    return ListView.builder(
-                      itemCount: tvMetadata.seasonEpisodes!.length,
-                      itemBuilder: (context, index) {
-                        final episode = tvMetadata.seasonEpisodes![index];
-                        final isCurrentEpisode =
-                            episode.episodeNumber == tvMetadata.episodeNumber &&
-                                episode.seasonNumber == tvMetadata.seasonNumber;
-
-                        // Check if episode is in recently watched
-                        final recentEpisode =
-                            recentProvider.episodes.firstWhere(
-                          (e) => e.id == episode.episodeId,
-                          orElse: () => RecentEpisode(
-                            dateTime: '',
-                            elapsed: 0,
-                            id: 0,
-                            posterPath: '',
-                            remaining: 0,
-                            seriesName: '',
-                            episodeName: '',
-                            episodeNum: 0,
-                            seasonNum: 0,
-                            seriesId: 0,
-                          ),
-                        );
-
-                        final hasProgress = recentEpisode.id != 0;
-                        final progressPercentage =
-                            hasProgress && recentEpisode.elapsed! > 0
-                                ? (recentEpisode.elapsed! /
-                                        (recentEpisode.elapsed! +
-                                            recentEpisode.remaining!)) *
-                                    100
-                                : 0.0;
-
-                        return InkWell(
-                          onTap: () async {
-                            if (!isCurrentEpisode) {
-                              // Save progress and send analytics before switching
-                              onSaveProgress();
-
-                              if (context.mounted) {
-                                // Close the bottom sheet first
-                                Navigator.pop(context);
-                                closePlayer();
-
-                                // Use pushReplacement to replace Player with VideoLoader
-                                // This prevents player stacking
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TVVideoLoader(
-                                      download: false,
-                                      route: tvRoute ?? StreamRoute.flixHQ,
-                                      metadata: TVStreamMetadata(
-                                        elapsed: null,
-                                        episodeId: episode.episodeId,
-                                        episodeName: episode.episodeName,
-                                        episodeNumber: episode.episodeNumber,
-                                        posterPath: tvMetadata.posterPath,
-                                        seasonNumber: episode.seasonNumber,
-                                        seriesName: tvMetadata.seriesName,
-                                        tvId: tvMetadata.tvId,
-                                        airDate: episode.airDate,
-                                        seasonEpisodes:
-                                            tvMetadata.seasonEpisodes,
-                                        allSeasons: tvMetadata.allSeasons,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                          },
-                          child: _buildEpisodeListItem(
-                            context,
-                            episode,
-                            isCurrentEpisode,
-                            hasProgress,
-                            progressPercentage,
-                            colors,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
+                          );
+                        },
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -224,196 +145,34 @@ class PlayerEpisodeSelection {
     bool hasProgress,
     double progressPercentage,
     List<Color> colors,
+    VoidCallback? onTap,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isCurrentEpisode ? colors.first.withValues(alpha: 0.1) : null,
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 0.5,
-          ),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Episode thumbnail
-            Stack(
-              children: [
-                Container(
-                  width: 140,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey[800],
-                  ),
-                  child: episode.stillPath != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: CachedNetworkImage(
-                            cacheManager: cacheProp(),
-                            imageUrl:
-                                'https://image.tmdb.org/t/p/w300${episode.stillPath}',
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: colors.first,
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Center(
-                              child: Icon(
-                                PhosphorIcons.filmStrip(),
-                                color: Colors.grey[600],
-                                size: 32,
-                              ),
-                            ),
-                          ),
-                        )
-                      : Center(
-                          child: Icon(
-                            PhosphorIcons.filmStrip(),
-                            color: Colors.grey[600],
-                            size: 32,
-                          ),
-                        ),
+    final details = <String>[];
+    if (episode.voteAverage != null && episode.voteAverage! > 0) {
+      details.add('★ ${episode.voteAverage!.toStringAsFixed(1)}');
+    }
+    if (episode.runtime != null) details.add('${episode.runtime}m');
+    return PlayerChoiceCard(
+      title: '${episode.episodeNumber}. ${episode.episodeName}',
+      subtitle: details.isEmpty ? null : details.join('  •  '),
+      description: episode.overview,
+      selected: isCurrentEpisode,
+      progress: hasProgress ? progressPercentage / 100 : null,
+      onTap: onTap,
+      thumbnail: PlayerThumbnail(
+        width: 124,
+        height: 76,
+        child: episode.stillPath == null
+            ? Icon(PhosphorIcons.filmStrip())
+            : CachedNetworkImage(
+                cacheManager: cacheProp(),
+                imageUrl: 'https://image.tmdb.org/t/p/w300${episode.stillPath}',
+                fit: BoxFit.cover,
+                placeholder: (_, __) => const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                // Progress bar
-                if (hasProgress && progressPercentage > 0)
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      height: 3,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(8),
-                          bottomRight: Radius.circular(8),
-                        ),
-                      ),
-                      child: LinearProgressIndicator(
-                        value: progressPercentage / 100,
-                        backgroundColor: Colors.grey[700],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          colors.first,
-                        ),
-                      ),
-                    ),
-                  ),
-                // Current episode indicator
-                if (isCurrentEpisode)
-                  Positioned(
-                    top: 4,
-                    right: 4,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colors.first,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        tr('playing'),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            SizedBox(width: 12),
-            // Episode info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${episode.episodeNumber}. ${episode.episodeName}',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight:
-                          isCurrentEpisode ? FontWeight.bold : FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 4),
-                  // Rating and runtime row
-                  Row(
-                    children: [
-                      if (episode.voteAverage != null &&
-                          episode.voteAverage! > 0)
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colors.first.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                PhosphorIcons.star(PhosphorIconsStyle.fill),
-                                size: 14,
-                                color: colors.first,
-                              ),
-                              SizedBox(width: 2),
-                              Text(
-                                '${episode.voteAverage!.toStringAsFixed(1)}/10',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: colors.first,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      if (episode.voteAverage != null &&
-                          episode.voteAverage! > 0 &&
-                          episode.runtime != null)
-                        SizedBox(width: 8),
-                      if (episode.runtime != null)
-                        Text(
-                          '${episode.runtime}m',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                    ],
-                  ),
-                  if (episode.overview != null && episode.overview!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                        episode.overview!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[500],
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                ],
+                errorWidget: (_, __, ___) => Icon(PhosphorIcons.filmStrip()),
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -422,167 +181,92 @@ class PlayerEpisodeSelection {
     required BuildContext context,
     required List<Color> colors,
     required TVStreamMetadata tvMetadata,
-    required StreamRoute? tvRoute,
     required Function() onSaveProgress,
     required Function() closePlayer,
   }) {
-    if (tvMetadata.allSeasons == null || tvMetadata.allSeasons!.isEmpty) {
-      return;
-    }
+    final seasons = tvMetadata.allSeasons;
+    if (seasons == null || seasons.isEmpty) return;
+    final playerContext = context;
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
+      useSafeArea: true,
+      showDragHandle: true,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.4,
-        maxChildSize: 0.9,
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: .72,
+        minChildSize: .5,
+        maxChildSize: .92,
         expand: false,
         snap: true,
-        snapSizes: [0.4, 0.6, 0.9],
-        builder: (context, scrollController) => Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
+        snapSizes: const [.5, .72, .92],
+        builder: (context, scrollController) => PlayerSheetScaffold(
+          icon: PhosphorIcons.stack(),
+          title: tr('select_season'),
+          subtitle: '${seasons.length} ${tr('select_season')}',
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.pop(sheetContext),
+              icon: Icon(PhosphorIcons.x()),
             ),
-          ),
-          child: Column(
-            children: [
-              // Draggable Header
-              SingleChildScrollView(
-                controller: scrollController,
-                physics: ClampingScrollPhysics(),
-                child: Column(
-                  children: [
-                    // Drag handle
-                    Container(
-                      margin: EdgeInsets.only(top: 8, bottom: 4),
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[600],
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    // Header
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0, vertical: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            tr('select_season'),
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
+          ],
+          child: ListView.separated(
+            controller: scrollController,
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+            itemCount: seasons.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final season = seasons[index];
+              final current = season.seasonNumber == tvMetadata.seasonNumber;
+              return _buildSeasonListItem(
+                context,
+                season,
+                current,
+                colors,
+                () async {
+                  Navigator.pop(sheetContext);
+                  final navigator =
+                      Navigator.of(playerContext, rootNavigator: true);
+                  navigator.push(
+                    DialogRoute<void>(
+                      context: playerContext,
+                      barrierDismissible: false,
+                      builder: (context) => const PopScope(
+                        canPop: false,
+                        child: Dialog(
+                          child: Padding(
+                            padding: EdgeInsets.all(28),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(width: 18),
+                                Text('Loading episodes…'),
+                              ],
                             ),
                           ),
-                          IconButton(
-                            icon: Icon(PhosphorIcons.x()),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                    Divider(height: 1),
-                  ],
-                ),
-              ),
-              // Season List
-              Expanded(
-                child: ListView.builder(
-                  itemCount: tvMetadata.allSeasons!.length,
-                  itemBuilder: (context, index) {
-                    final season = tvMetadata.allSeasons![index];
-                    final isCurrentSeason =
-                        season.seasonNumber == tvMetadata.seasonNumber;
-
-                    return InkWell(
-                      onTap: () async {
-                        // Check if we need to fetch episodes (either different season OR episodes from wrong season are loaded)
-                        if (!isCurrentSeason ||
-                            _browsedSeasonNumber != season.seasonNumber) {
-                          // Store the root navigator and context before closing the sheet
-                          final rootNavigator =
-                              Navigator.of(context, rootNavigator: true);
-
-                          // Close season selector first
-                          Navigator.of(context).pop();
-
-                          // Show loading indicator using root navigator
-                          rootNavigator.push(
-                            PageRouteBuilder(
-                              opaque: false,
-                              barrierDismissible: false,
-                              pageBuilder: (_, __, ___) => WillPopScope(
-                                onWillPop: () async => false,
-                                child: Container(
-                                  color: Colors.black54,
-                                  child: Center(
-                                    child: CircularProgressIndicator(
-                                      color: colors.first,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-
-                          // Fetch episodes for the selected season
-                          await _fetchEpisodesForSeason(
-                            context,
-                            season.seasonNumber,
-                            tvMetadata,
-                            colors,
-                          );
-
-                          // Close loading indicator using root navigator
-                          rootNavigator.pop();
-
-                          // Use WidgetsBinding to ensure we show the sheet after the frame is complete
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            // Get the current context from the root navigator
-                            final currentContext = rootNavigator.context;
-                            if (currentContext.mounted) {
-                              showEpisodeSelectionBottomSheet(
-                                context: currentContext,
-                                colors: colors,
-                                tvMetadata: tvMetadata,
-                                tvRoute: tvRoute,
-                                onSaveProgress: onSaveProgress,
-                                closePlayer: closePlayer,
-                              );
-                            }
-                          });
-                        } else {
-                          // Already showing correct season's episodes, just go back
-                          Navigator.pop(context);
-                          showEpisodeSelectionBottomSheet(
-                            context: context,
-                            colors: colors,
-                            tvMetadata: tvMetadata,
-                            tvRoute: tvRoute,
-                            onSaveProgress: onSaveProgress,
-                            closePlayer: closePlayer,
-                          );
-                        }
-                      },
-                      child: _buildSeasonListItem(
-                        context,
-                        season,
-                        isCurrentSeason,
-                        colors,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+                  );
+                  await _fetchEpisodesForSeason(
+                    playerContext,
+                    season.seasonNumber,
+                    tvMetadata,
+                    colors,
+                  );
+                  if (navigator.canPop()) navigator.pop();
+                  if (!playerContext.mounted) return;
+                  showEpisodeSelectionBottomSheet(
+                    context: playerContext,
+                    colors: colors,
+                    tvMetadata: tvMetadata,
+                    onSaveProgress: onSaveProgress,
+                    closePlayer: closePlayer,
+                  );
+                },
+              );
+            },
           ),
         ),
       ),
@@ -594,117 +278,31 @@ class PlayerEpisodeSelection {
     SeasonMetadata season,
     bool isCurrentSeason,
     List<Color> colors,
+    VoidCallback onTap,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isCurrentSeason ? colors.first.withValues(alpha: 0.1) : null,
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 0.5,
-          ),
-        ),
+    return PlayerChoiceCard(
+      title: season.seasonName,
+      subtitle: tr(
+        'episodes_count',
+        namedArgs: {'count': '${season.episodeCount}'},
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            // Season poster
-            if (season.posterPath != null)
-              Container(
-                width: 60,
-                height: 90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  color: Colors.grey[800],
+      description: season.overview,
+      selected: isCurrentSeason,
+      onTap: onTap,
+      thumbnail: PlayerThumbnail(
+        width: 64,
+        height: 96,
+        child: season.posterPath == null
+            ? Icon(PhosphorIcons.television())
+            : CachedNetworkImage(
+                cacheManager: cacheProp(),
+                imageUrl: 'https://image.tmdb.org/t/p/w185${season.posterPath}',
+                fit: BoxFit.cover,
+                placeholder: (_, __) => const Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: CachedNetworkImage(
-                    cacheManager: cacheProp(),
-                    imageUrl:
-                        'https://image.tmdb.org/t/p/w185${season.posterPath}',
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: colors.first,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => Center(
-                      child: Icon(
-                        PhosphorIcons.television(),
-                        color: Colors.grey[600],
-                        size: 32,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            else
-              Container(
-                width: 60,
-                height: 90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey[800],
-                ),
-                child: Center(
-                  child: Icon(
-                    PhosphorIcons.television(),
-                    color: Colors.grey[600],
-                    size: 32,
-                  ),
-                ),
+                errorWidget: (_, __, ___) => Icon(PhosphorIcons.television()),
               ),
-            SizedBox(width: 16),
-            // Season info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    season.seasonName,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight:
-                          isCurrentSeason ? FontWeight.bold : FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    tr('episodes_count',
-                        namedArgs: {'count': '${season.episodeCount}'}),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[400],
-                    ),
-                  ),
-                  if (season.overview != null && season.overview!.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4.0),
-                      child: Text(
-                        season.overview!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[500],
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            if (isCurrentSeason)
-              Icon(
-                PhosphorIcons.checkCircle(),
-                color: colors.first,
-                size: 24,
-              ),
-          ],
-        ),
       ),
     );
   }

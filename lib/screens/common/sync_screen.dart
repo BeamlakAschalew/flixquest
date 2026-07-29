@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/movie.dart';
 import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 
 class SyncScreen extends StatefulWidget {
   const SyncScreen({super.key});
@@ -32,7 +33,7 @@ class _SyncScreenState extends State<SyncScreen>
   FirebaseFirestore firebaseInstance = FirebaseFirestore.instance;
   List<Movie> firebaseMovies = [];
   List<TV> firebaseTvShows = [];
-  bool? isLoading;
+  bool isLoading = true;
   final scrollController = ScrollController();
   bool isOfflineMovieSyncFinished = true;
   bool isOfflineTVSyncFinished = true;
@@ -50,6 +51,13 @@ class _SyncScreenState extends State<SyncScreen>
     super.initState();
     tabController = TabController(length: 2, vsync: this);
     getSavedMoviesAndTV();
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    scrollController.dispose();
+    super.dispose();
   }
 
   Future<bool> checkIfDocExists(String docId) async {
@@ -411,58 +419,37 @@ class _SyncScreenState extends State<SyncScreen>
       appBar: AppBar(
         title: Text(tr('sync')),
       ),
-      body: isLoading!
-          ? const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Center(child: CircularProgressIndicator()),
+      body: isLoading
+          ? AppEmptyState(
+              icon: PhosphorIcons.cloudArrowDown(),
+              title: tr('sync'),
+              message: tr('loading_video_sources'),
+              action: const CircularProgressIndicator(),
             )
           : Column(
               children: [
-                Container(
-                  color: Colors.grey,
+                Card(
+                  margin: EdgeInsets.fromLTRB(
+                    AppUI.pagePadding(context),
+                    12,
+                    AppUI.pagePadding(context),
+                    8,
+                  ),
+                  clipBehavior: Clip.antiAlias,
                   child: TabBar(
+                    dividerColor: Colors.transparent,
                     tabs: [
                       Tab(
-                          child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: Icon(PhosphorIcons.filmStrip()),
-                          ),
-                          Text(
-                            tr('movies'),
-                          ),
-                        ],
-                      )),
+                        icon: Icon(PhosphorIcons.filmStrip()),
+                        text: tr('movies'),
+                      ),
                       Tab(
-                          child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Icon(PhosphorIcons.television())),
-                          Text(
-                            tr('tv_series'),
-                          ),
-                        ],
-                      ))
+                        icon: Icon(PhosphorIcons.television()),
+                        text: tr('tv_series'),
+                      ),
                     ],
-                    indicatorColor: themeMode == 'dark' || themeMode == 'amoled'
-                        ? Colors.white
-                        : Colors.black,
-                    indicatorWeight: 3,
-                    //isScrollable: true,
-                    labelStyle: const TextStyle(
-                      fontFamily: 'FigtreeSB',
-                      color: Colors.black,
-                      fontSize: 17,
-                    ),
-                    unselectedLabelStyle: const TextStyle(
-                        fontFamily: 'Figtree', color: Colors.black87),
-                    labelColor: Colors.black,
-                    controller: tabController,
                     indicatorSize: TabBarIndicatorSize.tab,
+                    controller: tabController,
                   ),
                 ),
                 Expanded(
@@ -852,7 +839,8 @@ class _SyncScreenState extends State<SyncScreen>
                                   onPressed: () {
                                     deleteTVFromFirebase(index);
                                   },
-                                  icon: Icon(PhosphorIcons.bookmarkSimple(),
+                                  icon: Icon(
+                                    PhosphorIcons.bookmarkSimple(),
                                     size: 50,
                                   ),
                                 )),
@@ -968,7 +956,8 @@ class _SyncScreenState extends State<SyncScreen>
                                   onPressed: () {
                                     deleteMovieFromFirebase(index);
                                   },
-                                  icon: Icon(PhosphorIcons.bookmarkSimple(),
+                                  icon: Icon(
+                                    PhosphorIcons.bookmarkSimple(),
                                     size: 50,
                                   ),
                                 )),

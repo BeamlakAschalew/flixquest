@@ -9,7 +9,6 @@ import '../../models/provider_video_source.dart';
 import '../../video_providers/names.dart';
 import '../../video_providers/provider_loader.dart';
 import '../../functions/video_utils.dart';
-import '../../provider/app_dependency_provider.dart';
 import '/constants/app_constants.dart';
 import '/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +18,12 @@ import 'package:provider/provider.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import '../../functions/function.dart';
 import '../../provider/settings_provider.dart';
+import '../../ui_components/app_ui_components.dart';
 import 'player/player_data_management.dart';
 import 'player/player_external_subtitles.dart';
 import 'player/player_episode_selection.dart';
 import 'player/player_movie_recommendations.dart';
+import 'player/player_sheet_ui.dart';
 import 'player/player_widgets.dart';
 
 class PlayerOne extends StatefulWidget {
@@ -36,7 +37,6 @@ class PlayerOne extends StatefulWidget {
       required this.mediaType,
       required this.subtitleStyle,
       this.onEpisodeChange, // Callback for when user selects a different episode
-      this.tvRoute, // StreamRoute for TV shows (needed for loading new episodes)
       this.availableProviders, // Provider metadata for lazy loading
       this.currentProviderCode, // Current provider code
       this.initialPlaybackPosition, // For preserving position on provider switch
@@ -51,7 +51,6 @@ class PlayerOne extends StatefulWidget {
   final String? subtitleStyle;
   final Function(int episodeId, int episodeNumber, int seasonNumber)?
       onEpisodeChange;
-  final StreamRoute? tvRoute;
   final List<VideoProvider>?
       availableProviders; // Changed to VideoProvider list
   final String? currentProviderCode;
@@ -98,6 +97,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       {}; // Cache loaded providers
   final Set<String> _loadingProviders =
       {}; // Track which providers are being loaded
+  final Map<String, String> _providerErrors = {};
 
   @override
   void initState() {
@@ -147,7 +147,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             context: context,
             colors: widget.colors,
             tvMetadata: widget.tvMetadata!,
-            tvRoute: widget.tvRoute,
             onSaveProgress: _handleContentSwitch,
             closePlayer: () => Navigator.pop(context),
           );
@@ -197,6 +196,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         overflowModalTextColor: widget.colors.first,
         overflowModalColor: widget.colors.last,
         subtitlesIcon: PhosphorIcons.closedCaptioning(),
+        enableSubtitles: false,
         qualitiesIcon: PhosphorIcons.highDefinition(),
         enableAudioTracks: true,
         controlBarHeight: 56,
@@ -204,6 +204,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         playerTimeMode: settings.playerTimeDisplay,
         // Add custom overflow menu item for external subtitles
         overflowMenuCustomItems: [
+          BetterPlayerOverflowMenuItem(
+            PhosphorIcons.closedCaptioning(),
+            tr('subtitle'),
+            _showSubtitleSwitcher,
+          ),
           BetterPlayerOverflowMenuItem(
             PhosphorIcons.closedCaptioning(),
             tr('external_subtitles'),
@@ -218,17 +223,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               );
             },
           ),
-          // Provider switching is temporarily disabled while VixSrc is the only
-          // working provider.
-          // if (widget.availableProviders != null &&
-          //     widget.availableProviders!.length > 1)
-          //   BetterPlayerOverflowMenuItem(
-          //     Icons.swap_horiz_rounded,
-          //     tr('switch_provider'),
-          //     () {
-          //       _showProviderSwitcher();
-          //     },
-          //   ),
+          if (widget.availableProviders?.isNotEmpty == true)
+            BetterPlayerOverflowMenuItem(
+              PhosphorIcons.arrowsLeftRight(),
+              tr('switch_provider'),
+              _showProviderSwitcher,
+            ),
         ]);
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
@@ -390,7 +390,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         colors: widget.colors,
         onSaveProgress: _handleContentSwitch,
         closePlayer: () => Navigator.pop(context),
-        tvRoute: widget.tvRoute,
       ),
     );
 
@@ -559,7 +558,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           nextEpisode: nextEpisode,
           colors: widget.colors,
           tvMetadata: widget.tvMetadata!,
-          tvRoute: widget.tvRoute,
           onSaveProgress: _handleContentSwitch,
           closePlayer: _closePlayer,
         );
@@ -569,7 +567,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           context: context,
           colors: widget.colors,
           tvMetadata: widget.tvMetadata!,
-          tvRoute: widget.tvRoute,
           onSaveProgress: _handleContentSwitch,
           closePlayer: _closePlayer,
         );
@@ -593,387 +590,249 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     }
   }
 
-  // Provider switching methods
-  // ignore: unused_element
   void _showProviderSwitcher() {
-    if (widget.availableProviders == null ||
-        widget.availableProviders!.length <= 1) {
-      return;
-    }
+    final providers = widget.availableProviders;
+    if (providers == null || providers.isEmpty) return;
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      useSafeArea: true,
+      showDragHandle: true,
       isScrollControlled: true,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setModalState) {
-            return SafeArea(
-              child: DraggableScrollableSheet(
-                initialChildSize: 0.5,
-                minChildSize: 0.3,
-                maxChildSize: 0.9,
-                expand: false,
-                builder: (context, scrollController) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            tr('select_provider'),
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, setSheetState) {
+          return FractionallySizedBox(
+            heightFactor: .72,
+            child: AppResponsiveContent(
+              maxWidth: 680,
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: .12),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          PhosphorIcons.hardDrives(),
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 13),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tr('select_provider'),
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
-                          ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${providers.length} ${tr('video_source')}',
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        Flexible(
-                          child: ListView.builder(
-                            controller: scrollController,
-                            shrinkWrap: true,
-                            itemCount: widget.availableProviders!.length,
-                            itemBuilder: (context, index) {
-                              final provider =
-                                  widget.availableProviders![index];
-                              final isCurrentProvider =
-                                  _currentProviderCode == provider.codeName;
-
-                              final isLoading =
-                                  _loadingProviders.contains(provider.codeName);
-
-                              return ListTile(
-                                leading: Icon(
-                                  isCurrentProvider
-                                      ? PhosphorIcons.checkCircle()
-                                      : PhosphorIcons.circle(),
-                                  color: isCurrentProvider
-                                      ? Theme.of(context).colorScheme.primary
-                                      : Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
-                                ),
-                                title: Text(
-                                  provider.fullName,
-                                  style: TextStyle(
-                                    fontWeight: isCurrentProvider
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                    color: isCurrentProvider
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(context)
-                                            .colorScheme
-                                            .onSurface,
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(sheetContext),
+                        icon: Icon(PhosphorIcons.x()),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: providers.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final provider = providers[index];
+                        final selected =
+                            provider.codeName == _currentProviderCode;
+                        final loading =
+                            _loadingProviders.contains(provider.codeName);
+                        final error = _providerErrors[provider.codeName];
+                        return AppSelectionTile(
+                          title: provider.fullName,
+                          selected: selected,
+                          subtitle: loading
+                              ? tr('loading_video_sources')
+                              : error ??
+                                  (selected
+                                      ? tr('currently_playing')
+                                      : tr('video_source')),
+                          leading: Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withValues(alpha: .1),
+                              borderRadius: BorderRadius.circular(13),
+                            ),
+                            child: loading
+                                ? const Padding(
+                                    padding: EdgeInsets.all(11),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Icon(
+                                    selected
+                                        ? PhosphorIcons.playCircle(
+                                            PhosphorIconsStyle.fill,
+                                          )
+                                        : PhosphorIcons.playCircle(),
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
-                                ),
-                                subtitle: isCurrentProvider
-                                    ? Text(
-                                        tr('currently_playing'),
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                              .withOpacity(0.7),
-                                          fontSize: 12,
-                                        ),
-                                      )
-                                    : null,
-                                trailing: isLoading
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2),
-                                      )
-                                    : null,
-                                onTap: isCurrentProvider ||
-                                        _isSwitchingProvider ||
-                                        isLoading
-                                    ? null
-                                    : () {
-                                        _switchToProvider(
-                                            provider.codeName, setModalState);
-                                      },
-                              );
-                            },
                           ),
-                        ),
-                      ],
+                          trailing: error == null
+                              ? null
+                              : Icon(
+                                  PhosphorIcons.warningCircle(),
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                          onTap: selected || loading || _isSwitchingProvider
+                              ? () {}
+                              : () => _switchToProvider(
+                                    provider.codeName,
+                                    sheetContext,
+                                    setSheetState,
+                                  ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
-            );
-          },
-        );
-      },
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Future<void> _switchToProvider(String providerCode,
-      [StateSetter? setModalState]) async {
-    if (_isSwitchingProvider || _currentProviderCode == providerCode) {
-      return;
-    }
-
-    if (!mounted) return;
+  Future<void> _switchToProvider(
+    String providerCode,
+    BuildContext sheetContext,
+    StateSetter setSheetState,
+  ) async {
+    if (_isSwitchingProvider || providerCode == _currentProviderCode) return;
 
     setState(() {
       _isSwitchingProvider = true;
       _loadingProviders.add(providerCode);
+      _providerErrors.remove(providerCode);
     });
+    setSheetState(() {});
 
-    // Also update modal state if provided
-    setModalState?.call(() {
-      _isSwitchingProvider = true;
-      _loadingProviders.add(providerCode);
-    });
-
+    final position =
+        _betterPlayerController.videoPlayerController?.value.position ??
+            Duration.zero;
     try {
-      // Pause the player first to avoid conflicts
-      if (_betterPlayerController.isPlaying() == true) {
-        _betterPlayerController.pause();
-      }
-
-      // Save current playback position
-      final currentPosition =
-          _betterPlayerController.videoPlayerController?.value.position ??
-              Duration.zero;
-
-      // Check if provider is already loaded
-      ProviderVideoSource? providerSource = _loadedProviders[providerCode];
-
-      // If not loaded, fetch it
-      if (providerSource == null) {
-        final appDep =
-            Provider.of<AppDependencyProvider>(context, listen: false);
-
-        // Load based on media type
-        if (widget.mediaType == MediaType.movie) {
-          final result = await ProviderLoader.loadMovieFromProvider(
-            providerCode: providerCode,
-            route: widget.tvRoute ?? StreamRoute.flixHQ,
-            movieId: widget.movieMetadata!.movieId!,
-            movieName: widget.movieMetadata!.movieName!,
-            releaseYear: widget.movieMetadata!.releaseYear?.toString(),
-            consumetUrl: appDep.consumetUrl,
-            newFlixHQUrl: appDep.newFlixHQUrl,
-            flixApiUrl: appDep.flixApiUrl,
-            newFlixhqServer: appDep.newFlixhqServer,
-            streamingServerFlixHQ: appDep.streamingServerFlixHQ,
-            gokuServer: appDep.gokuServer,
-            sflixServer: appDep.sflixServer,
-            himoviesServer: appDep.himoviesServer,
-            animekaiServer: appDep.animekaiServer,
-            hianimeServer: appDep.hianimeServer,
-          );
-
-          if (!result.success ||
-              result.videoLinks == null ||
-              result.videoLinks!.isEmpty) {
-            throw Exception(result.errorMessage ?? 'Failed to load video');
-          }
-
-          // Convert to ProviderVideoSource
-          Map<String, String> providerVideos =
-              VideoUtils.convertVideoLinksToMap(result.videoLinks!);
-          List<BetterPlayerSubtitlesSource> providerSubs = [];
-
-          if (result.subtitleLinks != null) {
-            for (final subLink in result.subtitleLinks!) {
-              providerSubs.add(
-                BetterPlayerSubtitlesSource(
-                  type: BetterPlayerSubtitlesSourceType.network,
-                  urls: [subLink.url ?? ''],
-                  name: subLink.language ?? 'Unknown',
-                ),
+      await _betterPlayerController.pause();
+      var source = _loadedProviders[providerCode];
+      if (source == null) {
+        final result = widget.mediaType == MediaType.movie
+            ? await ProviderLoader.loadMovieFromProvider(
+                providerCode: providerCode,
+                movieId: widget.movieMetadata!.movieId!,
+              )
+            : await ProviderLoader.loadTVFromProvider(
+                providerCode: providerCode,
+                tvId: widget.tvMetadata!.tvId!,
+                seasonNumber: widget.tvMetadata!.seasonNumber!,
+                episodeNumber: widget.tvMetadata!.episodeNumber!,
               );
-            }
-          }
-
-          providerSource = ProviderVideoSource(
-            providerCode: providerCode,
-            providerName: widget.availableProviders!
-                .firstWhere((p) => p.codeName == providerCode)
-                .fullName,
-            videoSources: VideoUtils.reverseVideoQualityMap(providerVideos),
-            subtitles: providerSubs,
-          );
-        } else {
-          // TV Show
-          final result = await ProviderLoader.loadTVFromProvider(
-            providerCode: providerCode,
-            route: widget.tvRoute ?? StreamRoute.flixHQ,
-            tvId: widget.tvMetadata!.tvId!,
-            seriesName: widget.tvMetadata!.seriesName!,
-            seasonNumber: widget.tvMetadata!.seasonNumber!,
-            episodeNumber: widget.tvMetadata!.episodeNumber!,
-            consumetUrl: appDep.consumetUrl,
-            newFlixHQUrl: appDep.newFlixHQUrl,
-            flixApiUrl: appDep.flixApiUrl,
-            newFlixhqServer: appDep.newFlixhqServer,
-            streamingServerFlixHQ: appDep.streamingServerFlixHQ,
-            appLanguage: settings.appLanguage,
-            gokuServer: appDep.gokuServer,
-            sflixServer: appDep.sflixServer,
-            himoviesServer: appDep.himoviesServer,
-            animekaiServer: appDep.animekaiServer,
-            hianimeServer: appDep.hianimeServer,
-          );
-
-          if (!result.success ||
-              result.videoLinks == null ||
-              result.videoLinks!.isEmpty) {
-            throw Exception(result.errorMessage ?? 'Failed to load video');
-          }
-
-          // Convert to ProviderVideoSource
-          Map<String, String> providerVideos =
-              VideoUtils.convertVideoLinksToMap(result.videoLinks!);
-          List<BetterPlayerSubtitlesSource> providerSubs = [];
-
-          if (result.subtitleLinks != null) {
-            for (final subLink in result.subtitleLinks!) {
-              providerSubs.add(
-                BetterPlayerSubtitlesSource(
-                  type: BetterPlayerSubtitlesSourceType.network,
-                  urls: [subLink.url ?? ''],
-                  name: subLink.language ?? 'Unknown',
-                ),
-              );
-            }
-          }
-
-          providerSource = ProviderVideoSource(
-            providerCode: providerCode,
-            providerName: widget.availableProviders!
-                .firstWhere((p) => p.codeName == providerCode)
-                .fullName,
-            videoSources: VideoUtils.reverseVideoQualityMap(providerVideos),
-            subtitles: providerSubs,
-          );
+        if (!result.success || result.videoLinks?.isEmpty != false) {
+          throw Exception(result.errorMessage ?? tr('movie_vid_404'));
         }
 
-        // Cache the loaded provider
-        _loadedProviders[providerCode] = providerSource;
+        final subtitles = <BetterPlayerSubtitlesSource>[
+          for (final subtitle in result.subtitleLinks ?? const [])
+            BetterPlayerSubtitlesSource(
+              type: BetterPlayerSubtitlesSourceType.network,
+              urls: [subtitle.url ?? ''],
+              name: subtitle.language ?? tr('not_available'),
+            ),
+        ];
+        final providerName = widget.availableProviders!
+            .firstWhere((provider) => provider.codeName == providerCode)
+            .fullName;
+        source = ProviderVideoSource(
+          providerCode: providerCode,
+          providerName: providerName,
+          videoSources: VideoUtils.reverseVideoQualityMap(
+            VideoUtils.convertVideoLinksToMap(result.videoLinks!),
+          ),
+          subtitles: subtitles,
+        );
+        _loadedProviders[providerCode] = source;
       }
-
-      // Ensure we have valid video sources
-      if (providerSource.videoSources.isEmpty) {
-        throw Exception('No video sources available');
-      }
-
-      // Save providerSource in a final variable to avoid null issues
-      final selectedProvider = providerSource;
-
-      // providerSource.videoSources is already reversed (done during caching)
-      // Just use it directly for the new player screen
 
       if (!mounted) return;
-
-      // Close any open modal/bottom sheet before navigation.
-      Navigator.of(context).pop();
-
+      if (sheetContext.mounted) Navigator.pop(sheetContext);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => PlayerOne(
-            sources: selectedProvider.videoSources, // Already reversed
-            subs: selectedProvider.subtitles,
+          builder: (_) => PlayerOne(
+            sources: source!.videoSources,
+            subs: source.subtitles,
             colors: widget.colors,
             settings: widget.settings,
             movieMetadata: widget.movieMetadata,
             tvMetadata: widget.tvMetadata,
             mediaType: widget.mediaType,
             subtitleStyle: widget.subtitleStyle,
-            tvRoute: widget.tvRoute,
             availableProviders: widget.availableProviders,
             currentProviderCode: providerCode,
-            initialPlaybackPosition:
-                currentPosition, // Preserve playback position
+            initialPlaybackPosition: position,
           ),
         ),
       );
-
-      // Show success message after a brief delay
-      Future.delayed(const Duration(milliseconds: 800), () {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${tr('switched_to')} ${selectedProvider.providerName}',
-                style:
-                    const TextStyle(color: Colors.white, fontFamily: 'Figtree'),
-              ),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      });
-    } catch (e) {
-      // Show error message
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${tr('switch_provider_error')}: $e',
-              style:
-                  const TextStyle(color: Colors.white, fontFamily: 'Figtree'),
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _providerErrors[providerCode] = error.toString());
+      if (sheetContext.mounted) setSheetState(() {});
     } finally {
-      // Check mounted before calling setState in finally block
       if (mounted) {
         setState(() {
           _isSwitchingProvider = false;
           _loadingProviders.remove(providerCode);
         });
-
-        // Also update modal state if provided
-        setModalState?.call(() {
-          _isSwitchingProvider = false;
-          _loadingProviders.remove(providerCode);
-        });
       }
+      if (sheetContext.mounted) setSheetState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (_betterPlayerController.isVideoInitialized()!) {
-          Navigator.pop(
-              context,
-              widget.mediaType == MediaType.movie
-                  ? insertRecentMovieData
-                  : insertRecentEpisodeData);
-        } else {
-          Navigator.pop(context);
-        }
-
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _exitPlayer();
       },
       child: Scaffold(
+        backgroundColor: Colors.black,
         body: Stack(
           children: [
-            Center(
+            Positioned.fill(
               child: SizedBox(
-                height: MediaQuery.of(context).size.height,
-                width: double.infinity,
                 child: BetterPlayer(
                   controller: _betterPlayerController,
                   key: _betterPlayerKey,
@@ -982,20 +841,104 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              if (mounted) {
-                showModalBottomSheet(
-                    builder: (context) {
-                      return ExternalPlay(
-                        videoSources: widget.sources,
-                        subtitleSources: widget.subs,
-                      );
-                    },
-                    context: context);
-              }
+        floatingActionButton: FloatingActionButton.small(
+          tooltip: tr('video_source'),
+          onPressed: _showExternalPlayerSheet,
+          child: Icon(PhosphorIcons.arrowSquareOut()),
+        ),
+      ),
+    );
+  }
+
+  void _exitPlayer() {
+    Navigator.pop(
+      context,
+      _betterPlayerController.isVideoInitialized() == true
+          ? widget.mediaType == MediaType.movie
+              ? insertRecentMovieData
+              : insertRecentEpisodeData
+          : null,
+    );
+  }
+
+  void _showExternalPlayerSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      builder: (context) => AppResponsiveContent(
+        maxWidth: 680,
+        padding: EdgeInsets.zero,
+        child: ExternalPlay(
+          videoSources: widget.sources,
+          subtitleSources: widget.subs,
+        ),
+      ),
+    );
+  }
+
+  void _showSubtitleSwitcher() {
+    final subtitles = List<BetterPlayerSubtitlesSource>.of(
+      _betterPlayerController.betterPlayerSubtitlesSourceList,
+    );
+    if (!subtitles.any(
+      (source) => source.type == BetterPlayerSubtitlesSourceType.none,
+    )) {
+      subtitles.add(
+        BetterPlayerSubtitlesSource(
+          type: BetterPlayerSubtitlesSourceType.none,
+        ),
+      );
+    }
+    final selected = _betterPlayerController.betterPlayerSubtitlesSource;
+
+    showModalBottomSheet<void>(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => FractionallySizedBox(
+        heightFactor: .72,
+        child: PlayerSheetScaffold(
+          icon: PhosphorIcons.closedCaptioning(),
+          title: tr('subtitle'),
+          subtitle: tr('choose_subtitle_language'),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.pop(sheetContext),
+              icon: Icon(PhosphorIcons.x()),
+            ),
+          ],
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+            itemCount: subtitles.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              final source = subtitles[index];
+              final isOff = source.type == BetterPlayerSubtitlesSourceType.none;
+              final isSelected = source == selected ||
+                  (isOff &&
+                      selected?.type == BetterPlayerSubtitlesSourceType.none);
+              return PlayerChoiceCard(
+                title: isOff
+                    ? _betterPlayerController.translations.generalNone
+                    : source.name ??
+                        _betterPlayerController.translations.generalDefault,
+                subtitle: isOff ? null : tr('subtitle'),
+                selected: isSelected,
+                thumbnail: PlayerThumbnail(
+                  width: 48,
+                  height: 48,
+                  child: Icon(PhosphorIcons.closedCaptioning()),
+                ),
+                onTap: () async {
+                  await _betterPlayerController.setupSubtitleSource(source);
+                  if (sheetContext.mounted) Navigator.pop(sheetContext);
+                },
+              );
             },
-            child: Icon(PhosphorIcons.arrowSquareOut())),
+          ),
+        ),
       ),
     );
   }

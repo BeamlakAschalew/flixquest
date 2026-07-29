@@ -74,18 +74,13 @@ Future<void> appInitialize() async {
   await settingsProvider.getBackgroundSubtitleColor();
   await settingsProvider.getAppLanguage();
   await settingsProvider.getAppColorIndex();
-  await settingsProvider.getProviderPrecedence();
   await settingsProvider.getPlayerTimeStyle();
   await settingsProvider.getUseProxyMode();
   await settingsProvider.getSubtitleStyle();
   await settingsProvider.getEnableNextEpisodeButton();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
-  await appDependencyProvider.getConsumetUrl();
   await appDependencyProvider.getFlixQuestLogo();
-  await appDependencyProvider.getOpenSubKey();
-  await appDependencyProvider.getStreamingServerFlixHQ();
-  await appDependencyProvider.getStreamRoute();
   await appDependencyProvider.getFQUrl();
   await appDependencyProvider.getTmdbProxy();
 
