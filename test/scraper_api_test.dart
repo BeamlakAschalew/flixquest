@@ -61,6 +61,10 @@ void main() {
                   'quality': '1080p',
                   'isM3U8': true,
                   'isDASH': false,
+                  'headers': {
+                    'Referer': 'https://provider.example/',
+                    'Origin': 'https://provider.example',
+                  },
                   'subtitles': [
                     {
                       'file': 'https://subs.example/en.vtt',
@@ -95,14 +99,20 @@ void main() {
       expect(requestedUri.queryParameters, {
         'tmdbId': '42',
         'provider': 'vidsrc',
-        'proxy': 'true',
-        'fProxy': 'true',
       });
       expect(result.success, isTrue);
       expect(result.videoLinks, hasLength(2));
       expect(result.videoLinks!.first.isM3U8, isTrue);
+      expect(result.videoLinks!.first.headers, {
+        'Referer': 'https://provider.example/',
+        'Origin': 'https://provider.example',
+      });
       expect(result.videoLinks!.last.isDash, isTrue);
       expect(result.subtitleLinks, hasLength(1));
+      expect(result.subtitleLinks!.single.headers, {
+        'Referer': 'https://provider.example/',
+        'Origin': 'https://provider.example',
+      });
     });
 
     test('uses the documented TV episode query parameters', () async {
@@ -143,8 +153,6 @@ void main() {
         'season': '2',
         'episode': '3',
         'provider': 'vidsrc',
-        'proxy': 'true',
-        'fProxy': 'true',
       });
     });
   });

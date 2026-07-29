@@ -193,6 +193,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       final videoFormats = VideoUtils.reverseVideoQualityMap(
         VideoUtils.convertVideoFormatsToMap(movieVideoLinks ?? const []),
       );
+      final videoHeaders = VideoUtils.reverseVideoQualityMap(
+        VideoUtils.convertVideoHeadersToMap(movieVideoLinks ?? const []),
+      );
 
       if (firstWorkingProviderCode != null && mounted) {
         final mixpanel =
@@ -224,6 +227,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                     firstWorkingProviderCode, // Current provider
                 scraperApiUrl: _scraperApiUrl,
                 videoFormats: videoFormats,
+                videoHeaders: videoHeaders,
                 prefetchedProviderResults: selection?.batchResults ?? const {},
                 subtitleStyle:
                     Provider.of<SettingsProvider>(context).subtitleTextStyle,
@@ -282,6 +286,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           urls: [subLink.url ?? ''],
           name: subLanguage,
           selectedByDefault: isPreferred,
+          headers: subLink.headers,
         ),
       );
     }

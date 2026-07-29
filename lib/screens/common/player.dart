@@ -42,6 +42,7 @@ class PlayerOne extends StatefulWidget {
       this.initialPlaybackPosition, // For preserving position on provider switch
       this.scraperApiUrl = '',
       this.videoFormats,
+      this.videoHeaders = const {},
       this.prefetchedProviderResults = const {},
       super.key});
   final Map<String, String> sources;
@@ -60,6 +61,7 @@ class PlayerOne extends StatefulWidget {
   final Duration? initialPlaybackPosition;
   final String scraperApiUrl;
   final Map<String, BetterPlayerVideoFormat?>? videoFormats;
+  final Map<String, Map<String, String>> videoHeaders;
   final Map<String, Future<ProviderLoaderResult>> prefetchedProviderResults;
 
   @override
@@ -105,6 +107,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   late Map<String, String> _activeSources;
   late List<BetterPlayerSubtitlesSource> _activeSubtitles;
   late Map<String, BetterPlayerVideoFormat?>? _activeVideoFormats;
+  late Map<String, Map<String, String>> _activeVideoHeaders;
   final Set<String> _loadingProviders =
       {}; // Track which providers are being loaded
   final Map<String, String> _providerErrors = {};
@@ -118,6 +121,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     _activeSubtitles = List.of(widget.subs);
     _activeVideoFormats =
         widget.videoFormats == null ? null : Map.of(widget.videoFormats!);
+    _activeVideoHeaders = Map.of(widget.videoHeaders);
     super.initState();
 
     // Initialize episode selection with current season
@@ -271,6 +275,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       sources: _activeSources,
       subtitles: _activeSubtitles,
       videoFormats: _activeVideoFormats,
+      videoHeaders: _activeVideoHeaders,
     );
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
     _betterPlayerController.setupDataSource(dataSource).then((value) {
@@ -404,6 +409,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     required Map<String, String> sources,
     required List<BetterPlayerSubtitlesSource> subtitles,
     required Map<String, BetterPlayerVideoFormat?>? videoFormats,
+    required Map<String, Map<String, String>> videoHeaders,
   }) {
     final preferredQuality = widget.settings.defaultVideoResolution == 0
         ? 'auto'
@@ -413,13 +419,16 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       orElse: () => sources.entries.first,
     );
     final link = selectedSource.value;
+    final suppliedHeaders = videoHeaders[selectedSource.key];
 
     return BetterPlayerDataSource(
       BetterPlayerDataSourceType.network,
       link,
       resolutions: sources.length > 1 ? sources : null,
       videoFormat: videoFormats?[selectedSource.key] ?? _inferVideoFormat(link),
-      headers: _inferHeaders(link),
+      headers: suppliedHeaders?.isNotEmpty == true
+          ? suppliedHeaders
+          : _inferHeaders(link),
       subtitles: subtitles,
       cacheConfiguration: BetterPlayerCacheConfiguration(
         useCache: true,
@@ -805,6 +814,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               type: BetterPlayerSubtitlesSourceType.network,
               urls: [subtitle.url ?? ''],
               name: subtitle.language ?? tr('not_available'),
+              headers: subtitle.headers,
             ),
         ];
         source = ProviderVideoSource(
@@ -815,6 +825,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           ),
           videoFormats: VideoUtils.reverseVideoQualityMap(
             VideoUtils.convertVideoFormatsToMap(result.videoLinks!),
+          ),
+          videoHeaders: VideoUtils.reverseVideoQualityMap(
+            VideoUtils.convertVideoHeadersToMap(result.videoLinks!),
           ),
           subtitles: subtitles,
         );
@@ -829,6 +842,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           sources: nextSource.videoSources,
           subtitles: nextSource.subtitles,
           videoFormats: nextSource.videoFormats,
+          videoHeaders: nextSource.videoHeaders,
         ),
       );
       await _betterPlayerController.seekTo(position);
@@ -840,6 +854,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         _activeSources = Map.of(nextSource.videoSources);
         _activeSubtitles = List.of(nextSource.subtitles);
         _activeVideoFormats = Map.of(nextSource.videoFormats);
+        _activeVideoHeaders = Map.of(nextSource.videoHeaders);
         final switchedDuration = _betterPlayerController
             .videoPlayerController?.value.duration?.inSeconds;
         if (switchedDuration != null) duration = switchedDuration;

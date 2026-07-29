@@ -40,6 +40,23 @@ class VideoUtils {
     return formats;
   }
 
+  /// Keep the request headers associated with each quality. Stream providers
+  /// may require values such as Referer or Origin for direct playback.
+  static Map<String, Map<String, String>> convertVideoHeadersToMap(
+    List<RegularVideoLinks> vids,
+  ) {
+    final headers = <String, Map<String, String>>{};
+    for (var index = 0; index < vids.length; index++) {
+      final linkHeaders = vids[index].headers;
+      if (linkHeaders == null || linkHeaders.isEmpty) continue;
+      final key = vids[index].quality == 'unknown quality'
+          ? '${vids[index].quality} $index'
+          : vids[index].quality!;
+      headers[key] = Map.of(linkHeaders);
+    }
+    return headers;
+  }
+
   /// Process VTT file timestamps to fix formatting issues
   static String processVttFileTimestamps(String vttContent) {
     final lines = vttContent.split('\n');

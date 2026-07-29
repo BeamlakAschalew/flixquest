@@ -61,12 +61,7 @@ class ScraperApi {
   }) {
     return _loadStream(
       '/stream-movie',
-      {
-        'tmdbId': '$movieId',
-        'provider': providerId,
-        'proxy': 'true',
-        'fProxy': 'true',
-      },
+      _buildQueryParams(providerId, {'tmdbId': '$movieId'}),
     );
   }
 
@@ -78,15 +73,22 @@ class ScraperApi {
   }) {
     return _loadStream(
       '/stream-tv',
-      {
+      _buildQueryParams(providerId, {
         'tmdbId': '$tvId',
         'season': '$seasonNumber',
         'episode': '$episodeNumber',
-        'provider': providerId,
-        'proxy': 'true',
-        'fProxy': 'true',
-      },
+      }),
     );
+  }
+
+  Map<String, String> _buildQueryParams(
+    String providerId,
+    Map<String, String> baseParams,
+  ) {
+    return {
+      ...baseParams,
+      'provider': providerId,
+    };
   }
 
   Future<ProviderLoadResult> _loadStream(
@@ -119,12 +121,14 @@ class ScraperApi {
           final link = Map<String, dynamic>.from(rawLink);
           final url = link['url']?.toString();
           if (url == null || url.isEmpty) continue;
+          final linkHeaders = _parseHeaders(link['headers']);
           links.add(
             RegularVideoLinks(
               url: url,
               quality: link['quality']?.toString() ?? 'unknown quality',
               isM3U8: link['isM3U8'] == true,
               isDash: link['isDASH'] == true,
+              headers: linkHeaders,
             ),
           );
 
@@ -137,7 +141,11 @@ class ScraperApi {
               final language = subtitle['label']?.toString() ?? 'Unknown';
               if (seenSubtitles.add('$file\u0000$language')) {
                 subtitles.add(
-                  RegularSubtitleLinks(url: file, language: language),
+                  RegularSubtitleLinks(
+                    url: file,
+                    language: language,
+                    headers: _parseHeaders(subtitle['headers']) ?? linkHeaders,
+                  ),
                 );
               }
             }
@@ -201,6 +209,17 @@ class ScraperApi {
     } on FormatException {
       return const {};
     }
+  }
+
+  Map<String, String>? _parseHeaders(Object? value) {
+    if (value is! Map) return null;
+    final headers = <String, String>{};
+    for (final entry in value.entries) {
+      if (entry.value is String) {
+        headers[entry.key.toString()] = entry.value as String;
+      }
+    }
+    return headers.isEmpty ? null : headers;
   }
 
   String _messageFrom(Map<String, dynamic> body, int statusCode) {

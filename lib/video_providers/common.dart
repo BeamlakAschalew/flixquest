@@ -3,12 +3,14 @@ class RegularVideoLinks {
   String? quality;
   bool? isM3U8;
   bool? isDash;
+  Map<String, String>? headers;
 
   RegularVideoLinks({
     this.url,
     this.quality = 'unknown quality',
     this.isM3U8,
     this.isDash,
+    this.headers,
   });
 
   RegularVideoLinks.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,14 @@ class RegularVideoLinks {
     }
     isM3U8 = json['isM3U8'];
     isDash = json['isDASH'];
+    final rawHeaders = json['headers'];
+    if (rawHeaders is Map) {
+      headers = {
+        for (final entry in rawHeaders.entries)
+          if (entry.value is String)
+            entry.key.toString(): entry.value as String,
+      };
+    }
   }
 }
 
@@ -44,12 +54,21 @@ class ProviderLoadResult {
 class RegularSubtitleLinks {
   String? url;
   String? language;
+  Map<String, String>? headers;
 
-  RegularSubtitleLinks({this.language, this.url});
+  RegularSubtitleLinks({this.language, this.url, this.headers});
 
   RegularSubtitleLinks.fromJson(Map<String, dynamic> json) {
     url = json['url'] ?? json['file'];
     language = json['lang'] ?? json['label'];
+    final rawHeaders = json['headers'];
+    if (rawHeaders is Map) {
+      headers = {
+        for (final entry in rawHeaders.entries)
+          if (entry.value is String)
+            entry.key.toString(): entry.value as String,
+      };
+    }
   }
 }
 
