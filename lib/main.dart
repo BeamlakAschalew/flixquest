@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'provider/settings_provider.dart';
 import 'singleton/sharedpreferences_singleton.dart';
+import 'tv/platform/device_presentation.dart';
+import 'tv/platform/device_presentation_detector.dart';
 
 Future<void> _messageHandler(RemoteMessage message) async {}
 
@@ -28,8 +30,14 @@ RecentProvider recentProvider = RecentProvider();
 AppDependencyProvider appDependencyProvider = AppDependencyProvider();
 final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
-Future<void> appInitialize() async {
+Future<DevicePresentation> appInitialize({
+  DevicePresentationDetector? devicePresentationDetector,
+}) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final devicePresentation = await resolveDevicePresentation(
+    detector: devicePresentationDetector,
+  );
 
   // Initialize MediaKit for video playback with multiple codec support
   // MediaKit.ensureInitialized();
@@ -85,10 +93,12 @@ Future<void> appInitialize() async {
   await appDependencyProvider.getTmdbProxy();
 
   await _initialization;
+
+  return devicePresentation;
 }
 
 void main() async {
-  await appInitialize();
+  final devicePresentation = await appInitialize();
   HttpOverrides.global = MyHttpOverrides();
   runApp(EasyLocalization(
     supportedLocales: Translation.all,
@@ -99,6 +109,7 @@ void main() async {
       settingsProvider: settingsProvider,
       recentProvider: recentProvider,
       appDependencyProvider: appDependencyProvider,
+      devicePresentation: devicePresentation,
       init: _initialization,
     ),
   ));

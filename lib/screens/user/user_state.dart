@@ -3,9 +3,18 @@ import '../../flixquest_main.dart';
 import '/screens/common/landing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../tv/app/tv_home_shell.dart';
+import '../../tv/platform/device_presentation.dart';
+import '../../tv/platform/tv_debug_options.dart';
+import '../../tv/screens/tv_landing_screen.dart';
 
 class UserState extends StatelessWidget {
-  const UserState({super.key});
+  const UserState({
+    required this.devicePresentation,
+    super.key,
+  });
+
+  final DevicePresentation devicePresentation;
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +28,13 @@ class UserState extends StatelessWidget {
               ),
             );
           } else if (userSnapshot.connectionState == ConnectionState.active) {
-            if (userSnapshot.hasData) {
-              return const FlixQuestHomePage();
-            } else {
-              return const LandingScreen();
-            }
+            final previewTvHome =
+                devicePresentation == DevicePresentation.television &&
+                    TvDebugOptions.previewHomeShell;
+            return presentationShellFor(
+              devicePresentation: devicePresentation,
+              isAuthenticated: userSnapshot.hasData || previewTvHome,
+            );
           } else {
             return Center(
               child: Text(tr('error_occured')),
@@ -31,4 +42,16 @@ class UserState extends StatelessWidget {
           }
         });
   }
+}
+
+Widget presentationShellFor({
+  required DevicePresentation devicePresentation,
+  required bool isAuthenticated,
+}) {
+  return switch ((devicePresentation, isAuthenticated)) {
+    (DevicePresentation.television, true) => const TvHomeShell(),
+    (DevicePresentation.television, false) => const TvLandingScreen(),
+    (DevicePresentation.handheld, true) => const FlixQuestHomePage(),
+    (DevicePresentation.handheld, false) => const LandingScreen(),
+  };
 }

@@ -1,12 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../flixquest_main.dart';
 import '../../functions/function.dart';
 import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
+import '../../services/flixquest_auth_service.dart';
 import '../user/login_screen.dart';
 import '../user/signup_screen.dart';
 
@@ -18,6 +17,7 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
+  final _authService = FlixQuestAuthService();
   bool _loadingAnonymous = false;
 
   @override
@@ -124,13 +124,9 @@ class _LandingScreenState extends State<LandingScreen> {
         if (mounted) _showError(tr('check_connection'));
         return;
       }
-      await FirebaseAuth.instance.signInAnonymously();
+      await _authService.signInAnonymously();
       settings.mixpanel.track('Anonymous Login');
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const FlixQuestHomePage()),
-      );
+      // UserState's auth stream owns the handheld/TV destination.
     } catch (error) {
       if (mounted) _showError(error.toString());
     } finally {

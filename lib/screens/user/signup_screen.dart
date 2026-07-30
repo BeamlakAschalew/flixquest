@@ -1,17 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
-import '/flixquest_main.dart';
 import '/functions/function.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '/constants/app_constants.dart';
 import '/models/profile_image_list.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../services/globle_method.dart';
+import '../../services/flixquest_auth_service.dart';
 import '../../ui_components/app_ui_components.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -36,9 +35,8 @@ class _SignupScreenState extends State<SignupScreen> {
   String _fullName = '';
   String _userName = '';
   bool _isUserVerified = false;
-  late DocumentSnapshot subscription;
   final _formKey = GlobalKey<FormState>();
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FlixQuestAuthService _authService = FlixQuestAuthService();
   final GlobalMethods _globalMethods = GlobalMethods();
   bool _isLoading = false;
 
@@ -51,18 +49,9 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  Future<bool> usernameExists(String username) async =>
-      (await FirebaseFirestore.instance
-              .collection('usernames')
-              .where('username', isEqualTo: username.trim().toLowerCase())
-              .get())
-          .docs
-          .isEmpty;
-
   void submitForm() async {
     final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-    var date = DateTime.now().toString();
     checkConnection().then((value) async {
       if (value) {
         if (isValid && mounted) {
@@ -72,96 +61,26 @@ class _SignupScreenState extends State<SignupScreen> {
               _isLoading = true;
             });
 
-            /// Check If Document Exists
-            Future<bool> checkIfDocExists(String docId) async {
-              try {
-                // Get reference to Firestore collection
-                var collectionRef =
-                    FirebaseFirestore.instance.collection('usernames');
-
-                var doc = await collectionRef.doc(docId).get();
-                return doc.exists;
-              } catch (e) {
-                rethrow;
-              }
-            }
-
-            if (await checkIfDocExists(_userName) == true) {
-              _globalMethods.authErrorHandle(
-                  tr('username_exists').toString(), context);
-              return;
-            } else {
-              await _auth.createUserWithEmailAndPassword(
-                  email: _emailAddress.toLowerCase().trim(),
-                  password: _password.trim());
-              final User? user = _auth.currentUser;
-              final uid = user!.uid;
-              user.reload();
-              await FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(uid)
-                  .set({
-                'id': uid,
-                'name': _fullName,
-                'email': _emailAddress,
-                'profileId': selectedProfile,
-                'username': _userName.trim().toLowerCase(),
-                'verified': _isUserVerified,
-                'joinedAt': date,
-                'createdAt': Timestamp.now(),
-              });
-              await FirebaseFirestore.instance
-                  .collection('usernames')
-                  .doc(_userName)
-                  .set({'uname': _userName.trim().toLowerCase(), 'uid': uid});
-
-              await FirebaseFirestore.instance
-                  .collection('bookmarks-v2.0')
-                  .doc(uid)
-                  .set({});
-
-              subscription = await FirebaseFirestore.instance
-                  .collection('bookmarks-v2.0')
-                  .doc(uid)
-                  .get();
-
-              final docData = subscription.data() as Map<String, dynamic>;
-
-              if (docData.containsKey('movies') == false) {
-                await FirebaseFirestore.instance
-                    .collection('bookmarks-v2.0')
-                    .doc(uid)
-                    .update(
-                  {'movies': []},
-                );
-              }
-
-              if (docData.containsKey('tvShows') == false) {
-                await FirebaseFirestore.instance
-                    .collection('bookmarks-v2.0')
-                    .doc(uid)
-                    .update(
-                  {'tvShows': []},
-                );
-              }
-
-              Navigator.canPop(context)
-                  ? Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: ((context) {
-                      final mixpanel =
-                          Provider.of<SettingsProvider>(context).mixpanel;
-                      mixpanel.track(
-                        'Users Signup',
-                      );
-                      return const FlixQuestHomePage();
-                    })))
-                  : null;
-            }
+            await _authService.createAccount(
+              fullName: _fullName,
+              email: _emailAddress,
+              username: _userName,
+              password: _password,
+              profileId: selectedProfile,
+              verified: _isUserVerified,
+            );
+            final mixpanel =
+                Provider.of<SettingsProvider>(context, listen: false).mixpanel;
+            mixpanel.track('Users Signup');
+            // UserState's auth stream owns the handheld/TV destination.
+            Navigator.of(context).popUntil((route) => route.isFirst);
           } on FirebaseAuthException catch (error) {
             if (error.code == 'weak-password') {
               _globalMethods.authErrorHandle(tr('weak_password'), context);
             } else if (error.code == 'email-already-in-use') {
               _globalMethods.authErrorHandle(tr('email_exists'), context);
+            } else if (error.code == 'username-already-in-use') {
+              _globalMethods.authErrorHandle(tr('username_exists'), context);
             } else if (error.code == 'invalid-email') {
               _globalMethods.authErrorHandle(tr('invalid_email'), context);
             } else if (error.code == 'operation-not-allowed') {

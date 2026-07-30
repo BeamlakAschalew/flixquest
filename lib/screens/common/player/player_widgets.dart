@@ -16,6 +16,7 @@ class PlayerNextEpisodeWidget {
     required List<Color> colors,
     required Function() onSaveProgress,
     required Function() closePlayer,
+    bool useTvPlayer = false,
   }) {
     final episodes = tvMetadata.seasonEpisodes;
     if (episodes == null) return const SizedBox.shrink();
@@ -75,6 +76,7 @@ class PlayerNextEpisodeWidget {
                     MaterialPageRoute(
                       builder: (_) => TVVideoLoader(
                         download: false,
+                        useTvPlayer: useTvPlayer,
                         metadata: _metadataForEpisode(
                           nextEpisode,
                           tvMetadata,
@@ -98,6 +100,7 @@ class PlayerNextEpisodeWidget {
     required TVStreamMetadata tvMetadata,
     required Function() onSaveProgress,
     required Function() closePlayer,
+    bool useTvPlayer = false,
   }) {
     var countdown = 10;
     Timer? timer;
@@ -115,6 +118,7 @@ class PlayerNextEpisodeWidget {
         MaterialPageRoute(
           builder: (_) => TVVideoLoader(
             download: false,
+            useTvPlayer: useTvPlayer,
             metadata: _metadataForEpisode(nextEpisode, tvMetadata),
           ),
         ),

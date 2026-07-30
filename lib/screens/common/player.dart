@@ -19,6 +19,8 @@ import 'package:better_player_plus/better_player_plus.dart';
 import '../../functions/function.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/app_ui_components.dart';
+import '../movie/movie_video_loader.dart';
+import '../tv/tv_video_loader.dart';
 import 'player/player_data_management.dart';
 import 'player/player_external_subtitles.dart';
 import 'player/player_episode_selection.dart';
@@ -44,6 +46,7 @@ class PlayerOne extends StatefulWidget {
       this.videoFormats,
       this.videoHeaders = const {},
       this.prefetchedProviderResults = const {},
+      this.useTvControls = false,
       super.key});
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
@@ -63,6 +66,7 @@ class PlayerOne extends StatefulWidget {
   final Map<String, BetterPlayerVideoFormat?>? videoFormats;
   final Map<String, Map<String, String>> videoHeaders;
   final Map<String, Future<ProviderLoaderResult>> prefetchedProviderResults;
+  final bool useTvControls;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -70,6 +74,8 @@ class PlayerOne extends StatefulWidget {
 
 class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   late BetterPlayerController _betterPlayerController;
+  final BetterPlayerTvControlsController _tvControlsController =
+      BetterPlayerTvControlsController();
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
   final PlayerDataManagement _dataManagement = PlayerDataManagement();
@@ -78,7 +84,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   final PlayerMovieRecommendations _movieRecommendations =
       PlayerMovieRecommendations();
   final PlayerNextEpisodeWidget _nextEpisodeWidget = PlayerNextEpisodeWidget();
-  late int duration;
+  int duration = 0;
 
   final GlobalKey _betterPlayerKey = GlobalKey();
 
@@ -92,9 +98,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   // For next episode button
   bool _showNextEpisodeButton = false;
-  final bool _nextEpisodeButtonDismissed = false;
+  bool _nextEpisodeButtonDismissed = false;
   Timer? _progressCheckTimer;
   OverlayEntry? _nextEpisodeOverlay;
+  Timer? _tvNextEpisodeTimer;
+  EpisodeMetadata? _tvNextEpisode;
+  int? _tvNextEpisodeCountdown;
+  _TvPlayerMenuData? _tvMenu;
 
   late SettingsProvider settings;
 
@@ -145,9 +155,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
         // Gesture controls configuration
         gestureConfiguration: BetterPlayerGestureConfiguration(
-          enableVolumeSwipe: true,
-          enableBrightnessSwipe: true,
-          enableSeekSwipe: true,
+          enableVolumeSwipe: !widget.useTvControls,
+          enableBrightnessSwipe: !widget.useTvControls,
+          enableSeekSwipe: !widget.useTvControls,
           volumeSwipeSensitivity: 0.5,
           brightnessSwipeSensitivity: 0.5,
           seekSwipeSensitivity: 1.0,
@@ -162,25 +172,33 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             widget.tvMetadata?.seasonEpisodes != null &&
             widget.tvMetadata!.seasonEpisodes!.isNotEmpty,
         onEpisodeListTap: () {
-          _episodeSelection.showEpisodeSelectionBottomSheet(
-            context: context,
-            colors: widget.colors,
-            tvMetadata: widget.tvMetadata!,
-            onSaveProgress: _handleContentSwitch,
-            closePlayer: () => Navigator.pop(context),
-          );
+          if (widget.useTvControls) {
+            _showTvEpisodeMenu();
+          } else {
+            _episodeSelection.showEpisodeSelectionBottomSheet(
+              context: context,
+              colors: widget.colors,
+              tvMetadata: widget.tvMetadata!,
+              onSaveProgress: _handleContentSwitch,
+              closePlayer: () => Navigator.pop(context),
+            );
+          }
         },
         enableMovieRecommendations: widget.mediaType == MediaType.movie &&
             widget.movieMetadata?.recommendations != null &&
             widget.movieMetadata!.recommendations!.isNotEmpty,
         onMovieRecommendationsTap: () {
-          _movieRecommendations.showMovieRecommendationsBottomSheet(
-            context: context,
-            colors: widget.colors,
-            movieMetadata: widget.movieMetadata!,
-            onSaveProgress: _handleContentSwitch,
-            closePlayer: () => Navigator.pop(context),
-          );
+          if (widget.useTvControls) {
+            _showTvMovieRecommendationsMenu();
+          } else {
+            _movieRecommendations.showMovieRecommendationsBottomSheet(
+              context: context,
+              colors: widget.colors,
+              movieMetadata: widget.movieMetadata!,
+              onSaveProgress: _handleContentSwitch,
+              closePlayer: () => Navigator.pop(context),
+            );
+          }
         },
         enableNextEpisodeButton: widget.mediaType == MediaType.tvShow &&
             widget.settings.enableNextEpisodeButton,
@@ -195,7 +213,20 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         pauseIcon: PhosphorIcons.pause(),
         pipMenuIcon: PhosphorIcons.appWindow(),
         playIcon: PhosphorIcons.play(),
-        showControlsOnInitialize: false,
+        showControlsOnInitialize: widget.useTvControls,
+        controlsHideTime: widget.useTvControls
+            ? const Duration(seconds: 5)
+            : const Duration(milliseconds: 300),
+        playerTheme: widget.useTvControls ? BetterPlayerTheme.custom : null,
+        customControlsBuilder: widget.useTvControls
+            ? (controller, onVisibilityChanged) => BetterPlayerTvControls(
+                  controller: controller,
+                  controlsController: _tvControlsController,
+                  onControlsVisibilityChanged: onVisibilityChanged,
+                  accentColor: widget.colors.first,
+                  onExit: _exitPlayer,
+                )
+            : null,
         loadingColor: widget.colors.first,
         iconsColor: widget.colors.first,
         backwardSkipTimeInMilliseconds:
@@ -215,51 +246,61 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         overflowModalTextColor: widget.colors.first,
         overflowModalColor: widget.colors.last,
         subtitlesIcon: PhosphorIcons.closedCaptioning(),
-        enableSubtitles: false,
+        enableSubtitles: widget.useTvControls,
         qualitiesIcon: PhosphorIcons.highDefinition(),
         enableAudioTracks: true,
         controlBarHeight: 56,
         watchingText: tr('watching_text'),
         playerTimeMode: settings.playerTimeDisplay,
         // Add custom overflow menu item for external subtitles
-        overflowMenuCustomItems: [
-          BetterPlayerOverflowMenuItem(
-            PhosphorIcons.closedCaptioning(),
-            tr('subtitle'),
-            _showSubtitleSwitcher,
-          ),
-          BetterPlayerOverflowMenuItem(
-            PhosphorIcons.closedCaptioning(),
-            tr('external_subtitles'),
-            () {
-              _externalSubtitles.showExternalSubtitlesMenu(
-                context: context,
-                colors: widget.colors,
-                mediaType: widget.mediaType,
-                movieMetadata: widget.movieMetadata,
-                tvMetadata: widget.tvMetadata,
-                betterPlayerController: _betterPlayerController,
-              );
-            },
-          ),
-          if (widget.availableProviders?.isNotEmpty == true)
-            BetterPlayerOverflowMenuItem(
-              PhosphorIcons.arrowsLeftRight(),
-              tr('switch_provider'),
-              _showProviderSwitcher,
-            ),
-        ]);
+        overflowMenuCustomItems: widget.useTvControls
+            ? [
+                if (widget.availableProviders?.isNotEmpty == true)
+                  BetterPlayerOverflowMenuItem(
+                    PhosphorIcons.arrowsLeftRight(),
+                    tr('switch_provider'),
+                    _showTvProviderMenu,
+                  ),
+              ]
+            : [
+                BetterPlayerOverflowMenuItem(
+                  PhosphorIcons.closedCaptioning(),
+                  tr('subtitle'),
+                  _showSubtitleSwitcher,
+                ),
+                BetterPlayerOverflowMenuItem(
+                  PhosphorIcons.closedCaptioning(),
+                  tr('external_subtitles'),
+                  () {
+                    _externalSubtitles.showExternalSubtitlesMenu(
+                      context: context,
+                      colors: widget.colors,
+                      mediaType: widget.mediaType,
+                      movieMetadata: widget.movieMetadata,
+                      tvMetadata: widget.tvMetadata,
+                      betterPlayerController: _betterPlayerController,
+                    );
+                  },
+                ),
+                if (widget.availableProviders?.isNotEmpty == true)
+                  BetterPlayerOverflowMenuItem(
+                    PhosphorIcons.arrowsLeftRight(),
+                    tr('switch_provider'),
+                    _showProviderSwitcher,
+                  ),
+              ]);
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
-            autoDetectFullscreenDeviceOrientation: true,
-            fullScreenByDefault: widget.settings.defaultViewMode,
+            autoDetectFullscreenDeviceOrientation: !widget.useTvControls,
+            fullScreenByDefault:
+                widget.useTvControls ? false : widget.settings.defaultViewMode,
             autoPlay: true,
             fit: BoxFit.contain,
             autoDispose: true,
             controlsConfiguration: betterPlayerControlsConfiguration,
             showPlaceholderUntilPlay: true,
             allowedScreenSleep: false,
-            autoDetectFullscreenAspectRatio: true,
+            autoDetectFullscreenAspectRatio: !widget.useTvControls,
             subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
                 backgroundColor: backgroundColor,
                 fontFamily: widget.subtitleStyle == 'regular'
@@ -335,19 +376,31 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         if (duration != null && duration.inSeconds > 0) {
           final progress = position.inSeconds / duration.inSeconds;
 
-          // Show button at 95% progress if there's a next episode, in fullscreen, not manually dismissed, and feature is enabled
+          // Surface the next episode near the end. TV playback already owns the
+          // full screen route, so Better Player's internal fullscreen flag is
+          // intentionally false there.
           if (progress >= 0.95 &&
               !_showNextEpisodeButton &&
               !_nextEpisodeButtonDismissed &&
               _hasNextEpisode() &&
-              isFullScreen &&
+              (widget.useTvControls || isFullScreen) &&
               betterPlayerControlsConfiguration.enableNextEpisodeButton) {
             _showNextEpisodeButton = true;
-            _showNextEpisodeOverlay();
-          } else if ((progress < 0.95 || !isFullScreen) &&
+            if (widget.useTvControls) {
+              _showTvNextEpisodePrompt(startCountdown: false);
+            } else {
+              _showNextEpisodeOverlay();
+            }
+          } else if ((progress < 0.95 ||
+                  (!widget.useTvControls && !isFullScreen)) &&
               _showNextEpisodeButton) {
             _showNextEpisodeButton = false;
-            _hideNextEpisodeOverlay();
+            _nextEpisodeButtonDismissed = false;
+            if (widget.useTvControls) {
+              _clearTvNextEpisodePrompt(showControls: false);
+            } else {
+              _hideNextEpisodeOverlay();
+            }
           }
         }
       }
@@ -432,9 +485,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       subtitles: subtitles,
       cacheConfiguration: BetterPlayerCacheConfiguration(
         useCache: true,
-        preCacheSize: 471859200 * 471859200,
-        maxCacheSize: 1073741824 * 1073741824,
-        maxCacheFileSize: 471859200 * 471859200,
+        preCacheSize: 3 * 1024 * 1024,
+        maxCacheSize: 256 * 1024 * 1024,
+        maxCacheFileSize: 64 * 1024 * 1024,
 
         ///Android only option to use cached video between app sessions
         key: generateCacheKey(),
@@ -545,6 +598,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   void dispose() {
     // _resetTimer?.cancel();
     _progressCheckTimer?.cancel();
+    _tvNextEpisodeTimer?.cancel();
     _hideNextEpisodeOverlay();
 
     // Restore original brightness before disposing
@@ -579,42 +633,370 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         final nextEpisode =
             widget.tvMetadata!.seasonEpisodes![currentIndex + 1];
 
-        // Show countdown dialog for next episode
-        _nextEpisodeWidget.showNextEpisodeCountdown(
-          context: context,
-          nextEpisode: nextEpisode,
-          colors: widget.colors,
-          tvMetadata: widget.tvMetadata!,
-          onSaveProgress: _handleContentSwitch,
-          closePlayer: _closePlayer,
-        );
+        if (widget.useTvControls) {
+          if (_nextEpisodeButtonDismissed) {
+            _showTvEpisodeMenu();
+          } else {
+            _showTvNextEpisodePrompt(startCountdown: true);
+          }
+        } else {
+          // Show countdown dialog for next episode
+          _nextEpisodeWidget.showNextEpisodeCountdown(
+            context: context,
+            nextEpisode: nextEpisode,
+            colors: widget.colors,
+            tvMetadata: widget.tvMetadata!,
+            onSaveProgress: _handleContentSwitch,
+            closePlayer: _closePlayer,
+          );
+        }
       } else {
         // No next episode, show episode list
-        _episodeSelection.showEpisodeSelectionBottomSheet(
-          context: context,
-          colors: widget.colors,
-          tvMetadata: widget.tvMetadata!,
-          onSaveProgress: _handleContentSwitch,
-          closePlayer: _closePlayer,
-        );
+        if (widget.useTvControls) {
+          _showTvEpisodeMenu();
+        } else {
+          _episodeSelection.showEpisodeSelectionBottomSheet(
+            context: context,
+            colors: widget.colors,
+            tvMetadata: widget.tvMetadata!,
+            onSaveProgress: _handleContentSwitch,
+            closePlayer: _closePlayer,
+          );
+        }
       }
     } else if (widget.mediaType == MediaType.movie) {
       debugPrint(
           'Movie finished. Recommendations: ${widget.movieMetadata?.recommendations?.length ?? 0}');
       if (widget.movieMetadata?.recommendations != null &&
           widget.movieMetadata!.recommendations!.isNotEmpty) {
-        // Show recommended movie countdown
-        _movieRecommendations.showRecommendedMovieCountdown(
-          context: context,
-          colors: widget.colors,
-          movieMetadata: widget.movieMetadata!,
-          onSaveProgress: _handleContentSwitch,
-          closePlayer: _closePlayer,
-        );
+        if (widget.useTvControls) {
+          _showTvMovieRecommendationsMenu();
+        } else {
+          // Show recommended movie countdown
+          _movieRecommendations.showRecommendedMovieCountdown(
+            context: context,
+            colors: widget.colors,
+            movieMetadata: widget.movieMetadata!,
+            onSaveProgress: _handleContentSwitch,
+            closePlayer: _closePlayer,
+          );
+        }
       } else {
         debugPrint('No recommendations available for this movie');
       }
     }
+  }
+
+  void _openTvMenu(String title, List<BetterPlayerTvMenuItem> items) {
+    if (!mounted || !widget.useTvControls || items.isEmpty) return;
+    _tvNextEpisodeTimer?.cancel();
+    setState(() {
+      _tvNextEpisode = null;
+      _tvNextEpisodeCountdown = null;
+      _tvMenu = _TvPlayerMenuData(title, items);
+    });
+    _tvControlsController.hide();
+  }
+
+  void _closeTvMenu({bool showControls = true}) {
+    if (!mounted || _tvMenu == null) return;
+    setState(() => _tvMenu = null);
+    if (showControls) _tvControlsController.show();
+  }
+
+  bool _handleTvOverlayBack() {
+    if (_tvMenu != null) {
+      _closeTvMenu();
+      return true;
+    }
+    if (_tvNextEpisode != null) {
+      _dismissTvNextEpisodePrompt();
+      return true;
+    }
+    return false;
+  }
+
+  void _showTvEpisodeMenu() {
+    final metadata = widget.tvMetadata;
+    final episodes = metadata?.seasonEpisodes;
+    if (metadata == null || episodes == null || episodes.isEmpty) return;
+    final season = episodes.first.seasonNumber;
+    final items = <BetterPlayerTvMenuItem>[
+      if ((metadata.allSeasons?.length ?? 0) > 1)
+        BetterPlayerTvMenuItem(
+          label: tr('select_season'),
+          subtitle: tr('season_episodes', namedArgs: {'season': '$season'}),
+          icon: PhosphorIcons.stack(),
+          onSelected: _showTvSeasonMenu,
+        ),
+      ...episodes.map(
+        (episode) => BetterPlayerTvMenuItem(
+          label: '${episode.episodeNumber}. ${episode.episodeName}',
+          subtitle: [
+            if (episode.runtime != null) '${episode.runtime}m',
+            if (episode.voteAverage != null && episode.voteAverage! > 0)
+              '★ ${episode.voteAverage!.toStringAsFixed(1)}',
+          ].join('  •  '),
+          icon: episode.episodeNumber == metadata.episodeNumber &&
+                  episode.seasonNumber == metadata.seasonNumber
+              ? PhosphorIcons.playCircle(PhosphorIconsStyle.fill)
+              : PhosphorIcons.playCircle(),
+          selected: episode.episodeNumber == metadata.episodeNumber &&
+              episode.seasonNumber == metadata.seasonNumber,
+          onSelected: () => _playTvEpisode(episode),
+        ),
+      ),
+    ];
+    _openTvMenu(
+      tr('season_episodes', namedArgs: {'season': '$season'}),
+      items,
+    );
+  }
+
+  void _showTvSeasonMenu() {
+    final metadata = widget.tvMetadata;
+    final seasons = metadata?.allSeasons;
+    if (metadata == null || seasons == null || seasons.isEmpty) return;
+    final browsedSeason = metadata.seasonEpisodes?.isNotEmpty == true
+        ? metadata.seasonEpisodes!.first.seasonNumber
+        : metadata.seasonNumber;
+    _openTvMenu(
+      tr('select_season'),
+      seasons
+          .map(
+            (season) => BetterPlayerTvMenuItem(
+              label: season.seasonName,
+              subtitle: tr(
+                'episodes_count',
+                namedArgs: {'count': '${season.episodeCount}'},
+              ),
+              icon: PhosphorIcons.stack(),
+              selected: season.seasonNumber == browsedSeason,
+              onSelected: () => unawaited(
+                _loadTvSeasonEpisodes(season.seasonNumber),
+              ),
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+
+  Future<void> _loadTvSeasonEpisodes(int seasonNumber) async {
+    final metadata = widget.tvMetadata;
+    if (metadata == null) return;
+    _openTvMenu(
+      tr('select_season'),
+      [
+        BetterPlayerTvMenuItem(
+          label: 'Loading episodes…',
+          icon: PhosphorIcons.spinnerGap(),
+          enabled: false,
+          onSelected: () {},
+        ),
+      ],
+    );
+    final loaded = await _episodeSelection.fetchEpisodesForSeason(
+      context,
+      seasonNumber,
+      metadata,
+      widget.colors,
+    );
+    if (!mounted || _tvMenu == null) return;
+    if (loaded) {
+      _showTvEpisodeMenu();
+    } else {
+      _showTvSeasonMenu();
+    }
+  }
+
+  void _showTvMovieRecommendationsMenu() {
+    final metadata = widget.movieMetadata;
+    final recommendations = metadata?.recommendations;
+    if (metadata == null ||
+        recommendations == null ||
+        recommendations.isEmpty) {
+      return;
+    }
+    _openTvMenu(
+      tr('recommended_movies'),
+      recommendations
+          .map(
+            (movie) => BetterPlayerTvMenuItem(
+              label: movie.title,
+              subtitle: [
+                if (movie.releaseDate?.isNotEmpty == true)
+                  movie.releaseDate!.split('-').first,
+                if (movie.voteAverage != null && movie.voteAverage! > 0)
+                  '★ ${movie.voteAverage!.toStringAsFixed(1)}',
+              ].join('  •  '),
+              icon: PhosphorIcons.filmSlate(),
+              onSelected: () => _playTvMovie(movie),
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+
+  void _showTvProviderMenu() {
+    final providers = widget.availableProviders;
+    if (providers == null || providers.isEmpty) return;
+    _openTvMenu(
+      tr('select_provider'),
+      providers.map(
+        (provider) {
+          final selected = provider.codeName == _currentProviderCode;
+          final loading = _loadingProviders.contains(provider.codeName);
+          final error = _providerErrors[provider.codeName];
+          return BetterPlayerTvMenuItem(
+            label: provider.displayName,
+            subtitle: loading
+                ? tr('loading_video_sources')
+                : error ??
+                    (selected ? tr('currently_playing') : tr('video_source')),
+            icon: error != null
+                ? PhosphorIcons.warningCircle()
+                : selected
+                    ? PhosphorIcons.playCircle(PhosphorIconsStyle.fill)
+                    : PhosphorIcons.hardDrives(),
+            selected: selected,
+            enabled: !loading && !_isSwitchingProvider,
+            onSelected: selected
+                ? _closeTvMenu
+                : () => _switchToProvider(
+                      provider.codeName,
+                      refreshMenu: () {
+                        if (_tvMenu != null) {
+                          _showTvProviderMenu();
+                        }
+                      },
+                      closeMenu: _closeTvMenu,
+                    ),
+          );
+        },
+      ).toList(growable: false),
+    );
+  }
+
+  EpisodeMetadata? get _nextTvEpisode {
+    final metadata = widget.tvMetadata;
+    final episodes = metadata?.seasonEpisodes;
+    if (metadata == null || episodes == null || episodes.isEmpty) return null;
+    final currentIndex = episodes.indexWhere(
+      (episode) =>
+          episode.episodeNumber == metadata.episodeNumber &&
+          episode.seasonNumber == metadata.seasonNumber,
+    );
+    if (currentIndex < 0 || currentIndex >= episodes.length - 1) return null;
+    return episodes[currentIndex + 1];
+  }
+
+  void _showTvNextEpisodePrompt({required bool startCountdown}) {
+    final nextEpisode = _nextTvEpisode;
+    if (!mounted || nextEpisode == null) return;
+    _tvNextEpisodeTimer?.cancel();
+    setState(() {
+      _tvMenu = null;
+      _tvNextEpisode = nextEpisode;
+      _tvNextEpisodeCountdown = startCountdown ? 10 : null;
+    });
+    _tvControlsController.hide();
+    if (!startCountdown) return;
+    _tvNextEpisodeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted || _tvNextEpisode == null) {
+        timer.cancel();
+        return;
+      }
+      final countdown = _tvNextEpisodeCountdown ?? 0;
+      if (countdown <= 1) {
+        timer.cancel();
+        unawaited(_playTvEpisode(nextEpisode));
+      } else {
+        setState(() => _tvNextEpisodeCountdown = countdown - 1);
+      }
+    });
+  }
+
+  void _clearTvNextEpisodePrompt({bool showControls = true}) {
+    _tvNextEpisodeTimer?.cancel();
+    _tvNextEpisodeTimer = null;
+    if (!mounted || _tvNextEpisode == null) return;
+    setState(() {
+      _tvNextEpisode = null;
+      _tvNextEpisodeCountdown = null;
+    });
+    if (showControls) _tvControlsController.show();
+  }
+
+  void _dismissTvNextEpisodePrompt() {
+    _nextEpisodeButtonDismissed = true;
+    _showNextEpisodeButton = false;
+    _clearTvNextEpisodePrompt();
+  }
+
+  Future<void> _playTvEpisode(EpisodeMetadata episode) async {
+    _tvNextEpisodeTimer?.cancel();
+    if (mounted) {
+      setState(() {
+        _tvMenu = null;
+        _tvNextEpisode = null;
+        _tvNextEpisodeCountdown = null;
+      });
+    }
+    await _handleContentSwitch();
+    if (!mounted) return;
+    await Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(
+        builder: (_) => TVVideoLoader(
+          download: false,
+          useTvPlayer: true,
+          metadata: _metadataForTvEpisode(episode),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _playTvMovie(MovieRecommendation movie) async {
+    if (mounted) setState(() => _tvMenu = null);
+    await _handleContentSwitch();
+    if (!mounted) return;
+    await Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(
+        builder: (_) => MovieVideoLoader(
+          download: false,
+          useTvPlayer: true,
+          metadata: MovieStreamMetadata(
+            movieId: movie.movieId,
+            movieName: movie.title,
+            posterPath: movie.posterPath,
+            backdropPath: movie.backdropPath,
+            releaseDate: movie.releaseDate,
+            releaseYear: movie.releaseDate == null
+                ? null
+                : DateTime.tryParse(movie.releaseDate!)?.year,
+            isAdult: false,
+            elapsed: 0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  TVStreamMetadata _metadataForTvEpisode(EpisodeMetadata episode) {
+    final current = widget.tvMetadata!;
+    return TVStreamMetadata(
+      elapsed: null,
+      episodeId: episode.episodeId,
+      episodeName: episode.episodeName,
+      episodeNumber: episode.episodeNumber,
+      posterPath: current.posterPath,
+      backdropPath: episode.stillPath ?? current.backdropPath,
+      seasonNumber: episode.seasonNumber,
+      seriesName: current.seriesName,
+      tvId: current.tvId,
+      airDate: episode.airDate,
+      seasonEpisodes: current.seasonEpisodes,
+      allSeasons: current.allSeasons,
+    );
   }
 
   void _showProviderSwitcher() {
@@ -743,8 +1125,16 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                               ? () {}
                               : () => _switchToProvider(
                                     provider.codeName,
-                                    sheetContext,
-                                    setSheetState,
+                                    refreshMenu: () {
+                                      if (sheetContext.mounted) {
+                                        setSheetState(() {});
+                                      }
+                                    },
+                                    closeMenu: () {
+                                      if (sheetContext.mounted) {
+                                        Navigator.pop(sheetContext);
+                                      }
+                                    },
                                   ),
                         );
                       },
@@ -760,10 +1150,10 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   Future<void> _switchToProvider(
-    String providerCode,
-    BuildContext sheetContext,
-    StateSetter setSheetState,
-  ) async {
+    String providerCode, {
+    required VoidCallback refreshMenu,
+    required VoidCallback closeMenu,
+  }) async {
     if (_isSwitchingProvider || providerCode == _currentProviderCode) return;
 
     setState(() {
@@ -771,7 +1161,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       _loadingProviders.add(providerCode);
       _providerErrors.remove(providerCode);
     });
-    setSheetState(() {});
+    refreshMenu();
 
     final position =
         _betterPlayerController.videoPlayerController?.value.position ??
@@ -780,6 +1170,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         _betterPlayerController.videoPlayerController?.value.isPlaying == true;
     final previousDataSource = _betterPlayerController.betterPlayerDataSource;
     var replacementStarted = false;
+    var switched = false;
     try {
       await _betterPlayerController.pause();
       var source = _loadedProviders[providerCode];
@@ -859,7 +1250,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             .videoPlayerController?.value.duration?.inSeconds;
         if (switchedDuration != null) duration = switchedDuration;
       });
-      if (sheetContext.mounted) Navigator.pop(sheetContext);
+      switched = true;
     } catch (error) {
       if (!mounted) return;
       if (replacementStarted && previousDataSource != null) {
@@ -874,15 +1265,18 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         await _betterPlayerController.play();
       }
       setState(() => _providerErrors[providerCode] = error.toString());
-      if (sheetContext.mounted) setSheetState(() {});
     } finally {
       if (mounted) {
         setState(() {
           _isSwitchingProvider = false;
           _loadingProviders.remove(providerCode);
         });
+        if (switched) {
+          closeMenu();
+        } else {
+          refreshMenu();
+        }
       }
-      if (sheetContext.mounted) setSheetState(() {});
     }
   }
 
@@ -891,7 +1285,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _exitPlayer();
+        if (!didPop) {
+          if (widget.useTvControls && _handleTvOverlayBack()) return;
+          if (widget.useTvControls && _tvControlsController.handleBack()) {
+            return;
+          }
+          _exitPlayer();
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -905,13 +1305,34 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 ),
               ),
             ),
+            if (_tvMenu case final menu?)
+              Positioned.fill(
+                child: BetterPlayerTvMenu(
+                  title: menu.title,
+                  items: menu.items,
+                  onClose: _closeTvMenu,
+                  accentColor: widget.colors.first,
+                ),
+              ),
+            if (_tvNextEpisode case final nextEpisode?)
+              Positioned.fill(
+                child: _TvNextEpisodeOverlay(
+                  episode: nextEpisode,
+                  countdown: _tvNextEpisodeCountdown,
+                  accentColor: widget.colors.first,
+                  onCancel: _dismissTvNextEpisodePrompt,
+                  onPlay: () => _playTvEpisode(nextEpisode),
+                ),
+              ),
           ],
         ),
-        floatingActionButton: FloatingActionButton.small(
-          tooltip: tr('video_source'),
-          onPressed: _showExternalPlayerSheet,
-          child: Icon(PhosphorIcons.arrowSquareOut()),
-        ),
+        floatingActionButton: widget.useTvControls
+            ? null
+            : FloatingActionButton.small(
+                tooltip: tr('video_source'),
+                onPressed: _showExternalPlayerSheet,
+                child: Icon(PhosphorIcons.arrowSquareOut()),
+              ),
       ),
     );
   }
@@ -1003,6 +1424,286 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 },
               );
             },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TvPlayerMenuData {
+  const _TvPlayerMenuData(this.title, this.items);
+
+  final String title;
+  final List<BetterPlayerTvMenuItem> items;
+}
+
+class _TvNextEpisodeOverlay extends StatelessWidget {
+  const _TvNextEpisodeOverlay({
+    required this.episode,
+    required this.accentColor,
+    required this.onCancel,
+    required this.onPlay,
+    this.countdown,
+  });
+
+  final EpisodeMetadata episode;
+  final int? countdown;
+  final Color accentColor;
+  final VoidCallback onCancel;
+  final VoidCallback onPlay;
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      onKeyEvent: (_, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.escape ||
+                event.logicalKey == LogicalKeyboardKey.goBack ||
+                event.logicalKey == LogicalKeyboardKey.browserBack)) {
+          onCancel();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: ColoredBox(
+        color: Colors.black38,
+        child: SafeArea(
+          minimum: const EdgeInsets.all(36),
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: Container(
+              width: 570,
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: const Color(0xf5161716),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: Colors.white12),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black54,
+                    blurRadius: 28,
+                    offset: Offset(0, 12),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        PhosphorIcons.skipForward(PhosphorIconsStyle.fill),
+                        color: accentColor,
+                        size: 28,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          tr('next_episode'),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                      if (countdown case final seconds?)
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 46,
+                              height: 46,
+                              child: CircularProgressIndicator(
+                                value: seconds / 10,
+                                strokeWidth: 4,
+                                color: accentColor,
+                                backgroundColor: Colors.white12,
+                              ),
+                            ),
+                            Text(
+                              '$seconds',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: SizedBox(
+                          width: 190,
+                          height: 108,
+                          child: episode.stillPath == null
+                              ? const ColoredBox(
+                                  color: Color(0xff292a28),
+                                  child: Icon(
+                                    PhosphorIconsRegular.filmStrip,
+                                    color: Colors.white54,
+                                    size: 34,
+                                  ),
+                                )
+                              : Image.network(
+                                  'https://image.tmdb.org/t/p/w780${episode.stillPath}',
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) =>
+                                      const ColoredBox(
+                                    color: Color(0xff292a28),
+                                    child: Icon(
+                                      PhosphorIconsRegular.filmStrip,
+                                      color: Colors.white54,
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 18),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${episode.episodeNumber}. ${episode.episodeName}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 21,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            if (episode.overview?.trim().isNotEmpty ==
+                                true) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                episode.overview!.trim(),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  height: 1.35,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _TvPromptButton(
+                        label: tr('cancel'),
+                        icon: PhosphorIcons.x(),
+                        accentColor: accentColor,
+                        onPressed: onCancel,
+                      ),
+                      const SizedBox(width: 12),
+                      _TvPromptButton(
+                        label: tr('play_now'),
+                        icon: PhosphorIcons.play(PhosphorIconsStyle.fill),
+                        accentColor: accentColor,
+                        primary: true,
+                        autofocus: true,
+                        onPressed: onPlay,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TvPromptButton extends StatefulWidget {
+  const _TvPromptButton({
+    required this.label,
+    required this.icon,
+    required this.accentColor,
+    required this.onPressed,
+    this.primary = false,
+    this.autofocus = false,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color accentColor;
+  final VoidCallback onPressed;
+  final bool primary;
+  final bool autofocus;
+
+  @override
+  State<_TvPromptButton> createState() => _TvPromptButtonState();
+}
+
+class _TvPromptButtonState extends State<_TvPromptButton> {
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FocusableActionDetector(
+      autofocus: widget.autofocus,
+      onFocusChange: (focused) => setState(() => _focused = focused),
+      shortcuts: const {
+        SingleActivator(LogicalKeyboardKey.select): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.numpadEnter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.gameButtonA): ActivateIntent(),
+      },
+      actions: {
+        ActivateIntent: CallbackAction<ActivateIntent>(
+          onInvoke: (_) {
+            widget.onPressed();
+            return null;
+          },
+        ),
+      },
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 130),
+          padding: const EdgeInsets.symmetric(horizontal: 19, vertical: 13),
+          decoration: BoxDecoration(
+            color: widget.primary
+                ? widget.accentColor
+                : _focused
+                    ? const Color(0xff30312f)
+                    : const Color(0xff242523),
+            borderRadius: BorderRadius.circular(11),
+            border: Border.all(
+              color: _focused ? Colors.white : Colors.transparent,
+              width: 3,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(widget.icon, color: Colors.white, size: 22),
+              const SizedBox(width: 9),
+              Text(
+                widget.label,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
           ),
         ),
       ),

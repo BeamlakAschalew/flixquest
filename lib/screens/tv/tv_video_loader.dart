@@ -25,13 +25,18 @@ import '../../widgets/common_widgets.dart';
 
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
+import '../../tv/player/tv_player_screen.dart';
 
 class TVVideoLoader extends StatefulWidget {
   const TVVideoLoader(
-      {required this.metadata, required this.download, super.key});
+      {required this.metadata,
+      required this.download,
+      this.useTvPlayer = false,
+      super.key});
 
   final TVStreamMetadata metadata;
   final bool download;
+  final bool useTvPlayer;
 
   @override
   State<TVVideoLoader> createState() => _TVVideoLoaderState();
@@ -217,7 +222,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return PlayerOne(
+              final player = PlayerOne(
                 mediaType: MediaType.tvShow,
                 sources: reversedVids,
                 subs: subs,
@@ -242,7 +247,11 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   // This callback is now unused but kept for backwards compatibility
                   // Episode changes are handled directly in the player
                 },
+                useTvControls: widget.useTvPlayer,
               );
+              return widget.useTvPlayer
+                  ? TvPlayerScreen(child: player)
+                  : player;
             },
           ),
         ).then((value) async {

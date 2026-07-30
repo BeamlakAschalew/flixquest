@@ -23,18 +23,21 @@ import 'widgets/common_widgets.dart';
 import 'widgets/movie_widgets.dart';
 import 'widgets/tv_widgets.dart';
 import 'services/in_app_messaging_service.dart';
+import 'tv/platform/device_presentation.dart';
 
 class FlixQuest extends StatefulWidget {
   const FlixQuest(
       {required this.settingsProvider,
       required this.recentProvider,
       required this.appDependencyProvider,
+      required this.devicePresentation,
       required this.init,
       super.key});
 
   final SettingsProvider settingsProvider;
   final RecentProvider recentProvider;
   final AppDependencyProvider appDependencyProvider;
+  final DevicePresentation devicePresentation;
   final Future<FirebaseApp> init;
 
   @override
@@ -153,7 +156,9 @@ class _FlixQuestState extends State<FlixQuest>
                                       settingsProvider.appColorIndex)
                                   .cs,
                               index: settingsProvider.appColorIndex)),
-                      home: const UserState(),
+                      home: UserState(
+                        devicePresentation: widget.devicePresentation,
+                      ),
                     );
                   },
                 );

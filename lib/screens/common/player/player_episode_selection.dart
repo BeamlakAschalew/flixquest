@@ -25,6 +25,7 @@ class PlayerEpisodeSelection {
     required TVStreamMetadata tvMetadata,
     required Function() onSaveProgress,
     required Function() closePlayer,
+    bool useTvPlayer = false,
   }) {
     final episodes = tvMetadata.seasonEpisodes;
     if (episodes == null || episodes.isEmpty) return;
@@ -65,6 +66,7 @@ class PlayerEpisodeSelection {
                     tvMetadata: tvMetadata,
                     onSaveProgress: onSaveProgress,
                     closePlayer: closePlayer,
+                    useTvPlayer: useTvPlayer,
                   );
                 },
                 icon: Icon(PhosphorIcons.stack()),
@@ -112,6 +114,7 @@ class PlayerEpisodeSelection {
                             MaterialPageRoute(
                               builder: (_) => TVVideoLoader(
                                 download: false,
+                                useTvPlayer: useTvPlayer,
                                 metadata: TVStreamMetadata(
                                   elapsed: null,
                                   episodeId: episode.episodeId,
@@ -185,6 +188,7 @@ class PlayerEpisodeSelection {
     required TVStreamMetadata tvMetadata,
     required Function() onSaveProgress,
     required Function() closePlayer,
+    bool useTvPlayer = false,
   }) {
     final seasons = tvMetadata.allSeasons;
     if (seasons == null || seasons.isEmpty) return;
@@ -251,7 +255,7 @@ class PlayerEpisodeSelection {
                       ),
                     ),
                   );
-                  await _fetchEpisodesForSeason(
+                  await fetchEpisodesForSeason(
                     playerContext,
                     season.seasonNumber,
                     tvMetadata,
@@ -265,6 +269,7 @@ class PlayerEpisodeSelection {
                     tvMetadata: tvMetadata,
                     onSaveProgress: onSaveProgress,
                     closePlayer: closePlayer,
+                    useTvPlayer: useTvPlayer,
                   );
                 },
               );
@@ -309,7 +314,7 @@ class PlayerEpisodeSelection {
     );
   }
 
-  Future<void> _fetchEpisodesForSeason(
+  Future<bool> fetchEpisodesForSeason(
     BuildContext context,
     int seasonNumber,
     TVStreamMetadata tvMetadata,
@@ -323,6 +328,7 @@ class PlayerEpisodeSelection {
       final currentLanguage =
           Provider.of<SettingsProvider>(context, listen: false).appLanguage;
 
+      var loaded = false;
       await fetchTVDetails(
         Endpoints.getSeasonDetails(
           tvMetadata.tvId!,
@@ -333,6 +339,7 @@ class PlayerEpisodeSelection {
         proxyUrl,
       ).then((value) {
         if (value.episodes != null && value.episodes!.isNotEmpty) {
+          loaded = true;
           // Update the browsed season number to show in the title
           _browsedSeasonNumber = seasonNumber;
 
@@ -356,6 +363,7 @@ class PlayerEpisodeSelection {
               .toList();
         }
       });
+      return loaded;
     } catch (e) {
       debugPrint('Failed to fetch episodes for season $seasonNumber: $e');
       if (context.mounted) {
@@ -366,6 +374,7 @@ class PlayerEpisodeSelection {
           ),
         );
       }
+      return false;
     }
   }
 }

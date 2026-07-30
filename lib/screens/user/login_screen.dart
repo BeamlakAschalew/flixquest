@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../flixquest_main.dart';
 import '../../constants/app_constants.dart';
 import '../../functions/function.dart';
 import '/screens/user/forgot_password.dart';
@@ -9,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../../services/globle_method.dart';
+import '../../services/flixquest_auth_service.dart';
 import '../../ui_components/app_ui_components.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String emailAddress = '';
   String password = '';
   final formKey = GlobalKey<FormState>();
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FlixQuestAuthService authService = FlixQuestAuthService();
   GlobalMethods globalMethods = GlobalMethods();
   bool isLoading = false;
 
@@ -45,23 +45,17 @@ class _LoginScreenState extends State<LoginScreen> {
           });
           formKey.currentState!.save();
           try {
-            await auth
-                .signInWithEmailAndPassword(
-                    email: emailAddress.toLowerCase().trim(),
-                    password: password.trim())
+            await authService
+                .signIn(email: emailAddress, password: password)
                 .then((value) {
               if (mounted) {
-                Navigator.canPop(context)
-                    ? Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: ((context) {
-                        final mixpanel =
-                            Provider.of<SettingsProvider>(context).mixpanel;
-                        mixpanel.track(
-                          'Users Login',
-                        );
-                        return const FlixQuestHomePage();
-                      })))
-                    : null;
+                final mixpanel =
+                    Provider.of<SettingsProvider>(context, listen: false)
+                        .mixpanel;
+                mixpanel.track('Users Login');
+                // UserState's auth stream owns the handheld/TV destination.
+                // Return to it instead of forcing the handheld home shell.
+                Navigator.of(context).popUntil((route) => route.isFirst);
               }
             });
           } on FirebaseAuthException catch (error) {
@@ -166,8 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   keyboardType: TextInputType.visiblePassword,
                                   focusNode: passwordFocusNode,
                                   decoration: InputDecoration(
-                                      prefixIcon:
-                                          Icon(PhosphorIcons.lock()),
+                                      prefixIcon: Icon(PhosphorIcons.lock()),
                                       suffixIcon: GestureDetector(
                                         onTap: () {
                                           setState(() {

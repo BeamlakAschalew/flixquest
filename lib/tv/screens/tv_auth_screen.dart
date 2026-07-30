@@ -1,0 +1,544 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
+
+import '../../provider/settings_provider.dart';
+import '../../services/flixquest_auth_service.dart';
+import '../app/tv_design.dart';
+import '../focus/tv_focusable.dart';
+
+enum TvAuthMode { signIn, createAccount }
+
+class TvAuthScreen extends StatefulWidget {
+  const TvAuthScreen({required this.mode, super.key});
+
+  const TvAuthScreen.signIn({super.key}) : mode = TvAuthMode.signIn;
+
+  const TvAuthScreen.createAccount({super.key})
+      : mode = TvAuthMode.createAccount;
+
+  final TvAuthMode mode;
+
+  @override
+  State<TvAuthScreen> createState() => _TvAuthScreenState();
+}
+
+class _TvAuthScreenState extends State<TvAuthScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _authService = FlixQuestAuthService();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _nameFocus = FocusNode(debugLabel: 'TV full name');
+  final _emailFocus = FocusNode(debugLabel: 'TV email');
+  final _usernameFocus = FocusNode(debugLabel: 'TV username');
+  final _passwordFocus = FocusNode(debugLabel: 'TV password');
+  final _confirmPasswordFocus = FocusNode(debugLabel: 'TV confirm password');
+  bool _submitting = false;
+  final bool _obscurePassword = true;
+  String? _error;
+  int _profileId = 0;
+
+  bool get _isSignIn => widget.mode == TvAuthMode.signIn;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _nameFocus.dispose();
+    _emailFocus.dispose();
+    _usernameFocus.dispose();
+    _passwordFocus.dispose();
+    _confirmPasswordFocus.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_submitting || !_formKey.currentState!.validate()) return;
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
+    try {
+      if (_isSignIn) {
+        await _authService.signIn(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+        if (mounted) {
+          context.read<SettingsProvider>().mixpanel.track('Users Login');
+        }
+      } else {
+        await _authService.createAccount(
+          fullName: _nameController.text,
+          email: _emailController.text,
+          username: _usernameController.text,
+          password: _passwordController.text,
+          profileId: _profileId,
+        );
+        if (mounted) {
+          context.read<SettingsProvider>().mixpanel.track('Users Signup');
+        }
+      }
+      if (mounted) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+    } on FirebaseAuthException catch (error) {
+      if (mounted) setState(() => _error = _authMessage(error));
+    } catch (_) {
+      if (mounted) {
+        setState(() => _error = 'Unable to connect. Please try again.');
+      }
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  String _authMessage(FirebaseAuthException error) {
+    return switch (error.code) {
+      'invalid-credential' ||
+      'wrong-password' =>
+        'The email or password is incorrect.',
+      'user-not-found' => 'No account exists for that email.',
+      'invalid-email' => 'Enter a valid email address.',
+      'user-disabled' => 'This account has been disabled.',
+      'email-already-in-use' => 'That email is already registered.',
+      'username-already-in-use' => 'That username is already in use.',
+      'weak-password' => 'Use a password with at least 7 characters.',
+      'network-request-failed' => 'Check your internet connection and retry.',
+      _ => error.message ?? 'Authentication failed. Please try again.',
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Scaffold(
+      backgroundColor: TvDesign.surfaceFor(context),
+      body: SafeArea(
+        minimum: const EdgeInsets.symmetric(horizontal: 52, vertical: 30),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final compact = constraints.maxHeight < 650;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  width: 170,
+                  child: _BackAction(onActivate: () => Navigator.pop(context)),
+                ),
+                const SizedBox(width: 36),
+                Expanded(
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 780),
+                      child: SingleChildScrollView(
+                        clipBehavior: Clip.hardEdge,
+                        padding: const EdgeInsets.all(TvDesign.focusOutset),
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: colors.surface.withValues(alpha: 0.94),
+                            borderRadius: BorderRadius.circular(22),
+                            border: Border.all(
+                              color:
+                                  colors.outlineVariant.withValues(alpha: 0.45),
+                            ),
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(compact ? 24 : 34),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        _isSignIn
+                                            ? PhosphorIcons.signIn()
+                                            : PhosphorIcons.userPlus(),
+                                        color: colors.primary,
+                                        size: 32,
+                                      ),
+                                      const SizedBox(width: 13),
+                                      Text(
+                                        _isSignIn
+                                            ? 'Sign in to FlixQuest'
+                                            : 'Create your account',
+                                        style: TextStyle(
+                                          color: colors.onSurface,
+                                          fontFamily: 'FigtreeSB',
+                                          fontSize: compact ? 28 : 34,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: compact ? 18 : 25),
+                                  if (!_isSignIn) ...<Widget>[
+                                    _TvAuthField(
+                                      controller: _nameController,
+                                      focusNode: _nameFocus,
+                                      nextFocusNode: _emailFocus,
+                                      label: 'Full name',
+                                      icon: PhosphorIcons.user(),
+                                      autofocus: true,
+                                      validator: (value) => value == null ||
+                                              value.trim().length < 2
+                                          ? 'Enter your full name.'
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 13),
+                                  ],
+                                  _TvAuthField(
+                                    controller: _emailController,
+                                    focusNode: _emailFocus,
+                                    nextFocusNode: _isSignIn
+                                        ? _passwordFocus
+                                        : _usernameFocus,
+                                    label: 'Email address',
+                                    icon: PhosphorIcons.envelopeSimple(),
+                                    autofocus: _isSignIn,
+                                    keyboardType: TextInputType.emailAddress,
+                                    validator: (value) => value == null ||
+                                            !value.trim().contains('@')
+                                        ? 'Enter a valid email address.'
+                                        : null,
+                                  ),
+                                  if (!_isSignIn) ...<Widget>[
+                                    const SizedBox(height: 13),
+                                    _TvAuthField(
+                                      controller: _usernameController,
+                                      focusNode: _usernameFocus,
+                                      nextFocusNode: _passwordFocus,
+                                      label: 'Username',
+                                      icon: PhosphorIcons.at(),
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(r'[a-zA-Z0-9_]'),
+                                        ),
+                                      ],
+                                      validator: (value) => value == null ||
+                                              value.trim().length < 3
+                                          ? 'Use at least 3 letters or numbers.'
+                                          : null,
+                                    ),
+                                  ],
+                                  const SizedBox(height: 13),
+                                  _TvAuthField(
+                                    controller: _passwordController,
+                                    focusNode: _passwordFocus,
+                                    nextFocusNode: _isSignIn
+                                        ? null
+                                        : _confirmPasswordFocus,
+                                    label: 'Password',
+                                    icon: PhosphorIcons.lock(),
+                                    obscureText: _obscurePassword,
+                                    textInputAction: _isSignIn
+                                        ? TextInputAction.done
+                                        : TextInputAction.next,
+                                    onSubmitted:
+                                        _isSignIn ? (_) => _submit() : null,
+                                    validator: (value) =>
+                                        value == null || value.length < 7
+                                            ? 'Use at least 7 characters.'
+                                            : null,
+                                  ),
+                                  if (!_isSignIn) ...<Widget>[
+                                    const SizedBox(height: 13),
+                                    _TvAuthField(
+                                      controller: _confirmPasswordController,
+                                      focusNode: _confirmPasswordFocus,
+                                      label: 'Confirm password',
+                                      icon: PhosphorIcons.checkCircle(),
+                                      obscureText: _obscurePassword,
+                                      textInputAction: TextInputAction.done,
+                                      onSubmitted: (_) => _submit(),
+                                      validator: (value) =>
+                                          value != _passwordController.text
+                                              ? 'Passwords do not match.'
+                                              : null,
+                                    ),
+                                    const SizedBox(height: 18),
+                                    _ProfilePicker(
+                                      selectedId: _profileId,
+                                      onSelected: (value) =>
+                                          setState(() => _profileId = value),
+                                    ),
+                                  ],
+                                  if (_error != null) ...<Widget>[
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      _error!,
+                                      style: TextStyle(
+                                        color: colors.error,
+                                        fontFamily: 'FigtreeSB',
+                                        fontSize: 17,
+                                      ),
+                                    ),
+                                  ],
+                                  const SizedBox(height: 20),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: TvFocusable(
+                                      semanticLabel: _isSignIn
+                                          ? 'Sign in'
+                                          : 'Create account',
+                                      enabled: !_submitting,
+                                      onActivate: _submit,
+                                      focusScale: 1.025,
+                                      child: Container(
+                                        height: 56,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 26,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: colors.primary,
+                                          borderRadius:
+                                              BorderRadius.circular(11),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            if (_submitting) ...<Widget>[
+                                              SizedBox.square(
+                                                dimension: 22,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: colors.onPrimary,
+                                                  strokeWidth: 2,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                            ],
+                                            Text(
+                                              _submitting
+                                                  ? 'Please wait…'
+                                                  : _isSignIn
+                                                      ? 'Sign in'
+                                                      : 'Create account',
+                                              style: TextStyle(
+                                                color: colors.onPrimary,
+                                                fontFamily: 'FigtreeSB',
+                                                fontSize: 19,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _TvAuthField extends StatefulWidget {
+  const _TvAuthField({
+    required this.controller,
+    required this.focusNode,
+    required this.label,
+    required this.icon,
+    this.nextFocusNode,
+    this.autofocus = false,
+    this.keyboardType,
+    this.obscureText = false,
+    this.textInputAction = TextInputAction.next,
+    this.onSubmitted,
+    this.validator,
+    this.inputFormatters,
+  });
+
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final FocusNode? nextFocusNode;
+  final String label;
+  final IconData icon;
+  final bool autofocus;
+  final TextInputType? keyboardType;
+  final bool obscureText;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
+  final FormFieldValidator<String>? validator;
+  final List<TextInputFormatter>? inputFormatters;
+
+  @override
+  State<_TvAuthField> createState() => _TvAuthFieldState();
+}
+
+class _TvAuthFieldState extends State<_TvAuthField> {
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.focusNode.addListener(_onFocus);
+  }
+
+  void _onFocus() {
+    if (_focused != widget.focusNode.hasFocus) {
+      setState(() => _focused = widget.focusNode.hasFocus);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode.removeListener(_onFocus);
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 150),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: _focused ? colors.primary : colors.outlineVariant,
+          width: _focused ? 3 : 1,
+        ),
+      ),
+      child: TextFormField(
+        controller: widget.controller,
+        focusNode: widget.focusNode,
+        autofocus: widget.autofocus,
+        keyboardType: widget.keyboardType,
+        obscureText: widget.obscureText,
+        textInputAction: widget.textInputAction,
+        inputFormatters: widget.inputFormatters,
+        validator: widget.validator,
+        onFieldSubmitted: (value) {
+          if (widget.nextFocusNode != null) {
+            widget.nextFocusNode!.requestFocus();
+          } else {
+            widget.onSubmitted?.call(value);
+          }
+        },
+        style: TextStyle(color: colors.onSurface, fontSize: 19),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          prefixIcon: Icon(widget.icon, color: colors.onSurfaceVariant),
+          labelText: widget.label,
+          labelStyle: TextStyle(color: colors.onSurfaceVariant),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 18, vertical: 17),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfilePicker extends StatelessWidget {
+  const _ProfilePicker({required this.selectedId, required this.onSelected});
+
+  final int selectedId;
+  final ValueChanged<int> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Choose a profile image',
+          style: TextStyle(
+            color: colors.onSurface,
+            fontFamily: 'FigtreeSB',
+            fontSize: 18,
+          ),
+        ),
+        const SizedBox(height: 11),
+        Wrap(
+          spacing: 13,
+          runSpacing: 13,
+          children: <Widget>[
+            for (final id in const <int>[0, 1, 2, 3, 4])
+              TvFocusable(
+                semanticLabel: 'Profile image ${id + 1}',
+                onActivate: () => onSelected(id),
+                focusScale: 1.04,
+                borderRadius: BorderRadius.circular(13),
+                child: Container(
+                  padding: EdgeInsets.all(selectedId == id ? 3 : 0),
+                  decoration: BoxDecoration(
+                    color: selectedId == id ? colors.primary : null,
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(9),
+                    child: Image.asset(
+                      'assets/images/profiles/$id.png',
+                      width: 62,
+                      height: 62,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _BackAction extends StatelessWidget {
+  const _BackAction({required this.onActivate});
+
+  final VoidCallback onActivate;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return TvFocusable(
+      semanticLabel: 'Back',
+      onActivate: onActivate,
+      focusScale: 1.025,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(PhosphorIcons.caretLeft(), color: colors.onSurface),
+            const SizedBox(width: 8),
+            Text(
+              'Back',
+              style: TextStyle(
+                color: colors.onSurface,
+                fontFamily: 'FigtreeSB',
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

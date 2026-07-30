@@ -24,13 +24,18 @@ import 'package:flixquest/constants/app_constants.dart' show MediaType;
 
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
+import '../../tv/player/tv_player_screen.dart';
 
 class MovieVideoLoader extends StatefulWidget {
   const MovieVideoLoader(
-      {required this.download, required this.metadata, super.key});
+      {required this.download,
+      required this.metadata,
+      this.useTvPlayer = false,
+      super.key});
 
   final bool download;
   final MovieStreamMetadata metadata;
+  final bool useTvPlayer;
 
   @override
   State<MovieVideoLoader> createState() => _MovieVideoLoaderState();
@@ -211,7 +216,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return PlayerOne(
+              final player = PlayerOne(
                 mediaType: MediaType.movie,
                 sources: reversedVids,
                 subs: subs,
@@ -231,7 +236,11 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 prefetchedProviderResults: selection?.batchResults ?? const {},
                 subtitleStyle:
                     Provider.of<SettingsProvider>(context).subtitleTextStyle,
+                useTvControls: widget.useTvPlayer,
               );
+              return widget.useTvPlayer
+                  ? TvPlayerScreen(child: player)
+                  : player;
             },
           ),
         ).then((value) async {

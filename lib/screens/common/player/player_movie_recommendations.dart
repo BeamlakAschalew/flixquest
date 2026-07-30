@@ -14,6 +14,7 @@ class PlayerMovieRecommendations {
     required MovieStreamMetadata movieMetadata,
     required Function() onSaveProgress,
     required Function() closePlayer,
+    bool useTvPlayer = false,
   }) async {
     try {
       // Save progress and analytics for current movie before switching
@@ -50,6 +51,7 @@ class PlayerMovieRecommendations {
           MaterialPageRoute(
             builder: (context) => MovieVideoLoader(
               download: false,
+              useTvPlayer: useTvPlayer,
               metadata: newMetadata,
             ),
           ),
@@ -75,6 +77,7 @@ class PlayerMovieRecommendations {
     required MovieStreamMetadata movieMetadata,
     required Function() onSaveProgress,
     required Function() closePlayer,
+    bool useTvPlayer = false,
   }) {
     final recommendations = movieMetadata.recommendations;
     if (recommendations == null || recommendations.isEmpty) return;
@@ -126,6 +129,7 @@ class PlayerMovieRecommendations {
                     movieMetadata: movieMetadata,
                     onSaveProgress: onSaveProgress,
                     closePlayer: closePlayer,
+                    useTvPlayer: useTvPlayer,
                   );
                 },
               );
@@ -142,6 +146,7 @@ class PlayerMovieRecommendations {
     required MovieStreamMetadata movieMetadata,
     required Function() onSaveProgress,
     required Function() closePlayer,
+    bool useTvPlayer = false,
   }) {
     final recommendations = movieMetadata.recommendations;
     if (recommendations == null || recommendations.isEmpty) return;
@@ -300,6 +305,7 @@ class PlayerMovieRecommendations {
                               movieMetadata: movieMetadata,
                               onSaveProgress: onSaveProgress,
                               closePlayer: closePlayer,
+                              useTvPlayer: useTvPlayer,
                             );
                           },
                           icon: Icon(PhosphorIcons.play()),
