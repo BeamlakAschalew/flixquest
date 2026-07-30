@@ -31,7 +31,7 @@ class PlayerExternalSubtitles {
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
-      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
       builder: (bottomSheetContext) => DraggableScrollableSheet(
         initialChildSize: .78,
@@ -60,11 +60,46 @@ class PlayerExternalSubtitles {
 
             final Widget content;
             if (_isLoadingExternalSubtitles) {
-              content = AppEmptyState(
-                icon: PhosphorIcons.closedCaptioning(),
-                title: tr('searching_for_subtitles'),
-                message: tr('loading_video_sources'),
-                action: const CircularProgressIndicator(),
+              content = Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: .12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      tr('searching_for_subtitles'),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontFamily: 'FigtreeSB',
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      tr('loading_video_sources'),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                    ),
+                  ],
+                ),
               );
             } else if (_availableExternalSubtitles.isEmpty) {
               content = AppEmptyState(

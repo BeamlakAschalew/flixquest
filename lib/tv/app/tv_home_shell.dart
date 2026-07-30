@@ -106,7 +106,21 @@ class _TvHomeShellState extends State<TvHomeShell> {
     return true;
   }
 
+  void _restoreFocusAfterRoute(FocusNode? previousFocus) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (previousFocus != null &&
+          previousFocus.context != null &&
+          previousFocus.canRequestFocus) {
+        previousFocus.requestFocus();
+        return;
+      }
+      _navigationRailKey.currentState?.requestFocus(_selectedDestinationId);
+    });
+  }
+
   Future<void> _openMedia(TvMediaItem item) async {
+    final previousFocus = FocusManager.instance.primaryFocus;
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (_) => TvMediaDetailsScreen(item: item),
@@ -114,10 +128,12 @@ class _TvHomeShellState extends State<TvHomeShell> {
     );
     if (mounted) {
       setState(() => _libraryRevision++);
+      _restoreFocusAfterRoute(previousFocus);
     }
   }
 
   Future<void> _continueWatching(TvMediaItem item) async {
+    final previousFocus = FocusManager.instance.primaryFocus;
     final recentMovie = item.recentMovie;
     final recentEpisode = item.recentEpisode;
     Widget? loader;
@@ -126,6 +142,11 @@ class _TvHomeShellState extends State<TvHomeShell> {
       loader = MovieVideoLoader(
         download: false,
         useTvPlayer: true,
+        onTvPlayerExit: () {
+          if (!mounted) return;
+          setState(() => _libraryRevision++);
+          _restoreFocusAfterRoute(previousFocus);
+        },
         metadata: MovieStreamMetadata(
           backdropPath: recentMovie!.backdropPath,
           elapsed: recentMovie.elapsed,
@@ -144,6 +165,11 @@ class _TvHomeShellState extends State<TvHomeShell> {
       loader = TVVideoLoader(
         download: false,
         useTvPlayer: true,
+        onTvPlayerExit: () {
+          if (!mounted) return;
+          setState(() => _libraryRevision++);
+          _restoreFocusAfterRoute(previousFocus);
+        },
         metadata: TVStreamMetadata(
           elapsed: recentEpisode!.elapsed,
           episodeId: recentEpisode.id,
@@ -175,9 +201,6 @@ class _TvHomeShellState extends State<TvHomeShell> {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(builder: (_) => loader!),
     );
-    if (mounted) {
-      setState(() => _libraryRevision++);
-    }
   }
 
   @override
@@ -210,39 +233,53 @@ class _TvHomeShellState extends State<TvHomeShell> {
                       SizedBox(width: metrics.railGap),
                       Expanded(
                         child: ClipRect(
-                          child: IndexedStack(
-                            index: _destinations.indexWhere(
-                              (destination) =>
-                                  destination.id == _selectedDestinationId,
-                            ),
-                            children: <Widget>[
-                              TvHomeScreen(
-                                metrics: metrics,
-                                onOpenMedia: _openMedia,
-                                onContinueWatching: _continueWatching,
-                              ),
-                              TvSearchScreen(
-                                metrics: metrics,
-                                onOpenMedia: _openMedia,
-                              ),
-                              TvCatalogScreen(
-                                kind: TvMediaKind.movie,
-                                metrics: metrics,
-                                onOpenMedia: _openMedia,
-                              ),
-                              TvCatalogScreen(
-                                kind: TvMediaKind.series,
-                                metrics: metrics,
-                                onOpenMedia: _openMedia,
-                              ),
-                              TvLibraryScreen(
-                                key: ValueKey<int>(_libraryRevision),
-                                metrics: metrics,
-                                onOpenMedia: _openMedia,
-                              ),
-                              TvProfileScreen(metrics: metrics),
-                              TvSettingsScreen(metrics: metrics),
-                            ],
+                          child: Builder(
+                            builder: (context) {
+                              final selectedIndex = _destinations.indexWhere(
+                                (destination) =>
+                                    destination.id == _selectedDestinationId,
+                              );
+                              final screens = <Widget>[
+                                TvHomeScreen(
+                                  metrics: metrics,
+                                  onOpenMedia: _openMedia,
+                                  onContinueWatching: _continueWatching,
+                                ),
+                                TvSearchScreen(
+                                  metrics: metrics,
+                                  onOpenMedia: _openMedia,
+                                ),
+                                TvCatalogScreen(
+                                  kind: TvMediaKind.movie,
+                                  metrics: metrics,
+                                  onOpenMedia: _openMedia,
+                                ),
+                                TvCatalogScreen(
+                                  kind: TvMediaKind.series,
+                                  metrics: metrics,
+                                  onOpenMedia: _openMedia,
+                                ),
+                                TvLibraryScreen(
+                                  key: ValueKey<int>(_libraryRevision),
+                                  metrics: metrics,
+                                  onOpenMedia: _openMedia,
+                                ),
+                                TvProfileScreen(metrics: metrics),
+                                TvSettingsScreen(metrics: metrics),
+                              ];
+                              return IndexedStack(
+                                index: selectedIndex,
+                                children: <Widget>[
+                                  for (var index = 0;
+                                      index < screens.length;
+                                      index++)
+                                    ExcludeFocus(
+                                      excluding: index != selectedIndex,
+                                      child: screens[index],
+                                    ),
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ),

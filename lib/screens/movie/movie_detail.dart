@@ -1099,7 +1099,7 @@ class _MovieTabHeaderDelegate extends SliverPersistentHeaderDelegate {
           builder: (context, _) => Row(
             children: [
               _MovieTabButton(
-                label: tr('videos'),
+                label: tr('media'),
                 selected: controller.index == 0,
                 onTap: () => controller.animateTo(0),
               ),

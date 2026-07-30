@@ -32,11 +32,13 @@ class TVVideoLoader extends StatefulWidget {
       {required this.metadata,
       required this.download,
       this.useTvPlayer = false,
+      this.onTvPlayerExit,
       super.key});
 
   final TVStreamMetadata metadata;
   final bool download;
   final bool useTvPlayer;
+  final VoidCallback? onTvPlayerExit;
 
   @override
   State<TVVideoLoader> createState() => _TVVideoLoaderState();
@@ -248,6 +250,7 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
                   // Episode changes are handled directly in the player
                 },
                 useTvControls: widget.useTvPlayer,
+                onTvPlayerExit: widget.onTvPlayerExit,
               );
               return widget.useTvPlayer
                   ? TvPlayerScreen(child: player)
@@ -274,12 +277,13 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         }
       }
     } on Exception catch (e) {
+      debugPrint('[TVVideoLoader] Exception loading video: $e');
       if (mounted) {
         Navigator.pop(context);
         showModalBottomSheet(
             builder: (context) {
               return ReportErrorWidget(
-                error: "${tr("tv_vid_404")}\n$e",
+                error: tr('tv_vid_404'),
                 hideButton: false,
               );
             },

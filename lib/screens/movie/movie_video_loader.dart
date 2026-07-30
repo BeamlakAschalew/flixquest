@@ -31,11 +31,13 @@ class MovieVideoLoader extends StatefulWidget {
       {required this.download,
       required this.metadata,
       this.useTvPlayer = false,
+      this.onTvPlayerExit,
       super.key});
 
   final bool download;
   final MovieStreamMetadata metadata;
   final bool useTvPlayer;
+  final VoidCallback? onTvPlayerExit;
 
   @override
   State<MovieVideoLoader> createState() => _MovieVideoLoaderState();
@@ -237,6 +239,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 subtitleStyle:
                     Provider.of<SettingsProvider>(context).subtitleTextStyle,
                 useTvControls: widget.useTvPlayer,
+                onTvPlayerExit: widget.onTvPlayerExit,
               );
               return widget.useTvPlayer
                   ? TvPlayerScreen(child: player)
@@ -263,12 +266,13 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         }
       }
     } on Exception catch (e) {
+      debugPrint('[MovieVideoLoader] Exception loading video: $e');
       if (mounted) {
         Navigator.pop(context);
         showModalBottomSheet(
             builder: (context) {
               return ReportErrorWidget(
-                error: "${tr("movie_vid_404")}\n$e",
+                error: tr('movie_vid_404'),
                 hideButton: false,
               );
             },

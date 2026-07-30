@@ -439,6 +439,8 @@ class AppSegmentedTabs extends StatelessWidget {
         ),
         labelColor: colors.onPrimary,
         unselectedLabelColor: colors.onSurfaceVariant,
+        labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600, fontSize: 13),
+        unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500, fontSize: 13),
         labelPadding: const EdgeInsets.symmetric(horizontal: 6),
         tabs: [
           for (final tab in tabs)

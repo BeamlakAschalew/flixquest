@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/app_colors.dart';
 import '../../provider/settings_provider.dart';
 import '../app/tv_design.dart';
 import '../focus/tv_focusable.dart';
+import '../widgets/tv_dialog.dart';
 
 class TvSettingsScreen extends StatelessWidget {
   const TvSettingsScreen({required this.metrics, super.key});
@@ -47,18 +49,17 @@ class TvSettingsScreen extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   _TvSettingTile(
-                    label: 'Appearance',
+                    label: 'Theme mode',
                     value: _themeLabel(settings.appTheme),
                     icon: PhosphorIcons.moonStars(),
-                    onActivate: () =>
-                        settings.appTheme = _nextTheme(settings.appTheme),
+                    onActivate: () => _showThemeModePicker(context, settings),
                   ),
                   const SizedBox(height: 14),
                   _TvSettingTile(
-                    label: 'Adult content',
-                    value: settings.isAdult ? 'Included' : 'Hidden',
-                    icon: PhosphorIcons.shieldCheck(),
-                    onActivate: () => settings.isAdult = !settings.isAdult,
+                    label: 'Color theme',
+                    value: _colorThemeLabel(settings.appColorIndex),
+                    icon: PhosphorIcons.palette(),
+                    onActivate: () => _showColorThemePicker(context),
                   ),
                   const SizedBox(height: 14),
                   _TvSettingTile(
@@ -71,12 +72,10 @@ class TvSettingsScreen extends StatelessWidget {
                   const SizedBox(height: 14),
                   _TvSettingTile(
                     label: 'Image quality',
-                    value: settings.imageQuality.replaceAll('/', ''),
+                    value: _imageQualityLabel(settings.imageQuality),
                     icon: PhosphorIcons.image(),
-                    onActivate: () => settings.imageQuality =
-                        settings.imageQuality == 'w500/'
-                            ? 'original/'
-                            : 'w500/',
+                    onActivate: () =>
+                        _showImageQualityPicker(context, settings),
                   ),
                 ],
               ),
@@ -95,12 +94,212 @@ class TvSettingsScreen extends StatelessWidget {
     };
   }
 
-  static String _nextTheme(String current) {
-    return switch (current) {
-      'dark' => 'amoled',
-      'amoled' => 'light',
-      _ => 'dark',
+  static String _imageQualityLabel(String value) {
+    return switch (value) {
+      'original/' => 'High',
+      'w600_and_h900_bestv2/' => 'Medium',
+      _ => 'Low',
     };
+  }
+
+  static String _colorThemeLabel(int index) => switch (index) {
+        -1 => 'FlixQuest',
+        1 => 'Indigo',
+        2 => 'Pink',
+        3 => 'Emerald',
+        4 => 'Amber',
+        5 => 'Violet',
+        6 => 'Cyan',
+        7 => 'Red',
+        8 => 'Teal',
+        9 => 'Orange',
+        10 => 'Purple',
+        11 => 'Blue',
+        12 => 'Lime',
+        13 => 'Rose',
+        14 => 'Sky blue',
+        15 => 'Green',
+        16 => 'Yellow',
+        17 => 'Slate',
+        18 => 'Fuchsia',
+        19 => 'Deep emerald',
+        20 => 'Coral',
+        _ => 'FlixQuest',
+      };
+
+  static Future<void> _showThemeModePicker(
+    BuildContext context,
+    SettingsProvider settings,
+  ) {
+    const options = <String, String>{
+      'dark': 'Dark',
+      'light': 'Light',
+      'amoled': 'AMOLED',
+    };
+    return showTvDialog<void>(
+      context: context,
+      title: 'Theme mode',
+      content: const Text('Choose how FlixQuest looks on this TV.'),
+      actions: <TvDialogAction>[
+        for (final option in options.entries)
+          TvDialogAction(
+            label: option.value,
+            autofocus: settings.appTheme == option.key,
+            isPrimary: settings.appTheme == option.key,
+            onPressed: () {
+              settings.appTheme = option.key;
+              Navigator.of(context).pop();
+            },
+          ),
+      ],
+    );
+  }
+
+  static Future<void> _showImageQualityPicker(
+    BuildContext context,
+    SettingsProvider settings,
+  ) {
+    const options = <String, String>{
+      'original/': 'High',
+      'w600_and_h900_bestv2/': 'Medium',
+      'w500/': 'Low',
+    };
+    return showTvDialog<void>(
+      context: context,
+      title: 'Image quality',
+      content: const Text(
+        'Higher quality uses more bandwidth and may load more slowly.',
+      ),
+      actions: <TvDialogAction>[
+        for (final option in options.entries)
+          TvDialogAction(
+            label: option.value,
+            autofocus: settings.imageQuality == option.key,
+            isPrimary: settings.imageQuality == option.key,
+            onPressed: () {
+              settings.imageQuality = option.key;
+              Navigator.of(context).pop();
+            },
+          ),
+      ],
+    );
+  }
+
+  static Future<void> _showColorThemePicker(BuildContext context) {
+    return showTvDialog<void>(
+      context: context,
+      title: 'Color theme',
+      content: const _TvColorThemePicker(),
+      autofocusFirstAction: false,
+      actions: <TvDialogAction>[
+        TvDialogAction(
+          label: 'Done',
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
+    );
+  }
+}
+
+class _TvColorThemePicker extends StatefulWidget {
+  const _TvColorThemePicker();
+
+  @override
+  State<_TvColorThemePicker> createState() => _TvColorThemePickerState();
+}
+
+class _TvColorThemePickerState extends State<_TvColorThemePicker> {
+  final Map<int, FocusNode> _focusNodes = <int, FocusNode>{};
+
+  FocusNode _nodeFor(int index) {
+    return _focusNodes.putIfAbsent(
+      index,
+      () => FocusNode(debugLabel: 'color-$index'),
+    );
+  }
+
+  @override
+  void dispose() {
+    for (final node in _focusNodes.values) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  void _selectColor(SettingsProvider settings, int index) {
+    settings.appColorIndex = index;
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    final colors = Theme.of(context).colorScheme;
+    final isDark = settings.appTheme == 'dark' || settings.appTheme == 'amoled';
+    final palette = AppColorsList().appColors(isDark);
+    final selectedIndex =
+        palette.any((color) => color.index == settings.appColorIndex)
+            ? settings.appColorIndex
+            : palette.first.index;
+
+    return Wrap(
+      spacing: 14,
+      runSpacing: 14,
+      children: <Widget>[
+        for (final appColor in palette)
+          TvFocusable(
+            key: ValueKey<int>(appColor.index),
+            focusNode: _nodeFor(appColor.index),
+            semanticLabel:
+                '${TvSettingsScreen._colorThemeLabel(appColor.index)} color theme'
+                '${selectedIndex == appColor.index ? ', selected' : ''}',
+            autofocus: selectedIndex == appColor.index,
+            focusScale: 1.025,
+            onActivate: () => _selectColor(settings, appColor.index),
+            child: Container(
+              width: 116,
+              height: 72,
+              padding: const EdgeInsets.symmetric(horizontal: 11),
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: appColor.cs.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: selectedIndex == appColor.index
+                        ? Icon(
+                            PhosphorIcons.check(PhosphorIconsStyle.bold),
+                            size: 17,
+                            color: appColor.cs.onPrimary,
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 9),
+                  Expanded(
+                    child: Text(
+                      TvSettingsScreen._colorThemeLabel(appColor.index),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: colors.onSurface,
+                        fontFamily: 'FigtreeSB',
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }
 

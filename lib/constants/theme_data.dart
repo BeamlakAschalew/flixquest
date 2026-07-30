@@ -136,6 +136,8 @@ ThemeData darkThemeData(
       disabledBorder: InputBorder.none,
     ),
     tabBarTheme: TabBarThemeData(
+      labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
+      unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500),
       indicatorColor: isM3Enabled
           ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
           : useUserColor
@@ -408,6 +410,8 @@ ThemeData lightThemeData(
       disabledBorder: InputBorder.none,
     ),
     tabBarTheme: TabBarThemeData(
+        labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500),
         indicatorColor: isM3Enabled
             ? lightDynamicColor?.primary ?? Color(0xFFF57C00)
             : useUserColor
@@ -684,6 +688,8 @@ ThemeData lightsOutThemeData(
       disabledBorder: InputBorder.none,
     ),
     tabBarTheme: TabBarThemeData(
+      labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600),
+      unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500),
       indicatorColor: isM3Enabled
           ? darkDynamicColor?.primary ?? Color(0xFFF57C00)
           : useUserColor
@@ -999,7 +1005,8 @@ ThemeData _applyFlixQuestUI(ThemeData base) {
       indicatorColor: colors.primary,
       labelColor: colors.primary,
       unselectedLabelColor: colors.onSurfaceVariant,
-      labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontSize: 15),
+      labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600, fontSize: 15),
+      unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500, fontSize: 15),
       indicatorSize: TabBarIndicatorSize.label,
     ),
     navigationBarTheme: NavigationBarThemeData(
@@ -1023,7 +1030,7 @@ ThemeData _applyFlixQuestUI(ThemeData base) {
     bottomSheetTheme: BottomSheetThemeData(
       backgroundColor: surface,
       surfaceTintColor: Colors.transparent,
-      showDragHandle: true,
+      showDragHandle: false,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),

@@ -91,12 +91,26 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
     }
   }
 
-  void _openRecommendation(TvMediaItem item) {
-    Navigator.of(context).push<void>(
+  void _restoreFocusAfterRoute(FocusNode? previousFocus) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted ||
+          previousFocus == null ||
+          previousFocus.context == null ||
+          !previousFocus.canRequestFocus) {
+        return;
+      }
+      previousFocus.requestFocus();
+    });
+  }
+
+  Future<void> _openRecommendation(TvMediaItem item) async {
+    final previousFocus = FocusManager.instance.primaryFocus;
+    await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (_) => TvMediaDetailsScreen(item: item),
       ),
     );
+    _restoreFocusAfterRoute(previousFocus);
   }
 
   Future<void> _playMovie() async {
@@ -111,11 +125,13 @@ class _TvMediaDetailsScreenState extends State<TvMediaDetailsScreen> {
       return;
     }
     if (!mounted) return;
+    final previousFocus = FocusManager.instance.primaryFocus;
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
         builder: (_) => MovieVideoLoader(
           download: false,
           useTvPlayer: true,
+          onTvPlayerExit: () => _restoreFocusAfterRoute(previousFocus),
           metadata: MovieStreamMetadata(
             backdropPath: movie.backdropPath,
             elapsed: null,
@@ -400,6 +416,7 @@ class _DetailsBody extends StatelessWidget {
     EpisodeList episode,
     List<EpisodeList> seasonEpisodes,
   ) async {
+    final previousFocus = FocusManager.instance.primaryFocus;
     final facts = <String>[
       if (episode.seasonNumber != null && episode.episodeNumber != null)
         'S${episode.seasonNumber!.toString().padLeft(2, '0')}  •  '
@@ -408,7 +425,7 @@ class _DetailsBody extends StatelessWidget {
       if (episode.voteAverage != null)
         '${episode.voteAverage!.toStringAsFixed(1)} / 10',
     ].join('  •  ');
-    await showTvDialog<void>(
+    final playEpisode = await showTvDialog<bool>(
       context: context,
       title: episode.name ?? 'Episode information',
       content: Column(
@@ -435,24 +452,32 @@ class _DetailsBody extends StatelessWidget {
             autofocus: true,
             isPrimary: true,
             onPressed: () {
-              Navigator.of(context).pop();
-              _playEpisode(context, episode, seasonEpisodes);
+              Navigator.of(context).pop(true);
             },
           ),
         TvDialogAction(
           label: 'Close',
           autofocus: episode.episodeId == null,
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(false),
         ),
       ],
     );
+    if (playEpisode == true && context.mounted) {
+      await _playEpisode(
+        context,
+        episode,
+        seasonEpisodes,
+        returnFocus: previousFocus,
+      );
+    }
   }
 
   Future<void> _playEpisode(
     BuildContext context,
     EpisodeList episode,
-    List<EpisodeList> seasonEpisodes,
-  ) async {
+    List<EpisodeList> seasonEpisodes, {
+    FocusNode? returnFocus,
+  }) async {
     if (!await checkConnection()) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -467,6 +492,14 @@ class _DetailsBody extends StatelessWidget {
         builder: (_) => TVVideoLoader(
           download: false,
           useTvPlayer: true,
+          onTvPlayerExit: () {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (returnFocus?.context != null &&
+                  returnFocus?.canRequestFocus == true) {
+                returnFocus?.requestFocus();
+              }
+            });
+          },
           metadata: TVStreamMetadata(
             elapsed: null,
             episodeId: episode.episodeId,

@@ -23,6 +23,7 @@ Future<T?> showTvDialog<T>({
   required Widget content,
   required List<TvDialogAction> actions,
   bool barrierDismissible = false,
+  bool autofocusFirstAction = true,
 }) {
   assert(actions.isNotEmpty);
   return showDialog<T>(
@@ -32,6 +33,7 @@ Future<T?> showTvDialog<T>({
       title: title,
       content: content,
       actions: actions,
+      autofocusFirstAction: autofocusFirstAction,
     ),
   );
 }
@@ -41,12 +43,14 @@ class TvDialog extends StatefulWidget {
     required this.title,
     required this.content,
     required this.actions,
+    this.autofocusFirstAction = true,
     super.key,
   });
 
   final String title;
   final Widget content;
   final List<TvDialogAction> actions;
+  final bool autofocusFirstAction;
 
   @override
   State<TvDialog> createState() => _TvDialogState();
@@ -126,7 +130,9 @@ class _TvDialogState extends State<TvDialog> {
                                 return TvFocusable(
                                   semanticLabel: action.label,
                                   autofocus: action.autofocus ||
-                                      (!hasExplicitAutofocus && index == 0),
+                                      (widget.autofocusFirstAction &&
+                                          !hasExplicitAutofocus &&
+                                          index == 0),
                                   onActivate: action.onPressed,
                                   focusScale: 1.03,
                                   child: Container(

@@ -35,7 +35,7 @@ class PlayerEpisodeSelection {
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
-      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
       builder: (sheetContext) => DraggableScrollableSheet(
         initialChildSize: .82,
@@ -197,7 +197,7 @@ class PlayerEpisodeSelection {
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
-      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
       builder: (sheetContext) => DraggableScrollableSheet(
         initialChildSize: .72,

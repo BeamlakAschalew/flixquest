@@ -47,6 +47,7 @@ class PlayerOne extends StatefulWidget {
       this.videoHeaders = const {},
       this.prefetchedProviderResults = const {},
       this.useTvControls = false,
+      this.onTvPlayerExit,
       super.key});
   final Map<String, String> sources;
   final List<BetterPlayerSubtitlesSource> subs;
@@ -67,6 +68,7 @@ class PlayerOne extends StatefulWidget {
   final Map<String, Map<String, String>> videoHeaders;
   final Map<String, Future<ProviderLoaderResult>> prefetchedProviderResults;
   final bool useTvControls;
+  final VoidCallback? onTvPlayerExit;
 
   @override
   State<PlayerOne> createState() => _PlayerOneState();
@@ -228,6 +230,18 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                 )
             : null,
         loadingColor: widget.colors.first,
+        loadingWidget: SizedBox(
+          width: 60,
+          height: 3,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(99),
+            child: LinearProgressIndicator(
+              minHeight: 3,
+              color: widget.colors.first,
+              backgroundColor: widget.colors.first.withValues(alpha: .24),
+            ),
+          ),
+        ),
         iconsColor: widget.colors.first,
         backwardSkipTimeInMilliseconds:
             Duration(seconds: widget.settings.defaultSeekDuration)
@@ -301,6 +315,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             showPlaceholderUntilPlay: true,
             allowedScreenSleep: false,
             autoDetectFullscreenAspectRatio: !widget.useTvControls,
+            errorBuilder: (context, errorMessage) =>
+                _buildCustomPlayerErrorWidget(context, errorMessage),
             subtitlesConfiguration: BetterPlayerSubtitlesConfiguration(
                 backgroundColor: backgroundColor,
                 fontFamily: widget.subtitleStyle == 'regular'
@@ -695,13 +711,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       _tvNextEpisodeCountdown = null;
       _tvMenu = _TvPlayerMenuData(title, items);
     });
-    _tvControlsController.hide();
+    _tvControlsController.hide(preserveFocus: true);
   }
 
   void _closeTvMenu({bool showControls = true}) {
     if (!mounted || _tvMenu == null) return;
     setState(() => _tvMenu = null);
-    if (showControls) _tvControlsController.show();
+    if (showControls) {
+      _tvControlsController.show(restorePreviousFocus: true);
+    }
   }
 
   bool _handleTvOverlayBack() {
@@ -727,6 +745,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           label: tr('select_season'),
           subtitle: tr('season_episodes', namedArgs: {'season': '$season'}),
           icon: PhosphorIcons.stack(),
+          showsNext: true,
           onSelected: _showTvSeasonMenu,
         ),
       ...episodes.map(
@@ -772,6 +791,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               ),
               icon: PhosphorIcons.stack(),
               selected: season.seasonNumber == browsedSeason,
+              showsNext: true,
               onSelected: () => unawaited(
                 _loadTvSeasonEpisodes(season.seasonNumber),
               ),
@@ -899,7 +919,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       _tvNextEpisode = nextEpisode;
       _tvNextEpisodeCountdown = startCountdown ? 10 : null;
     });
-    _tvControlsController.hide();
+    _tvControlsController.hide(preserveFocus: true);
     if (!startCountdown) return;
     _tvNextEpisodeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted || _tvNextEpisode == null) {
@@ -924,7 +944,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       _tvNextEpisode = null;
       _tvNextEpisodeCountdown = null;
     });
-    if (showControls) _tvControlsController.show();
+    if (showControls) {
+      _tvControlsController.show(restorePreviousFocus: true);
+    }
   }
 
   void _dismissTvNextEpisodePrompt() {
@@ -949,6 +971,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         builder: (_) => TVVideoLoader(
           download: false,
           useTvPlayer: true,
+          onTvPlayerExit: widget.onTvPlayerExit,
           metadata: _metadataForTvEpisode(episode),
         ),
       ),
@@ -964,6 +987,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         builder: (_) => MovieVideoLoader(
           download: false,
           useTvPlayer: true,
+          onTvPlayerExit: widget.onTvPlayerExit,
           metadata: MovieStreamMetadata(
             movieId: movie.movieId,
             movieName: movie.title,
@@ -1006,7 +1030,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
-      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
       builder: (sheetContext) => StatefulBuilder(
         builder: (context, setSheetState) {
@@ -1264,7 +1288,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       } else if (wasPlaying) {
         await _betterPlayerController.play();
       }
-      setState(() => _providerErrors[providerCode] = error.toString());
+      setState(() => _providerErrors[providerCode] = _sanitizeError(error));
     } finally {
       if (mounted) {
         setState(() {
@@ -1338,6 +1362,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   }
 
   void _exitPlayer() {
+    final playerRoute = ModalRoute.of(context);
+    final onTvPlayerExit = widget.onTvPlayerExit;
     Navigator.pop(
       context,
       _betterPlayerController.isVideoInitialized() == true
@@ -1346,13 +1372,19 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               : insertRecentEpisodeData
           : null,
     );
+    if (onTvPlayerExit == null) return;
+    if (playerRoute == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => onTvPlayerExit());
+      return;
+    }
+    unawaited(playerRoute.completed.then((_) => onTvPlayerExit()));
   }
 
   void _showExternalPlayerSheet() {
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
-      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (context) => AppResponsiveContent(
         maxWidth: 680,
         padding: EdgeInsets.zero,
@@ -1382,11 +1414,15 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
-      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       isScrollControlled: true,
-      builder: (sheetContext) => FractionallySizedBox(
-        heightFactor: .72,
-        child: PlayerSheetScaffold(
+      builder: (sheetContext) => DraggableScrollableSheet(
+        initialChildSize: .72,
+        minChildSize: .45,
+        maxChildSize: .95,
+        expand: false,
+        snap: true,
+        builder: (context, scrollController) => PlayerSheetScaffold(
           icon: PhosphorIcons.closedCaptioning(),
           title: tr('subtitle'),
           subtitle: tr('choose_subtitle_language'),
@@ -1397,6 +1433,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
             ),
           ],
           child: ListView.separated(
+            controller: scrollController,
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
             itemCount: subtitles.length,
             separatorBuilder: (_, __) => const SizedBox(height: 4),
@@ -1425,6 +1462,112 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+
+  String _sanitizeError(dynamic error) {
+    if (error == null) return tr('movie_vid_404');
+    String msg = error.toString();
+    msg = msg.replaceAll(RegExp(r'https?://[^\s]+'), '').trim();
+    msg = msg
+        .replaceAll(
+          RegExp(
+              r'^(Exception|SocketException|FormatException|ScraperApiException):\s*'),
+          '',
+        )
+        .trim();
+    if (msg.isEmpty) {
+      return tr('movie_vid_404');
+    }
+    return msg;
+  }
+
+  Widget _buildCustomPlayerErrorWidget(
+      BuildContext context, String? errorText) {
+    final cleanError = _sanitizeError(errorText);
+    final hasProviders = widget.availableProviders != null &&
+        widget.availableProviders!.isNotEmpty;
+    return Container(
+      color: Colors.black,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: const BoxDecoration(
+                color: Colors.white10,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                PhosphorIcons.warningCircle(),
+                size: 48,
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              cleanError,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'FigtreeSB',
+              ),
+            ),
+            const SizedBox(height: 24),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
+              children: [
+                if (hasProviders)
+                  FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: widget.colors.first,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () {
+                      if (widget.useTvControls) {
+                        _showTvProviderMenu();
+                      } else {
+                        _showProviderSwitcher();
+                      }
+                    },
+                    icon: Icon(PhosphorIcons.arrowsLeftRight(), size: 18),
+                    label: Text(tr('switch_provider')),
+                  ),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white38),
+                  ),
+                  onPressed: () {
+                    final currentSource = _currentProviderCode;
+                    if (currentSource != null) {
+                      _switchToProvider(
+                        currentSource,
+                        closeMenu: () {},
+                        refreshMenu: () {},
+                      );
+                    }
+                  },
+                  icon: Icon(PhosphorIcons.arrowClockwise(), size: 18),
+                  label: Text(tr('retry')),
+                ),
+                IconButton(
+                  onPressed: _exitPlayer,
+                  icon: Icon(PhosphorIcons.x(), color: Colors.white70),
+                  tooltip: tr('close'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

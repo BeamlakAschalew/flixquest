@@ -366,6 +366,7 @@ abstract class  LocaleKeys {
   static const no_release_date = 'no_release_date';
   static const release_date = 'release_date';
   static const videos = 'videos';
+  static const media = 'media';
   static const no_cast_movie = 'no_cast_movie';
   static const see_all_cast_crew = 'see_all_cast_crew';
   static const social_media_links = 'social_media_links';

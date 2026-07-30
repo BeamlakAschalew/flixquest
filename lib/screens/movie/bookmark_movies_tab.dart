@@ -211,19 +211,26 @@ class _MovieGridCard extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  left: 8,
                   top: 8,
-                  child:
+                  left: 8,
+                  right: 8,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
                       AppRatingBadge(rating: movie.voteAverage, compact: true),
-                ),
-                Positioned(
-                  right: 6,
-                  top: 6,
-                  child: IconButton.filledTonal(
-                    visualDensity: VisualDensity.compact,
-                    tooltip: tr('delete'),
-                    onPressed: onRemove,
-                    icon: Icon(PhosphorIcons.x(), size: 18),
+                      SizedBox(
+                        width: 28,
+                        height: 28,
+                        child: IconButton.filledTonal(
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          tooltip: tr('delete'),
+                          onPressed: onRemove,
+                          icon: Icon(PhosphorIcons.x(), size: 16),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

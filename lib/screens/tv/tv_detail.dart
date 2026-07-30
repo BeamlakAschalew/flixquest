@@ -681,7 +681,7 @@ class _TVTabHeader extends SliverPersistentHeaderDelegate {
           builder: (context, _) => Row(
             children: [
               _TVTabButton(
-                label: tr('videos'),
+                label: tr('media'),
                 selected: controller.index == 0,
                 onTap: () => controller.animateTo(0),
               ),

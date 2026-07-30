@@ -132,6 +132,14 @@ class _FlixQuestState extends State<FlixQuest>
                       appDependencyProvider, snapshot) {
                 return DynamicColorBuilder(
                   builder: (lightDynamic, darkDynamic) {
+                    final palette = AppColorsList().appColors(
+                      settingsProvider.appTheme == 'dark' ||
+                          settingsProvider.appTheme == 'amoled',
+                    );
+                    final selectedAppColor = palette.firstWhere(
+                      (color) => color.index == settingsProvider.appColorIndex,
+                      orElse: () => palette.first,
+                    );
                     return MaterialApp(
                       navigatorKey: InAppMessagingService.navigatorKey,
                       localizationsDelegates: context.localizationDelegates,
@@ -144,18 +152,7 @@ class _FlixQuestState extends State<FlixQuest>
                           lightDynamicColor: lightDynamic,
                           darkDynamicColor: darkDynamic,
                           context: context,
-                          appColor: AppColor(
-                              cs: AppColorsList()
-                                  .appColors(settingsProvider.appTheme ==
-                                              'dark' ||
-                                          settingsProvider.appTheme == 'amoled'
-                                      ? true
-                                      : false)
-                                  .firstWhere((element) =>
-                                      element.index ==
-                                      settingsProvider.appColorIndex)
-                                  .cs,
-                              index: settingsProvider.appColorIndex)),
+                          appColor: selectedAppColor),
                       home: UserState(
                         devicePresentation: widget.devicePresentation,
                       ),
