@@ -41,10 +41,12 @@ class _ProfileEditState extends State<ProfileEdit> {
   String _fullName = '';
   String _userName = '';
   final ProfileImages profileImages = ProfileImages();
+  late final List<Profile> _profileList = profileImages.profile();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   final GlobalMethods _globalMethods = GlobalMethods();
   DocumentSnapshot? userDoc;
+  final ScrollController _profileScrollController = ScrollController();
 
   void getData() async {
     User? user = _auth.currentUser;
@@ -73,7 +75,25 @@ class _ProfileEditState extends State<ProfileEdit> {
         userEmail = userDoc!.get('email');
         userId = userDoc!.get('id');
       });
+
+      if (profileId != null && profileId! > 0) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_profileScrollController.hasClients) {
+            final double offset = (profileId! * (72.0 + 14.0)).clamp(
+              0.0,
+              _profileScrollController.position.maxScrollExtent,
+            );
+            _profileScrollController.jumpTo(offset);
+          }
+        });
+      }
     }
+  }
+
+  @override
+  void dispose() {
+    _profileScrollController.dispose();
+    super.dispose();
   }
 
   void updateProfile() async {
@@ -223,85 +243,96 @@ class _ProfileEditState extends State<ProfileEdit> {
                           const SizedBox(height: 16),
                           Card(
                             child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Wrap(
-                                spacing: 14,
-                                runSpacing: 14,
-                                children: profileImages
-                                    .profile()
-                                    .map((Profile profile) {
-                                  final selected = profileId == profile.index;
-                                  return Semantics(
-                                    selected: selected,
-                                    button: true,
-                                    child: InkWell(
-                                      customBorder: const CircleBorder(),
-                                      onTap: () => setState(() {
-                                        profileId = profile.index;
-                                        selectedProfile = profile.index;
-                                      }),
-                                      child: AnimatedContainer(
-                                        duration:
-                                            const Duration(milliseconds: 180),
-                                        width: 72,
-                                        height: 72,
-                                        padding:
-                                            EdgeInsets.all(selected ? 3 : 0),
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: selected
-                                              ? Border.all(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .primary,
-                                                  width: 3,
-                                                )
-                                              : null,
-                                        ),
-                                        child: Stack(
-                                          clipBehavior: Clip.none,
-                                          children: [
-                                            ClipOval(
-                                              child: Image.asset(
-                                                'assets/images/profiles/${profile.index}.png',
-                                                width: 66,
-                                                height: 66,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                            if (selected)
-                                              Positioned(
-                                                right: -3,
-                                                bottom: -3,
-                                                child: Container(
-                                                  width: 24,
-                                                  height: 24,
-                                                  decoration: BoxDecoration(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 8),
+                              child: SizedBox(
+                                height: 84,
+                                child: ListView.separated(
+                                  controller: _profileScrollController,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8),
+                                  physics: const BouncingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _profileList.length,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(width: 14),
+                                  itemBuilder: (context, index) {
+                                    final profile = _profileList[index];
+                                    final selected =
+                                        profileId == profile.index;
+                                    return Semantics(
+                                      selected: selected,
+                                      button: true,
+                                      child: InkWell(
+                                        customBorder: const CircleBorder(),
+                                        onTap: () => setState(() {
+                                          profileId = profile.index;
+                                          selectedProfile = profile.index;
+                                        }),
+                                        child: AnimatedContainer(
+                                          duration: const Duration(
+                                              milliseconds: 180),
+                                          width: 72,
+                                          height: 72,
+                                          padding: EdgeInsets.all(
+                                              selected ? 3 : 0),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: selected
+                                                ? Border.all(
                                                     color: Theme.of(context)
                                                         .colorScheme
                                                         .primary,
-                                                    shape: BoxShape.circle,
-                                                    border: Border.all(
-                                                      color: Theme.of(context)
-                                                          .scaffoldBackgroundColor,
-                                                      width: 2,
-                                                    ),
-                                                  ),
-                                                  child: Icon(
-                                                    PhosphorIcons.check(),
-                                                    size: 15,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onPrimary,
-                                                  ),
+                                                    width: 3,
+                                                  )
+                                                : null,
+                                          ),
+                                          child: Stack(
+                                            clipBehavior: Clip.none,
+                                            children: [
+                                              ClipOval(
+                                                child: Image.asset(
+                                                  'assets/images/profiles/${profile.index}.png',
+                                                  width: 66,
+                                                  height: 66,
+                                                  fit: BoxFit.cover,
                                                 ),
                                               ),
-                                          ],
+                                              if (selected)
+                                                Positioned(
+                                                  right: -3,
+                                                  bottom: -3,
+                                                  child: Container(
+                                                    width: 24,
+                                                    height: 24,
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                        color: Theme.of(
+                                                                context)
+                                                            .scaffoldBackgroundColor,
+                                                        width: 2,
+                                                      ),
+                                                    ),
+                                                    child: Icon(
+                                                      PhosphorIcons.check(),
+                                                      size: 15,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimary,
+                                                    ),
+                                                  ),
+                                                ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  );
-                                }).toList(),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           ),

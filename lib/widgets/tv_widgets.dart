@@ -265,21 +265,93 @@ class DiscoverTVState extends State<DiscoverTV>
     TVGenreFilterChipWidget(genreName: tr('western'), genreValue: '37'),
   ];
 
-  void getData() {
+  Future<void> getData() async {
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
     final lang =
         Provider.of<SettingsProvider>(context, listen: false).appLanguage;
-    fetchTV(Endpoints.trendingTVUrl(lang), isProxyEnabled, proxyUrl)
-        .then((value) {
+
+    final random = Random();
+    final randomYear =
+        (1990 + random.nextInt(DateTime.now().year - 1990 + 1)).toString();
+    final randomGenre = tvGenreList.isNotEmpty
+        ? tvGenreList[random.nextInt(tvGenreList.length)].genreValue
+        : null;
+    final randomPage = random.nextInt(5) + 1;
+
+    final trendingFuture = fetchTV(
+      Endpoints.trendingTVUrl(lang),
+      isProxyEnabled,
+      proxyUrl,
+    );
+
+    final randomDiscoverFuture = fetchTV(
+      Endpoints.randomDiscoverTVUrl(
+        lang,
+        page: randomPage,
+        year: randomYear,
+        genreId: randomGenre,
+      ),
+      isProxyEnabled,
+      proxyUrl,
+    );
+
+    try {
+      final results =
+          await Future.wait([trendingFuture, randomDiscoverFuture]);
+      final trendingList = results[0];
+      final randomList = results[1];
+
+      final combined = <TV>[];
+      final seenIds = <int>{};
+
+      final validTrending = trendingList
+          .where((item) =>
+              (item.backdropPath != null || item.posterPath != null) &&
+              item.id != null)
+          .toList();
+
+      final validRandom = randomList
+          .where((item) =>
+              (item.backdropPath != null || item.posterPath != null) &&
+              item.id != null)
+          .toList()
+        ..shuffle(random);
+
+      int tIndex = 0;
+      int rIndex = 0;
+
+      while ((tIndex < validTrending.length || rIndex < validRandom.length) &&
+          combined.length < 10) {
+        if (tIndex < validTrending.length) {
+          final item = validTrending[tIndex++];
+          if (seenIds.add(item.id!)) {
+            combined.add(item);
+          }
+        }
+        if (rIndex < validRandom.length && combined.length < 10) {
+          final item = validRandom[rIndex++];
+          if (seenIds.add(item.id!)) {
+            combined.add(item);
+          }
+        }
+      }
+
       if (mounted) {
         setState(() {
-          tvList = value;
+          tvList = combined.isNotEmpty ? combined : trendingList;
         });
       }
-    });
+    } catch (_) {
+      final fallback = await trendingFuture.catchError((_) => <TV>[]);
+      if (mounted) {
+        setState(() {
+          tvList = fallback;
+        });
+      }
+    }
   }
 
   @override
@@ -297,7 +369,7 @@ class DiscoverTVState extends State<DiscoverTV>
           : tvList!.isEmpty
               ? Center(child: Text(tr('wow_odd'), style: kTextSmallBodyStyle))
               : AppCrossfadeCarousel(
-                  itemCount: tvList!.take(8).length,
+                  itemCount: tvList!.take(10).length,
                   itemBuilder: (context, index) {
                     final item = tvList![index];
                     final path = item.backdropPath ?? item.posterPath;

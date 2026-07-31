@@ -263,21 +263,92 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     MovieGenreFilterChipWidget(genreName: tr('western'), genreValue: '37'),
   ];
 
-  void getData() {
+  Future<void> getData() async {
     final lang =
         Provider.of<SettingsProvider>(context, listen: false).appLanguage;
     final isProxyEnabled =
         Provider.of<SettingsProvider>(context, listen: false).enableProxy;
     final proxyUrl =
         Provider.of<AppDependencyProvider>(context, listen: false).tmdbProxy;
-    fetchMovies(Endpoints.trendingMoviesUrl(lang), isProxyEnabled, proxyUrl)
-        .then((value) async {
+
+    final random = Random();
+    final randomYear =
+        (1990 + random.nextInt(DateTime.now().year - 1990 + 1)).toString();
+    final randomGenre = movieGenreFilterdata.isNotEmpty
+        ? movieGenreFilterdata[random.nextInt(movieGenreFilterdata.length)]
+            .genreValue
+        : null;
+    final randomPage = random.nextInt(5) + 1;
+
+    final trendingFuture = fetchMovies(
+      Endpoints.trendingMoviesUrl(lang),
+      isProxyEnabled,
+      proxyUrl,
+    );
+
+    final randomDiscoverFuture = fetchMovies(
+      Endpoints.randomDiscoverMoviesUrl(
+        lang,
+        page: randomPage,
+        year: randomYear,
+        genreId: randomGenre,
+      ),
+      isProxyEnabled,
+      proxyUrl,
+    );
+
+    try {
+      final results =
+          await Future.wait([trendingFuture, randomDiscoverFuture]);
+      final trendingList = results[0];
+      final randomList = results[1];
+
+      final combined = <Movie>[];
+      final seenIds = <int>{};
+
+      final validTrending = trendingList
+          .where((m) =>
+              (m.backdropPath != null || m.posterPath != null) && m.id != null)
+          .toList();
+
+      final validRandom = randomList
+          .where((m) =>
+              (m.backdropPath != null || m.posterPath != null) && m.id != null)
+          .toList()
+        ..shuffle(random);
+
+      int tIndex = 0;
+      int rIndex = 0;
+
+      while ((tIndex < validTrending.length || rIndex < validRandom.length) &&
+          combined.length < 10) {
+        if (tIndex < validTrending.length) {
+          final m = validTrending[tIndex++];
+          if (seenIds.add(m.id!)) {
+            combined.add(m);
+          }
+        }
+        if (rIndex < validRandom.length && combined.length < 10) {
+          final m = validRandom[rIndex++];
+          if (seenIds.add(m.id!)) {
+            combined.add(m);
+          }
+        }
+      }
+
       if (mounted) {
         setState(() {
-          moviesList = value;
+          moviesList = combined.isNotEmpty ? combined : trendingList;
         });
       }
-    });
+    } catch (_) {
+      final fallback = await trendingFuture.catchError((_) => <Movie>[]);
+      if (mounted) {
+        setState(() {
+          moviesList = fallback;
+        });
+      }
+    }
   }
 
   @override
@@ -295,7 +366,7 @@ class DiscoverMoviesState extends State<DiscoverMovies>
           : moviesList!.isEmpty
               ? Center(child: Text(tr('wow_odd'), style: kTextSmallBodyStyle))
               : AppCrossfadeCarousel(
-                  itemCount: moviesList!.take(8).length,
+                  itemCount: moviesList!.take(10).length,
                   itemBuilder: (context, index) {
                     final movie = moviesList![index];
                     final imagePath = movie.backdropPath ?? movie.posterPath;

@@ -12,6 +12,44 @@ class Endpoints {
         '=$page';
   }
 
+  static String randomDiscoverMoviesUrl(
+    String l, {
+    int? page,
+    String? year,
+    String? genreId,
+  }) {
+    final p = page ?? 1;
+    var url = '$TMDB_API_BASE_URL/discover/movie?api_key=$TMDB_API_KEY'
+        '&language=$l&sort_by=popularity.desc&include_video=false'
+        '&page=$p&vote_count.gte=30';
+    if (year != null && year.isNotEmpty) {
+      url += '&primary_release_year=$year';
+    }
+    if (genreId != null && genreId.isNotEmpty) {
+      url += '&with_genres=$genreId';
+    }
+    return url;
+  }
+
+  static String randomDiscoverTVUrl(
+    String l, {
+    int? page,
+    String? year,
+    String? genreId,
+  }) {
+    final p = page ?? 1;
+    var url = '$TMDB_API_BASE_URL/discover/tv?api_key=$TMDB_API_KEY'
+        '&language=$l&sort_by=popularity.desc'
+        '&page=$p&vote_count.gte=30';
+    if (year != null && year.isNotEmpty) {
+      url += '&first_air_date_year=$year';
+    }
+    if (genreId != null && genreId.isNotEmpty) {
+      url += '&with_genres=$genreId';
+    }
+    return url;
+  }
+
   static String nowPlayingMoviesUrl(int page, String l) {
     return '$TMDB_API_BASE_URL'
         '/movie/now_playing?api_key='

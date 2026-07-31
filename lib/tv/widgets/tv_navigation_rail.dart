@@ -184,6 +184,7 @@ class TvNavigationRailState extends State<TvNavigationRail> {
                           borderRadius: BorderRadius.circular(9),
                         ),
                         child: Stack(
+                          fit: StackFit.expand,
                           children: <Widget>[
                             if (destination.id == widget.selectedId)
                               Align(
