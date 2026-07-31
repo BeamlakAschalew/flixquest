@@ -22,6 +22,7 @@ import 'screens/user/user_state.dart';
 import 'widgets/common_widgets.dart';
 import 'widgets/movie_widgets.dart';
 import 'widgets/tv_widgets.dart';
+import 'provider/bookmark_provider.dart';
 import 'services/in_app_messaging_service.dart';
 import 'tv/platform/device_presentation.dart';
 
@@ -29,6 +30,7 @@ class FlixQuest extends StatefulWidget {
   const FlixQuest(
       {required this.settingsProvider,
       required this.recentProvider,
+      required this.bookmarkProvider,
       required this.appDependencyProvider,
       required this.devicePresentation,
       required this.init,
@@ -36,6 +38,7 @@ class FlixQuest extends StatefulWidget {
 
   final SettingsProvider settingsProvider;
   final RecentProvider recentProvider;
+  final BookmarkProvider bookmarkProvider;
   final AppDependencyProvider appDependencyProvider;
   final DevicePresentation devicePresentation;
   final Future<FirebaseApp> init;
@@ -121,6 +124,9 @@ class _FlixQuestState extends State<FlixQuest>
                 }),
                 ChangeNotifierProvider(create: (_) {
                   return widget.recentProvider;
+                }),
+                ChangeNotifierProvider(create: (_) {
+                  return widget.bookmarkProvider;
                 }),
                 ChangeNotifierProvider(create: (_) {
                   return widget.appDependencyProvider;

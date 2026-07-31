@@ -1,19 +1,18 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import '../../constants/app_constants.dart';
-import '../../controllers/bookmark_database_controller.dart';
-import '../../models/movie.dart';
-import '../../models/tv.dart';
-import '../../services/globle_method.dart';
-import '/screens/common/sync_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
+
+import '../../constants/app_constants.dart';
+import '../../provider/bookmark_provider.dart';
+import '../../services/bookmark_sync_service.dart';
+import '../../services/globle_method.dart';
 import '../../ui_components/app_ui_components.dart';
 import '../movie/bookmark_movies_tab.dart';
 import '../tv/bookmark_tv_tab.dart';
-
-import '../../services/bookmark_sync_service.dart';
+import '/screens/common/sync_screen.dart';
 
 class BookmarkScreen extends StatefulWidget {
   const BookmarkScreen({this.embedded = false, super.key});
@@ -27,21 +26,14 @@ class BookmarkScreen extends StatefulWidget {
 class _BookmarkScreenState extends State<BookmarkScreen>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
-  String? uid;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? user;
-  MovieDatabaseController movieDatabaseController = MovieDatabaseController();
-  TVDatabaseController tvDatabaseController = TVDatabaseController();
-  List<TV>? tvList;
-  List<Movie>? movieList;
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 2, vsync: this);
     getData();
-    fetchMovieBookmark();
-    fetchTVBookmark();
     _triggerAutoSync();
   }
 
@@ -49,42 +41,26 @@ class _BookmarkScreenState extends State<BookmarkScreen>
     if (BookmarkSyncService.instance.canSync) {
       await BookmarkSyncService.instance.autoSyncIfSignedIn();
       if (mounted) {
-        fetchMovieBookmark();
-        fetchTVBookmark();
+        context.read<BookmarkProvider>().fetchBookmarks();
       }
     }
   }
 
   void getData() async {
     user = _auth.currentUser;
-    uid = user?.uid;
   }
 
-  Future<void> setMovieData() async {
-    var mov = await movieDatabaseController.getMovieList();
-    if (mounted) {
-      setState(() {
-        movieList = mov;
-      });
-    }
-  }
-
-  void fetchMovieBookmark() async {
-    await setMovieData();
-  }
-
-  Future<void> setTVData() async {
-    var tv = await tvDatabaseController.getTVList();
-    if (mounted) setState(() => tvList = tv);
-  }
-
-  void fetchTVBookmark() async {
-    await setTVData();
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final bookmarkProvider = Provider.of<BookmarkProvider>(context);
+
     return Scaffold(
       appBar: widget.embedded
           ? null
@@ -193,10 +169,8 @@ class _BookmarkScreenState extends State<BookmarkScreen>
               child: TabBarView(
                 controller: tabController,
                 children: [
-                  MovieBookmark(movieList: movieList),
-                  TVBookmark(
-                    tvList: tvList,
-                  )
+                  MovieBookmark(movieList: bookmarkProvider.movies),
+                  TVBookmark(tvList: bookmarkProvider.tvShows),
                 ],
               ),
             )
@@ -224,8 +198,8 @@ class _BookmarkScreenState extends State<BookmarkScreen>
       context,
       MaterialPageRoute(builder: (_) => const SyncScreen()),
     ).then((_) {
-      fetchMovieBookmark();
-      fetchTVBookmark();
+      if (!mounted) return;
+      context.read<BookmarkProvider>().fetchBookmarks();
     });
   }
 }

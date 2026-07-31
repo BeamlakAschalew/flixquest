@@ -23,7 +23,7 @@ import '../../models/videos.dart';
 import '../../models/watch_providers.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
-import '../../services/bookmark_sync_service.dart';
+import '../../provider/bookmark_provider.dart';
 import '../../screens/common/photoview.dart';
 import '../../services/globle_method.dart';
 import '../../ui_components/app_ui_components.dart';
@@ -143,14 +143,14 @@ class MovieDetailPageState extends State<MovieDetailPage>
     if (_isBookmarked == null || _bookmarkBusy) return;
     setState(() => _bookmarkBusy = true);
     try {
+      final provider = Provider.of<BookmarkProvider>(context, listen: false);
       if (_isBookmarked!) {
-        await _database.deleteMovie(widget.movie.id!);
+        await provider.removeMovie(widget.movie.id!);
       } else {
-        await _database.insertMovie(widget.movie);
+        await provider.addMovie(widget.movie);
       }
       if (mounted) {
         setState(() => _isBookmarked = !_isBookmarked!);
-        BookmarkSyncService.instance.onBookmarkChanged();
         Provider.of<SettingsProvider>(context, listen: false)
             .analytics
             .trackBookmarkToggle(

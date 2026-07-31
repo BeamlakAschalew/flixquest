@@ -8,6 +8,7 @@ import 'package:flixquest/services/globle_method.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/bookmark_database_controller.dart';
+import '../provider/bookmark_provider.dart';
 import '../functions/function.dart';
 import '../models/recently_watched.dart';
 import '../models/tv_stream_metadata.dart';
@@ -236,9 +237,12 @@ class DiscoverTVState extends State<DiscoverTV>
     final id = item.id;
     if (id == null) return;
     final saved = _bookmarkedIds.contains(id);
-    saved
-        ? await _bookmarkController.deleteTV(id)
-        : await _bookmarkController.insertTV(item);
+    final provider = Provider.of<BookmarkProvider>(context, listen: false);
+    if (saved) {
+      await provider.removeTV(id);
+    } else {
+      await provider.addTV(item);
+    }
     if (!mounted) return;
     setState(() => saved ? _bookmarkedIds.remove(id) : _bookmarkedIds.add(id));
   }

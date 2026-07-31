@@ -1,152 +1,26 @@
 {
   "project_info": {
-    "project_number": "489547233921",
-    "project_id": "cinemax-323a2",
-    "storage_bucket": "cinemax-323a2.appspot.com"
+    "project_number": "296748538853",
+    "project_id": "flixquest-ac354",
+    "storage_bucket": "flixquest-ac354.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:489547233921:android:3d2e3ff13173860036eb80",
-        "android_client_info": {
-          "package_name": "cf.beamlakaschalew.cinemax"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC8ruDaKGPWmJrZK3Gv8PCJKW9B2JFK4s4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:489547233921:android:583b85290626658236eb80",
-        "android_client_info": {
-          "package_name": "dev.beamlak.cinemax"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC8ruDaKGPWmJrZK3Gv8PCJKW9B2JFK4s4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:489547233921:android:a0bf4daf048c335b36eb80",
-        "android_client_info": {
-          "package_name": "dev.beamlak.cinemax_androidtv"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC8ruDaKGPWmJrZK3Gv8PCJKW9B2JFK4s4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:489547233921:android:6a51bb1af31c796536eb80",
-        "android_client_info": {
-          "package_name": "dev.beamlak.flixquest"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC8ruDaKGPWmJrZK3Gv8PCJKW9B2JFK4s4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:489547233921:android:a0f4d1ec925f4a9c36eb80",
+        "mobilesdk_app_id": "1:296748538853:android:4601529affa7086f586d0c",
         "android_client_info": {
           "package_name": "dev.beamlak.flixquest_v2"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC8ruDaKGPWmJrZK3Gv8PCJKW9B2JFK4s4"
+          "current_key": "AIzaSyCbzOsLWvrrldV1TfARQn5ZJNP574sdMbU"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "489547233921-95jlokbhv2rns93ab2cn911nsn7akp5i.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

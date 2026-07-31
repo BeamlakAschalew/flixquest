@@ -9,6 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 // import 'package:media_kit/media_kit.dart';
 import 'constants/app_constants.dart';
+import 'provider/bookmark_provider.dart';
 import 'provider/recently_watched_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,7 +19,10 @@ import 'singleton/sharedpreferences_singleton.dart';
 import 'tv/platform/device_presentation.dart';
 import 'tv/platform/device_presentation_detector.dart';
 
-Future<void> _messageHandler(RemoteMessage message) async {}
+@pragma('vm:entry-point')
+Future<void> _messageHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
 
 bool isTablet(BuildContext context) {
   double screenWidth = MediaQuery.of(context).size.width;
@@ -28,6 +32,7 @@ bool isTablet(BuildContext context) {
 
 SettingsProvider settingsProvider = SettingsProvider();
 RecentProvider recentProvider = RecentProvider();
+BookmarkProvider bookmarkProvider = BookmarkProvider();
 AppDependencyProvider appDependencyProvider = AppDependencyProvider();
 final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
@@ -35,6 +40,10 @@ Future<DevicePresentation> appInitialize({
   DevicePresentationDetector? devicePresentationDetector,
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Firebase-dependent services and providers must not be accessed until the
+  // default app has finished initializing.
+  await _initialization;
 
   final devicePresentation = await resolveDevicePresentation(
     detector: devicePresentationDetector,
@@ -89,11 +98,11 @@ Future<DevicePresentation> appInitialize({
   await settingsProvider.getEnableNextEpisodeButton();
   await recentProvider.fetchMovies();
   await recentProvider.fetchEpisodes();
+  await bookmarkProvider.fetchBookmarks();
   await appDependencyProvider.getFlixQuestLogo();
   await appDependencyProvider.getFQUrl();
   await appDependencyProvider.getTmdbProxy();
 
-  await _initialization;
   await BookmarkSyncService.instance.init();
 
   return devicePresentation;
@@ -110,6 +119,7 @@ void main() async {
     child: FlixQuest(
       settingsProvider: settingsProvider,
       recentProvider: recentProvider,
+      bookmarkProvider: bookmarkProvider,
       appDependencyProvider: appDependencyProvider,
       devicePresentation: devicePresentation,
       init: _initialization,

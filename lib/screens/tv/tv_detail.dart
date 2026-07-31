@@ -20,7 +20,7 @@ import '../../constants/app_constants.dart';
 import '../../functions/function.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../controllers/bookmark_database_controller.dart';
-import '../../services/bookmark_sync_service.dart';
+import '../../provider/bookmark_provider.dart';
 import '../../functions/network.dart';
 import '../../models/credits.dart';
 import '../../models/images.dart';
@@ -113,13 +113,13 @@ class TVDetailPageState extends State<TVDetailPage>
   Future<void> _toggleBookmark() async {
     if (_isBookmarked == null || _bookmarkBusy) return;
     setState(() => _bookmarkBusy = true);
+    final provider = Provider.of<BookmarkProvider>(context, listen: false);
     if (_isBookmarked!) {
-      await _database.deleteTV(widget.tvSeries.id!);
+      await provider.removeTV(widget.tvSeries.id!);
     } else {
-      await _database.insertTV(widget.tvSeries);
+      await provider.addTV(widget.tvSeries);
     }
     if (!mounted) return;
-    BookmarkSyncService.instance.onBookmarkChanged();
     setState(() {
       _isBookmarked = !_isBookmarked!;
       _bookmarkBusy = false;

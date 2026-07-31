@@ -6,13 +6,12 @@ import 'package:provider/provider.dart';
 
 import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
-import '../../controllers/bookmark_database_controller.dart';
 import '../../functions/function.dart';
 import '../../models/tv.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/app_ui_components.dart';
-import '../../services/bookmark_sync_service.dart';
+import '../../provider/bookmark_provider.dart';
 import '../../widgets/common_widgets.dart';
 import 'tv_detail.dart';
 
@@ -26,8 +25,6 @@ class TVBookmark extends StatefulWidget {
 }
 
 class _TVBookmarkState extends State<TVBookmark> {
-  final TVDatabaseController _database = TVDatabaseController();
-
   @override
   Widget build(BuildContext context) {
     final settings = Provider.of<SettingsProvider>(context);
@@ -160,12 +157,8 @@ class _TVBookmarkState extends State<TVBookmark> {
   Future<void> _remove(List<TV> items, int index) async {
     final id = items[index].id;
     if (id != null) {
-      await _database.deleteTV(id);
-      await BookmarkSyncService.instance.deleteTVFromCloud(id);
-      BookmarkSyncService.instance.onBookmarkChanged();
+      await Provider.of<BookmarkProvider>(context, listen: false).removeTV(id);
     }
-    if (!mounted) return;
-    setState(() => items.removeAt(index));
   }
 }
 

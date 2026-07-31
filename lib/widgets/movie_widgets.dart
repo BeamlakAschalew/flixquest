@@ -21,6 +21,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:readmore/readmore.dart';
 import '../controllers/bookmark_database_controller.dart';
 import '../provider/settings_provider.dart';
+import '../provider/bookmark_provider.dart';
 import '/constants/app_constants.dart';
 import '/models/social_icons_icons.dart';
 import '/models/videos.dart';
@@ -226,10 +227,11 @@ class DiscoverMoviesState extends State<DiscoverMovies>
     final id = movie.id;
     if (id == null) return;
     final isBookmarked = _bookmarkedMovieIds.contains(id);
+    final provider = Provider.of<BookmarkProvider>(context, listen: false);
     if (isBookmarked) {
-      await _bookmarkController.deleteMovie(id);
+      await provider.removeMovie(id);
     } else {
-      await _bookmarkController.insertMovie(movie);
+      await provider.addMovie(movie);
     }
     if (!mounted) return;
     setState(() {
