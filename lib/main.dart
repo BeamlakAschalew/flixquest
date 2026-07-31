@@ -9,6 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 // import 'package:media_kit/media_kit.dart';
 import 'constants/app_constants.dart';
+import 'functions/function.dart';
 import 'provider/bookmark_provider.dart';
 import 'provider/recently_watched_provider.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +71,7 @@ Future<DevicePresentation> appInitialize({
   await dotenv.load(fileName: '.env');
   await EasyLocalization.ensureInitialized();
   sharedPrefsSingleton = await SharedPreferencesSingleton.getInstance();
+  await clearVideoPlaybackCache();
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
 

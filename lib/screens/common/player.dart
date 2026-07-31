@@ -75,6 +75,8 @@ class PlayerOne extends StatefulWidget {
 }
 
 class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
+  static const int _tvMaxBufferDurationMs = 120000;
+
   late BetterPlayerController _betterPlayerController;
   final BetterPlayerTvControlsController _tvControlsController =
       BetterPlayerTvControlsController();
@@ -150,8 +152,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     Color foregroundColor = Color(int.parse('0x$hexColorForeground'));
 
     WidgetsBinding.instance.addObserver(this);
+    final configuredMaxBufferMs = widget.settings.defaultMaxBufferDuration;
+    final maxBufferMs =
+        widget.useTvControls && configuredMaxBufferMs > _tvMaxBufferDurationMs
+            ? _tvMaxBufferDurationMs
+            : configuredMaxBufferMs;
     betterPlayerBufferingConfiguration = BetterPlayerBufferingConfiguration(
-      maxBufferMs: widget.settings.defaultMaxBufferDuration,
+      maxBufferMs: maxBufferMs,
       minBufferMs: 15000,
     );
     betterPlayerControlsConfiguration = BetterPlayerControlsConfiguration(
@@ -499,15 +506,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
           ? suppliedHeaders
           : _inferHeaders(link),
       subtitles: subtitles,
-      cacheConfiguration: BetterPlayerCacheConfiguration(
-        useCache: true,
-        preCacheSize: 3 * 1024 * 1024,
-        maxCacheSize: 256 * 1024 * 1024,
-        maxCacheFileSize: 64 * 1024 * 1024,
-
-        ///Android only option to use cached video between app sessions
-        key: generateCacheKey(),
-      ),
+      // Streaming already has a bounded in-memory buffer. A persistent media
+      // cache can fill the limited internal storage available on Android TVs.
+      cacheConfiguration: const BetterPlayerCacheConfiguration(useCache: false),
       bufferingConfiguration: betterPlayerBufferingConfiguration,
     );
   }

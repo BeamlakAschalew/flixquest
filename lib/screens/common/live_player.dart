@@ -36,6 +36,7 @@ class _LivePlayerState extends State<LivePlayer> {
 
     betterPlayerBufferingConfiguration =
         const BetterPlayerBufferingConfiguration(
+      // Keep memory usage predictable on low-memory Android TV hardware.
       maxBufferMs: 120000,
       minBufferMs: 15000,
       bufferForPlaybackMs: 2500,

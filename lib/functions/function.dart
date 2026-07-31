@@ -72,6 +72,25 @@ Future<bool> clearCache() async {
   }
 }
 
+/// Removes Better Player's persistent streaming cache without touching image,
+/// database, or other application caches.
+///
+/// Movie playback no longer uses a persistent media cache, but older app
+/// versions may have left a large cache behind on storage-constrained TVs.
+Future<void> clearVideoPlaybackCache() async {
+  try {
+    final cacheDir = await getApplicationCacheDirectory();
+    final videoCacheDir = Directory(
+      '${cacheDir.path}${Platform.pathSeparator}betterPlayerCache',
+    );
+    if (await videoCacheDir.exists()) {
+      await videoCacheDir.delete(recursive: true);
+    }
+  } catch (error) {
+    debugPrint('Unable to clear the video playback cache: $error');
+  }
+}
+
 void fileDelete() async {
   for (int i = 0; i < appNames.length; i++) {
     File file =
