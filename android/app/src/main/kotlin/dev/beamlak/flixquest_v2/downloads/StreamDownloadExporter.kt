@@ -1,11 +1,14 @@
 package dev.beamlak.flixquest_v2.downloads
 
 import android.content.Context
+import android.os.Looper
+import androidx.media3.common.Format
 import androidx.media3.common.util.Clock
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.transformer.AssetLoader
 import androidx.media3.transformer.Composition
 import androidx.media3.transformer.DefaultAssetLoaderFactory
 import androidx.media3.transformer.DefaultDecoderFactory
@@ -77,7 +80,9 @@ class StreamDownloadExporter(
         }
         try {
             activeTransformer = Transformer.Builder(appContext)
-                .setAssetLoaderFactory(assetLoaderFactory)
+                .setAssetLoaderFactory(
+                    SquarePixelAspectAssetLoaderFactory(assetLoaderFactory),
+                )
                 .addListener(listener)
                 .build()
                 .also { it.start(download.request.toMediaItem(), output.absolutePath) }
@@ -114,5 +119,59 @@ class StreamDownloadExporter(
             .ifBlank { "FlixQuest video" }
         val suffix = Integer.toHexString(download.request.id.hashCode())
         return File(exportDirectory, "$title-$suffix.mp4")
+    }
+}
+
+/**
+ * Some HLS/DASH manifests report a negligible non-square pixel ratio (for
+ * example 1.001565). Transformer then needlessly decodes and re-encodes an
+ * otherwise MP4-compatible stream. Normalizing that metadata keeps exports on
+ * the encoded remux path and avoids a codec surface altogether.
+ */
+@UnstableApi
+private class SquarePixelAspectAssetLoaderFactory(
+    private val delegate: AssetLoader.Factory,
+) : AssetLoader.Factory {
+    override fun createAssetLoader(
+        editedMediaItem: androidx.media3.transformer.EditedMediaItem,
+        looper: Looper,
+        listener: AssetLoader.Listener,
+        compositionSettings: AssetLoader.CompositionSettings,
+    ): AssetLoader {
+        return delegate.createAssetLoader(
+            editedMediaItem,
+            looper,
+            object : AssetLoader.Listener {
+                override fun onDurationUs(durationUs: Long) = listener.onDurationUs(durationUs)
+
+                override fun onTrackCount(trackCount: Int) = listener.onTrackCount(trackCount)
+
+                override fun onTrackAdded(
+                    inputFormat: Format,
+                    supportedOutputTypes: Int,
+                ): Boolean = listener.onTrackAdded(
+                    normalizePixelAspect(inputFormat),
+                    supportedOutputTypes,
+                )
+
+                override fun onOutputFormat(
+                    format: Format,
+                ): androidx.media3.transformer.SampleConsumer? =
+                    listener.onOutputFormat(normalizePixelAspect(format))
+
+                override fun onError(exportException: ExportException) =
+                    listener.onError(exportException)
+            },
+            compositionSettings,
+        )
+    }
+
+    private fun normalizePixelAspect(format: Format): Format {
+        val ratio = format.pixelWidthHeightRatio
+        return if (ratio.isFinite() && kotlin.math.abs(ratio - 1f) < 0.01f) {
+            format.buildUpon().setPixelWidthHeightRatio(1f).build()
+        } else {
+            format
+        }
     }
 }
