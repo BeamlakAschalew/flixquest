@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../provider/settings_provider.dart';
 import '../../services/flixquest_auth_service.dart';
+import '../../services/bookmark_sync_service.dart';
 import '../app/tv_design.dart';
 import '../focus/tv_focusable.dart';
 
@@ -74,7 +75,8 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
           password: _passwordController.text,
         );
         if (mounted) {
-          context.read<SettingsProvider>().mixpanel.track('Users Login');
+          BookmarkSyncService.instance.autoSyncIfSignedIn();
+          context.read<SettingsProvider>().analytics.trackLogin('email');
         }
       } else {
         await _authService.createAccount(
@@ -85,7 +87,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
           profileId: _profileId,
         );
         if (mounted) {
-          context.read<SettingsProvider>().mixpanel.track('Users Signup');
+          context.read<SettingsProvider>().analytics.trackSignup();
         }
       }
       if (mounted) {

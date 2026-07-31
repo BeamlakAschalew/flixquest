@@ -15,6 +15,11 @@ class TVGenre extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    settings.analytics.trackGenreClicked(
+      genreName: genres.genreName ?? 'Unknown',
+      mediaType: 'TV',
+    );
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     return Scaffold(
       appBar: AppBar(

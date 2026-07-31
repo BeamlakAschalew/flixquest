@@ -22,10 +22,12 @@ class UserState extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, userSnapshot) {
           if (userSnapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
+            final previewTvHome =
+                devicePresentation == DevicePresentation.television &&
+                    TvDebugOptions.previewHomeShell;
+            return presentationShellFor(
+              devicePresentation: devicePresentation,
+              isAuthenticated: userSnapshot.hasData || previewTvHome,
             );
           } else if (userSnapshot.connectionState == ConnectionState.active) {
             final previewTvHome =

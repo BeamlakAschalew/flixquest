@@ -12,6 +12,7 @@ import '../../models/tv.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/app_ui_components.dart';
+import '../../services/bookmark_sync_service.dart';
 import '../../widgets/common_widgets.dart';
 import 'tv_detail.dart';
 
@@ -158,7 +159,11 @@ class _TVBookmarkState extends State<TVBookmark> {
 
   Future<void> _remove(List<TV> items, int index) async {
     final id = items[index].id;
-    if (id != null) await _database.deleteTV(id);
+    if (id != null) {
+      await _database.deleteTV(id);
+      await BookmarkSyncService.instance.deleteTVFromCloud(id);
+      BookmarkSyncService.instance.onBookmarkChanged();
+    }
     if (!mounted) return;
     setState(() => items.removeAt(index));
   }

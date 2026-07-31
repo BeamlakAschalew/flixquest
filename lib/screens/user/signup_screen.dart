@@ -69,9 +69,9 @@ class _SignupScreenState extends State<SignupScreen> {
               profileId: selectedProfile,
               verified: _isUserVerified,
             );
-            final mixpanel =
-                Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-            mixpanel.track('Users Signup');
+            Provider.of<SettingsProvider>(context, listen: false)
+                .analytics
+                .trackSignup();
             // UserState's auth stream owns the handheld/TV destination.
             Navigator.of(context).popUntil((route) => route.isFirst);
           } on FirebaseAuthException catch (error) {

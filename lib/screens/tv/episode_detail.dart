@@ -91,12 +91,12 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
   }
 
   void mixpanelUpload(BuildContext context) {
-    final mixpanel =
-        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-    mixpanel.track('Most viewed episode details', properties: {
-      'TV series name': '${widget.seriesName}',
-      'TV series episode name': '${widget.episodeList.name}',
-    });
+    Provider.of<SettingsProvider>(context, listen: false)
+        .analytics
+        .trackEpisodeDetailView(
+          tvName: widget.seriesName,
+          episodeName: widget.episodeList.name,
+        );
   }
 
   Future<void> _watchNow() async {

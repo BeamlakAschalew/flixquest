@@ -1520,7 +1520,7 @@ class ScrollingTVEpisodeGuestStarsState
   Widget build(BuildContext context) {
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    final analytics = Provider.of<SettingsProvider>(context).analytics;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
@@ -1531,22 +1531,20 @@ class ScrollingTVEpisodeGuestStarsState
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      tr('guest_stars'),
-                      style: kTextHeaderStyle,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        tr('guest_stars'),
+                        style: kTextHeaderStyle,
+                      ),
                     ),
                   ],
                 ),
               )
-            : credits!.episodeGuestStars!.isEmpty
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                        child: Text(tr('no_guest_episode'),
-                            textAlign: TextAlign.center)),
-                  )
+            : credits!.episodeGuestStars == null ||
+                    credits!.episodeGuestStars!.isEmpty
+                ? const SizedBox()
                 : Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -1573,13 +1571,10 @@ class ScrollingTVEpisodeGuestStarsState
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          mixpanel
-                              .track('Most viewed person pages', properties: {
-                            'Person name':
-                                '${credits!.episodeGuestStars![index].name}',
-                            'Person id':
-                                '${credits!.episodeGuestStars![index].id}'
-                          });
+                          analytics.trackPersonPageView(
+                            personName: credits!.episodeGuestStars![index].name,
+                            personId: credits!.episodeGuestStars![index].id,
+                          );
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return GuestStarDetailPage(
@@ -1712,7 +1707,7 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
   Widget build(BuildContext context) {
     super.build(context);
     final imageQuality = Provider.of<SettingsProvider>(context).imageQuality;
-    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
+    final analytics = Provider.of<SettingsProvider>(context).analytics;
     final themeMode = Provider.of<SettingsProvider>(context).appTheme;
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
@@ -1723,22 +1718,19 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      tr('crew'),
-                      style: kTextHeaderStyle,
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        tr('crew'),
+                        style: kTextHeaderStyle,
+                      ),
                     ),
                   ],
                 ),
               )
-            : credits!.crew!.isEmpty
-                ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                        child: Text(tr('no_crew_episode'),
-                            textAlign: TextAlign.center)),
-                  )
+            : credits!.crew == null || credits!.crew!.isEmpty
+                ? const SizedBox()
                 : Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -1765,11 +1757,10 @@ class ScrollingTVEpisodeCrewState extends State<ScrollingTVEpisodeCrew>
                       padding: const EdgeInsets.all(8.0),
                       child: GestureDetector(
                         onTap: () {
-                          mixpanel
-                              .track('Most viewed person pages', properties: {
-                            'Person name': '${credits!.crew![index].name}',
-                            'Person id': '${credits!.crew![index].id}'
-                          });
+                          analytics.trackPersonPageView(
+                            personName: credits!.crew![index].name,
+                            personId: credits!.crew![index].id,
+                          );
                           Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
                             return CrewDetailPage(

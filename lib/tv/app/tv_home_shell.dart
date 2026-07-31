@@ -214,79 +214,94 @@ class _TvHomeShellState extends State<TvHomeShell> {
           child: Scaffold(
             key: TvHomeShell.shellKey,
             backgroundColor: TvDesign.surfaceFor(context),
-            body: LayoutBuilder(
-              builder: (context, constraints) {
-                final metrics = TvShellMetrics.fromConstraints(constraints);
-                return SafeArea(
-                  minimum: EdgeInsets.all(metrics.safeInset),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      TvNavigationRail(
-                        key: _navigationRailKey,
-                        destinations: _destinations,
-                        selectedId: _selectedDestinationId,
-                        autofocusId: 'home',
-                        metrics: metrics,
-                        onDestinationSelected: _selectDestination,
-                      ),
-                      SizedBox(width: metrics.railGap),
-                      Expanded(
-                        child: ClipRect(
-                          child: Builder(
-                            builder: (context) {
-                              final selectedIndex = _destinations.indexWhere(
-                                (destination) =>
-                                    destination.id == _selectedDestinationId,
-                              );
-                              final screens = <Widget>[
-                                TvHomeScreen(
-                                  metrics: metrics,
-                                  onOpenMedia: _openMedia,
-                                  onContinueWatching: _continueWatching,
-                                ),
-                                TvSearchScreen(
-                                  metrics: metrics,
-                                  onOpenMedia: _openMedia,
-                                ),
-                                TvCatalogScreen(
-                                  kind: TvMediaKind.movie,
-                                  metrics: metrics,
-                                  onOpenMedia: _openMedia,
-                                ),
-                                TvCatalogScreen(
-                                  kind: TvMediaKind.series,
-                                  metrics: metrics,
-                                  onOpenMedia: _openMedia,
-                                ),
-                                TvLibraryScreen(
-                                  key: ValueKey<int>(_libraryRevision),
-                                  metrics: metrics,
-                                  onOpenMedia: _openMedia,
-                                ),
-                                TvProfileScreen(metrics: metrics),
-                                TvSettingsScreen(metrics: metrics),
-                              ];
-                              return IndexedStack(
-                                index: selectedIndex,
-                                children: <Widget>[
-                                  for (var index = 0;
-                                      index < screens.length;
-                                      index++)
-                                    ExcludeFocus(
-                                      excluding: index != selectedIndex,
-                                      child: screens[index],
-                                    ),
-                                ],
-                              );
-                            },
+            body: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: const Alignment(0.75, -1),
+                  radius: 1.35,
+                  colors: <Color>[
+                    Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.1),
+                    TvDesign.surfaceFor(context),
+                  ],
+                ),
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final metrics = TvShellMetrics.fromConstraints(constraints);
+                  return SafeArea(
+                    minimum: EdgeInsets.all(metrics.safeInset),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        TvNavigationRail(
+                          key: _navigationRailKey,
+                          destinations: _destinations,
+                          selectedId: _selectedDestinationId,
+                          autofocusId: 'home',
+                          metrics: metrics,
+                          onDestinationSelected: _selectDestination,
+                        ),
+                        SizedBox(width: metrics.railGap),
+                        Expanded(
+                          child: ClipRect(
+                            child: Builder(
+                              builder: (context) {
+                                final selectedIndex = _destinations.indexWhere(
+                                  (destination) =>
+                                      destination.id == _selectedDestinationId,
+                                );
+                                final screens = <Widget>[
+                                  TvHomeScreen(
+                                    metrics: metrics,
+                                    onOpenMedia: _openMedia,
+                                    onContinueWatching: _continueWatching,
+                                  ),
+                                  TvSearchScreen(
+                                    metrics: metrics,
+                                    onOpenMedia: _openMedia,
+                                  ),
+                                  TvCatalogScreen(
+                                    kind: TvMediaKind.movie,
+                                    metrics: metrics,
+                                    onOpenMedia: _openMedia,
+                                  ),
+                                  TvCatalogScreen(
+                                    kind: TvMediaKind.series,
+                                    metrics: metrics,
+                                    onOpenMedia: _openMedia,
+                                  ),
+                                  TvLibraryScreen(
+                                    key: ValueKey<int>(_libraryRevision),
+                                    metrics: metrics,
+                                    onOpenMedia: _openMedia,
+                                  ),
+                                  TvProfileScreen(metrics: metrics),
+                                  TvSettingsScreen(metrics: metrics),
+                                ];
+                                return IndexedStack(
+                                  index: selectedIndex,
+                                  children: <Widget>[
+                                    for (var index = 0;
+                                        index < screens.length;
+                                        index++)
+                                      ExcludeFocus(
+                                        excluding: index != selectedIndex,
+                                        child: screens[index],
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),

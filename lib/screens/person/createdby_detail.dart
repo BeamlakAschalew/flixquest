@@ -29,12 +29,12 @@ class CreatedByPersonDetailPageState extends State<CreatedByPersonDetailPage>
   }
 
   void mixpanelUpload(BuildContext context) {
-    final mixpanel =
-        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-    mixpanel.track('Most viewed person pages', properties: {
-      'Person name': '${widget.createdBy!.name}',
-      'Person id': '${widget.createdBy!.id}'
-    });
+    Provider.of<SettingsProvider>(context, listen: false)
+        .analytics
+        .trackPersonPageView(
+          personName: widget.createdBy!.name,
+          personId: widget.createdBy!.id,
+        );
   }
 
   @override

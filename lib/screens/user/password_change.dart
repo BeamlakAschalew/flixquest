@@ -4,6 +4,8 @@ import '../../constants/app_constants.dart';
 import '../../services/globle_method.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '/provider/settings_provider.dart';
 import '../../ui_components/app_ui_components.dart';
 
 class PasswordChangeScreen extends StatefulWidget {
@@ -51,9 +53,10 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
         user = _auth.currentUser;
 
         await user!.updatePassword(newPassword).then((value) {
-          if (!context.mounted) {
-            return;
-          }
+          if (!mounted) return;
+          Provider.of<SettingsProvider>(context, listen: false)
+              .analytics
+              .trackPasswordChanged();
           GlobalMethods.showCustomScaffoldMessage(
               SnackBar(
                 content: Text(

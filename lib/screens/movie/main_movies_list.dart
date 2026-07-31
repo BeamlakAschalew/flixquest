@@ -166,7 +166,6 @@ class MainMoviesListState extends State<MainMoviesList> {
     showSearch(
       context: context,
       delegate: Search(
-        mixpanel: settings.mixpanel,
         includeAdult: settings.isAdult,
         lang: settings.appLanguage,
       ),

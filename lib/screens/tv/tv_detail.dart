@@ -20,6 +20,7 @@ import '../../constants/app_constants.dart';
 import '../../functions/function.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../controllers/bookmark_database_controller.dart';
+import '../../services/bookmark_sync_service.dart';
 import '../../functions/network.dart';
 import '../../models/credits.dart';
 import '../../models/images.dart';
@@ -118,6 +119,7 @@ class TVDetailPageState extends State<TVDetailPage>
       await _database.insertTV(widget.tvSeries);
     }
     if (!mounted) return;
+    BookmarkSyncService.instance.onBookmarkChanged();
     setState(() {
       _isBookmarked = !_isBookmarked!;
       _bookmarkBusy = false;
@@ -125,13 +127,13 @@ class TVDetailPageState extends State<TVDetailPage>
   }
 
   void mixpanelUpload(BuildContext context) {
-    final mixpanel =
-        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-    mixpanel.track('Most viewed TV pages', properties: {
-      'TV series name': '${widget.tvSeries.name}',
-      'TV series id': '${widget.tvSeries.id}',
-      'Is TV series adult?': '${widget.tvSeries.adult}'
-    });
+    Provider.of<SettingsProvider>(context, listen: false)
+        .analytics
+        .trackTVPageView(
+          tvName: widget.tvSeries.name,
+          tvId: widget.tvSeries.id,
+          isAdult: widget.tvSeries.adult,
+        );
   }
 
   @override

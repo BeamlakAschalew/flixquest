@@ -91,12 +91,12 @@ class SeasonsDetailState extends State<SeasonsDetail>
   }
 
   void mixpanelUpload(BuildContext context) {
-    final mixpanel =
-        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-    mixpanel.track('Most viewed season details', properties: {
-      'TV series name': '${widget.seriesName}',
-      'TV series season number': '${widget.seasons.seasonNumber}',
-    });
+    Provider.of<SettingsProvider>(context, listen: false)
+        .analytics
+        .trackSeasonDetailView(
+          tvName: widget.seriesName,
+          seasonNumber: widget.seasons.seasonNumber,
+        );
   }
 
   @override

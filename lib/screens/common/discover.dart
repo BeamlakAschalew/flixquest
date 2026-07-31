@@ -96,7 +96,6 @@ class _DiscoverPageState extends State<DiscoverPage>
     showSearch(
       context: context,
       delegate: Search(
-        mixpanel: settings.mixpanel,
         includeAdult: settings.isAdult,
         lang: settings.appLanguage,
       ),

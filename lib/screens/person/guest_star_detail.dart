@@ -28,12 +28,12 @@ class GuestStarDetailPageState extends State<GuestStarDetailPage>
   }
 
   void mixpanelUpload(BuildContext context) {
-    final mixpanel =
-        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-    mixpanel.track('Most viewed person pages', properties: {
-      'Person name': '${widget.cast!.name}',
-      'Person id': '${widget.cast!.id}'
-    });
+    Provider.of<SettingsProvider>(context, listen: false)
+        .analytics
+        .trackPersonPageView(
+          personName: widget.cast!.name,
+          personId: widget.cast!.id,
+        );
   }
 
   @override

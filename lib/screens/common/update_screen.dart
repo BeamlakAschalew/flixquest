@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_download_manager/flutter_download_manager.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
@@ -274,10 +275,10 @@ class _DownloadCard extends StatelessWidget {
             if (task == null)
               FilledButton.icon(
                 onPressed: () {
-                  context.read<SettingsProvider>().mixpanel.track(
-                    'Download event',
-                    properties: {'App version': appVersion},
-                  );
+                  context
+                      .read<SettingsProvider>()
+                      .analytics
+                      .trackAppUpdateDownload(appVersion);
                   onToggle(url);
                 },
                 icon: Icon(PhosphorIcons.downloadSimple()),
@@ -339,10 +340,31 @@ class _UpdateBottomState extends State<UpdateBottom> {
   @override
   void initState() {
     super.initState();
+    _checkVisibility();
+  }
+
+  Future<void> _checkVisibility() async {
     final ignored = sharedPrefsSingleton.getString('ignore_version') ?? '';
-    _visible = ignored != _appVersion &&
-        _appVersion.isNotEmpty &&
-        _appVersion != currentAppVersion;
+    final packageInfo = await PackageInfo.fromPlatform();
+    final currentBuildNumber = int.tryParse(packageInfo.buildNumber) ?? 0;
+    int remoteBuildNumber =
+        FirebaseRemoteConfig.instance.getInt('latest_build_number');
+    if (remoteBuildNumber == 0) {
+      remoteBuildNumber =
+          FirebaseRemoteConfig.instance.getInt('min_build_number');
+    }
+
+    if (!mounted) return;
+    setState(() {
+      if (remoteBuildNumber > 0) {
+        _visible = ignored != remoteBuildNumber.toString() &&
+            currentBuildNumber < remoteBuildNumber;
+      } else {
+        _visible = ignored != _appVersion &&
+            _appVersion.isNotEmpty &&
+            _appVersion != packageInfo.version;
+      }
+    });
   }
 
   @override

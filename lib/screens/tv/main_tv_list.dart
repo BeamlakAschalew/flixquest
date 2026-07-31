@@ -157,7 +157,6 @@ class MainTVListState extends State<MainTVList> {
     showSearch(
       context: context,
       delegate: Search(
-        mixpanel: settings.mixpanel,
         includeAdult: settings.isAdult,
         lang: settings.appLanguage,
       ),

@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../../services/globle_method.dart';
 import '../../services/flixquest_auth_service.dart';
+import '../../services/bookmark_sync_service.dart';
 import '../../ui_components/app_ui_components.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -49,10 +50,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 .signIn(email: emailAddress, password: password)
                 .then((value) {
               if (mounted) {
-                final mixpanel =
-                    Provider.of<SettingsProvider>(context, listen: false)
-                        .mixpanel;
-                mixpanel.track('Users Login');
+                BookmarkSyncService.instance.autoSyncIfSignedIn();
+                Provider.of<SettingsProvider>(context, listen: false)
+                    .analytics
+                    .trackLogin('email');
                 // UserState's auth stream owns the handheld/TV destination.
                 // Return to it instead of forcing the handheld home shell.
                 Navigator.of(context).popUntil((route) => route.isFirst);

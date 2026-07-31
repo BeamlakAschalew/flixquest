@@ -340,10 +340,9 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Future<void> _shareApp() async {
-    final mixpanel = context.read<SettingsProvider>().mixpanel;
-    mixpanel.track('Share button data', properties: {
-      'Share button click': 'Share',
-    });
+    context.read<SettingsProvider>().analytics.trackShare(
+          shareType: 'App',
+        );
     await Share.share(tr('share_text'));
   }
 
@@ -364,6 +363,9 @@ class _UserInfoState extends State<UserInfo> {
       ),
     );
     if (confirmed != true) return;
+    if (!mounted) return;
+    context.read<SettingsProvider>().analytics.trackSignOut();
+    context.read<SettingsProvider>().analytics.resetUser();
     await _auth.signOut();
     if (!mounted) return;
     Navigator.pushReplacement(

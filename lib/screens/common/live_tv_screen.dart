@@ -351,15 +351,14 @@ class ChannelWidget extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          final mixpanel =
-              Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-          final autoFS = Provider.of<SettingsProvider>(context, listen: false)
-              .defaultViewMode;
+          final settings =
+              Provider.of<SettingsProvider>(context, listen: false);
+          final autoFS = settings.defaultViewMode;
 
-          mixpanel.track('Most viewed TV channels', properties: {
-            'TV Channel name': channel.name ?? 'N/A',
-            'Stream ID': channel.streamId ?? 'N/A',
-          });
+          settings.analytics.trackLiveTVChannelView(
+            channelName: channel.name,
+            streamId: channel.streamId?.toString(),
+          );
 
           Navigator.push(
             context,

@@ -12,6 +12,7 @@ import '../../models/movie.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/app_ui_components.dart';
+import '../../services/bookmark_sync_service.dart';
 import '../../widgets/common_widgets.dart';
 import 'movie_detail.dart';
 
@@ -158,7 +159,11 @@ class _MovieBookmarkState extends State<MovieBookmark> {
 
   Future<void> _remove(List<Movie> items, int index) async {
     final id = items[index].id;
-    if (id != null) await _database.deleteMovie(id);
+    if (id != null) {
+      await _database.deleteMovie(id);
+      await BookmarkSyncService.instance.deleteMovieFromCloud(id);
+      BookmarkSyncService.instance.onBookmarkChanged();
+    }
     if (!mounted) return;
     setState(() => items.removeAt(index));
   }

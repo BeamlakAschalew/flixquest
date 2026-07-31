@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '/constants/app_constants.dart';
@@ -49,11 +50,19 @@ class AboutPage extends StatelessWidget {
               Text('FlixQuest',
                   style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 5),
-              Text(
-                tr('app_version', namedArgs: {'version': currentAppVersion}),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+              FutureBuilder<PackageInfo>(
+                future: PackageInfo.fromPlatform(),
+                builder: (context, snapshot) {
+                  final version =
+                      snapshot.data?.version ?? currentAppVersion;
+                  return Text(
+                    tr('app_version', namedArgs: {'version': version}),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  );
+                },
               ),
               const SizedBox(height: 26),
               Card(

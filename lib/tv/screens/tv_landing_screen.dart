@@ -30,8 +30,8 @@ class _TvLandingScreenState extends State<TvLandingScreen> {
       await _authService.signInAnonymously();
       if (!mounted) return;
       Provider.of<SettingsProvider>(context, listen: false)
-          .mixpanel
-          .track('Anonymous Login');
+          .analytics
+          .trackLogin('anonymous');
       // UserState owns the destination. Its auth stream replaces this landing
       // screen with TvHomeShell when the anonymous session becomes active.
     } on FirebaseAuthException catch (error) {

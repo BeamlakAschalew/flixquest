@@ -13,6 +13,8 @@ import '../../ui_components/app_ui_components.dart';
 import '../movie/bookmark_movies_tab.dart';
 import '../tv/bookmark_tv_tab.dart';
 
+import '../../services/bookmark_sync_service.dart';
+
 class BookmarkScreen extends StatefulWidget {
   const BookmarkScreen({this.embedded = false, super.key});
 
@@ -40,6 +42,17 @@ class _BookmarkScreenState extends State<BookmarkScreen>
     getData();
     fetchMovieBookmark();
     fetchTVBookmark();
+    _triggerAutoSync();
+  }
+
+  void _triggerAutoSync() async {
+    if (BookmarkSyncService.instance.canSync) {
+      await BookmarkSyncService.instance.autoSyncIfSignedIn();
+      if (mounted) {
+        fetchMovieBookmark();
+        fetchTVBookmark();
+      }
+    }
   }
 
   void getData() async {

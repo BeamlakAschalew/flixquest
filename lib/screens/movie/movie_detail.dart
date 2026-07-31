@@ -23,6 +23,7 @@ import '../../models/videos.dart';
 import '../../models/watch_providers.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
+import '../../services/bookmark_sync_service.dart';
 import '../../screens/common/photoview.dart';
 import '../../services/globle_method.dart';
 import '../../ui_components/app_ui_components.dart';
@@ -120,13 +121,13 @@ class MovieDetailPageState extends State<MovieDetailPage>
   }
 
   void _trackPageView() {
-    final mixpanel =
-        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-    mixpanel.track('Most viewed movie pages', properties: {
-      'Movie name': '${widget.movie.title}',
-      'Movie id': '${widget.movie.id}',
-      'Is Movie adult?': '${widget.movie.adult}',
-    });
+    final analytics =
+        Provider.of<SettingsProvider>(context, listen: false).analytics;
+    analytics.trackMoviePageView(
+      movieName: widget.movie.title,
+      movieId: widget.movie.id,
+      isAdult: widget.movie.adult,
+    );
   }
 
   Future<void> _checkBookmark() async {
@@ -147,7 +148,18 @@ class MovieDetailPageState extends State<MovieDetailPage>
       } else {
         await _database.insertMovie(widget.movie);
       }
-      if (mounted) setState(() => _isBookmarked = !_isBookmarked!);
+      if (mounted) {
+        setState(() => _isBookmarked = !_isBookmarked!);
+        BookmarkSyncService.instance.onBookmarkChanged();
+        Provider.of<SettingsProvider>(context, listen: false)
+            .analytics
+            .trackBookmarkToggle(
+              mediaType: 'Movie',
+              mediaName: widget.movie.title,
+              mediaId: widget.movie.id,
+              added: _isBookmarked!,
+            );
+      }
     } finally {
       if (mounted) setState(() => _bookmarkBusy = false);
     }
@@ -168,6 +180,9 @@ class MovieDetailPageState extends State<MovieDetailPage>
   }
 
   Future<void> _shareMovie() async {
+    Provider.of<SettingsProvider>(context, listen: false)
+        .analytics
+        .trackShare(shareType: 'Movie', mediaName: _displayTitle);
     await Share.share(
       tr(
         'share_movie',

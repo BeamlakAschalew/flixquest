@@ -29,13 +29,13 @@ class SearchedPersonDetailPageState extends State<SearchedPersonDetailPage>
   }
 
   void mixpanelUpload(BuildContext context) {
-    final mixpanel =
-        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-    mixpanel.track('Most viewed person pages', properties: {
-      'Person name': '${widget.person!.name}',
-      'Person id': '${widget.person!.id}',
-      'Is Person adult?': '${widget.person!.adult}'
-    });
+    Provider.of<SettingsProvider>(context, listen: false)
+        .analytics
+        .trackPersonPageView(
+          personName: widget.person!.name,
+          personId: widget.person!.id,
+          isAdult: widget.person!.adult,
+        );
   }
 
   @override

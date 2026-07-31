@@ -209,15 +209,15 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       );
 
       if (firstWorkingProviderCode != null && mounted) {
-        final mixpanel =
-            Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-        mixpanel.track('Most viewed TV series', properties: {
-          'TV series name': widget.metadata.seriesName,
-          'TV series id': '${widget.metadata.tvId}',
-          'TV series episode name': '${widget.metadata.episodeName}',
-          'TV series season number': '${widget.metadata.seasonNumber}',
-          'TV series episode number': '${widget.metadata.episodeNumber}'
-        });
+        Provider.of<SettingsProvider>(context, listen: false)
+            .analytics
+            .trackTVWatched(
+              tvName: widget.metadata.seriesName,
+              tvId: widget.metadata.tvId,
+              episodeName: widget.metadata.episodeName,
+              seasonNumber: widget.metadata.seasonNumber,
+              episodeNumber: widget.metadata.episodeNumber,
+            );
 
         // Navigate to player with provider list for lazy loading
         Navigator.pushReplacement(

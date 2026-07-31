@@ -125,7 +125,7 @@ class _LandingScreenState extends State<LandingScreen> {
         return;
       }
       await _authService.signInAnonymously();
-      settings.mixpanel.track('Anonymous Login');
+      settings.analytics.trackLogin('anonymous');
       // UserState's auth stream owns the handheld/TV destination.
     } catch (error) {
       if (mounted) _showError(error.toString());

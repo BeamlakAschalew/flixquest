@@ -28,12 +28,12 @@ class CrewDetailPageState extends State<CrewDetailPage>
   }
 
   void mixpanelUpload(BuildContext context) {
-    final mixpanel =
-        Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-    mixpanel.track('Most viewed person pages', properties: {
-      'Person name': '${widget.crew!.name}',
-      'Person id': '${widget.crew!.id}'
-    });
+    Provider.of<SettingsProvider>(context, listen: false)
+        .analytics
+        .trackPersonPageView(
+          personName: widget.crew!.name,
+          personId: widget.crew!.id,
+        );
   }
 
   @override

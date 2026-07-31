@@ -9,7 +9,6 @@ import '../../provider/app_dependency_provider.dart';
 import '../../preferences/setting_preferences.dart';
 import '/api/endpoints.dart';
 import '../../functions/network.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../provider/settings_provider.dart';
 import '/constants/api_constants.dart';
@@ -23,14 +22,13 @@ import '/screens/tv/tv_detail.dart';
 import '../../ui_components/app_ui_components.dart';
 
 class Search extends SearchDelegate<String> {
-  final Mixpanel mixpanel;
   final bool includeAdult;
   final String lang;
   Timer? _debounce;
   final SettingsPreferences _settingsPreferences = SettingsPreferences();
 
   Search(
-      {required this.mixpanel, required this.includeAdult, required this.lang})
+      {required this.includeAdult, required this.lang})
       : super(
           searchFieldLabel: tr('search_text'),
         );
@@ -101,6 +99,8 @@ class Search extends SearchDelegate<String> {
   Widget buildSuggestions(BuildContext context) {
     final isProxyEnabled = Provider.of<SettingsProvider>(context).enableProxy;
     final proxyUrl = Provider.of<AppDependencyProvider>(context).tmdbProxy;
+    final analytics =
+        Provider.of<SettingsProvider>(context, listen: false).analytics;
 
     // Trigger search saving timer when query changes
     if (query.isNotEmpty) {
@@ -136,8 +136,7 @@ class Search extends SearchDelegate<String> {
                 future: Future.delayed(const Duration(milliseconds: 700))
                     .then((value) async {
                   if (query.isNotEmpty) {
-                    mixpanel
-                        .track('Searched query', properties: {'query': query});
+                    analytics.trackSearch(query);
                   }
                   return await fetchMovies(
                       Endpoints.movieSearchUrl(query, includeAdult, lang),

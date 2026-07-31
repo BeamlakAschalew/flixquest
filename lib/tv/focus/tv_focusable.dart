@@ -9,6 +9,7 @@ class TvFocusable extends StatefulWidget {
     this.focusNode,
     this.autofocus = false,
     this.enabled = true,
+    this.selected = false,
     this.onFocusChanged,
     this.borderRadius = const BorderRadius.all(Radius.circular(12)),
     this.focusScale = 1.04,
@@ -24,6 +25,7 @@ class TvFocusable extends StatefulWidget {
   final FocusNode? focusNode;
   final bool autofocus;
   final bool enabled;
+  final bool selected;
   final ValueChanged<bool>? onFocusChanged;
   final BorderRadius borderRadius;
   final double focusScale;
@@ -100,6 +102,7 @@ class _TvFocusableState extends State<TvFocusable> {
       excludeSemantics: true,
       button: true,
       enabled: widget.enabled,
+      selected: widget.selected,
       focusable: widget.enabled,
       focused: _hasFocus,
       label: widget.semanticLabel,

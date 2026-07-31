@@ -1,9 +1,9 @@
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:flixquest/constants/app_constants.dart';
 import 'package:flixquest/models/app_colors.dart';
 import 'package:flixquest/screens/common/update_screen.dart';
 import 'package:flutter/material.dart';
@@ -216,11 +216,25 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
 
   void checkForcedUpdate() async {
     await FirebaseRemoteConfig.instance.ensureInitialized();
-    String appVersion =
-        FirebaseRemoteConfig.instance.getString('latest_version');
     bool isForcedUpdate =
         FirebaseRemoteConfig.instance.getBool('forced_update');
-    if (isForcedUpdate && (currentAppVersion != appVersion)) {
+    if (!isForcedUpdate) return;
+
+    final packageInfo = await PackageInfo.fromPlatform();
+    final currentBuildNumber = int.tryParse(packageInfo.buildNumber) ?? 0;
+
+    int remoteBuildNumber =
+        FirebaseRemoteConfig.instance.getInt('latest_build_number');
+    if (remoteBuildNumber == 0) {
+      remoteBuildNumber =
+          FirebaseRemoteConfig.instance.getInt('min_build_number');
+    }
+    if (remoteBuildNumber == 0) {
+      remoteBuildNumber =
+          int.tryParse(FirebaseRemoteConfig.instance.getString('latest_version')) ?? 0;
+    }
+
+    if (currentBuildNumber < remoteBuildNumber) {
       if (mounted) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return const UpdateScreen(
@@ -233,7 +247,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
 
   @override
   Widget build(BuildContext context) {
-    final mixpanel = Provider.of<SettingsProvider>(context).mixpanel;
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
@@ -325,7 +338,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                 showSearch(
                   context: context,
                   delegate: Search(
-                    mixpanel: mixpanel,
                     includeAdult:
                         Provider.of<SettingsProvider>(context, listen: false)
                             .isAdult,
@@ -340,7 +352,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                 showSearch(
                   context: context,
                   delegate: Search(
-                    mixpanel: mixpanel,
                     includeAdult:
                         Provider.of<SettingsProvider>(context, listen: false)
                             .isAdult,

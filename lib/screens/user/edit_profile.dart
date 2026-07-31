@@ -7,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import '/provider/settings_provider.dart';
 import '../../constants/app_constants.dart';
 import '../../models/profile_image_list.dart';
 import '../../services/globle_method.dart';
@@ -109,6 +111,9 @@ class _ProfileEditState extends State<ProfileEdit> {
             'verified': isVerified
           }).then((value) {
             if (mounted) {
+              Provider.of<SettingsProvider>(context, listen: false)
+                  .analytics
+                  .trackProfileUpdated();
               Navigator.pop(context);
             }
           });

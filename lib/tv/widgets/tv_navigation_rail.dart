@@ -102,6 +102,13 @@ class TvNavigationRailState extends State<TvNavigationRail> {
           border: Border.all(
             color: colors.onSurface.withValues(alpha: 0.08),
           ),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 28,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
         padding: EdgeInsets.symmetric(
           horizontal: widget.metrics.compact ? 9 : 13,
@@ -146,6 +153,7 @@ class TvNavigationRailState extends State<TvNavigationRail> {
                     TvFocusable(
                       focusNode: _focusNodes[destination.id],
                       autofocus: destination.id == initialFocusId,
+                      selected: destination.id == widget.selectedId,
                       semanticLabel: destination.label,
                       onFocusChanged: (hasFocus) {
                         if (hasFocus) {
@@ -165,42 +173,67 @@ class TvNavigationRailState extends State<TvNavigationRail> {
                           horizontal: widget.metrics.compact ? 0 : 12,
                         ),
                         decoration: BoxDecoration(
-                          color: destination.id == widget.selectedId
-                              ? colors.primary.withValues(alpha: 0.14)
-                              : Colors.transparent,
+                          gradient: destination.id == widget.selectedId
+                              ? LinearGradient(
+                                  colors: <Color>[
+                                    colors.primary.withValues(alpha: 0.2),
+                                    colors.primary.withValues(alpha: 0.08),
+                                  ],
+                                )
+                              : null,
                           borderRadius: BorderRadius.circular(9),
                         ),
-                        child: Row(
-                          mainAxisAlignment: widget.metrics.compact
-                              ? MainAxisAlignment.center
-                              : MainAxisAlignment.start,
+                        child: Stack(
                           children: <Widget>[
-                            Icon(
-                              destination.id == widget.selectedId
-                                  ? destination.selectedIcon ?? destination.icon
-                                  : destination.icon,
-                              color: destination.id == widget.selectedId
-                                  ? colors.primary
-                                  : colors.onSurfaceVariant,
-                              size: widget.metrics.compact ? 25 : 26,
-                            ),
-                            if (!widget.metrics.compact) ...<Widget>[
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Text(
-                                  destination.label,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: colors.onSurface,
-                                    fontFamily:
-                                        destination.id == widget.selectedId
-                                            ? 'FigtreeSB'
-                                            : 'Figtree',
-                                    fontSize: 18,
+                            if (destination.id == widget.selectedId)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  width: 4,
+                                  height: 24,
+                                  decoration: BoxDecoration(
+                                    color: colors.primary,
+                                    borderRadius: BorderRadius.circular(4),
                                   ),
                                 ),
                               ),
-                            ],
+                            Row(
+                              mainAxisAlignment: widget.metrics.compact
+                                  ? MainAxisAlignment.center
+                                  : MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  destination.id == widget.selectedId
+                                      ? destination.selectedIcon ??
+                                          destination.icon
+                                      : destination.icon,
+                                  color: destination.id == widget.selectedId
+                                      ? colors.primary
+                                      : colors.onSurfaceVariant,
+                                  size: widget.metrics.compact ? 25 : 26,
+                                ),
+                                if (!widget.metrics.compact) ...<Widget>[
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Text(
+                                      destination.label,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color:
+                                            destination.id == widget.selectedId
+                                                ? colors.onSurface
+                                                : colors.onSurfaceVariant,
+                                        fontFamily:
+                                            destination.id == widget.selectedId
+                                                ? 'FigtreeSB'
+                                                : 'Figtree',
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
                           ],
                         ),
                       ),

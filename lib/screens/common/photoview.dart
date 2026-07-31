@@ -91,6 +91,11 @@ class _HeroPhotoViewState extends State<HeroPhotoView> {
       });
     }
     if (externalStatus.isGranted) {
+      if (mounted) {
+        Provider.of<SettingsProvider>(context, listen: false)
+            .analytics
+            .trackImageDownloaded(imageType: widget.imageType);
+      }
       await createFolder('FlixQuest', 'Backdrops', 'Posters', 'Stills');
       await FlutterDownloader.enqueue(
         url: url,

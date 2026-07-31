@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import '../constants/api_constants.dart';
 import '../preferences/setting_preferences.dart';
+import '../services/analytics_service.dart';
 
 class SettingsProvider with ChangeNotifier {
   final SettingsPreferences _settingsPreferences = SettingsPreferences();
@@ -48,7 +47,13 @@ class SettingsProvider with ChangeNotifier {
   bool _defaultViewMode = true;
   bool get defaultViewMode => _defaultViewMode;
 
-  late Mixpanel mixpanel;
+  AnalyticsService? _analytics;
+
+  AnalyticsService get analytics => _analytics ?? AnalyticsService.instance;
+
+  /// Backward-compatible accessor used during migration.
+  /// Prefer [analytics] for new code.
+  AnalyticsService get mixpanel => analytics;
 
   String _subtitleForegroundColor = Colors.white.toString();
   String get subtitleForegroundColor => _subtitleForegroundColor;
@@ -85,6 +90,9 @@ class SettingsProvider with ChangeNotifier {
   set appTheme(String value) {
     _appTheme = value;
     _settingsPreferences.setThemeMode(value);
+    if (_analytics?.isInitialized == true) {
+      analytics.trackSettingsChange(settingName: 'App Theme', newValue: value);
+    }
     notifyListeners();
   }
 
@@ -107,6 +115,9 @@ class SettingsProvider with ChangeNotifier {
   set isAdult(bool value) {
     _isAdult = value;
     _settingsPreferences.setAdultMode(value);
+    if (_analytics?.isInitialized == true) {
+      analytics.trackSettingsChange(settingName: 'Adult Mode', newValue: '$value');
+    }
     notifyListeners();
   }
 
@@ -140,13 +151,15 @@ class SettingsProvider with ChangeNotifier {
   set defaultCountry(String value) {
     _defaultCountry = value;
     _settingsPreferences.setCountryName(value);
+    if (_analytics?.isInitialized == true) {
+      analytics.trackSettingsChange(settingName: 'Default Country', newValue: value);
+    }
     notifyListeners();
   }
 
-  // mixpanel
+  // analytics (Mixpanel)
   Future<void> initMixpanel() async {
-    mixpanel = await Mixpanel.init(mixpanelKey,
-        optOutTrackingDefault: false, trackAutomaticEvents: true);
+    _analytics = await AnalyticsService.init();
     notifyListeners();
   }
 
@@ -219,6 +232,9 @@ class SettingsProvider with ChangeNotifier {
   set defaultSubtitleLanguage(String value) {
     _defaultSubtitleLanguage = value;
     _settingsPreferences.setDefaultSubtitle(value);
+    if (_analytics?.isInitialized == true) {
+      analytics.trackSettingsChange(settingName: 'Subtitle Language', newValue: value);
+    }
     notifyListeners();
   }
 
@@ -259,6 +275,9 @@ class SettingsProvider with ChangeNotifier {
   set appLanguage(String value) {
     _appLanguage = value;
     _settingsPreferences.setAppLanguage(value);
+    if (_analytics?.isInitialized == true) {
+      analytics.trackSettingsChange(settingName: 'App Language', newValue: value);
+    }
     notifyListeners();
   }
 
@@ -299,6 +318,9 @@ class SettingsProvider with ChangeNotifier {
   set enableProxy(bool value) {
     _enableProxy = value;
     _settingsPreferences.setUseProxy(value);
+    if (_analytics?.isInitialized == true) {
+      analytics.trackSettingsChange(settingName: 'Proxy Mode', newValue: '$value');
+    }
     notifyListeners();
   }
 

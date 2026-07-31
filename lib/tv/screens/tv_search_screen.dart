@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
+import '../../singleton/sharedpreferences_singleton.dart';
 import '../app/tv_design.dart';
 import '../controllers/tv_catalog_controller.dart';
+import '../controllers/tv_search_history_controller.dart';
 import '../focus/tv_focusable.dart';
 import '../models/tv_media_item.dart';
 import '../widgets/tv_content_grid.dart';
@@ -33,12 +37,27 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
   Future<List<TvMediaItem>>? _results;
   String _submittedQuery = '';
   bool _queryHasFocus = false;
+  bool _historyIsLoading = true;
+  List<String> _recentSearches = const <String>[];
+  TvSearchHistoryController? _historyController;
   TvMediaKind _selectedKind = TvMediaKind.movie;
 
   @override
   void initState() {
     super.initState();
     _queryFocusNode.addListener(_handleQueryFocus);
+    unawaited(_loadSearchHistory());
+  }
+
+  Future<void> _loadSearchHistory() async {
+    final preferences = await SharedPreferencesSingleton.getInstance();
+    if (!mounted) return;
+    final controller = TvSearchHistoryController(preferences);
+    setState(() {
+      _historyController = controller;
+      _recentSearches = controller.load();
+      _historyIsLoading = false;
+    });
   }
 
   void _handleQueryFocus() {
@@ -47,13 +66,19 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
     }
   }
 
-  void _submit() {
-    final query = _queryController.text.trim();
+  void _submit([String? savedQuery]) {
+    final query = TvSearchHistoryController.normalize(
+      savedQuery ?? _queryController.text,
+    );
     if (query.isEmpty) {
       _queryFocusNode.requestFocus();
       return;
     }
+    _queryController
+      ..text = query
+      ..selection = TextSelection.collapsed(offset: query.length);
     FocusScope.of(context).unfocus();
+    unawaited(_rememberSearch(query));
     final results = _controller.search(
       query: query,
       settings: context.read<SettingsProvider>(),
@@ -70,6 +95,35 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
         }
         return items;
       });
+    });
+  }
+
+  Future<void> _rememberSearch(String query) async {
+    var controller = _historyController;
+    if (controller == null) {
+      final preferences = await SharedPreferencesSingleton.getInstance();
+      controller = TvSearchHistoryController(preferences);
+    }
+    final updated = await controller.remember(query);
+    if (!mounted) return;
+    setState(() {
+      _historyController = controller;
+      _recentSearches = updated;
+      _historyIsLoading = false;
+    });
+  }
+
+  Future<void> _clearHistory() async {
+    final controller = _historyController;
+    if (controller == null) return;
+    await controller.clear();
+    if (mounted) setState(() => _recentSearches = const <String>[]);
+  }
+
+  void _showRecentSearches() {
+    setState(() {
+      _results = null;
+      _submittedQuery = '';
     });
   }
 
@@ -96,17 +150,43 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Icon(PhosphorIcons.magnifyingGlass(),
-                  color: colors.primary, size: 32),
-              const SizedBox(width: 13),
-              Text(
-                'Search',
-                style: TextStyle(
-                  color: colors.onSurface,
-                  fontFamily: 'FigtreeSB',
-                  fontSize: 34,
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(14),
                 ),
+                child: Icon(
+                  PhosphorIcons.magnifyingGlass(),
+                  color: colors.primary,
+                  size: 27,
+                ),
+              ),
+              const SizedBox(width: 15),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Search',
+                    style: TextStyle(
+                      color: colors.onSurface,
+                      fontFamily: 'FigtreeSB',
+                      fontSize: 34,
+                      height: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Movies, series, and your recent searches',
+                    style: TextStyle(
+                      color: colors.onSurfaceVariant,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -118,16 +198,26 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
                 Expanded(
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
-                    height: 60,
+                    height: 62,
                     decoration: BoxDecoration(
-                      color: colors.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(13),
+                      color: _queryHasFocus
+                          ? colors.primary.withValues(alpha: 0.08)
+                          : colors.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(15),
                       border: Border.all(
                         color: _queryHasFocus
                             ? colors.primary
-                            : colors.outlineVariant,
+                            : colors.onSurface.withValues(alpha: 0.1),
                         width: _queryHasFocus ? 3 : 1,
                       ),
+                      boxShadow: _queryHasFocus
+                          ? <BoxShadow>[
+                              BoxShadow(
+                                color: colors.primary.withValues(alpha: 0.18),
+                                blurRadius: 22,
+                              ),
+                            ]
+                          : null,
                     ),
                     child: TextField(
                       controller: _queryController,
@@ -141,11 +231,18 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
                       ),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 17,
+                        prefixIcon: Icon(
+                          PhosphorIcons.keyboard(),
+                          color: _queryHasFocus
+                              ? colors.primary
+                              : colors.onSurfaceVariant,
+                          size: 23,
                         ),
-                        hintText: 'Movies and series',
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 18,
+                        ),
+                        hintText: 'Type a movie or series title',
                         hintStyle: TextStyle(
                           color: colors.onSurfaceVariant,
                           fontSize: 20,
@@ -155,34 +252,23 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
                   ),
                 ),
                 const SizedBox(width: 18),
-                TvFocusable(
+                _SearchActionButton(
+                  label: 'Search',
                   semanticLabel: 'Search FlixQuest',
+                  icon: PhosphorIcons.magnifyingGlass(),
                   onActivate: _submit,
-                  focusScale: 1.025,
-                  child: Container(
-                    height: 58,
-                    padding: const EdgeInsets.symmetric(horizontal: 27),
-                    decoration: BoxDecoration(
-                      color: colors.primary,
-                      borderRadius: BorderRadius.circular(11),
-                    ),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(PhosphorIcons.magnifyingGlass(),
-                            color: colors.onPrimary),
-                        const SizedBox(width: 10),
-                        Text(
-                          'Search',
-                          style: TextStyle(
-                            color: colors.onPrimary,
-                            fontFamily: 'FigtreeSB',
-                            fontSize: 19,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  primary: true,
                 ),
+                if (_results != null) ...<Widget>[
+                  const SizedBox(width: 14),
+                  _SearchActionButton(
+                    label:
+                        widget.metrics.compact ? 'Recent' : 'Recent searches',
+                    semanticLabel: 'Show recent searches',
+                    icon: PhosphorIcons.clockCounterClockwise(),
+                    onActivate: _showRecentSearches,
+                  ),
+                ],
               ],
             ),
           ),
@@ -196,11 +282,7 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
   Widget _buildResults() {
     final future = _results;
     if (future == null) {
-      return TvStatePanel(
-        title: 'Find something to watch',
-        message: 'Select the search field to open the TV keyboard.',
-        icon: PhosphorIcons.keyboard(),
-      );
+      return _buildSearchLanding();
     }
     return FutureBuilder<List<TvMediaItem>>(
       future: future,
@@ -284,6 +366,232 @@ class _TvSearchScreenState extends State<TvSearchScreen> {
       },
     );
   }
+
+  Widget _buildSearchLanding() {
+    final colors = Theme.of(context).colorScheme;
+    if (_historyIsLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_recentSearches.isEmpty) {
+      return TvStatePanel(
+        title: 'Find something to watch',
+        message:
+            'Select the search field to open the TV keyboard. Your searches will be saved here for next time.',
+        icon: PhosphorIcons.keyboard(),
+      );
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(
+        TvDesign.focusOutset,
+        TvDesign.focusOutset,
+        TvDesign.focusOutset,
+        28,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Icon(
+                PhosphorIcons.clockCounterClockwise(),
+                color: colors.primary,
+                size: 25,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'Recent searches',
+                style: TextStyle(
+                  color: colors.onSurface,
+                  fontFamily: 'FigtreeSB',
+                  fontSize: 25,
+                ),
+              ),
+              const Spacer(),
+              TvFocusable(
+                semanticLabel: 'Clear all recent searches',
+                onActivate: _clearHistory,
+                focusScale: 1.02,
+                child: Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colors.onSurface.withValues(alpha: 0.08),
+                    ),
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Icon(
+                        PhosphorIcons.trash(),
+                        color: colors.onSurfaceVariant,
+                        size: 19,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Clear all',
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontFamily: 'FigtreeSB',
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Pick a title to search again without using the keyboard.',
+            style: TextStyle(
+              color: colors.onSurfaceVariant,
+              fontSize: 17,
+            ),
+          ),
+          const SizedBox(height: 20),
+          FocusTraversalGroup(
+            policy: ReadingOrderTraversalPolicy(),
+            child: Wrap(
+              spacing: 14,
+              runSpacing: 14,
+              children: <Widget>[
+                for (var index = 0; index < _recentSearches.length; index++)
+                  _RecentSearchTile(
+                    query: _recentSearches[index],
+                    isMostRecent: index == 0,
+                    onActivate: () => _submit(_recentSearches[index]),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchActionButton extends StatelessWidget {
+  const _SearchActionButton({
+    required this.label,
+    required this.semanticLabel,
+    required this.icon,
+    required this.onActivate,
+    this.primary = false,
+  });
+
+  final String label;
+  final String semanticLabel;
+  final IconData icon;
+  final VoidCallback onActivate;
+  final bool primary;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final foreground = primary ? colors.onPrimary : colors.onSurface;
+    return TvFocusable(
+      semanticLabel: semanticLabel,
+      onActivate: onActivate,
+      focusScale: 1.025,
+      child: Container(
+        height: 60,
+        padding: const EdgeInsets.symmetric(horizontal: 23),
+        decoration: BoxDecoration(
+          color: primary ? colors.primary : colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(13),
+          border: primary
+              ? null
+              : Border.all(color: colors.onSurface.withValues(alpha: 0.08)),
+        ),
+        child: Row(
+          children: <Widget>[
+            Icon(icon, color: foreground, size: 22),
+            const SizedBox(width: 9),
+            Text(
+              label,
+              style: TextStyle(
+                color: foreground,
+                fontFamily: 'FigtreeSB',
+                fontSize: 18,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RecentSearchTile extends StatelessWidget {
+  const _RecentSearchTile({
+    required this.query,
+    required this.isMostRecent,
+    required this.onActivate,
+  });
+
+  final String query;
+  final bool isMostRecent;
+  final VoidCallback onActivate;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return TvFocusable(
+      semanticLabel: 'Search again for $query',
+      onActivate: onActivate,
+      autofocus: isMostRecent,
+      focusScale: 1.025,
+      child: Container(
+        constraints: const BoxConstraints(minWidth: 190, maxWidth: 330),
+        height: 64,
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        decoration: BoxDecoration(
+          color: isMostRecent
+              ? colors.primary.withValues(alpha: 0.12)
+              : colors.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(13),
+          border: Border.all(
+            color: isMostRecent
+                ? colors.primary.withValues(alpha: 0.32)
+                : colors.onSurface.withValues(alpha: 0.08),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(
+              PhosphorIcons.magnifyingGlass(),
+              color: isMostRecent ? colors.primary : colors.onSurfaceVariant,
+              size: 21,
+            ),
+            const SizedBox(width: 11),
+            Flexible(
+              child: Text(
+                query,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: colors.onSurface,
+                  fontFamily: 'FigtreeSB',
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            const SizedBox(width: 13),
+            Icon(
+              PhosphorIcons.arrowUpRight(),
+              color: colors.onSurfaceVariant,
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _SearchResultTab extends StatelessWidget {
@@ -307,6 +615,7 @@ class _SearchResultTab extends StatelessWidget {
     return TvFocusable(
       semanticLabel: '$label, $count results',
       onActivate: onActivate,
+      selected: selected,
       focusScale: 1.02,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),

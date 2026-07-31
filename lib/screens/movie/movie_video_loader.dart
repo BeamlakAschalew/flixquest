@@ -205,13 +205,13 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       );
 
       if (firstWorkingProviderCode != null && mounted) {
-        final mixpanel =
-            Provider.of<SettingsProvider>(context, listen: false).mixpanel;
-        mixpanel.track('Most viewed movies', properties: {
-          'Movie name': widget.metadata.movieName,
-          'Movie id': widget.metadata.movieId,
-          'Is Movie adult?': widget.metadata.isAdult ?? 'unknown',
-        });
+        Provider.of<SettingsProvider>(context, listen: false)
+            .analytics
+            .trackMovieWatched(
+              movieName: widget.metadata.movieName,
+              movieId: widget.metadata.movieId,
+              isAdult: widget.metadata.isAdult ?? 'unknown',
+            );
 
         // Navigate to player with provider list for lazy loading
         Navigator.pushReplacement(
