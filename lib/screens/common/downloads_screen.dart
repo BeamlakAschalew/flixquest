@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/offline_download.dart';
 import '../../provider/offline_download_provider.dart';
+import '../../services/offline_download_service.dart';
 import 'offline_player_screen.dart';
 
 class DownloadsScreen extends StatelessWidget {
@@ -113,17 +114,14 @@ class _DownloadCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final export =
+        context.select<OfflineDownloadProvider, OfflineExportProgress?>(
+      (provider) => provider.exportFor(download.id),
+    );
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: download.isComplete
-            ? () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => OfflinePlayerScreen(download: download),
-                  ),
-                )
-            : null,
+        onTap: download.isComplete ? () => _playOffline(context) : null,
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
@@ -172,12 +170,41 @@ class _DownloadCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10),
+                    if (export != null) ...[
+                      Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.filmReel(),
+                            size: 14,
+                            color: colors.primary,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            export.progress == null
+                                ? 'Preparing export…'
+                                : 'Preparing export ${export.progress}%',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: colors.primary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                    ],
                     LinearProgressIndicator(
-                      value: download.isComplete
-                          ? 1
-                          : download.progress > 0
-                              ? download.progress / 100
-                              : null,
+                      value: export != null
+                          ? export.progress == null
+                              ? null
+                              : export.progress! / 100
+                          : download.isComplete
+                              ? 1
+                              : download.progress > 0
+                                  ? download.progress / 100
+                                  : null,
                       minHeight: 5,
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -237,6 +264,15 @@ class _DownloadCard extends StatelessWidget {
       return '${item.progress.toStringAsFixed(0)}%  •  $downloaded downloaded';
     }
     return '$downloaded downloaded';
+  }
+
+  void _playOffline(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => OfflinePlayerScreen(download: download),
+      ),
+    );
   }
 }
 
@@ -401,40 +437,25 @@ class _DownloadActions extends StatelessWidget {
     required Future<bool> Function() operation,
     String? successMessage,
   }) async {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.showSnackBar(
-      const SnackBar(
-        duration: Duration(days: 1),
-        content: Row(
-          children: [
-            SizedBox.square(
-              dimension: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-            SizedBox(width: 12),
-            Expanded(child: Text('Preparing a shareable video…')),
-          ],
-        ),
-      ),
-    );
     try {
       final completed = await operation();
-      messenger.hideCurrentSnackBar();
       if (completed && successMessage != null && context.mounted) {
-        messenger.showSnackBar(SnackBar(content: Text(successMessage)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(successMessage)));
       }
     } catch (error) {
-      messenger.hideCurrentSnackBar();
       if (!context.mounted) return;
-      final message = error is PlatformException
-          ? error.message ?? 'Could not prepare this video.'
-          : 'Could not prepare this video.';
-      messenger.showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(_exportErrorMessage(error))));
     }
   }
 }
 
 enum _DownloadAction { pause, resume, retry, openExternal, saveCopy, delete }
+
+String _exportErrorMessage(Object error) => error is PlatformException
+    ? error.message ?? 'Could not prepare this video.'
+    : 'Could not prepare this video.';
 
 class _DownloadActionsSheet extends StatelessWidget {
   const _DownloadActionsSheet({required this.download});

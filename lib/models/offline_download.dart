@@ -31,6 +31,11 @@ class OfflineDownload {
     this.subtitle,
     this.posterUrl,
     this.error,
+    this.contentId,
+    this.seasonNumber,
+    this.episodeNumber,
+    this.offlineSubtitlePath,
+    this.offlineSubtitleName,
   });
 
   final String id;
@@ -46,6 +51,11 @@ class OfflineDownload {
   final double networkRateBytesPerSecond;
   final String? posterUrl;
   final String? error;
+  final int? contentId;
+  final int? seasonNumber;
+  final int? episodeNumber;
+  final String? offlineSubtitlePath;
+  final String? offlineSubtitleName;
 
   bool get isComplete => state == OfflineDownloadState.completed;
   bool get isActive =>
@@ -80,6 +90,11 @@ class OfflineDownload {
       subtitle: subtitle,
       posterUrl: posterUrl,
       error: error,
+      contentId: contentId,
+      seasonNumber: seasonNumber,
+      episodeNumber: episodeNumber,
+      offlineSubtitlePath: offlineSubtitlePath,
+      offlineSubtitleName: offlineSubtitleName,
     );
   }
 
@@ -107,6 +122,11 @@ class OfflineDownload {
           value<num>('networkRateBytesPerSecond')?.toDouble() ?? 0,
       posterUrl: value<String>('posterUrl'),
       error: value<String>('error'),
+      contentId: value<num>('contentId')?.toInt(),
+      seasonNumber: value<num>('seasonNumber')?.toInt(),
+      episodeNumber: value<num>('episodeNumber')?.toInt(),
+      offlineSubtitlePath: value<String>('offlineSubtitlePath'),
+      offlineSubtitleName: value<String>('offlineSubtitleName'),
     );
   }
 }
@@ -123,6 +143,12 @@ class OfflineDownloadRequest {
     this.posterUrl,
     this.maxVideoHeight,
     this.headers = const {},
+    this.contentId,
+    this.seasonNumber,
+    this.episodeNumber,
+    this.subtitleTrackUrl,
+    this.subtitleTrackName,
+    this.subtitleTrackHeaders = const {},
   });
 
   final String id;
@@ -135,6 +161,12 @@ class OfflineDownloadRequest {
   final String? posterUrl;
   final int? maxVideoHeight;
   final Map<String, String> headers;
+  final int? contentId;
+  final int? seasonNumber;
+  final int? episodeNumber;
+  final String? subtitleTrackUrl;
+  final String? subtitleTrackName;
+  final Map<String, String> subtitleTrackHeaders;
 
   Map<String, Object?> toMap() => {
         'id': id,
@@ -147,5 +179,11 @@ class OfflineDownloadRequest {
         'posterUrl': posterUrl,
         'maxVideoHeight': maxVideoHeight,
         'headers': headers,
+        'contentId': contentId,
+        'seasonNumber': seasonNumber,
+        'episodeNumber': episodeNumber,
+        'subtitleTrackUrl': subtitleTrackUrl,
+        'subtitleTrackName': subtitleTrackName,
+        'subtitleTrackHeaders': subtitleTrackHeaders,
       };
 }

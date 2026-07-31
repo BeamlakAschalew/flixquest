@@ -12,8 +12,28 @@ abstract interface class OfflineDownloadGateway {
   Future<void> resume(String id);
   Future<void> retry(String id);
   Future<void> remove(String id);
+  Future<OfflineExportProgress> getExportProgress(String id);
   Future<void> openExternal(String id);
   Future<bool> saveCopy(String id);
+}
+
+class OfflineExportProgress {
+  const OfflineExportProgress({required this.state, this.progress});
+
+  final String state;
+  final int? progress;
+
+  bool get isAvailable => progress != null;
+
+  factory OfflineExportProgress.fromMap(Map<Object?, Object?> map) {
+    final rawProgress = map['progress'];
+    final progress =
+        rawProgress is num ? rawProgress.toInt().clamp(0, 100).toInt() : null;
+    return OfflineExportProgress(
+      state: map['state'] as String? ?? 'starting',
+      progress: progress,
+    );
+  }
 }
 
 class OfflineDownloadService implements OfflineDownloadGateway {
@@ -61,6 +81,15 @@ class OfflineDownloadService implements OfflineDownloadGateway {
   @override
   Future<void> remove(String id) =>
       _methods.invokeMethod<void>('remove', {'id': id});
+
+  @override
+  Future<OfflineExportProgress> getExportProgress(String id) async {
+    final raw = await _methods.invokeMapMethod<Object?, Object?>(
+      'getExportProgress',
+      {'id': id},
+    );
+    return OfflineExportProgress.fromMap(raw ?? const {});
+  }
 
   @override
   Future<void> openExternal(String id) =>

@@ -13,6 +13,7 @@ class OfflineDownloadProvider extends ChangeNotifier {
   StreamSubscription<List<OfflineDownload>>? _subscription;
   List<OfflineDownload> _downloads = const [];
   final Map<String, _DownloadRateSample> _rateSamples = {};
+  final Map<String, OfflineExportProgress> _exports = {};
   bool _initialized = false;
   bool _loading = false;
   String? _error;
@@ -20,6 +21,7 @@ class OfflineDownloadProvider extends ChangeNotifier {
   List<OfflineDownload> get downloads => _downloads;
   bool get loading => _loading;
   String? get error => _error;
+  OfflineExportProgress? exportFor(String id) => _exports[id];
 
   Future<void> initialize() async {
     if (_initialized) return;
@@ -64,8 +66,53 @@ class OfflineDownloadProvider extends ChangeNotifier {
   Future<void> resume(String id) => _perform(() => _service.resume(id));
   Future<void> retry(String id) => _perform(() => _service.retry(id));
   Future<void> remove(String id) => _perform(() => _service.remove(id));
-  Future<void> openExternal(String id) => _service.openExternal(id);
-  Future<bool> saveCopy(String id) => _service.saveCopy(id);
+  Future<OfflineExportProgress> getExportProgress(String id) =>
+      _service.getExportProgress(id);
+  Future<void> openExternal(String id) =>
+      _runExport(id, () => _service.openExternal(id));
+  Future<bool> saveCopy(String id) =>
+      _runExport(id, () => _service.saveCopy(id));
+
+  Future<T> _runExport<T>(String id, Future<T> Function() operation) async {
+    _exports[id] = const OfflineExportProgress(state: 'starting');
+    notifyListeners();
+    var polling = true;
+    var querying = false;
+
+    Future<void> updateProgress() async {
+      if (!polling || querying) return;
+      querying = true;
+      try {
+        final next = await _service.getExportProgress(id);
+        if (!polling) return;
+        if (next.state == 'idle') {
+          _exports.remove(id);
+        } else {
+          _exports[id] = next;
+        }
+        notifyListeners();
+      } catch (_) {
+        // The export method reports the actionable error. A transient progress
+        // query failure should not abort the export itself.
+      } finally {
+        querying = false;
+      }
+    }
+
+    final timer = Timer.periodic(
+      const Duration(milliseconds: 350),
+      (_) => unawaited(updateProgress()),
+    );
+    unawaited(updateProgress());
+    try {
+      return await operation();
+    } finally {
+      polling = false;
+      timer.cancel();
+      _exports.remove(id);
+      notifyListeners();
+    }
+  }
 
   Future<void> _perform(Future<void> Function() operation) async {
     _error = null;

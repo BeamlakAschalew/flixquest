@@ -417,6 +417,22 @@ class _EpisodeContent extends StatelessWidget {
               icon: PhosphorIcons.users(),
               label: '${episodeList.voteCount ?? 0} ${tr('total_ratings')}',
             ),
+            IconButton(
+              tooltip: tr('shared_the_app'),
+              onPressed: onShare,
+              constraints: const BoxConstraints.tightFor(
+                width: 36,
+                height: 36,
+              ),
+              padding: EdgeInsets.zero,
+              style: IconButton.styleFrom(
+                backgroundColor: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: .06),
+              ),
+              icon: Icon(PhosphorIcons.shareNetwork(), size: 18),
+            ),
           ],
         ),
         const SizedBox(height: 18),
@@ -439,14 +455,6 @@ class _EpisodeContent extends StatelessWidget {
                   label: Text(tr('download')),
                 ),
               ),
-            if (canWatch) const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: onShare,
-                icon: Icon(PhosphorIcons.shareNetwork()),
-                label: Text(tr('share')),
-              ),
-            ),
           ],
         ),
         const SizedBox(height: 22),

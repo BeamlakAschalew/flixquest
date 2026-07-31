@@ -1421,6 +1421,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     final season = episode?.seasonNumber ?? 0;
     final episodeNumber = episode?.episodeNumber ?? 0;
     final posterPath = isMovie ? movie?.posterPath : episode?.posterPath;
+    final subtitleTrack = _originalSubtitleTrack();
 
     try {
       await context.read<OfflineDownloadProvider>().enqueue(
@@ -1447,6 +1448,12 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
               headers: headers[resolution] ??
                   VideoUtils.inferVideoHeaders(url) ??
                   const {},
+              contentId: isMovie ? movie?.movieId : episode?.tvId,
+              seasonNumber: isMovie ? null : season,
+              episodeNumber: isMovie ? null : episodeNumber,
+              subtitleTrackUrl: subtitleTrack?.urls!.first,
+              subtitleTrackName: subtitleTrack?.name,
+              subtitleTrackHeaders: subtitleTrack?.headers ?? const {},
             ),
           );
       if (!mounted) return;
@@ -1478,6 +1485,22 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   int? _downloadResolutionHeight(String resolution) {
     final match = RegExp(r'(\d{3,4})').firstMatch(resolution);
     return int.tryParse(match?.group(1) ?? '');
+  }
+
+  BetterPlayerSubtitlesSource? _originalSubtitleTrack() {
+    BetterPlayerSubtitlesSource? fallback;
+    for (final source in _activeSubtitles) {
+      final urls = source.urls;
+      if (source.type != BetterPlayerSubtitlesSourceType.network ||
+          urls == null ||
+          urls.isEmpty ||
+          urls.first?.isNotEmpty != true) {
+        continue;
+      }
+      if (source.selectedByDefault == true) return source;
+      fallback ??= source;
+    }
+    return fallback;
   }
 
   void _showSubtitleSwitcher() {

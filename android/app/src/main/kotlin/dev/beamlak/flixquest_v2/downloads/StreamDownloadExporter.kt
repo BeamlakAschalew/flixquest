@@ -14,6 +14,7 @@ import androidx.media3.transformer.DefaultAssetLoaderFactory
 import androidx.media3.transformer.DefaultDecoderFactory
 import androidx.media3.transformer.ExportException
 import androidx.media3.transformer.ExportResult
+import androidx.media3.transformer.ProgressHolder
 import androidx.media3.transformer.Transformer
 import java.io.File
 import java.util.concurrent.CancellationException
@@ -24,7 +25,10 @@ class StreamDownloadExporter(
     private val store: StreamDownloadStore,
 ) {
     private val appContext = context.applicationContext
-    private val exportDirectory = File(appContext.cacheDir, "offline_exports")
+    // Exported files are user-visible artifacts and must survive app restarts
+    // and Android cache cleanup. The download cache itself remains private,
+    // while this directory keeps completed conversion work reusable.
+    private val exportDirectory = File(appContext.filesDir, "offline_exports")
     private var activeExportId: String? = null
     private var activeTransformer: Transformer? = null
     private val callbacks = mutableListOf<(Result<File>) -> Unit>()
@@ -100,6 +104,27 @@ class StreamDownloadExporter(
         exportDirectory.listFiles()
             ?.filter { it.name.endsWith("-${Integer.toHexString(downloadId.hashCode())}.mp4") }
             ?.forEach(File::delete)
+    }
+
+    /** Returns the remuxer's real progress when the current export exposes it. */
+    fun progress(downloadId: String): Map<String, Any?> {
+        if (activeExportId != downloadId) {
+            return mapOf("state" to "idle", "progress" to null)
+        }
+        val transformer = activeTransformer
+            ?: return mapOf("state" to "starting", "progress" to null)
+        val holder = ProgressHolder()
+        return when (transformer.getProgress(holder)) {
+            Transformer.PROGRESS_STATE_AVAILABLE -> mapOf(
+                "state" to "available",
+                "progress" to holder.progress,
+            )
+            Transformer.PROGRESS_STATE_WAITING_FOR_AVAILABILITY ->
+                mapOf("state" to "starting", "progress" to null)
+            Transformer.PROGRESS_STATE_UNAVAILABLE ->
+                mapOf("state" to "unavailable", "progress" to null)
+            else -> mapOf("state" to "starting", "progress" to null)
+        }
     }
 
     private fun finish(result: Result<File>) {

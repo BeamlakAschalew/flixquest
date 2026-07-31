@@ -325,6 +325,10 @@ class _FakeGateway implements OfflineDownloadGateway {
   Future<void> retry(String id) async => operations.add('retry:$id');
 
   @override
+  Future<OfflineExportProgress> getExportProgress(String id) async =>
+      const OfflineExportProgress(state: 'idle');
+
+  @override
   Future<void> openExternal(String id) async =>
       operations.add('openExternal:$id');
 

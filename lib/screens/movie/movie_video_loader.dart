@@ -349,6 +349,7 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
                 ? 'dash'
                 : 'hls';
     final posterPath = widget.metadata.posterPath;
+    final subtitleTrack = _preferredSubtitle(movieVideoSubs);
     try {
       await context.read<OfflineDownloadProvider>().enqueue(
             OfflineDownloadRequest(
@@ -366,6 +367,10 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
               headers: videoHeaders[quality] ??
                   VideoUtils.inferVideoHeaders(url) ??
                   const {},
+              contentId: widget.metadata.movieId,
+              subtitleTrackUrl: subtitleTrack?.url,
+              subtitleTrackName: subtitleTrack?.language,
+              subtitleTrackHeaders: subtitleTrack?.headers ?? const {},
             ),
           );
       if (mounted) Navigator.pop(context, true);
@@ -381,6 +386,27 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   int? _qualityHeight(String quality) {
     final match = RegExp(r'(\d{3,4})').firstMatch(quality);
     return int.tryParse(match?.group(1) ?? '');
+  }
+
+  RegularSubtitleLinks? _preferredSubtitle(
+    List<RegularSubtitleLinks>? subtitles,
+  ) {
+    if (subtitles == null || subtitles.isEmpty) return null;
+    final preferred = settings.defaultSubtitleLanguage.toLowerCase();
+    for (final subtitle in subtitles) {
+      final language = subtitle.language?.toLowerCase() ?? '';
+      if (subtitle.url?.isNotEmpty == true &&
+          preferred.isNotEmpty &&
+          (language == preferred ||
+              language.startsWith(preferred) ||
+              (preferred == 'en' && language.startsWith('english')))) {
+        return subtitle;
+      }
+    }
+    return subtitles.cast<RegularSubtitleLinks?>().firstWhere(
+          (subtitle) => subtitle?.url?.isNotEmpty == true,
+          orElse: () => null,
+        );
   }
 
   void _addSubtitles(List<RegularSubtitleLinks>? subtitleLinks) {

@@ -71,10 +71,12 @@ class StreamDownloadsBridge(
                     true,
                 )
             }
+            "getExportProgress" -> exportProgress(call, result)
             "openExternal" -> exportForExternalPlayer(call, result)
             "saveCopy" -> exportForDocument(call, result)
             "remove" -> withId(call, result) { id ->
                 exporter.deleteExport(id)
+                store.deleteSubtitle(id)
                 DownloadService.sendRemoveDownload(
                     appContext,
                     StreamDownloadService::class.java,
@@ -129,6 +131,15 @@ class StreamDownloadsBridge(
             activity.startActivity(Intent.createChooser(viewIntent, "Open video with"))
             result.success(null)
         }
+    }
+
+    private fun exportProgress(call: MethodCall, result: MethodChannel.Result) {
+        val id = call.argument<String>("id")
+        if (id.isNullOrBlank()) {
+            result.error("INVALID_ID", "A download id is required.", null)
+            return
+        }
+        runResult(result) { exporter.progress(id) }
     }
 
     private fun exportForDocument(call: MethodCall, result: MethodChannel.Result) {

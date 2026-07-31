@@ -8,6 +8,8 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.DataSourceInputStream
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
@@ -35,6 +37,7 @@ class StreamDownloadStore private constructor(context: Context) {
     private val databaseProvider = StandaloneDatabaseProvider(appContext)
     private val downloadIndex = DefaultDownloadIndex(databaseProvider)
     private val downloadExecutor: ExecutorService = Executors.newFixedThreadPool(4)
+    private val subtitleDirectory = File(appContext.filesDir, "offline_subtitles")
 
     val cache = SimpleCache(
         File(appContext.filesDir, "offline_streams"),
@@ -98,16 +101,19 @@ class StreamDownloadStore private constructor(context: Context) {
 
         helper.prepare(object : DownloadHelper.Callback {
             override fun onPrepared(helper: DownloadHelper, tracksInfoAvailable: Boolean) {
-                try {
-                    val request = helper.getDownloadRequest(
-                        id,
-                        metadata.toString().toByteArray(StandardCharsets.UTF_8),
-                    )
-                    callback(Result.success(request))
-                } catch (error: Exception) {
-                    callback(Result.failure(error))
-                } finally {
-                    helper.release()
+                downloadExecutor.execute {
+                    try {
+                        downloadSubtitle(arguments, id, metadata)
+                        val request = helper.getDownloadRequest(
+                            id,
+                            metadata.toString().toByteArray(StandardCharsets.UTF_8),
+                        )
+                        callback(Result.success(request))
+                    } catch (error: Exception) {
+                        callback(Result.failure(error))
+                    } finally {
+                        helper.release()
+                    }
                 }
             }
 
@@ -161,7 +167,17 @@ class StreamDownloadStore private constructor(context: Context) {
             "contentLength" to download.contentLength,
             "createdAt" to download.startTimeMs,
             "error" to if (download.state == Download.STATE_FAILED) "The download failed. Retry to try again." else null,
+            "contentId" to metadata.optInt("contentId").takeIf { it > 0 },
+            "seasonNumber" to metadata.optInt("seasonNumber").takeIf { it >= 0 },
+            "episodeNumber" to metadata.optInt("episodeNumber").takeIf { it >= 0 },
+            "offlineSubtitlePath" to metadata.optString("offlineSubtitlePath").ifBlank { null },
+            "offlineSubtitleName" to metadata.optString("offlineSubtitleName").ifBlank { null },
         )
+    }
+
+    fun deleteSubtitle(id: String) {
+        subtitleFile(id, "vtt").delete()
+        subtitleFile(id, "srt").delete()
     }
 
     private fun metadataJson(arguments: Map<*, *>): JSONObject = JSONObject().apply {
@@ -171,11 +187,54 @@ class StreamDownloadStore private constructor(context: Context) {
         put("quality", arguments["quality"] as? String ?: "Auto")
         put("posterUrl", arguments["posterUrl"] as? String ?: "")
         put("format", arguments["format"] as? String ?: "")
+        put("contentId", (arguments["contentId"] as? Number)?.toInt() ?: 0)
+        put("seasonNumber", (arguments["seasonNumber"] as? Number)?.toInt() ?: -1)
+        put("episodeNumber", (arguments["episodeNumber"] as? Number)?.toInt() ?: -1)
         val headers = JSONObject()
         (arguments["headers"] as? Map<*, *>)?.forEach { (key, value) ->
             if (key is String && value is String) headers.put(key, value)
         }
         put("headers", headers)
+    }
+
+    private fun downloadSubtitle(arguments: Map<*, *>, id: String, metadata: JSONObject) {
+        val url = arguments["subtitleTrackUrl"] as? String
+        if (url.isNullOrBlank()) return
+        val name = (arguments["subtitleTrackName"] as? String).orEmpty()
+            .ifBlank { "Original subtitle" }
+        val extension = if (Uri.parse(url).path?.lowercase()?.endsWith(".srt") == true) {
+            "srt"
+        } else {
+            "vtt"
+        }
+        if (!subtitleDirectory.exists() && !subtitleDirectory.mkdirs()) return
+        deleteSubtitle(id)
+        val output = subtitleFile(id, extension)
+        val headers = buildMap {
+            (arguments["subtitleTrackHeaders"] as? Map<*, *>)?.forEach { (key, value) ->
+                if (key is String && value is String) put(key, value)
+            }
+        }
+        try {
+            val dataSource = httpFactory(headers).createDataSource()
+            DataSourceInputStream(dataSource, DataSpec(Uri.parse(url))).use { input ->
+                output.outputStream().use(input::copyTo)
+            }
+            if (output.length() > 0) {
+                metadata.put("offlineSubtitlePath", output.absolutePath)
+                metadata.put("offlineSubtitleName", name)
+            } else {
+                output.delete()
+            }
+        } catch (_: Exception) {
+            output.delete()
+            // A subtitle failure must not prevent the video itself downloading.
+        }
+    }
+
+    private fun subtitleFile(id: String, extension: String): File {
+        val safeId = id.replace(Regex("[^a-zA-Z0-9._-]"), "_")
+        return File(subtitleDirectory, "$safeId.$extension")
     }
 
     companion object {
