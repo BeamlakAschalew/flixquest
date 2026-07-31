@@ -3,6 +3,7 @@ import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/functions/network.dart';
 import 'package:flixquest/functions/video_utils.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
+import 'package:flixquest/models/offline_download.dart';
 import 'package:flixquest/models/provider_video_source.dart';
 import 'package:flixquest/constants/app_constants.dart' show MediaType;
 import 'package:flixquest/models/provider_load_state.dart';
@@ -15,7 +16,9 @@ import '../../provider/recently_watched_provider.dart';
 import '../../video_providers/common.dart';
 import '../../video_providers/names.dart';
 import '/api/endpoints.dart';
+import '/constants/api_constants.dart';
 import '/provider/app_dependency_provider.dart';
+import '/provider/offline_download_provider.dart';
 import '/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
@@ -25,6 +28,7 @@ import '../../widgets/common_widgets.dart';
 
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
+import '../../screens/common/download_selection_sheets.dart';
 import '../../tv/player/tv_player_screen.dart';
 
 class TVVideoLoader extends StatefulWidget {
@@ -101,6 +105,25 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
   void loadVideo() async {
     try {
       await _loadProviders();
+      VideoProvider? selectedDownloadProvider;
+      if (widget.download) {
+        if (!mounted) return;
+        selectedDownloadProvider = await DownloadSelectionSheets.showProvider(
+          context,
+          providers: videoProviders,
+        );
+        if (!mounted) return;
+        if (selectedDownloadProvider == null) {
+          Navigator.pop(context, false);
+          return;
+        }
+        setState(() {
+          currentProviderIndex = videoProviders.indexWhere(
+            (provider) =>
+                provider.codeName == selectedDownloadProvider!.codeName,
+          );
+        });
+      }
       // Fetch season episodes first
       await _fetchSeasonEpisodes();
 
@@ -133,14 +156,20 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
         setState(() {
           for (var index = 0; index < providerStates.length; index++) {
             providerStates[index] = providerStates[index].copyWith(
-              status: ProviderStatus.loading,
+              status: selectedDownloadProvider == null ||
+                      providerStates[index].codeName ==
+                          selectedDownloadProvider.codeName
+                  ? ProviderStatus.loading
+                  : ProviderStatus.pending,
             );
           }
         });
       }
 
       final selection = await ProviderLoader.loadFirstSuccessful(
-        providers: videoProviders,
+        providers: selectedDownloadProvider == null
+            ? videoProviders
+            : [selectedDownloadProvider],
         load: (provider) {
           debugPrint(
             '[TVVideoLoader] Request provider=${provider.displayName} '
@@ -156,6 +185,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           );
         },
         onResult: (index, provider, result) {
+          final providerIndex = videoProviders.indexWhere(
+            (candidate) => candidate.codeName == provider.codeName,
+          );
           debugPrint(
             '[TVVideoLoader] Response provider=${provider.displayName} '
             'success=${result.success}, links=${result.videoLinks?.length ?? 0}, '
@@ -163,8 +195,9 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
           );
           if (mounted) {
             setState(() {
-              currentProviderIndex = index;
-              providerStates[index] = providerStates[index].copyWith(
+              currentProviderIndex = providerIndex;
+              providerStates[providerIndex] =
+                  providerStates[providerIndex].copyWith(
                 status: result.success && result.videoLinks?.isNotEmpty == true
                     ? ProviderStatus.success
                     : ProviderStatus.failed,
@@ -209,6 +242,15 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
       );
 
       if (firstWorkingProviderCode != null && mounted) {
+        if (widget.download) {
+          await _enqueueDownload(
+            sources: reversedVids,
+            videoFormats: videoFormats,
+            videoHeaders: videoHeaders,
+            providerName: selection?.provider.displayName,
+          );
+          return;
+        }
         Provider.of<SettingsProvider>(context, listen: false)
             .analytics
             .trackTVWatched(
@@ -290,6 +332,71 @@ class _TVVideoLoaderState extends State<TVVideoLoader> {
             context: context);
       }
     }
+  }
+
+  Future<void> _enqueueDownload({
+    required Map<String, String> sources,
+    required Map<String, BetterPlayerVideoFormat?> videoFormats,
+    required Map<String, Map<String, String>> videoHeaders,
+    String? providerName,
+  }) async {
+    final quality = await DownloadSelectionSheets.showResolution(
+      context,
+      resolutions: sources.keys.toList(),
+      providerName: providerName,
+    );
+    if (!mounted) return;
+    if (quality == null) {
+      Navigator.pop(context, false);
+      return;
+    }
+    final url = sources[quality]!;
+    final declaredFormat = videoFormats[quality];
+    final format = declaredFormat == BetterPlayerVideoFormat.dash
+        ? 'dash'
+        : declaredFormat == BetterPlayerVideoFormat.hls
+            ? 'hls'
+            : url.toLowerCase().contains('.mpd')
+                ? 'dash'
+                : 'hls';
+    final posterPath = widget.metadata.posterPath;
+    final season = widget.metadata.seasonNumber ?? 0;
+    final episode = widget.metadata.episodeNumber ?? 0;
+    try {
+      await context.read<OfflineDownloadProvider>().enqueue(
+            OfflineDownloadRequest(
+              id: 'tv_${widget.metadata.tvId}_s${season}_e$episode',
+              url: url,
+              format: format,
+              title: widget.metadata.seriesName ?? 'TV episode',
+              subtitle:
+                  'S${season.toString().padLeft(2, '0')} • E${episode.toString().padLeft(2, '0')} '
+                  '${widget.metadata.episodeName ?? ''}'
+                  '${providerName == null ? '' : ' • $providerName'}',
+              mediaType: 'episode',
+              quality: quality,
+              posterUrl: posterPath == null
+                  ? null
+                  : '${TMDB_BASE_IMAGE_URL}w500$posterPath',
+              maxVideoHeight: _qualityHeight(quality),
+              headers: videoHeaders[quality] ??
+                  VideoUtils.inferVideoHeaders(url) ??
+                  const {},
+            ),
+          );
+      if (mounted) Navigator.pop(context, true);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not start download: $error')),
+      );
+      Navigator.pop(context, false);
+    }
+  }
+
+  int? _qualityHeight(String quality) {
+    final match = RegExp(r'(\d{3,4})').firstMatch(quality);
+    return int.tryParse(match?.group(1) ?? '');
   }
 
   void _addSubtitles(List<RegularSubtitleLinks>? subtitleLinks) {

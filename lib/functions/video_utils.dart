@@ -57,6 +57,23 @@ class VideoUtils {
     return headers;
   }
 
+  /// Provider defaults used when a source does not explicitly return headers.
+  /// These must be shared by streaming and offline downloads because manifests,
+  /// segments, redirects, and encryption keys can all enforce the same origin.
+  static Map<String, String>? inferVideoHeaders(String? url) {
+    final host = Uri.tryParse(url ?? '')?.host.toLowerCase();
+    if (host == null || !host.endsWith('vixsrc.to')) return null;
+
+    return const {
+      'accept': '*/*',
+      'origin': 'https://vixsrc.to',
+      'referer': 'https://vixsrc.to/',
+      'user-agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+              '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+    };
+  }
+
   /// Process VTT file timestamps to fix formatting issues
   static String processVttFileTimestamps(String vttContent) {
     final lines = vttContent.split('\n');

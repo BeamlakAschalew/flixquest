@@ -23,7 +23,9 @@ import 'widgets/common_widgets.dart';
 import 'widgets/movie_widgets.dart';
 import 'widgets/tv_widgets.dart';
 import 'provider/bookmark_provider.dart';
+import 'provider/offline_download_provider.dart';
 import 'services/in_app_messaging_service.dart';
+import 'screens/common/downloads_screen.dart';
 import 'tv/platform/device_presentation.dart';
 
 class FlixQuest extends StatefulWidget {
@@ -130,7 +132,10 @@ class _FlixQuestState extends State<FlixQuest>
                 }),
                 ChangeNotifierProvider(create: (_) {
                   return widget.appDependencyProvider;
-                })
+                }),
+                ChangeNotifierProvider(
+                  create: (_) => OfflineDownloadProvider()..initialize(),
+                ),
               ],
               child: Consumer3<SettingsProvider, RecentProvider,
                       AppDependencyProvider>(
@@ -214,9 +219,9 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     final defaultHome =
         Provider.of<SettingsProvider>(context, listen: false).defaultValue;
     setState(() {
-      // `3` was historically Profile. Keep existing saved preferences valid
-      // after inserting Bookmarks as the fourth navigation destination.
-      selectedIndex = defaultHome == 3 ? 4 : defaultHome;
+      // `3` is the persisted semantic value for Profile. Keep existing saved
+      // preferences valid as Bookmarks and Downloads are added to navigation.
+      selectedIndex = defaultHome == 3 ? 5 : defaultHome;
     });
   }
 
@@ -236,8 +241,9 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
           FirebaseRemoteConfig.instance.getInt('min_build_number');
     }
     if (remoteBuildNumber == 0) {
-      remoteBuildNumber =
-          int.tryParse(FirebaseRemoteConfig.instance.getString('latest_version')) ?? 0;
+      remoteBuildNumber = int.tryParse(
+              FirebaseRemoteConfig.instance.getString('latest_version')) ??
+          0;
     }
 
     if (currentBuildNumber < remoteBuildNumber) {
@@ -323,6 +329,13 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
                       label: tr('bookmarks'),
                     ),
                     NavigationDestination(
+                      icon: Icon(PhosphorIcons.downloadSimple()),
+                      selectedIcon: Icon(
+                          PhosphorIcons.downloadSimple(PhosphorIconsStyle.fill),
+                          color: colorScheme.primary),
+                      label: 'Downloads',
+                    ),
+                    NavigationDestination(
                       icon: Icon(PhosphorIcons.user()),
                       selectedIcon: Icon(
                           PhosphorIcons.user(PhosphorIconsStyle.fill),
@@ -368,6 +381,7 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
             ),
             const DiscoverPage(),
             const BookmarkScreen(embedded: true),
+            const DownloadsScreen(embedded: true),
             const UserInfo()
           ],
         ));

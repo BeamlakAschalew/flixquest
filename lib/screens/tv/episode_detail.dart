@@ -131,6 +131,43 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
     );
   }
 
+  Future<void> _download() async {
+    if (!await checkConnection()) {
+      if (!mounted) return;
+      GlobalMethods.showCustomScaffoldMessage(
+        SnackBar(content: Text(tr('check_connection'), maxLines: 3)),
+        context,
+      );
+      return;
+    }
+    if (!mounted || widget.tvId == null || widget.posterPath == null) return;
+    final queued = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TVVideoLoader(
+          download: true,
+          metadata: TVStreamMetadata(
+            elapsed: null,
+            episodeId: widget.episodeList.episodeId,
+            episodeName: widget.episodeList.name,
+            episodeNumber: widget.episodeList.episodeNumber!,
+            posterPath: widget.posterPath!,
+            backdropPath: widget.episodeList.stillPath,
+            seasonNumber: widget.episodeList.seasonNumber!,
+            seriesName: widget.seriesName ?? '',
+            tvId: widget.tvId!,
+            airDate: widget.episodeList.airDate,
+          ),
+        ),
+      ),
+    );
+    if (mounted && queued == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Added to downloads')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -196,6 +233,7 @@ class EpisodeDetailPageState extends State<EpisodeDetailPage>
                     widget.posterPath != null &&
                     widget.tvId != null,
                 onWatch: _watchNow,
+                onDownload: _download,
                 onShare: () => Share.share(tr('share_episode', namedArgs: {
                   'title': widget.seriesName ?? '',
                   'rating':
@@ -305,6 +343,7 @@ class _EpisodeContent extends StatelessWidget {
     required this.images,
     required this.canWatch,
     required this.onWatch,
+    required this.onDownload,
     required this.onShare,
   });
 
@@ -315,6 +354,7 @@ class _EpisodeContent extends StatelessWidget {
   final Future<Images> images;
   final bool canWatch;
   final VoidCallback onWatch;
+  final VoidCallback onDownload;
   final VoidCallback onShare;
 
   @override
@@ -388,6 +428,15 @@ class _EpisodeContent extends StatelessWidget {
                   onPressed: onWatch,
                   icon: Icon(PhosphorIcons.playCircle(PhosphorIconsStyle.fill)),
                   label: Text(tr('watch_now')),
+                ),
+              ),
+            if (canWatch) const SizedBox(width: 12),
+            if (canWatch)
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onDownload,
+                  icon: Icon(PhosphorIcons.downloadSimple()),
+                  label: Text(tr('download')),
                 ),
               ),
             if (canWatch) const SizedBox(width: 12),

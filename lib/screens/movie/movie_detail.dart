@@ -225,6 +225,41 @@ class MovieDetailPageState extends State<MovieDetailPage>
     );
   }
 
+  Future<void> _download() async {
+    if (!await checkConnection()) {
+      if (!mounted) return;
+      GlobalMethods.showCustomScaffoldMessage(
+        SnackBar(content: Text(tr('check_connection'), maxLines: 3)),
+        context,
+      );
+      return;
+    }
+    if (!mounted) return;
+    final queued = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MovieVideoLoader(
+          download: true,
+          metadata: MovieStreamMetadata(
+            backdropPath: widget.movie.backdropPath,
+            elapsed: null,
+            isAdult: widget.movie.adult,
+            movieId: widget.movie.id!,
+            movieName: widget.movie.title,
+            posterPath: widget.movie.posterPath,
+            releaseYear: int.tryParse(_releaseYear ?? '') ?? 0,
+            releaseDate: widget.movie.releaseDate,
+          ),
+        ),
+      ),
+    );
+    if (mounted && queued == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Added to downloads')),
+      );
+    }
+  }
+
   void _showWatchProviders() {
     final settings = Provider.of<SettingsProvider>(context, listen: false);
     showModalBottomSheet<void>(
@@ -333,6 +368,7 @@ class MovieDetailPageState extends State<MovieDetailPage>
                 onBookmark: _toggleBookmark,
                 onShare: _shareMovie,
                 onWatch: _watchNow,
+                onDownload: _download,
                 onProviders: _showWatchProviders,
                 onRetryGenres: () => setState(_loadPageData),
                 onRetryCredits: () => setState(_loadPageData),
@@ -541,6 +577,7 @@ class _MovieSummary extends StatelessWidget {
     required this.onBookmark,
     required this.onShare,
     required this.onWatch,
+    required this.onDownload,
     required this.onProviders,
     required this.onRetryGenres,
     required this.onRetryCredits,
@@ -558,6 +595,7 @@ class _MovieSummary extends StatelessWidget {
   final VoidCallback onBookmark;
   final VoidCallback onShare;
   final VoidCallback onWatch;
+  final VoidCallback onDownload;
   final VoidCallback onProviders;
   final VoidCallback onRetryGenres;
   final VoidCallback onRetryCredits;
@@ -871,6 +909,12 @@ class _MovieSummary extends StatelessWidget {
             onPressed: onWatch,
             icon: Icon(PhosphorIcons.playCircle(PhosphorIconsStyle.fill)),
             label: Text(tr('watch_now')),
+          ),
+        if (canWatch)
+          OutlinedButton.icon(
+            onPressed: onDownload,
+            icon: Icon(PhosphorIcons.downloadSimple()),
+            label: Text(tr('download')),
           ),
         // "Where to watch" is intentionally hidden from the primary actions.
         // OutlinedButton.icon(...),

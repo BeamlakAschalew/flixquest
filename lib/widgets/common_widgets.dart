@@ -1765,9 +1765,10 @@ class ExternalPlay extends StatelessWidget {
     final entries = videoSources.entries.toList();
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -1817,6 +1818,7 @@ class ExternalPlay extends StatelessWidget {
             if (index != entries.length - 1) const SizedBox(height: 10),
           ],
         ],
+      ),
       ),
     );
   }

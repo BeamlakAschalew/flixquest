@@ -3,6 +3,7 @@ import 'package:flixquest/functions/function.dart';
 import 'package:flixquest/functions/network.dart';
 import 'package:flixquest/functions/video_utils.dart';
 import 'package:flixquest/models/movie_stream_metadata.dart';
+import 'package:flixquest/models/offline_download.dart';
 import 'package:flixquest/models/provider_video_source.dart';
 import 'package:flixquest/models/provider_load_state.dart';
 import 'package:flixquest/services/globle_method.dart';
@@ -14,6 +15,8 @@ import '../../provider/recently_watched_provider.dart';
 import '../../video_providers/common.dart';
 import '../../video_providers/names.dart';
 import '/api/endpoints.dart';
+import '/constants/api_constants.dart';
+import '/provider/offline_download_provider.dart';
 import '/provider/app_dependency_provider.dart';
 import '/provider/settings_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -24,6 +27,7 @@ import 'package:flixquest/constants/app_constants.dart' show MediaType;
 
 import 'package:flutter/material.dart';
 import '../../screens/common/player.dart';
+import '../../screens/common/download_selection_sheets.dart';
 import '../../tv/player/tv_player_screen.dart';
 
 class MovieVideoLoader extends StatefulWidget {
@@ -102,6 +106,25 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
   void loadVideo() async {
     try {
       await _loadProviders();
+      VideoProvider? selectedDownloadProvider;
+      if (widget.download) {
+        if (!mounted) return;
+        selectedDownloadProvider = await DownloadSelectionSheets.showProvider(
+          context,
+          providers: videoProviders,
+        );
+        if (!mounted) return;
+        if (selectedDownloadProvider == null) {
+          Navigator.pop(context, false);
+          return;
+        }
+        setState(() {
+          currentProviderIndex = videoProviders.indexWhere(
+            (provider) =>
+                provider.codeName == selectedDownloadProvider!.codeName,
+          );
+        });
+      }
       // Fetch movie recommendations first
       await _fetchMovieRecommendations();
 
@@ -131,7 +154,11 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
         setState(() {
           for (var index = 0; index < providerStates.length; index++) {
             providerStates[index] = providerStates[index].copyWith(
-              status: ProviderStatus.loading,
+              status: selectedDownloadProvider == null ||
+                      providerStates[index].codeName ==
+                          selectedDownloadProvider.codeName
+                  ? ProviderStatus.loading
+                  : ProviderStatus.pending,
             );
           }
         });
@@ -139,7 +166,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
 
       // Start all sources together and use the first playable response.
       final selection = await ProviderLoader.loadFirstSuccessful(
-        providers: videoProviders,
+        providers: selectedDownloadProvider == null
+            ? videoProviders
+            : [selectedDownloadProvider],
         load: (provider) {
           debugPrint(
             '[MovieVideoLoader] Request provider=${provider.displayName} '
@@ -152,6 +181,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           );
         },
         onResult: (index, provider, result) {
+          final providerIndex = videoProviders.indexWhere(
+            (candidate) => candidate.codeName == provider.codeName,
+          );
           debugPrint(
             '[MovieVideoLoader] Response provider=${provider.displayName} '
             'success=${result.success}, links=${result.videoLinks?.length ?? 0}, '
@@ -159,8 +191,9 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
           );
           if (mounted) {
             setState(() {
-              currentProviderIndex = index;
-              providerStates[index] = providerStates[index].copyWith(
+              currentProviderIndex = providerIndex;
+              providerStates[providerIndex] =
+                  providerStates[providerIndex].copyWith(
                 status: result.success && result.videoLinks?.isNotEmpty == true
                     ? ProviderStatus.success
                     : ProviderStatus.failed,
@@ -205,6 +238,15 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
       );
 
       if (firstWorkingProviderCode != null && mounted) {
+        if (widget.download) {
+          await _enqueueDownload(
+            sources: reversedVids,
+            videoFormats: videoFormats,
+            videoHeaders: videoHeaders,
+            providerName: selection?.provider.displayName,
+          );
+          return;
+        }
         Provider.of<SettingsProvider>(context, listen: false)
             .analytics
             .trackMovieWatched(
@@ -279,6 +321,66 @@ class _MovieVideoLoaderState extends State<MovieVideoLoader> {
             context: context);
       }
     }
+  }
+
+  Future<void> _enqueueDownload({
+    required Map<String, String> sources,
+    required Map<String, BetterPlayerVideoFormat?> videoFormats,
+    required Map<String, Map<String, String>> videoHeaders,
+    String? providerName,
+  }) async {
+    final quality = await DownloadSelectionSheets.showResolution(
+      context,
+      resolutions: sources.keys.toList(),
+      providerName: providerName,
+    );
+    if (!mounted) return;
+    if (quality == null) {
+      Navigator.pop(context, false);
+      return;
+    }
+    final url = sources[quality]!;
+    final declaredFormat = videoFormats[quality];
+    final format = declaredFormat == BetterPlayerVideoFormat.dash
+        ? 'dash'
+        : declaredFormat == BetterPlayerVideoFormat.hls
+            ? 'hls'
+            : url.toLowerCase().contains('.mpd')
+                ? 'dash'
+                : 'hls';
+    final posterPath = widget.metadata.posterPath;
+    try {
+      await context.read<OfflineDownloadProvider>().enqueue(
+            OfflineDownloadRequest(
+              id: 'movie_${widget.metadata.movieId}',
+              url: url,
+              format: format,
+              title: widget.metadata.movieName ?? 'Movie',
+              subtitle: providerName == null ? null : 'From $providerName',
+              mediaType: 'movie',
+              quality: quality,
+              posterUrl: posterPath == null
+                  ? null
+                  : '${TMDB_BASE_IMAGE_URL}w500$posterPath',
+              maxVideoHeight: _qualityHeight(quality),
+              headers: videoHeaders[quality] ??
+                  VideoUtils.inferVideoHeaders(url) ??
+                  const {},
+            ),
+          );
+      if (mounted) Navigator.pop(context, true);
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not start download: $error')),
+      );
+      Navigator.pop(context, false);
+    }
+  }
+
+  int? _qualityHeight(String quality) {
+    final match = RegExp(r'(\d{3,4})').firstMatch(quality);
+    return int.tryParse(match?.group(1) ?? '');
   }
 
   void _addSubtitles(List<RegularSubtitleLinks>? subtitleLinks) {

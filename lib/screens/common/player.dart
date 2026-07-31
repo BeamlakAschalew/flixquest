@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flixquest/models/tv_stream_metadata.dart';
+import 'package:flixquest/models/offline_download.dart';
 
 import '../../models/movie_stream_metadata.dart';
 import '../../models/provider_video_source.dart';
@@ -18,6 +19,8 @@ import 'package:provider/provider.dart';
 import 'package:better_player_plus/better_player_plus.dart';
 import '../../functions/function.dart';
 import '../../provider/settings_provider.dart';
+import '../../provider/offline_download_provider.dart';
+import '../../constants/api_constants.dart';
 import '../../ui_components/app_ui_components.dart';
 import '../movie/movie_video_loader.dart';
 import '../tv/tv_video_loader.dart';
@@ -27,6 +30,7 @@ import 'player/player_episode_selection.dart';
 import 'player/player_movie_recommendations.dart';
 import 'player/player_sheet_ui.dart';
 import 'player/player_widgets.dart';
+import 'download_selection_sheets.dart';
 
 class PlayerOne extends StatefulWidget {
   const PlayerOne(
@@ -309,6 +313,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                     tr('switch_provider'),
                     _showProviderSwitcher,
                   ),
+                BetterPlayerOverflowMenuItem(
+                  PhosphorIcons.downloadSimple(),
+                  'Download',
+                  _downloadFromCurrentProvider,
+                ),
               ]);
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
@@ -504,7 +513,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
       videoFormat: videoFormats?[selectedSource.key] ?? _inferVideoFormat(link),
       headers: suppliedHeaders?.isNotEmpty == true
           ? suppliedHeaders
-          : _inferHeaders(link),
+          : VideoUtils.inferVideoHeaders(link),
       subtitles: subtitles,
       // Streaming already has a bounded in-memory buffer. A persistent media
       // cache can fill the limited internal storage available on Android TVs.
@@ -529,22 +538,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     }
 
     return null;
-  }
-
-  Map<String, String>? _inferHeaders(String? url) {
-    final host = Uri.tryParse(url ?? '')?.host.toLowerCase();
-    if (host == null || !host.endsWith('vixsrc.to')) {
-      return null;
-    }
-
-    return const {
-      'accept': '*/*',
-      'origin': 'https://vixsrc.to',
-      'referer': 'https://vixsrc.to/',
-      'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-              '(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-    };
   }
 
   void pauseDurationTimer() {
@@ -1395,6 +1388,96 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         ),
       ),
     );
+  }
+
+  Future<void> _downloadFromCurrentProvider() async {
+    if (_activeSources.isEmpty) return;
+    final providerName = _currentProviderName();
+    final sources = Map<String, String>.of(_activeSources);
+    final formats = _activeVideoFormats == null
+        ? <String, BetterPlayerVideoFormat?>{}
+        : Map<String, BetterPlayerVideoFormat?>.of(_activeVideoFormats!);
+    final headers = Map<String, Map<String, String>>.of(_activeVideoHeaders);
+    final resolution = await DownloadSelectionSheets.showResolution(
+      context,
+      resolutions: sources.keys.toList(),
+      providerName: providerName,
+    );
+    if (!mounted || resolution == null) return;
+
+    final url = sources[resolution];
+    if (url == null) return;
+    final declaredFormat = formats[resolution];
+    final format = declaredFormat == BetterPlayerVideoFormat.dash
+        ? 'dash'
+        : declaredFormat == BetterPlayerVideoFormat.hls
+            ? 'hls'
+            : url.toLowerCase().contains('.mpd')
+                ? 'dash'
+                : 'hls';
+    final movie = widget.movieMetadata;
+    final episode = widget.tvMetadata;
+    final isMovie = widget.mediaType == MediaType.movie;
+    final season = episode?.seasonNumber ?? 0;
+    final episodeNumber = episode?.episodeNumber ?? 0;
+    final posterPath = isMovie ? movie?.posterPath : episode?.posterPath;
+
+    try {
+      await context.read<OfflineDownloadProvider>().enqueue(
+            OfflineDownloadRequest(
+              id: isMovie
+                  ? 'movie_${movie!.movieId}'
+                  : 'tv_${episode!.tvId}_s${season}_e$episodeNumber',
+              url: url,
+              format: format,
+              title: isMovie
+                  ? movie?.movieName ?? 'Movie'
+                  : episode?.seriesName ?? 'TV episode',
+              subtitle: isMovie
+                  ? 'From $providerName'
+                  : 'S${season.toString().padLeft(2, '0')} • '
+                      'E${episodeNumber.toString().padLeft(2, '0')} '
+                      '${episode?.episodeName ?? ''} • $providerName',
+              mediaType: isMovie ? 'movie' : 'episode',
+              quality: resolution,
+              posterUrl: posterPath == null
+                  ? null
+                  : '${TMDB_BASE_IMAGE_URL}w500$posterPath',
+              maxVideoHeight: _downloadResolutionHeight(resolution),
+              headers: headers[resolution] ??
+                  VideoUtils.inferVideoHeaders(url) ??
+                  const {},
+            ),
+          );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$resolution download added from $providerName'),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not start download: $error')),
+      );
+    }
+  }
+
+  String _currentProviderName() {
+    final code = _currentProviderCode;
+    final loadedName =
+        code == null ? null : _loadedProviders[code]?.providerName;
+    if (loadedName?.isNotEmpty == true) return loadedName!;
+    for (final provider
+        in widget.availableProviders ?? const <VideoProvider>[]) {
+      if (provider.codeName == code) return provider.displayName;
+    }
+    return 'Current provider';
+  }
+
+  int? _downloadResolutionHeight(String resolution) {
+    final match = RegExp(r'(\d{3,4})').firstMatch(resolution);
+    return int.tryParse(match?.group(1) ?? '');
   }
 
   void _showSubtitleSwitcher() {

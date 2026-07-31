@@ -53,13 +53,11 @@ class AboutPage extends StatelessWidget {
               FutureBuilder<PackageInfo>(
                 future: PackageInfo.fromPlatform(),
                 builder: (context, snapshot) {
-                  final version =
-                      snapshot.data?.version ?? currentAppVersion;
+                  final version = snapshot.data?.version ?? currentAppVersion;
                   return Text(
                     tr('app_version', namedArgs: {'version': version}),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   );
                 },
