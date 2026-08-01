@@ -2,6 +2,8 @@ package dev.beamlak.flixquest_v2.downloads
 
 import android.content.Context
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackSelectionParameters
@@ -101,18 +103,35 @@ class StreamDownloadStore private constructor(context: Context) {
 
         helper.prepare(object : DownloadHelper.Callback {
             override fun onPrepared(helper: DownloadHelper, tracksInfoAvailable: Boolean) {
+                // DownloadHelper (and its DefaultTrackSelector) is bound to the
+                // looper on which preparation completes. Subtitle I/O belongs
+                // on the worker pool, but getDownloadRequest() and release()
+                // must return to this looper or Media3 throws and terminates
+                // the process.
+                val helperHandler = Handler(
+                    checkNotNull(Looper.myLooper()) {
+                        "DownloadHelper prepared without an application looper."
+                    },
+                )
                 downloadExecutor.execute {
                     try {
                         downloadSubtitle(arguments, id, metadata)
-                        val request = helper.getDownloadRequest(
-                            id,
-                            metadata.toString().toByteArray(StandardCharsets.UTF_8),
-                        )
-                        callback(Result.success(request))
                     } catch (error: Exception) {
-                        callback(Result.failure(error))
-                    } finally {
+                        helperHandler.post {
+                            helper.release()
+                            callback(Result.failure(error))
+                        }
+                        return@execute
+                    }
+                    helperHandler.post {
+                        val preparedRequest = runCatching {
+                            helper.getDownloadRequest(
+                                id,
+                                metadata.toString().toByteArray(StandardCharsets.UTF_8),
+                            )
+                        }
                         helper.release()
+                        callback(preparedRequest)
                     }
                 }
             }
