@@ -268,51 +268,41 @@ class _ChannelListState extends State<ChannelList> {
             ),
           ),
           const SizedBox(height: 14),
-          SegmentedButton<_ChannelScope>(
-            showSelectedIcon: false,
-            segments: <ButtonSegment<_ChannelScope>>[
-              ButtonSegment(
-                value: _ChannelScope.all,
-                icon: Icon(PhosphorIcons.broadcast()),
-                label: const Text('All'),
-              ),
-              ButtonSegment(
-                value: _ChannelScope.favorites,
-                icon: Icon(PhosphorIcons.heart()),
-                label: const Text('Favorites'),
-              ),
-              ButtonSegment(
-                value: _ChannelScope.recent,
-                icon: Icon(PhosphorIcons.clockCounterClockwise()),
-                label: const Text('Recent'),
-              ),
+          AppFilterRail(
+            children: <Widget>[
+              for (final entry in <(_ChannelScope, String, IconData)>[
+                (_ChannelScope.all, 'All', PhosphorIcons.broadcast()),
+                (_ChannelScope.favorites, 'Favorites', PhosphorIcons.heart()),
+                (
+                  _ChannelScope.recent,
+                  'Recent',
+                  PhosphorIcons.clockCounterClockwise()
+                ),
+              ])
+                AppFilterPill(
+                  label: entry.$2,
+                  selected: _scope == entry.$1,
+                  onPressed: () => setState(() => _scope = entry.$1),
+                ),
             ],
-            selected: <_ChannelScope>{_scope},
-            onSelectionChanged: (value) => setState(() => _scope = value.first),
           ),
           if (_categories.isNotEmpty) ...<Widget>[
             const SizedBox(height: 10),
-            SizedBox(
-              height: 42,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: <Widget>[
-                  ChoiceChip(
-                    label: const Text('All categories'),
-                    selected: _selectedCategory == null,
-                    onSelected: (_) => setState(() => _selectedCategory = null),
+            AppFilterRail(
+              children: <Widget>[
+                AppFilterPill(
+                  label: 'All categories',
+                  selected: _selectedCategory == null,
+                  onPressed: () => setState(() => _selectedCategory = null),
+                ),
+                for (final category in _categories)
+                  AppFilterPill(
+                    label: category,
+                    selected: _selectedCategory == category,
+                    onPressed: () =>
+                        setState(() => _selectedCategory = category),
                   ),
-                  for (final category in _categories) ...<Widget>[
-                    const SizedBox(width: 8),
-                    ChoiceChip(
-                      label: Text(category),
-                      selected: _selectedCategory == category,
-                      onSelected: (_) =>
-                          setState(() => _selectedCategory = category),
-                    ),
-                  ],
-                ],
-              ),
+              ],
             ),
           ],
           Padding(
@@ -397,7 +387,7 @@ class _ChannelCard extends StatelessWidget {
                     Text(
                       channel.categories.isEmpty
                           ? 'Channel ${channel.id}'
-                          : channel.categories.take(2).join(' â¢ '),
+                          : channel.categories.take(2).join(' • '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodySmall,

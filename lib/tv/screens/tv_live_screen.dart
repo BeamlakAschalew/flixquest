@@ -10,6 +10,7 @@ import '../../services/daddylive_service.dart';
 import '../app/tv_design.dart';
 import '../focus/tv_focusable.dart';
 import '../player/tv_player_screen.dart';
+import '../widgets/tv_state_panel.dart';
 
 enum _TvLiveScope { all, favorites, recent }
 
@@ -173,9 +174,14 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
     return FocusTraversalGroup(
       policy: ReadingOrderTraversalPolicy(),
       child: Padding(
-        padding: EdgeInsets.all(widget.metrics.contentPadding),
+        padding: EdgeInsets.fromLTRB(
+          widget.metrics.contentPadding,
+          0,
+          widget.metrics.contentPadding,
+          0,
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _buildTitle(),
             SizedBox(height: widget.metrics.compact ? 12 : 18),
@@ -193,24 +199,44 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   }
 
   Widget _buildTitle() {
+    final colors = Theme.of(context).colorScheme;
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: colors.primary.withValues(alpha: 0.14),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(
+            PhosphorIcons.broadcast(),
+            color: colors.primary,
+            size: 27,
+          ),
+        ),
+        const SizedBox(width: 15),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
                 'Live TV',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontFamily: 'FigtreeSB',
-                      fontWeight: FontWeight.w800,
-                    ),
+                style: TextStyle(
+                  color: colors.onSurface,
+                  fontFamily: 'FigtreeSB',
+                  fontSize: 34,
+                  height: 1,
+                ),
               ),
+              const SizedBox(height: 5),
               Text(
                 '${_visible.length} channels • Select a channel to watch',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                style: TextStyle(
+                  color: colors.onSurfaceVariant,
+                  fontSize: 16,
+                ),
               ),
             ],
           ),
@@ -218,6 +244,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
         TvFocusable(
           semanticLabel: 'Refresh live TV',
           onActivate: () => _load(refresh: true),
+          focusScale: 1.025,
           child: _TvPill(
             icon: PhosphorIcons.arrowsClockwise(),
             label: 'Refresh',
@@ -235,12 +262,15 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
             controller: _searchController,
             focusNode: _searchFocus,
             onChanged: (value) => setState(() => _query = value),
-            style: const TextStyle(fontSize: 18),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 20,
+            ),
             decoration: InputDecoration(
               hintText: 'Search channels',
               prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
               filled: true,
-              border: OutlineInputBorder(),
+              border: InputBorder.none,
             ),
           ),
         ),
@@ -258,6 +288,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
             semanticLabel: '${entry.$2} channels',
             selected: _scope == entry.$1,
             onActivate: () => setState(() => _scope = entry.$1),
+            focusScale: 1.025,
             child: _TvPill(
               icon: entry.$3,
               label: entry.$2,
@@ -280,6 +311,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
             semanticLabel: 'All categories',
             selected: _category == null,
             onActivate: () => setState(() => _category = null),
+            focusScale: 1.025,
             child:
                 _TvPill(label: 'All categories', selected: _category == null),
           ),
@@ -289,6 +321,7 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
               semanticLabel: '$category category',
               selected: _category == category,
               onActivate: () => setState(() => _category = category),
+              focusScale: 1.025,
               child: _TvPill(
                 label: category,
                 selected: _category == category,
@@ -303,11 +336,10 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   Widget _buildGrid() {
     final channels = _visible;
     if (channels.isEmpty) {
-      return Center(
-        child: Text(
-          'No channels match these filters.',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+      return TvStatePanel(
+        title: 'No channels found',
+        message: 'Try another search, category, or collection.',
+        icon: PhosphorIcons.televisionSimple(),
       );
     }
     return GridView.builder(
@@ -333,28 +365,9 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   }
 
   Widget _buildError() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(PhosphorIcons.linkBreak(), size: 72),
-          const SizedBox(height: 18),
-          Text('Live TV is unavailable',
-              style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 8),
-          Text(_error!, textAlign: TextAlign.center),
-          const SizedBox(height: 20),
-          TvFocusable(
-            autofocus: true,
-            semanticLabel: 'Retry live TV',
-            onActivate: _load,
-            child: _TvPill(
-              icon: PhosphorIcons.arrowsClockwise(),
-              label: 'Retry',
-            ),
-          ),
-        ],
-      ),
+    return TvStatePanel.error(
+      onRetry: _load,
+      message: _error ?? 'Live TV is currently unavailable.',
     );
   }
 }
@@ -374,18 +387,33 @@ class _TvPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: selected
-            ? colors.primaryContainer
-            : colors.surfaceContainerHighest.withValues(alpha: 0.72),
+            ? colors.primary.withValues(alpha: 0.18)
+            : colors.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+        border: selected
+            ? Border.all(color: colors.primary.withValues(alpha: 0.4))
+            : Border.all(color: colors.onSurface.withValues(alpha: 0.08)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           if (icon != null) ...<Widget>[
-            Icon(icon, size: 22),
+            Icon(
+              icon,
+              size: 22,
+              color: selected ? colors.primary : colors.onSurfaceVariant,
+            ),
             const SizedBox(width: 8),
           ],
-          Text(label, style: const TextStyle(fontSize: 17)),
+          Text(
+            label,
+            style: TextStyle(
+              color: colors.onSurface,
+              fontFamily: selected ? 'FigtreeSB' : 'Figtree',
+              fontSize: 17,
+            ),
+          ),
         ],
       ),
     );
@@ -413,6 +441,7 @@ class _TvChannelCard extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: TvDesign.surfaceFor(context, emphasis: 0.04),
+        borderRadius: BorderRadius.circular(TvDesign.cardRadius),
         border: Border.all(color: colors.onSurface.withValues(alpha: 0.08)),
       ),
       child: Padding(

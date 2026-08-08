@@ -30,6 +30,11 @@ class DaddyLiveService {
       : _baseUrl = baseUrl.replaceFirst(RegExp(r'/+$'), ''),
         _client = client ?? http.Client();
 
+  static const String _browserUserAgent =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36';
+  static const String _siteReferer = 'https://dlhd.st/';
+
   final String _baseUrl;
   final http.Client _client;
 
@@ -92,16 +97,127 @@ class DaddyLiveService {
     return DaddyLiveEpg.fromJson(json);
   }
 
+  /// Resolves a playable stream for [channelId].
+  ///
+  /// DaddyLive issues short-lived, IP-bound tokens: a stream URL is only
+  /// playable from the IP that fetched the channel's embed page. Because the
+  /// scraper fetches embeds server-side, its resolved URL cannot be played
+  /// directly on the device. The device therefore re-fetches the embed page
+  /// itself and extracts the m3u8 URL from it, falling back to the
+  /// server-resolved URL when that is unavailable.
   Future<DaddyLiveStream> getStream(String channelId) async {
     final json = await _getJson(
       _uri('/api/v2/dlhd/channels/${Uri.encodeComponent(channelId)}/stream'),
     );
-    final stream = DaddyLiveStream.fromJson(json);
-    if (stream.url.isEmpty) {
+    final apiStream = DaddyLiveStream.fromJson(json);
+    if (apiStream.embedUrl.isNotEmpty) {
+      final deviceStream = await _resolveFromEmbed(apiStream);
+      if (deviceStream != null) return deviceStream;
+    }
+    if (apiStream.url.isEmpty) {
       throw const DaddyLiveException(
           'The channel returned no playable stream.');
     }
-    return stream;
+    return apiStream;
+  }
+
+  Future<DaddyLiveStream?> _resolveFromEmbed(
+    DaddyLiveStream apiStream,
+  ) async {
+    try {
+      final embedPage = await _client.get(
+        Uri.parse(apiStream.embedUrl),
+        headers: <String, String>{
+          'Accept':
+              'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Referer': _siteReferer,
+          'User-Agent': _browserUserAgent,
+        },
+      ).timeout(const Duration(seconds: 30));
+      if (embedPage.statusCode < 200 || embedPage.statusCode >= 300) {
+        return null;
+      }
+      final html = utf8.decode(embedPage.bodyBytes);
+      final candidates = _extractM3u8Urls(html, apiStream.embedUrl);
+      for (final url in candidates) {
+        if (await _isPlayable(url, apiStream.headers)) {
+          return DaddyLiveStream(
+            url: url,
+            headers: apiStream.headers,
+            embedUrl: apiStream.embedUrl,
+            expiresAt: apiStream.expiresAt,
+          );
+        }
+      }
+    } catch (_) {
+      // Embed host may be unreachable; fall back to the server URL below.
+    }
+    return null;
+  }
+
+  Future<bool> _isPlayable(
+    String url,
+    Map<String, String> headers,
+  ) async {
+    try {
+      final response = await _client
+          .get(Uri.parse(url), headers: headers)
+          .timeout(const Duration(seconds: 15));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        return false;
+      }
+      final body = utf8.decode(response.bodyBytes);
+      return body.trimLeft().startsWith('#EXTM3U');
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Extracts candidate m3u8 URLs from an embed page, mirroring the scraper's
+  /// parsing: base64 literals inside `atob(...)` plus raw URLs in the markup.
+  List<String> _extractM3u8Urls(String html, String pageUrl) {
+    final candidates = <String>[];
+    final atobPattern = RegExp(
+      r'''atob\(\s*['"]([^'"]+)['"]\s*\)''',
+      caseSensitive: false,
+    );
+    for (final match in atobPattern.allMatches(html)) {
+      try {
+        final decoded = utf8.decode(base64Decode(match.group(1)!)).trim();
+        if (decoded.isNotEmpty) candidates.add(decoded);
+      } on FormatException {
+        // Ignore unrelated base64 payloads.
+      }
+    }
+    final unescaped = html
+        .replaceAll(r'\/', '/')
+        .replaceAll('&amp;', '&')
+        .replaceAll(r'\u0026', '&');
+    final rawUrlPattern = RegExp(
+      r'''(?:https?:)?//[^\s'"<>]+\.m3u8(?:\?[^\s'"<>]*)?''',
+      caseSensitive: false,
+    );
+    for (final match in rawUrlPattern.allMatches(unescaped)) {
+      candidates.add(match.group(0)!);
+    }
+    final resolved = <String>[];
+    for (final candidate in candidates) {
+      try {
+        final uri = Uri.parse(candidate);
+        final absolute =
+            uri.hasScheme ? uri : Uri.parse(pageUrl).resolveUri(uri);
+        if (absolute.hasScheme && absolute.scheme.startsWith('http')) {
+          resolved.add(absolute.toString());
+        }
+      } on FormatException {
+        // Ignore malformed candidates.
+      }
+    }
+    return resolved
+        .where((url) => url.contains('.m3u8'))
+        .toSet()
+        .toList(growable: false);
   }
 
   Future<Map<String, dynamic>> _getJson(Uri uri) async {
