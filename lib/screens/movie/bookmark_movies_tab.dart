@@ -75,8 +75,8 @@ class _MovieBookmarkState extends State<MovieBookmark> {
       itemBuilder: (_, index) {
         final movie = items[index];
         return Card(
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () => _open(movie),
             child: Padding(
               padding: const EdgeInsets.all(10),
@@ -179,9 +179,9 @@ class _MovieGridCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onOpen,
-      borderRadius: BorderRadius.circular(AppUI.cardRadius),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -120,7 +120,8 @@ class _DownloadCard extends StatelessWidget {
     );
     return Card(
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: download.isComplete ? () => _playOffline(context) : null,
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -598,9 +599,9 @@ class _DownloadActionTile extends StatelessWidget {
     return Material(
       color: accent.withValues(alpha: .08),
       borderRadius: BorderRadius.circular(16),
-      child: InkWell(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(

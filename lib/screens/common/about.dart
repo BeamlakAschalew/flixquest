@@ -77,8 +77,8 @@ class AboutPage extends StatelessWidget {
                             ?.copyWith(height: 1.5),
                       ),
                       const SizedBox(height: 18),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(16),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: () => launchUrl(
                             Uri.parse('https://themoviedb.org'),
                             mode: LaunchMode.externalApplication),

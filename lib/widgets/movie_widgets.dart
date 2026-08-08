@@ -51,12 +51,10 @@ import 'common_widgets.dart';
 
 class MainMoviesDisplay extends StatefulWidget {
   const MainMoviesDisplay({
-    this.onMenuPressed,
     this.onSearchPressed,
     super.key,
   });
 
-  final VoidCallback? onMenuPressed;
   final VoidCallback? onSearchPressed;
 
   @override
@@ -106,7 +104,6 @@ class _MainMoviesDisplayState extends State<MainMoviesDisplay> {
               child: DiscoverMovies(
                 includeAdult: includeAdult,
                 discoverType: 'discover',
-                onMenuPressed: widget.onMenuPressed,
                 onSearchPressed: widget.onSearchPressed,
               ),
             ),
@@ -189,11 +186,9 @@ class DiscoverMovies extends StatefulWidget {
       {super.key,
       required this.includeAdult,
       required this.discoverType,
-      this.onMenuPressed,
       this.onSearchPressed});
   final bool includeAdult;
   final String discoverType;
-  final VoidCallback? onMenuPressed;
   final VoidCallback? onSearchPressed;
   @override
   DiscoverMoviesState createState() => DiscoverMoviesState();
@@ -412,19 +407,15 @@ class DiscoverMoviesState extends State<DiscoverMovies>
                               alignment: Alignment.topCenter,
                               child: Row(
                                 children: [
-                                  InkWell(
-                                    onTap: widget.onMenuPressed,
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: SvgPicture.asset(
-                                        'assets/images/fq_svg.svg',
-                                        width: 28,
-                                        height: 28,
-                                        colorFilter: ColorFilter.mode(
-                                          Theme.of(context).colorScheme.primary,
-                                          BlendMode.srcIn,
-                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: SvgPicture.asset(
+                                      'assets/images/fq_svg.svg',
+                                      width: 28,
+                                      height: 28,
+                                      colorFilter: ColorFilter.mode(
+                                        Theme.of(context).colorScheme.primary,
+                                        BlendMode.srcIn,
                                       ),
                                     ),
                                   ),
@@ -919,12 +910,10 @@ class _ScrollingRecentMoviesState extends State<ScrollingRecentMovies> {
               final total = elapsed + (movie.remaining ?? 0).toDouble();
               return SizedBox(
                 width: cardWidth,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(18),
-                  overlayColor:
-                      const WidgetStatePropertyAll(Colors.transparent),
-                  onLongPress: () =>
-                      context.read<RecentProvider>().deleteMovie(movie.id!),
+                child: AppPressable(
+                  onLongPress: () => context
+                      .read<RecentProvider>()
+                      .deleteMovie(movie.id!),
                   onTap: () => _openMovie(movie),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -4088,8 +4077,8 @@ class StreamingServicesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 92,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(

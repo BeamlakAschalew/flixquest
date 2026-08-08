@@ -110,7 +110,8 @@ class PlayerChoiceCard extends StatelessWidget {
           selected ? colors.primary.withValues(alpha: .1) : Colors.transparent,
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

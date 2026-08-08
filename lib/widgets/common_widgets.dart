@@ -5,147 +5,21 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flixquest/services/globle_method.dart';
 import '../functions/function.dart';
 import '/provider/app_dependency_provider.dart';
-import '/screens/common/live_tv_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../constants/app_constants.dart';
 import '../functions/network.dart';
 import '../models/movie.dart';
 import '../models/watch_providers.dart';
-import '/screens/common/bookmark_screen.dart';
-import '/screens/common/settings.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../constants/api_constants.dart';
 import '../provider/settings_provider.dart';
-import '../screens/common/about.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../ui_components/app_ui_components.dart';
 //import '../screens/common/news_screen.dart';
-
-class DrawerWidget extends StatefulWidget {
-  const DrawerWidget({
-    super.key,
-  });
-
-  @override
-  State<DrawerWidget> createState() => _DrawerWidgetState();
-}
-
-class _DrawerWidgetState extends State<DrawerWidget> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final flixquestLogo =
-        Provider.of<AppDependencyProvider>(context).flixQuestLogo;
-    AppDependencyProvider appDependencyProvider = AppDependencyProvider();
-    return Drawer(
-      child: Container(
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: DrawerHeader(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withValues(alpha: .09),
-                      ),
-                      child: flixquestLogo == 'default'
-                          ? Image.asset('assets/images/logo.png')
-                          : CachedNetworkImage(
-                              imageUrl: flixquestLogo,
-                            ),
-                    ),
-                  ),
-                  ListTile(
-                    leading: Icon(
-                      PhosphorIcons.bookmarkSimple(),
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(tr('bookmarks')),
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: ((context) {
-                        return const BookmarkScreen();
-                      })));
-                    },
-                  ),
-                  appDependencyProvider.displayOTTDrawer
-                      ? ListTile(
-                          leading: Icon(
-                            PhosphorIcons.television(),
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          title: Text(tr('live_tv')),
-                          onTap: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: ((context) {
-                              return const ChannelList();
-                            })));
-                          },
-                        )
-                      : Container(),
-                  // ListTile(
-                  //   leading: Icon(
-                  //     FontAwesomeIcons.newspaper,
-                  //     color: Theme.of(context).colorScheme.primary,
-                  //   ),
-                  //   title: const Text('News'),
-                  //   onTap: () {
-                  //     Navigator.push(context,
-                  //         MaterialPageRoute(builder: ((context) {
-                  //       return const NewsPage();
-                  //     })));
-                  //   },
-                  // ),
-                  ListTile(
-                    leading: Icon(
-                      PhosphorIcons.gear(),
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(tr('settings')),
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: ((context) {
-                        return const Settings();
-                      })));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(
-                      PhosphorIcons.info(),
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(tr('about')),
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return const AboutPage();
-                      }));
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 Widget scrollingMoviesAndTVShimmer(String themeMode) =>
     const AppMediaRowShimmer();

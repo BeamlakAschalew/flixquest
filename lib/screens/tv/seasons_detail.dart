@@ -483,8 +483,8 @@ class _EpisodeRailCard extends StatelessWidget {
       color: colors.surfaceContainerHighest.withValues(alpha: .48),
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppUI.cardRadius),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(
@@ -798,8 +798,8 @@ class _SeasonMedia extends StatelessWidget {
                       return SizedBox(
                         width:
                             MediaQuery.sizeOf(context).width >= 700 ? 310 : 272,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(AppUI.cardRadius),
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
                           onTap: () => launchUrl(
                             Uri.parse('$YOUTUBE_BASE_URL${video.videoLink}'),
                             mode: LaunchMode.externalApplication,

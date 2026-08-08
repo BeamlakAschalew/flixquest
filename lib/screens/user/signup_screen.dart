@@ -192,8 +192,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                           profileImages.profile()[index];
                                       final selected =
                                           profileValue == profile.index;
-                                      return InkWell(
-                                        customBorder: const CircleBorder(),
+                                      return GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
                                         onTap: () => setState(() {
                                           profileValue = profile.index;
                                           selectedProfile = profile.index;

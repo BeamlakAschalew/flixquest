@@ -49,7 +49,13 @@ class DaddyLiveService {
     final channels = results[0] as List<Channel>;
     final epg = results[1] as DaddyLiveEpg;
     final categoriesByChannel = <String, Set<String>>{};
+    final eventsByChannel = <String, Set<String>>{};
+    final nowPlayingByChannel = <String, String>{};
+    final nowPlayingStart = <String, DateTime>{};
+    final nextUpByChannel = <String, String>{};
+    final nextUpStart = <String, DateTime>{};
     final categories = <String>{};
+    final now = DateTime.now();
     for (final day in epg.days) {
       for (final category in day.categories) {
         categories.add(category.name);
@@ -58,6 +64,22 @@ class DaddyLiveService {
             categoriesByChannel
                 .putIfAbsent(channel.id, () => <String>{})
                 .add(category.name);
+            eventsByChannel
+                .putIfAbsent(channel.id, () => <String>{})
+                .add(event.title);
+            final startsAt = event.startsAt;
+            if (startsAt == null) continue;
+            if (!startsAt.isAfter(now)) {
+              if (nowPlayingStart[channel.id] == null ||
+                  startsAt.isAfter(nowPlayingStart[channel.id]!)) {
+                nowPlayingStart[channel.id] = startsAt;
+                nowPlayingByChannel[channel.id] = event.title;
+              }
+            } else if (nextUpStart[channel.id] == null ||
+                startsAt.isBefore(nextUpStart[channel.id]!)) {
+              nextUpStart[channel.id] = startsAt;
+              nextUpByChannel[channel.id] = event.title;
+            }
           }
         }
       }
@@ -68,6 +90,11 @@ class DaddyLiveService {
             categories: (categoriesByChannel[channel.id] ?? const <String>{})
                 .toList(growable: false)
               ..sort(),
+            eventTitles: (eventsByChannel[channel.id] ?? const <String>{})
+                .toList(growable: false)
+              ..sort(),
+            nowPlaying: nowPlayingByChannel[channel.id],
+            nextUp: nextUpByChannel[channel.id],
           ),
         )
         .toList(growable: false);

@@ -19,7 +19,6 @@ import 'screens/common/bookmark_screen.dart';
 import 'screens/common/search_view.dart';
 import 'screens/user/user_info.dart';
 import 'screens/user/user_state.dart';
-import 'widgets/common_widgets.dart';
 import 'widgets/movie_widgets.dart';
 import 'widgets/tv_widgets.dart';
 import 'provider/bookmark_provider.dart';
@@ -187,7 +186,6 @@ class FlixQuestHomePage extends StatefulWidget {
 class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     with SingleTickerProviderStateMixin {
   late int selectedIndex;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
 
   @override
@@ -262,8 +260,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
     final lang = Provider.of<SettingsProvider>(context).appLanguage;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-        key: _scaffoldKey,
-        drawer: const Drawer(child: DrawerWidget()),
         bottomNavigationBar: Align(
           heightFactor: 1,
           alignment: Alignment.bottomCenter,
@@ -352,7 +348,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
           index: selectedIndex,
           children: <Widget>[
             MainMoviesDisplay(
-              onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
               onSearchPressed: () {
                 showSearch(
                   context: context,
@@ -366,7 +361,6 @@ class _FlixQuestHomePageState extends State<FlixQuestHomePage>
               },
             ),
             MainTVDisplay(
-              onMenuPressed: () => _scaffoldKey.currentState?.openDrawer(),
               onSearchPressed: () {
                 showSearch(
                   context: context,

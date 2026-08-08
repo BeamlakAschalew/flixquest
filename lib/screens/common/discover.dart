@@ -44,8 +44,8 @@ class _DiscoverPageState extends State<DiscoverPage>
                   child: Material(
                     color: colors.onSurface.withValues(alpha: .06),
                     borderRadius: BorderRadius.circular(15),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(15),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () => _openSearch(settings),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(

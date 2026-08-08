@@ -263,8 +263,8 @@ class _ProfileEditState extends State<ProfileEdit> {
                                     return Semantics(
                                       selected: selected,
                                       button: true,
-                                      child: InkWell(
-                                        customBorder: const CircleBorder(),
+                                      child: GestureDetector(
+                                        behavior: HitTestBehavior.opaque,
                                         onTap: () => setState(() {
                                           profileId = profile.index;
                                           selectedProfile = profile.index;

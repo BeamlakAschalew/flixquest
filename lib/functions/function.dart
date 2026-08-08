@@ -180,6 +180,34 @@ int createUniqueId() {
   return DateTime.now().millisecondsSinceEpoch.remainder(100000);
 }
 
+const Map<String, String> _searchAccentMap = {
+  'á': 'a', 'à': 'a', 'â': 'a', 'ä': 'a', 'ã': 'a', 'å': 'a', 'ā': 'a',
+  'é': 'e', 'è': 'e', 'ê': 'e', 'ë': 'e', 'ē': 'e',
+  'í': 'i', 'ì': 'i', 'î': 'i', 'ï': 'i', 'ī': 'i',
+  'ó': 'o', 'ò': 'o', 'ô': 'o', 'ö': 'o', 'õ': 'o', 'ø': 'o', 'ō': 'o',
+  'ú': 'u', 'ù': 'u', 'û': 'u', 'ü': 'u', 'ū': 'u',
+  'ñ': 'n', 'ç': 'c', 'ß': 'ss', 'æ': 'ae', 'œ': 'oe', 'ý': 'y', 'ÿ': 'y',
+};
+
+/// Folds text for tolerant searching: lowercase, strips accents, and
+/// collapses punctuation and other non-alphanumeric characters into spaces.
+String normalizeSearchText(String value) {
+  var folded = value.toLowerCase().trim();
+  for (final entry in _searchAccentMap.entries) {
+    folded = folded.replaceAll(entry.key, entry.value);
+  }
+  return folded.replaceAll(RegExp(r'[^a-z0-9 ]+'), ' ').replaceAll('  ', ' ');
+}
+
+/// Splits a search query into folded tokens. All tokens must match for a
+/// result to be included, which keeps multi-word queries useful.
+List<String> searchTokens(String query) {
+  return normalizeSearchText(query)
+      .split(' ')
+      .where((token) => token.isNotEmpty)
+      .toList(growable: false);
+}
+
 String buildImageUrl(String baseImage, String proxyUrl, bool isProxyEnabled,
     BuildContext context) {
   String concatenated = baseImage;

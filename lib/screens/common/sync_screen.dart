@@ -965,9 +965,9 @@ class _CloudMediaGridCard extends StatelessWidget {
             settings.imageQuality +
             posterPath!;
 
-    return InkWell(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppUI.cardRadius),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

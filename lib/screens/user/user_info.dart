@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../ui_components/app_ui_components.dart';
 import '../common/about.dart';
 import '../common/landing_screen.dart';
+import '../common/live_tv_screen.dart';
 import '../common/server_status_screen.dart';
 import '../common/settings.dart' as app_settings;
 import '../common/update_screen.dart';
@@ -286,12 +288,20 @@ class _UserInfoState extends State<UserInfo> {
   }
 
   Widget _profileActions({required bool authenticated}) {
+    final showLiveTV =
+        context.watch<AppDependencyProvider>().displayOTTDrawer;
     final actions = <Widget>[
       if (authenticated)
         _ProfileAction(
           icon: PhosphorIcons.user(),
           title: tr('edit_profile'),
           onTap: () => _push(const ProfileEdit()),
+        ),
+      if (showLiveTV)
+        _ProfileAction(
+          icon: PhosphorIcons.television(),
+          title: tr('live_tv'),
+          onTap: () => _push(const ChannelList()),
         ),
       _ProfileAction(
         icon: PhosphorIcons.sliders(),

@@ -58,12 +58,10 @@ import '/widgets/common_widgets.dart';
 
 class MainTVDisplay extends StatefulWidget {
   const MainTVDisplay({
-    this.onMenuPressed,
     this.onSearchPressed,
     super.key,
   });
 
-  final VoidCallback? onMenuPressed;
   final VoidCallback? onSearchPressed;
 
   @override
@@ -112,7 +110,6 @@ class _MainTVDisplayState extends State<MainTVDisplay> {
               child: DiscoverTV(
                 discoverType: 'discover',
                 includeAdult: Provider.of<SettingsProvider>(context).isAdult,
-                onMenuPressed: widget.onMenuPressed,
                 onSearchPressed: widget.onSearchPressed,
               ),
             ),
@@ -194,13 +191,11 @@ class DiscoverTV extends StatefulWidget {
   const DiscoverTV({
     required this.includeAdult,
     required this.discoverType,
-    this.onMenuPressed,
     this.onSearchPressed,
     super.key,
   });
 
   final String discoverType;
-  final VoidCallback? onMenuPressed;
   final VoidCallback? onSearchPressed;
   @override
   DiscoverTVState createState() => DiscoverTVState();
@@ -417,19 +412,15 @@ class DiscoverTVState extends State<DiscoverTV>
                               alignment: Alignment.topCenter,
                               child: Row(
                                 children: [
-                                  InkWell(
-                                    onTap: widget.onMenuPressed,
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8),
-                                      child: SvgPicture.asset(
-                                        'assets/images/fq_svg.svg',
-                                        width: 28,
-                                        height: 28,
-                                        colorFilter: ColorFilter.mode(
-                                          Theme.of(context).colorScheme.primary,
-                                          BlendMode.srcIn,
-                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: SvgPicture.asset(
+                                      'assets/images/fq_svg.svg',
+                                      width: 28,
+                                      height: 28,
+                                      colorFilter: ColorFilter.mode(
+                                        Theme.of(context).colorScheme.primary,
+                                        BlendMode.srcIn,
                                       ),
                                     ),
                                   ),
@@ -902,10 +893,7 @@ class _ScrollingRecentEpisodesState extends State<ScrollingRecentEpisodes> {
                   'S${episode.seasonNum.toString().padLeft(2, '0')} · E${episode.episodeNum.toString().padLeft(2, '0')}';
               return SizedBox(
                 width: cardWidth,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(18),
-                  overlayColor:
-                      const WidgetStatePropertyAll(Colors.transparent),
+                child: AppPressable(
                   onLongPress: () => _deleteEpisode(episode),
                   onTap: () => _openEpisode(episode),
                   child: Column(
@@ -5166,8 +5154,8 @@ class TVStreamingServicesWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 92,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(

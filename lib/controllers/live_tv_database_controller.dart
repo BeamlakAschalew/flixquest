@@ -9,6 +9,8 @@ class LiveTVDatabaseController {
   static const _updatedKey = 'daddylive_channels_updated_v2';
   static const _favoritesKey = 'daddylive_favorites_v2';
   static const _recentKey = 'daddylive_recent_v2';
+  static const _epgKey = 'daddylive_epg_v2';
+  static const _epgUpdatedKey = 'daddylive_epg_updated_v2';
 
   Future<void> cacheChannels(List<Channel> channels) async {
     final preferences = await SharedPreferences.getInstance();
@@ -20,6 +22,36 @@ class LiveTVDatabaseController {
       _updatedKey,
       DateTime.now().millisecondsSinceEpoch,
     );
+  }
+
+  Future<void> cacheEpg(DaddyLiveEpg epg) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(_epgKey, jsonEncode(epg.toJson()));
+    await preferences.setInt(
+      _epgUpdatedKey,
+      DateTime.now().millisecondsSinceEpoch,
+    );
+  }
+
+  Future<DaddyLiveEpg?> getCachedEpg() async {
+    final preferences = await SharedPreferences.getInstance();
+    final value = preferences.getString(_epgKey);
+    if (value == null) return null;
+    try {
+      final decoded = jsonDecode(value);
+      if (decoded is! Map<String, dynamic>) return null;
+      return DaddyLiveEpg.fromJson(decoded);
+    } on FormatException {
+      return null;
+    }
+  }
+
+  Future<bool> isEpgCacheValid({int maxAgeHours = 6}) async {
+    final preferences = await SharedPreferences.getInstance();
+    final updated = preferences.getInt(_epgUpdatedKey);
+    if (updated == null) return false;
+    return DateTime.now().millisecondsSinceEpoch - updated <
+        Duration(hours: maxAgeHours).inMilliseconds;
   }
 
   Future<List<Channel>> getCachedChannels() async {
@@ -55,6 +87,8 @@ class LiveTVDatabaseController {
     final preferences = await SharedPreferences.getInstance();
     await preferences.remove(_channelsKey);
     await preferences.remove(_updatedKey);
+    await preferences.remove(_epgKey);
+    await preferences.remove(_epgUpdatedKey);
   }
 
   Future<Set<String>> getFavoriteIds() async {

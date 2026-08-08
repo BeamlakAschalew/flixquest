@@ -578,8 +578,8 @@ class _SettingsState extends State<Settings> {
                             settingsValues.appColorIndex == appColor.index;
                         return Padding(
                           padding: const EdgeInsets.only(right: 14),
-                          child: InkWell(
-                            customBorder: const CircleBorder(),
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
                             onTap: () => setState(() {
                               settingsValues.appColorIndex =
                                   selected ? -1 : appColor.index;

@@ -580,7 +580,8 @@ class Search extends SearchDelegate<String> {
         final person = personList[index];
         return Card(
           clipBehavior: Clip.antiAlias,
-          child: InkWell(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return SearchedPersonDetailPage(

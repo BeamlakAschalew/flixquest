@@ -22,6 +22,9 @@ class Channel {
     this.watchUrl,
     this.playerUrl,
     this.categories = const <String>[],
+    this.eventTitles = const <String>[],
+    this.nowPlaying,
+    this.nextUp,
   });
 
   factory Channel.fromJson(Map<String, dynamic> json) => Channel(
@@ -33,6 +36,12 @@ class Channel {
         categories: (json['categories'] as List<dynamic>? ?? const <dynamic>[])
             .map((item) => item.toString())
             .toList(growable: false),
+        eventTitles:
+            (json['eventTitles'] as List<dynamic>? ?? const <dynamic>[])
+                .map((item) => item.toString())
+                .toList(growable: false),
+        nowPlaying: json['nowPlaying']?.toString(),
+        nextUp: json['nextUp']?.toString(),
       );
 
   final String id;
@@ -42,13 +51,31 @@ class Channel {
   final String? playerUrl;
   final List<String> categories;
 
-  Channel copyWith({List<String>? categories}) => Channel(
+  /// Event titles airing on this channel (used for searching by teams etc.).
+  final List<String> eventTitles;
+
+  /// Title of the event currently airing on this channel, when known.
+  final String? nowPlaying;
+
+  /// Title of the next upcoming event on this channel, when known.
+  final String? nextUp;
+
+  Channel copyWith({
+    List<String>? categories,
+    List<String>? eventTitles,
+    String? nowPlaying,
+    String? nextUp,
+  }) =>
+      Channel(
         id: id,
         name: name,
         letter: letter,
         watchUrl: watchUrl,
         playerUrl: playerUrl,
         categories: categories ?? this.categories,
+        eventTitles: eventTitles ?? this.eventTitles,
+        nowPlaying: nowPlaying ?? this.nowPlaying,
+        nextUp: nextUp ?? this.nextUp,
       );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
@@ -58,6 +85,9 @@ class Channel {
         if (watchUrl != null) 'watchUrl': watchUrl,
         if (playerUrl != null) 'playerUrl': playerUrl,
         'categories': categories,
+        if (eventTitles.isNotEmpty) 'eventTitles': eventTitles,
+        if (nowPlaying != null) 'nowPlaying': nowPlaying,
+        if (nextUp != null) 'nextUp': nextUp,
       };
 }
 
@@ -102,6 +132,11 @@ class DaddyLiveEpg {
 
   final String timezone;
   final List<DaddyLiveEpgDay> days;
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        if (timezone.isNotEmpty) 'timezone': timezone,
+        'days': days.map((day) => day.toJson()).toList(growable: false),
+      };
 }
 
 class DaddyLiveEpgDay {
@@ -118,6 +153,11 @@ class DaddyLiveEpgDay {
 
   final String label;
   final List<DaddyLiveEpgCategory> categories;
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        if (label.isNotEmpty) 'label': label,
+        'categories': categories.map((category) => category.toJson()).toList(),
+      };
 }
 
 class DaddyLiveEpgCategory {
@@ -134,6 +174,11 @@ class DaddyLiveEpgCategory {
 
   final String name;
   final List<DaddyLiveEpgEvent> events;
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        if (name.isNotEmpty) 'name': name,
+        'events': events.map((event) => event.toJson()).toList(),
+      };
 }
 
 class DaddyLiveEpgEvent {
@@ -159,4 +204,11 @@ class DaddyLiveEpgEvent {
   final String title;
   final DateTime? startsAt;
   final List<Channel> channels;
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        if (time.isNotEmpty) 'time': time,
+        'title': title,
+        if (startsAt != null) 'startsAt': startsAt!.toIso8601String(),
+        'channels': channels.map((channel) => channel.toJson()).toList(),
+      };
 }
