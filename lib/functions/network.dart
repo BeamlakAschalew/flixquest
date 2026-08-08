@@ -14,7 +14,6 @@ import 'package:http/http.dart' as http;
 import '/models/credits.dart';
 import '/models/genres.dart';
 import '/models/movie.dart';
-import '../models/live_tv.dart';
 
 Future<List<Movie>> fetchMovies(
     String api, bool isProxyEnabled, String proxyUrl) async {
@@ -443,29 +442,6 @@ Future<String> getVttFileAsString(String url) async {
   } catch (e) {
     rethrow;
   }
-}
-
-Future<Channels> fetchChannels(String api) async {
-  Channels channelsList;
-  try {
-    var res = await retryOptions.retry(
-      () => http.get(Uri.parse(api)).timeout(const Duration(seconds: 60)),
-      retryIf: (e) => e is SocketException || e is TimeoutException,
-    );
-    dynamic decodeRes;
-    if (res.statusCode == 200) {
-      decodeRes = jsonDecode(res.body);
-    } else {
-      throw ChannelsNotFoundException();
-    }
-
-    channelsList = Channels.fromJson(decodeRes);
-  } catch (e) {
-    rethrow;
-  } finally {
-    client.close();
-  }
-  return channelsList;
 }
 
 const Map<String, String> _vixSrcHeaders = {

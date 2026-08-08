@@ -1,145 +1,94 @@
-import 'package:flixquest/models/live_tv.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/live_tv.dart';
 
 class LiveTVDatabaseController {
-  static Database? _database;
-  static const String tableName = 'live_tv_channels';
-  static const String cacheMetaTable = 'cache_metadata';
+  static const _channelsKey = 'daddylive_channels_v2';
+  static const _updatedKey = 'daddylive_channels_updated_v2';
+  static const _favoritesKey = 'daddylive_favorites_v2';
+  static const _recentKey = 'daddylive_recent_v2';
 
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDatabase();
-    return _database!;
-  }
-
-  Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'live_tv_cache.db');
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
-  }
-
-  Future<void> _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE $tableName (
-        stream_id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL,
-        stream_icon TEXT,
-        direct_source TEXT NOT NULL,
-        video_url TEXT NOT NULL
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE $cacheMetaTable (
-        id INTEGER PRIMARY KEY,
-        last_updated INTEGER NOT NULL,
-        channel_count INTEGER NOT NULL
-      )
-    ''');
-  }
-
-  // Cache channels to database
   Future<void> cacheChannels(List<Channel> channels) async {
-    final db = await database;
-
-    // Clear existing data
-    await db.delete(tableName);
-    await db.delete(cacheMetaTable);
-
-    // Insert channels in batches for better performance
-    Batch batch = db.batch();
-    for (final channel in channels) {
-      batch.insert(
-        tableName,
-        channel.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
-    await batch.commit(noResult: true);
-
-    // Update metadata
-    await db.insert(cacheMetaTable, {
-      'id': 1,
-      'last_updated': DateTime.now().millisecondsSinceEpoch,
-      'channel_count': channels.length,
-    });
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(
+      _channelsKey,
+      jsonEncode(channels.map((channel) => channel.toJson()).toList()),
+    );
+    await preferences.setInt(
+      _updatedKey,
+      DateTime.now().millisecondsSinceEpoch,
+    );
   }
 
-  // Get all cached channels
   Future<List<Channel>> getCachedChannels() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      tableName,
-      orderBy: 'name ASC',
-    );
-
-    return List.generate(maps.length, (i) {
-      return Channel.fromMap(maps[i]);
-    });
+    final preferences = await SharedPreferences.getInstance();
+    final value = preferences.getString(_channelsKey);
+    if (value == null) return const <Channel>[];
+    try {
+      return (jsonDecode(value) as List<dynamic>)
+          .whereType<Map<String, dynamic>>()
+          .map(Channel.fromJson)
+          .toList(growable: false);
+    } on FormatException {
+      return const <Channel>[];
+    }
   }
 
-  // Search channels by name (efficient database query)
-  Future<List<Channel>> searchChannels(String query) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      tableName,
-      where: 'name LIKE ?',
-      whereArgs: ['%$query%'],
-      orderBy: 'name ASC',
-    );
-
-    return List.generate(maps.length, (i) {
-      return Channel.fromMap(maps[i]);
-    });
-  }
-
-  // Get cache metadata
   Future<Map<String, dynamic>?> getCacheMetadata() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      cacheMetaTable,
-      where: 'id = ?',
-      whereArgs: [1],
-    );
-
-    if (maps.isEmpty) return null;
-    return maps.first;
+    final preferences = await SharedPreferences.getInstance();
+    final updated = preferences.getInt(_updatedKey);
+    if (updated == null) return null;
+    return <String, dynamic>{'last_updated': updated};
   }
 
-  // Check if cache exists and is valid
-  Future<bool> isCacheValid({int maxAgeHours = 24}) async {
+  Future<bool> isCacheValid({int maxAgeHours = 6}) async {
     final metadata = await getCacheMetadata();
     if (metadata == null) return false;
-
-    final lastUpdated = metadata['last_updated'] as int;
-    final cacheAge = DateTime.now().millisecondsSinceEpoch - lastUpdated;
-    final maxAge =
-        maxAgeHours * 60 * 60 * 1000; // Convert hours to milliseconds
-
-    return cacheAge < maxAge;
+    return DateTime.now().millisecondsSinceEpoch -
+            (metadata['last_updated'] as int) <
+        Duration(hours: maxAgeHours).inMilliseconds;
   }
 
-  // Clear all cache
   Future<void> clearCache() async {
-    final db = await database;
-    await db.delete(tableName);
-    await db.delete(cacheMetaTable);
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.remove(_channelsKey);
+    await preferences.remove(_updatedKey);
   }
 
-  // Get channel count
-  Future<int> getChannelCount() async {
-    final db = await database;
-    final result = await db.rawQuery('SELECT COUNT(*) FROM $tableName');
-    return Sqflite.firstIntValue(result) ?? 0;
+  Future<Set<String>> getFavoriteIds() async {
+    final preferences = await SharedPreferences.getInstance();
+    return (preferences.getStringList(_favoritesKey) ?? const <String>[])
+        .toSet();
   }
 
-  // Close database
-  Future<void> close() async {
-    final db = await database;
-    await db.close();
+  Future<bool> toggleFavorite(String channelId) async {
+    final preferences = await SharedPreferences.getInstance();
+    final favorites =
+        (preferences.getStringList(_favoritesKey) ?? const <String>[]).toSet();
+    final isFavorite = favorites.contains(channelId);
+    if (isFavorite) {
+      favorites.remove(channelId);
+    } else {
+      favorites.add(channelId);
+    }
+    await preferences.setStringList(_favoritesKey, favorites.toList());
+    return !isFavorite;
+  }
+
+  Future<List<String>> getRecentIds() async {
+    final preferences = await SharedPreferences.getInstance();
+    return preferences.getStringList(_recentKey) ?? const <String>[];
+  }
+
+  Future<void> addRecent(String channelId) async {
+    final preferences = await SharedPreferences.getInstance();
+    final recent =
+        (preferences.getStringList(_recentKey) ?? const <String>[]).toList();
+    recent
+      ..remove(channelId)
+      ..insert(0, channelId);
+    await preferences.setStringList(_recentKey, recent.take(20).toList());
   }
 }

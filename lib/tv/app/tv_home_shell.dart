@@ -12,6 +12,7 @@ import '../navigation/tv_back_dispatcher.dart';
 import '../screens/tv_catalog_screen.dart';
 import '../screens/tv_home_screen.dart';
 import '../screens/tv_library_screen.dart';
+import '../screens/tv_live_screen.dart';
 import '../screens/tv_media_details_screen.dart';
 import '../screens/tv_profile_screen.dart';
 import '../screens/tv_search_screen.dart';
@@ -64,6 +65,12 @@ class _TvHomeShellState extends State<TvHomeShell> {
         label: 'Series',
         icon: PhosphorIcons.television(),
         selectedIcon: PhosphorIcons.television(PhosphorIconsStyle.fill),
+      ),
+      TvNavigationDestination(
+        id: 'live',
+        label: 'Live TV',
+        icon: PhosphorIcons.broadcast(),
+        selectedIcon: PhosphorIcons.broadcast(PhosphorIconsStyle.fill),
       ),
       TvNavigationDestination(
         id: 'library',
@@ -273,6 +280,7 @@ class _TvHomeShellState extends State<TvHomeShell> {
                                     metrics: metrics,
                                     onOpenMedia: _openMedia,
                                   ),
+                                  TvLiveScreen(metrics: metrics),
                                   TvLibraryScreen(
                                     key: ValueKey<int>(_libraryRevision),
                                     metrics: metrics,

@@ -343,6 +343,6 @@ class Endpoints {
   }
 
   static String getIPTVEndpoint(String baseUrl) {
-    return 'https://flixquest.beamlak.dev/live/generate_live_playlist.php';
+    return '${baseUrl.replaceFirst(RegExp(r'/+$'), '')}/api/v2/dlhd/channels';
   }
 }

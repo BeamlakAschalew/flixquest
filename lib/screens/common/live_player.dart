@@ -9,6 +9,7 @@ class LivePlayer extends StatefulWidget {
     required this.colors,
     required this.autoFullScreen,
     required this.channelName,
+    this.headers = const <String, String>{},
     this.streamIcon,
     super.key,
   });
@@ -17,6 +18,7 @@ class LivePlayer extends StatefulWidget {
   final List<Color> colors;
   final bool autoFullScreen;
   final String channelName;
+  final Map<String, String> headers;
   final String? streamIcon;
 
   @override
@@ -102,8 +104,9 @@ class _LivePlayerState extends State<LivePlayer> {
         'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Connection': 'keep-alive',
+        ...widget.headers,
       },
-      videoFormat: BetterPlayerVideoFormat.other,
+      videoFormat: BetterPlayerVideoFormat.hls,
     );
 
     _betterPlayerController = BetterPlayerController(betterPlayerConfiguration);
