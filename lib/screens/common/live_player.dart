@@ -373,9 +373,7 @@ class _ChannelSwitcherSheetState extends State<_ChannelSwitcherSheet> {
         : widget.channels
             .where(
               (channel) => normalizeSearchText(
-                '${channel.name} ${channel.id} '
-                '${channel.categories.join(' ')} '
-                '${channel.eventTitles.join(' ')}',
+                '${channel.name} ${channel.id}',
               ).contains(tokens.join(' ')),
             )
             .toList(growable: false);

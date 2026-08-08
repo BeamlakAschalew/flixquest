@@ -131,10 +131,9 @@ class _TvLiveScreenState extends State<TvLiveScreen> {
   }
 
   static bool _matches(Channel channel, List<String> tokens) {
-    final haystack = normalizeSearchText(
-      '${channel.name} ${channel.id} ${channel.categories.join(' ')} '
-      '${channel.eventTitles.join(' ')}',
-    );
+    // 24/7 channels match by their own identity only (name / id), never by
+    // the event that happens to be airing. Use the Schedule search for teams.
+    final haystack = normalizeSearchText('${channel.name} ${channel.id}');
     return tokens.every(haystack.contains);
   }
 

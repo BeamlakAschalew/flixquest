@@ -138,10 +138,9 @@ class _ChannelListState extends State<ChannelList> {
   }
 
   static bool _channelMatches(Channel channel, List<String> tokens) {
-    final haystack = normalizeSearchText(
-      '${channel.name} ${channel.id} ${channel.categories.join(' ')} '
-      '${channel.eventTitles.join(' ')}',
-    );
+    // 24/7 channels match by their own identity only (name / id), never by
+    // the event that happens to be airing. Use the Schedule search for teams.
+    final haystack = normalizeSearchText('${channel.name} ${channel.id}');
     return tokens.every(haystack.contains);
   }
 
@@ -287,13 +286,27 @@ class _ChannelListState extends State<ChannelList> {
   List<Widget> _buildChannelSlivers() {
     final visible = _visibleChannels;
     if (visible.isEmpty) {
+      final tokens = searchTokens(_query);
       return <Widget>[
         SliverFillRemaining(
           hasScrollBody: false,
           child: AppEmptyState(
             icon: PhosphorIcons.televisionSimple(),
             title: 'No channels found',
-            message: 'Try another search, category, or collection.',
+            message: tokens.isNotEmpty && _epg?.days.isNotEmpty == true
+                ? "No channels match '$_query'. Try the Schedule tab to browse "
+                    'matching matches, or clear the search.'
+                : 'Try another search, category, or collection.',
+            action: tokens.isNotEmpty
+                ? FilledButton.tonalIcon(
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() => _query = '');
+                    },
+                    icon: Icon(PhosphorIcons.x()),
+                    label: const Text('Clear search'),
+                  )
+                : null,
           ),
         ),
       ];
