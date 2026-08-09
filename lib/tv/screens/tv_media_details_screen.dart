@@ -13,6 +13,7 @@ import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
 import '../../screens/movie/movie_video_loader.dart';
 import '../../screens/tv/tv_video_loader.dart';
+import '../../ui_components/app_ui_components.dart';
 import '../app/tv_design.dart';
 import '../controllers/tv_media_details_controller.dart';
 import '../focus/tv_focusable.dart';
@@ -237,6 +238,7 @@ class _DetailsBody extends StatelessWidget {
                 imageUrl: imageUrl,
                 fit: BoxFit.cover,
                 alignment: Alignment.topCenter,
+                placeholder: (_, __) => const AppCachedImagePlaceholder(),
               ),
             ),
           ),

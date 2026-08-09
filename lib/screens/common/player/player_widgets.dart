@@ -5,6 +5,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../constants/app_constants.dart';
 import '../../../models/tv_stream_metadata.dart';
+import '../../../ui_components/app_ui_components.dart';
 import '../../tv/tv_video_loader.dart';
 import 'player_sheet_ui.dart';
 
@@ -61,6 +62,8 @@ class PlayerNextEpisodeWidget {
                           imageUrl:
                               'https://image.tmdb.org/t/p/w300${nextEpisode.stillPath}',
                           fit: BoxFit.cover,
+                          placeholder: (_, __) =>
+                              const AppCachedImagePlaceholder(),
                           errorWidget: (_, __, ___) =>
                               Icon(PhosphorIcons.filmStrip()),
                         ),
@@ -197,6 +200,8 @@ class PlayerNextEpisodeWidget {
                                 imageUrl:
                                     'https://image.tmdb.org/t/p/w300${nextEpisode.stillPath}',
                                 fit: BoxFit.cover,
+                                placeholder: (_, __) =>
+                                    const AppCachedImagePlaceholder(),
                                 errorWidget: (_, __, ___) =>
                                     Icon(PhosphorIcons.filmStrip()),
                               ),

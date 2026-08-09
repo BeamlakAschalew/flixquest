@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import '../../constants/loading_colors.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -56,8 +58,9 @@ class TvMediaCard extends StatelessWidget {
                       cacheManager: cacheProp(),
                       imageUrl: imageUrl,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                        color: colors.surfaceContainerHighest,
+                      placeholder: (_, __) => ColoredBox(
+                        color:
+                            AppLoadingColors.of(context).cachedImagePlaceholder,
                       ),
                       errorWidget: (_, __, ___) => _ImageFallback(item: item),
                     ),

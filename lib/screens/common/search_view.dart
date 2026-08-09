@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:async';
 import '../../constants/app_constants.dart';
+import '../../constants/loading_colors.dart';
 import '../../functions/function.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../preferences/setting_preferences.dart';
@@ -29,8 +30,7 @@ class Search extends SearchDelegate<String> {
   final ValueNotifier<int> _recentSearchesRevision = ValueNotifier<int>(0);
   bool _isDisposed = false;
 
-  Search(
-      {required this.includeAdult, required this.lang})
+  Search({required this.includeAdult, required this.lang})
       : super(
           searchFieldLabel: tr('search_text'),
         );
@@ -394,11 +394,8 @@ class Search extends SearchDelegate<String> {
                                     fadeInDuration:
                                         const Duration(milliseconds: 700),
                                     fadeInCurve: Curves.easeIn,
-                                    imageUrl: buildImageUrl(
-                                            TMDB_BASE_IMAGE_URL,
-                                            proxyUrl,
-                                            isProxyEnabled,
-                                            context) +
+                                    imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL,
+                                            proxyUrl, isProxyEnabled, context) +
                                         imageQuality +
                                         movie.posterPath!,
                                     imageBuilder: (context, imageProvider) =>
@@ -413,8 +410,7 @@ class Search extends SearchDelegate<String> {
                                     placeholder: (context, url) =>
                                         const AppShimmerBlock(),
                                     errorWidget: (context, url, error) =>
-                                        Image.asset(
-                                            'assets/images/na_logo.png',
+                                        Image.asset('assets/images/na_logo.png',
                                             fit: BoxFit.cover,
                                             width: double.infinity,
                                             height: double.infinity),
@@ -513,11 +509,8 @@ class Search extends SearchDelegate<String> {
                                     fadeInDuration:
                                         const Duration(milliseconds: 700),
                                     fadeInCurve: Curves.easeIn,
-                                    imageUrl: buildImageUrl(
-                                            TMDB_BASE_IMAGE_URL,
-                                            proxyUrl,
-                                            isProxyEnabled,
-                                            context) +
+                                    imageUrl: buildImageUrl(TMDB_BASE_IMAGE_URL,
+                                            proxyUrl, isProxyEnabled, context) +
                                         imageQuality +
                                         show.posterPath!,
                                     imageBuilder: (context, imageProvider) =>
@@ -532,8 +525,7 @@ class Search extends SearchDelegate<String> {
                                     placeholder: (context, url) =>
                                         const AppShimmerBlock(),
                                     errorWidget: (context, url, error) =>
-                                        Image.asset(
-                                            'assets/images/na_logo.png',
+                                        Image.asset('assets/images/na_logo.png',
                                             fit: BoxFit.cover,
                                             width: double.infinity,
                                             height: double.infinity),
@@ -694,9 +686,9 @@ class Search extends SearchDelegate<String> {
   // ─────────────────────────────────────────────────────────────────────────
 
   Widget _personShimmer(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final base = dark ? const Color(0xFF202124) : const Color(0xFFE7E7E9);
-    final highlight = dark ? const Color(0xFF303236) : const Color(0xFFF5F5F6);
+    final loadingColors = AppLoadingColors.of(context);
+    final base = loadingColors.shimmerBase;
+    final highlight = loadingColors.shimmerHighlight;
 
     return Shimmer.fromColors(
       baseColor: base,

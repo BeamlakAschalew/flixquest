@@ -8,6 +8,7 @@ import '../../models/offline_download.dart';
 import '../../provider/offline_download_provider.dart';
 import '../../services/analytics_service.dart';
 import '../../services/offline_download_service.dart';
+import '../../ui_components/app_ui_components.dart';
 import 'offline_player_screen.dart';
 
 class DownloadsScreen extends StatelessWidget {
@@ -316,7 +317,7 @@ class _Poster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final placeholder = ColoredBox(
+    final fallback = ColoredBox(
       color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Center(child: Icon(PhosphorIcons.filmSlate(), size: 28)),
     );
@@ -326,12 +327,12 @@ class _Poster extends StatelessWidget {
         width: 76,
         height: 112,
         child: url == null || url!.isEmpty
-            ? placeholder
+            ? fallback
             : CachedNetworkImage(
                 imageUrl: url!,
                 fit: BoxFit.cover,
-                placeholder: (_, __) => placeholder,
-                errorWidget: (_, __, ___) => placeholder,
+                placeholder: (_, __) => const AppCachedImagePlaceholder(),
+                errorWidget: (_, __, ___) => fallback,
               ),
       ),
     );

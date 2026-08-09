@@ -961,7 +961,8 @@ class _SeasonMedia extends StatelessWidget {
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(PhosphorIcons.image(),
+                                    Icon(
+                                      PhosphorIcons.image(),
                                       color: Colors.white,
                                       size: 15,
                                     ),
@@ -1303,10 +1304,7 @@ class TVSeasonDetailQuickInfo extends StatelessWidget {
                                       cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading_5.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          const AppCachedImagePlaceholder(),
                                       imageUrl:
                                           '${buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context)}original/${tvSeries.backdropPath!}',
                                       errorWidget: (context, url, error) =>

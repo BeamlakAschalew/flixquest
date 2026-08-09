@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../api/endpoints.dart';
 import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
+import '../../constants/loading_colors.dart';
 import '../../controllers/bookmark_database_controller.dart';
 import '../../functions/function.dart';
 import '../../functions/network.dart';
@@ -2491,10 +2492,10 @@ class _GenreShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final loadingColors = AppLoadingColors.of(context);
     return Shimmer.fromColors(
-      baseColor: dark ? const Color(0xFF30343A) : const Color(0xFFE9EBEF),
-      highlightColor: dark ? const Color(0xFF444950) : const Color(0xFFFAFAFB),
+      baseColor: loadingColors.shimmerBase,
+      highlightColor: loadingColors.shimmerHighlight,
       child: Wrap(
         spacing: 8,
         runSpacing: 8,

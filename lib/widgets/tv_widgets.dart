@@ -5585,10 +5585,7 @@ class TVDetailQuickInfo extends StatelessWidget {
                                       cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading_5.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          const AppCachedImagePlaceholder(),
                                       imageUrl:
                                           '${buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context)}original/${tvSeries.backdropPath!}',
                                       errorWidget: (context, url, error) =>
@@ -6237,10 +6234,7 @@ class TVEpisodeQuickInfo extends StatelessWidget {
                                       cacheManager: cacheProp(),
                                       fit: BoxFit.cover,
                                       placeholder: (context, url) =>
-                                          Image.asset(
-                                        'assets/images/loading_5.gif',
-                                        fit: BoxFit.cover,
-                                      ),
+                                          const AppCachedImagePlaceholder(),
                                       imageUrl:
                                           '${buildImageUrl(TMDB_BASE_IMAGE_URL, proxyUrl, isProxyEnabled, context)}original/${episodeList.stillPath!}',
                                       errorWidget: (context, url, error) =>

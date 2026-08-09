@@ -8,6 +8,7 @@ import '/provider/app_dependency_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../constants/app_constants.dart';
+import '../constants/loading_colors.dart';
 import '../functions/network.dart';
 import '../models/movie.dart';
 import '../models/watch_providers.dart';
@@ -1542,13 +1543,10 @@ class ShimmerBase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loadingColors = AppLoadingColors.forThemeMode(themeMode);
     return Shimmer.fromColors(
-      baseColor: themeMode == 'dark' || themeMode == 'amoled'
-          ? const Color(0xFF30343A)
-          : const Color(0xFFE9EBEF),
-      highlightColor: themeMode == 'dark' || themeMode == 'amoled'
-          ? const Color(0xFF444950)
-          : const Color(0xFFFAFAFB),
+      baseColor: loadingColors.shimmerBase,
+      highlightColor: loadingColors.shimmerHighlight,
       child: child,
     );
   }
@@ -1643,56 +1641,56 @@ class ExternalPlay extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: .12),
-                  borderRadius: BorderRadius.circular(14),
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: .12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    PhosphorIcons.arrowSquareOut(),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
-                child: Icon(
-                  PhosphorIcons.arrowSquareOut(),
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 13),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Open in external player',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      tr('video_source'),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Open in external player',
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                    ),
-                  ],
+                      Text(
+                        tr('video_source'),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          for (var index = 0; index < entries.length; index++) ...[
-            AppStreamSourceTile(
-              index: index + 1,
-              title: entries[index].key,
-              subtitle: tr('video_source'),
-              onTap: () => _openExternally(context, entries[index].value),
+              ],
             ),
-            if (index != entries.length - 1) const SizedBox(height: 10),
+            const SizedBox(height: 18),
+            for (var index = 0; index < entries.length; index++) ...[
+              AppStreamSourceTile(
+                index: index + 1,
+                title: entries[index].key,
+                subtitle: tr('video_source'),
+                onTap: () => _openExternally(context, entries[index].value),
+              ),
+              if (index != entries.length - 1) const SizedBox(height: 10),
+            ],
           ],
-        ],
-      ),
+        ),
       ),
     );
   }

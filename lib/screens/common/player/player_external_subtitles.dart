@@ -95,7 +95,8 @@ class PlayerExternalSubtitles {
                     Text(
                       tr('loading_video_sources'),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ],
@@ -148,6 +149,8 @@ class PlayerExternalSubtitles {
                           : CachedNetworkImage(
                               imageUrl: subtitle.flagUrl,
                               fit: BoxFit.cover,
+                              placeholder: (_, __) =>
+                                  const AppCachedImagePlaceholder(),
                               errorWidget: (_, __, ___) =>
                                   Icon(PhosphorIcons.flag()),
                             ),

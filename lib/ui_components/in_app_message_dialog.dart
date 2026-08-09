@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/in_app_message_payload.dart';
+import 'app_ui_components.dart';
 
 class InAppMessageDialog extends StatelessWidget {
   final InAppMessagePayload payload;
@@ -12,7 +13,8 @@ class InAppMessageDialog extends StatelessWidget {
     required this.payload,
   });
 
-  static Future<void> show(BuildContext context, InAppMessagePayload payload) async {
+  static Future<void> show(
+      BuildContext context, InAppMessagePayload payload) async {
     switch (payload.displayType) {
       case 'bottom_sheet':
         await showModalBottomSheet(
@@ -100,7 +102,9 @@ class InAppMessageDialog extends StatelessWidget {
                       height: 190,
                       width: double.infinity,
                       fit: BoxFit.cover,
-                      errorWidget: (context, url, error) => const SizedBox.shrink(),
+                      placeholder: (_, __) => const AppCachedImagePlaceholder(),
+                      errorWidget: (context, url, error) =>
+                          const SizedBox.shrink(),
                     ),
                     Positioned.fill(
                       child: Container(
@@ -163,7 +167,8 @@ class InAppMessageDialog extends StatelessWidget {
                   children: [
                     // Badge Header
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: primaryColor.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(8),
@@ -210,7 +215,8 @@ class InAppMessageDialog extends StatelessWidget {
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontFamily: 'Figtree',
                           fontSize: 14,
-                          color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.85),
+                          color: theme.textTheme.bodyMedium?.color
+                              ?.withValues(alpha: 0.85),
                           height: 1.45,
                         ),
                       ),
@@ -227,7 +233,8 @@ class InAppMessageDialog extends StatelessWidget {
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 13),
                               side: BorderSide(
-                                color: theme.dividerColor.withValues(alpha: 0.3),
+                                color:
+                                    theme.dividerColor.withValues(alpha: 0.3),
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -243,7 +250,8 @@ class InAppMessageDialog extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (payload.actionUrl != null && payload.actionUrl!.isNotEmpty) ...[
+                        if (payload.actionUrl != null &&
+                            payload.actionUrl!.isNotEmpty) ...[
                           const SizedBox(width: 12),
                           Expanded(
                             child: ElevatedButton(
@@ -252,7 +260,8 @@ class InAppMessageDialog extends StatelessWidget {
                                 backgroundColor: primaryColor,
                                 foregroundColor: Colors.white,
                                 elevation: 0,
-                                padding: const EdgeInsets.symmetric(vertical: 13),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 13),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -270,7 +279,8 @@ class InAppMessageDialog extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 6),
                                   Icon(
-                                    PhosphorIcons.arrowSquareOut(PhosphorIconsStyle.bold),
+                                    PhosphorIcons.arrowSquareOut(
+                                        PhosphorIconsStyle.bold),
                                     size: 16,
                                   ),
                                 ],
@@ -363,6 +373,7 @@ class _InAppBottomSheetWidget extends StatelessWidget {
                 height: 170,
                 width: double.infinity,
                 fit: BoxFit.cover,
+                placeholder: (_, __) => const AppCachedImagePlaceholder(),
                 errorWidget: (context, url, error) => const SizedBox.shrink(),
               ),
             ),
@@ -387,7 +398,8 @@ class _InAppBottomSheetWidget extends StatelessWidget {
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontFamily: 'Figtree',
                 fontSize: 14,
-                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.85),
+                color:
+                    theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.85),
                 height: 1.4,
               ),
             ),
@@ -420,7 +432,8 @@ class _InAppBottomSheetWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              if (payload.actionUrl != null && payload.actionUrl!.isNotEmpty) ...[
+              if (payload.actionUrl != null &&
+                  payload.actionUrl!.isNotEmpty) ...[
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
@@ -505,7 +518,9 @@ class _InAppBannerWidget extends StatelessWidget {
                   width: 48,
                   height: 48,
                   fit: BoxFit.cover,
-                  errorWidget: (context, url, error) => _buildDefaultIcon(primaryColor),
+                  placeholder: (_, __) => const AppCachedImagePlaceholder(),
+                  errorWidget: (context, url, error) =>
+                      _buildDefaultIcon(primaryColor),
                 ),
               )
             else
@@ -538,7 +553,8 @@ class _InAppBannerWidget extends StatelessWidget {
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontFamily: 'Figtree',
                         fontSize: 12.5,
-                        color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.8),
+                        color: theme.textTheme.bodySmall?.color
+                            ?.withValues(alpha: 0.8),
                       ),
                     ),
                   ],

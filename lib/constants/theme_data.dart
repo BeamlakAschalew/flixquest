@@ -3,6 +3,8 @@ import 'package:flixquest/models/app_colors.dart';
 import 'package:flixquest/models/occasional_theme.dart';
 import 'package:flutter/material.dart';
 
+import 'loading_colors.dart';
+
 ThemeData darkThemeData(
     bool isM3Enabled, ColorScheme? darkDynamicColor, AppColor color) {
   bool useUserColor = color.index != -1;
@@ -856,10 +858,16 @@ class Styles {
     if (activeTheme != null) {
       baseTheme = _applyOccasionalColors(baseTheme, activeTheme);
     }
-    return _applyFlixQuestUI(
+    final themed = _applyFlixQuestUI(
       baseTheme,
       surfaceOverride:
           activeTheme?.backgroundFor(baseTheme.colorScheme.brightness),
+    );
+    return themed.copyWith(
+      extensions: <ThemeExtension<dynamic>>[
+        ...themed.extensions.values,
+        AppLoadingColors.forThemeMode(appThemeMode),
+      ],
     );
   }
 }

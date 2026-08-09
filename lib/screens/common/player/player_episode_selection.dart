@@ -9,6 +9,7 @@ import '../../../models/tv_stream_metadata.dart';
 import '../../../provider/app_dependency_provider.dart';
 import '../../../provider/recently_watched_provider.dart';
 import '../../../provider/settings_provider.dart';
+import '../../../ui_components/app_ui_components.dart';
 import '../../../api/endpoints.dart';
 import '../../../functions/network.dart';
 import '../../tv/tv_video_loader.dart';
@@ -173,9 +174,7 @@ class PlayerEpisodeSelection {
                 cacheManager: cacheProp(),
                 imageUrl: 'https://image.tmdb.org/t/p/w300${episode.stillPath}',
                 fit: BoxFit.cover,
-                placeholder: (_, __) => const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+                placeholder: (_, __) => const AppCachedImagePlaceholder(),
                 errorWidget: (_, __, ___) => Icon(PhosphorIcons.filmStrip()),
               ),
       ),
@@ -305,9 +304,7 @@ class PlayerEpisodeSelection {
                 cacheManager: cacheProp(),
                 imageUrl: 'https://image.tmdb.org/t/p/w185${season.posterPath}',
                 fit: BoxFit.cover,
-                placeholder: (_, __) => const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
+                placeholder: (_, __) => const AppCachedImagePlaceholder(),
                 errorWidget: (_, __, ___) => Icon(PhosphorIcons.television()),
               ),
       ),

@@ -17,6 +17,7 @@ import '/api/endpoints.dart';
 import '../../ui_components/app_ui_components.dart';
 import '../../constants/api_constants.dart';
 import '../../constants/app_constants.dart';
+import '../../constants/loading_colors.dart';
 import '../../functions/function.dart';
 import '../../provider/app_dependency_provider.dart';
 import '../../controllers/bookmark_database_controller.dart';
@@ -535,7 +536,8 @@ class _TVSummary extends StatelessWidget {
                               )
                             : Icon(
                                 isBookmarked!
-                                    ? PhosphorIcons.bookmarkSimple(PhosphorIconsStyle.fill)
+                                    ? PhosphorIcons.bookmarkSimple(
+                                        PhosphorIconsStyle.fill)
                                     : PhosphorIcons.bookmarkSimple(),
                               ),
                       ),
@@ -569,10 +571,13 @@ class _TVSummary extends StatelessWidget {
                     (genre) => ActionChip(
                       label: Text(
                         genre.genreName ?? tr('genres'),
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              fontFamily: 'FigtreeSB',
-                            ),
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                  fontFamily: 'FigtreeSB',
+                                ),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 5),
                       visualDensity: VisualDensity.compact,
@@ -1304,7 +1309,9 @@ class _TVRailState extends State<_TVRail> {
         else if (_items == null)
           _TVInlineError(onRetry: _load)
         else if (_items!.isEmpty)
-          _TVEmpty(icon: PhosphorIcons.televisionSimple(), message: widget.emptyMessage)
+          _TVEmpty(
+              icon: PhosphorIcons.televisionSimple(),
+              message: widget.emptyMessage)
         else
           SizedBox(
             height: 246,
@@ -1591,10 +1598,10 @@ class _TVGenreShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final loadingColors = AppLoadingColors.of(context);
     return Shimmer.fromColors(
-      baseColor: dark ? const Color(0xFF30343A) : const Color(0xFFE9EBEF),
-      highlightColor: dark ? const Color(0xFF444950) : const Color(0xFFFAFAFB),
+      baseColor: loadingColors.shimmerBase,
+      highlightColor: loadingColors.shimmerHighlight,
       child: Wrap(
         spacing: 8,
         runSpacing: 8,

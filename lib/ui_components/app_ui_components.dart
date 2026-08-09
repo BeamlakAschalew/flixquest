@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../constants/loading_colors.dart';
+
 /// Shared responsive and visual primitives for the refreshed FlixQuest UI.
 abstract final class AppUI {
   static const double phonePadding = 20;
@@ -439,8 +441,10 @@ class AppSegmentedTabs extends StatelessWidget {
         ),
         labelColor: colors.onPrimary,
         unselectedLabelColor: colors.onSurfaceVariant,
-        labelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600, fontSize: 13),
-        unselectedLabelStyle: const TextStyle(fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500, fontSize: 13),
+        labelStyle: const TextStyle(
+            fontFamily: 'FigtreeSB', fontWeight: FontWeight.w600, fontSize: 13),
+        unselectedLabelStyle: const TextStyle(
+            fontFamily: 'FigtreeSB', fontWeight: FontWeight.w500, fontSize: 13),
         labelPadding: const EdgeInsets.symmetric(horizontal: 6),
         tabs: [
           for (final tab in tabs)
@@ -1135,9 +1139,9 @@ class AppHeroShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final base = dark ? const Color(0xFF202124) : const Color(0xFFE7E7E9);
-    final highlight = dark ? const Color(0xFF303236) : const Color(0xFFF5F5F6);
+    final loadingColors = AppLoadingColors.of(context);
+    final base = loadingColors.shimmerBase;
+    final highlight = loadingColors.shimmerHighlight;
     return Shimmer.fromColors(
       baseColor: base,
       highlightColor: highlight,
@@ -1179,9 +1183,9 @@ class AppMediaRowShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final base = dark ? const Color(0xFF202124) : const Color(0xFFE7E7E9);
-    final highlight = dark ? const Color(0xFF303236) : const Color(0xFFF5F5F6);
+    final loadingColors = AppLoadingColors.of(context);
+    final base = loadingColors.shimmerBase;
+    final highlight = loadingColors.shimmerHighlight;
     final cardWidth = itemWidth ?? AppUI.horizontalCardWidth(context);
     return Shimmer.fromColors(
       baseColor: base,
@@ -1222,9 +1226,9 @@ class AppMediaGridShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final base = dark ? const Color(0xFF202124) : const Color(0xFFE7E7E9);
-    final highlight = dark ? const Color(0xFF303236) : const Color(0xFFF5F5F6);
+    final loadingColors = AppLoadingColors.of(context);
+    final base = loadingColors.shimmerBase;
+    final highlight = loadingColors.shimmerHighlight;
     return Shimmer.fromColors(
       baseColor: base,
       highlightColor: highlight,
@@ -1435,9 +1439,9 @@ class AppMediaListShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final base = dark ? const Color(0xFF202124) : const Color(0xFFE7E7E9);
-    final highlight = dark ? const Color(0xFF303236) : const Color(0xFFF5F5F6);
+    final loadingColors = AppLoadingColors.of(context);
+    final base = loadingColors.shimmerBase;
+    final highlight = loadingColors.shimmerHighlight;
     final wide = MediaQuery.sizeOf(context).width >= 700;
     final posterWidth = wide ? 112.0 : 96.0;
     final posterHeight = posterWidth * 1.5;
@@ -1602,16 +1606,31 @@ class AppShimmerBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
+    final loadingColors = AppLoadingColors.of(context);
     return Shimmer.fromColors(
-      baseColor: dark ? const Color(0xFF30343A) : const Color(0xFFE9EBEF),
-      highlightColor: dark ? const Color(0xFF444950) : const Color(0xFFFAFAFB),
+      baseColor: loadingColors.shimmerBase,
+      highlightColor: loadingColors.shimmerHighlight,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(radius),
         ),
       ),
+    );
+  }
+}
+
+/// A neutral placeholder for cached network images that do not need shimmer.
+class AppCachedImagePlaceholder extends StatelessWidget {
+  const AppCachedImagePlaceholder({this.child, super.key});
+
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: AppLoadingColors.of(context).cachedImagePlaceholder,
+      child: child,
     );
   }
 }
