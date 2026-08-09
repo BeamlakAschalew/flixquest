@@ -35,6 +35,8 @@ class AppDependencyProvider extends ChangeNotifier {
   bool _ambientModeEnabled = false;
   int _nextAmbientScopeId = 0;
   final Map<int, Color?> _ambientScopes = <int, Color?>{};
+  int _nextEffectSuppressionId = 0;
+  final Set<int> _effectSuppressionScopes = <int>{};
   Timer? _occasionalThemeBoundaryTimer;
 
   OccasionalThemeCatalog get occasionalThemeCatalog => _occasionalThemeCatalog;
@@ -64,6 +66,7 @@ class AppDependencyProvider extends ChangeNotifier {
     return theme != null &&
         _occasionalThemeCatalog.effectsEnabled &&
         _occasionalEffectsEnabled &&
+        _effectSuppressionScopes.isEmpty &&
         theme.effect.enabled &&
         theme.effect.type != OccasionalEffectType.none;
   }
@@ -165,6 +168,19 @@ class AppDependencyProvider extends ChangeNotifier {
     _ambientScopes.remove(id);
     if (wasActive == activeAmbientColor) return;
     notifyListeners();
+  }
+
+  int suppressOccasionalEffects() {
+    final id = ++_nextEffectSuppressionId;
+    final wasSuppressed = _effectSuppressionScopes.isNotEmpty;
+    _effectSuppressionScopes.add(id);
+    if (!wasSuppressed) notifyListeners();
+    return id;
+  }
+
+  void releaseOccasionalEffectsSuppression(int id) {
+    if (!_effectSuppressionScopes.remove(id)) return;
+    if (_effectSuppressionScopes.isEmpty) notifyListeners();
   }
 
   set occasionalThemeCatalog(OccasionalThemeCatalog value) {

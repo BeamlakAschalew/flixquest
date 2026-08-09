@@ -1,8 +1,8 @@
-import 'package:easy_localization/easy_localization.dart';
 import '../../flixquest_main.dart';
 import '/screens/common/landing_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/auth_session_controller.dart';
 import '../../tv/app/tv_home_shell.dart';
 import '../../tv/platform/device_presentation.dart';
 import '../../tv/platform/tv_debug_options.dart';
@@ -18,42 +18,41 @@ class UserState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = FirebaseAuth.instance;
-    return StreamBuilder<User?>(
-        stream: auth.authStateChanges(),
-        initialData: auth.currentUser,
-        builder: (context, userSnapshot) {
-          if (userSnapshot.hasError) {
-            return Center(
-              child: Text(tr('error_occured')),
-            );
-          }
+    final authSession = AuthSessionController.instance..initialize();
+    return AuthStateRouter(
+      userIdListenable: authSession.userId,
+      builder: (context, isAuthenticated) {
+        final previewTvHome =
+            devicePresentation == DevicePresentation.television &&
+                TvDebugOptions.previewHomeShell;
+        return presentationShellFor(
+          devicePresentation: devicePresentation,
+          isAuthenticated: isAuthenticated || previewTvHome,
+        );
+      },
+    );
+  }
+}
 
-          final user = userSnapshot.data;
-          final previewTvHome =
-              devicePresentation == DevicePresentation.television &&
-                  TvDebugOptions.previewHomeShell;
-          final shell = presentationShellFor(
-            devicePresentation: devicePresentation,
-            isAuthenticated: user != null || previewTvHome,
-          );
+class AuthStateRouter extends StatelessWidget {
+  const AuthStateRouter({
+    required this.userIdListenable,
+    required this.builder,
+    super.key,
+  });
 
-          if (userSnapshot.connectionState == ConnectionState.waiting) {
-            return KeyedSubtree(
-              key: ValueKey(user?.uid ?? 'signed-out'),
-              child: shell,
-            );
-          } else if (userSnapshot.connectionState == ConnectionState.active) {
-            return KeyedSubtree(
-              key: ValueKey(user?.uid ?? 'signed-out'),
-              child: shell,
-            );
-          } else {
-            return Center(
-              child: Text(tr('error_occured')),
-            );
-          }
-        });
+  final ValueListenable<String?> userIdListenable;
+  final Widget Function(BuildContext context, bool isAuthenticated) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<String?>(
+      valueListenable: userIdListenable,
+      builder: (context, userId, _) => KeyedSubtree(
+        key: ValueKey(userId ?? 'signed-out'),
+        child: builder(context, userId != null),
+      ),
+    );
   }
 }
 

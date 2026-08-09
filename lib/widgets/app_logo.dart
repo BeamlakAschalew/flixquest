@@ -1,9 +1,24 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:xml/xml.dart';
 
 import '../provider/app_dependency_provider.dart';
+
+@visibleForTesting
+bool isValidRemoteLogoSvg(String source) {
+  if (source.isEmpty) return false;
+  try {
+    final document = XmlDocument.parse(source);
+    return document.rootElement.name.local.toLowerCase() == 'svg';
+  } catch (_) {
+    return false;
+  }
+}
 
 /// Displays the Remote Config logo when available and a bundled asset when it
 /// is not. Seasonal theme logos take precedence over the general app logo.
@@ -37,13 +52,12 @@ class AppLogo extends StatelessWidget {
 
     final path = uri.path.toLowerCase();
     if (path.endsWith('.svg')) {
-      return SvgPicture.network(
-        logoUrl,
+      return _SafeRemoteSvg(
+        uri: uri,
         width: width,
         height: height,
         fit: fit,
-        placeholderBuilder: (_) => _fallback(),
-        errorBuilder: (_, __, ___) => _fallback(),
+        fallback: _fallback,
       );
     }
 
@@ -75,6 +89,91 @@ class AppLogo extends StatelessWidget {
       height: height,
       fit: fit,
       color: fallbackColor,
+    );
+  }
+}
+
+/// Downloads and validates remote SVG XML before handing it to flutter_svg.
+/// This prevents HTML error pages, placeholder values, and malformed files
+/// from reaching the asynchronous vector compiler as uncaught exceptions.
+class _SafeRemoteSvg extends StatefulWidget {
+  const _SafeRemoteSvg({
+    required this.uri,
+    required this.fit,
+    required this.fallback,
+    this.width,
+    this.height,
+  });
+
+  final Uri uri;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+  final Widget Function() fallback;
+
+  @override
+  State<_SafeRemoteSvg> createState() => _SafeRemoteSvgState();
+}
+
+class _SafeRemoteSvgState extends State<_SafeRemoteSvg> {
+  static const _maximumLogoBytes = 1024 * 1024;
+  static final Map<Uri, Future<String?>> _cache = <Uri, Future<String?>>{};
+  late Future<String?> _svg;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  @override
+  void didUpdateWidget(_SafeRemoteSvg oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.uri != widget.uri) _load();
+  }
+
+  void _load() {
+    final uri = widget.uri;
+    _svg = _cache.putIfAbsent(uri, () {
+      final request = _fetchSvg(uri);
+      request.then((value) {
+        if (value == null && identical(_cache[uri], request)) {
+          _cache.remove(uri);
+        }
+      });
+      return request;
+    });
+  }
+
+  static Future<String?> _fetchSvg(Uri uri) async {
+    try {
+      final response = await http.get(uri).timeout(const Duration(seconds: 12));
+      if (response.statusCode < 200 || response.statusCode >= 300) return null;
+      final bytes = response.bodyBytes;
+      if (bytes.isEmpty || bytes.length > _maximumLogoBytes) return null;
+      final source = utf8.decode(bytes, allowMalformed: false).trim();
+      return isValidRemoteLogoSvg(source) ? source : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+      future: _svg,
+      builder: (context, snapshot) {
+        final source = snapshot.data;
+        if (source == null) return widget.fallback();
+        return SvgPicture.string(
+          source,
+          width: widget.width,
+          height: widget.height,
+          fit: widget.fit,
+          placeholderBuilder: (_) => widget.fallback(),
+          errorBuilder: (_, __, ___) => widget.fallback(),
+        );
+      },
     );
   }
 }

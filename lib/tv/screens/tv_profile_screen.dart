@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../services/auth_navigation_service.dart';
 import '../app/tv_design.dart';
 import '../focus/tv_focusable.dart';
 import '../widgets/tv_dialog.dart';
@@ -70,6 +71,9 @@ class TvProfileScreen extends StatelessWidget {
           onPressed: () async {
             Navigator.of(context).pop();
             await FirebaseAuth.instance.signOut();
+            if (context.mounted) {
+              await AuthNavigationService.returnToSignedOutRoot(context);
+            }
           },
         ),
       ],

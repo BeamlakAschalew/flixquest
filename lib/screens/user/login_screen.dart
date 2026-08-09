@@ -64,13 +64,17 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = true);
     formKey.currentState!.save();
     try {
-      await authService.signIn(email: emailAddress, password: password);
+      final credential =
+          await authService.signIn(email: emailAddress, password: password);
       if (!mounted) return;
       BookmarkSyncService.instance.autoSyncIfSignedIn();
       Provider.of<SettingsProvider>(context, listen: false)
           .analytics
           .trackLogin('email');
-      await AuthNavigationService.returnToAppRoot(context);
+      await AuthNavigationService.returnToAppRoot(
+        context,
+        authenticatedUserId: credential.user!.uid,
+      );
     } on FirebaseAuthException catch (error) {
       if (!mounted) return;
       if (error.code == 'wrong-password' ||

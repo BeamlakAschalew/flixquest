@@ -25,6 +25,7 @@ class OccasionalEffectOverlay extends StatefulWidget {
 class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final AnimationController _controller;
+  late final ContinuousEffectClock _clock;
   bool _appActive = true;
 
   @override
@@ -35,6 +36,7 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
       vsync: this,
       duration: const Duration(seconds: 12),
     );
+    _clock = ContinuousEffectClock(_controller);
   }
 
   @override
@@ -89,7 +91,7 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
           child: CustomPaint(
             key: const Key('occasional-effect-canvas'),
             painter: _OccasionalEffectPainter(
-              animation: _controller,
+              clock: _clock,
               effect: theme.effect,
               primary: theme.primaryColor,
               secondary: theme.secondaryColor,
@@ -105,28 +107,62 @@ class _OccasionalEffectOverlayState extends State<OccasionalEffectOverlay>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _clock.dispose();
     _controller.dispose();
+    super.dispose();
+  }
+}
+
+/// Converts the repeating controller phase into a monotonically increasing
+/// value. Individual particles can wrap naturally without the entire field
+/// jumping back to its initial state every controller cycle.
+@visibleForTesting
+class ContinuousEffectClock extends ChangeNotifier {
+  ContinuousEffectClock(this._controller) {
+    _previousPhase = _controller.value;
+    _value = _previousPhase;
+    _controller.addListener(_tick);
+  }
+
+  final AnimationController _controller;
+  double _previousPhase = 0;
+  double _cycles = 0;
+  double _value = 0;
+
+  double get value => _value;
+
+  void _tick() {
+    final phase = _controller.value;
+    if (phase < _previousPhase) _cycles += 1;
+    _previousPhase = phase;
+    _value = _cycles + phase;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_tick);
     super.dispose();
   }
 }
 
 class _OccasionalEffectPainter extends CustomPainter {
   _OccasionalEffectPainter({
-    required Animation<double> animation,
+    required ContinuousEffectClock clock,
     required this.effect,
     required this.primary,
     required this.secondary,
     required this.tertiary,
-  })  : _animation = animation,
-        super(repaint: animation);
+  })  : _clock = clock,
+        super(repaint: clock);
 
-  final Animation<double> _animation;
+  final ContinuousEffectClock _clock;
   final OccasionalEffect effect;
   final Color primary;
   final Color secondary;
   final Color tertiary;
 
-  double get _time => _animation.value * effect.speed;
+  double get _time => _clock.value * effect.speed;
 
   List<Color> get _colors => effect.colors.isNotEmpty
       ? effect.colors

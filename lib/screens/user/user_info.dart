@@ -8,10 +8,10 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../provider/app_dependency_provider.dart';
 import '../../provider/settings_provider.dart';
+import '../../services/auth_navigation_service.dart';
 import '../../ui_components/app_ui_components.dart';
 import '../../widgets/app_logo.dart';
 import '../common/about.dart';
-import '../common/landing_screen.dart';
 import '../common/live_tv_screen.dart';
 import '../common/server_status_screen.dart';
 import '../common/settings.dart' as app_settings;
@@ -280,10 +280,7 @@ class _UserInfoState extends State<UserInfo> {
     await _auth.currentUser?.delete();
     await _auth.signOut();
     if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LandingScreen()),
-    );
+    await AuthNavigationService.returnToSignedOutRoot(context);
   }
 
   Widget _profileActions({required bool authenticated}) {
@@ -376,10 +373,7 @@ class _UserInfoState extends State<UserInfo> {
     context.read<SettingsProvider>().analytics.resetUser();
     await _auth.signOut();
     if (!mounted) return;
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LandingScreen()),
-    );
+    await AuthNavigationService.returnToSignedOutRoot(context);
   }
 
   void _push(Widget page) {

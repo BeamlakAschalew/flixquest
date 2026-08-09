@@ -4,12 +4,14 @@ import 'package:better_player_plus/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../../functions/function.dart';
 import '../../models/live_tv.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../services/analytics_service.dart';
 import '../../services/daddylive_service.dart';
-import '../../widgets/branded_stream_intro.dart';
+import '../../services/stream_intro_service.dart';
 
 class LivePlayer extends StatefulWidget {
   const LivePlayer({
@@ -54,12 +56,11 @@ class LivePlayer extends StatefulWidget {
 
 class _LivePlayerState extends State<LivePlayer> {
   late BetterPlayerController _betterPlayerController;
-  late final Completer<void> _initialMainReady;
+  final StreamIntroService _introService = StreamIntroService();
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
   late BetterPlayerBufferingConfiguration betterPlayerBufferingConfiguration;
 
   final GlobalKey _betterPlayerKey = GlobalKey();
-  final GlobalKey<BrandedStreamIntroState> _introKey = GlobalKey();
 
   String? _currentChannelId;
   late String _currentChannelName;
@@ -76,14 +77,19 @@ class _LivePlayerState extends State<LivePlayer> {
   int _channelSwitchCount = 0;
   bool _hasInitialized = false;
   bool _wasPlayingBeforeBuffering = false;
+  late final AppDependencyProvider _appDependencies;
+  int? _occasionalEffectsSuppressionId;
 
   @override
   void initState() {
     super.initState();
+    _appDependencies =
+        Provider.of<AppDependencyProvider>(context, listen: false);
+    _occasionalEffectsSuppressionId =
+        _appDependencies.suppressOccasionalEffects();
     _sessionStartedAt = DateTime.now();
     _sessionId =
         '${_sessionStartedAt.microsecondsSinceEpoch}-${identityHashCode(this)}';
-    _initialMainReady = Completer<void>();
     _currentChannelId =
         widget.initialChannelId ?? widget.channels.firstOrNull?.id;
     _currentChannelName = widget.channelName;
@@ -142,7 +148,7 @@ class _LivePlayerState extends State<LivePlayer> {
         BetterPlayerConfiguration(
       autoDetectFullscreenDeviceOrientation: true,
       looping: true,
-      autoPlay: false,
+      autoPlay: true,
       allowedScreenSleep: false,
       fit: BoxFit.contain,
       autoDispose: true,
@@ -165,13 +171,13 @@ class _LivePlayerState extends State<LivePlayer> {
 
   Future<void> _setupInitialStream() async {
     try {
-      await _betterPlayerController
-          .setupDataSource(_buildDataSource(widget.videoUrl, widget.headers));
-      if (!_initialMainReady.isCompleted) _initialMainReady.complete();
-    } catch (error, stackTrace) {
-      if (!_initialMainReady.isCompleted) {
-        _initialMainReady.completeError(error, stackTrace);
+      await _setupStreamWithIntro(
+        _buildDataSource(widget.videoUrl, widget.headers),
+      );
+      if (widget.autoFullScreen && !_betterPlayerController.isFullScreen) {
+        _betterPlayerController.enterFullScreen();
       }
+    } catch (error) {
       _trackPlayerEvent('setup_error', error: error.toString());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -190,14 +196,35 @@ class _LivePlayerState extends State<LivePlayer> {
     }
   }
 
-  void _onInitialStreamStarted() {
-    if (!mounted || !widget.autoFullScreen) return;
-    final aspectRatio =
-        _betterPlayerController.videoPlayerController?.value.aspectRatio ?? 0;
-    if (aspectRatio > 1 && !_betterPlayerController.isFullScreen) {
-      _betterPlayerController.enterFullScreen();
+  Future<void> _setupStreamWithIntro(
+    BetterPlayerDataSource dataSource,
+  ) async {
+    StreamIntroConfig intro = const StreamIntroConfig.disabled();
+    try {
+      intro = await _introService.fetch(widget.scraperApiUrl);
+    } catch (error) {
+      debugPrint('[LivePlayer] Branded intro unavailable: $error');
+    }
+    if (intro.enabled && intro.url != null) {
+      await _betterPlayerController.setupDataSourceWithPreRoll(
+        preRollDataSource: _buildIntroDataSource(intro.url!),
+        betterPlayerDataSource: dataSource,
+      );
+    } else {
+      await _betterPlayerController.setupDataSource(dataSource);
     }
   }
+
+  BetterPlayerDataSource _buildIntroDataSource(Uri url) =>
+      BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        url.toString(),
+        cacheConfiguration: const BetterPlayerCacheConfiguration(
+          useCache: true,
+          maxCacheSize: 50 * 1024 * 1024,
+          maxCacheFileSize: 20 * 1024 * 1024,
+        ),
+      );
 
   bool get canSwitchChannels =>
       widget.service != null &&
@@ -381,18 +408,12 @@ class _LivePlayerState extends State<LivePlayer> {
       final stream = await service.getStream(channel.id);
       if (!mounted) return;
       Future<void> prepareStream() async {
-        await _betterPlayerController
-            .setupDataSource(_buildDataSource(stream.url, stream.headers));
+        await _setupStreamWithIntro(
+          _buildDataSource(stream.url, stream.headers),
+        );
       }
 
-      final introState = _introKey.currentState;
-      if (introState != null) {
-        await introState.playBefore(prepareStream);
-      } else {
-        await _betterPlayerController.pause();
-        await prepareStream();
-        await _betterPlayerController.play();
-      }
+      await prepareStream();
       if (!mounted) return;
       setState(() {
         _currentChannelId = channel.id;
@@ -443,6 +464,11 @@ class _LivePlayerState extends State<LivePlayer> {
 
   @override
   void dispose() {
+    final suppressionId = _occasionalEffectsSuppressionId;
+    if (suppressionId != null) {
+      _appDependencies.releaseOccasionalEffectsSuppression(suppressionId);
+      _occasionalEffectsSuppressionId = null;
+    }
     _bannerTimer?.cancel();
     _betterPlayerController.removeEventsListener(_onPlayerEvent);
     _stopWatchClock();
@@ -463,6 +489,7 @@ class _LivePlayerState extends State<LivePlayer> {
       channelSwitchCount: _channelSwitchCount,
     );
     _betterPlayerController.dispose();
+    _introService.close();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -485,16 +512,6 @@ class _LivePlayerState extends State<LivePlayer> {
                 child: BetterPlayer(
                   key: _betterPlayerKey,
                   controller: _betterPlayerController,
-                ),
-              ),
-              Positioned.fill(
-                child: BrandedStreamIntro(
-                  key: _introKey,
-                  apiBaseUrl: widget.scraperApiUrl,
-                  mainController: _betterPlayerController,
-                  initialMainReady: _initialMainReady.future,
-                  accentColor: widget.colors.first,
-                  onInitialStreamStarted: _onInitialStreamStarted,
                 ),
               ),
               Positioned(

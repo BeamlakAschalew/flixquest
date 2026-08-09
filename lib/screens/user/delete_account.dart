@@ -1,9 +1,10 @@
-import '/screens/common/landing_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../constants/app_constants.dart';
 import '../../services/globle_method.dart';
+import '../../services/auth_navigation_service.dart';
+import '../../services/in_app_messaging_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -88,24 +89,22 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                     Provider.of<SettingsProvider>(context, listen: false)
                         .analytics
                         .resetUser();
-                    await Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const LandingScreen();
-                    })).then((value) {
-                      if (!context.mounted) {
-                        return;
-                      }
+                    await AuthNavigationService.returnToSignedOutRoot(context);
+                    final rootContext =
+                        InAppMessagingService.navigatorKey.currentContext;
+                    if (rootContext != null && rootContext.mounted) {
                       GlobalMethods.showCustomScaffoldMessage(
-                          SnackBar(
-                            content: Text(
-                              tr('account_deleted_successfully'),
-                              maxLines: 3,
-                              style: kTextSmallBodyStyle,
-                            ),
-                            duration: const Duration(seconds: 4),
+                        SnackBar(
+                          content: Text(
+                            tr('account_deleted_successfully'),
+                            maxLines: 3,
+                            style: kTextSmallBodyStyle,
                           ),
-                          context.mounted ? context : null);
-                    });
+                          duration: const Duration(seconds: 4),
+                        ),
+                        rootContext,
+                      );
+                    }
                   }
                 });
               });
@@ -208,8 +207,7 @@ class DeleteAccountScreenState extends State<DeleteAccountScreen> {
                                   decoration: InputDecoration(
                                       errorMaxLines: 3,
                                       filled: true,
-                                      prefixIcon:
-                                          Icon(PhosphorIcons.textT()),
+                                      prefixIcon: Icon(PhosphorIcons.textT()),
                                       labelText: tr('type_delete')),
                                 ),
                               ),

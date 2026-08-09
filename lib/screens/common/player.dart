@@ -21,9 +21,10 @@ import 'package:better_player_plus/better_player_plus.dart';
 import '../../functions/function.dart';
 import '../../provider/settings_provider.dart';
 import '../../provider/offline_download_provider.dart';
+import '../../provider/app_dependency_provider.dart';
 import '../../constants/api_constants.dart';
 import '../../ui_components/app_ui_components.dart';
-import '../../widgets/branded_stream_intro.dart';
+import '../../services/stream_intro_service.dart';
 import '../movie/movie_video_loader.dart';
 import '../tv/tv_video_loader.dart';
 import 'player/player_data_management.dart';
@@ -88,7 +89,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   static const int _bufferForPlaybackAfterRebufferMs = 12000;
 
   late BetterPlayerController _betterPlayerController;
-  late final Completer<void> _initialMainReady;
+  final StreamIntroService _introService = StreamIntroService();
   final BetterPlayerTvControlsController _tvControlsController =
       BetterPlayerTvControlsController();
   late BetterPlayerControlsConfiguration betterPlayerControlsConfiguration;
@@ -148,6 +149,8 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   bool _analyticsWasPlayingBeforeBuffering = false;
   String? _lastAnalyticsError;
   DateTime? _lastAnalyticsErrorAt;
+  late final AppDependencyProvider _appDependencies;
+  int? _occasionalEffectsSuppressionId;
 
   @override
   void initState() {
@@ -160,10 +163,13 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
         widget.videoFormats == null ? null : Map.of(widget.videoFormats!);
     _activeVideoHeaders = Map.of(widget.videoHeaders);
     super.initState();
+    _appDependencies =
+        Provider.of<AppDependencyProvider>(context, listen: false);
+    _occasionalEffectsSuppressionId =
+        _appDependencies.suppressOccasionalEffects();
     _analyticsSessionStartedAt = DateTime.now();
     _analyticsSessionId =
         '${_analyticsSessionStartedAt.microsecondsSinceEpoch}-${identityHashCode(this)}';
-    _initialMainReady = Completer<void>();
 
     // Initialize episode selection with current season
     _episodeSelection = PlayerEpisodeSelection(widget.tvMetadata?.seasonNumber);
@@ -342,8 +348,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
     BetterPlayerConfiguration betterPlayerConfiguration =
         BetterPlayerConfiguration(
             autoDetectFullscreenDeviceOrientation: !widget.useTvControls,
-            fullScreenByDefault: false,
-            autoPlay: false,
+            fullScreenByDefault:
+                widget.useTvControls ? false : widget.settings.defaultViewMode,
+            autoPlay: true,
             fit: BoxFit.contain,
             autoDispose: true,
             controlsConfiguration: betterPlayerControlsConfiguration,
@@ -393,35 +400,50 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   Future<void> _setupInitialDataSource(
       BetterPlayerDataSource dataSource) async {
+    final initialPosition = widget.initialPlaybackPosition ??
+        Duration(
+          seconds: widget.mediaType == MediaType.movie
+              ? widget.movieMetadata!.elapsed!
+              : widget.tvMetadata!.elapsed!,
+        );
     try {
-      await _betterPlayerController.setupDataSource(dataSource);
+      StreamIntroConfig intro = const StreamIntroConfig.disabled();
+      try {
+        intro = await _introService.fetch(widget.scraperApiUrl);
+      } catch (error) {
+        debugPrint('[Player] Branded intro unavailable: $error');
+      }
+
+      if (intro.enabled && intro.url != null) {
+        await _betterPlayerController.setupDataSourceWithPreRoll(
+          preRollDataSource: _buildIntroDataSource(intro.url!),
+          betterPlayerDataSource: dataSource,
+          contentStartPosition: initialPosition,
+        );
+      } else {
+        await _betterPlayerController.setupDataSource(dataSource);
+        await _betterPlayerController.seekTo(initialPosition);
+      }
       if (!mounted) return;
       _applyPreferredAdaptiveQuality();
-      final initialPosition = widget.initialPlaybackPosition ??
-          Duration(
-            seconds: widget.mediaType == MediaType.movie
-                ? widget.movieMetadata!.elapsed!
-                : widget.tvMetadata!.elapsed!,
-          );
-      await _betterPlayerController.seekTo(initialPosition);
       duration = _betterPlayerController
               .videoPlayerController?.value.duration?.inSeconds ??
           0;
-      if (!_initialMainReady.isCompleted) _initialMainReady.complete();
-    } catch (error, stackTrace) {
-      if (!_initialMainReady.isCompleted) {
-        _initialMainReady.completeError(error, stackTrace);
-      }
+    } catch (error) {
+      debugPrint('[Player] Initial stream setup failed: $error');
     }
   }
 
-  void _onInitialStreamStarted() {
-    if (!mounted || widget.useTvControls || !widget.settings.defaultViewMode) {
-      return;
-    }
-    if (!_betterPlayerController.isFullScreen) {
-      _betterPlayerController.enterFullScreen();
-    }
+  BetterPlayerDataSource _buildIntroDataSource(Uri url) {
+    return BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
+      url.toString(),
+      cacheConfiguration: const BetterPlayerCacheConfiguration(
+        useCache: true,
+        maxCacheSize: 50 * 1024 * 1024,
+        maxCacheFileSize: 20 * 1024 * 1024,
+      ),
+    );
   }
 
   String get _analyticsMediaType =>
@@ -443,6 +465,9 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
   void _onAnalyticsPlayerEvent(BetterPlayerEvent event) {
     switch (event.betterPlayerEventType) {
       case BetterPlayerEventType.initialized:
+        duration = _betterPlayerController
+                .videoPlayerController?.value.duration?.inSeconds ??
+            duration;
         _analyticsInitializationCount++;
         _trackPlaybackEvent(
           _analyticsInitializationCount == 1 ? 'initialized' : 'reinitialized',
@@ -838,6 +863,11 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    final suppressionId = _occasionalEffectsSuppressionId;
+    if (suppressionId != null) {
+      _appDependencies.releaseOccasionalEffectsSuppression(suppressionId);
+      _occasionalEffectsSuppressionId = null;
+    }
     // _resetTimer?.cancel();
     _progressCheckTimer?.cancel();
     _tvNextEpisodeTimer?.cancel();
@@ -869,6 +899,7 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
 
     // Dispose the BetterPlayer controller to clean up resources
     _betterPlayerController.dispose();
+    _introService.close();
 
     // Reset orientation to portrait when leaving the player
     SystemChrome.setPreferredOrientations([
@@ -1617,15 +1648,6 @@ class _PlayerOneState extends State<PlayerOne> with WidgetsBindingObserver {
                   controller: _betterPlayerController,
                   key: _betterPlayerKey,
                 ),
-              ),
-            ),
-            Positioned.fill(
-              child: BrandedStreamIntro(
-                apiBaseUrl: widget.scraperApiUrl,
-                mainController: _betterPlayerController,
-                initialMainReady: _initialMainReady.future,
-                accentColor: widget.colors.first,
-                onInitialStreamStarted: _onInitialStreamStarted,
               ),
             ),
             if (_tvMenu case final menu?)

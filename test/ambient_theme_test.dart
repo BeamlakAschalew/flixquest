@@ -92,4 +92,34 @@ void main() {
     expect(color!.r, greaterThan(color.g * 3));
     expect(color.r, greaterThan(color.b * 3));
   });
+
+  test('player scopes suppress and safely restore seasonal effects', () {
+    final provider = AppDependencyProvider();
+    provider.occasionalThemeCatalog = OccasionalThemeCatalog.fromJsonString('''
+      {
+        "enabled": true,
+        "effects_enabled": true,
+        "themes": [{
+          "id": "christmas",
+          "enabled": true,
+          "effect": {"enabled": true, "type": "snow"}
+        }]
+      }
+    ''');
+    expect(provider.shouldShowOccasionalEffects, isTrue);
+
+    final player = provider.suppressOccasionalEffects();
+    final nestedPlayer = provider.suppressOccasionalEffects();
+    expect(provider.shouldShowOccasionalEffects, isFalse);
+
+    provider.releaseOccasionalEffectsSuppression(player);
+    expect(provider.shouldShowOccasionalEffects, isFalse);
+    provider.releaseOccasionalEffectsSuppression(nestedPlayer);
+    expect(provider.shouldShowOccasionalEffects, isTrue);
+
+    // Releasing a scope twice must not affect a future player scope.
+    provider.releaseOccasionalEffectsSuppression(nestedPlayer);
+    expect(provider.shouldShowOccasionalEffects, isTrue);
+    provider.dispose();
+  });
 }

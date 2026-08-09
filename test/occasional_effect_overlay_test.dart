@@ -51,4 +51,23 @@ void main() {
 
     expect(find.byKey(const Key('occasional-effect-canvas')), findsNothing);
   });
+
+  testWidgets('animation clock stays continuous across controller repeats',
+      (tester) async {
+    final controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(seconds: 12),
+    );
+    final clock = ContinuousEffectClock(controller);
+
+    controller.value = .98;
+    expect(clock.value, closeTo(.98, .0001));
+    controller.value = .02;
+    expect(clock.value, closeTo(1.02, .0001));
+    controller.value = .5;
+    expect(clock.value, closeTo(1.5, .0001));
+
+    clock.dispose();
+    controller.dispose();
+  });
 }

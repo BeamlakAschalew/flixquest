@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'auth_session_controller.dart';
+
 class FlixQuestAuthService {
   FlixQuestAuthService({
     FirebaseAuth? auth,
@@ -14,15 +16,19 @@ class FlixQuestAuthService {
   Future<UserCredential> signIn({
     required String email,
     required String password,
-  }) {
-    return _auth.signInWithEmailAndPassword(
+  }) async {
+    final credential = await _auth.signInWithEmailAndPassword(
       email: email.toLowerCase().trim(),
       password: password.trim(),
     );
+    AuthSessionController.instance.setAuthenticatedUserId(credential.user?.uid);
+    return credential;
   }
 
-  Future<UserCredential> signInAnonymously() {
-    return _auth.signInAnonymously();
+  Future<UserCredential> signInAnonymously() async {
+    final credential = await _auth.signInAnonymously();
+    AuthSessionController.instance.setAuthenticatedUserId(credential.user?.uid);
+    return credential;
   }
 
   Future<UserCredential> createAccount({
@@ -71,6 +77,7 @@ class FlixQuestAuthService {
       },
     );
     await batch.commit();
+    AuthSessionController.instance.setAuthenticatedUserId(user.uid);
     return credential;
   }
 }

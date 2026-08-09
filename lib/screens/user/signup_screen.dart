@@ -79,7 +79,7 @@ class _SignupScreenState extends State<SignupScreen> {
     _formKey.currentState!.save();
     setState(() => _isLoading = true);
     try {
-      await _authService.createAccount(
+      final credential = await _authService.createAccount(
         fullName: _fullName,
         email: _emailAddress,
         username: _userName,
@@ -92,7 +92,10 @@ class _SignupScreenState extends State<SignupScreen> {
       Provider.of<SettingsProvider>(context, listen: false)
           .analytics
           .trackSignup();
-      await AuthNavigationService.returnToAppRoot(context);
+      await AuthNavigationService.returnToAppRoot(
+        context,
+        authenticatedUserId: credential.user!.uid,
+      );
     } on FirebaseAuthException catch (error) {
       if (!mounted) return;
       if (error.code == 'weak-password') {

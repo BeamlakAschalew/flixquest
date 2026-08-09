@@ -70,8 +70,9 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
       _error = null;
     });
     try {
+      late final UserCredential credential;
       if (_isSignIn) {
-        await _authService.signIn(
+        credential = await _authService.signIn(
           email: _emailController.text,
           password: _passwordController.text,
         );
@@ -80,7 +81,7 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
           context.read<SettingsProvider>().analytics.trackLogin('email');
         }
       } else {
-        await _authService.createAccount(
+        credential = await _authService.createAccount(
           fullName: _nameController.text,
           email: _emailController.text,
           username: _usernameController.text,
@@ -92,7 +93,10 @@ class _TvAuthScreenState extends State<TvAuthScreen> {
         }
       }
       if (mounted) {
-        await AuthNavigationService.returnToAppRoot(context);
+        await AuthNavigationService.returnToAppRoot(
+          context,
+          authenticatedUserId: credential.user!.uid,
+        );
       }
     } on FirebaseAuthException catch (error) {
       if (mounted) setState(() => _error = _authMessage(error));
